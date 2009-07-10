@@ -22,7 +22,8 @@ class Configuration extends ModelTenant
         'decimal_quantity',
         'amount_plastic_bag_taxes',
         'colums_grid_item',
-        'options_pos'
+        'options_pos',
+        'edit_name_product'
     ];
 
     public function setPlanAttribute($value)
