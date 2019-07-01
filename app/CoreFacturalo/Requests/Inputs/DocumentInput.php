@@ -111,7 +111,7 @@ class DocumentInput
                         'description' => $item->description,
                         'item_type_id' => $item->item_type_id,
                         'internal_id' => $item->internal_id,
-                        'item_code' => $item->item_code,
+                        'item_code' => trim($item->item_code),
                         'item_code_gs1' => $item->item_code_gs1,
                         'unit_type_id' => (key_exists('item', $row))?$row['item']['unit_type_id']:$item->unit_type_id,
                         'presentation' => (key_exists('item', $row))?$row['item']['presentation']:[]
