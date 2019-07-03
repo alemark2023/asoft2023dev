@@ -61,49 +61,8 @@
                                 <h2 class="font-weight-semibold mt-0 mb-3">{{ total_documents }}</h2>
                             </div>
                         </section>
-                    </div>
-                    <!--<div class="col-xl-6">-->
-                        <!--<section class="card card-horizontal">-->
-                            <!--<header class="card-header bg-secondary">-->
-                                <!--<div class="card-header-icon">-->
-                                    <!--<i class="fas fa-dollar-sign"></i>-->
-                                <!--</div>-->
-                            <!--</header>-->
-                            <!--<div class="card-body p-4 text-center">-->
-                                <!--<p class="font-weight-semibold mb-0 mt-3">Total Venta en Planes</p>-->
-                                <!--<h2 class="font-weight-semibold mt-0 mb-3">2</h2>-->
-                            <!--</div>-->
-                        <!--</section>-->
-                    <!--</div>-->
-                </div>
-                <!--<div class="row">-->
-                    <!--<div class="col-xl-6">-->
-                        <!--<section class="card card-horizontal">-->
-                            <!--<header class="card-header bg-megna">-->
-                                <!--<div class="card-header-icon">-->
-                                    <!--<i class="fas fa-file"></i>-->
-                                <!--</div>-->
-                            <!--</header>-->
-                            <!--<div class="card-body p-4 text-center">-->
-                                <!--<p class="font-weight-semibold mb-0 mt-3">Total Facturas</p>-->
-                                <!--<h2 class="font-weight-semibold mt-0 mb-3">{{ total_documents }}</h2>-->
-                            <!--</div>-->
-                        <!--</section>-->
-                    <!--</div>-->
-                    <!--<div class="col-xl-6">-->
-                        <!--<section class="card card-horizontal">-->
-                            <!--<header class="card-header bg-info">-->
-                                <!--<div class="card-header-icon">-->
-                                    <!--<i class="fas fa-file-alt"></i>-->
-                                <!--</div>-->
-                            <!--</header>-->
-                            <!--<div class="card-body p-4 text-center">-->
-                                <!--<p class="font-weight-semibold mb-0 mt-3">Total Comprobantes</p>-->
-                                <!--<h2 class="font-weight-semibold mt-0 mb-3">{{ total_documents }}</h2>-->
-                            <!--</div>-->
-                        <!--</section>-->
-                    <!--</div>-->
-                <!--</div>-->
+                    </div> 
+                </div> 
             </div>
         </div>
 
@@ -131,6 +90,8 @@
                             <th class="text-center">Usuarios</th>
                             <th class="text-center">F.Creación</th>
                             <th class="text-right">Acciones</th>
+                            <th class="text-right">Pagos</th>
+                            <th class="text-right">E. Cuenta</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -156,6 +117,15 @@
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click.prevent="clickDelete(row.id)">Eliminar</button>
                                 </template>
                             </td>
+                            <td class="text-right">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning m-1__2" @click.prevent="clickPayments(row.id)">Pago</button>
+
+                            </td>
+                            <td class="text-right">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary m-1__2" @click.prevent="clickAccountStatus(row.id)">E. Cuenta</button>
+
+                            </td>
+
                         </tr>
                         </tbody>
                     </table>
@@ -164,6 +134,13 @@
         </div>
         <system-clients-form :showDialog.sync="showDialog"
                              :recordId="recordId"></system-clients-form>
+                             
+            
+        <client-payments :showDialog.sync="showDialogPayments"
+                            :clientId="recordId"></client-payments>
+                            
+        <account-status :showDialog.sync="showDialogAccountStatus"
+                            :clientId="recordId"></account-status>
     </div>
 </template>
 
@@ -173,13 +150,17 @@
     import {deletable} from "../../../mixins/deletable"
     import {changeable} from "../../../mixins/changeable"
     import ChartLine from './charts/Line'
+    import ClientPayments from './partials/payments.vue'
+    import AccountStatus from './partials/account_status.vue'
 
     export default {
         mixins: [deletable,changeable],
-        components: {CompaniesForm, ChartLine},
+        components: {CompaniesForm, ChartLine, ClientPayments, AccountStatus},
         data() {
             return {
                 showDialog: false,
+                showDialogPayments: false,
+                showDialogAccountStatus: false,
                 resource: 'clients',
                 recordId: null,
                 records: [],
@@ -228,6 +209,14 @@
             clickCreate(recordId = null) {
                 this.recordId = recordId
                 this.showDialog = true
+            },
+            clickPayments(recordId = null) {
+                this.recordId = recordId
+                this.showDialogPayments = true
+            },
+            clickAccountStatus(recordId = null) {
+                this.recordId = recordId
+                this.showDialogAccountStatus = true
             },
             clickPassword(id) {
                 this.change(`/${this.resource}/password/${id}`)
