@@ -23,7 +23,7 @@ class ClientPaymentCollection extends ResourceCollection
                 'reference' => $row->reference,
                 'payment' => $row->payment, 
                 'state' => $row->state,
-                'state_description' => ($row->state) ? 'Cancelado': (($row->date_of_payment >= date('Y-m-d')) ? 'Pendiente':'Vencido'),
+                'state_description' => ($row->state) ? 'Pagado': (($row->date_of_payment >= date('Y-m-d')) ? 'Pendiente':'Vencido'),
             ];
         });
     }

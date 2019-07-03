@@ -27,6 +27,10 @@ Vue.prototype.$http = Axios
 //
 // Vue.component('table-component', TableComponent);
 // Vue.component('table-column', TableColumn);
+Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
+
+Vue.component('x-graph', require('./components/graph/src/Graph.vue'));
+Vue.component('x-graph-line', require('./components/graph/src/GraphLine.vue'));
 
 Vue.component('tenant-companies-form', require('./views/tenant/companies/form.vue'));
 Vue.component('tenant-companies-logo', require('./views/tenant/companies/logo.vue'));

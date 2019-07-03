@@ -118,7 +118,7 @@
                                 </template>
                             </td>
                             <td class="text-right">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning m-1__2" @click.prevent="clickPayments(row.id)">Pago</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning m-1__2" @click.prevent="clickPayments(row.id)">Pagos</button>
 
                             </td>
                             <td class="text-right">

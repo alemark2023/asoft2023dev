@@ -17,10 +17,10 @@ if ($hostname) {
 
        Route::middleware(['auth', 'redirect.module'])->group(function() {
         // Route::middleware(['auth'])->group(function() {
-            Route::get('/', function () {
-                return redirect()->route('tenant.documents.create');
-            });
-            Route::get('dashboard', 'Tenant\HomeController@index')->name('tenant.dashboard');
+            // Route::get('/', function () {
+            //     return redirect()->route('tenant.documents.create');
+            // });
+            // Route::get('dashboard', 'Tenant\HomeController@index')->name('tenant.dashboard');
             Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
             

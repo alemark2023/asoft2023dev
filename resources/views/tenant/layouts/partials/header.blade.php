@@ -1,6 +1,7 @@
 <header class="header">
     <div class="logo-container">
-        <a href="{{route('tenant.dashboard')}}" class="logo pt-2 pt-md-0">
+        <a href="{{route('tenant.dashboard.index')}}" class="logo pt-2 pt-md-0">
+
             @if($vc_company->logo)
                 <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}" alt="Logo" />
             @else

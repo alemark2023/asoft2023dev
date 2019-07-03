@@ -11,8 +11,8 @@
                                 <th>Método de pago</th>
                                 <th>Tarjeta</th>
                                 <th>Referencia</th>
-                                <th class="text-right">Monto</th>
-                                <th>Cancelar</th>
+                                <th>Monto</th>
+                                <th>Pagar</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -24,15 +24,15 @@
                                     <td v-if="row.card_brand">{{ row.card_brand.description }}</td>
                                     <td v-else>-</td>
                                     <td>{{ row.reference }}</td>
-                                    <td class="text-right">S/ {{ row.payment }}</td>
+                                    <td  >S/ {{ row.payment }}</td>
                                     <td>
                                         <template v-if="!row.state">
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickCancelPayment(row.id)">
-                                                Cancelar
+                                                Pagar
                                             </button>
                                         </template>
                                         <template v-else>
-                                            Cancelado
+                                            Pagado
                                         </template>
 
                                         
@@ -80,7 +80,10 @@
                                     
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
-                                            <el-input v-model="row.payment"></el-input>
+                                            <!-- <el-input v-model="row.payment"></el-input> -->
+                                            <el-input  v-model="row.payment" >
+                                                <template slot="prepend">S/ </template>
+                                            </el-input>
                                             <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
                                         </div>
                                     </td>
@@ -172,7 +175,7 @@
                 await this.$http.get(`/${this.resource}/client/${this.clientId}`)
                     .then(response => {
                         this.client = response.data;
-                        this.title = 'Pagos del cliente: '+this.client.name;
+                        this.title = 'Programación de pagos del cliente: '+this.client.name;
                     });
                 await this.$http.get(`/${this.resource}/records/${this.clientId}`)
                     .then(response => {
@@ -198,7 +201,7 @@
                     card_brand_id: null,
                     reference: null,
                     reference: null,
-                    payment: 0,
+                    payment: this.client.pricing,
                     errors: {},
                     loading: false
                 });

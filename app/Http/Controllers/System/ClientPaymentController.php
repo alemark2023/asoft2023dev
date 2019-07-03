@@ -37,6 +37,7 @@ class ClientPaymentController extends Controller
 
         return [
             'name' => $client->name,
+            'pricing' => $client->plan->pricing,
             'total_paid' => $total_paid,
             'total' => $total,
             'total_difference' => $total_difference
@@ -53,7 +54,7 @@ class ClientPaymentController extends Controller
 
         return [
             'success' => true,
-            'message' => ($id)?'Pago editado con éxito':'Pago registrado con éxito'
+            'message' => ($id)?'Pago editado con éxito':'Pago programado con éxito'
         ];
     }
 
@@ -77,7 +78,7 @@ class ClientPaymentController extends Controller
 
         return [
             'success' => true,
-            'message' => 'Monto cancelado', 
+            'message' => 'Monto pagado', 
         ];
 
     } 
