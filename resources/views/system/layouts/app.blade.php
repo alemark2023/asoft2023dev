@@ -132,5 +132,6 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
+    <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script>
 </body>
 </html>

@@ -212,10 +212,10 @@
                 this.showAddButton = true;
             },
             clickSubmit(index) {
-                // if(this.records[index].payment > parseFloat(this.client.total_difference)) {
-                //     this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
-                //     return;
-                // }
+                if(this.has_card) {
+                    this.$message.error('Elija una tarjeta.');
+                    return;
+                }
                 let form = {
                     id: this.records[index].id,
                     client_id: this.clientId,

@@ -25,6 +25,7 @@
     </div>
 
     @stack('scripts')
+    <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script>
 </body>
 
 </html>
