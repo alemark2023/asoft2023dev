@@ -212,7 +212,7 @@
                 this.showAddButton = true;
             },
             clickSubmit(index) {
-                if(this.has_card) {
+                if(this.has_card && this.records[index].card_brand_id == null) {
                     this.$message.error('Elija una tarjeta.');
                     return;
                 }
