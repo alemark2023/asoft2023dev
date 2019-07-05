@@ -5,6 +5,7 @@ namespace Modules\Dashboard\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Dashboard\Helpers\DashboardData;
+use Modules\Dashboard\Helpers\DashboardSalePurchase;
 use Modules\Dashboard\Helpers\DashboardView;
 
 class DashboardController extends Controller
@@ -33,5 +34,12 @@ class DashboardController extends Controller
         return [
             'records' => (new DashboardView())->getUnpaid($request->all())
        ];
+    }
+
+    public function data_aditional()
+    {
+        return [
+            'data' => (new DashboardSalePurchase())->data(),
+        ];
     }
 }
