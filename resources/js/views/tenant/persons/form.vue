@@ -110,7 +110,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-2" v-if="type === 'suppliers'">
+                    <div class="col-md-3 center-el-checkbox">
+                        <div class="form-group" :class="{'has-danger': errors.perception_agent}">
+                            <el-checkbox v-model="form.perception_agent">¿Es agente de percepción?</el-checkbox><br>
+                            <small class="form-control-feedback" v-if="errors.perception_agent" v-text="errors.perception_agent[0]"></small>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row mt-2">
                     <div class="col-md-12">
                         <a href="#" @click.prevent="clickAddAddress">Agregar otra dirección</a>
                     </div>
@@ -130,7 +138,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -203,6 +211,7 @@
                     address: null,
                     telephone: null,
                     email: null,
+                    perception_agent: false,
                     more_address: []
                 }
             },

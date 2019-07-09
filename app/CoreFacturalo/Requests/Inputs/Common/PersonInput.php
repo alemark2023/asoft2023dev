@@ -46,6 +46,7 @@ class PersonInput
             'address' => $person->address,
             'email' => $person->email,
             'telephone' => $person->telephone,
+            'perception_agent' => $person->perception_agent,
         ];
     }
 }

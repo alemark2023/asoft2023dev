@@ -28,6 +28,8 @@ class PersonResource extends JsonResource
             'address' => $this->address,
             'telephone' => $this->telephone,
             'email' => $this->email,
+            'perception_agent' => (bool) $this->perception_agent,
+            // 'more_address' =>  $this->more_address,
         ];
     }
 }

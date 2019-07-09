@@ -117,6 +117,7 @@
                             nav-parent
                             {{ ($path[0] === 'purchases')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active nav-expanded':'' }}
+                            {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-shopping-cart" aria-hidden="true"></i>
@@ -136,6 +137,12 @@
                                 <li class="{{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'suppliers'])}}">
                                         Proveedores
+                                    </a>
+                                </li>
+
+                                <li class="{{ ($path[0] === 'expenses' )?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.expenses.index')}}">
+                                        Gastos diversos
                                     </a>
                                 </li>
                             </ul>

@@ -25,6 +25,7 @@ class Person extends ModelTenant
         'address',
         'email',
         'telephone',
+        'perception_agent',
     ];
 
     public function identity_document_type()

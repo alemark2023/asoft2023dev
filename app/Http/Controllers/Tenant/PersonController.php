@@ -71,10 +71,10 @@ class PersonController extends Controller
         $person->fill($request->all());
         $person->save();
 
-        foreach ($request->input('more_address') as $row)
-        {
-            $person->more_address()->create($row);
-        }
+        // foreach ($request->input('more_address') as $row)
+        // {
+        //     $person->more_address()->create($row);
+        // }
 
         return [
             'success' => true,
