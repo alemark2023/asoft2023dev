@@ -22,7 +22,7 @@ class PurchaseCollection extends ResourceCollection
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
-                'date_of_due' => $row->date_of_due->format('Y-m-d'),
+                'date_of_due' => ($row->date_of_due) ? $row->date_of_due->format('Y-m-d'):'-',
                 'number' => $row->number_full,
                 'supplier_name' => $row->supplier->name,
                 'supplier_number' => $row->supplier->number,
