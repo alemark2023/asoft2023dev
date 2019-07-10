@@ -55,7 +55,7 @@
                             <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>
                         </div>
-                    </div>
+                    </div> 
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.internal_id}">
                             <label class="control-label">Código Interno
@@ -90,6 +90,18 @@
                             <label class="control-label">Stock Mínimo</label>
                             <el-input v-model="form.stock_min"></el-input>
                             <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 center-el-checkbox" >
+                        <div class="form-group"  >
+                            <el-checkbox v-model="has_percentage_perception" @change="changePercentagePerception">Incluye percepción</el-checkbox><br>
+                        </div>
+                    </div>
+                    <div class="col-md-3 center-el-checkbox" v-show="has_percentage_perception">
+                        <div class="form-group"  >
+                            <label class="control-label">Porcentaje de percepción</label>
+
+                            <el-input v-model="form.percentage_perception"></el-input>
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -241,16 +253,26 @@
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
             </div>
         </form>
+        <!-- <percentage-perception 
+                :showDialog.sync="showPercentagePerception"
+                :percentage_perception="percentage_perception">
+        </percentage-perception> -->
     </el-dialog>
 </template>
 
 <script>
+    // import PercentagePerception from './partials/percentage_perception.vue'
 
     export default {
         props: ['showDialog', 'recordId', 'external'],
+        // components: {PercentagePerception},
+
         data() {
             return {
                 loading_submit: false,
+                showPercentagePerception: false,
+                has_percentage_perception: false,
+                percentage_perception:null,
                 titleDialog: null,
                 resource: 'items',
                 errors: {},
@@ -284,6 +306,12 @@
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                 })
+
+            this.$eventHub.$on('submitPercentagePerception', (data)=>{
+                this.form.percentage_perception = data
+                if(!this.form.percentage_perception) this.has_percentage_perception = false
+            })
+
         },
         methods: {
             clickDelete(id) {
@@ -303,6 +331,14 @@
                             }
                         })
                 
+            },
+            changePercentagePerception(){
+                // if(this.has_percentage_perception){
+                //     // this.percentage_perception = (this.recordId) ? this.form.percentage_perception:null 
+                // } else{
+                //     this.form.percentage_perception = null 
+                // }
+
             },
             clickAddRow() {
                 this.form.item_unit_types.push({
@@ -347,6 +383,7 @@
                     has_igv: true,
                     item_unit_types:[],
                     percentage_of_profit: 0,
+                    percentage_perception: 0,
                 }
                 this.show_has_igv = true
             },
@@ -374,6 +411,7 @@
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
+                            this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                             this.changeAffectationIgvType()
                         })
                 }
@@ -409,6 +447,9 @@
                 this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
             submit() {
+                if(this.has_percentage_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
+                if(!this.has_percentage_perception) this.form.percentage_perception = null
+                
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {

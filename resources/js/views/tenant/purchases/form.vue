@@ -8,7 +8,7 @@
                 <div class="form-body">
 
                     <div class="row">
-                         <div class="col-lg-3">
+                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                                 <label class="control-label">Tipo comprobante</label>
                                 <el-select v-model="form.document_type_id" @change="changeDocumentType">
@@ -33,22 +33,22 @@
                                 <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                             </div>
                         </div>
+                        
+
+
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
-                                <label class="control-label">Moneda</label>
-                                <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
-                                    <el-option v-for="option in currency_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                </el-select>
-                                <small class="form-control-feedback" v-if="errors.currency_type_id" v-text="errors.currency_type_id[0]"></small>
-                            </div>
-                        </div>
-
-
-                        <div class="col-lg-3">
                             <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                 <label class="control-label">Fec Emisión</label>
                                 <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2">
+                            <div class="form-group" :class="{'has-danger': errors.date_of_due}">
+                                <label class="control-label">Fec. Vencimiento</label>
+                                <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
+                                <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                             </div>
                         </div>
                     </div>
@@ -59,18 +59,30 @@
                                     Proveedor
                                     <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                 </label>
-                                <el-select v-model="form.supplier_id" filterable>
+                                <el-select v-model="form.supplier_id" filterable @change="changeSupplier">
                                     <el-option v-for="option in suppliers" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
-
+                        <div class="col-lg-3">
+                            <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
+                                <label class="control-label">
+                                    Forma de pago
+                                </label>
+                                <el-select v-model="form.payment_method_type_id" filterable @change="changePaymentMethodType">
+                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                                <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                            </div>
+                        </div>
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.date_of_due}">
-                                <label class="control-label">Fec. Vencimiento</label>
-                                <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
-                                <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
+                            <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
+                                <label class="control-label">Moneda</label>
+                                <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
+                                    <el-option v-for="option in currency_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                                <small class="form-control-feedback" v-if="errors.currency_type_id" v-text="errors.currency_type_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2">
@@ -85,7 +97,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
+                        <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
                             <div class="form-group">
                                 <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
                             </div>
@@ -99,6 +111,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Descripción</th>
+                                        <th>Almacén</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-right">Cantidad</th>
                                         <th class="text-right">Precio Unitario</th>
@@ -112,6 +125,7 @@
                                     <tr v-for="(row, index) in form.items">
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                        <td class="text-left">{{ row.warehouse_description }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
@@ -133,13 +147,57 @@
                             <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS: {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
                             <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}</p>
                             <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
-                            <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
+                            <h3 class="text-right" v-if="form.total > 0"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
+
+                            <template v-if="is_perception_agent">
+                                <hr>
+                                <div class="row mt-1">
+                                    <div class="col-lg-10 float-right">
+                                        <label class="float-right control-label">NÚMERO PERCEPCIÓN: </label>
+                                    </div>
+                                    <div class="col-lg-2 float-right">
+                                        <div class="form-group" :class="{'has-danger': errors.perception_number}">
+                                            <el-input v-model="form.perception_number"></el-input>
+
+                                            <small class="form-control-feedback" v-if="errors.perception_number" v-text="errors.perception_number[0]"></small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-1">
+                                    <div class="col-lg-10 float-right">
+                                        <label class="float-right control-label">FEC EMISIÓN PERCEPCIÓN: </label>
+                                    </div>
+                                    <div class="col-lg-2 float-right">
+                                        <div class="form-group" :class="{'has-danger': errors.perception_date}">
+                                            <el-date-picker v-model="form.perception_date" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                            <small class="form-control-feedback" v-if="errors.perception_date" v-text="errors.perception_date[0]"></small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-1">
+                                    <div class="col-lg-10 float-right">
+                                        <label class="float-right control-label">IMPORTE PERCEPCIÓN: </label>
+                                    </div>
+                                    <div class="col-lg-2 float-right">
+                                        <div class="form-group" :class="{'has-danger': errors.total_perception}">
+                                            <el-input v-model="form.total_perception" @input="inputTotalPerception"></el-input>
+
+                                            <small class="form-control-feedback" v-if="errors.total_perception" v-text="errors.total_perception[0]"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="text-right" v-if="form.total > 0 && !hide_button"><b>MONTO TOTAL : </b>{{ currency_type.symbol }} {{ total_amount }}</h3>
+                                
+                                
+                            </template>
                         </div>
                     </div>
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <el-button type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+                    <el-button type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && !hide_button">Generar</el-button>
                 </div>
             </form>
         </div>
@@ -177,13 +235,17 @@
                 showDialogNewPerson: false,
                 showDialogOptions: false,
                 loading_submit: false,
+                hide_button: false,
+                is_perception_agent: false,
                 errors: {},
                 form: {},
                 aux_supplier_id:null,
+                total_amount:0,
                 document_types: [],
                 currency_types: [],
                 discount_types: [],
                 charges_types: [],
+                payment_method_types: [],
                 all_suppliers: [],
                 suppliers: [],
                 company: null,
@@ -205,6 +267,8 @@
                     this.establishment = response.data.establishment
                     this.all_suppliers = response.data.suppliers
                     this.discount_types = response.data.discount_types
+                    this.payment_method_types = response.data.payment_method_types
+
                     this.charges_types = response.data.charges_types
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishment.id) ? this.establishment.id:null
@@ -220,7 +284,39 @@
            })
         },
         methods: {
+            changePaymentMethodType(flag_submit = true){
+                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+                if(payment_method_type.number_days){
+                    this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
+                    this.changeDateOfIssue()
+                }else{
+                    if(flag_submit){
+                        this.form.date_of_issue = moment().format('YYYY-MM-DD')
+                        this.changeDateOfIssue()
+                    }
+                }
+            },
+            inputTotalPerception(){
+                this.total_amount = parseFloat(this.form.total) + parseFloat(this.form.total_perception)
+                if(isNaN(this.total_amount)){
+                    this.hide_button = true
+                }else{
+                    this.hide_button = false
 
+                }
+            },
+            changeSupplier(){
+                let supplier = _.find(this.all_suppliers,{'id':this.form.supplier_id})
+                this.is_perception_agent = supplier.perception_agent
+                if(this.is_perception_agent){
+                    this.form.total_perception = 0
+                    this.form.perception_date = moment().format('YYYY-MM-DD')
+                }else{
+                    this.form.perception_date = null
+                    this.form.perception_number = null
+                    this.form.total_perception = null
+                }
+            },
             filterSuppliers() {
 
                 if(this.form.document_type_id === '01') {
@@ -249,6 +345,7 @@
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     supplier_id: null,
+                    payment_method_type_id:'01',
                     currency_type_id: null,
                     purchase_order: null,
                     exchange_rate_sale: 0,
@@ -268,7 +365,9 @@
                     total_taxes: 0,
                     total_value: 0,
                     total: 0,
-                    operation_type_id: 1,
+                    perception_date: null,
+                    perception_number: null,
+                    total_perception: 0,
                     date_of_due: moment().format('YYYY-MM-DD'),
                     items: [],
                     charges: [],
@@ -324,6 +423,7 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_perception = 0
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -358,11 +458,14 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+                total_perception = total + parseFloat(this.form.total_perception)
+                this.total_amount = _.round(total_perception, 2)
              },
-            submit() {
+            async submit() {
 
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form)
+                await this.changePaymentMethodType(false)
+                await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
 
                         if (response.data.success) {

@@ -41,12 +41,20 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
+                            <label class="control-label">Almacén de destino</label>
+                            <el-select v-model="form.warehouse_id"   filterable  >
+                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
+                        </div>
+                    </div>
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
                                 <header class="card-header hoverable bg-light border-top rounded-0 py-1" data-card-toggle style="cursor: pointer;" id="card-click">
                                     <div class="card-actions" style="margin-top: -12px;">
                                         <a href="#" class="card-action card-action-toggle text-info" data-card-toggle=""></a>
-
                                     </div>
 
                                     <p class="pl-1">Información adicional atributos UBL 2.1</p>
@@ -181,6 +189,7 @@
                 errors: {},
                 form: {},
                 items: [],
+                warehouses: [],
                 affectation_igv_types: [],
                 system_isc_types: [],
                 discount_types: [],
@@ -199,6 +208,7 @@
                 this.discount_types = response.data.discount_types
                 this.charge_types = response.data.charge_types
                 this.attribute_types = response.data.attribute_types
+                this.warehouses = response.data.warehouses
                 // this.filterItems()
             })
 
@@ -214,6 +224,8 @@
                 this.errors = {}
                 this.form = {
                     item_id: null,
+                    warehouse_id: 1,
+                    warehouse_description: null,
                     item: {},
                     affectation_igv_type_id: null,
                     affectation_igv_type: {},
@@ -301,9 +313,16 @@
                 this.form.item.unit_price = this.form.unit_price
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+                this.row = this.changeWarehouse(this.row)
                 this.initForm()
-                // this.initializeFields()
+                // this.initializeFields() 
                 this.$emit('add', this.row)
+            },
+            changeWarehouse(row){
+                let warehouse = _.find(this.warehouses,{'id':this.form.warehouse_id})
+                row.warehouse_id = warehouse.id
+                row.warehouse_description = warehouse.description
+                return row
             },
             reloadDataItems(item_id) {
                 this.$http.get(`/${this.resource}/table/items`).then((response) => {

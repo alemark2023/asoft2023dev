@@ -11,7 +11,6 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Purchase;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\Models\Tenant\Item;
-use App\Models\Tenant\Warehouse;
 use App\Http\Resources\Tenant\PurchaseCollection;
 use App\Http\Resources\Tenant\PurchaseResource;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
@@ -24,6 +23,9 @@ use App\Models\Tenant\Company;
 use App\Http\Requests\Tenant\PurchaseRequest;
 use Illuminate\Support\Str;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\Models\Tenant\PaymentMethodType;
+use Carbon\Carbon;
+use Modules\Inventory\Models\Warehouse;
 
 class PurchaseController extends Controller
 {
@@ -63,8 +65,10 @@ class PurchaseController extends Controller
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
+        $payment_method_types = PaymentMethodType::all();
 
-        return compact('suppliers', 'establishment','currency_types', 'discount_types', 'charge_types', 'document_types_invoice','company');
+        return compact('suppliers', 'establishment','currency_types', 'discount_types', 
+                    'charge_types', 'document_types_invoice','company','payment_method_types');
     }
 
     public function item_tables()
@@ -78,9 +82,10 @@ class PurchaseController extends Controller
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $warehouses = Warehouse::all();
 
         return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                        'discount_types', 'charge_types', 'attribute_types');
+                        'discount_types', 'charge_types', 'attribute_types','warehouses');
     }
 
     public function record($id)
@@ -99,6 +104,12 @@ class PurchaseController extends Controller
             {
                 $doc->items()->create($row);
             }     
+
+            $doc->purchase_payments()->create([
+                'date_of_payment' => $data['date_of_issue'],
+                'payment_method_type_id' => $data['payment_method_type_id'],
+                'payment' => $data['total'],
+            ]);
 
             return $doc;
         });       
@@ -139,6 +150,7 @@ class PurchaseController extends Controller
                         'description' => $row->number.' - '.$row->name,
                         'name' => $row->name,
                         'number' => $row->number,
+                        'perception_agent' => (bool) $row->perception_agent,
                         'identity_document_type_id' => $row->identity_document_type_id,
                         'identity_document_type_code' => $row->identity_document_type->code
                     ];

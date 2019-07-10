@@ -132,4 +132,8 @@ trait InventoryTrait
             }
         }
     }
+
+    public function findWarehouseById($warehouse_id) {
+        return Warehouse::findOrFail($warehouse_id);
+    }
 }

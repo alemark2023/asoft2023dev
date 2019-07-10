@@ -50,9 +50,11 @@
                                 <th>#</th>
                                 <th>Tipo Doc</th>
                                 <th>Número</th>
-                                <th>Fecha emisión</th>
+                                <th>F. Emisión</th>
+                                <th class="">F. Vencimiento</th>
                                 <th>Cliente</th>
                                 <th>RUC</th>
+                                <th class="">F. Pago</th>
                                 <th>Estado</th>
                                 <th>Total Gravado</th>
                                 <th>Total IGV</th>
@@ -66,8 +68,10 @@
                                 <td class="celda">{{$value->document_type->id}}</td>
                                 <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
+                                <td class="celda">{{$value->date_of_due->format('Y-m-d')}}</td>
                                 <td class="celda">{{$value->supplier->name}}</td>
                                 <td class="celda">{{$value->supplier->number}}</td>
+                                <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
                                 <td class="celda">{{$value->state_type->description}}</td>
                                 <td class="celda">{{$value->total_taxed}}</td>
                                 <td class="celda">{{$value->total_igv}}</td>

@@ -60,6 +60,7 @@ class DashboardSalePurchase
         $purchases = Purchase::get();
 
         $purchases_total = round($purchases->sum('total'),2);
+        $purchases_total_perception = round($purchases->sum('total_perception'),2);
  
       
         $data_array = ['Ene', 'Feb','Mar', 'Abr','May', 'Jun','Jul', 'Ago','Sep', 'Oct', 'Nov', 'Dic'];
@@ -71,14 +72,25 @@ class DashboardSalePurchase
                             
         return [
             'totals' => [ 
-                'total' => $purchases_total,
+                'purchases_total_perception' => $purchases_total_perception,
+                'purchases_total' => $purchases_total,
+                'total' => $purchases_total + $purchases_total_perception,
             ],
             'graph' => [
                 'labels' => $data_array,
                 'datasets' => [ 
                     [
+                        'label' => 'Total percepciones',
+                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_perception'),
+                        'backgroundColor' => 'rgb(255, 99, 132)',
+                        'borderColor' => 'rgb(255, 99, 132)',
+                        'borderWidth' => 1,
+                        'fill' => false,
+                        'lineTension' => 0,
+                    ],
+                    [
                         'label' => 'Total compras',
-                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month),
+                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total'),
                         'backgroundColor' => 'rgb(54, 162, 235)',
                         'borderColor' => 'rgb(54, 162, 235)',
                         'borderWidth' => 1,
@@ -138,21 +150,21 @@ class DashboardSalePurchase
      * @param $purchases
      * @return array
      */
-    private function arrayPurchasesbyMonth($purchases_by_month){
+    private function arrayPurchasesbyMonth($purchases_by_month, $total){
 
         return [
-            isset($purchases_by_month['01']) ? round($purchases_by_month['01']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['02']) ? round($purchases_by_month['02']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['03']) ? round($purchases_by_month['03']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['04']) ? round($purchases_by_month['04']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['05']) ? round($purchases_by_month['05']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['06']) ? round($purchases_by_month['06']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['07']) ? round($purchases_by_month['07']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['08']) ? round($purchases_by_month['08']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['09']) ? round($purchases_by_month['09']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['10']) ? round($purchases_by_month['10']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['11']) ? round($purchases_by_month['11']->sum('total'), 2) : 0, 
-            isset($purchases_by_month['12']) ? round($purchases_by_month['12']->sum('total'), 2) : 0
+            isset($purchases_by_month['01']) ? round($purchases_by_month['01']->sum($total), 2) : 0, 
+            isset($purchases_by_month['02']) ? round($purchases_by_month['02']->sum($total), 2) : 0, 
+            isset($purchases_by_month['03']) ? round($purchases_by_month['03']->sum($total), 2) : 0, 
+            isset($purchases_by_month['04']) ? round($purchases_by_month['04']->sum($total), 2) : 0, 
+            isset($purchases_by_month['05']) ? round($purchases_by_month['05']->sum($total), 2) : 0, 
+            isset($purchases_by_month['06']) ? round($purchases_by_month['06']->sum($total), 2) : 0, 
+            isset($purchases_by_month['07']) ? round($purchases_by_month['07']->sum($total), 2) : 0, 
+            isset($purchases_by_month['08']) ? round($purchases_by_month['08']->sum($total), 2) : 0, 
+            isset($purchases_by_month['09']) ? round($purchases_by_month['09']->sum($total), 2) : 0, 
+            isset($purchases_by_month['10']) ? round($purchases_by_month['10']->sum($total), 2) : 0, 
+            isset($purchases_by_month['11']) ? round($purchases_by_month['11']->sum($total), 2) : 0, 
+            isset($purchases_by_month['12']) ? round($purchases_by_month['12']->sum($total), 2) : 0
         ];
 
     }

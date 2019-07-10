@@ -42,6 +42,9 @@ class Purchase extends ModelTenant
         'total_taxes',
         'total_value',
         'total',
+        'total_perception',
+        'perception_number',
+        'perception_date',
 
         'charges',
         'discounts',
@@ -51,11 +54,13 @@ class Purchase extends ModelTenant
         'perception',
         'detraction',
         'legends',
- 
+        'date_of_due',
+        
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
+        'date_of_due' => 'date',
     ];
 
     public function getEstablishmentAttribute($value)
@@ -162,6 +167,11 @@ class Purchase extends ModelTenant
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function purchase_payments()
+    {
+        return $this->hasOne(PurchasePayment::class);
     }
 
     public function soap_type()

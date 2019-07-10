@@ -124,9 +124,9 @@
                                 <span>Compras</span>
                             </a>
                             <ul class="nav nav-children" style="">
-                                <li class="{{ ($path[0] === 'purchases' && $path[1] != 'create')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.purchases.index')}}">
-                                        Listado
+                                <li class="{{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'suppliers'])}}">
+                                        Proveedores
                                     </a>
                                 </li>
                                 <li class="{{ ($path[0] === 'purchases' && $path[1] === 'create')?'nav-active':'' }}">
@@ -134,9 +134,10 @@
                                         Nuevo
                                     </a>
                                 </li>
-                                <li class="{{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'suppliers'])}}">
-                                        Proveedores
+                                
+                                <li class="{{ ($path[0] === 'purchases' && $path[1] != 'create')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.purchases.index')}}">
+                                        Listado
                                     </a>
                                 </li>
 

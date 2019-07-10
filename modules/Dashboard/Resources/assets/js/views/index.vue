@@ -218,9 +218,25 @@
                                                 </div> 
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title text-info">Total</h4>
+                                                        <h4 class="title text-danger">Total percepciones</h4>
                                                         <div class="info">
-                                                            <strong class="amount text-info">S/ {{ purchase.totals.total }}</strong>
+                                                            <strong class="amount text-danger">S/ {{ purchase.totals.purchases_total_perception }}</strong>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <div class="summary">
+                                                        <h4 class="title text-info">Total compras</h4>
+                                                        <div class="info">
+                                                            <strong class="amount text-info">S/ {{ purchase.totals.purchases_total }}</strong>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                                <div class="col-lg-4">
+                                                    <div class="summary">
+                                                        <h4 class="title">Total</h4>
+                                                        <div class="info">
+                                                            <strong class="amount ">S/ {{ purchase.totals.total }}</strong>
                                                         </div>
                                                     </div>
                                                 </div>

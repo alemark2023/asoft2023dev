@@ -35,6 +35,7 @@ class Item extends ModelTenant
         'percentage_of_profit',
 
         'attributes',
+        'percentage_perception',
         // 'warehouse_id'
     ];
 

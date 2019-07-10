@@ -9,5 +9,8 @@ class PaymentMethodType extends ModelTenant
 
     protected $fillable = [
         'description',
+        'has_card',
+        'charge',
+        'number_days',
     ];
 }

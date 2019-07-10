@@ -24,7 +24,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
     
     private function purchase() {
         PurchaseItem::created(function ($purchase_item) {
-            $warehouse = $this->findWarehouse();
+            $warehouse = $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id);
+            // $warehouse = $this->findWarehouse();
             //$this->createInventory($purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
             $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
             $this->updateStock($purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
