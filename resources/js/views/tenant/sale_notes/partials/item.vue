@@ -164,7 +164,12 @@
                    :external="true"></item-form>
     </el-dialog>
 </template>
-
+<style>
+.el-select-dropdown { 
+    max-width: 80% !important;
+    margin-right: 5% !important;
+}
+</style>
 <script>
 
     import itemForm from '../../items/form.vue'
