@@ -59,25 +59,50 @@
                     </div>
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.address}">
-                            <label class="control-label">Dirección</label>
+                            <label class="control-label">Dirección Fiscal</label>
                             <el-input v-model="form.address"></el-input>
                             <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.telephone}">
                             <label class="control-label">Teléfono</label>
                             <el-input v-model="form.telephone"></el-input>
                             <small class="form-control-feedback" v-if="errors.telephone" v-text="errors.telephone[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-8">
+                        <div class="form-group" :class="{'has-danger': errors.trade_address}">
+                            <label class="control-label">Dirección Comercial</label>
+                            <el-input v-model="form.trade_address"></el-input>
+                            <small class="form-control-feedback" v-if="errors.trade_address" v-text="errors.trade_address[0]"></small>
+                        </div>
+                    </div> 
+                </div>
+                 <div class="row">  
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.email}">
-                            <label class="control-label">Correo electrónico</label>
+                            <label class="control-label">Correo de contacto</label>
                             <el-input v-model="form.email"></el-input>
                             <small class="form-control-feedback" v-if="errors.email" v-text="errors.email[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.web_address}">
+                            <label class="control-label">Dirección web</label>
+                            <el-input v-model="form.web_address"></el-input>
+                            <small class="form-control-feedback" v-if="errors.web_address" v-text="errors.web_address[0]"></small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">   
+                    <div class="col-md-12">
+                        <div class="form-group" :class="{'has-danger': errors.aditional_information}">
+                            <label class="control-label">Información adicional</label>
+                            <el-input v-model="form.aditional_information"></el-input>
+                            <small class="form-control-feedback" v-if="errors.aditional_information" v-text="errors.aditional_information[0]"></small>
                         </div>
                     </div>
                 </div>
@@ -134,6 +159,9 @@
                     telephone: null,
                     email: null,
                     code: null,
+                    trade_address: null,
+                    web_address: null,
+                    aditional_information: null,
                 }
             },
             async create() {

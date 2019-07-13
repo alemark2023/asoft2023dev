@@ -36,6 +36,9 @@ class EstablishmentInput
             'email' => $establishment->email,
             'telephone' => $establishment->telephone,
             'code' => $establishment->code,
+            'trade_address' => $establishment->trade_address,
+            'web_address' => $establishment->web_address,
+            'aditional_information' => $establishment->aditional_information,
         ];
     }
 }

@@ -9,11 +9,11 @@
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id" @change="changeItem" filterable
+                            <el-select v-model="form.item_id" @change="changeItem"  filterable
                                        popper-class="el-select-items"
                                        dusk="item_id"
                                        @visible-change="focusTotalItem">
-                                <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
@@ -318,6 +318,12 @@
                    :external="true"></item-form>
     </el-dialog>
 </template>
+<style>
+.el-select-dropdown { 
+    max-width: 80% !important;
+    margin-right: 5% !important;
+}
+</style>
 
 <script>
 

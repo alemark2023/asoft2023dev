@@ -39,12 +39,31 @@
             {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
         </td>
     </tr>
+
+
+    @isset($establishment->trade_address)
     <tr>
-        <td class="text-center">{{ ($establishment->email !== '-')? $establishment->email : '' }}</td>
+        <td class="text-center ">{{  ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : ''  }}</td>
+    </tr>
+    @endisset  
+    <tr>
+        <td class="text-center ">{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</td>
     </tr>
     <tr>
-        <td class="text-center pb-3">{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</td>
+        <td class="text-center">{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</td>
     </tr>
+    @isset($establishment->web_address)    
+        <tr>    
+            <td class="text-center">{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</td>
+        </tr>
+    @endisset
+
+    @isset($establishment->aditional_information)
+        <tr>
+            <td class="text-center pb-3">{{ ($establishment->aditional_information !== '-')? $establishment->aditional_information : '' }}</td>
+        </tr>
+    @endisset
+
     <tr>
         <td class="text-center pt-3 border-top"><h5>{{ $document->document_type->description }}</h5></td>
     </tr>

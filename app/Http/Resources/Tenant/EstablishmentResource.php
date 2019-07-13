@@ -25,6 +25,9 @@ class EstablishmentResource extends JsonResource
             'telephone' => $this->telephone,
             'email' => $this->email,
             'code' => $this->code,
+            'trade_address' => $this->trade_address,
+            'web_address' => $this->web_address,
+            'aditional_information' => $this->aditional_information,
         ];
     }
 }

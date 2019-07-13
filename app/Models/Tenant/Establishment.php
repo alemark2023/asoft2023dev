@@ -20,6 +20,9 @@ class Establishment extends ModelTenant
         'email',
         'telephone',
         'code',
+        'trade_address',
+        'web_address',
+        'aditional_information',
     ];
 
     public function country()
