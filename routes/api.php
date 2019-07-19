@@ -25,4 +25,10 @@ if ($hostname) {
         Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
 
     });
+}else{
+    Route::domain(env('APP_URL_BASE'))->group(function() {
+        //reseller
+        Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
+    });
+    
 }

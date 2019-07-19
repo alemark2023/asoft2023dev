@@ -402,6 +402,8 @@ if ($hostname) {
             Route::post('users', 'System\UserController@store');
 
             Route::get('services/ruc/{number}', 'System\ServiceController@ruc');
+
+
         });
     });
 }
