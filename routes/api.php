@@ -27,8 +27,10 @@ if ($hostname) {
     });
 }else{
     Route::domain(env('APP_URL_BASE'))->group(function() {
+
         //reseller
         Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
+        
     });
     
 }
