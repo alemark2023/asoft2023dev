@@ -24,6 +24,7 @@ class ClientCollection extends ResourceCollection
                 'number' => $row->number,
                 'plan' => $row->plan->name,
                 'locked' => (bool) $row->locked,
+                'locked_emission' => (bool) $row->locked_emission,
                 'count_doc' => $row->count_doc,
                 'max_documents' => (int) $row->plan->limit_documents,
                 'count_user' => $row->count_user,

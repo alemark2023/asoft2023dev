@@ -89,6 +89,7 @@
                             <th class="text-center">Comprobantes</th>
                             <th class="text-center">Usuarios</th>
                             <th class="text-center">F.Creación</th>
+                            <th class="text-right">Limitar Doc.</th>
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
@@ -111,6 +112,15 @@
                                 <template v-else>{{ row.max_users }}</template>
                             </td>
                             <td class="text-center">{{ row.created_at }}</td>
+                            <td class="text-center">
+                                <el-switch
+                                    style="display: block"
+                                    v-model="row.locked_emission"
+                                    active-color="#ff4949"
+                                    inactive-color="#13ce66"
+                                    @change="changeLockedEmission(row)">
+                                </el-switch>
+                            </td>
                             <td class="text-right">
                                 <template v-if="!row.locked">
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2" @click.prevent="clickPassword(row.id)">Resetear clave</button>
@@ -199,6 +209,27 @@
             this.getData()
         },
         methods: {
+            changeLockedEmission(row){
+                this.$http.post(`${this.resource}/locked_emission`, row)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if(error.response.status === 500){
+                            this.$message.error(error.response.data.message);
+                        }
+                         else {
+                            console.log(error.response)
+                        }
+                    })
+                    .then(() => {
+                    })
+            },
             getData() {
                 this.$http.get(`/${this.resource}/records`)
                     .then(response => {

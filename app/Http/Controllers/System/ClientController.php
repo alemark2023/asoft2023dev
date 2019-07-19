@@ -15,6 +15,8 @@ use App\Models\System\Plan;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use App\Models\Tenant\Configuration;
 
 class ClientController extends Controller
 {
@@ -119,6 +121,7 @@ class ClientController extends Controller
             $client->name = $request->input('name');
             $client->number = $request->input('number');
             $client->plan_id = $request->input('plan_id');
+            $client->locked_emission = $request->input('locked_emission');
             $client->save();
 
             DB::connection('system')->commit();
@@ -142,8 +145,12 @@ class ClientController extends Controller
             'soap_type_id' => '01'
         ]);
 
+        $plan = Plan::findOrFail($request->input('plan_id'));
+
         DB::connection('tenant')->table('configurations')->insert([
             'send_auto' => true,
+            'locked_emission' =>  $request->input('locked_emission'),
+            'limit_documents' =>  $plan->limit_documents,
         ]);
 
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([
@@ -225,6 +232,25 @@ class ClientController extends Controller
         }
 
     }
+
+
+    public function lockedEmission(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_emission = $request->locked_emission;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_emission' => $client->locked_emission]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_emission) ? 'Limite de emisión de documentos activado' : 'Limite de emisión de documentos desactivado'
+        ];
+
+    }
+
 
     public function destroy($id)
     {

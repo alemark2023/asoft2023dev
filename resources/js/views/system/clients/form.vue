@@ -74,6 +74,12 @@
                             <small class="form-control-feedback" v-if="errors.type" v-text="errors.type[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-6 center-el-checkbox mt-4">
+                        <div class="form-group" :class="{'has-danger': errors.locked_emission}">
+                            <el-checkbox v-model="form.locked_emission">Limitar emisión de documentos</el-checkbox><br>
+                            <small class="form-control-feedback" v-if="errors.locked_emission" v-text="errors.locked_emission[0]"></small>
+                        </div>
+                    </div> 
                 </div>
             </div>
             <div class="form-actions text-right pt-2">
@@ -132,6 +138,7 @@
                     number: '',
                     password:null,
                     plan_id:null,
+                    locked_emission:false,
                     type:null
                 }
             },
