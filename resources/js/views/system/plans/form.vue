@@ -38,7 +38,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-md-12 mt-3">
                         <div class="form-group" :class="{'has-danger': (errors.plan_documents)}">
                             <label class="control-label font-weight-bold mb-0">Habilitar documentos electrónicos</label> 
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                    
-                </div>
+                </div> -->
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>

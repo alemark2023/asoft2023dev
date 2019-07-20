@@ -26,9 +26,9 @@
                                     <li v-if="row.limit_documents === 0"><strong>Comprobantes</strong> ilimitados</li>                                
                                     <li v-else><strong>{{row.limit_documents}}</strong> comprobantes</li>
                                 
-                                    <template v-for="(plan_document, i) in getDescriptions(row.plan_documents)">
+                                    <!-- <template v-for="(plan_document, i) in getDescriptions(row.plan_documents)">
                                         <li :key="i" v-if="plan_document">{{plan_document.description}}</li>
-                                    </template>                                   
+                                    </template>                                    -->
 								</ul>                                
                                 <div v-if="!row.locked">
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger float-right" style="margin-left:6px;" @click.prevent="clickDelete(row.id)"><i class="fas fa-trash"></i> </button>

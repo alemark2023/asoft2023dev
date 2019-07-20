@@ -35,7 +35,7 @@ class PlanRequest extends FormRequest
                 'integer', 
             ],
             'plan_documents' => [
-                'required'
+                // 'required'
             ],
         ];
     }

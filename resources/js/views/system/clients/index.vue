@@ -136,9 +136,7 @@
                             <td class="text-center">
                                 <el-switch
                                     style="display: block"
-                                    v-model="row.locked_emission"
-                                    active-color="#ff4949"
-                                    inactive-color="#13ce66"
+                                    v-model="row.locked_emission" 
                                     @change="changeLockedEmission(row)">
                                 </el-switch>
                             </td>

@@ -122,7 +122,7 @@
                     </div>
                 </div>
                 <div class="col-md-12 text-center pt-2" >
-                    <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Nuevo</el-button>
+                    <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Programar pago</el-button>
                 </div>
             </div>
 
