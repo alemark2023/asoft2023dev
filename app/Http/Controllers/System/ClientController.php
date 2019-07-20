@@ -246,7 +246,7 @@ class ClientController extends Controller
 
         return [
             'success' => true,
-            'message' => ($client->locked_emission) ? 'Limite de emisión de documentos activado' : 'Limite de emisión de documentos desactivado'
+            'message' => ($client->locked_emission) ? 'Limitar emisión de documentos activado' : 'Limitar emisión de documentos desactivado'
         ];
 
     }

@@ -103,13 +103,34 @@
                             <td>{{ row.number }}</td>
                             <td>{{ row.plan }}</td>
                             <td>{{ row.email }}</td>
-                            <td class="text-center">{{ row.count_doc }}/
-                                <template v-if="row.max_documents > 9999"><i class="fas fa-infinity"></i></template>
-                                <template v-else>{{ row.max_documents }}</template>
+                            <td class="text-center">
+
+                                <template v-if="row.max_documents !== 0 && row.count_doc > row.max_documents">
+                                    <el-popover    placement="top-start"     width="220"    trigger="hover"    :content="text_limit_doc">
+                                        <label slot="reference" class="text-danger" ><strong>{{ row.count_doc }}</strong></label>
+                                    </el-popover>
+                                </template>
+                                <template v-else>
+                                        <label><strong>{{ row.count_doc }}</strong></label>
+                                </template>                                
+                                /
+                                <template v-if="row.max_documents == 0"><i class="fas fa-infinity"></i></template>
+                                <template v-else><strong>{{ row.max_documents }}</strong></template>
                             </td>
-                            <td class="text-center">{{ row.count_user }}/
-                                <template v-if="row.max_users > 9999"><i class="fas fa-infinity"></i></template>
-                                <template v-else>{{ row.max_users }}</template>
+                            <td class="text-center">
+
+                                <template v-if="row.max_users !== 0 && row.count_user > row.max_users">
+                                    <el-popover    placement="top-start"     width="220"    trigger="hover"    :content="text_limit_users">
+                                        <label slot="reference" class="text-danger" ><strong>{{ row.count_user }}</strong></label>
+                                    </el-popover>
+                                </template>
+                                <template v-else>
+                                        <label><strong>{{ row.count_user }}</strong></label>
+                                </template>                                
+                                /
+                                <template v-if="row.max_users == 0"><i class="fas fa-infinity"></i></template>
+                                <template v-else><strong>{{ row.max_users }}</strong></template>
+                                
                             </td>
                             <td class="text-center">{{ row.created_at }}</td>
                             <td class="text-center">
@@ -174,6 +195,8 @@
                 resource: 'clients',
                 recordId: null,
                 records: [],
+                text_limit_doc:null,
+                text_limit_users:null,
                 loaded: false,
                 year: 2019,
                 total_documents: 0,
@@ -207,6 +230,9 @@
                 this.getData()
             })
             this.getData()
+            
+            this.text_limit_doc = 'El límite de comprobantes fue superado'
+            this.text_limit_users = 'El límite de usuarios fue superado'
         },
         methods: {
             changeLockedEmission(row){

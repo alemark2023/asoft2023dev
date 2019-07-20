@@ -457,4 +457,23 @@ class DocumentController extends Controller
             ];
         }
     }
+
+    public function messageLockedEmission(){
+
+        $configuration = Configuration::first();
+        $quantity_documents = Document::count();
+
+        if($configuration->limit_documents !== 0 && ($quantity_documents > $configuration->limit_documents))
+            return [
+                'success' => false,
+                'message' => 'Alcanzó el límite permitido para la emisión de comprobantes',
+            ];
+                
+
+        return [
+            'success' => true,
+            'message' => '',
+        ];
+    }
+
 }

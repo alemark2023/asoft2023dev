@@ -172,6 +172,8 @@ return [
         App\Providers\InventoryAnulationServiceProvider::class,
         App\Providers\InventoryServiceProvider::class,
 
+        App\Providers\LockedEmissionProvider::class,
+
     ],
 
     /*
