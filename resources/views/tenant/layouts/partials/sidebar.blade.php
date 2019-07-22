@@ -262,6 +262,19 @@
                         </ul>
                     </li>
                     @endif
+                    {{--<li class="nav-parent">--}}
+                        {{--<a class="nav-link" href="#">--}}
+                            {{--<i class="fas fa-chart-area" aria-hidden="true"></i>--}}
+                            {{--<span>Contabilidad</span>--}}
+                        {{--</a>--}}
+                        {{--<ul class="nav nav-children" style="">--}}
+                            {{--<li>--}}
+                                {{--<a class="nav-link" href="{{ route('tenant.account_format.index') }}">--}}
+                                    {{--Exportar formatos--}}
+                                {{--</a>--}}
+                            {{--</li>--}}
+                        {{--</ul>--}}
+                    {{--</li>--}}
                     @if(in_array('configuration', $vc_modules))
                     <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories']) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">

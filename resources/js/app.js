@@ -73,10 +73,7 @@ Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue
 Vue.component('tenant-tasks-lists', require('./views/tenant/tasks/lists.vue'));
 Vue.component('tenant-tasks-form', require('./views/tenant/tasks/form.vue'));
 Vue.component('tenant-reports-consistency-documents-lists', require('./views/tenant/reports/consistency-documents/lists.vue'));
-
-
 Vue.component('tenant-contingencies-index', require('./views/tenant/contingencies/index.vue'));
-
 
 Vue.component('tenant-quotations-index', require('./views/tenant/quotations/index.vue'));
 Vue.component('tenant-quotations-form', require('./views/tenant/quotations/form.vue')); 
@@ -93,6 +90,8 @@ Vue.component('warehouses-index', require('../../modules/Inventory/Resources/ass
 Vue.component('tenant-inventories-form', require('../../modules/Inventory/Resources/assets/js/config/form.vue'));
 Vue.component('tenant-expenses-index', require('../../modules/Expense/Resources/assets/js/views/expenses/index.vue'));
 Vue.component('tenant-expenses-form', require('../../modules/Expense/Resources/assets/js/views/expenses/form.vue'));
+Vue.component('tenant-account-export', require('../../modules/Account/Resources/assets/js/views/account/export.vue'));
+Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
