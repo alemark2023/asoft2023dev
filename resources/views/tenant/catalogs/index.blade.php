@@ -15,5 +15,9 @@
 
             <tenant-unit_types-index></tenant-unit_types-index>
         </div>
+        <div class="col-lg-6 col-md-12 ui-sortable">
+            <tenant-card-brands-index></tenant-card-brands-index>
+
+        </div>
     </div>
 @endsection

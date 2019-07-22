@@ -9,6 +9,8 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\Item;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Http\Requests\Tenant\ItemRequest;
 use App\Http\Resources\Tenant\ItemCollection;
 use App\Http\Resources\Tenant\ItemResource;
@@ -55,8 +57,9 @@ class ItemController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first(); 
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse');
     }
 
     public function record($id)
@@ -67,18 +70,30 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
-        // $establishment_id = auth()->user()->establishment->id;
-        // $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-        // dd($request->item_unit_types);
         
         $id = $request->input('id');
         $item = Item::firstOrNew(['id' => $id]);
         $item->item_type_id = '01';
-        // $item->warehouse_id = optional($warehouse)->id;
         $item->fill($request->all());
+
+        $temp_path = $request->input('temp_path');
+        if($temp_path) {
+
+            $file_name_old = $request->input('image');
+            $file_name_old_array = explode('.', $file_name_old);
+            $file_content = file_get_contents($temp_path);
+            $file_name = Str::slug($item->description).'-'.date('YmdHis').'.'.$file_name_old_array[1];
+            Storage::put('public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$file_name, $file_content);
+            $item->image = $file_name;
+
+        }else if(!$request->input('image') && !$request->input('temp_path') && !$request->input('image_url')){
+            $item->image = 'imagen-no-disponible.jpg';
+        }
+
         $item->save();
         
         foreach ($request->item_unit_types as $value) {
+
             $item_unit_type = ItemUnitType::firstOrNew(['id' => $value['id']]);
             $item_unit_type->item_id = $item->id;
             $item_unit_type->description = $value['description'];
@@ -90,12 +105,11 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
         
-        }
+        }         
         
-        // $item->warehouses()->create([
-        //     'warehouse_id' => $warehouse->id,
-        //     'stock' => $item->stock,
-        // ]);
+        $item->update();
+
+        
         
         return [
             'success' => true,
@@ -150,6 +164,43 @@ class ItemController extends Controller
         return [
             'success' => false,
             'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type'),
+            ];
+
+            return $this->upload_image($new_request);
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    function upload_image($request)
+    {
+        $file = $request['file'];
+        $type = $request['type'];
+
+        $temp = tempnam(sys_get_temp_dir(), $type);
+        file_put_contents($temp, file_get_contents($file));
+
+        $mime = mime_content_type($temp);
+        $data = file_get_contents($temp);
+
+        return [
+            'success' => true,
+            'data' => [
+                'filename' => $file->getClientOriginalName(),
+                'temp_path' => $temp,
+                'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
+            ]
         ];
     }
 

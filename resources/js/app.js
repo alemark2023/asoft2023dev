@@ -83,6 +83,9 @@ Vue.component('tenant-quotations-form', require('./views/tenant/quotations/form.
 
 Vue.component('tenant-sale-notes-index', require('./views/tenant/sale_notes/index.vue'));
 Vue.component('tenant-sale-notes-form', require('./views/tenant/sale_notes/form.vue'));
+Vue.component('tenant-pos-index', require('./views/tenant/pos/index.vue'));
+Vue.component('cash-index', require('./views/tenant/cash/index.vue'));
+Vue.component('tenant-card-brands-index', require('./views/tenant/card_brands/index.vue'));
 
 // Modules
 Vue.component('inventory-index', require('../../modules/Inventory/Resources/assets/js/inventory/index.vue'));

@@ -257,6 +257,8 @@ class DocumentController extends Controller
             'success' => true,
             'data' => [
                 'id' => $document->id,
+                'response' =>$response
+
             ],
         ];
     }

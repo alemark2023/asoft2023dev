@@ -36,6 +36,8 @@
                         {{ ($path[0] === 'quotations')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'pos')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-receipt" aria-hidden="true"></i>
@@ -43,6 +45,16 @@
                         </a>
                         <ul class="nav nav-children" style="">
                             @if(auth()->user()->type != 'integrator')
+                            <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.cash.index')}}">
+                                    Caja chica
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'pos'  )?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.pos.index')}}">
+                                    Punto de venta (POS)
+                                </a>
+                            </li>
                             <li class="{{ ($path[0] === 'documents' && $path[1] === 'create')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.documents.create')}}">
                                     Nuevo comprobante electrónico

@@ -8,6 +8,8 @@ class CardBrand extends ModelTenant
     public $timestamps = false;
 
     protected $fillable = [
-        'description',
+        'description',        
+        'id',
+
     ];
 }

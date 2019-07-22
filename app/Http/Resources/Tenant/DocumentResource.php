@@ -22,6 +22,8 @@ class DocumentResource extends JsonResource
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
             'customer_email' => $this->customer->email,
             'download_pdf' => $this->download_external_pdf,
+            'print_ticket' => url('')."/print/document/{$this->external_id}/ticket",
+            'print_a4' => url('')."/print/document/{$this->external_id}/a4",
         ];
     }
 }

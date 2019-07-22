@@ -204,32 +204,61 @@
                         
                     </div>
                 </div>   
+
+
                     <div class="col-md-12">
                         <h5 class="separator-title">Campos adicionales</h5>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group" :class="{'has-danger': errors.purchase_unit_price}">
-                            <label class="control-label">Precio Unitario (Compra)</label>
-                            <el-input v-model="form.purchase_unit_price" dusk="purchase_unit_price" @input="calculatePercentageOfProfitByPurchase"></el-input>
-                            <small class="form-control-feedback" v-if="errors.purchase_unit_price" v-text="errors.purchase_unit_price[0]"></small>
+                    <div class="row col-md-12"> 
+                        <div class="col-md-3">
+                            <div class="form-group" >
+                                <label class="control-label">Imágen <span class="text-danger"></span></label>
+                                <el-upload class="avatar-uploader"
+                                        :data="{'type': 'items'}"
+                                        :headers="headers"
+                                        :action="`/${resource}/upload`"
+                                        :show-file-list="false"
+                                        :on-success="onSuccess">
+                                    <img v-if="form.image_url" :src="form.image_url" class="avatar">
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </el-upload>
+                            </div> 
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.purchase_affectation_igv_type_id}">
-                            <label class="control-label">Tipo de afectación (Compra)</label>
-                            <el-select v-model="form.purchase_affectation_igv_type_id">
-                                <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.purchase_affectation_igv_type_id" v-text="errors.purchase_affectation_igv_type_id[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group" :class="{'has-danger': errors.percentage_of_profit}">
-                            <label class="control-label">Porcentaje de ganancia (%)</label>
-                            <el-input v-model="form.percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
-                            <small class="form-control-feedback" v-if="errors.percentage_of_profit" v-text="errors.percentage_of_profit[0]"></small>
-                        </div>
-                    </div>
+
+                        <div class="col-md-9"> 
+                            <div class="row">
+
+                                <div class="short-div col-md-8"> 
+                                    <div class="form-group" :class="{'has-danger': errors.purchase_affectation_igv_type_id}">
+                                        <label class="control-label">Tipo de afectación (Compra)</label>
+                                        <el-select v-model="form.purchase_affectation_igv_type_id">
+                                            <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                        </el-select>
+                                        <small class="form-control-feedback" v-if="errors.purchase_affectation_igv_type_id" v-text="errors.purchase_affectation_igv_type_id[0]"></small>
+                                    </div>
+                                </div>
+                                
+                                <div class="short-div col-md-4">
+                                    <div class="form-group" :class="{'has-danger': errors.purchase_unit_price}">
+                                        <label class="control-label">Precio Unitario (Compra)</label>
+                                        <el-input v-model="form.purchase_unit_price" dusk="purchase_unit_price" @input="calculatePercentageOfProfitByPurchase"></el-input>
+                                        <small class="form-control-feedback" v-if="errors.purchase_unit_price" v-text="errors.purchase_unit_price[0]"></small>
+                                    </div>
+                                </div> 
+                                <div class="short-div col-md-4">
+                                    <div class="form-group" :class="{'has-danger': errors.percentage_of_profit}">
+                                        <label class="control-label">Porcentaje de ganancia (%)</label>
+                                        <el-input v-model="form.percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
+                                        <small class="form-control-feedback" v-if="errors.percentage_of_profit" v-text="errors.percentage_of_profit[0]"></small>
+                                    </div>
+                                </div> 
+
+                            </div>
+                        </div> 
+                    </div> 
+
+
+
                     <div class="col-md-12" v-if="form.warehouses">
                         <table class="table">
                             <thead>
@@ -275,7 +304,8 @@
                 percentage_perception:null,
                 titleDialog: null,
                 resource: 'items',
-                errors: {},
+                errors: {},                
+                headers: headers_token,
                 form: {},
                 unit_types: [],
                 currency_types: [],
@@ -384,9 +414,21 @@
                     item_unit_types:[],
                     percentage_of_profit: 0,
                     percentage_perception: 0,
+                    image: null,
+                    image_url: null,
+                    temp_path: null,
                 }
                 this.show_has_igv = true
             },
+            onSuccess(response, file, fileList) {
+                if (response.success) {
+                    this.form.image = response.data.filename
+                    this.form.image_url = response.data.temp_image
+                    this.form.temp_path = response.data.temp_path
+                } else {
+                    this.$message.error(response.message)
+                }
+            },  
             changeAffectationIgvType(){
 
                 let affectation_igv_type_exonerated = [20,21,30,31,32,33,34,35,36,37]

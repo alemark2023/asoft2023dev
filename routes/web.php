@@ -37,6 +37,13 @@ if ($hostname) {
             Route::post('companies', 'Tenant\CompanyController@store');
             Route::post('companies/uploads', 'Tenant\CompanyController@uploadFile');
 
+            
+            //Card Brands
+            Route::get('card_brands/records', 'Tenant\CardBrandController@records');
+            Route::get('card_brands/record/{card_brand}', 'Tenant\CardBrandController@record');
+            Route::post('card_brands', 'Tenant\CardBrandController@store');
+            Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
+
             //Configurations
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
@@ -100,6 +107,7 @@ if ($hostname) {
             Route::delete('items/{item}', 'Tenant\ItemController@destroy');
             Route::delete('items/item-unit-type/{item}', 'Tenant\ItemController@destroyItemUnitType');
             Route::post('items/import', 'Tenant\ItemController@import');
+            Route::post('items/upload', 'Tenant\ItemController@upload');
 
             //Customers
 //            Route::get('customers', 'Tenant\CustomerController@index')->name('tenant.customers.index');
@@ -352,6 +360,33 @@ if ($hostname) {
            Route::get('sale_note_payments/tables', 'Tenant\SaleNotePaymentController@tables');
            Route::post('sale_note_payments', 'Tenant\SaleNotePaymentController@store');
            Route::delete('sale_note_payments/{sale_note_payment}', 'Tenant\SaleNotePaymentController@destroy');
+
+           //POS
+           Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
+           Route::get('pos/search_items', 'Tenant\PosController@search_items');
+           Route::get('pos/tables', 'Tenant\PosController@tables');
+           Route::get('pos/table/{table}', 'Tenant\PosController@table');
+           Route::get('pos/payment_tables', 'Tenant\PosController@payment_tables');
+           Route::get('pos/payment', 'Tenant\PosController@payment')->name('tenant.pos.payment');
+           Route::get('pos/status_configuration', 'Tenant\PosController@status_configuration');
+           Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
+
+         
+           Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
+           Route::get('cash/columns', 'Tenant\CashController@columns');
+           Route::get('cash/records', 'Tenant\CashController@records');
+           Route::get('cash/create', 'Tenant\CashController@create')->name('tenant.sale_notes.create');
+           Route::get('cash/tables', 'Tenant\CashController@tables');
+           Route::get('cash/opening_cash', 'Tenant\CashController@opening_cash');
+           Route::post('cash', 'Tenant\CashController@store');
+           Route::post('cash/cash_document', 'Tenant\CashController@cash_document');
+           Route::get('cash/close/{cash}', 'Tenant\CashController@close'); 
+           Route::get('cash/record/{cash}', 'Tenant\CashController@record'); 
+           Route::delete('cash/{cash}', 'Tenant\CashController@destroy');
+           Route::get('cash/item/tables', 'Tenant\CashController@item_tables');
+           Route::get('cash/search/customers', 'Tenant\CashController@searchCustomers');
+           Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
+
         });
     });
 } else {

@@ -36,7 +36,10 @@ class ItemResource extends JsonResource
             'calculate_quantity' => (bool) $this->calculate_quantity,
             'has_igv' => (bool) $this->has_igv,
             'percentage_perception' => $this->percentage_perception, 
-            'item_unit_types' => $this->item_unit_types
+            'item_unit_types' => $this->item_unit_types,
+            'image' => $this->image,
+            'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image),
+
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [
             //         'warehouse_description' => $row->warehouse->description,
