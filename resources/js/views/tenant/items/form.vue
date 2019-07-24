@@ -131,7 +131,7 @@
                             <tr>
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Descripción</th>
-                                <th class="text-center">C. Unidades</th>
+                                <th class="text-center">Factor</th>
                                 <th class="text-center">Precio 1</th>
                                 <th class="text-center">Precio 2</th>
                                 <th class="text-center">Precio 3</th>
