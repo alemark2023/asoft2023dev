@@ -235,6 +235,7 @@
             }
         },
         async created() {
+            
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => { 
