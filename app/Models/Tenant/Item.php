@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
+use Modules\Account\Models\Account;
 
 class Item extends ModelTenant
 {
@@ -37,6 +38,7 @@ class Item extends ModelTenant
         'attributes',
         'percentage_perception',        
         'image',
+        'account_id',
 
         // 'warehouse_id'
     ];
@@ -49,6 +51,11 @@ class Item extends ModelTenant
     public function setAttributesAttribute($value)
     {
         $this->attributes['attributes'] = (is_null($value))?null:json_encode($value);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
     }
 
     public function item_type()

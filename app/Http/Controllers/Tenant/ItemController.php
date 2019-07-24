@@ -20,6 +20,7 @@ use App\Models\Tenant\ItemUnitType;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
+use Modules\Account\Models\Account;
 
 class ItemController extends Controller
 {
@@ -57,9 +58,10 @@ class ItemController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
-        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first(); 
+        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+        $accounts = Account::all();
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse', 'accounts');
     }
 
     public function record($id)
