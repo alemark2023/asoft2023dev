@@ -38,6 +38,7 @@ class ItemResource extends JsonResource
             'percentage_perception' => $this->percentage_perception, 
             'item_unit_types' => $this->item_unit_types,
             'image' => $this->image,
+            'account_id' => $this->account_id,
             'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image),
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {

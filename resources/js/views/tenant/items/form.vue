@@ -104,6 +104,20 @@
                             <el-input v-model="form.percentage_perception"></el-input>
                         </div>
                     </div>
+                    <div class="col-md-3 center-el-checkbox">
+                        <div class="form-group" >
+                            <el-checkbox v-model="have_account" @change="changeHaveAccount">¿Tiene cuenta contable?</el-checkbox><br>
+                        </div>
+                    </div>
+                    <div class="col-md-3" v-show="have_account">
+                        <div class="form-group" :class="{'has-danger': errors.account_id}">
+                            <label class="control-label">Cuenta contable</label>
+                            <el-select v-model="form.account_id" filterable>
+                                <el-option v-for="option in accounts" :key="option.id" :value="option.id" :label="`${option.number} - ${option.description}`"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.account_id" v-text="errors.account_id[0]"></small>
+                        </div>
+                    </div>
                     <div class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios
@@ -311,7 +325,9 @@
                 currency_types: [],
                 system_isc_types: [],
                 affectation_igv_types: [],
+                accounts: [],
                 show_has_igv:true,
+                have_account:false,
                 item_unit_type:{
                         id:null,
                         unit_type_id:null,
@@ -329,6 +345,7 @@
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
+                    this.accounts = response.data.accounts
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
@@ -344,6 +361,9 @@
 
         },
         methods: {
+            changeHaveAccount(){
+                if(!this.have_account) this.form.account_id = null
+            },
             clickDelete(id) {
 
                 this.$http.delete(`/${this.resource}/item-unit-type/${id}`)
@@ -417,6 +437,7 @@
                     image: null,
                     image_url: null,
                     temp_path: null,
+                    account_id: null,
                 }
                 this.show_has_igv = true
             },
