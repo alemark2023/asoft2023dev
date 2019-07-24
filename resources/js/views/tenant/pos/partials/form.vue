@@ -234,15 +234,16 @@
                 }
             }
         },
-        created() {
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
-                .then(response => {
+        async created() {
+            await this.initForm()
+            await this.$http.get(`/${this.resource}/tables`)
+                .then(response => { 
+
                     this.unit_types = response.data.unit_types
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
-                    this.warehouse = response.data.warehouse
+                    this.warehouse = (response.data.warehouse) ? response.data.warehouse:{id:1, establishment_id:1, description:'Almacén Oficina Principal'}
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -254,7 +255,6 @@
                     this.form.image = response.data.filename
                     this.form.image_url = response.data.temp_image
                     this.form.temp_path = response.data.temp_path
-                    console.log(this.form)
                 } else {
                     this.$message.error(response.message)
                 }

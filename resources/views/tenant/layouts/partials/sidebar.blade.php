@@ -45,16 +45,20 @@
                         </a>
                         <ul class="nav nav-children" style="">
                             @if(auth()->user()->type != 'integrator')
-                            <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
-                                <a class="nav-link" href="{{route('tenant.cash.index')}}">
-                                    Caja chica
-                                </a>
-                            </li>
-                            <li class="{{ ($path[0] === 'pos'  )?'nav-active':'' }}">
-                                <a class="nav-link" href="{{route('tenant.pos.index')}}">
-                                    Punto de venta (POS)
-                                </a>
-                            </li>
+
+                                @if(in_array('pos', $vc_modules))
+                                    <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.cash.index')}}">
+                                            Caja chica
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'pos'  )?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.pos.index')}}">
+                                            Punto de venta (POS)
+                                        </a>
+                                    </li>
+                                @endif
+
                             <li class="{{ ($path[0] === 'documents' && $path[1] === 'create')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.documents.create')}}">
                                     Nuevo comprobante electrónico
