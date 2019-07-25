@@ -266,15 +266,23 @@
                         </ul>
                     </li>
                     @endif
-                    <li class="nav-parent">
+                    <li class="
+                        nav-parent
+                        {{ ($path[0] === 'account')?'nav-active nav-expanded':'' }}
+                        ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Contabilidad</span>
                         </a>
                         <ul class="nav nav-children" style="">
-                            <li>
+                            <li class="{{(($path[0] === 'account') && ($path[1] === 'format')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account_format.index') }}">
                                     Exportar formatos
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'account') && ($path[1] !== 'format'))   ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{ route('tenant.account.index') }}">
+                                    Exportar SISCONT/CONCAR
                                 </a>
                             </li>
                         </ul>

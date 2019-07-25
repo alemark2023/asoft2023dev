@@ -17,9 +17,10 @@ class CompanyController extends Controller
 
     public function tables()
     {
+        $soap_sends = config('tables.system.soap_sends');
         $soap_types = SoapType::all();
 
-        return compact('soap_types');
+        return compact('soap_types', 'soap_sends');
     }
 
     public function record()

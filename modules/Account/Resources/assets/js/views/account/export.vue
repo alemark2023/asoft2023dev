@@ -121,7 +121,7 @@
                 loading: false,
                 loading_submit: false,
                 title: null,
-                resource: 'accounting',
+                resource: 'account',
                 // establishments: [],
                 // document_types: [],
                 // series: [],

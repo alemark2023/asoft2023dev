@@ -8,7 +8,7 @@ if($hostname) {
 
             Route::prefix('account')->group(function () {
                 Route::get('/', 'AccountController@index')->name('tenant.account.index');
-                Route::post('download', 'AccountController@download');
+                Route::get('download', 'AccountController@download');
                 Route::get('format', 'FormatController@index')->name('tenant.account_format.index');
                 Route::get('format/download', 'FormatController@download');
             });
