@@ -3,6 +3,24 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
+
+                     <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.name}">
+                            <label class="control-label">Nombre  <span class="text-danger">*</span></label>
+                            <el-input v-model="form.name" dusk="name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                        </div>
+                    </div>
+
+                     <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.second_name}">
+                            <label class="control-label">Nombre secundario <span class="text-danger">*</span></label>
+                            <el-input v-model="form.second_name" dusk="second_name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.second_name" v-text="errors.second_name[0]"></small>
+                        </div>
+                    </div>
+
+
                     <div class="col-md-9">
                         <div class="form-group" :class="{'has-danger': errors.description}">
                             <label class="control-label">Descripción <span class="text-danger">*</span></label>
@@ -90,6 +108,15 @@
                             <label class="control-label">Stock Mínimo</label>
                             <el-input v-model="form.stock_min"></el-input>
                             <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
+                            <label class="control-label">Almacen</label>
+                            <el-select v-model="form.warehouse_id" filterable>
+                                <el-option v-for="option in warehouse" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
                     <div class="col-md-3 center-el-checkbox" >
@@ -273,7 +300,7 @@
 
 
 
-                    <div class="col-md-12" v-if="form.warehouses">
+                    <!--<div class="col-md-12" v-if="form.warehouses">
                         <table class="table">
                             <thead>
                             <tr>
@@ -288,7 +315,7 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </div>-->
                 </div>
             </div>
             <div class="form-actions text-right pt-2">
@@ -312,6 +339,7 @@
 
         data() {
             return {
+                warehouse: [],
                 loading_submit: false,
                 showPercentagePerception: false,
                 has_percentage_perception: false,
@@ -349,6 +377,7 @@
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
+                    this.warehouse = response.data.warehouse
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -417,6 +446,8 @@
                     item_code: null,
                     item_code_gs1: null,
                     description: null,
+                    name: null,
+                    second_name: null,
                     unit_type_id: 'NIU',
                     currency_type_id: 'PEN',
                     sale_unit_price: 0,

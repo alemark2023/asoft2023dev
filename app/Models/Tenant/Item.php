@@ -12,6 +12,9 @@ class Item extends ModelTenant
 {
     protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types'];
     protected $fillable = [
+        'warehouse_id',
+        'name',
+        'second_name',
         'description',
         'item_type_id',
         'internal_id',

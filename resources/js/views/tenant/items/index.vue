@@ -14,7 +14,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de productos</h3>
+                <h3 class="my-0">Listado de  productos</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -22,6 +22,7 @@
                         <th>#</th>
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
+                        <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Cód. SUNAT</th>
                         <th  class="text-left">Stock</th>
@@ -33,6 +34,7 @@
                         <td>{{ index }}</td>
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
+                        <td>{{ row.name }}</td>
                         <td>{{ row.description }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
