@@ -208,7 +208,9 @@ class ItemController extends Controller
     private function deleteRecordInitialKardex($item){
 
         if($item->kardex->count() == 1){
+
             ($item->kardex[0]->type == null) ? $item->kardex[0]->delete() : false;
+            
         }
 
     }
