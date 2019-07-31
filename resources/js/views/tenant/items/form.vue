@@ -104,7 +104,7 @@
                             <el-input v-model="form.percentage_perception"></el-input>
                         </div>
                     </div>
-                    <div class="col-md-3 center-el-checkbox">
+                    <!-- <div class="col-md-3 center-el-checkbox">
                         <div class="form-group" >
                             <el-checkbox v-model="have_account" @change="changeHaveAccount">¿Tiene cuenta contable?</el-checkbox><br>
                         </div>
@@ -117,7 +117,7 @@
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.account_id" v-text="errors.account_id[0]"></small>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios

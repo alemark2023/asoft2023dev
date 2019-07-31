@@ -17,6 +17,7 @@ class ConfigurationRequest extends FormRequest
         return [
             'send_auto' => ['required', 'boolean'],
             'cron' => ['required', 'boolean'],
+            // 'subtotal_account' => ['required'],
             // 'stock' => ['required', 'boolean']
         ];
     }

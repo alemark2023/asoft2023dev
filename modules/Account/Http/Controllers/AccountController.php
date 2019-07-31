@@ -5,6 +5,7 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -54,7 +55,7 @@ class AccountController extends Controller
         return Document::query()
                                 ->whereBetween('date_of_issue', [$d_start, $d_end])
                                 ->whereIn('document_type_id', ['01', '03'])
-                                ->whereIn('currency_type_id', ['PEN'])
+                                ->whereIn('currency_type_id', ['PEN','USD'])
                                 ->orderBy('series')
                                 ->orderBy('number')
                                 ->get();
@@ -63,6 +64,7 @@ class AccountController extends Controller
 
     private function getStructureConcar($documents)
     {
+        $configuration = Configuration::first();
         $rows = [];
         foreach ($documents as $index => $row)
         {
@@ -70,12 +72,10 @@ class AccountController extends Controller
             $currency_type_id = ($row->currency_type_id === 'PEN')?'MN':'US';
             $document_type_id = ($row->document_type_id === '01')?'FT':'BV';
             $detail = $row->customer->name.', '.$document_type_id.' '.$row->number_full;
-
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
 
             foreach ($row->items as $item) {
 
-                $item_query = Item::findOrFail($item->item_id);
 
                 $rows[] = [
                     'col_A' => '',
@@ -88,7 +88,8 @@ class AccountController extends Controller
                     'col_H' => 'V',
                     'col_I' => 'N',
                     'col_J' => '',
-                    'col_K' => '121201',
+                    // 'col_K' => '121201',
+                    'col_K' => ($row->currency_type_id === 'PEN') ? '12101' : '12102',
                     'col_L' => $row->customer->number,
                     'col_M' => '',
                     'col_N' => 'D',
@@ -113,7 +114,8 @@ class AccountController extends Controller
                     'col_H' => 'V',
                     'col_I' => 'N',
                     'col_J' => '',
-                    'col_K' => '401111',
+                    // 'col_K' => '401111',
+                    'col_K' => '40101',
                     'col_L' => $row->customer->number,
                     'col_M' => '',
                     'col_N' => 'H',
@@ -139,7 +141,7 @@ class AccountController extends Controller
                     'col_I' => 'N',
                     'col_J' => '',
                     // 'col_K' => '704101',
-                    'col_K' => isset($item_query->account->number) ? $item_query->account->number : '',//cambiar
+                    'col_K' => $configuration->subtotal_account,
                     'col_L' => $row->customer->number,
                     'col_M' => '',
                     'col_N' => 'H',
@@ -164,6 +166,8 @@ class AccountController extends Controller
 
     private function getStructureSiscont($documents)
     {
+
+        $configuration = Configuration::first();
         $rows = [];
         foreach ($documents as $index => $row)
         {
@@ -176,13 +180,13 @@ class AccountController extends Controller
 
             foreach ($row->items as $item) {
 
-                $item_query = Item::findOrFail($item->item_id);
 
                 $rows[] = [
                     'col_001_002' => '01',
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
-                    'col_015_024' => '12102',
+                    // 'col_015_024' => '12102',
+                    'col_015_024' => ($row->currency_type_id === 'PEN') ? '12101' : '12102',
                     'col_025_036' => str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'D',
                     'col_038_038' => $currency_type_id,
@@ -220,7 +224,7 @@ class AccountController extends Controller
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '40111',
-                    'col_015_024' => isset($item_query->account->number) ? $item_query->account->number : '',
+                    'col_015_024' => '40101',
                     // 'col_025_036' => str_pad($row->total, 12, '0', STR_PAD_LEFT),
                     'col_025_036' => str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'H',
@@ -258,7 +262,8 @@ class AccountController extends Controller
                     'col_001_002' => '01',
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
-                    'col_015_024' => '70201',
+                    // 'col_015_024' => '70201', 
+                    'col_015_024' => $configuration->subtotal_account,
                     'col_025_036' => str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'H',
                     'col_038_038' => $currency_type_id,
