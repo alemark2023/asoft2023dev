@@ -288,7 +288,7 @@
                         </ul>
                     </li>
                     @if(in_array('configuration', $vc_modules))
-                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories']) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts']) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-cogs" aria-hidden="true"></i>
                             <span>Configuración</span>
@@ -297,6 +297,11 @@
                             <li class="{{($path[0] === 'companies') ? 'nav-active': ''}}">
                                 <a class="nav-link" href="{{route('tenant.companies.create')}}">
                                     Empresa
+                                </a>
+                            </li>
+                            <li class="{{($path[0] === 'company_accounts') ? 'nav-active': ''}}">
+                                <a class="nav-link" href="{{route('tenant.company_accounts.create')}}">
+                                    Cuentas contables
                                 </a>
                             </li>
                             @if(auth()->user()->type != 'integrator')

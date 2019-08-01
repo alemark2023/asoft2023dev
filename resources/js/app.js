@@ -92,6 +92,7 @@ Vue.component('tenant-expenses-index', require('../../modules/Expense/Resources/
 Vue.component('tenant-expenses-form', require('../../modules/Expense/Resources/assets/js/views/expenses/form.vue'));
 Vue.component('tenant-account-export', require('../../modules/Account/Resources/assets/js/views/account/export.vue'));
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
+Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));

@@ -10,6 +10,5 @@ class Configuration extends ModelTenant
         'stock',
         'locked_emission',
         'limit_documents',
-        'subtotal_account',
     ];
 }

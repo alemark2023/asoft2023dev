@@ -8,6 +8,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Configuration;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Modules\Account\Models\CompanyAccount;
 
 class AccountController extends Controller
 {
@@ -64,7 +65,7 @@ class AccountController extends Controller
 
     private function getStructureConcar($documents)
     {
-        $configuration = Configuration::first();
+        $company_account = CompanyAccount::first();
         $rows = [];
         foreach ($documents as $index => $row)
         {
@@ -89,7 +90,7 @@ class AccountController extends Controller
                     'col_I' => 'N',
                     'col_J' => '',
                     // 'col_K' => '121201',
-                    'col_K' => ($row->currency_type_id === 'PEN') ? '12101' : '12102',
+                    'col_K' => ($row->currency_type_id === 'PEN') ? $company_account->total_pen : $company_account->total_usd,
                     'col_L' => $row->customer->number,
                     'col_M' => '',
                     'col_N' => 'D',
@@ -115,7 +116,7 @@ class AccountController extends Controller
                     'col_I' => 'N',
                     'col_J' => '',
                     // 'col_K' => '401111',
-                    'col_K' => '40101',
+                    'col_K' => ($row->currency_type_id === 'PEN') ? $company_account->igv_pen : $company_account->igv_usd,
                     'col_L' => $row->customer->number,
                     'col_M' => '',
                     'col_N' => 'H',
@@ -141,7 +142,7 @@ class AccountController extends Controller
                     'col_I' => 'N',
                     'col_J' => '',
                     // 'col_K' => '704101',
-                    'col_K' => $configuration->subtotal_account,
+                    'col_K' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
                     'col_L' => $row->customer->number,
                     'col_M' => '',
                     'col_N' => 'H',
@@ -167,7 +168,7 @@ class AccountController extends Controller
     private function getStructureSiscont($documents)
     {
 
-        $configuration = Configuration::first();
+        $company_account = CompanyAccount::first();
         $rows = [];
         foreach ($documents as $index => $row)
         {
@@ -186,7 +187,7 @@ class AccountController extends Controller
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '12102',
-                    'col_015_024' => ($row->currency_type_id === 'PEN') ? '12101' : '12102',
+                    'col_015_024' => ($row->currency_type_id === 'PEN') ? $company_account->total_pen : $company_account->total_usd,
                     'col_025_036' => str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'D',
                     'col_038_038' => $currency_type_id,
@@ -224,7 +225,7 @@ class AccountController extends Controller
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '40111',
-                    'col_015_024' => '40101',
+                    'col_015_024' =>  ($row->currency_type_id === 'PEN') ? $company_account->igv_pen : $company_account->igv_usd,
                     // 'col_025_036' => str_pad($row->total, 12, '0', STR_PAD_LEFT),
                     'col_025_036' => str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'H',
@@ -263,7 +264,7 @@ class AccountController extends Controller
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '70201', 
-                    'col_015_024' => $configuration->subtotal_account,
+                    'col_015_024' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
                     'col_025_036' => str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'H',
                     'col_038_038' => $currency_type_id,
