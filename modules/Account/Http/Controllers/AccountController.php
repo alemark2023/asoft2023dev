@@ -183,7 +183,7 @@ class AccountController extends Controller
 
 
                 $rows[] = [
-                    'col_001_002' => '01',
+                    'col_001_002' => '02',
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '12102',
@@ -221,7 +221,7 @@ class AccountController extends Controller
                 ];
     
                 $rows[] = [
-                    'col_001_002' => '01',
+                    'col_001_002' => '02',
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '40111',
@@ -260,7 +260,7 @@ class AccountController extends Controller
                 ];
     
                 $rows[] = [
-                    'col_001_002' => '01',
+                    'col_001_002' => '02',
                     'col_003_006' => $number_index,
                     'col_007_014' => $date_of_issue->format('d/m/y'),
                     // 'col_015_024' => '70201', 
