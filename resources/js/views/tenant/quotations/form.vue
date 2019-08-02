@@ -72,6 +72,14 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                    <label class="control-label">Descripcion
+                                    </label>
+                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="row mt-2">
@@ -240,6 +248,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    description: '',
                     prefix:'COT',
                     establishment_id: null, 
                     date_of_issue: moment().format('YYYY-MM-DD'),

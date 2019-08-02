@@ -26,8 +26,8 @@ table {
   height: 100px;
 }
 .company_logo_ticket {
-  max-width: 200px;
-  max-height: 80px
+  max-width: 180px;
+  max-height: 70px
 }
 .contain {object-fit: cover;}
 

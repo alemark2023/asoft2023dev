@@ -39,7 +39,9 @@ class CurrencyTypeController extends Controller
     public function destroy($id)
     {
         $currency_type = CurrencyType::findOrFail($id);
-        $currency_type->delete();
+        //$currency_type->delete();
+        $currency_type->active = 0;
+        $currency_type->save();
 
         return [
             'success' => true,

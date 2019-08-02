@@ -5,18 +5,33 @@
                 :close-on-press-escape="false"
                 :show-close="false"> 
             <div class="row" v-show="!showGenerate">
-                <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold">
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir A4</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a4')">
                         <i class="fa fa-file-alt"></i>
                     </button>
-                </div> 
-                <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold">
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+                    <p>Imprimir A5</p>
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
+                        <i class="fa fa-file-alt"></i>
+                    </button>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir Ticket</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('ticket')">
                         <i class="fa fa-receipt"></i>
                     </button>
                 </div> 
+            </div>
+            <br>
+            <div class="row" v-show="!showGenerate">
+                <div class="col-md-12">
+                    <el-input v-model="customer_email">
+                        <el-button slot="append" icon="el-icon-message" @click="clickSendEmail" :loading="loading">Enviar</el-button>
+                    </el-input>
+                    <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
+                </div>
             </div>
             <br>
             <div class="row"> 
@@ -80,6 +95,7 @@
         props: ['showDialog', 'recordId', 'showClose','showGenerate'],
         data() {
             return {
+                customer_email: '',
                 titleDialog: null,
                 loading: false,
                 resource: 'quotations',
@@ -267,7 +283,29 @@ console.log(this.document)
             },
             clickToPrint(format){
                 window.open(`/${this.resource}/print/${this.form.external_id}/${format}`, '_blank');
-            } 
+            },
+            clickSendEmail()
+            {
+                this.loading = true
+                this.$http.post(`/${this.resource}/email`, {
+                    customer_email: this.customer_email,
+                    id: this.form.id,
+                    customer_id: this.form.quotation.customer_id
+                })
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success('El correo fue enviado satisfactoriamente')
+                    } else {
+                        this.$message.error('Error al enviar el correo')
+                    }
+                })
+                .catch(error => {
+                    this.$message.error('Error al enviar el correo')
+                })
+                .then(() => {
+                    this.loading = false
+                })
+            }
         }
     }
 </script>

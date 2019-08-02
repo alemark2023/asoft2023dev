@@ -9,7 +9,7 @@
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id" @change="changeItem"  filterable
+                            <el-select :disabled="recordItem != null" v-model="form.item_id" @change="changeItem"  filterable
                                        popper-class="el-select-items"
                                        dusk="item_id"
                                        @visible-change="focusTotalItem">
@@ -24,7 +24,7 @@
                             <el-select v-model="form.affectation_igv_type_id" :disabled="!change_affectation_igv_type_id" filterable>
                                 <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
-                            <el-checkbox v-model="change_affectation_igv_type_id">Editar</el-checkbox>
+                            <el-checkbox :disabled="recordItem != null" v-model="change_affectation_igv_type_id">Editar</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
@@ -90,8 +90,8 @@
                         </table>
                     </div>
                     <div class="col-md-12 mt-2">
-                        <el-collapse v-model="activePanel">
-                            <el-collapse-item title="Información adicional atributos UBL 2.1" name="1">
+                        <el-collapse  v-model="activePanel">
+                            <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1">
                                 <!--<div>-->
                                     <!--<div class="row">-->
                                         <div v-if="discount_types.length > 0">
@@ -311,7 +311,7 @@
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button class="add" type="primary" native-type="submit" v-if="form.item_id">Agregar</el-button>
+                <el-button class="add" type="primary" native-type="submit" v-if="form.item_id">{{titleAction}}</el-button>
             </div>
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
@@ -331,18 +331,17 @@
     import {calculateRowItem} from '../../../../helpers/functions'
 
     export default {
-        props: ['showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'user'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'user'],
         components: {ItemForm},
         data() {
             return {
-                titleDialog: 'Agregar Producto o Servicio',
+                titleAction: '',
+                titleDialog: '',
                 resource: 'documents',
                 showDialogNewItem: false,
                 has_list_prices: false,
                 errors: {},
                 form: {},
-//                categories: [],
-//                all_items: [],
                 items: [],
                 operation_types: [],
                 all_affectation_igv_types: [],
@@ -362,7 +361,7 @@
         created() {
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
-//                this.categories = response.categories
+               // console.log('tablas new edit')
                 this.items = response.data.items 
                 this.operation_types = response.data.operation_types
                 this.all_affectation_igv_types = response.data.affectation_igv_types
@@ -387,6 +386,7 @@
                 
                 this.form = {
                    // category_id: [1],
+                   // edit: false,
                     item_id: null,
                     item: {},
                     affectation_igv_type_id: null,
@@ -413,9 +413,21 @@
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
             // },
             create() {
+
+                this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
+                this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
                 let operation_type = _.find(this.operation_types, {id: this.operationTypeId})
                 this.affectation_igv_types = _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
-                // this.initializeFields()
+                if (this.recordItem) {
+                    console.log('form updasssste')
+                    this.form.item_id = this.recordItem.item_id
+                    this.changeItem()
+                    this.form.quantity = this.recordItem.quantity
+                    this.form.unit_price_value = this.recordItem.unit_price
+                    this.calculateQuantity()
+                }
+               
+               
             },
             clickAddDiscount() {
                 this.form.discounts.push({
@@ -493,6 +505,7 @@
             },
             calculateQuantity() {
                 if(this.form.item.calculate_quantity) {
+                    console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
                 }
             },
@@ -510,9 +523,15 @@
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
                 
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
-                
+               // this.row.edit = false;
                 this.initForm();
                 //this.initializeFields()
+
+                if (this.recordItem)
+                {
+                    this.row.indexi = this.recordItem.indexi
+                }
+
                 this.$emit('add', this.row);
             },
             validateTotalItem(){

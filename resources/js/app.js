@@ -70,6 +70,10 @@ Vue.component('tenant-purchases-form', require('./views/tenant/purchases/form.vu
 Vue.component('tenant-purchases-items', require('./views/tenant/dispatches/items.vue'));
 Vue.component('tenant-attribute_types-index', require('./views/tenant/attribute_types/index.vue'));
 Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+Vue.component('tenant-product', require('./views/tenant/components/products.vue'));
+
+
 Vue.component('tenant-tasks-lists', require('./views/tenant/tasks/lists.vue'));
 Vue.component('tenant-tasks-form', require('./views/tenant/tasks/form.vue'));
 Vue.component('tenant-reports-consistency-documents-lists', require('./views/tenant/reports/consistency-documents/lists.vue'));

@@ -13,10 +13,11 @@
                     <div>
                         <form action="{{route('reports.kardex.search')}}" class="el-form demo-form-inline el-form--inline" method="POST">
                             {{csrf_field()}}
-                            <div class="box ">
+                            <div class="box">
                                 <div class="box-body no-padding">
-                                    {{Form::label('item_id', 'Producto')}}
-                                    {{Form::select('item_id', $items->pluck('description', 'id'), old('item_id', request()->item_id), ['class' => 'form-control col-md-6'])}}
+                                   <!-- {{Form::label('item_id', 'Producto')}}-->
+                                    <!--{{Form::select('item_id', $items->pluck('description', 'id'), old('item_id', request()->item_id), ['class' => 'form-control col-md-6'])}} -->
+                                    <tenant-product :data_products="{{json_encode($items)}}"></tenant-product>
                                 </div>
                                 <div class="el-form-item col-xs-12">
                                     <div class="el-form-item__content">

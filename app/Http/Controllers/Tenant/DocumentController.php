@@ -64,6 +64,7 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
+       // return 'asd';
 //        $series = Series::select('number')->where('contingency', false)->get();
         $series = Series::select('number')->get();
 

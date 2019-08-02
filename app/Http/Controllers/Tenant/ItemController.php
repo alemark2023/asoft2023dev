@@ -121,9 +121,13 @@ class ItemController extends Controller
     
     public function destroy($id)
     {
+        //return 'sd';
         $item = Item::findOrFail($id);
         $this->deleteRecordInitialKardex($item);
-        $item->delete();
+        $item->status = 0;
+        $item->save();
+
+       // $item->delete();
 
         return [
             'success' => true,

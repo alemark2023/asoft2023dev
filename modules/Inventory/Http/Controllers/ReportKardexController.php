@@ -37,6 +37,8 @@ class ReportKardexController extends Controller
             ->where('item_type_id', '01')
             ->latest()
             ->get();
+
+           // return json_encode( $items);
             
         return view('inventory::reports.kardex.index', compact('items'));
     }
@@ -47,7 +49,7 @@ class ReportKardexController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function search(Request $request) { 
-
+        //return $request->item_selected;
         $balance = 0;
         
         $items = Item::query()
@@ -58,9 +60,10 @@ class ReportKardexController extends Controller
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
         $reports = InventoryKardex::with(['inventory_kardexable'])
-                                    ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])  
+                                    ->where([['item_id', $request->item_selected],['warehouse_id', $warehouse->id]])  
                                     ->orderBy('id')     
                                     ->get();
+        //return $reports;
         
         $models = $this->models;
         

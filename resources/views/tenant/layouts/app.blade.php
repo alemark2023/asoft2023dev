@@ -123,7 +123,7 @@
     {{-- Specific Page Vendor --}}
     <script src="{{asset('porto-light/vendor/jquery-ui/jquery-ui.js')}}"></script>
     <script src="{{asset('porto-light/vendor/jqueryui-touch-punch/jqueryui-touch-punch.js')}}"></script>
-    <script src="{{asset('porto-light/vendor/select2/js/select2.js')}}"></script>
+    <!--<script src="{{asset('porto-light/vendor/select2/js/select2.js')}}"></script>-->
 
     <script src="{{asset('porto-light/vendor/jquery-loading/dist/jquery.loading.js')}}"></script>
 
@@ -154,6 +154,9 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
+    <script>
+     
+    </script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
 </body>
 </html>
