@@ -175,7 +175,7 @@ class AccountController extends Controller
             $date_of_issue = Carbon::parse($row->date_of_issue);
             $currency_type_id = ($row->currency_type_id === 'PEN')?'S':'D';
             $document_type_id = ($row->document_type_id === '01')?'01':'03';
-            $detail = substr($row->customer->name.', '.$document_type_id.' '.$row->number_full, 0, 30);
+            $detail = substr($row->customer->name.', '.$document_type_id.' '.$row->number_full, 0, 60);
 
             $number_index = $date_of_issue->format('m').str_pad($index + 1, 4, "0", STR_PAD_LEFT);
 
