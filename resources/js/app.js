@@ -67,16 +67,24 @@ Vue.component('tenant-dispatches-index', require('./views/tenant/dispatches/inde
 Vue.component('tenant-dispatches-form', require('./views/tenant/dispatches/form.vue'));
 Vue.component('tenant-purchases-index', require('./views/tenant/purchases/index.vue'));
 Vue.component('tenant-purchases-form', require('./views/tenant/purchases/form.vue'));
+Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_edit.vue'));
+
 Vue.component('tenant-purchases-items', require('./views/tenant/dispatches/items.vue'));
 Vue.component('tenant-attribute_types-index', require('./views/tenant/attribute_types/index.vue'));
 Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+//Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+Vue.component('tenant-product', require('./views/tenant/components/products.vue'));
+
+
 Vue.component('tenant-tasks-lists', require('./views/tenant/tasks/lists.vue'));
 Vue.component('tenant-tasks-form', require('./views/tenant/tasks/form.vue'));
 Vue.component('tenant-reports-consistency-documents-lists', require('./views/tenant/reports/consistency-documents/lists.vue'));
 Vue.component('tenant-contingencies-index', require('./views/tenant/contingencies/index.vue'));
 
 Vue.component('tenant-quotations-index', require('./views/tenant/quotations/index.vue'));
-Vue.component('tenant-quotations-form', require('./views/tenant/quotations/form.vue')); 
+Vue.component('tenant-quotations-form', require('./views/tenant/quotations/form.vue'));
+Vue.component('tenant-quotations-edit', require('./views/tenant/quotations/form_edit.vue'));
+
 
 Vue.component('tenant-sale-notes-index', require('./views/tenant/sale_notes/index.vue'));
 Vue.component('tenant-sale-notes-form', require('./views/tenant/sale_notes/form.vue'));
@@ -92,6 +100,7 @@ Vue.component('tenant-expenses-index', require('../../modules/Expense/Resources/
 Vue.component('tenant-expenses-form', require('../../modules/Expense/Resources/assets/js/views/expenses/form.vue'));
 Vue.component('tenant-account-export', require('../../modules/Account/Resources/assets/js/views/account/export.vue'));
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
+Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));

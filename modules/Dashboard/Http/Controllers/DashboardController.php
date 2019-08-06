@@ -12,6 +12,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if(auth()->user()->type != 'admin' || !auth()->user()->searchModule('dashboard'))
+            return redirect()->route('tenant.documents.index');
+
         return view('dashboard::index');
     }
 

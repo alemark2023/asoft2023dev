@@ -122,6 +122,11 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-lg-2 mt-2 mb-2">
+                                <div class="form-group" > 
+                                    <el-checkbox v-model="is_receivable" v-if="form.document_type_id=='03'" class=" font-weight-bold">¿Es venta por cobrar?</el-checkbox>
+                                </div>
+                            </div> 
                         </div>
                         <div class="row mt-1">
                             <div class="col-md-12">
@@ -200,13 +205,21 @@
                                                 <td>{{index + 1}}</td>
                                                 <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
+                                                
                                                 <td class="text-right">{{row.quantity}}</td>
+                                                <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.quantity"></el-input-number> </td> -->
+
                                                 <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td>
+                                                <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.unit_price"></el-input-number> </td> -->
+
+
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                                 <td class="text-right">
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
+                                                    
                                                 </td>
                                             </tr>
                                             <tr><td colspan="8"></td></tr>
@@ -248,6 +261,7 @@
         </div>
 
         <document-form-item :showDialog.sync="showDialogAddItem"
+                           :recordItem="recordItem"
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
@@ -280,6 +294,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                recordItem: null,
                 resource: 'documents',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -292,7 +307,8 @@
                 currency_types: [],
                 discount_types: [],
                 charges_types: [],
-                all_customers: [],
+                all_customers: [],                
+                form_payment: {},
                 document_types_guide: [],
                 customers: [],
                 company: null,
@@ -307,6 +323,7 @@
                 activePanel: 0,
                 loading_search:false,
                 user: {},
+                is_receivable:false,
                 is_contingency: false,
             }
         },
@@ -343,6 +360,14 @@
             })
         },
         methods: {
+
+            ediItem(row, index)
+            {
+                row.indexi = index
+                this.recordItem = row
+                this.showDialogAddItem = true
+
+            },
 
               searchRemoteCustomers(input) {  
                   
@@ -405,6 +430,17 @@
                         format_pdf:'a4',
                     }
                 }
+
+                this.form_payment = {
+                    id: null,
+                    document_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: null,
+                }
+
+                this.is_receivable = false
             },
             resetForm() {
                 this.activePanel = 0
@@ -429,13 +465,15 @@
                 this.filterSeries()
                 this.cleanCustomer()
                 this.filterCustomers()
-            },
+            }, 
             cleanCustomer(){                
                 this.form.customer_id = null
                 // this.customers = []
             },
             changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
+                this.form_payment.date_of_payment = this.form.date_of_issue
+
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
@@ -470,8 +508,16 @@
                 this.form.guides.splice(index, 1)
             },
             addRow(row) {
-                this.form.items.push(JSON.parse(JSON.stringify(row)));
-                
+                if(this.recordItem)
+                {
+                    //this.form.items.$set(this.recordItem.indexi, row)
+                    this.form.items[this.recordItem.indexi] = row
+                    this.recordItem = null
+                }
+                else{
+                      this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
+              
                 this.calculateTotal();
             },
             clickRemoveItem(index) {
@@ -533,11 +579,16 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+
+                this.form_payment.payment = this.form.total
+
              },
             submit() {
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+                        this.form_payment.document_id = response.data.data.id;
+                        this.document_payment()
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -555,6 +606,29 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
+            },
+            document_payment(){
+
+                if(this.form.document_type_id == '03' && !this.is_receivable){
+
+                    this.$http.post(`/document_payments`, this.form_payment)
+                    .then(response => {
+                        if (response.data.success) { 
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.records[index].errors = error.response.data;
+                        } else {
+                            console.log(error);
+                        }
+                    })
+
+                }
+                
+
             },
             close() {
                 location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`

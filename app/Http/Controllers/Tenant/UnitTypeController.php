@@ -39,7 +39,9 @@ class UnitTypeController extends Controller
     public function destroy($id)
     {
         $record = UnitType::findOrFail($id);
-        $record->delete();
+        //$record->delete();
+        $record->active = 0;
+        $record->save();
 
         return [
             'success' => true,

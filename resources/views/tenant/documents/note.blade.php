@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <tenant-documents-note :document="{{ json_encode($document) }}"></tenant-documents-note>
+    <tenant-documents-note :user="{{ json_encode(auth()->user()) }}" :document="{{ json_encode($document) }}"></tenant-documents-note>
 
 @endsection
