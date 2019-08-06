@@ -15,12 +15,19 @@
                             </div>
                         </div>
                         <div class="col-md-6" v-if="typeUser != 'integrator'">
-                            <label class="control-label">Crontab</small></label>
+                            <label class="control-label">Crontab</label>
                             <div class="form-group" :class="{'has-danger': errors.cron}">
                                 <el-switch v-model="form.cron" active-text="Si" inactive-text="No" @change="submit"></el-switch>
                                 <small class="form-control-feedback" v-if="errors.cron" v-text="errors.cron[0]"></small>
                             </div>
                         </div>
+                        <!-- <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
+                            <label class="control-label">Cuenta contable venta subtotal</label>
+                            <div class="form-group" :class="{'has-danger': errors.subtotal_account}">
+                                <el-input v-model="form.subtotal_account" width="50%"></el-input>                                
+                                <small class="form-control-feedback" v-if="errors.subtotal_account" v-text="errors.subtotal_account[0]"></small>
+                            </div>
+                        </div> -->
                     </div>
                 </div>
             </form>
@@ -55,7 +62,8 @@
                     send_auto: true,
                     stock: true,
                     cron: true,
-                    id: null
+                    id: null,
+                    subtotal_account:null
                 };
             },
             submit() {

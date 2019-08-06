@@ -17,7 +17,8 @@ class ConfigurationResource extends JsonResource
             'id' => $this->id,
             'send_auto' => (bool) $this->send_auto,
             'stock' => (bool) $this->stock,
-            'cron' => (bool) $this->cron
+            'cron' => (bool) $this->cron,
+            'subtotal_account' => $this->subtotal_account,
         ];
     }
 }
