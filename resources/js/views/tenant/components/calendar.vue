@@ -2,6 +2,8 @@
     <div class="box ">
         <div class="box-body no-padding">
             <div class="el-form-item  col-xs-12">
+
+                
                 <div class="el-form-item__content">
                     <el-date-picker :inline=true v-model="d" type="date" name="d" placeholder="Inicio"></el-date-picker>
                 </div>

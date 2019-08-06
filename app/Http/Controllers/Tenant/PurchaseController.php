@@ -89,14 +89,23 @@ class PurchaseController extends Controller
     }
 
     public function record($id)
-    {
+    {  
+      
         $record = new PurchaseResource(Purchase::findOrFail($id));
 
         return $record;
     }
 
+    public function edit($id)
+    {   
+        $resourceId = $id;
+        return view('tenant.purchases.form_edit', compact('resourceId'));
+    }
+
     public function store(PurchaseRequest $request)
     {
+
+        //return 'asd';
         $data = self::convert($request);
         $purchase = DB::connection('tenant')->transaction(function () use ($data) {
             $doc = Purchase::create($data);
@@ -119,6 +128,55 @@ class PurchaseController extends Controller
             'data' => [
                 'id' => $purchase->id,
             ],
+        ];
+    }
+
+    public function update(PurchaseRequest $request)
+    {
+       
+
+        $data = self::convert($request);
+        $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+            //$doc = Purchase::create($data);
+            $doc = Purchase::firstOrNew(['id' => $data['id']]);
+            $doc->fill($data);
+            $doc->items()->delete();
+
+            foreach ($data['items'] as $row)
+            {
+                $doc->items()->create($row);
+            }
+
+           // //$payment = $data['purchase_payments'];
+
+            $doc->purchase_payments()->where('id', $data['purchase_payments_id'])->update([
+                'date_of_payment' => $data['date_of_issue'],
+                'payment_method_type_id' => $data['payment_method_type_id'],
+                'payment' => $data['total'],
+            ]);
+
+            return $doc;
+        });       
+ 
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $purchase->id,
+            ],
+        ];
+
+
+
+    }
+
+    public function anular($id)
+    {
+        $obj =  Purchase::find($id);
+        $obj->state_type_id = 11;
+        $obj->save();
+        return [
+            'success' => true,
+            'message' => 'Compra anulada con éxito'
         ];
     }
 

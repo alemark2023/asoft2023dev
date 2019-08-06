@@ -315,7 +315,11 @@ if ($hostname) {
             Route::get('purchases/tables', 'Tenant\PurchaseController@tables');
             Route::get('purchases/table/{table}', 'Tenant\PurchaseController@table');
             Route::post('purchases', 'Tenant\PurchaseController@store');
+            Route::post('purchases/update', 'Tenant\PurchaseController@update');
             Route::get('purchases/record/{document}', 'Tenant\PurchaseController@record');
+            Route::get('purchases/edit/{id}', 'Tenant\PurchaseController@edit');
+            Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular'); 
+
             // Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
             // Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
             // Route::post('documents/email', 'Tenant\DocumentController@email');
@@ -328,16 +332,21 @@ if ($hostname) {
             Route::get('quotations/columns', 'Tenant\QuotationController@columns');
             Route::get('quotations/records', 'Tenant\QuotationController@records');
             Route::get('quotations/create', 'Tenant\QuotationController@create')->name('tenant.quotations.create');
+            Route::get('quotations/edit/{id}', 'Tenant\QuotationController@edit');
+
             Route::get('quotations/tables', 'Tenant\QuotationController@tables');
             Route::get('quotations/table/{table}', 'Tenant\QuotationController@table');
             Route::post('quotations', 'Tenant\QuotationController@store');
+            Route::post('quotations/update', 'Tenant\QuotationController@update');
             Route::get('quotations/record/{quotation}', 'Tenant\QuotationController@record'); 
+            Route::get('quotations/anular/{id}', 'Tenant\QuotationController@anular'); 
             Route::get('quotations/item/tables', 'Tenant\QuotationController@item_tables');
             Route::get('quotations/option/tables', 'Tenant\QuotationController@option_tables');
             Route::get('quotations/search/customers', 'Tenant\QuotationController@searchCustomers');
             Route::get('quotations/search/customer/{id}', 'Tenant\QuotationController@searchCustomerById');
             Route::get('quotations/download/{external_id}/{format?}', 'Tenant\QuotationController@download');
             Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
+            Route::post('quotations/email', 'Tenant\QuotationController@email');
 
             
             //sale-notes
@@ -353,13 +362,15 @@ if ($hostname) {
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
 
-           Route::get('sale-notes/recreate_pdf/{sale_note}', 'Tenant\SaleNoteController@recreatePdf');
+         //   Route::get('sale-notes/recreate_pdf/{sale_note}', 'Tenant\SaleNoteController@recreatePdf');
+            Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');
            Route::get('sale_note_payments/tables', 'Tenant\SaleNotePaymentController@tables');
            Route::post('sale_note_payments', 'Tenant\SaleNotePaymentController@store');
            Route::delete('sale_note_payments/{sale_note_payment}', 'Tenant\SaleNotePaymentController@destroy');
+         
 
            //POS
            Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');

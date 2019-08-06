@@ -14,7 +14,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de productos</h3>
+                <h3 class="my-0">Listado de  productos</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -22,6 +22,7 @@
                         <th>#</th>
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
+                        <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Cód. SUNAT</th>
                         <th  class="text-left">Stock</th>
@@ -33,6 +34,7 @@
                         <td>{{ index }}</td>
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
+                        <td>{{ row.name }}</td>
                         <td>{{ row.description }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
@@ -51,8 +53,8 @@
                         <td class="text-right">{{ row.sale_unit_price }}</td>
                         <td class="text-center">{{ (row.has_igv)?'Si':'No' }}</td>
                         <td class="text-right">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                             <template v-if="typeUser === 'admin'">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
                         </td>

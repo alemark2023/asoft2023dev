@@ -9,6 +9,7 @@ use App\Models\Tenant\Catalogs\UnitType;
 
 class ItemUnitType extends ModelTenant
 {
+     protected $with = ['unit_type'];
     public $timestamps = false;
     
     protected $fillable = [

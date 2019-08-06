@@ -28,7 +28,9 @@
                         <td class="text-right">{{ row.number }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                             <template v-if="typeUser === 'admin'">
+                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                             </template>
                         </td>
                     </tr>
                 </data-table>
@@ -53,7 +55,7 @@
 
     export default {
         mixins: [deletable],
-        props: ['type'],
+        props: ['type', 'typeUser'],
         components: {PersonsForm, PersonsImport, DataTable},
         data() {
             return {

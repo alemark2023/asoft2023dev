@@ -9,6 +9,7 @@ class Quotation extends ModelTenant
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items'];
     
     protected $fillable = [
+        'id',
         'user_id',
         'external_id',
         'establishment_id',
@@ -49,6 +50,7 @@ class Quotation extends ModelTenant
         'detraction',
         'legends', 
         'filename',
+        'description'
          
     ];
 

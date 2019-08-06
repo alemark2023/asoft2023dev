@@ -60,7 +60,9 @@ class BankAccountController extends Controller
     public function destroy($id)
     {
         $bank_account = BankAccount::findOrFail($id);
-        $bank_account->delete();
+       // $bank_account->delete();
+       $bank_account->status = 0;
+       $bank_account->save();
 
         return [
             'success' => true,
