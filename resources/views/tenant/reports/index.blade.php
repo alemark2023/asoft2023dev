@@ -53,6 +53,7 @@
                                         <th class="">Tipo Documento</th>
                                         <th class="">Comprobante</th>
                                         <th class="">Fecha emisión</th>
+                                        <th>Documento que Modifica</th>
                                         <th class="">Cliente</th>
                                         <th class="">RUC</th>
                                         <th class="">Estado</th>
@@ -68,6 +69,7 @@
                                         <td>{{$value->document_type->id}}</td>
                                         <td>{{$value->series}}-{{$value->number}}</td>
                                         <td>{{$value->date_of_issue->format('Y-m-d')}}</td>
+                                        <td>{{ $value->document_type->id == '07' ? $value->series.' - '.$value->number : '' }} </td>
                                         <td>{{$value->person->name}}</td>
                                         <td>{{$value->person->number}}</td>
                                         <td>{{$value->state_type->description}}</td>

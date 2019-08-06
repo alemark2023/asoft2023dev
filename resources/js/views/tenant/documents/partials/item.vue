@@ -38,7 +38,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="user.type === 'seller'">
+                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="userType === 'seller'">
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
@@ -180,7 +180,7 @@
                                                     <td>
                                                         <el-select v-model="row.attribute_type_id" filterable @change="changeAttributeType(index)">
                                                             <el-option v-for="option in attribute_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                             7                           </el-select>
+                                                        </el-select>
                                                     </td>
                                                     <td>
                                                         <el-input v-model="row.value"></el-input>
@@ -331,7 +331,7 @@
     import {calculateRowItem} from '../../../../helpers/functions'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'user'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'userType'],
         components: {ItemForm},
         data() {
             return {

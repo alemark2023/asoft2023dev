@@ -17,6 +17,7 @@
                         <th class="text-center">F. Emisión</th>
                         <th class="text-center">F. Vencimiento</th>
                         <th>Proveedor</th>
+                        <th>Estado</th>
                         <th>Número</th>
                         <th>F. Pago</th>
                         <!-- <th>Estado</th> -->
@@ -29,13 +30,14 @@
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
                         <!-- <th class="text-center">Descargas</th> -->
-                        <!-- <th class="text-right">Acciones</th> -->
+                        <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td class="text-center">{{ row.date_of_due }}</td>
                         <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
+                        <td>{{row.state_type_description}}</td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/> 
                         </td>
@@ -49,6 +51,12 @@
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
+                        <td>
+                            
+                            <a :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+
+                        </td>
                         
                         <!-- <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
@@ -84,8 +92,10 @@
     // import DocumentsVoided from './partials/voided.vue'
     // import DocumentOptions from './partials/options.vue'
     import DataTable from '../../../components/DataTable.vue'
+     import {deletable} from '../../../mixins/deletable'
 
     export default {
+          mixins: [deletable],
         // components: {DocumentsVoided, DocumentOptions, DataTable},
         components: {DataTable},
         data() {
@@ -110,6 +120,12 @@
                 this.recordId = recordId
                 this.showDialogOptions = true
             },
+            clickAnulate(id)
+            {
+                this.anular(`/${this.resource}/anular/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            }
         }
     }
 </script>

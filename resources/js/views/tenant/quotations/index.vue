@@ -16,6 +16,7 @@
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
+                        <th>Estado</th>
                         <th>Cotización</th>
                         <th>Comprobantes</th>
                         <!-- <th>Estado</th> -->
@@ -34,6 +35,7 @@
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+                        <td>{{row.state_type_description}}</td>
                         <td>{{ row.identifier }} 
                         </td>
                         <td>
@@ -59,7 +61,12 @@
                         <td class="text-right"> 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" 
                                     @click.prevent="clickOptions(row.id)">Generar comprobante</button>
+                            <a :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+
+                                    
                         </td>
+
                     </tr>
                 </data-table>
             </div>
@@ -82,8 +89,10 @@
     import QuotationOptions from './partials/options.vue'
     import QuotationOptionsPdf from './partials/options_pdf.vue'
     import DataTable from '../../../components/DataTable.vue'
+    import {deletable} from '../../../mixins/deletable'
 
     export default { 
+        mixins: [deletable],
         components: {DataTable,QuotationOptions, QuotationOptionsPdf},
         data() {
             return { 
@@ -96,6 +105,11 @@
         created() {
         },
         methods: {  
+            clickEdit(id)
+            {
+                this.recordId = id
+                this.showDialogFormEdit = true
+            },
             clickOptions(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptions = true
@@ -103,6 +117,12 @@
             clickOptionsPdf(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptionsPdf = true
+            },
+            clickAnulate(id)
+            {
+                this.anular(`/${this.resource}/anular/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
             }
         }
     }

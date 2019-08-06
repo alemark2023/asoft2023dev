@@ -57,6 +57,12 @@ class QuotationController extends Controller
         return view('tenant.quotations.form');
     }
 
+    public function edit($id)
+    {   
+        $resourceId = $id;
+        return view('tenant.quotations.form_edit', compact('resourceId'));
+    }
+
     public function columns()
     {
         return [
@@ -152,6 +158,45 @@ class QuotationController extends Controller
             'data' => [
                 'id' => $this->quotation->id,
             ],
+        ];
+    }
+
+    public function update(QuotationRequest $request)
+    {
+        
+         DB::connection('tenant')->transaction(function () use ($request) {
+            $data = $this->mergeData($request);
+           // return $request['id'];
+
+           $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
+           $this->quotation->fill($data);
+           $this->quotation->items()->delete();
+            
+            foreach ($data['items'] as $row) {
+                
+                $this->quotation->items()->create($row);
+            }
+            
+            $this->setFilename();
+        });
+        
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->quotation->id,
+            ],
+        ];
+
+    }
+
+    public function anular($id)
+    {
+        $obj =  Quotation::find($id);
+        $obj->state_type_id = 11;
+        $obj->save();
+        return [
+            'success' => true,
+            'message' => 'Producto anulado con éxito'
         ];
     }
     

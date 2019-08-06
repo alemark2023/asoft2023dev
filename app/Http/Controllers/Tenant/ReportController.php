@@ -74,6 +74,8 @@ class ReportController extends Controller
         if(!is_null($establishment_id)){
             $reports = $reports->where('establishment_id', $establishment_id);
         }
+
+       // return json_encode($reports);
         
         return view("tenant.reports.index", compact("reports", "a", "d", "td", "documentTypes","establishment","establishments"));
     }

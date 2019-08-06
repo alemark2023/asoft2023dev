@@ -92,7 +92,7 @@
     export default {
         components: {DocumentOptions},
 
-        props: ['showDialog', 'recordId', 'showClose','showGenerate'],
+        props: ['showDialog', 'recordId', 'showClose','showGenerate', 'type'],
         data() {
             return {
                 customer_email: '',
@@ -259,7 +259,9 @@ console.log(this.document)
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
-                        this.titleDialog = 'Cotización registrada: '+this.form.identifier
+
+                        let type = this.type == 'edit' ? 'editada' : 'registrada'
+                        this.titleDialog = `Cotización ${type}: '` +this.form.identifier
                     })
             },
             changeDocumentType() {

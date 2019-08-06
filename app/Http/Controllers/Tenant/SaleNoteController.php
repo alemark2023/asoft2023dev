@@ -285,7 +285,8 @@ class SaleNoteController extends Controller
                                 'warehouse_description' => $row->warehouse->description,
                                 'stock' => $row->stock,
                             ];
-                        })
+                        }),
+                        'item_unit_types' => $row->item_unit_types
                     ];
                 });
 //                return $items;

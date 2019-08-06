@@ -7,7 +7,7 @@ use App\Models\Tenant\Catalogs\DocumentType;
 
 class Purchase extends ModelTenant
 {
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
 
     protected $fillable = [
         'user_id',

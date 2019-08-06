@@ -64,6 +64,8 @@ class ReportKardexController extends Controller
                                     ->orderBy('id')     
                                     ->get();
         //return $reports;
+
+        //return json_encode($reports);
         
         $models = $this->models;
         
