@@ -31,11 +31,7 @@
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
                         <th>Número</th>
-<<<<<<< HEAD
                         <th v-if="columns.notes.visible">Notas C/D</th>
-=======
-                        <th>Documento que modifica</th>
->>>>>>> 99496d6694955e7030bd4f9e02814a0ac0eb1fc6
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
@@ -67,9 +63,9 @@
                             </template>
                         </td>
 
-                        <td>
+                        <!-- <td>
                             {{ row.document_type_id == '07' ?  row.number : ''}}
-                        </td>
+                        </td> -->
                         
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
