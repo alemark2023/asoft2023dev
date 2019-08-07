@@ -31,6 +31,7 @@
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
                         <th>Número</th>
+                        <th v-if="columns.notes.visible">Notas C/D</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
@@ -54,6 +55,12 @@
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>
+                            
+                        </td>
+                        <td v-if="columns.notes.visible">
+                            <template v-for="(row,index) in row.notes">
+                                <label class="d-block"   :key="index">{{row.note_type_description}}: {{row.description}}</label>
+                            </template>
                         </td>
                         
                         <td>
@@ -161,6 +168,10 @@
                 showDialogOptions: false,
                 showDialogPayments: false,
                 columns: {
+                    notes: {
+                        title: 'Notas C/D',
+                        visible: false
+                    },
                     user_name: {
                         title: 'Usuario',
                         visible: false

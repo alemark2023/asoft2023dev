@@ -21,7 +21,8 @@ class Note extends ModelTenant
 
     public function document()
     {
-        return $this->hasOne(Document::class);
+        // return $this->hasOne(Document::class);
+        return $this->belongsTo(Document::class);
     }
 
     public function affected_document()
