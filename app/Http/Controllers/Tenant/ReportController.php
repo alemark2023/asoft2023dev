@@ -13,6 +13,8 @@ use App\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Item;
+
 use Carbon\Carbon;
 
 class ReportController extends Controller
@@ -75,10 +77,14 @@ class ReportController extends Controller
             $reports = $reports->where('establishment_id', $establishment_id);
         }
 
+       
+
        // return json_encode($reports);
         
         return view("tenant.reports.index", compact("reports", "a", "d", "td", "documentTypes","establishment","establishments"));
     }
+
+
     
     public function pdf(Request $request) {
         

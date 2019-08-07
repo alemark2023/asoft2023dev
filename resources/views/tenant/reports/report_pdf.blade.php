@@ -82,6 +82,9 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
+                        $total_exonerado=0;
+                        $total_inafecto=0;
+                       
                     @endphp
                     <table class="">
                         <thead>
@@ -94,6 +97,8 @@
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
+                                <th>Total Exonerado</th>
+                                <th>Total Inafecto</th>
                                 <th>Total Gravado</th>
                                 <th>Total IGV</th>
                                 <th>Total</th>
@@ -110,14 +115,32 @@
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->customer->number}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
-                                    <td class="celda">{{$value->total_taxed}}</td>
-                                    <td class="celda">{{$value->total_igv}}</td>
-                                    <td class="celda">{{$value->total}}</td>
+                                    
+                                    @php
+                                     $signal = $value->document_type->short;
+                                    @endphp
+
+
+                                    @if($value->affectation_igv_type_id == '20' || $value->affectation_igv_type_id == '21')
+                                         $total_exonerado += $value->total_value;
+                                    @endif
+                                     @if($value->affectation_igv_type_id == '30' || $value->affectation_igv_type_id == '31' || $value->affectation_igv_type_id == '32' || $value->affectation_igv_type_id == '33'
+                                     || $value->affectation_igv_type_id == '34' || $value->affectation_igv_type_id == '35' || $value->affectation_igv_type_id == '36' || $value->affectation_igv_type_id == '37')
+                                         $total_inafecto += $value->total_value;
+                                    @endif
+
+                                    <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$total_exonerado}} </td>
+                                    <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$total_inafecto}}</td>
+                                    <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                    <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                    <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$value->total}}</td>
                                 </tr>
                             @php
                                 $acum_total_taxed += $value->total_taxed;
                                 $acum_total_igv += $value->total_igv;
                                 $acum_total += $value->total;
+                                $total_exonerado=0;
+                                $total_inafecto=0;
                             @endphp
                             @endforeach
                             <tr>

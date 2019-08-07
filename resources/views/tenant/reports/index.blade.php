@@ -45,6 +45,11 @@
                                 $acum_total_taxed=0;
                                 $acum_total_igv=0;
                                 $acum_total=0;
+                                $total_exonerado=0;
+                                $total_inafecto=0;
+
+                            
+
                             @endphp
                             <table width="100%" class="table table-striped table-responsive-xl table-bordered table-hover">
                                 <thead class="">
@@ -57,6 +62,8 @@
                                         <th class="">Cliente</th>
                                         <th class="">RUC</th>
                                         <th class="">Estado</th>
+                                        <th class="">Total Exonerado</th>
+                                        <th class="">Total Inafecto</th>
                                         <th class="">Total Gravado</th>
                                         <th class="">Total IGV</th>
                                         <th class="">Total</th>
@@ -73,14 +80,34 @@
                                         <td>{{$value->person->name}}</td>
                                         <td>{{$value->person->number}}</td>
                                         <td>{{$value->state_type->description}}</td>
-                                        <td>{{$value->total_taxed}}</td>
-                                        <td>{{$value->total_igv}}</td>
-                                        <td>{{$value->total}}</td>
+
+                                        @php
+                                         $signal = $value->document_type->short;
+                                        @endphp
+
+
+                                        @if($value->affectation_igv_type_id == '20' || $value->affectation_igv_type_id == '21')
+                                             $total_exonerado += $value->total_value;
+                                        @endif
+
+                                         @if($value->affectation_igv_type_id == '30' || $value->affectation_igv_type_id == '31' || $value->affectation_igv_type_id == '32' || $value->affectation_igv_type_id == '33'
+                                         || $value->affectation_igv_type_id == '34' || $value->affectation_igv_type_id == '35' || $value->affectation_igv_type_id == '36' || $value->affectation_igv_type_id == '37')
+                                             $total_inafecto += $value->total_value;
+                                        @endif
+                                        
+                                        <td>{{$signal == 'NC' ? "-" : ""  }}{{$total_exonerado}} </td>
+                                        <td>{{$signal == 'NC' ? "-" : ""  }}{{$total_inafecto}}</td>
+                                        <td>{{$signal == 'NC' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                        <td>{{$signal == 'NC' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                        <td>{{$signal == 'NC' ? "-" : ""  }}{{$value->total}}</td>
                                     </tr>
                                     @php
                                         $acum_total_taxed += $value->total_taxed;
                                         $acum_total_igv += $value->total_igv;
                                         $acum_total += $value->total;
+
+                                        $total_exonerado=0;
+                                        $total_inafecto=0;
                                     @endphp
                                     @endforeach
                                     <tr>
