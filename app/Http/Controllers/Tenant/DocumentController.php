@@ -61,6 +61,7 @@ class DocumentController extends Controller
 
     public function columns()
     {
+        //return 'sd';
         return [
             'number' => 'Número',
             'date_of_issue' => 'Fecha de emisión'
@@ -69,6 +70,7 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
+        //return 'asd';
 //        $series = Series::select('number')->where('contingency', false)->get();
         $series = Series::select('number')->get();
 

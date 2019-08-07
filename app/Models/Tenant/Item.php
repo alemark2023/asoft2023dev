@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
-
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
@@ -12,6 +12,9 @@ class Item extends ModelTenant
 {
     protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types'];
     protected $fillable = [
+        'warehouse_id',
+        'name',
+        'second_name',
         'description',
         'item_type_id',
         'internal_id',
@@ -42,6 +45,15 @@ class Item extends ModelTenant
 
         // 'warehouse_id'
     ];
+
+     protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('status', 1);
+        });
+    }
 
     public function getAttributesAttribute($value)
     {

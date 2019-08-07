@@ -42,7 +42,9 @@ class CardBrandController extends Controller
     public function destroy($id)
     {
         $card_brand = CardBrand::findOrFail($id);
-        $card_brand->delete();
+        //$card_brand->delete();
+        $card_brand->active = 0;
+        $card_brand->save();
 
         return [
             'success' => true,

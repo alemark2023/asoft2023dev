@@ -40,6 +40,7 @@ class ReportPurchaseController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function search(Request $request) {
+       // return 'asd';
         $documentTypes = DocumentType::all();
         $td = $this->getTypeDoc($request->document_type);
         $d = null;

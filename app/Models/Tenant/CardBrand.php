@@ -2,6 +2,9 @@
 
 namespace App\Models\Tenant;
 
+use Illuminate\Database\Eloquent\Builder;
+
+
 class CardBrand extends ModelTenant
 {
     public $incrementing = false;
@@ -12,4 +15,13 @@ class CardBrand extends ModelTenant
         'id',
 
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('active', 1);
+        });
+    }
 }

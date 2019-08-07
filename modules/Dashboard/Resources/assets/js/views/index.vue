@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="typeUser == 'admin'">
         <header class="page-header" style="display: flex; justify-content: space-between; align-items: center">
             <div>
                 <h2>Dashboard</h2>
@@ -389,6 +389,7 @@
     import SaleNotePayments from '../../../../../../resources/js/views/tenant/sale_notes/partials/payments.vue'
 
     export default {
+        props: ['typeUser'],
         components: {DocumentPayments, SaleNotePayments},
         data() {
             return {

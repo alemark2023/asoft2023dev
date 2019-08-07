@@ -79,6 +79,7 @@ class DocumentCollection extends ResourceCollection
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'document_type_description' => $row->document_type->description,
+                'document_type_id' => $row->document_type->id,
                 'has_xml' => $has_xml,
                 'has_pdf' => $has_pdf,
                 'has_cdr' => $has_cdr,

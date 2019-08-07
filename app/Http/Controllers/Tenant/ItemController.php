@@ -41,7 +41,6 @@ class ItemController extends Controller
         $records = Item::whereTypeUser()
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->orderBy('description');
-
         
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -58,7 +57,7 @@ class ItemController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
-        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->get();
         $accounts = Account::all();
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse', 'accounts');
@@ -72,7 +71,7 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
-        
+        //return 'no';
         $id = $request->input('id');
         $item = Item::firstOrNew(['id' => $id]);
         $item->item_type_id = '01';
@@ -122,9 +121,13 @@ class ItemController extends Controller
     
     public function destroy($id)
     {
+        //return 'sd';
         $item = Item::findOrFail($id);
         $this->deleteRecordInitialKardex($item);
-        $item->delete();
+        $item->status = 0;
+        $item->save();
+
+       // $item->delete();
 
         return [
             'success' => true,

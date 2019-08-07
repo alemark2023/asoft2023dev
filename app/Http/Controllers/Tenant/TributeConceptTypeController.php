@@ -43,7 +43,9 @@ class TributeConceptTypeController extends Controller
     public function destroy($id)
     {
         $record = AttributeType::findOrFail($id);
-        $record->delete();
+        //$record->delete();
+        $record->active = 0;
+        $record->save();
 
         return [
             'success' => true,

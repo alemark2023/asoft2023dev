@@ -172,7 +172,7 @@
             </form>
         </div>
 
-        <document-form-item :showDialog.sync="showDialogAddItem"
+        <document-form-item :user-type="user.type" :showDialog.sync="showDialogAddItem"
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
                             :exchange-rate-sale="form.exchange_rate_sale"
@@ -193,7 +193,7 @@
     export default {
         components: {DocumentFormItem, DocumentOptions},
         mixins: [functions, exchangeRate],
-        props: ['document'],
+        props: ['document', 'user'],
         data() {
             return {
                 showDialogAddItem: false,

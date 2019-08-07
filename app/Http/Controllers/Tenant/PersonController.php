@@ -33,6 +33,7 @@ class PersonController extends Controller
 
     public function records($type, Request $request)
     {
+      //  return 'sd';
         $records = Person::where($request->column, 'like', "%{$request->value}%")
                             ->where('type', $type)
                             ->orderBy('name');
@@ -87,6 +88,8 @@ class PersonController extends Controller
     {
         $person = Person::findOrFail($id);
         $person->delete();
+        $person->status = 0;
+        $person->save();
 
         return [
             'success' => true,
