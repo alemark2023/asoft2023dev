@@ -51,6 +51,11 @@ class DocumentController extends Controller
     {
         $is_client = config('tenant.is_client');
 
+        $records = Document::where('number',2)->first();
+
+        // dd($records->affected_documents[0]->document);
+
+
         return view('tenant.documents.index', compact('is_client'));
     }
 

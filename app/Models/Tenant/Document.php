@@ -293,4 +293,11 @@ class Document extends ModelTenant
         $user = auth()->user();         
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
     }
+
+    public function affected_documents()
+    {
+        return $this->hasMany(Note::class, 'affected_document_id');
+    }
+
+    
 }
