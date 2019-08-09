@@ -99,21 +99,60 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     /* Discounts */
     let discount_base = 0
     let discount_no_base = 0
-    row.discounts.forEach((discount, index) => {
-        discount.percentage = parseFloat(discount.percentage)
-        discount.factor = discount.percentage / 100
-        discount.base = _.round(total_value_partial, 2)
-        discount.amount = _.round(discount.base * discount.factor, 2)
-        if (discount.discount_type.base) {
-            discount_base += discount.amount
-        } else {
-            discount_no_base += discount.amount
+    // row.discounts.forEach((discount, index) => {
+    //     discount.percentage = parseFloat(discount.percentage)
+    //     discount.factor = discount.percentage / 100
+    //     discount.base = _.round(total_value_partial, 2)
+    //     discount.amount = _.round(discount.base * discount.factor, 2)
+    //     if (discount.discount_type.base) {
+    //         discount_base += discount.amount
+    //     } else {
+    //         discount_no_base += discount.amount
+    //     }
+    //     row.discounts.splice(index, discount)
+    // })
+
+    row.discounts.forEach((discount, index) => { 
+
+        if(discount.is_amount){
+
+            discount.base = _.round(total_value_partial, 2)            
+            //amount and percentage are equals in input
+            discount.amount = _.round(discount.percentage, 2)
+            
+            discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
+
+            discount.factor = _.round(discount.percentage / 100, 2)
+
+            if (discount.discount_type.base) {
+                discount_base += discount.amount
+            } else {
+                discount_no_base += discount.amount
+            }
+
+        }else{
+
+            discount.percentage = parseFloat(discount.percentage)
+            discount.factor = discount.percentage / 100
+            discount.base = _.round(total_value_partial, 2)
+            discount.amount = _.round(discount.base * discount.factor, 2)
+            if (discount.discount_type.base) {
+                discount_base += discount.amount
+            } else {
+                discount_no_base += discount.amount
+            }
+
         }
+        
         row.discounts.splice(index, discount)
     })
+
     // console.log('total base discount:'+discount_base)
     // console.log('total no base discount:'+discount_no_base)
 
+
+
+    
     /* Charges */
     let charge_base = 0
     let charge_no_base = 0

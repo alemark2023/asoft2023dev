@@ -98,9 +98,11 @@
                     <cbc:CityName>{{ $establishment->province->description }}</cbc:CityName>
                     <cbc:CountrySubentity>{{ $establishment->department->description }}</cbc:CountrySubentity>
                     <cbc:District>{{ $establishment->district->description }}</cbc:District>
+                    @if($establishment->address && $establishment->address !== '-')
                     <cac:AddressLine>
                         <cbc:Line><![CDATA[{{ $establishment->address }}]]></cbc:Line>
                     </cac:AddressLine>
+                    @endif
                     <cac:Country>
                         <cbc:IdentificationCode>{{ $establishment->country_id }}</cbc:IdentificationCode>
                     </cac:Country>
@@ -125,7 +127,7 @@
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName><![CDATA[{{ $customer->name }}]]></cbc:RegistrationName>
-                @if($customer->address)
+                @if($customer->address && $customer->address !== '-')
                 <cac:RegistrationAddress>
                     @if($customer->district_id)
                     <cbc:ID>{{ $customer->district_id }}</cbc:ID>
@@ -269,7 +271,7 @@
         @if($document->total_free > 0)
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_free }}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv }}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cac:TaxScheme>
                     <cbc:ID>9996</cbc:ID>

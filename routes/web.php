@@ -167,7 +167,9 @@ if ($hostname) {
             Route::get('documents/check_server/{document}', 'Tenant\DocumentController@checkServer');
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');
 
+            Route::post('documents/import', 'Tenant\DocumentController@import');
 
+            
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index');
@@ -361,9 +363,11 @@ if ($hostname) {
             Route::get('sale-notes/item/tables', 'Tenant\SaleNoteController@item_tables');
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
-
+            Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+            
          //   Route::get('sale-notes/recreate_pdf/{sale_note}', 'Tenant\SaleNoteController@recreatePdf');
-            Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
+            // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
+            Route::get('sale-notes/print-a5/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

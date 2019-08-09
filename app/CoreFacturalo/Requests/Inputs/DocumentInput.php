@@ -22,11 +22,13 @@ class DocumentInput
 
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
-        $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
+        // $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
 
-        Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Document::class);
+        if($number !== '#') {
+            Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Document::class);
+        }
 
-        $filename = Functions::filename($company, $document_type_id, $series, $number);
+        // $filename = Functions::filename($company, $document_type_id, $series, $number);
         $establishment = EstablishmentInput::set($inputs['establishment_id']);
         $customer = PersonInput::set($inputs['customer_id']);
 
@@ -53,7 +55,7 @@ class DocumentInput
             'soap_type_id' => $soap_type_id,
             'state_type_id' => '01',
             'ubl_version' => '2.1',
-            'filename' => $filename,
+            'filename' => '',//$filename,
             'document_type_id' => $document_type_id,
             'series' => $series,
             'number' => $number,

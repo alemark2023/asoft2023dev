@@ -119,6 +119,7 @@
                                                         <el-input v-model="row.description"></el-input>
                                                     </td>
                                                     <td>
+                                                        <el-checkbox v-model="row.is_amount">Ingresar monto fijo</el-checkbox><br>
                                                         <el-input v-model="row.percentage"></el-input>
                                                     </td>
                                                     <td>
@@ -437,7 +438,8 @@
                     percentage: 0,
                     factor: 0,
                     amount: 0,
-                    base: 0
+                    base: 0,
+                    is_amount: false
                 })
             },
             clickRemoveDiscount(index) {

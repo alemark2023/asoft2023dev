@@ -25,6 +25,7 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
@@ -37,6 +38,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Nexmo\Account\Price;
 use Illuminate\Support\Facades\Cache;
+use App\Imports\DocumentsImport;
+use Maatwebsite\Excel\Excel;
 
 class DocumentController extends Controller
 {
@@ -50,13 +53,9 @@ class DocumentController extends Controller
     public function index()
     {
         $is_client = config('tenant.is_client');
+        $import_documents = config('tenant.import_documents');
 
-        $records = Document::where('number',2)->first();
-
-        // dd($records->affected_documents[0]->document);
-
-
-        return view('tenant.documents.index', compact('is_client'));
+        return view('tenant.documents.index', compact('is_client','import_documents'));
     }
 
     public function columns()
@@ -87,7 +86,8 @@ class DocumentController extends Controller
 
         //tru de boletas en env esta en true filtra a los con dni   , false a todos
         $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);     
-         
+//        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
+
         $customers = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
@@ -142,6 +142,8 @@ class DocumentController extends Controller
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get();
         $user = \auth()->user();
+        $payment_method_types = PaymentMethodType::all();
+        $enabled_discount_global = config('tenant.enabled_discount_global');
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
 //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
@@ -156,7 +158,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user');
+                        'document_types_guide', 'user','payment_method_types','enabled_discount_global');
 
     }
 
@@ -465,6 +467,31 @@ class DocumentController extends Controller
                 'message' => 'El estado del documento fue actualizado.',
             ];
         }
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new DocumentsImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
     }
 
     public function messageLockedEmission(){

@@ -258,7 +258,7 @@ class Facturalo
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
-            if(config('tenant.enabled_template_ticket_80')) $width = 80;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
             
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
@@ -544,22 +544,46 @@ class Facturalo
 
     private function setPathCertificate()
     {
-        if($this->isDemo) {
-            $this->pathCertificate = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.
-                'WS'.DIRECTORY_SEPARATOR.
-                'Signed'.DIRECTORY_SEPARATOR.
-                'Resources'.DIRECTORY_SEPARATOR.
-                'certificate.pem');
-        } else {
+        if($this->isOse) {
             $this->pathCertificate = storage_path('app'.DIRECTORY_SEPARATOR.
                 'certificates'.DIRECTORY_SEPARATOR.$this->company->certificate);
+        } else {
+            if($this->isDemo) {
+                $this->pathCertificate = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.
+                    'WS'.DIRECTORY_SEPARATOR.
+                    'Signed'.DIRECTORY_SEPARATOR.
+                    'Resources'.DIRECTORY_SEPARATOR.
+                    'certificate.pem');
+            } else {
+                $this->pathCertificate = storage_path('app'.DIRECTORY_SEPARATOR.
+                    'certificates'.DIRECTORY_SEPARATOR.$this->company->certificate);
+            }
         }
+
+//        if($this->isDemo) {
+//            $this->pathCertificate = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.
+//                'WS'.DIRECTORY_SEPARATOR.
+//                'Signed'.DIRECTORY_SEPARATOR.
+//                'Resources'.DIRECTORY_SEPARATOR.
+//                'certificate.pem');
+//        } else {
+//            $this->pathCertificate = storage_path('app'.DIRECTORY_SEPARATOR.
+//                'certificates'.DIRECTORY_SEPARATOR.$this->company->certificate);
+//        }
     }
 
     private function setSoapCredentials()
     {
-        $this->soapUsername = ($this->isDemo)?$this->company->number.'MODDATOS':$this->company->soap_username;
-        $this->soapPassword = ($this->isDemo)?'moddatos':$this->company->soap_password;
+        if($this->isDemo) {
+            $this->soapUsername = $this->company->number.'MODDATOS';
+            $this->soapPassword = 'moddatos';
+        } else {
+            $this->soapUsername = $this->company->soap_username;
+            $this->soapPassword = $this->company->soap_password;
+        }
+
+//        $this->soapUsername = ($this->isDemo)?$this->company->number.'MODDATOS':$this->company->soap_username;
+//        $this->soapPassword = ($this->isDemo)?'moddatos':$this->company->soap_password;
 
         if($this->isOse) {
             $this->endpoint = $this->company->soap_url;
