@@ -133,26 +133,26 @@ class PurchaseController extends Controller
 
     public function update(PurchaseRequest $request)
     {
-       
+      
 
-        $data = self::convert($request);
-        $purchase = DB::connection('tenant')->transaction(function () use ($data) {
-            //$doc = Purchase::create($data);
-            $doc = Purchase::firstOrNew(['id' => $data['id']]);
-            $doc->fill($data);
+     
+        $purchase = DB::connection('tenant')->transaction(function () use ($request) {
+         
+            $doc = Purchase::firstOrNew(['id' => $request['id']]);
+           // return json_encode($doc);
+            $doc->fill($request->all());
+            $doc->save();
             $doc->items()->delete();
 
-            foreach ($data['items'] as $row)
+            foreach ($request['items'] as $row)
             {
                 $doc->items()->create($row);
             }
 
-           // //$payment = $data['purchase_payments'];
-
-            $doc->purchase_payments()->where('id', $data['purchase_payments_id'])->update([
-                'date_of_payment' => $data['date_of_issue'],
-                'payment_method_type_id' => $data['payment_method_type_id'],
-                'payment' => $data['total'],
+            $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
+                'date_of_payment' => $request['date_of_issue'],
+                'payment_method_type_id' => $request['payment_method_type_id'],
+                'payment' => $request['total'],
             ]);
 
             return $doc;

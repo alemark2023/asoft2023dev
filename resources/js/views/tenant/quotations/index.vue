@@ -61,9 +61,10 @@
                         <td class="text-right"> 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" 
                                     @click.prevent="clickOptions(row.id)">Generar comprobante</button>
-                            <a :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
-
+                            
+                            <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            <button @click="duplicate(row.id)" v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                                     
                         </td>
 
@@ -123,6 +124,22 @@
                 this.anular(`/${this.resource}/anular/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            duplicate(id)
+            {
+                this.$http.post(`${this.resource}/duplicate`, {id})
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success('Se guardaron los cambios correctamente.')
+
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+                  
+                })
+                this.$eventHub.$emit('reloadData')
             }
         }
     }

@@ -347,6 +347,7 @@ if ($hostname) {
             Route::get('quotations/download/{external_id}/{format?}', 'Tenant\QuotationController@download');
             Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
             Route::post('quotations/email', 'Tenant\QuotationController@email');
+            Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
 
             
             //sale-notes

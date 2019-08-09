@@ -165,14 +165,14 @@ class QuotationController extends Controller
     {
         
          DB::connection('tenant')->transaction(function () use ($request) {
-            $data = $this->mergeData($request);
+           // $data = $this->mergeData($request);
            // return $request['id'];
 
            $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
-           $this->quotation->fill($data);
+           $this->quotation->fill($request->all());
            $this->quotation->items()->delete();
             
-            foreach ($data['items'] as $row) {
+            foreach ($request['items'] as $row) {
                 
                 $this->quotation->items()->create($row);
             }
@@ -186,6 +186,36 @@ class QuotationController extends Controller
                 'id' => $this->quotation->id,
             ],
         ];
+
+    }
+
+
+    public function duplicate(Request $request)
+    {   
+       // return $request->id;
+       $obj = Quotation::find($request->id);
+       $this->quotation = $obj->replicate();
+       $this->quotation->external_id = Str::uuid()->toString();
+       $this->quotation->save();
+      
+       foreach($obj->items as $row)
+       {
+         $new = $row->replicate();
+         $new->quotation_id = $this->quotation->id;
+         $new->save();
+       }
+
+        $this->setFilename();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->quotation->id,
+            ],
+        ];
+
+       
+
 
     }
 
