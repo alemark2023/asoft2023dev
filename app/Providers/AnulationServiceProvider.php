@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Tenant\Item; 
 use App\Models\Tenant\Document;  
+use App\Models\Tenant\Purchase;  
+
 use App\Models\Tenant\Kardex; 
 use Illuminate\Support\ServiceProvider;
 use App\Traits\KardexTrait;
@@ -19,6 +21,7 @@ class AnulationServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->anulation();
+        //$this->anulation_purchase();
         
     }
 
@@ -45,6 +48,27 @@ class AnulationServiceProvider extends ServiceProvider
 
                 }
             }         
+
+            
+        });
+        
+    }
+    private function anulation_purchase(){
+
+        Purchase::updated(function ($document) { 
+
+                if($document['state_type_id'] == 11){
+
+                    foreach ($document['items'] as $detail) {     
+    
+                        $this->updateStock($detail['item_id'], $detail['quantity'], true); //pongo true porque la compra se anula, entonces el stock disminuye                 
+ 
+                       // $this->saveKardex('sale', $detail['item_id'], $document['id'], -$detail['quantity'],'document');
+                         
+                    }
+
+                }
+                  
 
             
         });

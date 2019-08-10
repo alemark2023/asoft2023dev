@@ -28,6 +28,7 @@
                         <!-- <th class="text-right">T.Exonerado</th> -->
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
+                        <th>Percepcion</th>
                         <th class="text-right">Total</th>
                         <!-- <th class="text-center">Descargas</th> -->
                         <th class="text-right">Acciones</th>
@@ -50,7 +51,8 @@
                         <td class="text-right">{{ row.total_exonerated }}</td> -->
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
-                        <td class="text-right">{{ row.total }}</td>
+                        <td class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td>
+                        <td class="text-right">{{ row.total   }}</td>
                         <td>
                             
                             <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>

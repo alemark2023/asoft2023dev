@@ -50,6 +50,9 @@
                         $acum_total=0;
                         $total_exonerado=0;
                         $total_inafecto=0;
+                        $serie_affec = '';
+                        $acum_total_exonerado=0;
+                        $acum_total_inafecto=0;
                         
                     @endphp
                     <table class="">
@@ -77,13 +80,24 @@
                                 <td class="celda">{{$value->document_type->id}}</td>
                                 <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
-                                <td class="celda">{{ $value->document_type->id == '07' ? $value->series.' - '.$value->number : '' }} </td>
+                                  @if($value->document_type_id == "07" && $value->note)
+
+                                          @php
+                                            $serie = $value->note->affected_document->series;
+                                            $number =  $value->note->affected_document->number;
+                                            $serie_affec = $serie.' - '.$number;
+
+                                          @endphp
+                                        
+
+                                    @endif
+                                <td class="celda">{{$serie_affec }} </td>
                                 <td class="celda">{{$value->customer->name}}</td>
                                 <td class="celda">{{$value->customer->number}}</td>
                                 <td class="celda">{{$value->state_type->description}}</td>
                                
                                 @php
-                                  $signal = $value->document_type->short;
+                                  $signal = $value->document_type_id;
                                 @endphp
 
                                 @if($value->affectation_igv_type_id == '20' || $value->affectation_igv_type_id == '21')
@@ -93,22 +107,34 @@
                                  || $value->affectation_igv_type_id == '34' || $value->affectation_igv_type_id == '35' || $value->affectation_igv_type_id == '36' || $value->affectation_igv_type_id == '37')
                                      $total_inafecto += $value->total_value;
                                 @endif
-                                <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$total_inafecto}}</td>
-                                <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$value->total_taxed}}</td>
-                                <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$value->total_igv}}</td>
-                                <td class="celda">{{$signal == 'NC' ? "-" : ""  }}{{$value->total}}</td>
+                                <td class="celda">{{$total_inafecto}}</td>
+                                <td class="celda">{{$value->total_taxed}}</td>
+                                <td class="celda">{{$value->total_igv}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                             </tr>
                             @php
                                 $acum_total_taxed += $value->total_taxed;
                                 $acum_total_igv += $value->total_igv;
-                                $acum_total += $value->total;
+                              
+                                if($signal == '07')
+                                {
+                                   $acum_total -= $value->total;
+                                }
+                                else{
+                                    $acum_total += $value->total;
+                                }
                                 $total_exonerado=0;
+                                 $acum_total_exonerado += $total_exonerado;
                                 $total_inafecto=0;
+                                $acum_total_inafecto +=  $total_inafecto;
+                                $serie_affec =  '';
                             @endphp
                             @endforeach
                             <tr>
                                 <td colspan="6"></td>
                                 <td >Totales</td>
+                                <td>{{$acum_total_exonerado}}</td>
+                                <td>{{$acum_total_inafecto}}</td>
                                 <td>{{$acum_total_taxed}}</td>
                                 <td>{{$acum_total_igv}}</td>
                                 <td>{{$acum_total}}</td>
