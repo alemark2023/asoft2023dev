@@ -80,7 +80,9 @@
                         </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
+
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
+                        
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>

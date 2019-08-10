@@ -51,6 +51,9 @@
 
                                 $acum_total_exonerado=0;
                                 $acum_total_inafecto=0;
+                             
+                                $acum_total_free=0;
+
 
 
                             
@@ -69,7 +72,9 @@
                                         <th class="">Estado</th>
                                         <th class="">Total Exonerado</th>
                                         <th class="">Total Inafecto</th>
+                                        <th class="">Total Gratutio</th>
                                         <th class="">Total Gravado</th>
+                                      
                                         <th class="">Total IGV</th>
                                         <th class="">Total</th>
                                     </tr>
@@ -116,7 +121,9 @@
                                         
                                         <td>{{$total_exonerado}} </td>
                                         <td>{{$total_inafecto}}</td>
+                                        <td>{{$value->total_free}}</td>
                                         <td>{{$value->total_taxed}}</td>
+                                      
                                         <td>{{$value->total_igv}}</td>
                                         <td>{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                                     </tr>
@@ -133,10 +140,14 @@
                                             $acum_total += $value->total;
                                         }
 
-                                        $total_exonerado=0;
                                         $acum_total_exonerado += $total_exonerado;
-                                        $total_inafecto=0;
+                                        $total_exonerado=0;
+                                        
                                         $acum_total_inafecto +=  $total_inafecto;
+                                        $total_inafecto=0;
+                                       
+                                        $acum_total_free += $value->total_free;
+
                                         $serie_affec =  '';
                                     @endphp
                                     @endforeach
@@ -146,7 +157,8 @@
                                         <td>Totales</td>
                                         <td>{{$acum_total_exonerado}}</td>
                                         <td>{{$acum_total_inafecto}}</td>
-                                        <td>{{$acum_total_taxed}}</td>
+                                         <td>{{$acum_total_free}}</td>
+                                         <td>{{$acum_total_taxed}}</td>
                                         <td>{{$acum_total_igv}}</td>
                                         <td>{{$acum_total}}</td>
                                     </tr>

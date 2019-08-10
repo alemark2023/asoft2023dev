@@ -88,6 +88,8 @@
 
                         $acum_total_exonerado=0;
                         $acum_total_inafecto=0;
+
+                        $acum_total_free=0;
                        
                     @endphp
                     <table class="">
@@ -103,7 +105,9 @@
                                 <th>Estado</th>
                                 <th>Total Exonerado</th>
                                 <th>Total Inafecto</th>
+                                 <th>Total Gratutio</th>
                                 <th>Total Gravado</th>
+                               
                                 <th>Total IGV</th>
                                 <th>Total</th>
                             </tr>
@@ -148,6 +152,8 @@
 
                                     <td class="celda">{{$total_exonerado}} </td>
                                     <td class="celda">{{$total_inafecto}}</td>
+                                    <td class="celda">{{$value->total_free}}</td>
+
                                     <td class="celda">{{$value->total_taxed}}</td>
                                     <td class="celda">{{$value->total_igv}}</td>
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
@@ -163,11 +169,13 @@
                                 else{
                                     $acum_total += $value->total;
                                 }
-                              
-                                $total_exonerado=0;
                                 $acum_total_exonerado += $total_exonerado;
-                                $total_inafecto=0;
+                                $total_exonerado=0;
                                 $acum_total_inafecto +=  $total_inafecto;
+                                $total_inafecto=0;
+
+                                $acum_total_free += $value->total_free;
+                             
                                 $serie_affec =  '';
                             @endphp
                             @endforeach
@@ -176,6 +184,7 @@
                                 <td class="celda">Totales</td>
                                 <td class="celda">{{$acum_total_exonerado}}</td>
                                 <td class="celda">{{$acum_total_inafecto}}</td>
+                                <td class="celda">{{$acum_total_free}}</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
