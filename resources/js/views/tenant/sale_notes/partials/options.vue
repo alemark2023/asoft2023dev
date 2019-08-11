@@ -6,15 +6,21 @@
                 :show-close="false"> 
 
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold">
+                <div class="col-lg-4 col-md-6 col-sm-6 text-center font-weight-bold">
                     <p>Descargar PDF</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload()">
                         <i class="fa fa-file-alt"></i>
                     </button>
                 </div> 
-               <div class="col-lg-6 col-md-4 col-sm-4 text-center font-weight-bold">
+               <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir A5</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
+                        <i class="fa fa-file-alt"></i>
+                    </button>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+                    <p>Imprimir A4</p>
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a4')">
                         <i class="fa fa-file-alt"></i>
                     </button>
                 </div>
@@ -85,8 +91,8 @@
             clickDownload(){
                 window.open(`/downloads/saleNote/sale_note/${this.form.external_id}`, '_blank');
             },
-            clickToPrint(){
-                window.open(`/${this.resource}/print/${this.form.id}`, '_blank');
+            clickToPrint(format){
+                window.open(`/${this.resource}/print/${this.form.id}/${format}`, '_blank');
             },
         }
     }

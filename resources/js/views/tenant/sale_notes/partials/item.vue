@@ -25,14 +25,14 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price">

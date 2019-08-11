@@ -175,10 +175,10 @@ class PurchaseController extends Controller
         $obj->state_type_id = 11;
         $obj->save();
 
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();  
-        $item_warehouse = ItemWarehouse::where([['item_id', $item_id],['warehouse_id',$establishment->id]])->first();
-        $item_warehouse->stock = ($is_sale) ? $item_warehouse->stock - $quantity : $item_warehouse->stock + $quantity;
-        $item_warehouse->save();
+       // $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();  
+        //$item_warehouse = ItemWarehouse::where([['item_id', $item_id],['warehouse_id',$establishment->id]])->first();
+        //$item_warehouse->stock = ($is_sale) ? $item_warehouse->stock - $quantity : $item_warehouse->stock + $quantity;
+        //$item_warehouse->save();
 
         return [
             'success' => true,
