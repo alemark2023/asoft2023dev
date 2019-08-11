@@ -31,7 +31,7 @@
                         <th class="text-center">PDF</th>
                         <th class="text-right">Acciones</th>
                     <tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{ danger : row.state_type_id == '11' }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
@@ -59,12 +59,12 @@
                         </td>
                         
                         <td class="text-right"> 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" 
+                            <button v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info" 
                                     @click.prevent="clickOptions(row.id)">Generar comprobante</button>
                             
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
-                            <button @click="duplicate(row.id)" v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
+                            <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                                     
                         </td>
 

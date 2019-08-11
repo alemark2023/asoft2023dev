@@ -82,8 +82,7 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
-                        $total_exonerado=0;
-                        $total_inafecto=0;
+                     
                         $serie_affec = '';
 
                         $acum_total_exonerado=0;
@@ -142,16 +141,10 @@
                                     @endphp
 
 
-                                    @if($value->affectation_igv_type_id == '20' || $value->affectation_igv_type_id == '21')
-                                         $total_exonerado += $value->total_value;
-                                    @endif
-                                     @if($value->affectation_igv_type_id == '30' || $value->affectation_igv_type_id == '31' || $value->affectation_igv_type_id == '32' || $value->affectation_igv_type_id == '33'
-                                     || $value->affectation_igv_type_id == '34' || $value->affectation_igv_type_id == '35' || $value->affectation_igv_type_id == '36' || $value->affectation_igv_type_id == '37')
-                                         $total_inafecto += $value->total_value;
-                                    @endif
+                                 
 
-                                    <td class="celda">{{$total_exonerado}} </td>
-                                    <td class="celda">{{$total_inafecto}}</td>
+                                    <td class="celda">{{$value->total_exonerated}}</td>
+                                    <td class="celda">{{$value->total_unaffected}}</td>
                                     <td class="celda">{{$value->total_free}}</td>
 
                                     <td class="celda">{{$value->total_taxed}}</td>
@@ -169,10 +162,10 @@
                                 else{
                                     $acum_total += $value->total;
                                 }
-                                $acum_total_exonerado += $total_exonerado;
-                                $total_exonerado=0;
-                                $acum_total_inafecto +=  $total_inafecto;
-                                $total_inafecto=0;
+                                $acum_total_exonerado +=  $value->total_exonerated;
+                             
+                                $acum_total_inafecto +=  $value->total_unaffected;
+                            
 
                                 $acum_total_free += $value->total_free;
                              
