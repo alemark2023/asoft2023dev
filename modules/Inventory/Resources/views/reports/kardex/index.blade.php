@@ -67,10 +67,10 @@
 
                                             @switch($value->inventory_kardexable_type)
                                                 @case($models[0])
-                                                    {{($value->quantity < 0) ? "Venta":"Anulación"}}
+                                                    {{($value->quantity < 0) ? "Venta":"Anulación Venta"}}
                                                     @break
                                                 @case($models[1])
-                                                    {{"Compra"}}                                                    
+                                                    {{($value->quantity < 0) ? "Compra":"Anulación Compra"}}
                                                     @break 
                                                     
                                                 @case($models[2])
