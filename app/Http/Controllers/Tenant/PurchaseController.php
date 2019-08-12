@@ -26,6 +26,9 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\PaymentMethodType;
 use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
+use App\Models\Tenant\InventoryKardex; 
+use App\Models\Tenant\ItemWarehouse; 
+
 
 class PurchaseController extends Controller
 {
@@ -142,6 +145,21 @@ class PurchaseController extends Controller
            // return json_encode($doc);
             $doc->fill($request->all());
             $doc->save();
+
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            //proceso para eliminar los actualizar el stock de proiductos
+            foreach ($doc->items as $item) {
+                $item->purchase->inventory_kardex()->create([ 
+                    'date_of_issue' => date('Y-m-d'),
+                    'item_id' => $item->item_id,
+                    'warehouse_id' => $establishment->id,
+                    'quantity' => -$item->quantity,
+                ]);
+                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
+                $wr->stock =  $wr->stock - $item->quantity;
+                $wr->save();
+            }
+
             $doc->items()->delete();
 
             foreach ($request['items'] as $row)
@@ -175,10 +193,20 @@ class PurchaseController extends Controller
         $obj->state_type_id = 11;
         $obj->save();
 
-       // $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();  
-        //$item_warehouse = ItemWarehouse::where([['item_id', $item_id],['warehouse_id',$establishment->id]])->first();
-        //$item_warehouse->stock = ($is_sale) ? $item_warehouse->stock - $quantity : $item_warehouse->stock + $quantity;
-        //$item_warehouse->save();
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+
+        //proceso para eliminar los actualizar el stock de proiductos
+        foreach ($obj->items as $item) {
+            $item->purchase->inventory_kardex()->create([ 
+                'date_of_issue' => date('Y-m-d'),
+                'item_id' => $item->item_id,
+                'warehouse_id' => $establishment->id,
+                'quantity' => -$item->quantity,
+            ]);
+            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
+            $wr->stock =  $wr->stock - $item->quantity;
+            $wr->save();
+        }
 
         return [
             'success' => true,
