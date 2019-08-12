@@ -70,7 +70,7 @@
                                                     {{($value->quantity < 0) ? "Venta":"Anulación Venta"}}
                                                     @break
                                                 @case($models[1])
-                                                    {{($value->quantity < 0) ? "Compra":"Anulación Compra"}}
+                                                    {{($value->quantity < 0) ? "Anulación Compra":"Compra"}}
                                                     @break 
                                                     
                                                 @case($models[2])
