@@ -8,11 +8,9 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Exports\PurchaseExport;
 use Illuminate\Http\Request;
 use App\Traits\ReportTrait;
-use App\Models\Tenant\{
-    Establishment,
-    Purchase,
-    Company,
-};
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Purchase;
+use App\Models\Tenant\Company;
 use Carbon\Carbon;
 
 class ReportPurchaseController extends Controller

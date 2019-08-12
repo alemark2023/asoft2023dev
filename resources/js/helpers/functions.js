@@ -92,7 +92,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         unit_value = row.unit_price / (1 + percentage_igv / 100)
     }
 
-    row.unit_value = _.round(unit_value, 4)
+    // row.unit_value = _.round(unit_value, 4)
+
+    row.unit_value = unit_value
 
     let total_value_partial = unit_value * row.quantity
 

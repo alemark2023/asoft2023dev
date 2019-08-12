@@ -116,7 +116,7 @@ class DocumentInput
                         'item_code' => trim($item->item_code),
                         'item_code_gs1' => $item->item_code_gs1,
                         'unit_type_id' => (key_exists('item', $row))?$row['item']['unit_type_id']:$item->unit_type_id,
-                        'presentation' => (key_exists('item', $row))?$row['item']['presentation']:[]
+                        'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation']:[]):[]
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],

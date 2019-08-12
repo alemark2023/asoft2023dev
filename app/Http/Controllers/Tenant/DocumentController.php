@@ -85,7 +85,7 @@ class DocumentController extends Controller
     {
 
         //tru de boletas en env esta en true filtra a los con dni   , false a todos
-        $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);     
+        $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id, $request->operation_type_id);
 //        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
 
         $customers = Person::where('number','like', "%{$request->input}%")
@@ -440,17 +440,21 @@ class DocumentController extends Controller
         return compact('customers');
     }
 
-    public function getIdentityDocumentTypeId($document_type_id){
+    public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
 
-        if($document_type_id == '01'){
-            $identity_document_type_id = [6];
-        }else{
-            if(config('tenant.document_type_03_filter')){
-                $identity_document_type_id = [1];
+        if($operation_type_id === '0101') {
+            if($document_type_id == '01'){
+                $identity_document_type_id = [6];
             }else{
-                $identity_document_type_id = [1,4,6,7,0];
+                if(config('tenant.document_type_03_filter')){
+                    $identity_document_type_id = [1];
+                }else{
+                    $identity_document_type_id = [1,4,6,7,0];
+                }
             }
-        } 
+        } else {
+            $identity_document_type_id = [1,4,6,7,0];
+        }
 
         return $identity_document_type_id;
     }

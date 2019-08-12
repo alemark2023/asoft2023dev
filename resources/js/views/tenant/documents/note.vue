@@ -172,9 +172,10 @@
             </form>
         </div>
 
-        <document-form-item :user-type="user.type" :showDialog.sync="showDialogAddItem"
+        <document-form-item :showDialog.sync="showDialogAddItem"
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
+                            :user="user"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             @add="addRow"></document-form-item>
 
@@ -193,7 +194,7 @@
     export default {
         components: {DocumentFormItem, DocumentOptions},
         mixins: [functions, exchangeRate],
-        props: ['document', 'user'],
+        props: ['document'],
         data() {
             return {
                 showDialogAddItem: false,
@@ -211,6 +212,7 @@
                 documentNewId: null,
                 note_credit_types: [],
                 note_debit_types: [],
+                user: {},
                 operation_types: [],
                 is_contingency: false,
             }
@@ -226,6 +228,7 @@
                     this.note_credit_types = response.data.note_credit_types
                     this.note_debit_types = response.data.note_debit_types
                     this.operation_types = response.data.operation_types
+                    this.user = response.data.user;
 
                     this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null

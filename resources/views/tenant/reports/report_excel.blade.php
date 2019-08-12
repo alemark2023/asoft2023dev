@@ -48,6 +48,9 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
+                        $acum_total_taxed_usd=0;
+                        $acum_total_igv_usd=0;
+                        $acum_total_usd=0;
                     @endphp
                     <table class="">
                         <thead>
@@ -56,10 +59,10 @@
                                 <th>Tipo Doc</th>
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
-                                <th>Documento Modifica</th>
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
+                                <th class="">Moneda</th>
                                 <th>Total Gravado</th>
                                 <th>Total IGV</th>
                                 <th>Total</th>
@@ -72,26 +75,39 @@
                                 <td class="celda">{{$value->document_type->id}}</td>
                                 <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
-                                <td class="celda">{{ $value->document_type->id == '07' ? $value->series.' - '.$value->number : '' }} </td>
                                 <td class="celda">{{$value->customer->name}}</td>
                                 <td class="celda">{{$value->customer->number}}</td>
                                 <td class="celda">{{$value->state_type->description}}</td>
+                                <td class="celda">{{$value->currency_type_id}}</td>
                                 <td class="celda">{{$value->total_taxed}}</td>
                                 <td class="celda">{{$value->total_igv}}</td>
                                 <td class="celda">{{$value->total}}</td>
                             </tr>
                             @php
-                                $acum_total_taxed += $value->total_taxed;
-                                $acum_total_igv += $value->total_igv;
-                                $acum_total += $value->total;
+                                if($value->currency_type_id == 'PEN'){
+                                    $acum_total_taxed += $value->total_taxed;
+                                    $acum_total_igv += $value->total_igv;
+                                    $acum_total += $value->total;
+                                }else if($value->currency_type_id == 'USD'){
+                                    $acum_total_taxed_usd += $value->total_taxed;
+                                    $acum_total_igv_usd += $value->total_igv;
+                                    $acum_total_usd += $value->total;
+                                }
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="6"></td>
-                                <td >Totales</td>
+                                <td colspan="7"></td>
+                                <td >Totales PEN</td>
                                 <td>{{$acum_total_taxed}}</td>
                                 <td>{{$acum_total_igv}}</td>
                                 <td>{{$acum_total}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="7"></td>
+                                <td >Totales USD</td>
+                                <td>{{$acum_total_taxed_usd}}</td>
+                                <td>{{$acum_total_igv_usd}}</td>
+                                <td>{{$acum_total_usd}}</td>
                             </tr>
                         </tbody>
                     </table>
