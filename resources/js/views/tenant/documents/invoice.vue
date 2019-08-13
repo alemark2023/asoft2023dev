@@ -597,6 +597,8 @@
                         this.$message.error(response.data.message);
                     }
                 }).catch(error => {
+
+                    //alert('sdsd')
                     if (error.response.status === 422) {
                         this.errors = error.response.data;
                     }

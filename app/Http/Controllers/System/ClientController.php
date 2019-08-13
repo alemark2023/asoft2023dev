@@ -151,6 +151,7 @@ class ClientController extends Controller
             'send_auto' => true,
             'locked_emission' =>  $request->input('locked_emission'),
             'limit_documents' =>  $plan->limit_documents,
+            'limit_users' =>  $plan->limit_users
         ]);
 
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([
