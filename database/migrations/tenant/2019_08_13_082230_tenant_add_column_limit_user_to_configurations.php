@@ -14,7 +14,7 @@ class TenantAddColumnLimitUserToConfigurations extends Migration
     public function up()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            $table->bigInteger('limit_users')->default(0)->after('limit_documents');
+            $table->bigInteger('limit_users')->default(10)->after('limit_documents');
         });
     }
 
