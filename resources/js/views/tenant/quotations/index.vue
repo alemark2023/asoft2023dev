@@ -31,7 +31,7 @@
                         <th class="text-center">PDF</th>
                         <th class="text-right">Acciones</th>
                     <tr>
-                    <tr slot-scope="{ index, row }" :class="{ danger : row.state_type_id == '11' }">
+                    <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
@@ -84,7 +84,11 @@
         </div>
     </div>
 </template>
-
+<style scoped>
+    .anulate_color{
+        color:red;
+    }
+</style>
 <script>
  
     import QuotationOptions from './partials/options.vue'

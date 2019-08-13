@@ -103,11 +103,11 @@
                                 @endphp
 
                              
-                                <td class="celda">{{$value->total_exonerated}}</td>
-                                <td class="celda">{{$value->total_unaffected}}</td>
-                                <td class="celda">{{$value->total_free}}</td>
-                                <td class="celda">{{$value->total_taxed}}</td>
-                                <td class="celda">{{$value->total_igv}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
                                 <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                             </tr>
                             @php

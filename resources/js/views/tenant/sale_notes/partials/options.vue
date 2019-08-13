@@ -13,7 +13,7 @@
                     </button>
                 </div> 
                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
-                    <p>Imprimir A5</p>
+                    <p>Imprimir Ticket</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
                         <i class="fa fa-file-alt"></i>
                     </button>

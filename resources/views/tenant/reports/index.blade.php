@@ -107,18 +107,14 @@
                                         @php
                                          $signal = $value->document_type_id;
                                         @endphp
-
-
-                                       
-
                                       
                                         
-                                        <td>{{$value->total_exonerated}} </td>
-                                        <td>{{$value->total_unaffected}}</td>
-                                        <td>{{$value->total_free}}</td>
-                                        <td>{{$value->total_taxed}}</td>
+                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}} </td>
+                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
+                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
+                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
                                       
-                                        <td>{{$value->total_igv}}</td>
+                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
                                         <td>{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                                     </tr>
                                     @php
