@@ -73,9 +73,9 @@
                                 <td class="celda">{{$value->supplier->number}}</td>
                                 <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
                                 <td class="celda">{{$value->state_type->description}}</td>
-                                <td class="celda">{{$value->total_taxed}}</td>
-                                <td class="celda">{{$value->total_igv}}</td>
-                                <td class="celda">{{$value->total}}</td>
+                                <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
+                                <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
+                                <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total}}</td>
                             </tr>
                             @endforeach
                         </tbody>

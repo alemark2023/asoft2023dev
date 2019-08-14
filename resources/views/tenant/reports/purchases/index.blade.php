@@ -70,9 +70,9 @@
                                         <td>{{$value->supplier->number}}</td>
                                         <td>{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
                                         <td>{{$value->state_type->description}}</td>
-                                        <td>{{$value->total_taxed}}</td>
-                                        <td>{{$value->total_igv}}</td>
-                                        <td>{{$value->total}}</td>
+                                        <td>{{ $value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
+                                        <td>{{ $value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
+                                        <td>{{ $value->state_type_id == '11' ? 0 : $value->total}}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
