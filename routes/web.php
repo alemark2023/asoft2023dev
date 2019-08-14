@@ -145,6 +145,8 @@ if ($hostname) {
             Route::get('documents/columns', 'Tenant\DocumentController@columns');
             Route::get('documents/records', 'Tenant\DocumentController@records');
             Route::get('documents/create', 'Tenant\DocumentController@create')->name('tenant.documents.create');
+            Route::get('documents/create_tensu', 'Tenant\DocumentController@create_tensu')->name('tenant.documents.create_tensu');
+
             Route::get('documents/tables', 'Tenant\DocumentController@tables');
             Route::get('documents/record/{document}', 'Tenant\DocumentController@record');
             Route::post('documents', 'Tenant\DocumentController@store');
