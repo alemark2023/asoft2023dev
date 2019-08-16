@@ -11,8 +11,7 @@
                 </div>
                 <div class="card-body">
                     <div>
-                        <form action="{{route('tenant.search')}}" class="el-form demo-form-inline el-form--inline" method="POST">
-                            {{csrf_field()}}
+                        <form action="{{route('tenant.search')}}" class="el-form demo-form-inline el-form--inline" method="GET">
                             <tenant-calendar :document_types="{{json_encode($documentTypes)}}" :establishments="{{json_encode($establishments)}}" establishment="{{$establishment ?? null}}" data_d="{{$d ?? ''}}" data_a="{{$a ?? ''}}" td="{{$td ?? null}}"></tenant-calendar>
                         </form>
                     </div>
@@ -110,10 +109,11 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper">
+                            Total {{$reports->total()}}
+                            <label class="pagination-wrapper ml-2">
                                 {{-- {{ $reports->appends(['search' => Session::get('form_document_list')])->render()  }} --}}
-                                {{-- {{$reports->links()}} --}}
-                            </div>
+                                {{$reports->appends($_GET)->render()}} 
+                            </label>
                         </div>
                     </div>
                     @else

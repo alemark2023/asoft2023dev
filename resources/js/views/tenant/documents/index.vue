@@ -164,7 +164,7 @@
     import DocumentsVoided from './partials/voided.vue'
     import DocumentOptions from './partials/options.vue'
     import DocumentPayments from './partials/payments.vue'
-    import DataTable from '../../../components/DataTable.vue'
+    import DataTable from '../../../components/DataTableDocuments.vue'
     import ItemsImport from './import.vue'
 
     export default {

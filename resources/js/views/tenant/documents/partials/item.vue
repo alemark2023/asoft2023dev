@@ -50,6 +50,11 @@
                             <!--<small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>-->
                         <!--</div>-->
                     <!--</div>-->
+                    <div class="col-md-3 center-el-checkbox">
+                        <div class="form-group" :class="{'has-danger': errors.has_igv}">
+                            <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
+                        </div>
+                    </div> 
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
                         <div class="form-group"  :class="{'has-danger': errors.total_item}">
                             <label class="control-label">Total venta producto</label>
@@ -402,7 +407,8 @@
                     charges: [],
                     discounts: [],
                     attributes: [],
-                    has_igv: null
+                    has_igv: null,
+                    has_plastic_bag_taxes:false
                 };
                 
                 this.activePanel = 0;

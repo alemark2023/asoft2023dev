@@ -54,33 +54,31 @@ class ReportPurchaseController extends Controller
             if (is_null($td)) {
                 $reports = Purchase::with([ 'state_type', 'supplier'])
                     ->whereBetween('date_of_issue', [$d, $a])
-                    ->latest()
-                    ->get();
+                    ->latest();
             }
             else {
                 $reports = Purchase::with([ 'state_type', 'supplier'])
                     ->whereBetween('date_of_issue', [$d, $a])
                     ->latest()
-                    ->where('document_type_id', $td)
-                    ->get();
+                    ->where('document_type_id', $td);
             }
         }
         else {
             if (is_null($td)) {
                 $reports = Purchase::with([ 'state_type', 'supplier'])
-                    ->latest()
-                    ->get();
+                    ->latest();
             } else {
                 $reports = Purchase::with([ 'state_type', 'supplier'])
                     ->latest()
-                    ->where('document_type_id', $td)
-                    ->get();
+                    ->where('document_type_id', $td);
             }
         }
 
         if(!is_null($establishment_id)){
             $reports = $reports->where('establishment_id', $establishment_id);
         }
+
+        $reports = $reports->paginate(config('tenant.items_per_page'));
 
         return view('tenant.reports.purchases.index', compact('reports', 'a', 'd', 'td', 'documentTypes',"establishment","establishments"));
     }

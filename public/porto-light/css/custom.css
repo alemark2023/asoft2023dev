@@ -62,6 +62,13 @@ ul.nav-main li i {
     font-size: 20px;
 }
 
+.page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #0088cc !important;
+    border-color: #0088cc !important;
+  }
+
 
 
 .avatar-uploader .el-upload {

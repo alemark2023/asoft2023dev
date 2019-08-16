@@ -152,6 +152,7 @@ if ($hostname) {
             Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
             Route::post('documents/email', 'Tenant\DocumentController@email');
             Route::get('documents/note/{document}', 'Tenant\NoteController@create');
+            Route::get('documents/note/record/{document}', 'Tenant\NoteController@record');
             Route::get('documents/item/tables', 'Tenant\DocumentController@item_tables');
             Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
             Route::get('documents/re_store/{document}', 'Tenant\DocumentController@reStore');
@@ -168,7 +169,7 @@ if ($hostname) {
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');
 
             Route::post('documents/import', 'Tenant\DocumentController@import');
-
+            Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
             
 
             //Contingencies
@@ -228,12 +229,12 @@ if ($hostname) {
             Route::post('dispatches', 'Tenant\DispatchController@store');
 
             Route::get('reports', 'Tenant\ReportController@index')->name('tenant.reports.index');
-            Route::post('reports/search', 'Tenant\ReportController@search')->name('tenant.search');
+            Route::get('reports/search', 'Tenant\ReportController@search')->name('tenant.search');
             Route::post('reports/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
             Route::post('reports/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
 
             Route::get('reports/purchases', 'Tenant\ReportPurchaseController@index')->name('tenant.reports.purchases.index');
-            Route::post('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
+            Route::get('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
             Route::post('reports/purchases/pdf', 'Tenant\ReportPurchaseController@pdf')->name('tenant.report.purchases.pdf');
             Route::post('reports/purchases/excel', 'Tenant\ReportPurchaseController@excel')->name('tenant.report.purchases.report_excel');
 

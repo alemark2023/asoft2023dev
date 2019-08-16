@@ -272,6 +272,7 @@ class Facturalo
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
 
             $extra_by_item_description = 0;
@@ -304,7 +305,8 @@ class Facturalo
                     $total_free +
                     $total_unaffected +
                     $total_exonerated +
-                    $total_taxed],
+                    $total_taxed+
+                    $total_plastic_bag_taxes],
                 'margin_top' => 0,
                 'margin_right' => 1,
                 'margin_bottom' => 0,
