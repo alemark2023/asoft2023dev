@@ -170,6 +170,21 @@
             </cac:TaxSubtotal>
         </cac:TaxTotal>
         @endif
+        @if($doc->total_plastic_bag_taxes > 0)
+        <cac:TaxTotal>
+            <cbc:TaxAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_plastic_bag_taxes }}</cbc:TaxAmount>
+            <cac:TaxSubtotal>
+                <cbc:TaxAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_plastic_bag_taxes }}</cbc:TaxAmount>
+                <cac:TaxCategory>
+                    <cac:TaxScheme>
+                        <cbc:ID>7152</cbc:ID>
+                        <cbc:Name>ICBPER</cbc:Name>
+                        <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                    </cac:TaxScheme>
+                </cac:TaxCategory>
+            </cac:TaxSubtotal>
+        </cac:TaxTotal>
+        @endif
     </sac:SummaryDocumentsLine>
     @endforeach
 </SummaryDocuments>

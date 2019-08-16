@@ -362,7 +362,11 @@ class QuotationController extends Controller
         
         $html = $template->pdf($base_template, "quotation", $company, $document, $format_pdf);
         
-        if ($format_pdf === 'ticket') {
+        if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80') {
+
+            $width = 78;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+
             $company_name      = (strlen($company->name) / 20) * 10;
             $company_address   = (strlen($document->establishment->address) / 30) * 10;
             $company_number    = $document->establishment->telephone != '' ? '10' : '0';
@@ -387,7 +391,7 @@ class QuotationController extends Controller
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
-                    78,
+                    $width,
                     120 +
                     ($quantity_rows * 8) +
                     ($discount_global * 3) +

@@ -104,8 +104,14 @@ class DispatchController extends Controller
                 ];
             });
         
+        $identities = ['6'];
+        $dni_filter = config('tenant.document_type_03_filter');
+        if($dni_filter){
+            array_push($identities, '1');
+        }
+
         $customers = Person::query()
-            ->whereIn('identity_document_type_id', [6])
+            ->whereIn('identity_document_type_id', $identities)
             ->whereType('customers')
             ->orderBy('name')
             ->get()

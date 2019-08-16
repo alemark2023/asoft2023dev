@@ -1,64 +1,131 @@
 <?php
 
-namespace App\Core\Services\Extras;
+namespace App\CoreFacturalo\Services\Extras;
 
-use App\Models\Tenant\Company;
 use Carbon\Carbon;
-use DiDom\Document as DiDom;
 use Exception;
-use GoogleCloudVision\GoogleCloudVision;
-use GoogleCloudVision\Request\AnnotateImageRequest;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 
 class ValidateCpe2
 {
-    const URL_CONSULT = 'https://www.sunat.gob.pe/ol-ti-itconsultaunificadalibre/consultaUnificadaLibre/consulta';
-    const URL_CAPTCHA = 'https://www.sunat.gob.pe/ol-ti-itconsultaunificadalibre/consultaUnificadaLibre/doCaptcha?accion=image';
+    const URL_CONSULT = 'consultaIndividual';
+    const URL_CAPTCHA = 'doCaptcha?accion=image';
 
-    protected $company;
     protected $client;
-    protected $document_type_code = [
-        '01' => '03',
-        '03' => '06'
+
+    protected $document_state = [
+        '-' => '-',
+        '0' => 'NO EXISTE',
+        '1' => 'ACEPTADO',
+        '2' => 'ANULADO',
+        '3' => 'AUTORIZADO',
+        '4' => 'NO AUTORIZADO'
+    ];
+
+    protected $company_state = [
+        '-' => '-',
+        '00' => 'ACTIVO',
+        '01' => 'BAJA PROVISIONAL',
+        '02' => 'BAJA PROV. POR OFICIO',
+        '03' => 'SUSPENSION TEMPORAL',
+        '10' => 'BAJA DEFINITIVA',
+        '11' => 'BAJA DE OFICIO',
+        '12' => 'BAJA MULT.INSCR. Y OTROS ',
+        '20' => 'NUM. INTERNO IDENTIF.',
+        '21' => 'OTROS OBLIGADOS',
+        '22' => 'INHABILITADO-VENT.UNICA',
+        '30' => 'ANULACION - ERROR SUNAT   '
+    ];
+
+    protected $company_condition = [
+        '-' => '-',
+        '00' => 'HABIDO',
+        '01' => 'NO HALLADO SE MUDO DE DOMICILIO',
+        '02' => 'NO HALLADO FALLECIO',
+        '03' => 'NO HALLADO NO EXISTE DOMICILIO',
+        '04' => 'NO HALLADO CERRADO',
+        '05' => 'NO HALLADO NRO.PUERTA NO EXISTE',
+        '06' => 'NO HALLADO DESTINATARIO DESCONOCIDO',
+        '07' => 'NO HALLADO RECHAZADO',
+        '08' => 'NO HALLADO OTROS MOTIVOS',
+        '09' => 'PENDIENTE',
+        '10' => 'NO APLICABLE',
+        '11' => 'POR VERIFICAR',
+        '12' => 'NO HABIDO',
+        '20' => 'NO HALLADO',
+        '21' => 'NO EXISTE LA DIRECCION DECLARADA',
+        '22' => 'DOMICILIO CERRADO',
+        '23' => 'NEGATIVA RECEPCION X PERSONA CAPAZ',
+        '24' => 'AUSENCIA DE PERSONA CAPAZ',
+        '25' => 'NO APLICABLE X TRAMITE DE REVERSION',
+        '40' => 'DEVUELTO'
     ];
 
     public function __construct()
     {
-        $this->company = Company::first();
-        $this->client = new Client(['cookies' => true]);
+        $this->client = new Client([
+            'base_uri' => 'https://www.sunat.gob.pe/ol-ti-itconsultaunificadalibre/consultaUnificadaLibre/',
+            'defaults' => [
+                'exceptions' => false,
+                'allow_redirects' => false
+            ]
+        ]);
+//        $this->client = new Client(['cookies' => true]);
     }
 
-    public function search($document_type_code, $series, $number, $date_of_issue, $total = null)
+    public function search($company_number, $document_type_id, $series, $number, $date_of_issue, $total)
     {
-        $this->getCaptchaImage();
+//        dd('aca');
         try {
             $captcha = trim($this->getCaptchaImage());
+            $form_params = [
+                'numRuc' => $company_number,
+                'codComp' => $document_type_id,
+                'numeroSerie' => $series,
+                'numero' => $number,
+                'fechaEmision' => Carbon::parse($date_of_issue)->format('d/m/Y'),
+                'codDocRecep' => '',
+                'numDocRecep' => '',
+                'monto' => $total,
+                'codigo' => $captcha
+            ];
+
             $response = $this->client->request('POST', self::URL_CONSULT, [
-                'form_params' => [
-                    //'accion' => 'CapturaCriterioValidez',
-                    'numRuc' => $this->company->number,
-                    'codComp' => $document_type_code,
-                    'numeroSerie' => $series,
-                    'numero' => $number,
-                    'fechaEmision' => Carbon::parse($date_of_issue)->format('d/m/Y'),
-                    'monto' => $total,
-                    'codigo' => $captcha
-                ]
+                'curl' => [
+                    CURLOPT_HTTPHEADER => [],
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_COOKIEFILE => public_path('cookie.txt'),
+                    CURLOPT_COOKIEJAR => public_path('cookie.txt'),
+                    CURLOPT_POSTFIELDS => http_build_query($form_params)
+                ],
+                'http_errors' => false,
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+//                'form_params' => $form_params
             ]);
 
             $html = $response->getBody()->getContents();
-            $xp = new DiDom($html);
-            $sub_headings = $xp->find('td.bgn');
-            if (count($sub_headings) > 0) {
-                return  [
+            $response = json_decode(json_decode($html));
+            if($response->rpta === 1) {
+                return [
                     'success' => true,
-                    'message' => $sub_headings[0]->text()
+                    'response' => $response,
+                    'data' => [
+                        'comprobante_estado_codigo' => $response->data->estadoCp,
+                        'comprobante_estado_descripcion' => $this->document_state[$response->data->estadoCp],
+                        'empresa_estado_codigo' => $response->data->estadoRuc,
+                        'empresa_estado_description' => $this->company_state[$response->data->estadoRuc],
+                        'empresa_condicion_codigo' => $response->data->condDomiRuc,
+                        'empresa_condicion_descripcion' => $this->company_condition[$response->data->condDomiRuc],
+                    ]
                 ];
             } else {
                 return [
                     'success' => false,
-                    'message' => "No se obtuvo resultado de la consulta:{$series}-{$number}"
+                    'message' => $response->data
                 ];
             }
         } catch (Exception $e) {
@@ -71,7 +138,18 @@ class ValidateCpe2
 
     private function getCaptchaImage()
     {
-        $response = $this->client->request('GET', self::URL_CAPTCHA);
+//        $response = $this->client->request('GET', self::URL_CAPTCHA);
+
+        $response = $this->client->request('GET', self::URL_CAPTCHA, [
+            'curl' => [
+                CURLOPT_HTTPHEADER => [],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_COOKIEFILE => public_path('cookie.txt'),
+                CURLOPT_COOKIEJAR => public_path('cookie.txt'),
+            ]
+        ]);
+
+//        dd($response);
         $temp = tempnam(sys_get_temp_dir(), 'captcha_');
         file_put_contents($temp, $response->getBody()->getContents());
         $ocr = new TesseractOCR($temp);
@@ -86,5 +164,44 @@ class ValidateCpe2
     private function isWindows()
     {
         return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+    }
+
+    public function validateAndChangeDocuments($month, $year)
+    {
+        $company = Company::first();
+        for ($i = $month; $i <= $month; $i++) {
+            $date = Carbon::createFromDate($year, $i, 1);
+            $date_from = $date->format('Y-m-d');
+            $date_to = $date->endOfMonth()->format('Y-m-d');
+            $documents = Document::where('state_type_id', '01')
+                ->where('soap_type_id', '02')
+                ->where('document_type_id', '03')
+                ->where('series', 'B146')
+                ->whereBetween('date_of_issue', [$date_from, $date_to])
+                ->orderBy('number')
+                ->get();
+            Log::info('-------------------------------------------------');
+            Log::info('Periodo: ' . $date_from . ' al ' . $date_to);
+            Log::info('Documentos:' . count($documents));
+            foreach ($documents as $document) {
+                reValidate:
+                sleep(2);
+                $response = $this->search($company->number,
+                    $document->document_type_id, $document->series, $document->number,
+                    $document->date_of_issue->format('Y-m-d'), $document->total);
+                if ($response['success']) {
+                    Log::info($document->series . '-' . $document->number . '|' . 'Mensaje: ' . $response['data']['comprobante_estado_descripcion']);
+                    if ($response['data']['comprobante_estado_codigo'] === '1') {
+                        $document->update([
+                            'state_type_id' => '05'
+                        ]);
+                    }
+                } else {
+                    //Log::info($document->series.'-'.$document->number.'|'.'Mensaje: '.$response['message']);
+                    goto reValidate;
+                }
+            }
+            Log::info('-------------------------------------------------');
+        }
     }
 }

@@ -73,8 +73,33 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="row mt-2">
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
+                                    <label class="control-label">Metodo de pago</label>
+                                    <el-select v-model="form_payment.payment_method_type_id" >
+                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.reference}">
+                                    <label class="control-label">Referencia</label> 
+                                    <el-input v-model="form_payment.reference"></el-input>                           
+                                    <small class="form-control-feedback" v-if="errors.reference" v-text="errors.reference[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.payment}">
+                                    <label class="control-label">Monto</label>
+                                    <el-input v-model="form_payment.payment"></el-input> 
+                                    <small class="form-control-feedback" v-if="errors.payment" v-text="errors.payment[0]"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -189,7 +214,9 @@
                 establishments: [],
                 establishment: null, 
                 currency_type: {},
-                saleNotesNewId: null,
+                saleNotesNewId: null,                
+                form_payment: {},
+                payment_method_types: [],
                 activePanel: 0,
                 loading_search:false
             }
@@ -203,6 +230,7 @@
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
+                    this.payment_method_types = response.data.payment_method_types
                     this.company = response.data.company
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
@@ -274,6 +302,16 @@
                         format_pdf:'a4',
                     }
                 }
+
+                this.form_payment = {
+                    id: null,
+                    sale_note_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: null,
+                }
+
             },
             resetForm() {
                 this.activePanel = 0
@@ -293,6 +331,8 @@
                 this.form.customer_id = null 
             },
             changeDateOfIssue() {
+                this.form_payment.date_of_payment = this.form.date_of_issue
+
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
@@ -363,14 +403,24 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+                this.form_payment.payment = this.form.total
              },
             submit() {
+
+                if(this.form_payment.payment > parseFloat(this.form.total) || this.form_payment.payment < 0) {
+                    return this.$message.error('El monto ingresado supera al monto a pagar o es incorrecto.');
+                }
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+
+                        this.form_payment.sale_note_id = response.data.data.id;
+                        this.sale_note_payment()
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
+
                     }
                     else {
                         this.$message.error(response.data.message);
@@ -385,6 +435,24 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
+            },
+            sale_note_payment(){
+
+                this.$http.post(`/sale_note_payments`, this.form_payment)
+                    .then(response => {
+                        if (response.data.success) { 
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.records[index].errors = error.response.data;
+                        } else {
+                            console.log(error);
+                        }
+                    })
+
             },
             close() {
                 location.href = '/sale-notes'

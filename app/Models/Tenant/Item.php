@@ -42,7 +42,7 @@ class Item extends ModelTenant
         'percentage_perception',        
         'image',
         'account_id',
-
+        'amount_plastic_bag_taxes',
         // 'warehouse_id'
     ];
 
