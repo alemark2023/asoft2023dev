@@ -23,7 +23,8 @@
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
                         <th class="text-center"></th>
-                        <th class="text-center">Descargas</th> 
+                        <th class="text-center">Descarga</th> 
+                        <th class="text-center">Acciones</th> 
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
@@ -44,7 +45,11 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.external_id)">PDF</button>
                         </td>
-                        
+                        <td class="text-right">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)">Opciones</button>
+                        </td>
+
                          
                     </tr>
                 </data-table>
@@ -54,6 +59,11 @@
         <sale-note-payments :showDialog.sync="showDialogPayments"
                             :documentId="recordId"></sale-note-payments>
 
+        <sale-notes-options :showDialog.sync="showDialogOptions"
+                          :recordId="saleNotesNewId" 
+                          :showClose="true"></sale-notes-options> 
+
+
     </div>
 </template>
 
@@ -61,13 +71,16 @@
   
     import DataTable from '../../../components/DataTable.vue'
     import SaleNotePayments from './partials/payments.vue'
-
+    import SaleNotesOptions from './partials/options.vue'
+    
     export default { 
-        components: {DataTable, SaleNotePayments},
+        components: {DataTable, SaleNotePayments, SaleNotesOptions},
         data() {
             return { 
                 resource: 'sale-notes',
                 showDialogPayments: false,
+                showDialogOptions: false,
+                saleNotesNewId: null,
                 recordId: null,
                 showDialogOptions: false
             }
@@ -78,8 +91,8 @@
             clickDownload(external_id) {
                 window.open(`/downloads/saleNote/sale_note/${external_id}`, '_blank');                
             },  
-            clickOptions(recordId = null) {
-                this.recordId = recordId
+            clickOptions(recordId) {
+                this.saleNotesNewId = recordId
                 this.showDialogOptions = true
             },
             clickPayment(recordId) {

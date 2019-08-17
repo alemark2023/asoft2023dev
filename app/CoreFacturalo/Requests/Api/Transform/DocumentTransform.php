@@ -37,6 +37,7 @@ class DocumentTransform
             'total_isc' => Functions::valueKeyInArray($totals, 'total_isc'),
             'total_base_other_taxes' => Functions::valueKeyInArray($totals, 'total_base_otros_impuestos'),
             'total_other_taxes' => Functions::valueKeyInArray($totals, 'total_otros_impuestos'),
+            'total_plastic_bag_taxes' => Functions::valueKeyInArray($totals, 'total_impuestos_bolsa_plastica'),
             'total_taxes' => Functions::valueKeyInArray($totals, 'total_impuestos'),
             'total_value' => Functions::valueKeyInArray($totals, 'total_valor'),
             'total' => Functions::valueKeyInArray($totals, 'total_venta'),
@@ -92,6 +93,7 @@ class DocumentTransform
                     'total_base_other_taxes' => Functions::valueKeyInArray($row, 'total_base_otros_impuestos'),
                     'percentage_other_taxes' => Functions::valueKeyInArray($row, 'porcentaje_otros_impuestos'),
                     'total_other_taxes' => Functions::valueKeyInArray($row, 'total_otros_impuestos'),
+                    'total_plastic_bag_taxes' => Functions::valueKeyInArray($row, 'total_impuestos_bolsa_plastica'),
 
                     'total_taxes' => Functions::valueKeyInArray($row, 'total_impuestos'),
                     'total_value' => Functions::valueKeyInArray($row, 'total_valor_item'),

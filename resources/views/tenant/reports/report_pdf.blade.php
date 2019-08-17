@@ -82,6 +82,7 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
+<<<<<<< HEAD
                      
                         $serie_affec = '';
 
@@ -90,21 +91,29 @@
 
                         $acum_total_free=0;
                        
+=======
+                        $acum_total_taxed_usd=0;
+                        $acum_total_igv_usd=0;
+                        $acum_total_usd=0;
+>>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
                     @endphp
                     <table class="">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Tipo sssDoc</th>
+                                <th>Tipo Doc</th>
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
-                                <th>Documento Modifica</th>
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
+<<<<<<< HEAD
                                 <th>Total Exonerado</th>
                                 <th>Total Inafecto</th>
                                  <th>Total Gratutio</th>
+=======
+                                <th class="">Moneda</th>
+>>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
                                 <th>Total Gravado</th>
                                
                                 <th>Total IGV</th>
@@ -118,6 +127,7 @@
                                     <td class="celda">{{$value->document_type->id}}</td>
                                     <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                     <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
+<<<<<<< HEAD
                                        
                                         @if($value->document_type_id == "07" && $value->note)
 
@@ -178,9 +188,42 @@
                                 <td class="celda">{{$acum_total_exonerado}}</td>
                                 <td class="celda">{{$acum_total_inafecto}}</td>
                                 <td class="celda">{{$acum_total_free}}</td>
+=======
+                                    <td class="celda">{{$value->customer->name}}</td>
+                                    <td class="celda">{{$value->customer->number}}</td>
+                                    <td class="celda">{{$value->state_type->description}}</td>
+                                    <td class="celda">{{$value->currency_type_id}}</td>
+                                    <td class="celda">{{$value->total_taxed}}</td>
+                                    <td class="celda">{{$value->total_igv}}</td>
+                                    <td class="celda">{{$value->total}}</td>
+                                </tr>
+                            @php
+                               
+                                if($value->currency_type_id == 'PEN'){
+                                    $acum_total_taxed += $value->total_taxed;
+                                    $acum_total_igv += $value->total_igv;
+                                    $acum_total += $value->total;
+                                }else if($value->currency_type_id == 'USD'){
+                                    $acum_total_taxed_usd += $value->total_taxed;
+                                    $acum_total_igv_usd += $value->total_igv;
+                                    $acum_total_usd += $value->total;
+                                }
+                            @endphp
+                            @endforeach
+                            <tr>
+                                <td class="celda" colspan="7"></td>
+                                <td class="celda" >Totales PEN</td>
+>>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda" colspan="7"></td>
+                                <td class="celda" >Totales USD</td>
+                                <td class="celda">{{$acum_total_taxed_usd}}</td>
+                                <td class="celda">{{$acum_total_igv_usd}}</td>
+                                <td class="celda">{{$acum_total_usd}}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -111,6 +111,8 @@ Vue.component('system-users-form', require('./views/system/users/form.vue'));
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
+Vue.component('x-input-service', require('./components/InputService.vue'));
+
 const app = new Vue({
     el: '#main-wrapper'
 });

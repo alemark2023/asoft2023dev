@@ -154,6 +154,7 @@ if ($hostname) {
             Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
             Route::post('documents/email', 'Tenant\DocumentController@email');
             Route::get('documents/note/{document}', 'Tenant\NoteController@create');
+            Route::get('documents/note/record/{document}', 'Tenant\NoteController@record');
             Route::get('documents/item/tables', 'Tenant\DocumentController@item_tables');
             Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
             Route::get('documents/re_store/{document}', 'Tenant\DocumentController@reStore');
@@ -169,7 +170,9 @@ if ($hostname) {
             Route::get('documents/check_server/{document}', 'Tenant\DocumentController@checkServer');
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');
 
-
+            Route::post('documents/import', 'Tenant\DocumentController@import');
+            Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
+            
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index');
@@ -228,12 +231,12 @@ if ($hostname) {
             Route::post('dispatches', 'Tenant\DispatchController@store');
 
             Route::get('reports', 'Tenant\ReportController@index')->name('tenant.reports.index');
-            Route::post('reports/search', 'Tenant\ReportController@search')->name('tenant.search');
+            Route::get('reports/search', 'Tenant\ReportController@search')->name('tenant.search');
             Route::post('reports/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
             Route::post('reports/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
 
             Route::get('reports/purchases', 'Tenant\ReportPurchaseController@index')->name('tenant.reports.purchases.index');
-            Route::post('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
+            Route::get('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
             Route::post('reports/purchases/pdf', 'Tenant\ReportPurchaseController@pdf')->name('tenant.report.purchases.pdf');
             Route::post('reports/purchases/excel', 'Tenant\ReportPurchaseController@excel')->name('tenant.report.purchases.report_excel');
 
@@ -364,9 +367,15 @@ if ($hostname) {
             Route::get('sale-notes/item/tables', 'Tenant\SaleNoteController@item_tables');
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
-
+            Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+            
          //   Route::get('sale-notes/recreate_pdf/{sale_note}', 'Tenant\SaleNoteController@recreatePdf');
+<<<<<<< HEAD
             Route::get('sale-notes/print/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
+=======
+            // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
+            Route::get('sale-notes/print-a5/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
+>>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

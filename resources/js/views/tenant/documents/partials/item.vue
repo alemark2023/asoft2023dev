@@ -86,6 +86,11 @@
                             <!--<small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>-->
                         <!--</div>-->
                     <!--</div>-->
+                    <div class="col-md-3 center-el-checkbox">
+                        <div class="form-group" :class="{'has-danger': errors.has_igv}">
+                            <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
+                        </div>
+                    </div> 
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
                         <div class="form-group"  :class="{'has-danger': errors.total_item}">
                             <label class="control-label">Total venta producto</label>
@@ -155,6 +160,7 @@
                                                         <el-input v-model="row.description"></el-input>
                                                     </td>
                                                     <td>
+                                                        <el-checkbox v-model="row.is_amount">Ingresar monto fijo</el-checkbox><br>
                                                         <el-input v-model="row.percentage"></el-input>
                                                     </td>
                                                     <td>
@@ -458,7 +464,11 @@
                     discounts: [],
                     attributes: [],
                     has_igv: null,
+<<<<<<< HEAD
                     item_unit_types: []
+=======
+                    has_plastic_bag_taxes:false
+>>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
                 };
                 
                 this.activePanel = 0;
@@ -494,7 +504,8 @@
                     percentage: 0,
                     factor: 0,
                     amount: 0,
-                    base: 0
+                    base: 0,
+                    is_amount: false
                 })
             },
             clickRemoveDiscount(index) {
