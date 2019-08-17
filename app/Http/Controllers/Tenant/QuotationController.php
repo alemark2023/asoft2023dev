@@ -33,6 +33,10 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Exception;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Tenant\QuotationEmail;
+
+
 
 class QuotationController extends Controller
 {
@@ -51,6 +55,12 @@ class QuotationController extends Controller
     public function create()
     {
         return view('tenant.quotations.form');
+    }
+
+    public function edit($id)
+    {   
+        $resourceId = $id;
+        return view('tenant.quotations.form_edit', compact('resourceId'));
     }
 
     public function columns()
@@ -148,6 +158,75 @@ class QuotationController extends Controller
             'data' => [
                 'id' => $this->quotation->id,
             ],
+        ];
+    }
+
+    public function update(QuotationRequest $request)
+    {
+        
+         DB::connection('tenant')->transaction(function () use ($request) {
+           // $data = $this->mergeData($request);
+           // return $request['id'];
+
+           $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
+           $this->quotation->fill($request->all());
+           $this->quotation->items()->delete();
+            
+            foreach ($request['items'] as $row) {
+                
+                $this->quotation->items()->create($row);
+            }
+            
+            $this->setFilename();
+        });
+        
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->quotation->id,
+            ],
+        ];
+
+    }
+
+
+    public function duplicate(Request $request)
+    {   
+       // return $request->id;
+       $obj = Quotation::find($request->id);
+       $this->quotation = $obj->replicate();
+       $this->quotation->external_id = Str::uuid()->toString();
+       $this->quotation->save();
+      
+       foreach($obj->items as $row)
+       {
+         $new = $row->replicate();
+         $new->quotation_id = $this->quotation->id;
+         $new->save();
+       }
+
+        $this->setFilename();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->quotation->id,
+            ],
+        ];
+
+       
+
+
+    }
+
+    public function anular($id)
+    {
+        $obj =  Quotation::find($id);
+        $obj->state_type_id = 11;
+        $obj->save();
+        return [
+            'success' => true,
+            'message' => 'Producto anulado con éxito'
         ];
     }
     
@@ -313,7 +392,11 @@ class QuotationController extends Controller
         
         $html = $template->pdf($base_template, "quotation", $company, $document, $format_pdf);
         
-        if ($format_pdf === 'ticket') {
+        if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80') {
+
+            $width = 78;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+
             $company_name      = (strlen($company->name) / 20) * 10;
             $company_address   = (strlen($document->establishment->address) / 30) * 10;
             $company_number    = $document->establishment->telephone != '' ? '10' : '0';
@@ -338,7 +421,7 @@ class QuotationController extends Controller
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
-                    78,
+                    $width,
                     120 +
                     ($quantity_rows * 8) +
                     ($discount_global * 3) +
@@ -359,7 +442,60 @@ class QuotationController extends Controller
                 'margin_bottom' => 0,
                 'margin_left' => 5
             ]);
-        } else {
+        } else if($format_pdf === 'a5'){
+
+             $company_name      = (strlen($company->name) / 20) * 10;
+            $company_address   = (strlen($document->establishment->address) / 30) * 10;
+            $company_number    = $document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($document->customer->address) / 200) * 10;
+            $p_order           = $document->purchase_order != '' ? '10' : '0';
+
+            $total_exportation = $document->total_exportation != '' ? '10' : '0';
+            $total_free        = $document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $document->total_taxed != '' ? '10' : '0';
+            $quantity_rows     = count($document->items);
+            $discount_global = 0;
+            foreach ($document->items as $it) {
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends           = $document->legends != '' ? '10' : '0';
+
+
+            $alto = ($quantity_rows * 8) +
+                    ($discount_global * 3) +
+                    $company_name +
+                    $company_address +
+                    $company_number +
+                    $customer_name +
+                    $customer_address +
+                    $p_order +
+                    $legends +
+                    $total_exportation +
+                    $total_free +
+                    $total_unaffected +
+                    $total_exonerated +
+                    $total_taxed;
+            $diferencia = 148 - (float)$alto;
+
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    210,
+                    $diferencia + $alto 
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 5,
+                'margin_bottom' => 0,
+                'margin_left' => 5
+            ]);
+
+
+        }  else {
             
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
@@ -414,5 +550,20 @@ class QuotationController extends Controller
     
     public function uploadFile($filename, $file_content, $file_type) {
         $this->uploadStorage($filename, $file_content, $file_type);
+    }
+
+    public function email(Request $request)
+    {
+       
+        $client = Person::find($request->customer_id);
+        $quotation = Quotation::find($request->id);
+        $customer_email = $request->input('customer_email');
+
+        $this->reloadPDF($quotation, null, $quotation->filename);
+
+        Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
+        return [
+            'success' => true
+        ];
     }
 }

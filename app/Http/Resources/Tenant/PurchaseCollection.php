@@ -16,7 +16,11 @@ class PurchaseCollection extends ResourceCollection
     {
         return $this->collection->transform(function($row, $key) {
         
-  
+            $total = $row->total;
+            if($row->total_perception)
+            {
+                $total += round($row->total_perception, 2);
+            }
             return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
@@ -33,7 +37,8 @@ class PurchaseCollection extends ResourceCollection
                 'total_exonerated' => $row->total_exonerated,
                 'total_taxed' => $row->total_taxed,
                 'total_igv' => $row->total_igv,
-                'total' => $row->total,
+                'total_perception' => $row->total_perception,
+                'total' => $total,
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'document_type_description' => $row->document_type->description,

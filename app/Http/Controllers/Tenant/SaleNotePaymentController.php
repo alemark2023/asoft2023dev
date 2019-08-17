@@ -80,7 +80,7 @@ class SaleNotePaymentController extends Controller
         ];
     }
 
-    public function createPdf($sale_note_id)
+    public function createPdf($sale_note_id, $format = null)
     {
         $sale_note = SaleNote::find($sale_note_id);
         $total_paid = round(collect($sale_note->payments)->sum('payment'), 2);
@@ -100,7 +100,25 @@ class SaleNotePaymentController extends Controller
         $company = Company::first();
 
         $template = new Template();
-        $pdf = new Mpdf();
+        $pdf = null;
+        if($format == 'a5')
+        {
+              $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    78,
+                    220 
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 5,
+                'margin_bottom' => 0,
+                'margin_left' => 5
+            ]);
+           
+        }
+        else{
+           $pdf = new Mpdf();
+        }
 
         $document = SaleNote::find($sale_note_id);
 
@@ -152,6 +170,18 @@ class SaleNotePaymentController extends Controller
         }
 
         $this->uploadStorage($document->filename, $pdf->output('', 'S'), 'sale_note');
+        return $document->filename;
 //        $this->uploadFile($pdf->output('', 'S'), 'sale_note');
     }
+
+    public function toPrint($sale_note_id, $format)
+    {
+        $filename = $this->createPdf($sale_note_id, $format);
+        $temp = tempnam(sys_get_temp_dir(), 'sale_note');
+        file_put_contents($temp, $this->getStorage($filename, 'sale_note'));
+        return response()->file($temp);
+
+    }
+
+    
 }

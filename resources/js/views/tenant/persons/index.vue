@@ -28,7 +28,9 @@
                         <td class="text-right">{{ row.number }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                             <template v-if="typeUser === 'admin'">
+                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                             </template>
                         </td>
                     </tr>
                 </data-table>
@@ -36,7 +38,8 @@
 
             <persons-form :showDialog.sync="showDialog"
                           :type="type"
-                          :recordId="recordId"></persons-form>
+                          :recordId="recordId"
+                          :api_service_token="api_service_token"></persons-form>
 
             <persons-import :showDialog.sync="showImportDialog"
                             :type="type"></persons-import>
@@ -53,7 +56,7 @@
 
     export default {
         mixins: [deletable],
-        props: ['type'],
+        props: ['type', 'typeUser','api_service_token'],
         components: {PersonsForm, PersonsImport, DataTable},
         data() {
             return {

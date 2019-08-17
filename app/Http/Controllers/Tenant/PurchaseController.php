@@ -26,6 +26,9 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\PaymentMethodType;
 use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
+use App\Models\Tenant\InventoryKardex; 
+use App\Models\Tenant\ItemWarehouse; 
+
 
 class PurchaseController extends Controller
 {
@@ -89,14 +92,23 @@ class PurchaseController extends Controller
     }
 
     public function record($id)
-    {
+    {  
+      
         $record = new PurchaseResource(Purchase::findOrFail($id));
 
         return $record;
     }
 
+    public function edit($id)
+    {   
+        $resourceId = $id;
+        return view('tenant.purchases.form_edit', compact('resourceId'));
+    }
+
     public function store(PurchaseRequest $request)
     {
+
+        //return 'asd';
         $data = self::convert($request);
         $purchase = DB::connection('tenant')->transaction(function () use ($data) {
             $doc = Purchase::create($data);
@@ -119,6 +131,86 @@ class PurchaseController extends Controller
             'data' => [
                 'id' => $purchase->id,
             ],
+        ];
+    }
+
+    public function update(PurchaseRequest $request)
+    {
+      
+
+     
+        $purchase = DB::connection('tenant')->transaction(function () use ($request) {
+         
+            $doc = Purchase::firstOrNew(['id' => $request['id']]);
+           // return json_encode($doc);
+            $doc->fill($request->all());
+            $doc->save();
+
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            //proceso para eliminar los actualizar el stock de proiductos
+            foreach ($doc->items as $item) {
+                $item->purchase->inventory_kardex()->create([ 
+                    'date_of_issue' => date('Y-m-d'),
+                    'item_id' => $item->item_id,
+                    'warehouse_id' => $establishment->id,
+                    'quantity' => -$item->quantity,
+                ]);
+                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
+                $wr->stock =  $wr->stock - $item->quantity;
+                $wr->save();
+            }
+
+            $doc->items()->delete();
+
+            foreach ($request['items'] as $row)
+            {
+                $doc->items()->create($row);
+            }
+
+            $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
+                'date_of_payment' => $request['date_of_issue'],
+                'payment_method_type_id' => $request['payment_method_type_id'],
+                'payment' => $request['total'],
+            ]);
+
+            return $doc;
+        });       
+ 
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $purchase->id,
+            ],
+        ];
+
+
+
+    }
+
+    public function anular($id)
+    {
+        $obj =  Purchase::find($id);
+        $obj->state_type_id = 11;
+        $obj->save();
+
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+
+        //proceso para eliminar los actualizar el stock de proiductos
+        foreach ($obj->items as $item) {
+            $item->purchase->inventory_kardex()->create([ 
+                'date_of_issue' => date('Y-m-d'),
+                'item_id' => $item->item_id,
+                'warehouse_id' => $establishment->id,
+                'quantity' => -$item->quantity,
+            ]);
+            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
+            $wr->stock =  $wr->stock - $item->quantity;
+            $wr->save();
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Compra anulada con éxito'
         ];
     }
 

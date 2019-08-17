@@ -39,7 +39,9 @@ class BankController extends Controller
     public function destroy($id)
     {
         $bank = Bank::findOrFail($id);
-        $bank->delete();
+        //$bank->delete();
+        $bank->active = 0;
+        $bank->save();
 
         return [
             'success' => true,

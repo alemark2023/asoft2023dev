@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\User;
+
 use App\Models\Tenant\Configuration;
 use Exception;
 
@@ -27,6 +29,7 @@ class LockedEmissionProvider extends ServiceProvider
     public function boot()
     {
         $this->locked_emission();
+        $this->locked_users();
     }
 
 
@@ -44,6 +47,23 @@ class LockedEmissionProvider extends ServiceProvider
                     
             }
         
+        });
+    }
+    private function locked_users()
+    {
+
+        User::created(function ($document) {
+            
+            $configuration = Configuration::first();
+            $quantity_users = User::count();
+
+            if($configuration->limit_users !== 0){
+
+                if( $quantity_users > $configuration->limit_users )
+                {
+                    throw new Exception("Ha superado el límite permitido para la creación de usuarios");
+                }
+            }
         });
     }
 }

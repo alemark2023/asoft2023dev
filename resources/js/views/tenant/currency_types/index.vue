@@ -49,6 +49,7 @@
 
     export default {
         mixins: [deletable],
+        props: ['typeUser'],
         components: {CurrencyTypesForm},
         data() {
             return {

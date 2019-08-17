@@ -13,9 +13,11 @@ class Company extends ModelTenant
         'number',
         'name',
         'trade_name',
+        'soap_send_id',
         'soap_type_id',
         'soap_username',
         'soap_password',
+        'soap_url',
         'certificate',
         'logo',
     ];

@@ -19,7 +19,7 @@
                                         value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
                     </div>
                     <div class="col-md-3">
-                        <label>Exportar a</label>
+                        <label>Tipo</label>
                         <el-select v-model="form.type">
                             <el-option key="sale" value="sale" label="Venta"></el-option>
                             <el-option key="purchase" value="purchase" label="Compra"></el-option>

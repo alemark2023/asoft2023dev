@@ -3,15 +3,21 @@
         <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%"
                 > 
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold">
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir A4</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a4')">
                         <i class="fa fa-print"></i>
                     </button>
                 </div> 
-                <div class="col-lg-6 col-md-6 col-sm-6 text-center font-weight-bold">
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
                     <p>Imprimir Ticket</p>
                     <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('ticket')">
+                        <i class="fa fa-print"></i>
+                    </button>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+                    <p>Imprimir A5</p>
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
                         <i class="fa fa-print"></i>
                     </button>
                 </div> 

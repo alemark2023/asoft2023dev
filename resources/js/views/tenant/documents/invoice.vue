@@ -122,8 +122,40 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-lg-2 mt-2 mb-2"  v-if="form.document_type_id=='03'">
+                                <div class="form-group" > 
+                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold">¿Es venta por cobrar?</el-checkbox>
+                                </div>
+                            </div> 
                         </div>
-                        <div class="row mt-1">
+
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
+                                    <label class="control-label">Método de pago</label>
+                                    <el-select v-model="form_payment.payment_method_type_id" >
+                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.reference}">
+                                    <label class="control-label">Referencia</label> 
+                                    <el-input v-model="form_payment.reference"></el-input>                           
+                                    <small class="form-control-feedback" v-if="errors.reference" v-text="errors.reference[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.payment}">
+                                    <label class="control-label">Monto</label>
+                                    <el-input v-model="form_payment.payment"></el-input> 
+                                    <small class="form-control-feedback" v-if="errors.payment" v-text="errors.payment[0]"></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
                             <div class="col-md-12">
                                 <el-collapse v-model="activePanel">
                                     <el-collapse-item title="Información Adicional">
@@ -200,13 +232,21 @@
                                                 <td>{{index + 1}}</td>
                                                 <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
+                                                
                                                 <td class="text-right">{{row.quantity}}</td>
+                                                <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.quantity"></el-input-number> </td> -->
+
                                                 <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td>
+                                                <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.unit_price"></el-input-number> </td> -->
+
+
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                                 <td class="text-right">
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
+                                                    
                                                 </td>
                                             </tr>
                                             <tr><td colspan="8"></td></tr>
@@ -219,12 +259,12 @@
                                     <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
                                 </div>
                             </div>
- 
-                            <div class="col-md-8 mt-3">
-
-                            </div>
-
-                            <div class="col-md-4">
+  
+                            <!-- <div class="col-md-4">
+                                <p class="text-right" v-if="form.total > 0">
+                                            
+                                     DESCUENTO <el-input v-model="form_payment.payment" class="d-inline"></el-input>
+                                </p>
                                 <p class="text-right" v-if="form.total_exportation > 0">OP.EXPORTACIÓN: {{ currency_type.symbol }} {{ form.total_exportation }}</p>
                                 <p class="text-right" v-if="form.total_free > 0">OP.GRATUITAS: {{ currency_type.symbol }} {{ form.total_free }}</p>
                                 <p class="text-right" v-if="form.total_unaffected > 0">OP.INAFECTAS: {{ currency_type.symbol }} {{ form.total_unaffected }}</p>
@@ -232,7 +272,61 @@
                                 <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}</p>
                                 <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
-                            </div> 
+                            </div>  -->
+
+                            <div class="col-md-12" style="display: flex; flex-direction: column; align-items: flex-end;">
+                                <table> 
+                                    <tr v-if="form.total_taxed > 0 && enabled_discount_global">
+                                        <td>
+                                            DESCUENTO 
+                                            <template v-if="is_amount"> MONTO</template>
+                                            <template v-else> %</template>
+                                            <el-checkbox class="ml-1 mr-1" v-model="is_amount" @change="changeTypeDiscount"></el-checkbox> 
+
+                                        </td>
+                                        <td>:</td>
+                                        <td class="text-right">
+                                            <el-input class="input-custom" v-model="total_global_discount" @input="calculateTotal"></el-input>
+                                        </td>
+                                    </tr>
+
+                                    <tr v-if="form.total_exportation > 0">
+                                        <td>OP.EXPORTACIÓN</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_exportation }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_free > 0">
+                                        <td>OP.GRATUITAS</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_free }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_unaffected > 0">
+                                        <td>OP.INAFECTAS</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_unaffected }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_exonerated > 0">
+                                        <td>OP.EXONERADAS</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_taxed > 0">
+                                        <td>OP.GRAVADA</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_taxed }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_igv > 0">
+                                        <td>IGV</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_igv }}</td>
+                                    </tr> 
+    
+                                </table>
+    
+                                <template v-if="form.total > 0">
+                                    <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
+                                </template>
+                            </div>
                             
                         </div>
 
@@ -248,6 +342,7 @@
         </div>
 
         <document-form-item :showDialog.sync="showDialogAddItem"
+                           :recordItem="recordItem"
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
@@ -266,6 +361,11 @@
     </div>
 </template>
 
+<style>
+.input-custom{
+    width: 50% !important;
+}
+</style>
 <script>
     import DocumentFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
@@ -280,6 +380,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                recordItem: null,
                 resource: 'documents',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -288,25 +389,32 @@
                 loading_form: false,
                 errors: {},
                 form: {},
+                form_payment: {},
                 document_types: [],
                 currency_types: [],
                 discount_types: [],
                 charges_types: [],
-                all_customers: [],
+                all_customers: [],                
+                form_payment: {},
                 document_types_guide: [],
                 customers: [],
                 company: null,
                 document_type_03_filter: null,
                 operation_types: [],
                 establishments: [],
+                payment_method_types: [],
                 establishment: null,
                 all_series: [],
                 series: [],
                 currency_type: {},
                 documentNewId: null,
                 activePanel: 0,
+                total_global_discount:0,
                 loading_search:false,
+                is_amount:true,
+                enabled_discount_global:false,
                 user: {},
+                is_receivable:false,
                 is_contingency: false,
             }
         },
@@ -315,8 +423,8 @@
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
-                    this.document_types = response.data.document_types_invoice
-                    this.document_types_guide = response.data.document_types_guide
+                    this.document_types = response.data.document_types_invoice;
+                    this.document_types_guide = response.data.document_types_guide;
                     this.currency_types = response.data.currency_types
                     this.establishments = response.data.establishments
                     this.operation_types = response.data.operation_types
@@ -324,13 +432,15 @@
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
+                    this.payment_method_types = response.data.payment_method_types
+                    this.enabled_discount_global = response.data.enabled_discount_global
                     this.company = response.data.company;
                     this.user = response.data.user;
-                    this.document_type_03_filter = response.data.document_type_03_filter 
-                    this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
-                    this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
-                    this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-                    this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                    this.document_type_03_filter = response.data.document_type_03_filter; 
+                    this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
+                    this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
+                    this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
+                    this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -344,13 +454,21 @@
         },
         methods: {
 
-              searchRemoteCustomers(input) {  
+            ediItem(row, index)
+            {
+                row.indexi = index
+                this.recordItem = row
+                this.showDialogAddItem = true
+
+            },
+
+            searchRemoteCustomers(input) {  
                   
                 if (input.length > 0) {
                 // if (input!="") {
 
                     this.loading_search = true
-                    let parameters = `input=${input}&document_type_id=${this.form.document_type_id}`
+                    let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&operation_type_id=${this.form.operation_type_id}`
 
                     this.$http.get(`/${this.resource}/search/customers?${parameters}`)
                             .then(response => { 
@@ -390,6 +508,7 @@
                     total_isc: 0,
                     total_base_other_taxes: 0,
                     total_other_taxes: 0,
+                    total_plastic_bag_taxes: 0,
                     total_taxes: 0,
                     total_value: 0,
                     total: 0,
@@ -405,6 +524,20 @@
                         format_pdf:'a4',
                     }
                 }
+
+                this.form_payment = {
+                    id: null,
+                    document_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: null,
+                }
+
+                this.is_receivable = false
+                this.total_global_discount = 0
+                this.is_amount = true
+
             },
             resetForm() {
                 this.activePanel = 0
@@ -419,23 +552,24 @@
                 this.changeCurrencyType()
             },
             changeOperationType() {
-
+                this.filterCustomers();
             },
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
             },
             changeDocumentType() {
-                this.filterSeries()
-                this.cleanCustomer()
-                this.filterCustomers()
-            },
+                this.filterSeries();
+                this.cleanCustomer();
+                this.filterCustomers();
+            }, 
             cleanCustomer(){                
                 this.form.customer_id = null
                 // this.customers = []
             },
             changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
+                this.form_payment.date_of_payment = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
@@ -448,16 +582,19 @@
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
             },
             filterCustomers() {
-                
                 // this.form.customer_id = null
-                if(this.form.document_type_id === '01') {
-                    this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
-                } else {
-                    if(this.document_type_03_filter) {
-                        this.customers = _.filter(this.all_customers, (c) => { return c.identity_document_type_id !== '6' })
+                if(this.form.operation_type_id === '0101') {
+                    if(this.form.document_type_id === '01') {
+                        this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
                     } else {
-                        this.customers = this.all_customers
+                        if(this.document_type_03_filter) {
+                            this.customers = _.filter(this.all_customers, (c) => { return c.identity_document_type_id !== '6' })
+                        } else {
+                            this.customers = this.all_customers
+                        }
                     }
+                } else {
+                    this.customers = this.all_customers
                 }
             },
             clickAddGuide() {
@@ -470,8 +607,16 @@
                 this.form.guides.splice(index, 1)
             },
             addRow(row) {
-                this.form.items.push(JSON.parse(JSON.stringify(row)));
-                
+                if(this.recordItem)
+                {
+                    //this.form.items.$set(this.recordItem.indexi, row)
+                    this.form.items[this.recordItem.indexi] = row
+                    this.recordItem = null
+                }
+                else{
+                      this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
+              
                 this.calculateTotal();
             },
             clickRemoveItem(index) {
@@ -498,6 +643,7 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_plastic_bag_taxes = 0
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -522,6 +668,7 @@
                         total += parseFloat(row.total)
                     }
                     total_value += parseFloat(row.total_value)
+                    total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
                 });
 
                 this.form.total_exportation = _.round(total_exportation, 2)
@@ -532,12 +679,64 @@
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
-                this.form.total = _.round(total, 2)
-             },
+                this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+                // this.form.total = _.round(total, 2)
+                this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
+                
+                if(this.enabled_discount_global) this.discountGlobal()
+                this.form_payment.payment = this.form.total
+
+            },
+            changeTypeDiscount(){
+                this.calculateTotal()
+            },
+            discountGlobal(){
+                
+                let base = this.form.total_taxed
+
+                let amount = (this.is_amount) ? parseFloat(this.total_global_discount) : parseFloat(this.total_global_discount)/100 * base
+                let factor = (this.is_amount) ? _.round(amount/base,2) : _.round(parseFloat(this.total_global_discount)/100,2)
+
+                if(this.total_global_discount>0 && this.form.discounts.length == 0){
+
+                    this.form.discounts.push({
+                            discount_type_id: "02",
+                            description: "Descuento Global afecta a la base imponible",
+                            factor: 0,
+                            amount: 0,
+                            base: 0
+                        })
+
+                }
+
+
+                if(this.form.discounts.length){
+                    
+                    this.form.total_discount =  _.round(amount,2)
+                    this.form.total_value =  _.round(base - amount,2)
+                    this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
+                    this.form.total_taxes =  _.round(this.form.total_igv,2)
+                    this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+
+                    this.form.discounts[0].base = base
+                    this.form.discounts[0].amount = amount
+                    this.form.discounts[0].factor = factor
+                }
+
+
+                // console.log(this.form.discounts)
+            }, 
             submit() {
+                
+                if(this.form_payment.payment > parseFloat(this.form.total) || this.form_payment.payment < 0) {
+                    return this.$message.error('El monto ingresado supera al monto a pagar o es incorrecto.');
+                }
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+                        this.form_payment.document_id = response.data.data.id;
+                        this.document_payment()
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -546,6 +745,8 @@
                         this.$message.error(response.data.message);
                     }
                 }).catch(error => {
+
+                    //alert('sdsd')
                     if (error.response.status === 422) {
                         this.errors = error.response.data;
                     }
@@ -555,6 +756,29 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
+            },
+            document_payment(){
+
+                if(!this.is_receivable){
+
+                    this.$http.post(`/document_payments`, this.form_payment)
+                    .then(response => {
+                        if (response.data.success) { 
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.records[index].errors = error.response.data;
+                        } else {
+                            console.log(error);
+                        }
+                    })
+
+                }
+                
+
             },
             close() {
                 location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`

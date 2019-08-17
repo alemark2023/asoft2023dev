@@ -56,8 +56,8 @@
     @endforeach
     @endif
     <cac:Signature>
-        <cbc:ID>{{ $company->number }}</cbc:ID>
-        <cbc:Note>{{ config('tenant.signature_note') }}</cbc:Note>
+        <cbc:ID>{{ config('configuration.signature_uri') }}</cbc:ID>
+        <cbc:Note>{{ config('configuration.signature_note') }}</cbc:Note>
         <cac:SignatoryParty>
             <cac:PartyIdentification>
                 <cbc:ID>{{ $company->number }}</cbc:ID>
@@ -68,7 +68,7 @@
         </cac:SignatoryParty>
         <cac:DigitalSignatureAttachment>
             <cac:ExternalReference>
-                <cbc:URI>{{ config('tenant.signature_uri') }}</cbc:URI>
+                <cbc:URI>#{{ config('configuration.signature_uri') }}</cbc:URI>
             </cac:ExternalReference>
         </cac:DigitalSignatureAttachment>
     </cac:Signature>
@@ -237,6 +237,18 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         @endif
+        @if($document->total_plastic_bag_taxes > 0) 
+        <cac:TaxSubtotal>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_plastic_bag_taxes }}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>7152</cbc:ID>
+                    <cbc:Name>ICBPER</cbc:Name>
+                    <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        @endif
     </cac:TaxTotal>
     <cac:RequestedMonetaryTotal>
         @if($document->total_other_charges > 0)
@@ -295,6 +307,20 @@
                         <cac:TaxScheme>
                             <cbc:ID>9999</cbc:ID>
                             <cbc:Name>OTROS</cbc:Name>
+                            <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                        </cac:TaxScheme>
+                    </cac:TaxCategory>
+                </cac:TaxSubtotal>
+                @endif
+                @if($row->total_plastic_bag_taxes > 0)
+                <cac:TaxSubtotal>
+                    <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{$row->total_plastic_bag_taxes}}</cbc:TaxAmount>
+                    <cbc:BaseUnitMeasure unitCode="NIU">{{ round($row->quantity,0) }}</cbc:BaseUnitMeasure>
+                    <cac:TaxCategory>
+                        <cbc:PerUnitAmount currencyID="{{ $document->currency_type_id }}">{{$row->item->amount_plastic_bag_taxes}}</cbc:PerUnitAmount>
+                        <cac:TaxScheme>
+                            <cbc:ID>7152</cbc:ID>
+                            <cbc:Name>ICBPER</cbc:Name>
                             <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
                         </cac:TaxScheme>
                     </cac:TaxCategory>

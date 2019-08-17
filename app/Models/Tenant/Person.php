@@ -7,6 +7,8 @@ use App\Models\Tenant\Catalogs\Department;
 use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class Person extends ModelTenant
 {
@@ -27,6 +29,15 @@ class Person extends ModelTenant
         'telephone',
         'perception_agent',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('status', 1);
+        });
+    }
 
     public function identity_document_type()
     {

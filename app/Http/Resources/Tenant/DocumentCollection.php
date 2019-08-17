@@ -79,6 +79,7 @@ class DocumentCollection extends ResourceCollection
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'document_type_description' => $row->document_type->description,
+                'document_type_id' => $row->document_type->id,
                 'has_xml' => $has_xml,
                 'has_pdf' => $has_pdf,
                 'has_cdr' => $has_cdr,
@@ -106,6 +107,16 @@ class DocumentCollection extends ResourceCollection
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
+
+                'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'document_id' => $row->document_id,
+                        'note_type_description' => ($row->note_type == 'credit') ? 'NC':'ND',
+                        'description' => $row->document->number_full,
+                    ];
+                }) : null,
+
             ];
         });
     }

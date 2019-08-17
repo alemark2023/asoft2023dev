@@ -64,7 +64,8 @@ class Document extends ModelTenant
         'send_server',
         'shipping_status',
         'sunat_shipping_status',
-        'query_status'
+        'query_status',
+        'total_plastic_bag_taxes',
     ];
 
     protected $casts = [
@@ -221,7 +222,10 @@ class Document extends ModelTenant
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
 
-    
+    public function getCompanyAttribute()
+    {
+        return Company::first();
+    }
 
     public function invoice()
     {
@@ -293,4 +297,11 @@ class Document extends ModelTenant
         $user = auth()->user();         
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
     }
+
+    public function affected_documents()
+    {
+        return $this->hasMany(Note::class, 'affected_document_id');
+    }
+
+    
 }

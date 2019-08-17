@@ -13,6 +13,8 @@ use App\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Item;
+
 use Carbon\Carbon;
 
 class ReportController extends Controller
@@ -47,36 +49,43 @@ class ReportController extends Controller
             if (is_null($td)) {
                 $reports = Document::with([ 'state_type', 'person'])
                     ->whereBetween('date_of_issue', [$d, $a])
-                    ->latest()
-                    ->get();
+                    ->latest();
             }
             else {
                 $reports = Document::with([ 'state_type', 'person'])
                     ->whereBetween('date_of_issue', [$d, $a])
                     ->latest()
-                    ->where('document_type_id', $td)
-                    ->get();
+                    ->where('document_type_id', $td);
             }
         }
         else {
             if (is_null($td)) {
                 $reports = Document::with([ 'state_type', 'person'])
-                    ->latest()
-                    ->get();
+                    ->latest();
             } else {
                 $reports = Document::with([ 'state_type', 'person'])
                     ->latest()
-                    ->where('document_type_id', $td)
-                    ->get();
+                    ->where('document_type_id', $td);
             }
         }
 
         if(!is_null($establishment_id)){
             $reports = $reports->where('establishment_id', $establishment_id);
         }
+
+<<<<<<< HEAD
+       
+
+=======
+        $reports = $reports->paginate(config('tenant.items_per_page'));
+        
+>>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
+       // return json_encode($reports);
         
         return view("tenant.reports.index", compact("reports", "a", "d", "td", "documentTypes","establishment","establishments"));
     }
+
+
     
     public function pdf(Request $request) {
         
@@ -121,6 +130,8 @@ class ReportController extends Controller
             $reports = $reports->where('establishment_id', $establishment_id);
         }
 
+        set_time_limit(0); 
+        
         $pdf = PDF::loadView('tenant.reports.report_pdf', compact("reports", "company", "establishment"));
         $filename = 'Reporte_Documentos'.date('YmdHis');
         

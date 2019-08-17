@@ -11,8 +11,7 @@
                 </div>
                 <div class="card-body">
                     <div>
-                        <form action="{{route('tenant.reports.purchases.search')}}" class="el-form demo-form-inline el-form--inline" method="POST">
-                            {{csrf_field()}}
+                        <form action="{{route('tenant.reports.purchases.search')}}" class="el-form demo-form-inline el-form--inline" method="GET">
                             <tenant-calendar :document_types="{{json_encode($documentTypes)}}" data_d="{{$d ?? ''}}" :establishments="{{json_encode($establishments)}}" establishment="{{$establishment ?? null}}" data_a="{{$a ?? ''}}" td="{{$td ?? null}}"></tenant-calendar>
                         </form>
                     </div>
@@ -70,17 +69,18 @@
                                         <td>{{$value->supplier->number}}</td>
                                         <td>{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
                                         <td>{{$value->state_type->description}}</td>
-                                        <td>{{$value->total_taxed}}</td>
-                                        <td>{{$value->total_igv}}</td>
-                                        <td>{{$value->total}}</td>
+                                        <td>{{ $value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
+                                        <td>{{ $value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
+                                        <td>{{ $value->state_type_id == '11' ? 0 : $value->total}}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper">
+                            Total {{$reports->total()}}
+                            <label class="pagination-wrapper ml-2">
                                 {{-- {{ $reports->appends(['search' => Session::get('form_document_list')])->render()  }} --}}
-                                {{-- {{$reports->links()}} --}}
-                            </div>
+                                {{$reports->appends($_GET)->render()}} 
+                            </label>
                         </div>
                     </div>
                     @else

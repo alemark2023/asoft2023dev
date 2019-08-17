@@ -18,7 +18,8 @@
     <cbc:ReferenceDate>{{ $document->date_of_reference->format('Y-m-d') }}</cbc:ReferenceDate>
     <cbc:IssueDate>{{ $document->date_of_issue->format('Y-m-d') }}</cbc:IssueDate>
     <cac:Signature>
-        <cbc:ID>{{ $company->number }}</cbc:ID>
+        <cbc:ID>{{ config('configuration.signature_uri') }}</cbc:ID>
+        <cbc:Note>{{ config('configuration.signature_note') }}</cbc:Note>
         <cac:SignatoryParty>
             <cac:PartyIdentification>
                 <cbc:ID>{{ $company->number }}</cbc:ID>
@@ -29,7 +30,7 @@
         </cac:SignatoryParty>
         <cac:DigitalSignatureAttachment>
             <cac:ExternalReference>
-                <cbc:URI>{{ config('tenant.signature_uri') }}</cbc:URI>
+                <cbc:URI>#{{ config('configuration.signature_uri') }}</cbc:URI>
             </cac:ExternalReference>
         </cac:DigitalSignatureAttachment>
     </cac:Signature>
@@ -163,6 +164,21 @@
                     <cac:TaxScheme>
                         <cbc:ID>9999</cbc:ID>
                         <cbc:Name>OTROS</cbc:Name>
+                        <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                    </cac:TaxScheme>
+                </cac:TaxCategory>
+            </cac:TaxSubtotal>
+        </cac:TaxTotal>
+        @endif
+        @if($doc->total_plastic_bag_taxes > 0)
+        <cac:TaxTotal>
+            <cbc:TaxAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_plastic_bag_taxes }}</cbc:TaxAmount>
+            <cac:TaxSubtotal>
+                <cbc:TaxAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_plastic_bag_taxes }}</cbc:TaxAmount>
+                <cac:TaxCategory>
+                    <cac:TaxScheme>
+                        <cbc:ID>7152</cbc:ID>
+                        <cbc:Name>ICBPER</cbc:Name>
                         <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
                     </cac:TaxScheme>
                 </cac:TaxCategory>

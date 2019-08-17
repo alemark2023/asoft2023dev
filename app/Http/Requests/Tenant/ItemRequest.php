@@ -23,6 +23,10 @@ class ItemRequest extends FormRequest
             'description' => [
                 'required',
             ],
+            'name' => [
+                
+                'required',
+            ],
             'unit_type_id' => [
                 'required',
             ],

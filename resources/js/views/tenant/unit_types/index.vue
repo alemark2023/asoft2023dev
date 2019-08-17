@@ -34,7 +34,10 @@
                         <td class="text-center">{{ row.active }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
+
+                              <template v-if="typeUser === 'admin'">
+                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)">Eliminar</button>
+                              </template>
                         </td>
                     </tr>
                     </tbody>
@@ -58,6 +61,7 @@
 
     export default {
         mixins: [deletable],
+        props: ['typeUser'],
         components: {UnitTypesForm},
         data() {
             return {

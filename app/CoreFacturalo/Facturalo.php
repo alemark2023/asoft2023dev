@@ -42,6 +42,7 @@ class Facturalo
 
     protected $company;
     protected $isDemo;
+    protected $isOse;
     protected $signer;
     protected $wsClient;
     protected $document;
@@ -59,6 +60,7 @@ class Facturalo
     {
         $this->company = Company::active();
         $this->isDemo = ($this->company->soap_type_id === '01')?true:false;
+        $this->isOse = ($this->company->soap_send_id === '02')?true:false;
         $this->signer = new XmlSigned();
         $this->wsClient = new WsClient();
         $this->setDataSoapType();
@@ -239,6 +241,7 @@ class Facturalo
     }
 
     public function createPdf($document = null, $type = null, $format = null) {
+        ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
 
@@ -255,7 +258,8 @@ class Facturalo
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
-
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+            
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
@@ -268,9 +272,15 @@ class Facturalo
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
+
+            $extra_by_item_description = 0;
             $discount_global = 0;
             foreach ($this->document->items as $it) {
+                if(strlen($it->item->description)>100){
+                    $extra_by_item_description +=24;
+                }
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
                 }
@@ -282,7 +292,7 @@ class Facturalo
                 'format' => [
                     $width,
                     120 +
-                    ($quantity_rows * 8) +
+                    (($quantity_rows * 8) + $extra_by_item_description) +
                     ($discount_global * 3) +
                     $company_name +
                     $company_address +
@@ -295,7 +305,8 @@ class Facturalo
                     $total_free +
                     $total_unaffected +
                     $total_exonerated +
-                    $total_taxed],
+                    $total_taxed+
+                    $total_plastic_bag_taxes],
                 'margin_top' => 0,
                 'margin_right' => 1,
                 'margin_bottom' => 0,
@@ -417,7 +428,7 @@ class Facturalo
             return;
         }
         if($code === 'HTTP') {
-            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
+//            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
             throw new Exception("Code: {$code}; Description: {$message}");
         }
         if((int)$code === 0) {
@@ -535,33 +546,63 @@ class Facturalo
 
     private function setPathCertificate()
     {
-        if($this->isDemo) {
-            $this->pathCertificate = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.
-                'WS'.DIRECTORY_SEPARATOR.
-                'Signed'.DIRECTORY_SEPARATOR.
-                'Resources'.DIRECTORY_SEPARATOR.
-                'certificate.pem');
-        } else {
+        if($this->isOse) {
             $this->pathCertificate = storage_path('app'.DIRECTORY_SEPARATOR.
                 'certificates'.DIRECTORY_SEPARATOR.$this->company->certificate);
+        } else {
+            if($this->isDemo) {
+                $this->pathCertificate = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.
+                    'WS'.DIRECTORY_SEPARATOR.
+                    'Signed'.DIRECTORY_SEPARATOR.
+                    'Resources'.DIRECTORY_SEPARATOR.
+                    'certificate.pem');
+            } else {
+                $this->pathCertificate = storage_path('app'.DIRECTORY_SEPARATOR.
+                    'certificates'.DIRECTORY_SEPARATOR.$this->company->certificate);
+            }
         }
+
+//        if($this->isDemo) {
+//            $this->pathCertificate = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.
+//                'WS'.DIRECTORY_SEPARATOR.
+//                'Signed'.DIRECTORY_SEPARATOR.
+//                'Resources'.DIRECTORY_SEPARATOR.
+//                'certificate.pem');
+//        } else {
+//            $this->pathCertificate = storage_path('app'.DIRECTORY_SEPARATOR.
+//                'certificates'.DIRECTORY_SEPARATOR.$this->company->certificate);
+//        }
     }
 
     private function setSoapCredentials()
     {
-        $this->soapUsername = ($this->isDemo)?'20000000000MODDATOS':$this->company->soap_username;
-        $this->soapPassword = ($this->isDemo)?'moddatos':$this->company->soap_password;
-
-        switch ($this->type) {
-            case 'retention':
-                $this->endpoint = ($this->isDemo)?SunatEndpoints::RETENCION_BETA:SunatEndpoints::RETENCION_PRODUCCION;
-                break;
-            case 'dispatch':
-                $this->endpoint = ($this->isDemo)?SunatEndpoints::GUIA_BETA:SunatEndpoints::GUIA_PRODUCCION;
-                break;
-            default:
-                $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA:SunatEndpoints::FE_PRODUCCION;
-                break;
+        if($this->isDemo) {
+            $this->soapUsername = $this->company->number.'MODDATOS';
+            $this->soapPassword = 'moddatos';
+        } else {
+            $this->soapUsername = $this->company->soap_username;
+            $this->soapPassword = $this->company->soap_password;
         }
+
+//        $this->soapUsername = ($this->isDemo)?$this->company->number.'MODDATOS':$this->company->soap_username;
+//        $this->soapPassword = ($this->isDemo)?'moddatos':$this->company->soap_password;
+
+        if($this->isOse) {
+            $this->endpoint = $this->company->soap_url;
+//            dd($this->soapPassword);
+        } else {
+            switch ($this->type) {
+                case 'retention':
+                    $this->endpoint = ($this->isDemo)?SunatEndpoints::RETENCION_BETA:SunatEndpoints::RETENCION_PRODUCCION;
+                    break;
+                case 'dispatch':
+                    $this->endpoint = ($this->isDemo)?SunatEndpoints::GUIA_BETA:SunatEndpoints::GUIA_PRODUCCION;
+                    break;
+                default:
+                    $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA:SunatEndpoints::FE_PRODUCCION;
+                    break;
+            }
+        }
+
     }
 }

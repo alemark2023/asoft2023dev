@@ -40,6 +40,8 @@ class Template
         $path_template_default = 'pdf'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$template.'_'.$format_pdf;
         $path_template = 'pdf'.DIRECTORY_SEPARATOR.$base_template.DIRECTORY_SEPARATOR.$template.'_'.$format_pdf;
 
+      
+
         if(file_exists($path_app_template.DIRECTORY_SEPARATOR.$path_template.'.blade.php')) {
             return str_replace(DIRECTORY_SEPARATOR, '.', $path_template);
         }
