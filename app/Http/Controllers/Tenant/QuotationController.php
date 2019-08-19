@@ -14,6 +14,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Http\Resources\Tenant\QuotationCollection;
 use App\Http\Resources\Tenant\QuotationResource;
+use App\Http\Resources\Tenant\QuotationResource2;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
 use App\Models\Tenant\Catalogs\DocumentType;  
 use Illuminate\Support\Facades\DB;
@@ -134,6 +135,13 @@ class QuotationController extends Controller
     }
 
     public function record($id)
+    {
+        $record = new QuotationResource(Quotation::findOrFail($id));
+
+        return $record;
+    }
+
+    public function record2($id)
     {
         $record = new QuotationResource(Quotation::findOrFail($id));
 

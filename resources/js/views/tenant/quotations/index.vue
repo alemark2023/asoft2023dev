@@ -19,6 +19,7 @@
                         <th>Estado</th>
                         <th>Cotización</th>
                         <th>Comprobantes</th>
+                        <th>Notas de venta</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <!-- <th class="text-right">T.Exportación</th>
@@ -43,6 +44,11 @@
                                 <label :key="i" v-text="document.number_full" class="d-block"></label>
                             </template>
                         </td>
+                        <td>
+                            <template v-for="(sale_note,i) in row.sale_notes">
+                                <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
+                            </template>
+                        </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <!-- <td class="text-right">{{ row.total_exportation }}</td>
@@ -59,8 +65,8 @@
                         </td>
                         
                         <td class="text-right"> 
-                            <button v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info" 
-                                    @click.prevent="clickOptions(row.id)">Generar comprobante</button>
+                            <button v-if="row.state_type_id != '11' && row.btn_generate"  type="button" class="btn waves-effect waves-light btn-xs btn-info" 
+                                    @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
                             
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>

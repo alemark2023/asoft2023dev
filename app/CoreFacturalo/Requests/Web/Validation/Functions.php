@@ -120,6 +120,20 @@ class Functions
             }
         }
 
+        $person = Person::find($inputs['customer_id']);
+        if ($inputs['document_type_id'] === '01') {
+            if (!in_array($person->identity_document_type_id, ['6'], true)) {
+                throw new Exception("El tipo doc. identidad {$person->identity_document_type->description} del cliente no es válido.");
+            }
+        }
+        if ($inputs['document_type_id'] === '03') {
+            if ($inputs['total'] >= 700) {
+                if (in_array($person->identity_document_type_id, ['0'], true)) {
+                    throw new Exception("El tipo doc. identidad {$person->identity_document_type->description} del cliente no es válido, el monto supera el monto base.");
+                }
+            }
+        }
+
 
     }
     

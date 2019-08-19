@@ -353,13 +353,16 @@ if ($hostname) {
             Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
             Route::post('quotations/email', 'Tenant\QuotationController@email');
             Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
+            Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
 
             
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index');
             Route::get('sale-notes/columns', 'Tenant\SaleNoteController@columns');
             Route::get('sale-notes/records', 'Tenant\SaleNoteController@records');
-            Route::get('sale-notes/create', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create');
+            // Route::get('sale-notes/create', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create');
+            Route::get('sale-notes/create/{salenote?}', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create');
+
             Route::get('sale-notes/tables', 'Tenant\SaleNoteController@tables');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');
@@ -368,14 +371,14 @@ if ($hostname) {
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
             Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
-            
+            Route::get('sale-notes/record2/{salenote}', 'Tenant\SaleNoteController@record2');
+            Route::get('sale-notes/option/tables', 'Tenant\SaleNoteController@option_tables');
+            Route::get('sale-notes/changed/{salenote}', 'Tenant\SaleNoteController@changed');
+            Route::post('sale-notes/email', 'Tenant\SaleNoteController@email');
          //   Route::get('sale-notes/recreate_pdf/{sale_note}', 'Tenant\SaleNoteController@recreatePdf');
-<<<<<<< HEAD
-            Route::get('sale-notes/print/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
-=======
+            // Route::get('sale-notes/print/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
             // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
-            Route::get('sale-notes/print-a5/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
->>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
+            Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

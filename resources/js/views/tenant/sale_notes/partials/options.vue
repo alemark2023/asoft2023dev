@@ -6,26 +6,6 @@
                 :show-close="false"> 
 
             <div class="row">
-<<<<<<< HEAD
-                <div class="col-lg-4 col-md-6 col-sm-6 text-center font-weight-bold">
-                    <p>Descargar PDF</p>
-                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload()">
-                        <i class="fa fa-file-alt"></i>
-                    </button>
-                </div> 
-               <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
-                    <p>Imprimir Ticket</p>
-                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
-                        <i class="fa fa-file-alt"></i>
-                    </button>
-                </div>
-                <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
-                    <p>Imprimir A4</p>
-                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a4')">
-                        <i class="fa fa-file-alt"></i>
-                    </button>
-                </div>
-=======
                 <div class="col-lg-12 col-md-12 col-sm-12  ">
                     <el-tabs v-model="activeName"  >
                         <el-tab-pane label="Imprimir A4" name="first">                                    
@@ -42,9 +22,14 @@
                 </div>
                
 
->>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
             </div> 
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer" class="dialog-footer row">
+                <div class="col-md-6">   
+                    <el-input v-model="form.customer_email">
+                        <el-button slot="append" icon="el-icon-message"   @click="clickSendEmail" :loading="loading">Enviar</el-button>
+                    </el-input>
+                </div>
+                <div class="col-md-6">   
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
                 </template>
@@ -52,6 +37,7 @@
                     <el-button @click="clickFinalize">Ir al listado</el-button>
                     <el-button type="primary" @click="clickNewSaleNote">Nueva nota de venta</el-button>
                 </template>
+                </div>
             </span>
         </el-dialog>
  
@@ -122,6 +108,32 @@
             clickToPrint(format){
                 window.open(`/${this.resource}/print/${this.form.id}/${format}`, '_blank');
             },
+            clickSendEmail() {
+                this.loading=true
+                this.$http.post(`/${this.resource}/email`, {
+                    customer_email: this.form.customer_email,
+                    id: this.form.id
+                })
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success('El correo fue enviado satisfactoriamente')
+                        } else {
+                            this.$message.error('Error al enviar el correo')
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors
+                        } else {
+                            this.$message.error(error.response.data.message)
+                        }
+                    })
+                    .then(() => {
+                        this.loading=false
+
+                    })
+            },
+
         }
     }
 </script>

@@ -14,6 +14,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
+use App\Http\Resources\Tenant\SaleNoteResource2;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
 use App\Models\Tenant\Catalogs\DocumentType;  
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,9 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\PaymentMethodType;
+use App\Mail\Tenant\SaleNoteEmail;
+use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class SaleNoteController extends Controller
 {
@@ -48,9 +52,9 @@ class SaleNoteController extends Controller
     }
 
 
-    public function create()
+    public function create($id = null)
     {
-        return view('tenant.sale_notes.form');
+        return view('tenant.sale_notes.form', compact('id'));
     }
 
     public function columns()
@@ -102,7 +106,13 @@ class SaleNoteController extends Controller
                          'charge_types','company','payment_method_types');
     }
  
-    
+    public function changed($id)
+    {
+        $sale_note = SaleNote::find($id);
+        $sale_note->changed = true;
+        $sale_note->save();
+    }
+
 
     public function item_tables()
     {
@@ -126,22 +136,34 @@ class SaleNoteController extends Controller
         return $record;
     }
 
+    public function record2($id)
+    {
+        $record = new SaleNoteResource2(SaleNote::findOrFail($id));
+
+        return $record;
+    }
+
     public function store(SaleNoteRequest $request)
     {
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
-            $this->sale_note =  SaleNote::create($data);
+            $this->sale_note =  SaleNote::updateOrCreate(
+                ['id' => $request->input('id')],
+                $data);
+
+//            $this->sale_note =  SaleNote::create($data);
+            $this->sale_note->items()->delete();
             foreach ($data['items'] as $row)
             {
                 $this->sale_note->items()->create($row);
             }     
 
             $this->setFilename();
-            // $this->createPdf($this->sale_note, 'a4', $this->sale_note->filename);
+            $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
 
-        });     
+        });   
 
         return [
             'success' => true,
@@ -403,5 +425,29 @@ class SaleNoteController extends Controller
 
         return compact('customers');
     }
+
+    public function option_tables()
+    {
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id',$establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+
+        return compact('series', 'document_types_invoice');
+    }
+
+    public function email(Request $request)
+    {
+        $company = Company::active();
+        $record = SaleNote::find($request->input('id'));
+        $customer_email = $request->input('customer_email');
+
+        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+
+        return [
+            'success' => true
+        ];
+    }
+
+
  
 }

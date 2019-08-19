@@ -66,6 +66,7 @@ class DocumentInput
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => $inputs['purchase_order'],
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
+            'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'exchange_rate_sale' => $inputs['exchange_rate_sale'],
             'total_prepayment' => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
             'total_discount' => Functions::valueKeyInArray($inputs, 'total_discount', 0),

@@ -464,11 +464,8 @@
                     discounts: [],
                     attributes: [],
                     has_igv: null,
-<<<<<<< HEAD
-                    item_unit_types: []
-=======
+                    item_unit_types: [],
                     has_plastic_bag_taxes:false
->>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
                 };
                 
                 this.activePanel = 0;

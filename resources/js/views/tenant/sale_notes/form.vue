@@ -3,7 +3,7 @@
         <!-- <div class="card-header bg-info">
             <h3 class="my-0">Nuevo Comprobante</h3>
         </div> -->
-        <div class="tab-content" v-if="loading_form">
+        <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
                     <div class="row">
@@ -193,6 +193,7 @@
     import Logo from '../companies/logo.vue'
 
     export default {
+        props: ['id'],
         components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
@@ -244,6 +245,16 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+
+            if (this.id) {
+                console.log(this.id);
+                await this.$http.get(`/${this.resource}/record2/${this.id}`)
+                    .then(response => {
+                        this.form = response.data.data;
+//                        this.filterProvinces();
+//                        this.filterDistricts();
+                    })
+            }
         },
         methods: {
 
@@ -416,7 +427,7 @@
                     if (response.data.success) {
 
                         this.form_payment.sale_note_id = response.data.data.id;
-                        this.sale_note_payment()
+                        if(!this.id) this.sale_note_payment()
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -437,7 +448,7 @@
                 });
             },
             sale_note_payment(){
-
+                
                 this.$http.post(`/sale_note_payments`, this.form_payment)
                     .then(response => {
                         if (response.data.success) { 
