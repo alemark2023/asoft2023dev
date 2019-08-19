@@ -159,6 +159,8 @@ class QuotationController extends Controller
             }
             
             $this->setFilename();
+            $this->createPdf($this->quotation, "a4", $this->quotation->filename);
+
         });
         
         return [
@@ -567,7 +569,7 @@ class QuotationController extends Controller
         $quotation = Quotation::find($request->id);
         $customer_email = $request->input('customer_email');
 
-        $this->reloadPDF($quotation, null, $quotation->filename);
+        // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
         Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
         return [

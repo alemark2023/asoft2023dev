@@ -103,6 +103,9 @@ class Facturalo
                 break;
             case 'invoice':
                 $document = Document::create($inputs);
+                foreach ($inputs['payments'] as $row) {
+                    $document->payments()->create($row);
+                }
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }

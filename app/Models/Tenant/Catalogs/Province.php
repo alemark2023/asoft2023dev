@@ -25,4 +25,10 @@ class Province extends ModelCatalog
     {
         return $this->hasMany(District::class);
     }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
 }

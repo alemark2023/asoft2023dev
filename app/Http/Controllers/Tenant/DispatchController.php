@@ -23,7 +23,9 @@ use App\Models\Tenant\{
     Series,
     Item
 };
-use Exception, DB;
+use App\Models\Tenant\Document;
+use App\Http\Requests\Tenant\DispatchRequest;
+use Exception, Illuminate\Support\Facades\DB;
 
 class DispatchController extends Controller
 {
@@ -50,12 +52,16 @@ class DispatchController extends Controller
         
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
     }
-    
-    public function create() {
-        return view('tenant.dispatches.form');
+     
+    public function create($document_id = null)
+    {
+        $document = Document::find($document_id);
+
+        return view('tenant.dispatches.form', compact('document'));
     }
+
     
-    public function store(Request $request) {
+    public function store(DispatchRequest $request) {
         $fact = DB::connection('tenant')->transaction(function () use($request) {
             $facturalo = new Facturalo();
             $facturalo->save($request->all());
@@ -132,6 +138,36 @@ class DispatchController extends Controller
                 ];
             });
         
+        
+        $locations = [];
+        $departments = Department::whereActive()->get();
+        foreach ($departments as $department)
+        {
+            $children_provinces = [];
+            foreach ($department->provinces as $province)
+            {
+                $children_districts = [];
+                foreach ($province->districts as $district)
+                {
+                    $children_districts[] = [
+                        'value' => $district->id,
+                        'label' => $district->description
+                    ];
+                }
+                $children_provinces[] = [
+                    'value' => $province->id,
+                    'label' => $province->description,
+                    'children' => $children_districts
+                ];
+            }
+            $locations[] = [
+                'value' => $department->id,
+                'label' => $department->description,
+                'children' => $children_provinces
+            ];
+        }
+
+
         $identityDocumentTypes = IdentityDocumentType::whereActive()->get();
         $transferReasonTypes = TransferReasonType::whereActive()->get();
         $transportModeTypes = TransportModeType::whereActive()->get();
@@ -143,7 +179,7 @@ class DispatchController extends Controller
         $establishments = Establishment::all();
         $series = Series::all();
         
-        return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items');
+        return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items','locations');
     }
     
     public function downloadExternal($type, $external_id) {

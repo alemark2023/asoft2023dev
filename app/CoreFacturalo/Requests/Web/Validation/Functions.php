@@ -87,10 +87,15 @@ class Functions
         return $document;
     }
     
-    public static function findSeries($inputs) {
-        if(!$inputs['series_id']) throw new Exception("La serie no existe");
+    public static function findSeries($inputs)
+    {
         return Series::find($inputs['series_id']);
     }
+    
+    // public static function findSeries($inputs) {
+    //     if(!$inputs['series_id']) throw new Exception("La serie no existe");
+    //     return Series::find($inputs['series_id']);
+    // }
     
     public static function findAffectedDocument($inputs) {
         return Document::find($inputs['affected_document_id']);

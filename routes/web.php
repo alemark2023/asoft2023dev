@@ -226,9 +226,16 @@ if ($hostname) {
             Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
             Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
             Route::get('dispatches/records', 'Tenant\DispatchController@records');
-            Route::get('dispatches/create', 'Tenant\DispatchController@create');
+            Route::get('dispatches/create/{document?}', 'Tenant\DispatchController@create');
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
+
+//            Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
+//            Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
+//            Route::get('dispatches/records', 'Tenant\DispatchController@records');
+//            Route::get('dispatches/create', 'Tenant\DispatchController@create');
+//            Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
+//            Route::post('dispatches', 'Tenant\DispatchController@store');
 
             Route::get('reports', 'Tenant\ReportController@index')->name('tenant.reports.index');
             Route::get('reports/search', 'Tenant\ReportController@search')->name('tenant.search');

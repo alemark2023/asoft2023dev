@@ -99,6 +99,7 @@ class DocumentInput
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
             'data_json' => Functions::valueKeyInArray($inputs, 'data_json'),
+            'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
         ];
     }

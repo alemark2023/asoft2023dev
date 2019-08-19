@@ -3,6 +3,8 @@
     $customer = $document->customer;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+    $payments = $document->payments;
+
 @endphp
 <html>
 <head>
@@ -197,18 +199,21 @@
     </tbody>
 </table>
 <table class="full-width">
-    <tr>
-        {{-- <td width="65%">
-            @foreach($document->legends as $row)
-                <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
-            @endforeach
-            <br/>
-            <strong>Información adicional</strong>
-            @foreach($document->additional_information as $information)
-                <p>{{ $information }}</p>
-            @endforeach
-        </td> --}}
+<tr>
+    <td>
+    <strong>PAGOS:</strong> </td></tr>
+        @php
+            $payment = 0;
+        @endphp
+        @foreach($payments as $row)
+            <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+            @php
+                $payment += (float) $row->payment;
+            @endphp
+        @endforeach
+        <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
     </tr>
+
 </table>
 </body>
 </html>

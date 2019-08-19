@@ -93,6 +93,7 @@ class DashboardView
                              "IFNULL(payments.total_payment, 0) as total_payment, ".
                              "'sale_note' AS 'type'"))
             ->where('sale_notes.establishment_id', $establishment_id)
+            ->where('sale_notes.changed', false)
             ->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end])
             ->where('sale_notes.total_canceled', false);
 
