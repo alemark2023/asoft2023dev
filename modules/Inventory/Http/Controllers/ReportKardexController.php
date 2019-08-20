@@ -62,7 +62,7 @@ class ReportKardexController extends Controller
         $reports = InventoryKardex::with(['inventory_kardexable'])
                                     ->where([['item_id', $request->item_selected],['warehouse_id', $warehouse->id]])  
                                     ->orderBy('id')     
-                                    ->get();
+                                    ->paginate(config('tenant.items_per_page'));
         //return $reports;
 
         //return json_encode($reports);

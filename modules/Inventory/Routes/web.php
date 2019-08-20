@@ -36,7 +36,7 @@ if($hostname) {
                 Route::post('inventory/excel', 'ReportInventoryController@excel')->name('reports.inventory.report_excel');
 
                 Route::get('kardex', 'ReportKardexController@index')->name('reports.kardex.index');
-                Route::post('kardex/search', 'ReportKardexController@search')->name('reports.kardex.search');
+                Route::get('kardex/search', 'ReportKardexController@search')->name('reports.kardex.search');
                 Route::post('kardex/pdf', 'ReportKardexController@pdf')->name('reports.kardex.pdf');
                 Route::post('kardex/excel', 'ReportKardexController@excel')->name('reports.kardex.report_excel');
             });

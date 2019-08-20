@@ -11,8 +11,7 @@
                 </div>
                 <div class="card-body">
                     <div>
-                        <form action="{{route('reports.kardex.search')}}" class="el-form demo-form-inline el-form--inline" method="POST">
-                            {{csrf_field()}}
+                        <form action="{{route('reports.kardex.search')}}" class="el-form demo-form-inline el-form--inline" method="GET">
                             <div class="box">
                                 <div class="box-body no-padding">
                                    <!-- {{Form::label('item_id', 'Producto')}}-->
@@ -147,10 +146,10 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper">
-                                {{-- {{ $reports->appends(['search' => Session::get('form_document_list')])->render()  }} --}}
-                                {{-- {{$reports->links()}} --}}
-                            </div>
+                            Total {{$reports->total()}}
+                            <label class="pagination-wrapper ml-2">
+                                {{$reports->appends($_GET)->render()}} 
+                            </label>
                         </div>
                     </div>
                     @else
