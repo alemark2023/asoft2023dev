@@ -73,13 +73,10 @@ class ReportController extends Controller
             $reports = $reports->where('establishment_id', $establishment_id);
         }
 
-<<<<<<< HEAD
        
 
-=======
         $reports = $reports->paginate(config('tenant.items_per_page'));
         
->>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
        // return json_encode($reports);
         
         return view("tenant.reports.index", compact("reports", "a", "d", "td", "documentTypes","establishment","establishments"));
