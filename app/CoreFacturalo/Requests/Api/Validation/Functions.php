@@ -68,6 +68,8 @@ class Functions
             'internal_id' => $inputs['internal_id'],
         ], [
             'description' => $inputs['description'],
+            'name' => $inputs['name'],
+            'second_name' => $inputs['second_name'],
             'item_type_id' => $inputs['item_type_id'],
             'item_code' => $inputs['item_code'],
             'item_code_gs1' => $inputs['item_code_gs1'],

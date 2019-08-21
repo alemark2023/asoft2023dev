@@ -184,6 +184,7 @@ return [
         'note.note_description' => 'descripción',
         'exchange_rate_sale' => 'tipo de cambio',
         'type' => 'perfil',
+        'second_name' => 'nombre secundario',
       
     ],
 ];

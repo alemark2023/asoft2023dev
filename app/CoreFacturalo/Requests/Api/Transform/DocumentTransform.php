@@ -69,6 +69,8 @@ class DocumentTransform
                 $items[] = [
                     'internal_id' => $row['codigo_interno'],
                     'description' => $row['descripcion'],
+                    'name' => Functions::valueKeyInArray($row, 'nombre'),
+                    'second_name' => Functions::valueKeyInArray($row, 'nombre_secundario'),
                     'item_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_item', '01'),
                     'item_code' => Functions::valueKeyInArray($row, 'codigo_producto_sunat'),
                     'item_code_gs1' => Functions::valueKeyInArray($row, 'codigo_producto_gsl'),
