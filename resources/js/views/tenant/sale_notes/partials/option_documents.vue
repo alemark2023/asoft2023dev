@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%"
+        <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%"  
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :show-close="false"> 
@@ -43,7 +43,7 @@
             <span slot="footer" class="dialog-footer"> 
                 <!--<template v-if="showClose">-->
                     <el-button @click="clickClose">Cerrar</el-button>         
-                    <el-button class="submit" type="primary" @click="submit" :loading="loading_submit" v-if="generate">Generar</el-button>
+                    <el-button class="submit" type="primary" @click="submit" :loading="loading_submit" v-if="flag_generate">Generar</el-button>
 
                 <!--</template>-->
                 <!--<template v-else>-->
@@ -53,10 +53,10 @@
                 <!--</template>-->
             </span>
 
-            <!--<document-options :showDialog.sync="showDialogDocumentOptions"-->
-                              <!--:recordId="documentNewId"-->
-                              <!--:isContingency="false"-->
-                              <!--:showClose="true"></document-options>-->
+            <document-options :showDialog.sync="showDialogDocumentOptions"
+                              :recordId="documentNewId"
+                              :isContingency="false"
+                              :showClose="true"></document-options>
 
         </el-dialog>
     </div>
@@ -86,7 +86,7 @@
                 loading_submit:false,
                 showDialogDocumentOptions: false,
                 documentNewId: null,
-                
+                flag_generate:true
             }
         },
         created() {
@@ -166,8 +166,11 @@
                             this.showDialogDocumentOptions = true;
                             this.$http.get(`/${this.resource}/changed/${this.form.id}`).then(() => {
                                 this.$eventHub.$emit('reloadData');
+                                this.flag_generate = false
                             });
-                            this.clickClose();
+                            this.resetDocument() 
+
+                            // this.clickClose();
                         } else {
                             this.$message.error(response.data.message);
                         }
@@ -184,7 +187,7 @@
             },
             assignDocument(){ 
                 let q = this.form.sale_note;
-                console.log(q);
+                // console.log(q);
 
                 this.document.establishment_id = q.establishment_id  
                 this.document.date_of_issue = q.date_of_issue
@@ -258,6 +261,7 @@
                 this.$emit('update:showDialog', false)
                 this.initForm()
                 this.resetDocument()
+                this.flag_generate = true
             },
             clickToPrint(){
                 window.open(`/downloads/saleNote/sale_note/${this.form.external_id}`, '_blank');
