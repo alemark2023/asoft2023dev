@@ -8,7 +8,7 @@ class ServiceData
 {
     public static function service($type, $number)
     {
-        $client = new Client(['base_uri' => config('configuration.api_service_url')]);
+        $client = new Client(['base_uri' => config('configuration.api_service_url'), 'verify' => false]);
         $parameters = [
             'http_errors' => false,
             'connect_timeout' => 5,
