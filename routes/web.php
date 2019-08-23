@@ -237,10 +237,10 @@ if ($hostname) {
 //            Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
 //            Route::post('dispatches', 'Tenant\DispatchController@store');
 
-            Route::get('reports', 'Tenant\ReportController@index')->name('tenant.reports.index');
-            Route::get('reports/search', 'Tenant\ReportController@search')->name('tenant.search');
-            Route::post('reports/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
-            Route::post('reports/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
+            Route::get('reports/sales', 'Tenant\ReportController@index')->name('tenant.reports.index');
+            Route::get('reports/sales/search', 'Tenant\ReportController@search')->name('tenant.search');
+            Route::post('reports/sales/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
+            Route::post('reports/sales/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
 
             Route::get('reports/purchases', 'Tenant\ReportPurchaseController@index')->name('tenant.reports.purchases.index');
             Route::get('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');

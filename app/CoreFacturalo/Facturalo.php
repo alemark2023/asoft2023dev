@@ -315,7 +315,66 @@ class Facturalo
                 'margin_bottom' => 0,
                 'margin_left' => 1
             ]);
-        } else {
+        } else if($format_pdf === 'a5'){
+
+            $company_name      = (strlen($this->company->name) / 20) * 10;
+            $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
+            $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $p_order           = $this->document->purchase_order != '' ? '10' : '0';
+
+            $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
+            $total_free        = $this->document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
+            $quantity_rows     = count($this->document->items);
+
+            $extra_by_item_description = 0;
+            $discount_global = 0;
+            foreach ($this->document->items as $it) {
+                if(strlen($it->item->description)>100){
+                    $extra_by_item_description +=24;
+                }
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends = $this->document->legends != '' ? '10' : '0';
+
+
+            $height = ($quantity_rows * 8) +
+                    ($discount_global * 3) +
+                    $company_name +
+                    $company_address +
+                    $company_number +
+                    $customer_name +
+                    $customer_address +
+                    $p_order +
+                    $legends +
+                    $total_exportation +
+                    $total_free +
+                    $total_unaffected +
+                    $total_exonerated +
+                    $total_taxed;
+            $diferencia = 148 - (float)$height;
+
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    210,
+                    $diferencia + $height 
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 5,
+                'margin_bottom' => 0,
+                'margin_left' => 5
+            ]);
+
+
+       } else {
             
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');

@@ -79,6 +79,12 @@
             </td>
         </tr>
     @endif
+    @if ($document->description)
+        <tr>
+            <td class="align-top"><p class="desc">Descripción:</p></td>
+            <td><p class="desc">{{ $document->description }}</p></td>
+        </tr>
+    @endif
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>
