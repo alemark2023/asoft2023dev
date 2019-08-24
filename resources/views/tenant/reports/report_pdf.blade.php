@@ -158,49 +158,35 @@
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                                 </tr>
                                 @php
-                                    $acum_total_taxed += $value->total_taxed;
-                                    $acum_total_igv += $value->total_igv;
                                     
-                                    if($signal == '07')
-                                    {
-                                    $acum_total -= $value->total;
-                                    }
-                                    else{
-                                        $acum_total += $value->total;
-                                    }
-                                    $acum_total_exonerado +=  $value->total_exonerated;
-                                
-                                    $acum_total_inafecto +=  $value->total_unaffected;
-                                
-
-                                    $acum_total_free += $value->total_free;
                                 
                                     $serie_affec =  '';
                                 @endphp
 
+                           
+                                <!-- <tr>
+                                    <td colspan="7" class="celda"></td>
+                                    <td class="celda">Totales</td>
+                                    <td class="celda">{{$acum_total_exonerado}}</td>
+                                    <td class="celda">{{$acum_total_inafecto}}</td>
+                                    <td class="celda">{{$acum_total_free}}</td> 
+                                    <td class="celda">{{$value->total_taxed}}</td>
+                                    <td class="celda">{{$value->total_igv}}</td>
+                                    <td class="celda">{{$value->total}}</td>
+                                </tr> -->
+                                @php
+                                
+                                    if($value->currency_type_id == 'PEN'){
+                                        $acum_total_taxed +=  $signal != '07' ? $value->total_taxed : -$value->total_taxed ;
+                                        $acum_total_igv +=  $signal != '07' ? $value->total_igv : -$value->total_igv ;
+                                        $acum_total += $signal != '07' ? $value->total : -$value->total ;
+                                    }else if($value->currency_type_id == 'USD'){
+                                        $acum_total_taxed_usd += $value->total_taxed;
+                                        $acum_total_igv_usd += $value->total_igv;
+                                        $acum_total_usd += $value->total;
+                                    }
+                                @endphp
                             @endforeach
-                            <!-- <tr>
-                                <td colspan="7" class="celda"></td>
-                                <td class="celda">Totales</td>
-                                <td class="celda">{{$acum_total_exonerado}}</td>
-                                <td class="celda">{{$acum_total_inafecto}}</td>
-                                <td class="celda">{{$acum_total_free}}</td> 
-                                <td class="celda">{{$value->total_taxed}}</td>
-                                <td class="celda">{{$value->total_igv}}</td>
-                                <td class="celda">{{$value->total}}</td>
-                            </tr> -->
-                            @php
-                               
-                                if($value->currency_type_id == 'PEN'){
-                                    $acum_total_taxed += $value->total_taxed;
-                                    $acum_total_igv += $value->total_igv;
-                                    $acum_total += $value->total;
-                                }else if($value->currency_type_id == 'USD'){
-                                    $acum_total_taxed_usd += $value->total_taxed;
-                                    $acum_total_igv_usd += $value->total_igv;
-                                    $acum_total_usd += $value->total;
-                                }
-                            @endphp
                             <tr>
                                 <td class="celda" colspan="8"></td>
                                 <td class="celda" >Totales PEN</td>
