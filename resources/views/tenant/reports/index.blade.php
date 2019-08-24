@@ -120,25 +120,6 @@
                                         <td>{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                                    
                                     @php
-                                        $acum_total_taxed += $value->total_taxed;
-                                        $acum_total_igv += $value->total_igv;
-                                       
-
-                                        if($signal == '07')
-                                        {
-                                           $acum_total -= $value->total;
-                                        }
-                                        else{
-                                            $acum_total += $value->total;
-                                        }
-
-                                        $acum_total_exonerado += $value->total_exonerated;
-                                      
-                                        
-                                        $acum_total_inafecto +=  $value->total_unaffected;
-                                     
-                                       
-                                        $acum_total_free += $value->total_free;
 
                                         $serie_affec =  '';
                                     @endphp
@@ -146,32 +127,48 @@
                                     </tr>
                                     @php
                                         if($value->currency_type_id == 'PEN'){
-                                            $acum_total_taxed += $value->total_taxed;
-                                            $acum_total_igv += $value->total_igv;
-                                            $acum_total += $value->total;
+                                            $acum_total_taxed +=  $signal != '07' ? $value->total_taxed : -$value->total_taxed ;
+                                            $acum_total_igv +=  $signal != '07' ? $value->total_igv : -$value->total_igv ;
+                                            $acum_total += $signal != '07' ? $value->total : -$value->total ;
+
+                                            $acum_total_exonerado += $signal != '07' ? $value->total_exonerated : -$value->total_exonerated ;
+                                            $acum_total_inafecto += $signal != '07' ? $value->total_unaffected : -$value->total_unaffected ;
+                                            $acum_total_free += $signal != '07' ? $value->total_free : -$value->total_free ;
+
+
                                         }else if($value->currency_type_id == 'USD'){
                                             $acum_total_taxed_usd += $value->total_taxed;
                                             $acum_total_igv_usd += $value->total_igv;
                                             $acum_total_usd += $value->total;
+
+                                            
                                         }
 
                                     @endphp
                                     @endforeach
                                     <tr>
-                                        <td colspan="11"></td>
+                                        <td colspan="8"></td>
                                       
                                         <!-- <td>Totales</td>
                                         <td>{{$acum_total_exonerado}}</td>
                                         <td>{{$acum_total_inafecto}}</td>
                                         <td>{{$acum_total_free}}</td> -->
                                         <td >Totales PEN</td>
+                                        <td>{{ number_format($acum_total_exonerado, 2)}}</td>
+                                        <td>{{number_format ($acum_total_inafecto, 2 )}}</td>
+                                        <td>{{number_format($acum_total_free, 2)}}</td>
+
                                         <td>{{$acum_total_taxed}}</td>
                                         <td>{{$acum_total_igv}}</td>
                                         <td>{{$acum_total}}</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="11"></td>
+                                        <td colspan="8"></td>
                                         <td >Totales USD</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        
                                         <td>{{$acum_total_taxed_usd}}</td>
                                         <td>{{$acum_total_igv_usd}}</td>
                                         <td>{{$acum_total_usd}}</td>
