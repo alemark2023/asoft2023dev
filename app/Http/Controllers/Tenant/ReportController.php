@@ -85,7 +85,7 @@ class ReportController extends Controller
 
     
     public function pdf(Request $request) {
-        
+       
         $company = Company::first();
         $establishment = Establishment::first();
         $td = $request->td;

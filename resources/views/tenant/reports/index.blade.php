@@ -132,6 +132,7 @@
                                             $acum_total += $signal != '07' ? $value->total : -$value->total ;
 
                                             $acum_total_exonerado += $signal != '07' ? $value->total_exonerated : -$value->total_exonerated ;
+                                            
                                             $acum_total_inafecto += $signal != '07' ? $value->total_unaffected : -$value->total_unaffected ;
                                             $acum_total_free += $signal != '07' ? $value->total_free : -$value->total_free ;
 
@@ -154,7 +155,7 @@
                                         <td>{{$acum_total_inafecto}}</td>
                                         <td>{{$acum_total_free}}</td> -->
                                         <td >Totales PEN</td>
-                                        <td>{{ number_format($acum_total_exonerado, 2)}}</td>
+                                        <td>{{number_format($acum_total_exonerado, 2)}}</td>
                                         <td>{{number_format ($acum_total_inafecto, 2 )}}</td>
                                         <td>{{number_format($acum_total_free, 2)}}</td>
 
