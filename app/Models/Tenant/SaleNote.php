@@ -50,6 +50,7 @@ class SaleNote extends ModelTenant
         'legends', 
         'filename',
         'total_canceled',
+        'quotation_id',
     ];
 
     protected $casts = [
@@ -205,6 +206,12 @@ class SaleNote extends ModelTenant
     {
         return $this->hasMany(SaleNotePayment::class);
     }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
 
     public function getNumberToLetterAttribute()
     {

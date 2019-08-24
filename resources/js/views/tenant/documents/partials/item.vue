@@ -28,14 +28,14 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6">
+                    <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01" :disabled="form.item.calculate_quantity"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6">
+                    <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="userType === 'seller'">
@@ -44,12 +44,53 @@
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
+                     <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
+                        <div style="margin:3px" class="table-responsive">
+                            <h3>Lista de Precios</h3>
+                            <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Unidad</th>
+                                <th class="text-center">Descripción</th>
+                                <th class="text-center">Factor</th>
+                                <th class="text-center">Precio 1</th>
+                                <th class="text-center">Precio 2</th>
+                                <th class="text-center">Precio 3</th>
+                                <th class="text-center">Precio Default</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(row, index) in form.item_unit_types">
+                               
+                                    <td class="text-center">{{row.unit_type_id}}</td>
+                                    <td class="text-center">{{row.description}}</td>
+                                    <td class="text-center">{{row.quantity_unit}}</td>
+                                    <td class="text-center">{{row.price1}}</td>
+                                    <td class="text-center">{{row.price2}}</td>
+                                    <td class="text-center">{{row.price3}}</td>
+                                    <td class="text-center">Precio {{row.price_default}}</td>
+                                    <td class="series-table-actions text-right">
+                                       <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
+                                            <i class="el-icon-check"></i>
+                                        </button>
+                                    </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
                     <!--<div class="col-md-3 center-el-checkbox">-->
                         <!--<div class="form-group" :class="{'has-danger': errors.has_igv}">-->
                             <!--<el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox><br>-->
                             <!--<small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>-->
                         <!--</div>-->
                     <!--</div>-->
+                    <div class="col-md-3 center-el-checkbox">
+                        <div class="form-group" :class="{'has-danger': errors.has_igv}">
+                            <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
+                        </div>
+                    </div> 
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
                         <div class="form-group"  :class="{'has-danger': errors.total_item}">
                             <label class="control-label">Total venta producto</label>
@@ -59,7 +100,7 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6" v-show="has_list_prices">
+                    <!--<div class="col-md-6" v-show="has_list_prices">
                         <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
                             <label class="control-label">Presentación</label>
                             <el-select v-model="form.item_unit_type_id" filterable @change="changePresentation">
@@ -72,7 +113,7 @@
                             </el-radio-group>
                             <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="col-md-12 mt-2" v-if="form.item.warehouses">
                         <table class="table">
                             <thead>
@@ -356,7 +397,7 @@
                 activePanel: 0,
                 total_item: 0,
                 item_unit_types: [],
-                item_unit_type: {}
+                //item_unit_type: {}
             }
         },
         created() {
@@ -379,6 +420,26 @@
             })
         },
         methods: {
+             selectedPrice(row)
+            {
+                let valor = 0
+                switch(row.price_default)
+                {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                         valor = row.price2
+                        break
+                    case 3:
+                         valor = row.price3
+                        break
+
+                }
+
+                this.form.unit_price_value = valor
+                this.calculateQuantity()
+            },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
             },
@@ -402,7 +463,9 @@
                     charges: [],
                     discounts: [],
                     attributes: [],
-                    has_igv: null
+                    has_igv: null,
+                    item_unit_types: [],
+                    has_plastic_bag_taxes:false
                 };
                 
                 this.activePanel = 0;
@@ -490,15 +553,16 @@
                 this.$emit('update:showDialog', false)
             },
             changeItem() {
+               
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
+                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price_value = this.form.item.sale_unit_price;
                 this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
                 this.cleanTotalItem();
-                this.item_unit_types = this.form.item.item_unit_types;
-                
-                (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
+                //this.item_unit_types = this.form.item.item_unit_types;
+                //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
             },
             focusTotalItem(change) {
                 if(!change && this.form.item.calculate_quantity) {

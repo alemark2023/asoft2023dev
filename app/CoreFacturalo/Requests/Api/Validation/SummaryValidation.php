@@ -27,8 +27,9 @@ class SummaryValidation
                             ->where('state_type_id', '01')
                             ->take(500)
                             ->get();
-        if(!$documents) {
-            throw new Exception("No se encontraron documentos con fecha de emisión {$inputs}.");
+
+        if($documents->count() === 0) {
+            throw new Exception("No se encontraron documentos con fecha de emisión {$inputs['date_of_reference']}.");
         }
 
         $docs = [];

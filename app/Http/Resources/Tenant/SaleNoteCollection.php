@@ -16,7 +16,9 @@ class SaleNoteCollection extends ResourceCollection
     {
         return $this->collection->transform(function($row, $key) {
         
-  
+            $btn_generate = (count($row->documents) > 0)?false:true;
+            $btn_payments = (count($row->documents) > 0)?false:true;
+
             return [
                 'id' => $row->id, 
                 'soap_type_id' => $row->soap_type_id,
@@ -34,8 +36,15 @@ class SaleNoteCollection extends ResourceCollection
                 'total_igv' => $row->total_igv,
                 'total' => $row->total,
                 'state_type_id' => $row->state_type_id,
-                'state_type_description' => $row->state_type->description, 
-             
+                'state_type_description' => $row->state_type->description,
+                'documents' => $row->documents->transform(function($row) {
+                    return [
+                        'number_full' => $row->number_full,
+                    ];
+                }),
+                'btn_generate' => $btn_generate,
+                'btn_payments' => $btn_payments,
+                'changed' => (boolean) $row->changed,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

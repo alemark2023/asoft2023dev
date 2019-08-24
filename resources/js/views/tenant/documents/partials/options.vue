@@ -1,20 +1,26 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false" append-to-body>
         <div class="row">
             
             <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold" v-if="!locked_emission.success">
                 <el-alert    :title="locked_emission.message"    type="warning"    show-icon>  </el-alert>
             </div>
             
-            <div class="col-lg-6 col-md-6 col-sm-12 text-center font-weight-bold mt-4">
+            <div class="col-lg-4 col-md-4 col-sm-12 text-center font-weight-bold mt-4">
                 <p>Imprimir A4</p>
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a4')">
                     <i class="fa fa-file-alt"></i>
                 </button>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 text-center font-weight-bold mt-4">
+            <div class="col-lg-4 col-md-4 col-sm-12 text-center font-weight-bold mt-4">
                 <p>Imprimir Ticket</p>
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket')">
+                    <i class="fa fa-receipt"></i>
+                </button>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 text-center font-weight-bold mt-4">
+                <p>Imprimir A5</p>
+                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a5')">
                     <i class="fa fa-receipt"></i>
                 </button>
             </div>

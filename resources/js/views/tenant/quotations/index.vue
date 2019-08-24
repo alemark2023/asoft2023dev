@@ -19,6 +19,7 @@
                         <th>Estado</th>
                         <th>Cotización</th>
                         <th>Comprobantes</th>
+                        <th>Notas de venta</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <!-- <th class="text-right">T.Exportación</th>
@@ -31,7 +32,7 @@
                         <th class="text-center">PDF</th>
                         <th class="text-right">Acciones</th>
                     <tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
@@ -41,6 +42,11 @@
                         <td>
                             <template v-for="(document,i) in row.documents">
                                 <label :key="i" v-text="document.number_full" class="d-block"></label>
+                            </template>
+                        </td>
+                        <td>
+                            <template v-for="(sale_note,i) in row.sale_notes">
+                                <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
                             </template>
                         </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
@@ -59,11 +65,12 @@
                         </td>
                         
                         <td class="text-right"> 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" 
-                                    @click.prevent="clickOptions(row.id)">Generar comprobante</button>
-                            <a :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
-
+                            <button v-if="row.state_type_id != '11' && row.btn_generate"  type="button" class="btn waves-effect waves-light btn-xs btn-info" 
+                                    @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
+                            
+                            <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                                     
                         </td>
 
@@ -83,7 +90,11 @@
         </div>
     </div>
 </template>
-
+<style scoped>
+    .anulate_color{
+        color:red;
+    }
+</style>
 <script>
  
     import QuotationOptions from './partials/options.vue'
@@ -123,6 +134,22 @@
                 this.anular(`/${this.resource}/anular/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            duplicate(id)
+            {
+                this.$http.post(`${this.resource}/duplicate`, {id})
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success('Se guardaron los cambios correctamente.')
+
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+                  
+                })
+                this.$eventHub.$emit('reloadData')
             }
         }
     }

@@ -24,11 +24,10 @@ class RedirectModule
 
             if(count($modules)){
                 
-                if(count($modules) < 5){
+                if(count($modules) < 9){
 
                     $group = $this->getGroup($path, $module);
                     if($group){
-    
                         if($this->getModuleByGroup($modules,$group) === 0){ 
                             return $this->redirectRoute($module);                    
                         }     
@@ -48,6 +47,9 @@ class RedirectModule
 
         switch ($module) {
 
+            case 'pos':
+                return redirect()->route('tenant.pos.index'); 
+
             case 'documents':
                 return redirect()->route('tenant.documents.create');                
             
@@ -62,6 +64,12 @@ class RedirectModule
 
             case 'configuration':
                 return redirect()->route('tenant.companies.create');
+
+            case 'inventory':
+                return redirect()->route('warehouses.index');
+
+            case 'accounting':
+                return redirect()->route('tenant.account.index');
              
         }
     }
@@ -112,6 +120,10 @@ class RedirectModule
         elseif($path[0] == "purchases"){
             $group = "purchases";
             
+        } 
+        elseif($path[0] == "expenses"){
+            $group = "purchases";
+            
         }
 
         ///* Module advanced */
@@ -131,9 +143,14 @@ class RedirectModule
 
         ///* Module reports */
 
-        elseif($path[0] == "reports"){
-            $group = "reports";
-            
+        elseif($path[0] == "reports" && $path[1] == "purchases"){
+            $group = "reports";            
+        }
+        elseif($path[0] == "reports" && $path[1] == "sales"){
+            $group = "reports";            
+        }
+        elseif($path[0] == "reports" && $path[1] == "consistency-documents"){
+            $group = "reports";            
         }
 
         ///* Module configuration */
@@ -176,7 +193,41 @@ class RedirectModule
             }else{
                 $group = null;
             } 
-        }else{
+        }
+        ///* Module pos */
+        elseif($path[0] == "pos"){
+            $group = "pos";
+            
+        }
+        elseif($path[0] == "cash"){
+            $group = "pos";
+            
+        }
+
+        ///* Module inventory */
+        elseif($path[0] == "warehouses"){
+            $group = "inventory";            
+        }
+        elseif($path[0] == "inventory"){
+            $group = "inventory";            
+        }
+        elseif($path[0] == "reports" && $path[1] == "kardex"){
+            $group = "inventory";            
+        }
+        elseif($path[0] == "reports" && $path[1] == "inventory"){
+            $group = "inventory";            
+        }
+
+        ///* Module accounting */
+        elseif($path[0] == "account"){
+            $group = "accounting";            
+        }
+        // elseif($path[0] == "cash"){
+        //     $group = "pos";
+            
+        // }
+
+        else{
             $group = null;
         } 
         

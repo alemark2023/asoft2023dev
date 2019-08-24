@@ -24,7 +24,7 @@ class ReportInventoryController extends Controller
 
         $reports = ItemWarehouse::with(['item'=>function($q){
                                     $q->where('item_type_id', '01');
-                                }])->latest()->get();
+                                }])->latest()->paginate(config('tenant.items_per_page'));
                     
         return view('inventory::reports.inventory.index', compact('reports'));
     }

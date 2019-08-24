@@ -14,6 +14,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Http\Resources\Tenant\QuotationCollection;
 use App\Http\Resources\Tenant\QuotationResource;
+use App\Http\Resources\Tenant\QuotationResource2;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
 use App\Models\Tenant\Catalogs\DocumentType;  
 use Illuminate\Support\Facades\DB;
@@ -140,6 +141,13 @@ class QuotationController extends Controller
         return $record;
     }
 
+    public function record2($id)
+    {
+        $record = new QuotationResource(Quotation::findOrFail($id));
+
+        return $record;
+    }
+
     public function store(QuotationRequest $request) {
         DB::connection('tenant')->transaction(function () use ($request) {
             $data = $this->mergeData($request);
@@ -151,6 +159,8 @@ class QuotationController extends Controller
             }
             
             $this->setFilename();
+            $this->createPdf($this->quotation, "a4", $this->quotation->filename);
+
         });
         
         return [
@@ -165,14 +175,14 @@ class QuotationController extends Controller
     {
         
          DB::connection('tenant')->transaction(function () use ($request) {
-            $data = $this->mergeData($request);
+           // $data = $this->mergeData($request);
            // return $request['id'];
 
            $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
-           $this->quotation->fill($data);
+           $this->quotation->fill($request->all());
            $this->quotation->items()->delete();
             
-            foreach ($data['items'] as $row) {
+            foreach ($request['items'] as $row) {
                 
                 $this->quotation->items()->create($row);
             }
@@ -186,6 +196,36 @@ class QuotationController extends Controller
                 'id' => $this->quotation->id,
             ],
         ];
+
+    }
+
+
+    public function duplicate(Request $request)
+    {   
+       // return $request->id;
+       $obj = Quotation::find($request->id);
+       $this->quotation = $obj->replicate();
+       $this->quotation->external_id = Str::uuid()->toString();
+       $this->quotation->save();
+      
+       foreach($obj->items as $row)
+       {
+         $new = $row->replicate();
+         $new->quotation_id = $this->quotation->id;
+         $new->save();
+       }
+
+        $this->setFilename();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->quotation->id,
+            ],
+        ];
+
+       
+
 
     }
 
@@ -529,7 +569,7 @@ class QuotationController extends Controller
         $quotation = Quotation::find($request->id);
         $customer_email = $request->input('customer_email');
 
-        $this->reloadPDF($quotation, null, $quotation->filename);
+        // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
         Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
         return [

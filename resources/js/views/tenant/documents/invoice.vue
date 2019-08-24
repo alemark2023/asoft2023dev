@@ -508,6 +508,7 @@
                     total_isc: 0,
                     total_base_other_taxes: 0,
                     total_other_taxes: 0,
+                    total_plastic_bag_taxes: 0,
                     total_taxes: 0,
                     total_value: 0,
                     total: 0,
@@ -642,6 +643,7 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_plastic_bag_taxes = 0
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -666,6 +668,7 @@
                         total += parseFloat(row.total)
                     }
                     total_value += parseFloat(row.total_value)
+                    total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
                 });
 
                 this.form.total_exportation = _.round(total_exportation, 2)
@@ -676,8 +679,10 @@
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
-                this.form.total = _.round(total, 2)
-
+                this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+                // this.form.total = _.round(total, 2)
+                this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
+                
                 if(this.enabled_discount_global) this.discountGlobal()
                 this.form_payment.payment = this.form.total
 
@@ -740,6 +745,8 @@
                         this.$message.error(response.data.message);
                     }
                 }).catch(error => {
+
+                    //alert('sdsd')
                     if (error.response.status === 422) {
                         this.errors = error.response.data;
                     }

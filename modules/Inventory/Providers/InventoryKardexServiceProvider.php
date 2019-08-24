@@ -41,7 +41,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $warehouse = $this->findWarehouse();
             //$this->createInventory($document_item->item_id, $factor * $document_item->quantity, $warehouse->id);
             $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-            $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+            if(!$document_item->document->sale_note_id) $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
         });
     }
     

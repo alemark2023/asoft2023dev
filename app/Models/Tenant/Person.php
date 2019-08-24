@@ -28,6 +28,9 @@ class Person extends ModelTenant
         'email',
         'telephone',
         'perception_agent',
+        'state',
+        'condition',
+
     ];
 
     protected static function boot()

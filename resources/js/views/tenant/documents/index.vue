@@ -83,7 +83,9 @@
                         </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
+
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
+                        
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
@@ -128,6 +130,9 @@
                                     v-if="row.btn_voided"  >Anular</button>
                             <a :href="`/${resource}/note/${row.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
                                v-if="row.btn_note">Nota</a>
+                            <a :href="`/dispatches/create/${row.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                               v-if="row.btn_note">Guía</a>
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickResend(row.id)"
                                     v-if="row.btn_resend && !isClient">Reenviar</button>
@@ -164,7 +169,7 @@
     import DocumentsVoided from './partials/voided.vue'
     import DocumentOptions from './partials/options.vue'
     import DocumentPayments from './partials/payments.vue'
-    import DataTable from '../../../components/DataTable.vue'
+    import DataTable from '../../../components/DataTableDocuments.vue'
     import ItemsImport from './import.vue'
 
     export default {

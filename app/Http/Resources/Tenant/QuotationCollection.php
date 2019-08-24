@@ -16,7 +16,8 @@ class QuotationCollection extends ResourceCollection
     {
         return $this->collection->transform(function($row, $key) {
         
-  
+            $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
+
             return [
                 'id' => $row->id, 
                 'soap_type_id' => $row->soap_type_id,
@@ -40,6 +41,12 @@ class QuotationCollection extends ResourceCollection
                         'number_full' => $row->number_full, 
                     ];
                 }),
+                'sale_notes' => $row->sale_notes->transform(function($row) {
+                    return [
+                        'identifier' => $row->identifier,
+                    ];
+                }),
+                'btn_generate' => $btn_generate,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

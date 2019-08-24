@@ -103,12 +103,24 @@ class DashboardData
         $document_total = round(collect($documents)->sum('total'),2);
 
         $document_total_payment = 0;
+        $document_total_payment_discount = 0;
+
         foreach ($documents as $document)
         {
             $document_total_payment += collect($document->payments)->sum('payment');
+
+            if($document->document_type_id == '07') //nota de credito
+            {
+                $document_total_payment_discount += $document->total;
+            }
+            if($document->state_type_id == '09'  || $document->state_type_id == '11') //si es rechazado o anulado
+            {
+                $document_total_payment_discount += $document->total;
+            }
+
         }
 
-        $document_total_to_pay = round($document_total - $document_total_payment,2);
+        $document_total_to_pay = round( ($document_total - $document_total_payment_discount ) - $document_total_payment,2);
 
         return [
             'totals' => [

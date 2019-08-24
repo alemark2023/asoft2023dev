@@ -64,7 +64,10 @@ class Document extends ModelTenant
         'send_server',
         'shipping_status',
         'sunat_shipping_status',
-        'query_status'
+        'query_status',
+        'total_plastic_bag_taxes',
+        'sale_note_id'
+
     ];
 
     protected $casts = [

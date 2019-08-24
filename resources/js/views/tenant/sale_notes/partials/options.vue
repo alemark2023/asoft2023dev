@@ -23,7 +23,13 @@
                
 
             </div> 
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer" class="dialog-footer row">
+                <div class="col-md-6">   
+                    <el-input v-model="form.customer_email">
+                        <el-button slot="append" icon="el-icon-message"   @click="clickSendEmail" :loading="loading">Enviar</el-button>
+                    </el-input>
+                </div>
+                <div class="col-md-6">   
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
                 </template>
@@ -31,6 +37,7 @@
                     <el-button @click="clickFinalize">Ir al listado</el-button>
                     <el-button type="primary" @click="clickNewSaleNote">Nueva nota de venta</el-button>
                 </template>
+                </div>
             </span>
         </el-dialog>
  
@@ -98,9 +105,35 @@
             clickDownload(){
                 window.open(`/downloads/saleNote/sale_note/${this.form.external_id}`, '_blank');
             },
-            clickToPrint(){
-                window.open(`/${this.resource}/print/${this.form.id}`, '_blank');
+            clickToPrint(format){
+                window.open(`/${this.resource}/print/${this.form.id}/${format}`, '_blank');
             },
+            clickSendEmail() {
+                this.loading=true
+                this.$http.post(`/${this.resource}/email`, {
+                    customer_email: this.form.customer_email,
+                    id: this.form.id
+                })
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success('El correo fue enviado satisfactoriamente')
+                        } else {
+                            this.$message.error('Error al enviar el correo')
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors
+                        } else {
+                            this.$message.error(error.response.data.message)
+                        }
+                    })
+                    .then(() => {
+                        this.loading=false
+
+                    })
+            },
+
         }
     }
 </script>

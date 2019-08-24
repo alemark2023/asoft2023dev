@@ -199,6 +199,11 @@ class Quotation extends ModelTenant
         return $this->hasMany(Document::class);
     }
 
+    public function sale_notes()
+    {
+        return $this->hasMany(SaleNote::class);
+    }
+
   
     public function getNumberToLetterAttribute()
     {

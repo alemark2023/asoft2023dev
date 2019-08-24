@@ -11,13 +11,13 @@
                 </div>
                 <div class="card-body">
                     <div>
-                        <form action="{{route('reports.kardex.search')}}" class="el-form demo-form-inline el-form--inline" method="POST">
-                            {{csrf_field()}}
+                        <form action="{{route('reports.kardex.search')}}" class="el-form demo-form-inline el-form--inline" method="GET">
                             <div class="box">
                                 <div class="box-body no-padding">
+                                    
                                    <!-- {{Form::label('item_id', 'Producto')}}-->
                                     <!--{{Form::select('item_id', $items->pluck('description', 'id'), old('item_id', request()->item_id), ['class' => 'form-control col-md-6'])}} -->
-                                    <tenant-product :data_products="{{json_encode($items)}}"></tenant-product>
+                                    <tenant-product :data_products="{{json_encode($items)}}" :item_selected="{{json_encode(isset($_GET['item_selected']) ? $_GET['item_selected']:null)}}"></tenant-product>
                                 </div>
                                 <div class="el-form-item col-xs-12">
                                     <div class="el-form-item__content">
@@ -34,13 +34,13 @@
                                 @if(isset($reports))
                                     <form action="{{route('reports.kardex.pdf')}}" class="d-inline" method="POST">
                                         {{csrf_field()}}
-                                        <input type="hidden" name="item_id" value="{{old('item_id', request()->item_id)}}">
+                                        <input type="hidden" name="item_id" value="{{$_GET['item_selected']}}">
                                         <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
                                         {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                     </form>
                                 <form action="{{route('reports.kardex.report_excel')}}" class="d-inline" method="POST">
                                     {{csrf_field()}}
-                                    <input type="hidden" name="item_id" value="{{old('item_id', request()->item_id)}}">
+                                    <input type="hidden" name="item_id" value="{{$_GET['item_selected']}}">
                                     <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-excel"></i> Exportar Excel</button>
                                     {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                 </form>
@@ -67,10 +67,10 @@
 
                                             @switch($value->inventory_kardexable_type)
                                                 @case($models[0])
-                                                    {{($value->quantity < 0) ? "Venta":"Anulación"}}
+                                                    {{($value->quantity < 0) ? "Venta":"Anulación Venta"}}
                                                     @break
                                                 @case($models[1])
-                                                    {{"Compra"}}                                                    
+                                                    {{($value->quantity < 0) ? "Anulación Compra":"Compra"}}
                                                     @break 
                                                     
                                                 @case($models[2])
@@ -147,10 +147,10 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper">
-                                {{-- {{ $reports->appends(['search' => Session::get('form_document_list')])->render()  }} --}}
-                                {{-- {{$reports->links()}} --}}
-                            </div>
+                            Total {{$reports->total()}}
+                            <label class="pagination-wrapper ml-2">
+                                {{$reports->appends($_GET)->render()}} 
+                            </label>
                         </div>
                     </div>
                     @else
