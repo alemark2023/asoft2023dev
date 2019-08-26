@@ -80,6 +80,7 @@
                 form: {},
                 document:{},
                 document_types: [],
+                all_document_types: [],
                 all_series: [],
                 series: [],
                 generate:false,
@@ -227,24 +228,44 @@
                 this.document.payments = q.payments;
                 //console.log(this.document);
             },
-            create() {
+            async create() {
 
-                this.$http.get(`/${this.resource}/option/tables`).then(response => {
-                    this.document_types = response.data.document_types_invoice;
+                await this.$http.get(`/${this.resource}/option/tables`).then(response => {
+                    this.all_document_types = response.data.document_types_invoice;
                     this.all_series = response.data.series;
-                    this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
-                    this.changeDocumentType();
+                    // this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
+                    // this.changeDocumentType();
                 });
 
-                this.$http.get(`/${this.resource}/record/${this.recordId}`)
+                await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        this.validateIdentityDocumentType()
+
                         this.assignDocument();
                         this.titleDialog = 'Nota de venta registrada: '+this.form.identifier
                     })
             },
             changeDocumentType() {
                 this.filterSeries();
+            },
+            async validateIdentityDocumentType(){
+
+                let identity_document_types = ['0','1']
+
+
+                if(identity_document_types.includes(this.form.sale_note.customer.identity_document_type_id)){
+
+                    this.document_types = _.filter(this.all_document_types,{'id':'03'})
+
+                }else{
+                    this.document_types = this.all_document_types
+
+                }
+
+                this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
+                await this.changeDocumentType()
+                
             },
             filterSeries() {
                 this.document.series_id = null

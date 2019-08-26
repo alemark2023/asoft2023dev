@@ -70,7 +70,7 @@
                         <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4" v-show="is_document_type_invoice">
                     <div class="form-group" :class="{'has-danger': errors.series_id}">
                         <label class="control-label">Serie</label>
                         <el-select v-model="document.series_id">
@@ -130,6 +130,7 @@
                 form: {},
                 document:{},
                 document_types: [],
+                all_document_types: [],
                 all_series: [],
                 series: [],
                 generate:false,
@@ -137,6 +138,7 @@
                 showDialogDocumentOptions: false,
                 showDialogSaleNoteOptions: false,
                 documentNewId: null,
+                is_document_type_invoice:true
                 
             }
         },
@@ -293,16 +295,16 @@
             async create() {
 
                 await this.$http.get(`/${this.resource}/option/tables`).then(response => {
-                    this.document_types = response.data.document_types_invoice
+                    this.all_document_types = response.data.document_types_invoice
                     this.all_series = response.data.series                     
-                    this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-                    this.changeDocumentType()
+                    // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
+                    // this.changeDocumentType()
                 })
 
-                this.$http.get(`/${this.resource}/record2/${this.recordId}`)
+                await this.$http.get(`/${this.resource}/record2/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
-
+                        this.validateIdentityDocumentType()
                         let type = this.type == 'edit' ? 'editada' : 'registrada'
                         this.titleDialog = `Cotización ${type}: '` +this.form.identifier
                     })
@@ -312,7 +314,28 @@
                 this.series = [];
                 if(this.document.document_type_id !== 'nv') {
                     this.filterSeries();
+                    this.is_document_type_invoice = true
+                }else{
+                    this.is_document_type_invoice = false
                 }
+            },
+            async validateIdentityDocumentType(){
+
+                let identity_document_types = ['0','1']
+
+
+                if(identity_document_types.includes(this.form.quotation.customer.identity_document_type_id)){
+
+                    this.document_types = _.filter(this.all_document_types,{'id':'03'})
+
+                }else{
+                    this.document_types = this.all_document_types
+
+                }
+
+                this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
+                await this.changeDocumentType()
+                
             },
             filterSeries() {
                 this.document.series_id = null
