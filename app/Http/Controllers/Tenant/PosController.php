@@ -55,7 +55,7 @@ class PosController extends Controller
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,            
-                                    'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image),
+                                    'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
 
                                 ];
                             }); 
@@ -130,7 +130,7 @@ class PosController extends Controller
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,
-                                    'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image),
+                                    'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
                                 ];
                             }); 
             return $items;

@@ -34,8 +34,8 @@
                         <td>{{ index }}</td>
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
-                        <td>{{ row.name }}</td>
                         <td>{{ row.description }}</td>
+                        <td>{{ row.name }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
                             <template v-if="typeUser=='seller'">{{ row.stock }}</template>

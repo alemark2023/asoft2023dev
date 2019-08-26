@@ -23,12 +23,12 @@ class ItemRequest extends FormRequest
             'description' => [
                 'required',
             ],
-            'name' => [                
-                'required',
-            ],
-            'second_name' => [                
-                'required',
-            ],
+            // 'name' => [                
+            //     'required',
+            // ],
+            // 'second_name' => [                
+            //     'required',
+            // ],
             'unit_type_id' => [
                 'required',
             ],
@@ -57,6 +57,13 @@ class ItemRequest extends FormRequest
             'purchase_affectation_igv_type_id' => [
                 'required'
             ],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'description.required' => 'El campo nombre es obligatorio.',
         ];
     }
 }
