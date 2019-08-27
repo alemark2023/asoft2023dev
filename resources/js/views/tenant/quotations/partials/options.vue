@@ -285,6 +285,7 @@
                 this.document.charges = q.charges
                 this.document.discounts = q.discounts
                 this.document.attributes = []
+                this.document.payments = []
                 this.document.guides = q.guides
                 this.document.additional_information =null
                 this.document.actions = {
