@@ -82,9 +82,10 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Fecha y hora</th>
+                                <th>Fecha y hora transacción</th>
                                 <th>Tipo transacción</th>
                                 <th>Número</th>
+                                <th>Feha emisión</th>
                                 <th>Entrada</th>
                                 <th>Salida</th>
                                 <th>Saldo</th>
@@ -133,6 +134,26 @@
                                                 {{"-"}}                                                 
                                                 @break  
                                         @endswitch
+
+                                    </td>
+                                    <td class="celda">
+
+                                        @switch($value->inventory_kardexable_type)
+                                            @case($models[0])
+                                                {{ optional($value->inventory_kardexable->date_of_issue)->format('Y-m-d') }}
+                                                @break
+                                            @case($models[1])
+                                                {{ optional($value->inventory_kardexable->date_of_issue)->format('Y-m-d') }}
+                                                @break
+                                            @case($models[2])
+                                                {{ optional($value->inventory_kardexable->date_of_issue)->format('Y-m-d') }}
+                                                @break
+                                            @case($models[3])
+                                                {{"-"}}                                                 
+                                                @break  
+                                        @endswitch
+
+
 
                                     </td>
                                     <td class="celda">

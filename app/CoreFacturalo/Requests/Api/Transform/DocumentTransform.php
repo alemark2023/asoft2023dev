@@ -52,12 +52,13 @@ class DocumentTransform
             'legends' => LegendTransform::transform($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
             'actions' => ActionTransform::transform($inputs),
+            'payments' => self::payments($inputs),
             'data_json' => $inputs
         ];
 
         $inputs_transform = self::invoice($inputs_transform, $inputs);
         $inputs_transform = self::note($inputs_transform, $inputs);
-
+        
         return $inputs_transform;
     }
 
@@ -275,4 +276,32 @@ class DocumentTransform
         }
         return $inputs_transform;
     }
+
+
+    private static function payments($inputs)
+    {
+        if(in_array($inputs['codigo_tipo_documento'], ['01', '03'])) {
+
+            $payments = [];
+
+            if(key_exists('pagos', $inputs)) {
+
+                foreach ($inputs['pagos'] as $row) {
+                    $payments[] = [
+                        'date_of_payment' => Functions::valueKeyInArray($inputs, 'fecha_de_emision'),
+                        'payment_method_type_id' => $row['codigo_metodo_pago'],
+                        'reference' => Functions::valueKeyInArray($row, 'referencia'), 
+                        'payment' => Functions::valueKeyInArray($row, 'monto', 0), 
+                    ];
+                } 
+
+            }
+
+            return $payments;
+
+        } 
+
+        return [];
+    }
+
 }
