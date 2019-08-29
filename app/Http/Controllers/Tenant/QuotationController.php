@@ -206,6 +206,7 @@ class QuotationController extends Controller
        $obj = Quotation::find($request->id);
        $this->quotation = $obj->replicate();
        $this->quotation->external_id = Str::uuid()->toString();
+       $this->quotation->state_type_id = '01' ;
        $this->quotation->save();
       
        foreach($obj->items as $row)
@@ -223,9 +224,6 @@ class QuotationController extends Controller
                 'id' => $this->quotation->id,
             ],
         ];
-
-       
-
 
     }
 

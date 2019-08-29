@@ -10,6 +10,18 @@
             </div>
         </div>
         <div class="card mb-0">
+            <div class="data-table-visible-columns">
+                <el-dropdown :hide-on-click="false">
+                    <el-button type="primary">
+                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
             <div class="card-body">
                 <data-table :resource="resource">
                     <tr slot="heading">
@@ -22,10 +34,9 @@
                         <th>Notas de venta</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
-                        <!-- <th class="text-right">T.Exportación</th>
-                        <th class="text-right">T.Gratuita</th>
-                        <th class="text-right">T.Inafecta</th>
-                        <th class="text-right">T.Exonerado</th> -->
+                        <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
+                        <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
+                        <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
@@ -51,10 +62,9 @@
                         </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
-                        <!-- <td class="text-right">{{ row.total_exportation }}</td>
-                        <td class="text-right">{{ row.total_free }}</td>
-                        <td class="text-right">{{ row.total_unaffected }}</td>
-                        <td class="text-right">{{ row.total_exonerated }}</td> -->
+                        <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
+                        <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
+                        <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td> 
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
@@ -110,7 +120,21 @@
                 resource: 'quotations',
                 recordId: null,
                 showDialogOptions: false,
-                showDialogOptionsPdf: false
+                showDialogOptionsPdf: false,
+                columns: {
+                    total_exportation: {
+                        title: 'T.Exportación',
+                        visible: false
+                    },
+                    total_unaffected: {
+                        title: 'T.Inafecto',
+                        visible: false
+                    },
+                    total_exonerated: {
+                        title: 'T.Exonerado',
+                        visible: false
+                    }
+                }
             }
         },
         created() {
