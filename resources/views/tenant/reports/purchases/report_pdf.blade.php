@@ -89,6 +89,9 @@
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th class="">F. Pago</th>
+                                <th class="" >T.Exonerado</th>
+                                <th class="" >T.Inafecta</th>
+                                <th class="" >T.Gratuito</th>
                                 <th>Total Gravado</th>
                                 <th>Total IGV</th>
                                 <th>Total</th>
@@ -105,6 +108,11 @@
                                     <td class="celda">{{$value->supplier->name}}</td>
                                     <td class="celda">{{$value->supplier->number}}</td>
                                     <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
+
+                                    <td class="celda">{{$value->total_exonerated}}</td>
+                                    <td class="celda">{{$value->total_unaffected}}</td>
+                                    <td class="celda">{{$value->total_free}}</td>
+
                                     <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
                                     <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
                                     <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total}}</td>

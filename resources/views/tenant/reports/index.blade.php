@@ -120,7 +120,6 @@
                                         <td>{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
                                    
                                     @php
-
                                         $serie_affec =  '';
                                     @endphp
   
