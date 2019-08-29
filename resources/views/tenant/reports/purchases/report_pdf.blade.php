@@ -100,6 +100,8 @@
                         <tbody>
                             @foreach($reports as $key => $value)
                                 <tr>
+
+                                
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->document_type->id}}</td>
                                     <td class="celda">{{$value->series}}-{{$value->number}}</td>
@@ -116,6 +118,8 @@
                                     <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
                                     <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
                                     <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total}}</td>
+
+
                                 </tr>
                             @endforeach
                         </tbody>
