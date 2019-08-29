@@ -107,13 +107,13 @@
 
                                             @switch($value->inventory_kardexable_type)
                                                 @case($models[0])
-                                                    {{ optional($value->inventory_kardexable)->date_of_issue->format('Y-m-d') }}
+                                                    {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                     @break
                                                 @case($models[1])
-                                                    {{ optional($value->inventory_kardexable)->date_of_issue->format('Y-m-d') }}
+                                                    {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                     @break
                                                 @case($models[2])
-                                                    {{ optional($value->inventory_kardexable)->date_of_issue->format('Y-m-d') }}
+                                                    {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                     @break
                                                 @case($models[3])
                                                     {{"-"}}                                                 
