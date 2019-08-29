@@ -51,3 +51,7 @@ Para actualizar el certificado SSL instalado con el manual de Docker+SSL: [Guía
 ## Cambio de entornos (Prueba - Producción)
 
 Visite el siguiente enlace: [Guía](https://docs.google.com/document/d/1IBXczY4b1YvSnGdFlIklpb8HGlQcP1lN44rpXbtYyUc/edit "Clic")
+
+## Manual de Tareas Programadas
+
+Visite el siguiente enlace: [Guía](https://docs.google.com/document/d/1Cu3Kpgv9HvMAV4fwVNbR-CFc0uTu_-qEVLT-MIuxBTQ/edit?usp=sharing "Clic")
