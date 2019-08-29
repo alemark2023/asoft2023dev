@@ -131,7 +131,7 @@
                                                  @break
 
                                             @case($models[1])
-                                                {{  $value->quantity }}                                                    
+                                                {{ ($value->quantity > 0) ?  $value->quantity:"-"}}                                                    
                                                 @break 
                                                 
                                             @case($models[3])
@@ -148,6 +148,10 @@
                                         @switch($value->inventory_kardexable_type) 
                                             @case($models[0])
                                                 {{ ($value->quantity < 0) ?  $value->quantity:"-" }}                                                    
+                                                @break 
+
+                                            @case($models[1])
+                                                {{ ($value->quantity < 0) ?  $value->quantity:"-"}}                                                    
                                                 @break 
                                             @case($models[2])
                                                 {{  $value->quantity }}                                                    
