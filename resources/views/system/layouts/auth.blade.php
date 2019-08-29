@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/css/fontawesome-all.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.26.29/sweetalert2.min.css" />
+    <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
+
 </head>
 
 <body>
