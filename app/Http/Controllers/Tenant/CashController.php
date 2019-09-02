@@ -121,7 +121,7 @@ class CashController extends Controller
 
     public function cash_document(Request $request) {
                
-        $cash = Cash::where('user_id',auth()->user()->id)->first();
+        $cash = Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
         $cash->cash_documents()->create(['document_id'=>$request->document_id]);
           
         return [
