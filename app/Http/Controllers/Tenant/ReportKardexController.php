@@ -50,6 +50,7 @@ class ReportKardexController extends Controller
             ->where('item_id', $request->item_id)
             ->orderBy('id')
             ->get();
+            
         
         return view('tenant.reports.kardex.index', compact('items', 'reports', 'balance'));
     }
