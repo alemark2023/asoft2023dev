@@ -4,30 +4,47 @@
             <div class="form-body">
                 <div class="row">
 
-                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.name}">
-                            <label class="control-label">Nombre  <span class="text-danger">*</span></label>
-                            <el-input v-model="form.name" dusk="name"></el-input>
-                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
-                        </div>
-                    </div>
-
-                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.second_name}">
-                            <label class="control-label">Nombre secundario <span class="text-danger">*</span></label>
-                            <el-input v-model="form.second_name" dusk="second_name"></el-input>
-                            <small class="form-control-feedback" v-if="errors.second_name" v-text="errors.second_name[0]"></small>
-                        </div>
-                    </div>
-
-
-                    <div class="col-md-9">
+                    <!-- <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.description}">
                             <label class="control-label">Descripción <span class="text-danger">*</span></label>
                             <el-input v-model="form.description" dusk="description"></el-input>
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
+                    </div> -->
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.description}">
+                            <label class="control-label">Nombre<span class="text-danger">*</span></label>
+                            <el-input v-model="form.description" dusk="description"></el-input>
+                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                        </div>
                     </div>
+
+                     <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.second_name}">
+                            <label class="control-label">Nombre secundario </label>
+                            <el-input v-model="form.second_name" dusk="second_name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.second_name" v-text="errors.second_name[0]"></small>
+                        </div>
+                    </div>
+
+                    
+                     <!-- <div class="col-md-9">
+                        <div class="form-group" :class="{'has-danger': errors.name}">
+                            <label class="control-label">Nombre  <span class="text-danger">*</span></label>
+                            <el-input v-model="form.name" dusk="name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                        </div>
+                    </div> -->
+                     <div class="col-md-9">
+                        <div class="form-group" :class="{'has-danger': errors.name}">
+                            <label class="control-label">Descripción</label>
+                            <el-input v-model="form.name" dusk="name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                        </div>
+                    </div>
+
+
+                    
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                             <label class="control-label">Unidad</label>

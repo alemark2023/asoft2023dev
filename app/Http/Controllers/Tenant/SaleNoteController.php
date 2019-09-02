@@ -159,6 +159,10 @@ class SaleNoteController extends Controller
             {
                 $this->sale_note->items()->create($row);
             }     
+            //pagos
+            foreach ($data['payments'] as $row) {
+                $this->sale_note->payments()->create($row);
+            } 
 
             $this->setFilename();
             $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
@@ -238,7 +242,7 @@ class SaleNoteController extends Controller
         
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
          
-        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58') OR ($format_pdf === 'ticket_80')) {
+        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
  
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;

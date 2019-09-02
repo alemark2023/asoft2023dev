@@ -129,31 +129,48 @@
                             </div> 
                         </div>
 
-                        <div class="row">
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
-                                    <label class="control-label">Método de pago</label>
-                                    <el-select v-model="form_payment.payment_method_type_id" >
-                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                    <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.reference}">
-                                    <label class="control-label">Referencia</label> 
-                                    <el-input v-model="form_payment.reference"></el-input>                           
-                                    <small class="form-control-feedback" v-if="errors.reference" v-text="errors.reference[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.payment}">
-                                    <label class="control-label">Monto</label>
-                                    <el-input v-model="form_payment.payment"></el-input> 
-                                    <small class="form-control-feedback" v-if="errors.payment" v-text="errors.payment[0]"></small>
-                                </div>
-                            </div>
+                        <div class="row col-lg-8">
+
+                            <table>
+                                <thead>
+                                    <tr width="100%">
+                                        <th v-if="form.payments.length>0">Método de pago</th>
+                                        <th v-if="form.payments.length>0">Referencia</th>
+                                        <th v-if="form.payments.length>0">Monto</th>
+                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                        <td>
+                                            <div class="form-group mb-2 mr-2">
+                                                <el-select v-model="row.payment_method_type_id">
+                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2"  >
+                                                <el-input v-model="row.reference"></el-input>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2" >
+                                                <el-input v-model="row.payment"></el-input>
+                                            </div>
+                                        </td>
+                                        <td class="series-table-actions text-center"> 
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td> 
+                                        <br>
+                                    </tr>
+                                </tbody> 
+                            </table> 
+                            
                         </div>
+
 
                         <div class="row mt-2">
                             <div class="col-md-12">
@@ -453,7 +470,19 @@
             })
         },
         methods: {
-
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    document_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: 0,
+                });
+            },            
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
+            },
             ediItem(row, index)
             {
                 row.indexi = index
@@ -519,21 +548,14 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payments: [],
                     additional_information:null,
                     actions: {
                         format_pdf:'a4',
                     }
                 }
-
-                this.form_payment = {
-                    id: null,
-                    document_id: null,
-                    date_of_payment:  moment().format('YYYY-MM-DD'),
-                    payment_method_type_id: '01',
-                    reference: null,
-                    payment: null,
-                }
-
+ 
+                this.clickAddPayment()
                 this.is_receivable = false
                 this.total_global_discount = 0
                 this.is_amount = true
@@ -569,11 +591,16 @@
             },
             changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
-                this.form_payment.date_of_payment = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
             },
+            assignmentDateOfPayment(){
+                this.form.payments.forEach((payment)=>{
+                    payment.date_of_payment = this.form.date_of_issue
+                })
+            },
+
             filterSeries() {
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id,
@@ -684,7 +711,6 @@
                 this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
                 
                 if(this.enabled_discount_global) this.discountGlobal()
-                this.form_payment.payment = this.form.total
 
             },
             changeTypeDiscount(){
@@ -726,17 +752,17 @@
 
                 // console.log(this.form.discounts)
             }, 
-            submit() {
+            async submit() {
                 
-                if(this.form_payment.payment > parseFloat(this.form.total) || this.form_payment.payment < 0) {
-                    return this.$message.error('El monto ingresado supera al monto a pagar o es incorrecto.');
+                let validate = await this.validate_payments()
+                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                 }
+
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
-                        this.form_payment.document_id = response.data.data.id;
-                        this.document_payment()
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -757,29 +783,29 @@
                     this.loading_submit = false;
                 });
             },
-            document_payment(){
+            validate_payments(){
 
-                if(!this.is_receivable){
+                //eliminando items de pagos
+                for (let index = 0; index < this.form.payments.length; index++) {
+                    if(parseFloat(this.form.payments[index].payment) === 0)
+                        this.form.payments.splice(index, 1)                    
+                }   
 
-                    this.$http.post(`/document_payments`, this.form_payment)
-                    .then(response => {
-                        if (response.data.success) { 
-                        } else {
-                            this.$message.error(response.data.message);
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.records[index].errors = error.response.data;
-                        } else {
-                            console.log(error);
-                        }
-                    })
+                let error_by_item = 0
+                let acum_total = 0
 
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
                 }
-                
 
             },
+ 
             close() {
                 location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
             },
