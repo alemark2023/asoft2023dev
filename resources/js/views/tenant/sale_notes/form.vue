@@ -265,7 +265,7 @@
             })
 
             if (this.id) {
-                console.log(this.id);
+                // console.log(this.id);
                 await this.$http.get(`/${this.resource}/record2/${this.id}`)
                     .then(response => {
                         this.form = response.data.data;
@@ -445,9 +445,9 @@
                 this.form.total = _.round(total, 2)
                 this.form_payment.payment = this.form.total
              },
-            submit() {
+            async submit() {
 
-                let validate = this.validate_payments()
+                let validate = await this.validate_payments()
                 if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
                     return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                 }
@@ -479,6 +479,11 @@
                 });
             },
             validate_payments(){
+
+                for (let index = 0; index < this.form.payments.length; index++) {
+                    if(parseFloat(this.form.payments[index].payment) === 0)
+                        this.form.payments.splice(index, 1)                    
+                } 
 
                 let error_by_item = 0
                 let acum_total = 0

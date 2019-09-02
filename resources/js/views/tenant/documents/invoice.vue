@@ -752,9 +752,9 @@
 
                 // console.log(this.form.discounts)
             }, 
-            submit() {
+            async submit() {
                 
-                let validate = this.validate_payments()
+                let validate = await this.validate_payments()
                 if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
                     return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                 }
@@ -784,6 +784,12 @@
                 });
             },
             validate_payments(){
+
+                //eliminando items de pagos
+                for (let index = 0; index < this.form.payments.length; index++) {
+                    if(parseFloat(this.form.payments[index].payment) === 0)
+                        this.form.payments.splice(index, 1)                    
+                }   
 
                 let error_by_item = 0
                 let acum_total = 0
