@@ -29,8 +29,9 @@
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
     
-    <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
-
+    @if (file_exists(public_path('theme/custom_styles.css')))
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
+    @endif
     
     {{--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />--}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.26.29/sweetalert2.min.css" />
