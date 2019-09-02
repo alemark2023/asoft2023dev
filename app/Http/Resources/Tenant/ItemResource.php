@@ -42,7 +42,7 @@ class ItemResource extends JsonResource
             'item_unit_types' => $this->item_unit_types,
             'image' => $this->image,
             'account_id' => $this->account_id,
-            'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image),
+            'image_url' => ($this->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image) : asset("/logo/{$this->image}"),
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

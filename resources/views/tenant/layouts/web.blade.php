@@ -48,7 +48,10 @@
 {{--    <link rel="stylesheet" href="{{asset('porto-light/vendor/bootstrap-timepicker/css/bootstrap-timepicker.css')}}" />--}}
 
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-loading/dist/jquery.loading.css')}}" />
-
+    
+    @if (file_exists(public_path('theme/custom_styles.css')))
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
+    @endif
     {{--@stack('styles')--}}
 
 

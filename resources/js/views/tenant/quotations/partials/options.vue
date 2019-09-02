@@ -43,6 +43,27 @@
             </div>
             <div class="row" v-if="generate">
 
+                
+                <div class="col-lg-12 pb-2">
+                    <div class="form-group" >
+                        <label class="control-label font-weight-bold text-info">
+                            Cliente
+                            <!-- <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a> -->
+                        </label>
+                        <el-select v-model="document.customer_id" filterable remote class="border-left rounded-left border-info" popper-class="el-select-customers" 
+                            dusk="customer_id"                                    
+                            placeholder="Escriba el nombre o número de documento del cliente"
+                            :remote-method="searchRemoteCustomers"
+                            @change="changeCustomer"
+                            :loading="loading_search">
+
+                            <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+                    </div>
+                </div>
+
                  <div class="col-lg-6">
                     <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                         <label class="control-label">Fecha de emisión</label>
@@ -70,7 +91,7 @@
                         <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-4" v-show="is_document_type_invoice">
                     <div class="form-group" :class="{'has-danger': errors.series_id}">
                         <label class="control-label">Serie</label>
                         <el-select v-model="document.series_id">
@@ -130,14 +151,17 @@
                 form: {},
                 document:{},
                 document_types: [],
+                all_document_types: [],
                 all_series: [],
                 series: [],
+                customers: [],
                 generate:false,
                 loading_submit:false,
                 showDialogDocumentOptions: false,
                 showDialogSaleNoteOptions: false,
                 documentNewId: null,
-                
+                is_document_type_invoice:true,
+                loading_search:false
             }
         },
         created() {
@@ -155,6 +179,31 @@
                     date_of_issue:null,
                     quotation:null,
                 }
+            },
+            getCustomer(){
+                this.$http.get(`/${this.resource_documents}/search/customer/${this.form.quotation.customer_id}`).then((response) => {
+                    this.customers = response.data.customers
+                    this.document.customer_id = this.form.quotation.customer_id
+                    this.changeCustomer()
+                }) 
+            },     
+            changeCustomer(){
+                this.validateIdentityDocumentType()
+            },       
+            searchRemoteCustomers(input) {  
+                  
+                if (input.length > 0) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&operation_type_id=${this.form.operation_type_id}`
+
+                    this.$http.get(`/${this.resource}/search/customers?${parameters}`)
+                            .then(response => { 
+                                this.customers = response.data.customers
+                                this.loading_search = false
+                            })  
+                }  
+
             },
             initDocument(){
 
@@ -233,8 +282,9 @@
                             }
 
                             this.$eventHub.$emit('reloadData')
-                            this.resetDocument() 
-
+                            this.resetDocument()                             
+                            this.document.customer_id = this.form.quotation.customer_id
+                            this.changeCustomer() 
                         }
                         else {
                             this.$message.error(response.data.message);
@@ -257,7 +307,7 @@
                 this.document.establishment_id = q.establishment_id  
                 // this.document.date_of_issue = q.date_of_issue
                 this.document.time_of_issue = moment().format('HH:mm:ss')
-                this.document.customer_id = q.customer_id
+                // this.document.customer_id = q.customer_id
                 this.document.currency_type_id = q.currency_type_id
                 this.document.purchase_order = null
                 this.document.exchange_rate_sale = q.exchange_rate_sale
@@ -283,6 +333,7 @@
                 this.document.charges = q.charges
                 this.document.discounts = q.discounts
                 this.document.attributes = []
+                this.document.payments = []
                 this.document.guides = q.guides
                 this.document.additional_information =null
                 this.document.actions = {
@@ -293,16 +344,17 @@
             async create() {
 
                 await this.$http.get(`/${this.resource}/option/tables`).then(response => {
-                    this.document_types = response.data.document_types_invoice
+                    this.all_document_types = response.data.document_types_invoice
                     this.all_series = response.data.series                     
-                    this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
-                    this.changeDocumentType()
+                    // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
+                    // this.changeDocumentType()
                 })
 
-                this.$http.get(`/${this.resource}/record2/${this.recordId}`)
+                await this.$http.get(`/${this.resource}/record2/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
-
+                        // this.validateIdentityDocumentType()
+                        this.getCustomer()
                         let type = this.type == 'edit' ? 'editada' : 'registrada'
                         this.titleDialog = `Cotización ${type}: '` +this.form.identifier
                     })
@@ -312,7 +364,29 @@
                 this.series = [];
                 if(this.document.document_type_id !== 'nv') {
                     this.filterSeries();
+                    this.is_document_type_invoice = true
+                }else{
+                    this.is_document_type_invoice = false
                 }
+            },
+            async validateIdentityDocumentType(){
+
+                let identity_document_types = ['0','1']
+                // console.log(this.document)
+                let customer = _.find(this.customers,{'id':this.document.customer_id})
+
+                if(identity_document_types.includes(customer.identity_document_type_id)){
+
+                    this.document_types = _.filter(this.all_document_types,{'id':'03'})
+
+                }else{
+                    this.document_types = this.all_document_types
+
+                }
+
+                this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
+                await this.changeDocumentType()
+                
             },
             filterSeries() {
                 this.document.series_id = null
