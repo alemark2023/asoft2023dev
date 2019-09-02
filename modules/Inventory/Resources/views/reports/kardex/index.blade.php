@@ -93,7 +93,7 @@
                                                     {{ optional($value->inventory_kardexable)->series.'-'.optional($value->inventory_kardexable)->number }}
                                                     @break
                                                 @case($models[2])
-                                                    {{ optional($value->inventory_kardexable)->series.'-'.optional($value->inventory_kardexable)->number }}
+                                                    {{ optional($value->inventory_kardexable)->prefix.'-'.optional($value->inventory_kardexable)->id }}
                                                     @break
                                                 @case($models[3])
                                                     {{"-"}}                                                 
