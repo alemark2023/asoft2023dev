@@ -50,6 +50,40 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
+                        <div style="margin:3px" class="table-responsive">
+                            <h3>Lista de Precios</h3>
+                            <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Unidad</th>
+                                <th class="text-center">Descripción</th>
+                                <th class="text-center">Factor</th>
+                               
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(row, index) in form.item_unit_types">
+                               
+                                    <td class="text-center">{{row.unit_type_id}}</td>
+                                    <td class="text-center">{{row.description}}</td>
+                                    <td class="text-center">{{row.quantity_unit}}</td>
+                 
+                                    <td class="series-table-actions text-right">
+                                       <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
+                                            <i class="el-icon-check"></i>
+                                        </button>
+                                    </td>
+                                
+                               
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        </div>
+                        
+                    </div>
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
                                 <header class="card-header hoverable bg-light border-top rounded-0 py-1" data-card-toggle style="cursor: pointer;" id="card-click">
@@ -243,7 +277,10 @@
                     charges: [],
                     discounts: [],
                     attributes: [],
+                    item_unit_types: []
                 }
+
+                this.item_unit_type = {};
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -309,16 +346,29 @@
                 this.initForm()
                 this.$emit('update:showDialog', false)
             },
+            selectedPrice(row)
+            {
+
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+
+               // this.form.unit_price = valor
+                this.form.item.unit_type_id = row.unit_type_id
+            },
             changeItem() {
                 this.form.item = _.find(this.items, {'id': this.form.item_id})
                 this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
+
+                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             },
             clickAddItem() {
                 this.form.item.unit_price = this.form.unit_price
+                this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
                 this.row = this.changeWarehouse(this.row)
+             
                 this.initForm()
                 // this.initializeFields() 
                 this.$emit('add', this.row)
