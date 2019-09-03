@@ -255,6 +255,7 @@
         methods: {
             selectedPrice(row)
             {
+                debugger
                 let valor = 0
                 switch(row.price_default)
                 {
