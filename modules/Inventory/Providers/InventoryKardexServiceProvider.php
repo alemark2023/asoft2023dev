@@ -47,7 +47,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
     
     private function sale_note() {
         SaleNoteItem::created(function ($sale_note_item) {
-            $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
+            $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
             
             $warehouse = $this->findWarehouse();
             //$this->createInventory($sale_note_item->item_id, -1 * $sale_note_item->quantity, $warehouse->id);

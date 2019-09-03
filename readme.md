@@ -22,7 +22,7 @@ Visite el [Manual de usuario](https://docs.google.com/document/d/1i7yKGy3rIvv9Tr
 
 Para conocer acerca de la API, visite la [documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 
-Además puede realizar sus pruebas usando [Postman Collection](https://drive.google.com/open?id=1c-CcTljMfXBhAkzWbb3v29-_trsi4UKw "Clic")
+Además puede realizar sus pruebas usando [Postman Collection](https://drive.google.com/open?id=14dLTSuagNAGMUe4QhXnQ7FON4ombm0y0 "Clic")
 
 ## Pruebas
 
@@ -51,3 +51,7 @@ Para actualizar el certificado SSL instalado con el manual de Docker+SSL: [Guía
 ## Cambio de entornos (Prueba - Producción)
 
 Visite el siguiente enlace: [Guía](https://docs.google.com/document/d/1IBXczY4b1YvSnGdFlIklpb8HGlQcP1lN44rpXbtYyUc/edit "Clic")
+
+## Manual de Tareas Programadas
+
+Visite el siguiente enlace: [Guía](https://docs.google.com/document/d/1Cu3Kpgv9HvMAV4fwVNbR-CFc0uTu_-qEVLT-MIuxBTQ/edit?usp=sharing "Clic")

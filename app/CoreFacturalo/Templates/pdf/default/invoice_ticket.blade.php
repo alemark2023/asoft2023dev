@@ -6,6 +6,7 @@
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $accounts = \App\Models\Tenant\BankAccount::all();
     $document_base = ($document->note) ? $document->note : null;
+    $payments = $document->payments;
 
 @endphp
 <html>
@@ -288,9 +289,24 @@
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
+
+    @if($payments->count())
+        <tr>
+            <td class="desc pt-5">
+                <strong>PAGOS:</strong> 
+            </td>
+        </tr> 
+        @foreach($payments as $row)
+            <tr>
+                <td class="desc">- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+            </tr> 
+        @endforeach
+    @endif
+
     <tr>
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
 </table>
+ 
 </body>
 </html>
