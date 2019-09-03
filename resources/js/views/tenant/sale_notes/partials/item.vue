@@ -271,6 +271,7 @@
                 }
 
                 this.form.unit_price = valor
+                this.form.item.unit_type_id = row.unit_type_id
             },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)

@@ -420,26 +420,7 @@
             })
         },
         methods: {
-             selectedPrice(row)
-            {
-                let valor = 0
-                switch(row.price_default)
-                {
-                    case 1:
-                        valor = row.price1
-                        break
-                    case 2:
-                         valor = row.price2
-                        break
-                    case 3:
-                         valor = row.price3
-                        break
-
-                }
-
-                this.form.unit_price_value = valor
-                this.calculateQuantity()
-            },
+             
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
             },
@@ -571,7 +552,7 @@
             },
             calculateQuantity() {
                 if(this.form.item.calculate_quantity) {
-                    console.log('entro')
+                    //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
                 }
             },
@@ -635,7 +616,29 @@
                 
                 this.form.unit_price_value = price;
                 this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
-            }
+            },
+            selectedPrice(row)
+            {
+                debugger
+                let valor = 0
+                switch(row.price_default)
+                {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                         valor = row.price2
+                        break
+                    case 3:
+                         valor = row.price3
+                        break
+
+                }
+
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
+                this.calculateQuantity()
+            },
         }
     }
 
