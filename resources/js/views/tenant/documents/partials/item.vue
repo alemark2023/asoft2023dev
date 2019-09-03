@@ -538,6 +538,7 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price_value = this.form.item.sale_unit_price;
+
                 this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
@@ -560,6 +561,7 @@
                 this.total_item = null  
             }, 
             clickAddItem() {
+                
                 if (this.validateTotalItem().total_item) return;
                 
                 let unit_price = (this.form.has_igv)?this.form.unit_price_value:this.form.unit_price_value*1.18;
@@ -619,7 +621,8 @@
             },
             selectedPrice(row)
             {
-                debugger
+                
+                
                 let valor = 0
                 switch(row.price_default)
                 {
@@ -634,6 +637,8 @@
                         break
 
                 }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
 
                 this.form.unit_price_value = valor
                 this.form.item.unit_type_id = row.unit_type_id
