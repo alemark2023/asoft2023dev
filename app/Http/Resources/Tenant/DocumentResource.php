@@ -24,6 +24,7 @@ class DocumentResource extends JsonResource
             'download_pdf' => $this->download_external_pdf,
             'print_ticket' => url('')."/print/document/{$this->external_id}/ticket",
             'print_a4' => url('')."/print/document/{$this->external_id}/a4",
+            'print_a5' => url('')."/print/document/{$this->external_id}/a5",
         ];
     }
 }

@@ -14,6 +14,7 @@
         $affected_document_number = null;
     }
 
+    $payments = $document->payments;
 
 @endphp
 <html>
@@ -330,5 +331,24 @@
         </td>
     </tr>
 </table>
+@if($payments->count())
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>PAGOS:</strong> 
+            </td>
+        </tr>
+            @php
+                $payment = 0;
+            @endphp
+            @foreach($payments as $row)
+                <tr>
+                    <td>- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+                </tr> 
+            @endforeach
+        </tr>
+
+    </table>
+@endif
 </body>
 </html>
