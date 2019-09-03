@@ -41,6 +41,41 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
+                      <div class="col-md-12"  v-if="item_unit_types.length > 0">
+                        <div style="margin:3px" class="table-responsive">
+                            <h3>Lista de Precios</h3>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="text-center">Unidad</th>
+                                    <th class="text-center">Descripción</th>
+                                    <th class="text-center">Factor</th>
+                                    <th class="text-center">Precio 1</th>
+                                    <th class="text-center">Precio 2</th>
+                                    <th class="text-center">Precio 3</th>
+                                    <th class="text-center">Precio Default</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in item_unit_types">
+                                            <td class="text-center">{{row.unit_type_id}}</td>
+                                            <td class="text-center">{{row.description}}</td>
+                                            <td class="text-center">{{row.quantity_unit}}</td>
+                                            <td class="text-center">{{row.price1}}</td>
+                                            <td class="text-center">{{row.price2}}</td>
+                                            <td class="text-center">{{row.price3}}</td>
+                                            <td class="text-center">Precio {{row.price_default}}</td>
+                                            <td class="series-table-actions text-right">
+                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
+                                                    <i class="el-icon-check"></i>
+                                                </button>
+                                            </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
                         <div class="form-group"  :class="{'has-danger': errors.total_item}">
                             <label class="control-label">Total venta producto</label>
@@ -50,7 +85,7 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6" v-show="has_list_prices">
+                    <!--<div class="col-md-6" v-show="has_list_prices">
                         <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
                             <label class="control-label">Presentación</label>
                             <el-select v-model="form.item_unit_type_id" filterable @change="changePresentation">
@@ -63,7 +98,7 @@
                             </el-radio-group>
                             <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
                                 <header class="card-header hoverable bg-light border-top rounded-0 py-1" data-card-toggle style="cursor: pointer;" id="card-click">
@@ -241,6 +276,7 @@
             })
         },
         methods: {
+           
             filterItems(){
                 // this.items = this.items.filter(item => item.warehouses.length >0)
             },
@@ -361,6 +397,29 @@
                 
                 this.form.unit_price = price;
                 this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
+            },
+            selectedPrice(row)
+            {
+                let valor = 0
+                switch(row.price_default)
+                {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                         valor = row.price2
+                        break
+                    case 3:
+                         valor = row.price3
+                        break
+
+                }
+
+               
+                this.item_unit_type = row
+                this.form.unit_price = valor
+                this.form.item.unit_type_id = row.unit_type_id
+                this.form.item_unit_type_id = row.id
             },
             clickAddItem() {
                 if (this.validateTotalItem().total_item) return;
