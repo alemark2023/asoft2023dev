@@ -36,6 +36,8 @@ use Mpdf\Config\FontVariables;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
+use App\Models\Tenant\PaymentMethodType;
+
 
 
 
@@ -117,8 +119,9 @@ class QuotationController extends Controller
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();   
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+        $payment_method_types = PaymentMethodType::all();
 
-        return compact('series', 'document_types_invoice');
+        return compact('series', 'document_types_invoice', 'payment_method_types');
     }
     
     public function item_tables() {
