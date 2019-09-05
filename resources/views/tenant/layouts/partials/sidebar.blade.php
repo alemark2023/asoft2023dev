@@ -78,9 +78,17 @@
                             @endif
 
                             @if(in_array('documents', $vc_modules))
-                                <li class="{{ ($path[0] === 'documents' && $path[1] != 'create')?'nav-active':'' }}">
+                                <li class="{{ ($path[0] === 'documents' && $path[1] != 'create' && $path[1] != 'not-sent')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.documents.index')}}">
                                         Listado de comprobantes
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(in_array('documents', $vc_modules))
+                                <li class="{{ ($path[0] === 'documents' && $path[1] === 'not-sent')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.documents.not_sent')}}">
+                                        Comprobantes no enviados
                                     </a>
                                 </li>
                             @endif

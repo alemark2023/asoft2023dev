@@ -103,6 +103,8 @@ Vue.component('tenant-account-export', require('../../modules/Account/Resources/
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 
+Vue.component('tenant-documents-not-sent', require('../../modules/Document/Resources/assets/js/views/documents/not_sent.vue'));
+
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
 Vue.component('system-clients-form', require('./views/system/clients/form.vue'));
