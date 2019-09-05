@@ -11,8 +11,18 @@ class DocumentValidation
         Functions::validateSeries($inputs);
         
         if (in_array($inputs['document_type_id'], ['07', '08'])) {
-            $document = Functions::findAffectedDocumentByExternalId($inputs['affected_document_external_id']);
-            $inputs['affected_document_id'] = $document->id;
+
+            if($inputs['affected_document_external_id']){
+                $document = Functions::findAffectedDocumentByExternalId($inputs['affected_document_external_id']);
+                $inputs['affected_document_id'] = $document->id;
+                $inputs['data_affected_document'] = null;
+
+            }else{
+                //validar campos json doc afectado
+                $inputs['affected_document_id'] = null;
+
+            }
+            
             unset($inputs['affected_document_external_id']);
         }
         
