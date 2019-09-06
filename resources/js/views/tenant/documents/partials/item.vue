@@ -420,26 +420,7 @@
             })
         },
         methods: {
-             selectedPrice(row)
-            {
-                let valor = 0
-                switch(row.price_default)
-                {
-                    case 1:
-                        valor = row.price1
-                        break
-                    case 2:
-                         valor = row.price2
-                        break
-                    case 3:
-                         valor = row.price3
-                        break
-
-                }
-
-                this.form.unit_price_value = valor
-                this.calculateQuantity()
-            },
+             
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
             },
@@ -557,6 +538,7 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price_value = this.form.item.sale_unit_price;
+
                 this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
@@ -571,7 +553,7 @@
             },
             calculateQuantity() {
                 if(this.form.item.calculate_quantity) {
-                    console.log('entro')
+                    //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
                 }
             },
@@ -579,6 +561,7 @@
                 this.total_item = null  
             }, 
             clickAddItem() {
+                
                 if (this.validateTotalItem().total_item) return;
                 
                 let unit_price = (this.form.has_igv)?this.form.unit_price_value:this.form.unit_price_value*1.18;
@@ -635,7 +618,32 @@
                 
                 this.form.unit_price_value = price;
                 this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
-            }
+            },
+            selectedPrice(row)
+            {
+                
+                
+                let valor = 0
+                switch(row.price_default)
+                {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                         valor = row.price2
+                        break
+                    case 3:
+                         valor = row.price3
+                        break
+
+                }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
+                this.calculateQuantity()
+            },
         }
     }
 

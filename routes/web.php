@@ -361,6 +361,14 @@ if ($hostname) {
             Route::post('quotations/email', 'Tenant\QuotationController@email');
             Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
+            Route::get('reports/quotations', 'Tenant\ReportQuotationController@index')->name('tenant.reports.quotations.index');
+            Route::get('reports/quotations/search', 'Tenant\ReportQuotationController@search')->name('tenant.reports.quotations.search');
+            Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
+            Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
+            Route::post('reports/quotations/excel', 'Tenant\ReportQuotationController@excel')->name('tenant.report.quotations.report_excel');
+
+
+
 
             
             //sale-notes
@@ -387,11 +395,18 @@ if ($hostname) {
             // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
 
+            Route::get('reports/sale-notes', 'Tenant\ReportSaleNoteController@index')->name('tenant.reports.sale_note.index');
+            Route::get('reports/sale-notes/search', 'Tenant\ReportSaleNoteController@search')->name('tenant.reports.sale_note.search');
+            Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
+            Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
+            Route::post('reports/sale-notes/excel', 'Tenant\ReportSaleNoteController@excel')->name('tenant.report.sale_note.report_excel');
+
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');
            Route::get('sale_note_payments/tables', 'Tenant\SaleNotePaymentController@tables');
            Route::post('sale_note_payments', 'Tenant\SaleNotePaymentController@store');
            Route::delete('sale_note_payments/{sale_note_payment}', 'Tenant\SaleNotePaymentController@destroy');
+           
          
 
            //POS

@@ -255,6 +255,7 @@
         methods: {
             selectedPrice(row)
             {
+                debugger
                 let valor = 0
                 switch(row.price_default)
                 {
@@ -270,7 +271,11 @@
 
                 }
 
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+
                 this.form.unit_price = valor
+                this.form.item.unit_type_id = row.unit_type_id
             },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
@@ -293,6 +298,7 @@
                     attributes: [],
                     item_unit_types: []
                 }
+                 this.item_unit_type = {};
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -359,14 +365,17 @@
                 this.$emit('update:showDialog', false)
             },
             changeItem() {
-                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.item = _.find(this.items, {'id': this.form.item_id})
+                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price = this.form.item.sale_unit_price
+
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id
+                this.form.quantity = 1;
             },
             clickAddItem() {
                 this.form.item.unit_price = this.form.unit_price
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
+                this.form.item.presentation = this.item_unit_type;
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
                 this.initForm()
                 // this.initializeFields()
