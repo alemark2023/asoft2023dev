@@ -21,11 +21,11 @@
             </li> 
         </ul>
         @endif
-        <ul class="notifications">
+        <!-- <ul class="notifications">
             <li class="open">
                                   
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fa fa-bell"></i>
+                    <i class="fas fa-file-alt"></i>
                         <span class="badge">4</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
@@ -35,7 +35,7 @@
                             <li>
                                 <a href="{{route('tenant.documents.not_sent')}}" class="clearfix">
                                     <div class="image">
-                                        <i class="fa fa-receipt bg-danger"></i>
+                                        <i class="fas fa-file-alt bg-primary"></i>
                                     </div>
                                     <span class="title">Tiene comprobantes por vencer <span class="badge badge-warning"></span></span>
                                     <span class="message">Pendientes de envio a SUNAT/OSE</span>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </li>
-        </ul>
+        </ul> -->
         <span class="separator"></span>
         <div id="userbox" class="userbox">
             <a href="#" data-toggle="dropdown">
