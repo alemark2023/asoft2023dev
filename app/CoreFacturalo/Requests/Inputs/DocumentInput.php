@@ -364,19 +364,35 @@ class DocumentInput
         $note_description = $inputs['note_description'];
         $affected_document_id = $inputs['affected_document_id'];
 
-        $affected_document = Document::find($affected_document_id);
+        $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
 
         $type = ($document_type_id === '07')?'credit':'debit';
 
+        if(!$data_affected_document){
+
+            $affected_document = Document::find($affected_document_id);
+            $group_id = $affected_document->group_id;
+            $$affected_document_id = $affected_document->id;
+
+        }else{
+
+            $affected_document_id = null;
+            $group_id = ($data_affected_document['document_type_id'] == '01') ? '01' : '02';
+
+        }
+
+
         return [
             'type' => $type,
-            'group_id' => $affected_document->group_id,
+            // 'group_id' => $affected_document->group_id,
+            'group_id' => $group_id,
             'note' => [
                 'note_type' => $type,
                 'note_credit_type_id' => ($type === 'credit')?$note_credit_or_debit_type_id:null,
                 'note_debit_type_id' => ($type === 'debit')?$note_credit_or_debit_type_id:null,
                 'note_description' => $note_description,
-                'affected_document_id' => $affected_document->id
+                'affected_document_id' => $affected_document_id,
+                'data_affected_document' => $data_affected_document
             ]
         ];
     }

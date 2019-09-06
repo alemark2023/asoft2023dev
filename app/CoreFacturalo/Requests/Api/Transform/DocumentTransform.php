@@ -273,6 +273,16 @@ class DocumentTransform
             $inputs_transform['note_credit_or_debit_type_id'] = Functions::valueKeyInArray($inputs, 'codigo_tipo_nota');
             $inputs_transform['note_description'] = Functions::valueKeyInArray($inputs, 'motivo_o_sustento_de_nota');
             $inputs_transform['affected_document_external_id'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'external_id');
+
+            if(!$inputs_transform['affected_document_external_id']){
+                
+
+                $inputs_transform['data_affected_document']['number'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'numero_documento');
+                $inputs_transform['data_affected_document']['series'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'serie_documento');
+                $inputs_transform['data_affected_document']['document_type_id'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'codigo_tipo_documento');
+
+                // dd($inputs);
+            }
         }
         return $inputs_transform;
     }
