@@ -88,12 +88,12 @@
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
                                   @if(in_array($value->document_type_id,["07","08"]) && $value->note)
 
-                                          @php
-                                            $serie = $value->note->affected_document->series;
-                                            $number =  $value->note->affected_document->number;
+                                        @php 
+                                            $serie = ($value->note->affected_document) ? $value->note->affected_document->series : $value->note->data_affected_document->series;
+                                            $number =  ($value->note->affected_document) ? $value->note->affected_document->number : $value->note->data_affected_document->number;
                                             $serie_affec = $serie.' - '.$number;
 
-                                          @endphp
+                                        @endphp
                                         
 
                                     @endif
