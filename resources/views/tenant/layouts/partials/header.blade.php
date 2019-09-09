@@ -21,15 +21,16 @@
             </li> 
         </ul>
         @endif
-        <!-- <ul class="notifications">
+        @if($vc_document > 0)
+        <ul class="notifications">
             <li class="open">
                                   
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-file-alt"></i>
-                        <span class="badge">4</span>
+                    <i class="fas fa-file-alt"></i>                        
+                    <span class="badge">{{ $vc_document }}</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-                    <div class="notification-title bg-primary">Alerts</div>
+                    <div class="notification-title bg-primary">Pendientes de envío</div>
                     <div class="content">
                         <ul>
                             <li>
@@ -37,15 +38,17 @@
                                     <div class="image">
                                         <i class="fas fa-file-alt bg-primary"></i>
                                     </div>
-                                    <span class="title">Tiene comprobantes por vencer <span class="badge badge-warning"></span></span>
-                                    <span class="message">Pendientes de envio a SUNAT/OSE</span>
+                                    <span class="title">Tiene {{ $vc_document }} comprobante(s) pendientes de envío<span class="badge badge-warning"></span></span>
+                                    <!-- <span class="message">Pendientes de envio a SUNAT/OSE</span> -->
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </li>
-        </ul> -->
+        </ul>
+        @endif
+
         <span class="separator"></span>
         <div id="userbox" class="userbox">
             <a href="#" data-toggle="dropdown">

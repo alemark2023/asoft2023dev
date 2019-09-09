@@ -302,7 +302,7 @@ class Document extends ModelTenant
 
     public function scopeWhereNotSent($query)
     {
-        return  $query->whereIn('state_type_id', ['01','03']); 
+        return  $query->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d')); 
     }
 
     public function affected_documents()

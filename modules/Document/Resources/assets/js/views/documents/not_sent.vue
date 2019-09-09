@@ -16,10 +16,10 @@
                         <th class="text-center">F. Emisión</th>
                         <th>Cliente</th>
                         <th>Comprobante</th>
-                        <!-- <th class="text-right">Dias para vencer</th> -->
+                        <th class="text-center">Días para enviar</th>
                         <th class="text-center">Enviar</th>  
                     <tr>
-                    <tr slot-scope="{ index, row }" :class="{'border-black': (row.state_type_id === '01'), 'border-left border-info': (row.state_type_id === '03')}">
+                    <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.user_name }}</td>                         
@@ -29,9 +29,9 @@
                             <small v-text="row.document_type_description"></small><br/>
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>                            
                         </td> 
-                        <!-- <td class="text-right"> 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" ><i class="fa fa-search"></i></button>
-                        </td> -->
+                        <td class="text-center"> 
+                            {{row.expiration_days}}
+                        </td>
 
                         <td class="text-center">  
                             <template v-if="row.btn_resend">
@@ -84,6 +84,7 @@
                         if (response.data.success) {
                             this.$message.success(response.data.message)
                             this.$eventHub.$emit('reloadData')
+                            // location.reload()
                         } else {
                             this.$message.error(response.data.message)
                         }
