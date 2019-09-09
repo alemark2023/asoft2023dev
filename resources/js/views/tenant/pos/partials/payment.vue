@@ -66,20 +66,23 @@
         </div>
         <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
             <div class="row d-flex justify-content-center pt-2">
-                <div class="col-lg-4 col-md-3">
+                <div class="col-lg-6 col-md-6 ">
 
-                    <el-radio-group v-model="form.document_type_id" size="small" class="full" @change="filterSeries">
+                    <el-radio-group v-model="form.document_type_id" size="small"   @change="filterSeries">
                         <el-radio-button label="01" >FACTURA  </el-radio-button>
                         <el-radio-button label="03">BOLETA  </el-radio-button>
+                        <el-radio-button label="NV">N. VENTA  </el-radio-button>
                     </el-radio-group>
                 </div>
 
-                <div class="col-lg-4 col-md-3">
+                <div class="col-lg-2 col-md-2" v-if="form.document_type_id != 'NV'">
 
-                    <el-select v-model="form.series_id" >
+                    <el-select v-model="form.series_id" class="c-width">
                         <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
                         </el-option>
                     </el-select>
+                </div>
+                <div class="col-lg-2 col-md-2" v-else> 
                 </div>
 
                 <div class="col-lg-8">
@@ -199,7 +202,13 @@
             :showDialog.sync="showDialogOptions"
             :recordId="documentNewId" 
             :statusDocument="statusDocument" 
+            :resource="resource_options" 
             ></options-form>
+
+
+        <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
+                          :recordId="saleNotesNewId" 
+                          :showClose="true"></sale-notes-options>  -->
 
         <card-brands-form   :showDialog.sync="showDialogNewCardBrand"
                             :external="true"
@@ -216,22 +225,28 @@
 </style>
 
 <script>
+
     import CardBrandsForm from '../../card_brands/form.vue'
-  
+    import SaleNotesOptions from '../../sale_notes/partials/options.vue'  
     import OptionsForm from './options.vue'
 
     export default { 
-        components: {OptionsForm, CardBrandsForm},
+        components: {OptionsForm, CardBrandsForm, SaleNotesOptions},
 
         props:['form','customer', 'currencyTypeActive', 'exchangeRateSale'],
         data() {
             return {
                 loading_submit: false,
                 showDialogOptions:false,
+                showDialogSaleNote:false,
                 showDialogNewCardBrand:false,
                 documentNewId:null,
+                saleNotesNewId:null,
+                resource_options:null,
                 has_card: false,
                 resource: 'pos', 
+                resource_documents: 'documents', 
+                resource_payments: 'document_payments', 
                 amount: 0,
                 difference: 0,
                 button_payment: false,
@@ -298,11 +313,13 @@
                     reference: null,
                     card_brand_id:null,
                     document_id:null,
+                    sale_note_id:null,
                     payment: this.form.total,  
                 } 
 
                 this.form_cash_document = { 
                     document_id:null, 
+                    sale_note_id:null 
                 } 
                  
             }, 
@@ -318,6 +335,7 @@
                 await this.sleep(800); 
                 this.loading_submit = false
                 this.$eventHub.$emit('cancelSale')
+
             },
             sleep(ms) { 
                 return new Promise(resolve => setTimeout(resolve, ms));                
@@ -325,17 +343,41 @@
             async clickPayment(){
                 if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
+                if (this.form.document_type_id === "NV") {
+                    this.form.prefix = "NV";
+                    this.resource_documents = "sale-notes";
+                    this.resource_payments = "sale_note_payments";
+                    this.resource_options = this.resource_documents;
+                } else {
+                    this.form.prefix = null;
+                    this.resource_documents = "documents";
+                    this.resource_payments = "document_payments";
+                    this.resource_options = this.resource_documents;
+                }
+
                 this.loading_submit = true
-                await this.$http.post(`/documents`, this.form).then(response => {
+                await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
-                        // console.log(response)
-                        this.form_payment.document_id = response.data.data.id;
-                        this.form_cash_document.document_id = response.data.data.id;
+
+                        if (this.form.document_type_id === "NV") { 
+                            
+                            this.form_payment.sale_note_id = response.data.data.id;
+                            this.form_cash_document.sale_note_id = response.data.data.id; 
+
+                        } else { 
+
+                            this.form_payment.document_id = response.data.data.id;
+                            this.form_cash_document.document_id = response.data.data.id;
+                            this.statusDocument = response.data.data.response
+
+                        }
+
+                        this.documentNewId = response.data.data.id;                        
+                        this.showDialogOptions = true;
+                        
                         this.savePaymentMethod();
                         this.saveCashDocument();
-                        this.statusDocument = response.data.data.response
-                        this.documentNewId = response.data.data.id;
-                        this.showDialogOptions = true;
+
                         this.initFormPayment() ;
                         this.$eventHub.$emit('saleSuccess');
                     }
@@ -367,7 +409,7 @@
                     })
             },
             savePaymentMethod(){
-                this.$http.post(`/document_payments`, this.form_payment)
+                this.$http.post(`/${this.resource_payments}`, this.form_payment)
                     .then(response => {
                         if (response.data.success) {
                             // console.log(response)                             

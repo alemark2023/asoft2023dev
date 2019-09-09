@@ -219,5 +219,10 @@ class SaleNote extends ModelTenant
         $legend = collect($legends)->where('code', '1000')->first();
         return $legend->value;
     }
+
+    public function getNumberFullAttribute()
+    {
+        return $this->prefix.'-'.$this->id;
+    }
  
 }

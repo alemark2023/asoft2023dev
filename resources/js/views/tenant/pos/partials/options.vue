@@ -58,12 +58,11 @@
 
 <script>
     export default {
-        props: ['showDialog', 'recordId', 'statusDocument'],
+        props: ['showDialog', 'recordId', 'statusDocument','resource'],
         data() {
             return {
                 titleDialog: null,
                 loading: false,
-                resource: 'documents',
                 errors: {},
                 form: {},
                 company: {},

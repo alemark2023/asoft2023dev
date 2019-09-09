@@ -103,7 +103,7 @@ class CashController extends Controller
         $income = 0;
 
         foreach ($cash->cash_documents as $cash_document) {
-            $final_balance += $cash_document->document->total;
+            $final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
         }
 
         $cash->final_balance = $final_balance + $cash->beginning_balance; 
@@ -122,7 +122,7 @@ class CashController extends Controller
     public function cash_document(Request $request) {
                
         $cash = Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
-        $cash->cash_documents()->create(['document_id'=>$request->document_id]);
+        $cash->cash_documents()->create($request->all());
           
         return [
             'success' => true,

@@ -207,6 +207,7 @@
                     establishment_id: null,
                     document_type_id: '01',
                     series_id: null,
+                    prefix: null,
                     number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
@@ -237,6 +238,7 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payments: [],
                     additional_information:null,
                     actions: {
                         format_pdf:'a4',
