@@ -97,41 +97,7 @@
           </div>
         </div>
 
-        <div class="col-lg-6">
-          <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-            <label class="control-label">Fecha de emisión</label>
-            <el-date-picker
-              v-model="document.date_of_issue"
-              type="date"
-              value-format="yyyy-MM-dd"
-              :clearable="false"
-              @change="changeDateOfIssue"
-            ></el-date-picker>
-            <small
-              class="form-control-feedback"
-              v-if="errors.date_of_issue"
-              v-text="errors.date_of_issue[0]"
-            ></small>
-          </div>
-        </div>
-
-        <div class="col-lg-6">
-          <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-            <!--<label class="control-label">Fecha de emisión</label>-->
-            <label class="control-label">Fecha de vencimiento</label>
-            <el-date-picker
-              v-model="document.date_of_due"
-              type="date"
-              value-format="yyyy-MM-dd"
-              :clearable="false"
-            ></el-date-picker>
-            <small
-              class="form-control-feedback"
-              v-if="errors.date_of_due"
-              v-text="errors.date_of_due[0]"
-            ></small>
-          </div>
-        </div>
+        
 
         <div class="col-lg-8">
           <div class="form-group" :class="{'has-danger': errors.document_type_id}">
@@ -175,7 +141,45 @@
               v-text="errors.series_id[0]"
             ></small>
           </div>
-        </div> <br>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+            <label class="control-label">Fecha de emisión</label>
+            <el-date-picker
+              readonly
+              v-model="document.date_of_issue"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+              @change="changeDateOfIssue"
+            ></el-date-picker>
+            <small
+              class="form-control-feedback"
+              v-if="errors.date_of_issue"
+              v-text="errors.date_of_issue[0]"
+            ></small>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+            <!--<label class="control-label">Fecha de emisión</label>-->
+            <label class="control-label">Fecha de vencimiento</label>
+            <el-date-picker
+              v-model="document.date_of_due"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+            ></el-date-picker>
+            <small
+              class="form-control-feedback"
+              v-if="errors.date_of_due"
+              v-text="errors.date_of_due[0]"
+            ></small>
+          </div>
+        </div>
+        <br>
         <div class="col-lg-4">
           <div class="form-group" v-show="document.document_type_id == '03'">
             <el-checkbox
