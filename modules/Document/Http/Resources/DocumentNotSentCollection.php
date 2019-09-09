@@ -3,6 +3,7 @@
 namespace Modules\Document\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Carbon\Carbon;
 
 class DocumentNotSentCollection extends ResourceCollection
 {
@@ -38,7 +39,11 @@ class DocumentNotSentCollection extends ResourceCollection
                     $text_tooltip = 'Consulte el ticket del resúmen de boletas'; 
                 } 
             }
- 
+
+            $now = Carbon::now();
+            $date_document = (new Carbon($row->date_of_issue))->addDay();
+            $difference_days = 7 - $date_document->diffInDays($now);
+            $days_send = ($difference_days <= 0) ? 'El plazo de envío caducó' : $difference_days;
 
             return [
                 'id' => $row->id,
@@ -58,7 +63,8 @@ class DocumentNotSentCollection extends ResourceCollection
                 'affected_document' => $affected_document,  
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
-                'text_tooltip' => $text_tooltip
+                'text_tooltip' => $text_tooltip,
+                'expiration_days' => $days_send,
             ];
         });
     }
