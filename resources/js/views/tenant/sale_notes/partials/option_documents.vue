@@ -93,6 +93,8 @@
         created() {
             this.initForm()
             this.initDocument()
+
+           // console.log(moment().format('YYYY-MM-DD'))
         },
         methods: {
             initForm() {
@@ -191,7 +193,8 @@
                 // console.log(q);
 
                 this.document.establishment_id = q.establishment_id  
-                this.document.date_of_issue = q.date_of_issue
+                this.document.date_of_issue =  moment().format('YYYY-MM-DD')//q.date_of_issue
+                this.document.date_of_due = moment().format('YYYY-MM-DD') //q.date_of_issue
                 this.document.time_of_issue = q.time_of_issue
                 this.document.customer_id = q.customer_id
                 this.document.currency_type_id = q.currency_type_id
@@ -214,7 +217,7 @@
                 this.document.total_value = q.total_value
                 this.document.total = q.total
                 this.document.operation_type_id = '0101'
-                this.document.date_of_due = q.date_of_issue
+              
                 this.document.items = q.items
                 this.document.charges = q.charges
                 this.document.discounts = q.discounts

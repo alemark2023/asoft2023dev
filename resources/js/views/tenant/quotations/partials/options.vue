@@ -320,6 +320,9 @@ export default {
     this.clickAddPayment()
   },
   methods: {
+     clickCancel(index) {
+                this.document.payments.splice(index, 1);
+      },
     clickAddPayment() {
       this.document.payments.push({
         id: null,
