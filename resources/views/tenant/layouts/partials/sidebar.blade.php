@@ -245,6 +245,7 @@
                         nav-parent
                         {{ ($path[0] === 'retentions')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'dispatches')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'perceptions')?'nav-active nav-expanded':'' }}
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-alt" aria-hidden="true"></i>
@@ -261,11 +262,11 @@
                                     Guías de remisión
                                 </a>
                             </li>
-                            <li class="#">
-                                <a class="nav-link" href="#">
-                                    Percepciones (Pronto)
+                            <li class="{{ ($path[0] === 'perceptions')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.perceptions.index')}}">
+                                Percepciones
                                 </a>
-                            </li>
+                            </li> 
 
                         </ul>
                     </li>

@@ -28,6 +28,7 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
+use App\Models\Tenant\Perception;
 
 class Facturalo
 {
@@ -132,6 +133,13 @@ class Facturalo
                     $document->documents()->create($row);
                 }
                 $this->document = Retention::find($document->id);
+                break;
+            case 'perception':
+                $document = Perception::create($inputs);
+                foreach ($inputs['documents'] as $row) {
+                    $document->documents()->create($row);
+                }
+                $this->document = Perception::find($document->id);
                 break;
             default:
                 $document = Dispatch::create($inputs);
@@ -275,6 +283,8 @@ class Facturalo
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $perception       = $this->document->perception != '' ? '10' : '0';
+
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
 
@@ -308,6 +318,7 @@ class Facturalo
                     $total_free +
                     $total_unaffected +
                     $total_exonerated +
+                    $perception +
                     $total_taxed+
                     $total_plastic_bag_taxes],
                 'margin_top' => 0,
@@ -654,6 +665,7 @@ class Facturalo
 //            dd($this->soapPassword);
         } else {
             switch ($this->type) {
+                case 'perception':
                 case 'retention':
                     $this->endpoint = ($this->isDemo)?SunatEndpoints::RETENCION_BETA:SunatEndpoints::RETENCION_PRODUCCION;
                     break;
