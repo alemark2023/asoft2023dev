@@ -165,7 +165,7 @@
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success('Se guardaron los cambios correctamente.')
-
+                        this.$eventHub.$emit('reloadData')
                     } else {
                         this.$message.error('No se guardaron los cambios')
                     }
