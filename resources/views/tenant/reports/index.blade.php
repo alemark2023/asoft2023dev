@@ -106,18 +106,19 @@
 
                                         @php
                                          $signal = $value->document_type_id;
+                                         $state = $value->state_type_id;
                                         @endphp
                                       
                                         <td class="celda">{{$value->currency_type_id}}</td>
                                         
-                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}} </td>
-                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
-                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td>
+                                        <td>{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_exonerated}} </td>
+                                        <td>{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_unaffected}}</td>
+                                        <td>{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_free}}</td>
 
-                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                        <td>{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_taxed}}</td>
                                       
-                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
-                                        <td>{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+                                        <td>{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_igv}}</td>
+                                        <td>{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total}}</td>
                                    
                                     @php
                                         $serie_affec =  '';
@@ -126,20 +127,73 @@
                                     </tr>
                                     @php
                                         if($value->currency_type_id == 'PEN'){
-                                            $acum_total_taxed +=  $signal != '07' ? $value->total_taxed : -$value->total_taxed ;
+                                            /*$acum_total_taxed +=  $signal != '07' ? $value->total_taxed : -$value->total_taxed ;
                                             $acum_total_igv +=  $signal != '07' ? $value->total_igv : -$value->total_igv ;
-                                            $acum_total += $signal != '07' ? $value->total : -$value->total ;
+                                            $acum_total += $signal != '07' ? $value->total : -$value->total ;*/
 
-                                            $acum_total_exonerado += $signal != '07' ? $value->total_exonerated : -$value->total_exonerated ;
-                                            
+                                            /*$acum_total_exonerado += $signal != '07' ? $value->total_exonerated : -$value->total_exonerated ;                                            
                                             $acum_total_inafecto += $signal != '07' ? $value->total_unaffected : -$value->total_unaffected ;
-                                            $acum_total_free += $signal != '07' ? $value->total_free : -$value->total_free ;
+                                            $acum_total_free += $signal != '07' ? $value->total_free : -$value->total_free ;*/
+
+ 
+                                            if(($signal == '07' && $state !== '11')){
+
+                                                $acum_total += -$value->total;
+                                                $acum_total_taxed += -$value->total_taxed;
+                                                $acum_total_igv += -$value->total_igv;
+
+                                                
+                                                $acum_total_exonerado += -$value->total_exonerated;
+                                                $acum_total_inafecto += -$value->total_unaffected;
+                                                $acum_total_free += -$value->total_free;
 
 
-                                        }else if($value->currency_type_id == 'USD'){
-                                            $acum_total_taxed_usd += $value->total_taxed;
-                                            $acum_total_igv_usd += $value->total_igv;
-                                            $acum_total_usd += $value->total;
+                                            }elseif($signal != '07' && $state == '11'){
+
+                                                $acum_total += 0;
+                                                $acum_total_taxed += 0;
+                                                $acum_total_igv += 0;
+
+                                                $acum_total_exonerado += 0;
+                                                $acum_total_inafecto += 0;
+                                                $acum_total_free += 0;
+
+                                            }else{
+
+                                                $acum_total += $value->total;
+                                                $acum_total_taxed += $value->total_taxed;
+                                                $acum_total_igv += $value->total_igv;
+
+                                                $acum_total_exonerado += $value->total_exonerated;
+                                                $acum_total_inafecto += $value->total_unaffected;
+                                                $acum_total_free += $value->total_free;
+                                            }
+  
+
+                                        }else if($value->currency_type_id == 'USD'){ 
+                                            
+                                            if(($signal == '07' && $state !== '11')){
+
+                                                $acum_total_usd += -$value->total;
+                                                $acum_total_taxed_usd += -$value->total_taxed;
+                                                $acum_total_igv_usd += -$value->total_igv;
+ 
+
+
+                                            }elseif($signal != '07' && $state == '11'){
+
+                                                $acum_total_usd += 0;
+                                                $acum_total_taxed_usd += 0;
+                                                $acum_total_igv_usd += 0;
+ 
+
+                                            }else{
+
+                                                $acum_total_usd += $value->total;
+                                                $acum_total_taxed_usd += $value->total_taxed;
+                                                $acum_total_igv_usd += $value->total_igv;
+ 
+                                            }
 
                                             
                                         }
