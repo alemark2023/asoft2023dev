@@ -24,8 +24,10 @@ class InventoryChangeServiceProvider extends ServiceProvider
     private function createdItem()
     {
         Item::created(function ($item) {
-            $warehouse = $this->findWarehouse();
+
+            $warehouse = ($item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($item->warehouse_id)->establishment_id) : $this->findWarehouse();           
             $this->createInitialInventory($item->id, $item->stock, $warehouse->id);
+            
         });
     }
 

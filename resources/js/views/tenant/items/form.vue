@@ -127,11 +127,16 @@
                             <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" v-show="recordId==null">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
-                            <label class="control-label">Almacen</label>
-                            <el-select v-model="form.warehouse_id" filterable>
-                                <el-option v-for="option in warehouse" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            <label class="control-label">
+                                Almacén
+                                <el-tooltip class="item" effect="dark" content="Si no selecciona almacén, se asignará por defecto el relacionado al establecimiento" placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-select v-model="form.warehouse_id" filterable >
+                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
@@ -165,6 +170,9 @@
                     <div class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios
+                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
                              <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
                         </h5> 
                     </div>
@@ -175,7 +183,12 @@
                             <tr>
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Descripción</th>
-                                <th class="text-center">Factor</th>
+                                <th class="text-center">
+                                    Factor
+                                    <el-tooltip class="item" effect="dark" content="Cantidad de unidades" placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </th>
                                 <th class="text-center">Precio 1</th>
                                 <th class="text-center">Precio 2</th>
                                 <th class="text-center">Precio 3</th>
@@ -356,7 +369,7 @@
 
         data() {
             return {
-                warehouse: [],
+                warehouses: [],
                 loading_submit: false,
                 showPercentagePerception: false,
                 has_percentage_perception: false,
@@ -394,7 +407,7 @@
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
-                    this.warehouse = response.data.warehouse
+                    this.warehouses = response.data.warehouses
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
