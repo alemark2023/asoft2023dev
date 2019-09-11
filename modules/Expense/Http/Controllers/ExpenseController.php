@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Expense\Models\Expense;
+use Modules\Expense\Models\ExpenseReason;
 use Modules\Expense\Models\ExpensePayment;
 use Modules\Expense\Models\ExpenseType;
 use Modules\Expense\Models\ExpenseMethodType;
@@ -58,8 +59,9 @@ class ExpenseController extends Controller
         $currency_types = CurrencyType::whereActive()->get();
         $expense_types = ExpenseType::get();        
         $expense_method_types = ExpenseMethodType::all();
+        $expense_reasons = ExpenseReason::all();
 
-        return compact('suppliers', 'establishment','currency_types', 'expense_types', 'expense_method_types');
+        return compact('suppliers', 'establishment','currency_types', 'expense_types', 'expense_method_types', 'expense_reasons');
     }
 
      

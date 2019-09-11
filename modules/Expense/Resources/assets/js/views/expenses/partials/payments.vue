@@ -9,8 +9,7 @@
                             <tr> 
                                 <th>Método de gasto</th>
                                 <th>Referencia</th>
-                                <th class="text-right">Monto</th>
-                                <th></th>
+                                <th>Monto</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -19,7 +18,7 @@
                                     <!-- <td>{{ row.date_of_payment }}</td> -->
                                     <td>{{ row.expense_method_type_description }}</td>
                                     <td>{{ row.reference }}</td>
-                                    <td class="text-right">{{ row.payment }}</td> 
+                                    <td>{{ row.payment }}</td> 
                                 </template> 
                             </tr>
                             </tbody> 
@@ -65,7 +64,7 @@
                 await this.$http.get(`/${this.resource}/record/${this.expenseId}`)
                     .then(response => {
                         this.form = response.data.data
-                        this.title = 'Distribución del gasto: G-'+this.form.number;
+                        this.title = 'Distribución de gasto: G-'+this.form.number;
 
                     });
             },   

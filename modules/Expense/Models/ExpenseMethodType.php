@@ -5,7 +5,6 @@ use App\Models\Tenant\ModelTenant;
 
 class ExpenseMethodType extends ModelTenant
 {
-    public $incrementing = false;
     public $timestamps = false;
 
     protected $fillable = [

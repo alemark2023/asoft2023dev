@@ -69,6 +69,16 @@
                                 <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="form-group" :class="{'has-danger': errors.expense_reason_id}">
+                                <label class="control-label">Motivo</label>
+                                <el-select v-model="form.expense_reason_id"  >
+                                    <el-option v-for="option in expense_reasons" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                                <small class="form-control-feedback" v-if="errors.expense_reason_id" v-text="errors.expense_reason_id[0]"></small>
+                            </div>
+                        </div>
   
                     </div>
                     <div class="row col-lg-8 mt-3">
@@ -198,6 +208,7 @@
                 establishment: {},
                 currency_type: {},
                 expense_method_types: [],
+                expense_reasons: [],
                 expenseNewId: null
             }
         },
@@ -206,6 +217,7 @@
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
 
+                    this.expense_reasons = response.data.expense_reasons
                     this.expense_method_types = response.data.expense_method_types
                     this.expense_types = response.data.expense_types
                     this.currency_types = response.data.currency_types
@@ -214,6 +226,7 @@
                     this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
                     this.form.establishment_id = (this.establishment.id) ? this.establishment.id : null
                     this.form.expense_type_id = (this.expense_types.length > 0) ? this.expense_types[0].id : null
+                    this.form.expense_reason_id = (this.expense_reasons.length > 0)?this.expense_reasons[0].id:null
 
                     this.changeDateOfIssue()
                     
@@ -238,6 +251,7 @@
                 this.form = {
                     establishment_id: null,
                     expense_type_id: null,
+                    expense_reason_id: null,
                     number: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
@@ -256,6 +270,7 @@
                 this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                 this.form.establishment_id = this.establishment.id
                 this.form.expense_type_id = (this.expense_types.length > 0)?this.expense_types[0].id:null
+                this.form.expense_reason_id = (this.expense_reasons.length > 0)?this.expense_reasons[0].id:null
 
                 this.changeDateOfIssue()                
                 this.changeCurrencyType()

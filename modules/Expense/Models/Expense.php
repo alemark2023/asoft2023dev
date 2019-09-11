@@ -16,6 +16,7 @@ class Expense extends ModelTenant
     protected $fillable = [
         'user_id',
         'expense_type_id',
+        'expense_reason_id',
         'establishment_id',
         'supplier_id',
         'currency_type_id',
@@ -55,6 +56,11 @@ class Expense extends ModelTenant
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function expense_reason()
+    {
+        return $this->belongsTo(ExpenseReason::class);
     }
 
     public function establishment()

@@ -17,9 +17,10 @@
                         <th class="text-center">Fecha Emisión</th>
                         <th>Proveedor</th>
                         <th>Número</th>
+                        <th>Motivo</th>
                         <th class="text-center">Moneda</th> 
                         <th class="text-right">Total</th> 
-                        <th class="text-center">D. Gasto</th>
+                        <th class="text-center">Dist. Gasto</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
@@ -28,6 +29,7 @@
                         <td>{{ row.number }}<br/>
                             <small v-text="row.expense_type_description"></small><br/> 
                         </td>
+                        <td class="">{{ row.expense_reason_description }}</td> 
                         <td class="text-center">{{ row.currency_type_id }}</td> 
                         <td class="text-right">{{ row.total }}</td>
                         
