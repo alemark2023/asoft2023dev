@@ -71,6 +71,47 @@
                         </div>
   
                     </div>
+                    <div class="row col-lg-8 mt-3">
+
+                        <table>
+                            <thead>
+                                <tr width="100%">
+                                    <th v-if="form.payments.length>0">Método de gasto</th>
+                                    <th v-if="form.payments.length>0">Referencia</th>
+                                    <th v-if="form.payments.length>0">Monto</th>
+                                    <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, index) in form.payments" :key="index"> 
+                                    <td>
+                                        <div class="form-group mb-2 mr-2">
+                                            <el-select v-model="row.expense_method_type_id">
+                                                <el-option v-for="option in expense_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                            </el-select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group mb-2 mr-2"  >
+                                            <el-input v-model="row.reference"></el-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group mb-2 mr-2" >
+                                            <el-input v-model="row.payment"></el-input>
+                                        </div>
+                                    </td>
+                                    <td class="series-table-actions text-center"> 
+                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td> 
+                                    <br>
+                                </tr>
+                            </tbody> 
+                        </table> 
+                        
+                    </div>
                     <div class="row">
                         <div class="col-lg-2 col-md-6 mt-4">
                             <div class="form-group">
@@ -156,6 +197,7 @@
                 suppliers: [],
                 establishment: {},
                 currency_type: {},
+                expense_method_types: [],
                 expenseNewId: null
             }
         },
@@ -164,6 +206,7 @@
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
 
+                    this.expense_method_types = response.data.expense_method_types
                     this.expense_types = response.data.expense_types
                     this.currency_types = response.data.currency_types
                     this.establishment = response.data.establishment
@@ -203,7 +246,10 @@
                     exchange_rate_sale: 0,                    
                     total: 0,  
                     items: [], 
+                    payments: [], 
                 }
+
+                this.clickAddPayment()
             },
             resetForm() {
                 this.initForm()
@@ -219,8 +265,20 @@
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
+            },         
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
             },
-            
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    expense_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    expense_method_type_id: 1,
+                    reference: null,
+                    payment: 0,
+                });
+            },               
             addRow(row) {
                 this.form.items.push(row)
                 this.calculateTotal()
@@ -266,8 +324,14 @@
                     total += parseFloat(row.total)
                 }); 
                 this.form.total = _.round(total, 2)
-             },
+                this.form.payments[0].payment = this.form.total
+            },
             submit() {
+
+                let validate = this.validate_payments()
+                if(validate.acum_total !== parseFloat(this.form.total) || validate.error_by_item > 0) {
+                    return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
+                }
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
@@ -291,6 +355,22 @@
                     .then(() => {
                         this.loading_submit = false
                     })
+            },
+            validate_payments(){ 
+
+                let error_by_item = 0
+                let acum_total = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
+                }
+
             },
             close() {
                 location.href = `/${this.resource}`

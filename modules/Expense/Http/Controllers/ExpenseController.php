@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Expense\Models\Expense;
+use Modules\Expense\Models\ExpensePayment;
 use Modules\Expense\Models\ExpenseType;
+use Modules\Expense\Models\ExpenseMethodType;
 use Modules\Expense\Models\ExpenseItem;
 use Modules\Expense\Http\Resources\ExpenseCollection;
 use Modules\Expense\Http\Resources\ExpenseResource;
@@ -55,8 +57,9 @@ class ExpenseController extends Controller
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();    
         $currency_types = CurrencyType::whereActive()->get();
         $expense_types = ExpenseType::get();        
+        $expense_method_types = ExpenseMethodType::all();
 
-        return compact('suppliers', 'establishment','currency_types', 'expense_types');
+        return compact('suppliers', 'establishment','currency_types', 'expense_types', 'expense_method_types');
     }
 
      
@@ -78,7 +81,12 @@ class ExpenseController extends Controller
             foreach ($data['items'] as $row)
             {
                 $doc->items()->create($row);
-            }     
+            } 
+
+            foreach ($data['payments'] as $row)
+            {
+                $doc->payments()->create($row);
+            }             
 
             return $doc;
         });       
@@ -129,6 +137,7 @@ class ExpenseController extends Controller
                 break;
         } 
     }
+ 
 
     
 }

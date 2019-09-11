@@ -19,6 +19,7 @@
                         <th>Número</th>
                         <th class="text-center">Moneda</th> 
                         <th class="text-right">Total</th> 
+                        <th class="text-center">D. Gasto</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
@@ -30,25 +31,38 @@
                         <td class="text-center">{{ row.currency_type_id }}</td> 
                         <td class="text-right">{{ row.total }}</td>
                         
+                        <td class="text-center">
+                            <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                    @click.prevent="clickPayment(row.id)">
+                                    <i class="fa fa-search"></i>        
+                            </button>
+                        </td>
                         
                     </tr>
                 </data-table>
             </div>
+
+            
+            <document-payments :showDialog.sync="showDialogPayments"
+                               :expenseId="recordId"></document-payments>
  
         </div>
     </div>
+    
 </template>
 
 <script>
  
     import DataTable from '../../../../../../../resources/js/components/DataTable.vue'
+    import DocumentPayments from './partials/payments.vue'
 
     export default {
-        components: {DataTable},
+        components: {DataTable, DocumentPayments},
         data() {
             return {
                 showDialogVoided: false,
                 resource: 'expenses',
+                showDialogPayments: false,
                 recordId: null,
                 showDialogOptions: false
             }
@@ -66,6 +80,10 @@
             clickOptions(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptions = true
+            },
+            clickPayment(recordId) {
+                this.recordId = recordId;
+                this.showDialogPayments = true;
             },
         }
     }

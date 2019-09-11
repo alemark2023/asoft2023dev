@@ -11,7 +11,7 @@ use App\Models\Tenant\ModelTenant;
 class Expense extends ModelTenant
 {
 
-    protected $with = ['user', 'items'];
+    // protected $with = ['user', 'items'];
 
     protected $fillable = [
         'user_id',
@@ -72,6 +72,9 @@ class Expense extends ModelTenant
         return $this->belongsTo(ExpenseType::class);
     }
     
-    
+    public function payments()
+    {
+        return $this->hasMany(ExpensePayment::class);
+    }
 
 }
