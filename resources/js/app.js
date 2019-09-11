@@ -117,6 +117,10 @@ Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
 Vue.component('x-input-service', require('./components/InputService.vue'));
 
+// Ecommerce
+
+Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecommerce/index.vue'));
+
 const app = new Vue({
     el: '#main-wrapper'
 });

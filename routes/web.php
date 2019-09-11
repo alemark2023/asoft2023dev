@@ -12,7 +12,9 @@ if ($hostname) {
         Route::get('search/tables', 'Tenant\SearchController@tables');
         Route::post('search', 'Tenant\SearchController@store');
 
-        Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');;
+        Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
+      
+
 
 
 
@@ -102,6 +104,10 @@ if ($hostname) {
             Route::get('charge_discounts/record/{charge}', 'Tenant\ChargeDiscountController@record');
             Route::post('charge_discounts', 'Tenant\ChargeDiscountController@store');
             Route::delete('charge_discounts/{charge}', 'Tenant\ChargeDiscountController@destroy');
+
+
+            //Items Ecommerce
+            Route::get('items_ecommerce', 'Tenant\ItemController@index_ecommerce')->name('tenant.items_ecommerce.index');
 
             //Items
             Route::get('items', 'Tenant\ItemController@index')->name('tenant.items.index');

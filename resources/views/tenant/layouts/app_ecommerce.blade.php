@@ -27,7 +27,7 @@
       
         @include('tenant.layouts.partials_ecommerce.header')
         <main class="main">
-            @include('tenant.layouts.partials_ecommerce.info_boxes')
+           <br> <!-- layout-  info_boxez-->
 
             <div class="container">
                 <div class="row">
@@ -70,14 +70,15 @@
                         <div class="mb-6"></div><!-- margin -->
                         
                         <div class="row">
-                            @include('tenant.layouts.partials_ecommerce.products_main')
+                         <!-- layout-  products_main-->
+                           
                         </div><!-- End .row -->
 
                         <div class="mb-3"></div><!-- margin -->
 
                         <div class="row">
-
-                            @include('tenant.layouts.partials_ecommerce.features_box')
+                            <!-- layout-  features_box -->
+                           
                            
                         </div><!-- End .row -->
                     </div><!-- End .col-lg-9 -->
@@ -124,7 +125,8 @@
                         </div><!-- End .widget -->
 
                         <div class="widget">
-                            @include('tenant.layouts.partials_ecommerce.news')
+                            <!-- layout-  news -->
+                        
                         </div><!-- End .widget -->
                     </aside><!-- End .col-lg-3 -->
                 </div><!-- End .row -->

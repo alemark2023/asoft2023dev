@@ -38,7 +38,8 @@ class ItemCollection extends ResourceCollection
                         'warehouse_description' => $row->warehouse->description,
                         'stock' => $row->stock,
                     ];
-                })
+                }),
+                'apply_store' => $row->apply_store
             ];
         });
     }

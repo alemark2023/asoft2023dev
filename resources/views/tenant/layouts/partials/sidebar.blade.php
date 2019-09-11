@@ -20,12 +20,32 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
-                    <li class="{{ ($path[0] === 'ecommerce')?'nav-active':'' }}">
+                   <!-- <li class="{{ ($path[0] === 'ecommerce')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.ecommerce.index') }}">
                             <i class="fas fa-chart-line" aria-hidden="true"></i>
                             <span>Ecommerce</span>
                         </a>
+                    </li> -->
+
+                    <li class="nav-parent {{ in_array($path[0], ['ecommerce'])?'nav-active nav-expanded':'' }}">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <span>Ecommerce</span>
+                        </a>
+                        <ul class="nav nav-children" style="">
+                            <li class="{{ ($path[0] === 'users')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.ecommerce.index')}}">
+                                    Tienda
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'establishments')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
+                                    Productos
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.dashboard.index') }}">

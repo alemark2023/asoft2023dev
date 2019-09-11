@@ -29,6 +29,11 @@ class ItemController extends Controller
         return view('tenant.items.index');
     }
 
+    public function index_ecommerce()
+    {
+        return view('tenant.items_ecommerce.index');
+    }
+
     public function columns()
     {
         return [
@@ -58,7 +63,7 @@ class ItemController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
-        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->get();
         $accounts = Account::all();
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse', 'accounts');

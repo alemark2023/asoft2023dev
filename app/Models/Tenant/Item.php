@@ -43,6 +43,7 @@ class Item extends ModelTenant
         'image',
         'account_id',
         'amount_plastic_bag_taxes',
+        'apply_store'
         // 'warehouse_id'
     ];
 
