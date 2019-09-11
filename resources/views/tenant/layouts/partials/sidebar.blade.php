@@ -20,6 +20,12 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
+                    <li class="{{ ($path[0] === 'ecommerce')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{ route('tenant.ecommerce.index') }}">
+                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                            <span>Ecommerce</span>
+                        </a>
+                    </li>
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.dashboard.index') }}">
