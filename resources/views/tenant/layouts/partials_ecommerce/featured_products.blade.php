@@ -9,10 +9,10 @@
     @foreach ($items as $item)
      <div class="product">
           <figure class="product-image-container">
-              <a href="product.html" class="product-image">
+              <a  href="/ecommerce/item/{{ $item->id }}" class="product-image">
                   <img src="{{ asset('storage/uploads/items/'.$item->image) }}" alt="product">
               </a>
-              <a href="{{ asset('porto-ecommerce/ajax/product-quick-view.html') }}" class="btn-quickview">Quick View</a>
+              <a  href="{{ asset('porto-ecommerce/ajax/product-quick-view.html') }}" class="btn-quickview">Quick View</a>
           </figure>
           <div class="product-details">
               <div class="ratings-container">

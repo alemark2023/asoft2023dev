@@ -13,6 +13,10 @@ if ($hostname) {
         Route::post('search', 'Tenant\SearchController@store');
 
         Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
+        Route::get('ecommerce/item/{id}', 'Tenant\EcommerceController@item')->name('tenant.ecommerce.item');
+        Route::get('ecommerce/item', 'Tenant\EcommerceController@items');
+
+
       
 
 

@@ -72,7 +72,7 @@
             <div class="header-middle">
                 <div class="container">
                     <div class="header-left">
-                        <a href="index-2.html" class="logo">
+                        <a href="/ecommerce" class="logo">
                             <img src="{{ asset('porto-ecommerce/assets/images/logo.png') }}" alt="Porto Logo">
                         </a>
                     </div><!-- End .header-left -->
