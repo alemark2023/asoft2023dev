@@ -38,6 +38,14 @@ class ViewServiceProvider extends ServiceProvider
             'tenant.layouts.partials_ecommerce.featured_products',
             'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
         );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.featured_products_bottom',
+            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.sidebar_product_right',
+            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+        );
 
 
 
