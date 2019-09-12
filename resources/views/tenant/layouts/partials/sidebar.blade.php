@@ -284,7 +284,7 @@
                                 </a>
                             </li>
                             <li class="{{(($path[0] === 'reports') && ($path[1] === 'sales')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.index')}}">
+                                <a class="nav-link" href="{{route('tenant.reports.sales.index')}}">
                                     Ventas
                                 </a>
                             </li>
@@ -299,7 +299,7 @@
                                 </a>
                             </li>
                              <li class="{{(($path[0] === 'reports') && ($path[1] == 'sale-notes')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.sale_note.index')}}">
+                                <a class="nav-link" href="{{route('tenant.reports.sale_notes.index')}}">
                                     Notas de Venta
                                 </a>
                             </li>

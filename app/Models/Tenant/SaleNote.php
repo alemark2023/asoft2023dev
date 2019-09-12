@@ -172,6 +172,11 @@ class SaleNote extends ModelTenant
         return $this->belongsTo(SoapType::class);
     }
 
+    public function establishment()
+    {
+        return $this->belongsTo(Establishment::class);
+    }
+
     public function state_type()
     {
         return $this->belongsTo(StateType::class);

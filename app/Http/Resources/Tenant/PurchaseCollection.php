@@ -23,6 +23,7 @@ class PurchaseCollection extends ResourceCollection
             }
             return [
                 'id' => $row->id,
+                'document_type_description' => $row->document_type->description,
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),

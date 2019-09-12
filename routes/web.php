@@ -237,15 +237,15 @@ if ($hostname) {
 //            Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
 //            Route::post('dispatches', 'Tenant\DispatchController@store');
 
-            Route::get('reports/sales', 'Tenant\ReportController@index')->name('tenant.reports.index');
-            Route::get('reports/sales/search', 'Tenant\ReportController@search')->name('tenant.search');
-            Route::post('reports/sales/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
-            Route::post('reports/sales/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
+            // Route::get('reports/sales', 'Tenant\ReportController@index')->name('tenant.reports.index');
+            // Route::get('reports/sales/search', 'Tenant\ReportController@search')->name('tenant.search');
+            // Route::post('reports/sales/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
+            // Route::post('reports/sales/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
 
-            Route::get('reports/purchases', 'Tenant\ReportPurchaseController@index')->name('tenant.reports.purchases.index');
-            Route::get('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
-            Route::post('reports/purchases/pdf', 'Tenant\ReportPurchaseController@pdf')->name('tenant.report.purchases.pdf');
-            Route::post('reports/purchases/excel', 'Tenant\ReportPurchaseController@excel')->name('tenant.report.purchases.report_excel');
+            // Route::get('reports/purchases', 'Tenant\ReportPurchaseController@index')->name('tenant.reports.purchases.index');
+            // Route::get('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
+            // Route::post('reports/purchases/pdf', 'Tenant\ReportPurchaseController@pdf')->name('tenant.report.purchases.pdf');
+            // Route::post('reports/purchases/excel', 'Tenant\ReportPurchaseController@excel')->name('tenant.report.purchases.report_excel');
 
 //            Route::get('reports/inventories', 'Tenant\ReportInventoryController@index')->name('tenant.reports.inventories.index');
 //            Route::post('reports/inventories/search', 'Tenant\ReportInventoryController@search')->name('tenant.reports.inventories.search');
@@ -395,11 +395,11 @@ if ($hostname) {
             // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
 
-            Route::get('reports/sale-notes', 'Tenant\ReportSaleNoteController@index')->name('tenant.reports.sale_note.index');
-            Route::get('reports/sale-notes/search', 'Tenant\ReportSaleNoteController@search')->name('tenant.reports.sale_note.search');
-            Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
-            Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
-            Route::post('reports/sale-notes/excel', 'Tenant\ReportSaleNoteController@excel')->name('tenant.report.sale_note.report_excel');
+            // Route::get('reports/sale-notes', 'Tenant\ReportSaleNoteController@index')->name('tenant.reports.sale_note.index');
+            // Route::get('reports/sale-notes/search', 'Tenant\ReportSaleNoteController@search')->name('tenant.reports.sale_note.search');
+            // Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
+            // Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
+            // Route::post('reports/sale-notes/excel', 'Tenant\ReportSaleNoteController@excel')->name('tenant.report.sale_note.report_excel');
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');
