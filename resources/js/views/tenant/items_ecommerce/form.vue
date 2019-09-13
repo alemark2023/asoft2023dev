@@ -281,6 +281,7 @@
                                     <img v-if="form.image_url" :src="form.image_url" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
+                                <div class="sub-title text-danger"><small>Se recomienda resoluciones Full Hd 1024x600</small></div>
                             </div> 
                         </div>
 

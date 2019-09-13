@@ -14,7 +14,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de productos</h3>
+                <h3 class="my-0">Listado de productos Tienda Virtual</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -24,10 +24,9 @@
                         <th>Unidad</th>
                         <th>Nombre</th>
                         <th>Descripción</th>
-                        <th>Visible en Tienda</th>
-                    
-                        <th  class="text-right">P.Unitario (Venta)</th>
-                       
+                        <th class="text-center">P.Unitario (Venta)</th>
+                        <th class="text-center">Imagen</th>
+                        <th class="text-center">Visible en Tienda</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
@@ -36,13 +35,14 @@
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
                         <td>{{ row.name }}</td>
-                        <td> 
-                            <el-checkbox readonly :value="row.apply_store == 1 ? true : false"></el-checkbox>
+                        <td class="text-center">{{ row.sale_unit_price }}</td>
+                        <td class="text-center">
+                             <img :src="row.image_url_medium" alt="" width="40" height="40"> 
+                               <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
                         </td>
-                       
-                       
-                        <td class="text-right">{{ row.sale_unit_price }}</td>
-                   
+                        <td class="text-center"> 
+                            <el-checkbox @change="visibleStore($event, row.id)" :checked="row.apply_store"></el-checkbox>
+                        </td>
                         <td class="text-right">
                             <template > <!-- v-if="typeUser === 'admin'" -->
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
@@ -91,6 +91,25 @@
         created() {
         },
         methods: {
+            visibleStore(apply_store, id)
+            {
+
+                this.$http.post(`/${this.resource}/visible_store`, { id, apply_store })
+                    .then(response => {
+                        if (response.data.success) {
+                           // row.apply_store = 
+                            this.$message.success(response.data.message)
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        
+                    })
+                    .then(() => {
+                       
+                    })
+            },
             clickWarehouseDetail(warehouses){
                 this.warehousesDetail = warehouses
                 this.showWarehousesDetail = true

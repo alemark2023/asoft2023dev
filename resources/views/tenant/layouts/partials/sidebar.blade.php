@@ -2,7 +2,9 @@
     $path = explode('/', request()->path());
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
-    $path[0] = ($path[0] === '')?'documents':$path[0]; 
+    $path[0] = ($path[0] === '')?'documents':$path[0];
+
+
 
 @endphp
 
@@ -27,20 +29,23 @@
                         </a>
                     </li> -->
 
-                    <li class="nav-parent {{ in_array($path[0], ['ecommerce'])?'nav-active nav-expanded':'' }}">
+                    <li class=" nav-parent
+                        {{ ($path[0] === 'store')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'items_store')?'nav-active nav-expanded':'' }}
+                        ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-shopping-cart" aria-hidden="true"></i>
-                            <span>Ecommerce</span>
+                            <span>Tienda</span>
                         </a>
                         <ul class="nav nav-children" style="">
-                            <li class="{{ ($path[0] === 'users')?'nav-active':'' }}">
-                                <a class="nav-link" href="{{route('tenant.ecommerce.index')}}">
-                                    Tienda
+                            <li class="{{ ($path[0] === 'store')?'nav-active':'' }}">
+                                <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">
+                                    Tienda Virtual
                                 </a>
                             </li>
-                            <li class="{{ ($path[0] === 'establishments')?'nav-active':'' }}">
+                            <li class="{{ ($path[0] === 'items_store')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
-                                    Productos
+                                    Productos Tienda Virtual
                                 </a>
                             </li>
                         </ul>

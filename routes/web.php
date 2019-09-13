@@ -124,6 +124,9 @@ if ($hostname) {
             Route::delete('items/item-unit-type/{item}', 'Tenant\ItemController@destroyItemUnitType');
             Route::post('items/import', 'Tenant\ItemController@import');
             Route::post('items/upload', 'Tenant\ItemController@upload');
+            Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
+
+
 
             //Customers
 //            Route::get('customers', 'Tenant\CustomerController@index')->name('tenant.customers.index');

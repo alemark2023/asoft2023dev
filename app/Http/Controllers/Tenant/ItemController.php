@@ -223,4 +223,19 @@ class ItemController extends Controller
 
     }
 
+
+    public function visibleStore(Request $request)
+    {
+        $item = Item::find($request->id);
+        $item->apply_store = $request->apply_store == true ? 1 : 0 ;
+        $item->save();
+
+        return [
+            'success' => true,
+            'message' => 'Producto editado con éxito',
+            'id' => $request->id
+        ];
+
+    }
+
 }
