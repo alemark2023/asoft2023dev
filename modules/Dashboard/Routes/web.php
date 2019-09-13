@@ -12,8 +12,9 @@ if($current_hostname) {
                 Route::get('/', 'DashboardController@index')->name('tenant.dashboard.index');
                 Route::get('filter', 'DashboardController@filter');
                 Route::post('data', 'DashboardController@data');
-                Route::get('data_aditional', 'DashboardController@data_aditional');
+                Route::post('data_aditional', 'DashboardController@data_aditional');
                 Route::post('unpaid', 'DashboardController@unpaid');
+                Route::get('stock-by-product/records', 'DashboardController@stockByProduct');
             });
 
         });

@@ -13,19 +13,52 @@ use Carbon\Carbon;
 
 class DashboardSalePurchase
 {
-    public function data()
+    public function data($request)
     {
+// dd($request);
+        $establishment_id = $request['establishment_id'];
+        $period = $request['period'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        $month_start = $request['month_start'];
+        $month_end = $request['month_end'];
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
         return [
-            'purchase' => $this->purchase_totals(),
-            'items_by_sales' => $this->items_by_sales(),
-            'top_customers' => $this->top_customers(),
+            'purchase' => $this->purchase_totals($establishment_id, $d_start, $d_end),
+            'items_by_sales' => $this->items_by_sales($establishment_id, $d_start, $d_end),
+            'top_customers' => $this->top_customers($establishment_id, $d_start, $d_end),
         ];
     }
 
-    private function top_customers(){
+    private function top_customers($establishment_id, $d_start, $d_end){
 
-        $documents = Document::get(); 
-        $sale_notes = SaleNote::get(); 
+        // $documents = Document::get(); 
+        // $sale_notes = SaleNote::get(); 
+
+        $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
         foreach ($sale_notes as $sn) { 
             $documents->push($sn);
@@ -55,9 +88,10 @@ class DashboardSalePurchase
         
     }
  
-    private function purchase_totals()
+    private function purchase_totals($establishment_id, $d_start, $d_end)
     {
         $purchases = Purchase::get();
+        // $purchases = Purchase::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
         $purchases_total = round($purchases->sum('total'),2);
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
@@ -114,10 +148,31 @@ class DashboardSalePurchase
 
 
     
-    private function items_by_sales(){
+    private function items_by_sales($establishment_id, $d_start, $d_end){
 
-        $document_items = DocumentItem::get(); 
-        $sale_note_items = SaleNoteItem::get(); 
+        // $document_items = DocumentItem::get(); 
+        // $sale_note_items = SaleNoteItem::get();
+         
+        $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+
+        // dd($documents->count(),$sale_notes->count());
+
+        $document_items = collect([]);
+        $sale_note_items = collect([]);
+
+        foreach ($documents as $doc) {
+            foreach ($doc->items as $item) {
+                $document_items->push($item);
+            }
+        }
+
+        foreach ($sale_notes as $s_notes) {
+            foreach ($s_notes->items as $item) {
+                $sale_note_items->push($item);
+            }
+        }
+ 
 
         foreach ($sale_note_items as $sni) { 
             $document_items->push($sni);

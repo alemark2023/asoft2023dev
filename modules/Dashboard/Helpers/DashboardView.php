@@ -33,7 +33,7 @@ class DashboardView
         switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
-                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
                 break;
             case 'between_months':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
@@ -41,7 +41,7 @@ class DashboardView
                 break;
             case 'date':
                 $d_start = $date_start;
-                $d_end = $date_end;
+                $d_end = $date_start;
                 break;
             case 'between_dates':
                 $d_start = $date_start;
