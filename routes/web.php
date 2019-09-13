@@ -361,11 +361,12 @@ if ($hostname) {
             Route::post('quotations/email', 'Tenant\QuotationController@email');
             Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
-            Route::get('reports/quotations', 'Tenant\ReportQuotationController@index')->name('tenant.reports.quotations.index');
-            Route::get('reports/quotations/search', 'Tenant\ReportQuotationController@search')->name('tenant.reports.quotations.search');
-            Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
-            Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
-            Route::post('reports/quotations/excel', 'Tenant\ReportQuotationController@excel')->name('tenant.report.quotations.report_excel');
+
+            // Route::get('reports/quotations', 'Tenant\ReportQuotationController@index')->name('tenant.reports.quotations.index');
+            // Route::get('reports/quotations/search', 'Tenant\ReportQuotationController@search')->name('tenant.reports.quotations.search');
+            // Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
+            // Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
+            // Route::post('reports/quotations/excel', 'Tenant\ReportQuotationController@excel')->name('tenant.report.quotations.report_excel');
 
 
 

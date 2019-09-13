@@ -26,7 +26,13 @@ if($current_hostname) {
                 Route::get('sale-notes/pdf', 'ReportSaleNoteController@pdf')->name('tenant.reports.sale_notes.pdf');
                 Route::get('sale-notes/excel', 'ReportSaleNoteController@excel')->name('tenant.reports.sale_notes.excel');
                 Route::get('sale-notes/filter', 'ReportSaleNoteController@filter')->name('tenant.reports.sale_notes.filter');
-                Route::get('sale-notes/records', 'ReportSaleNoteController@records')->name('tenant.reports.sales.records');
+                Route::get('sale-notes/records', 'ReportSaleNoteController@records')->name('tenant.reports.sale_notes.records');
+
+                Route::get('quotations', 'ReportQuotationController@index')->name('tenant.reports.quotations.index');
+                Route::get('quotations/pdf', 'ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
+                Route::get('quotations/excel', 'ReportQuotationController@excel')->name('tenant.reports.quotations.excel');
+                Route::get('quotations/filter', 'ReportQuotationController@filter')->name('tenant.reports.quotations.filter');
+                Route::get('quotations/records', 'ReportQuotationController@records')->name('tenant.reports.quotations.records');
 
             });
 

@@ -55,7 +55,7 @@
                                 </el-select>
                             </div>
                         </div>
-                        <div class="col-md-3" v-show="resource !== 'reports/sale-notes'">
+                        <div class="col-md-3" v-show="resource == 'reports/sales' || resource == 'reports/purchases'">
                             <div class="form-group">
                                 <label class="control-label">Tipo de documento</label>
                                 <el-select v-model="form.document_type_id" clearable>
