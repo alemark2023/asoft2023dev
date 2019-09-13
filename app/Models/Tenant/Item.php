@@ -41,6 +41,9 @@ class Item extends ModelTenant
         'attributes',
         'percentage_perception',        
         'image',
+        'image_medium',
+        'image_small',
+
         'account_id',
         'amount_plastic_bag_taxes',
         'apply_store'

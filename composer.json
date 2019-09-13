@@ -13,6 +13,7 @@
         "guzzlehttp/guzzle": "~6.0",
         "hyn/multi-tenant": "5.*",
         "imangazaliev/didom": "^1.13",
+        "intervention/image": "^2.5",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^5.4.0",

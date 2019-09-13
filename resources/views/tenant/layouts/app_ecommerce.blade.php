@@ -107,22 +107,21 @@
                             </div><!-- End .banner-slider -->
                         </div><!-- End .widget -->
 
-                        <div class="widget widget-newsletters">
-                            <h3 class="widget-title">Newsletter</h3>
+                        <!-- <div class="widget widget-newsletters">
+                           <h3 class="widget-title">Newsletter</h3>
                             <p>Get all the latest information on Events, Sales and Offers. </p>
                             <form action="#">
                                 <div class="form-group">
                                     <input type="email" class="form-control" id="wemail">
                                     <label for="wemail"><i class="icon-envolope"></i>Email Address</label>
-                                </div><!-- Endd .form-group -->
+                                </div>
                                 <input type="submit" class="btn btn-block" value="Subscribe Now">
                             </form>
-                        </div><!-- End .widget -->
+                        </div>-->
 
-                        <div class="widget widget-testimonials">
-                           
-                            @include('tenant.layouts.partials_ecommerce.testimonials')
-                        </div><!-- End .widget -->
+                        {{-- <div class="widget widget-testimonials">
+                            @include('tenant.layouts.partials_ecommerce.testimonials') 
+                        </div> --}} <!-- End .widget -->
 
                         <div class="widget">
                             <!-- layout-  news -->
@@ -148,7 +147,7 @@
 
     </div><!-- End .mobile-menu-container -->
 
-    <div class="newsletter-popup mfp-hide" id="newsletter-popup-form" style="background-image: url(assets/images/newsletter_popup_bg.jpg)">
+    <div class="newsletter-popup mfp-hide" id="newsletter-popup-form" > <!-- style="background-image: url(assets/images/newsletter_popup_bg.jpg)" -->
         <div class="newsletter-popup-content">
             <img src="{{ asset('porto-ecommerce/assets/images/logo-black.png') }}" alt="Logo" class="logo-newsletter">
             <h2>BE THE FIRST TO KNOW</h2>
@@ -178,7 +177,7 @@
     <script src="{{ asset('porto-ecommerce/assets/js/plugins.min.js') }}"></script>
 
     <!-- Main JS File -->
-    <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/main.js') }}"></script>
 </body>
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:54 GMT -->

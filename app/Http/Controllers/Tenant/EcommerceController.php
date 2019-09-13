@@ -10,8 +10,6 @@ use App\Models\Tenant\Item;
 class EcommerceController extends Controller
 {
 
-   
-
     public function index()
     {
         return view('tenant.ecommerce.index');
@@ -23,9 +21,15 @@ class EcommerceController extends Controller
         return view('tenant.ecommerce.items.record', compact('record'));
     }
 
-     public function items()
+    public function items()
     {
         return view('tenant.ecommerce.items.index');
+    }
+
+    public function partialItem($id)
+    {   
+        $record = Item::find($id);
+        return view('tenant.ecommerce.items.partial', compact('record'));
     }
 
 

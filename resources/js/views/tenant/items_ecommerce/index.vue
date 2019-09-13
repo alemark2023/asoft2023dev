@@ -37,7 +37,7 @@
                         <td>{{ row.name }}</td>
                         <td class="text-center">{{ row.sale_unit_price }}</td>
                         <td class="text-center">
-                             <img :src="row.image_url_medium" alt="" width="40" height="40"> 
+                             <img :src="row.image_url_small" alt="" width="170" height="170"> 
                                <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
                         </td>
                         <td class="text-center"> 
