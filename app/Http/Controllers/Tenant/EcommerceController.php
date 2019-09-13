@@ -23,7 +23,8 @@ class EcommerceController extends Controller
 
     public function items()
     {
-        return view('tenant.ecommerce.items.index');
+        $records = Item::where('apply_store', 1)->get();
+        return view('tenant.ecommerce.items.index', compact('records'));
     }
 
     public function partialItem($id)

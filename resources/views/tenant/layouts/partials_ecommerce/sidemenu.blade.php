@@ -54,7 +54,7 @@
               </div><!-- End .megamenu -->
           </li>
           <li class="megamenu-container">
-              <a href="product.html" class="sf-with-ul"><i class="icon-video"></i>Products</a>
+              <a href="{{route('tenant.ecommerce.item.index')}}" class="sf-with-ul"><i class="icon-video"></i>Products</a>
               <div class="megamenu">
                   <div class="row">
                       <div class="col-lg-8">

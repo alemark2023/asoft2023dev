@@ -6,10 +6,10 @@
                     <div class="product-item">
                         <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image) }}" data-zoom-image="{{ asset('storage/uploads/items/'.$record->image) }}"/>
                     </div>
-                    <!--<div class="product-item">
-                        <img class="product-single-image" src="{{ asset( 'porto_ecommerce/ajax/assets/images/products/zoom/product-2.html' ) }}" data-zoom-image="/porto_ecommerce/demo-6/ajax/assets/images/products/zoom/product-2-big.html"/>
-                    </div>
                     <div class="product-item">
+                        <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image_medium) }}" data-zoom-image="{{ asset('storage/uploads/items/'.$record->image_medium) }}"/>
+                    </div>
+                    <!--<div class="product-item">
                         <img class="product-single-image" src="{{ asset('porto_ecommerce/ajax/assets/images/products/zoom/product-3.html') }}" data-zoom-image="//porto_ecommerce/demo-6/ajax/assets/images/products/zoom/product-3-big.html"/>
                     </div>
                     <div class="product-item">
@@ -21,6 +21,9 @@
             <div class="prod-thumbnail row owl-dots" id='carousel-custom-dots'>
                 <div class="col-3 owl-dot">
                     <img src="{{ asset('storage/uploads/items/'.$record->image) }}"/>
+                </div>
+                <div class="col-3 owl-dot">
+                    <img src="{{ asset('storage/uploads/items/'.$record->image_medium) }}"/>
                 </div>
                 <!--<div class="col-3 owl-dot">
                     <img src="{{ asset('porto_ecommerce/ajax/assets/images/products/zoom/product-2.html') }}" />

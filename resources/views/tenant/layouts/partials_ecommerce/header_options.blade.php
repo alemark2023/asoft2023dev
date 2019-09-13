@@ -202,7 +202,7 @@
                  <ul class="menu sf-arrows">
                      <li><a href="/ecommerce">Home</a></li>
                      <li>
-                         <a href="category.html" class="sf-with-ul">Categories</a>
+                         <a href="#" class="sf-with-ul">Categories</a>
                          <div class="megamenu megamenu-fixed-width">
                              <div class="row">
                                  <div class="col-lg-8">
@@ -257,7 +257,7 @@
                          </div><!-- End .megamenu -->
                      </li>
                      <li class="megamenu-container active">
-                         <a href="product.html" class="sf-with-ul">Products</a>
+                         <a href="{{route('tenant.ecommerce.item.index')}}" class="sf-with-ul">Products</a>
                          <div class="megamenu">
                              <div class="row">
                                  <div class="col-lg-8">
