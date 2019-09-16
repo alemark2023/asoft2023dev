@@ -143,22 +143,11 @@ class ItemController extends Controller
             $item_unit_type->save();
         
         }
-
-
-
-      //  ItemTag::destroy( $item->tags->pluck('') );
-
-        
-       // foreach ($request->tags_id as $value) {
-
-            /*ItemTag::firstOrCreate(
-                ['item_id' => $item->id,  'tag_id' => $value]
-                //['created_at' => ]
-            );*/
+        ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));
+        foreach ($request->tags_id as $value) {
+            ItemTag::create(['item_id' => $item->id,  'tag_id' => $value]);
             //$tag = ItemTag::where('item_id', $item->id)->where('tag_id', $value)->first();
-           
-
-        //}
+        }
         
         $item->update();
 

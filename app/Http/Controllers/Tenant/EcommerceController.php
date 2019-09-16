@@ -17,7 +17,17 @@ class EcommerceController extends Controller
 
     public function item($id)
     {
-        $record = Item::find($id);
+        $row = Item::find($id);
+        $record = (object)[
+            'id' => $row->id,
+            'description' => $row->description,
+            'name' => $row->name,
+            'second_name' => $row->second_name,
+            'sale_unit_price' => $row->sale_unit_price,
+            'image' =>  $row->image,
+            'image_medium' => $row->image_medium,
+            'image_small' => $row->image_small
+        ];
         return view('tenant.ecommerce.items.record', compact('record'));
     }
 

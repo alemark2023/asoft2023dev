@@ -50,6 +50,10 @@ class ViewServiceProvider extends ServiceProvider
             'tenant.layouts.partials_ecommerce.list_products',
             'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
         );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.sidemenu',
+            'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
+        );
 
 
 

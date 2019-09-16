@@ -1,7 +1,7 @@
   <nav class="side-nav">
       <ul class="menu menu-vertical sf-arrows">
           <li class="active"><a href="index-2.html"><i class="icon-home"></i>Home</a></li>
-          <li>
+          {{--<li>
               <a href="#" class="sf-with-ul"><i class="icon-briefcase"></i>
                   Categories</a>
               <div class="megamenu megamenu-fixed-width">
@@ -18,27 +18,11 @@
                                       <li><a href="#">Laptops</a></li>
                                       <li><a href="#">Mac Book Pro</a></li>
                                       <li><a href="#">Tablets</a></li>
-                                      <!--<li><a href="category-sidebar-right.html">Right Sidebar</a></li>
-                                      <li><a href="category-flex-grid.html">Product Flex Grid</a></li>
-                                      <li><a href="category-horizontal-filter1.html">Horizontal Filter1</a></li>
-                                      <li><a href="category-horizontal-filter2.html">Horizontal Filter2</a></li>-->
+                                    
                                   </ul>
                               </div><!-- End .col-lg-6 -->
                               <div class="col-lg-6">
-                                 <!-- <div class="menu-title">
-                                      <a href="#">Variations 2</a>
-                                  </div>
-                                  <ul>
-                                      <li><a href="#">Product List Item Types</a></li>
-                                      <li><a href="category-infinite-scroll.html">Ajax Infinite Scroll</a></li>
-                                      <li><a href="#">3 Columns Products</a></li>
-                                      <li><a href="category-4col.html">4 Columns Products <span
-                                                  class="tip tip-new">New</span></a></li>
-                                      <li><a href="category-5col.html">5 Columns Products</a></li>
-                                      <li><a href="category-6col.html">6 Columns Products</a></li>
-                                      <li><a href="category-7col.html">7 Columns Products</a></li>
-                                      <li><a href="category-8col.html">8 Columns Products</a></li>
-                                  </ul> -->
+                              
 
                               </div><!-- End .col-lg-6 -->
                           </div><!-- End .row -->
@@ -52,8 +36,8 @@
                       </div><!-- End .col-lg-4 -->
                   </div>
               </div><!-- End .megamenu -->
-          </li>
-          <li class="megamenu-container">
+          </li> --}}
+          {{--<li class="megamenu-container">
               <a href="{{route('tenant.ecommerce.item.index')}}" class="sf-with-ul"><i class="icon-video"></i>Products</a>
               <div class="megamenu">
                   <div class="row">
@@ -108,8 +92,8 @@
                       </div><!-- End .col-lg-4 -->
                   </div><!-- End .row -->
               </div><!-- End .megamenu -->
-          </li>
-          <li>
+          </li> --}}
+          {{--<li>
               <a href="#" class="sf-with-ul"><i class="icon-docs-inv"></i>Pages</a>
 
               <ul>
@@ -138,14 +122,17 @@
                   <li><a href="#" class="login-link">Login</a></li>
                   <li><a href="forgot-password.html">Forgot Password</a></li>
               </ul>
-          </li>
-          <li><a href="#" class="sf-with-ul"><i class="icon-sliders"></i>Features</a>
+          </li> --}}
+          {{--<li><a href="#" class="sf-with-ul"><i class="icon-sliders"></i>Features</a>
               <ul>
                   <li><a href="#">Header Types</a></li>
                   <li><a href="#">Footer Types</a></li>
               </ul>
-          </li>
-          <li><a href="#"><i class="icon-cat-gift"></i>Special Offer!</a></li>
-          <li><a href="#"><i class="icon-star-empty"></i>Buy Porto!</a></li>
+          </li> --}}
+
+          @foreach ($items as $item)
+            <li><a href="#"><i class="icon-cat-gift"></i>{{ $item->name }}</a></li>
+          @endforeach
+        
       </ul>
   </nav>
