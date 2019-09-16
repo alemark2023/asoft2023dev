@@ -127,6 +127,20 @@
                             <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
                         </div>
                     </div>
+                    
+
+                    <div class="col-md-3 center-el-checkbox" >
+                        <div class="form-group"  >
+                            <el-checkbox v-model="has_percentage_perception" @change="changePercentagePerception">Incluye percepción</el-checkbox><br>
+                        </div>
+                    </div>
+                    <div class="col-md-3 center-el-checkbox" v-show="has_percentage_perception">
+                        <div class="form-group"  >
+                            <label class="control-label">Porcentaje de percepción</label>
+
+                            <el-input v-model="form.percentage_perception"></el-input>
+                        </div>
+                    </div>
                     <div class="col-md-3" v-show="recordId==null">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">
@@ -141,16 +155,12 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3 center-el-checkbox" >
-                        <div class="form-group"  >
-                            <el-checkbox v-model="has_percentage_perception" @change="changePercentagePerception">Incluye percepción</el-checkbox><br>
-                        </div>
-                    </div>
-                    <div class="col-md-3 center-el-checkbox" v-show="has_percentage_perception">
-                        <div class="form-group"  >
-                            <label class="control-label">Porcentaje de percepción</label>
-
-                            <el-input v-model="form.percentage_perception"></el-input>
+                    
+                    <div class="col-md-3 " >
+                        <div class="form-group" :class="{'has-danger': errors.date_of_due}">
+                            <label class="control-label">Fec. Vencimiento</label>
+                            <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                            <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                         </div>
                     </div>
                     <!-- <div class="col-md-3 center-el-checkbox">
@@ -499,6 +509,7 @@
                     image_url: null,
                     temp_path: null,
                     account_id: null,
+                    date_of_due:null
                 }
                 this.show_has_igv = true
             },

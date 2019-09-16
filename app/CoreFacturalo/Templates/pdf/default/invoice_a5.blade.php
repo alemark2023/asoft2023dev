@@ -308,6 +308,19 @@
             
             @endforeach
             <br/>
+            @if ($customer->department_id == 16)
+                <br/><br/><br/>                       
+                <div>
+                    <center>
+                        Representación impresa del Comprobante de Pago Electrónico. 
+                        <br/>Esta puede ser consultada en:
+                        <br/><b>{!! url('/buscar') !!}</b>
+                        <br/> "Bienes transferidos en la Amazonía 
+                        <br/>para ser consumidos en la misma".
+                    </center>
+                </div>
+                <br/>
+            @endif
             @foreach($document->additional_information as $information)
                 @if ($information)
                     @if ($loop->first)

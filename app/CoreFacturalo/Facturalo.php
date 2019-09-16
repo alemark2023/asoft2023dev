@@ -276,6 +276,7 @@ class Facturalo
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
             $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
             $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0; 
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
             $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
@@ -320,6 +321,7 @@ class Facturalo
                     $total_exonerated +
                     $perception +
                     $total_taxed+
+                    $customer_department_id+
                     $total_plastic_bag_taxes],
                 'margin_top' => 0,
                 'margin_right' => 1,

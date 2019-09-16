@@ -296,6 +296,18 @@
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
 
+    @if ($customer->department_id == 16)
+        <tr>
+            <td class="text-center desc pt-5">
+                Representación impresa del Comprobante de Pago Electrónico. 
+                <br/>Esta puede ser consultada en:
+                <br/> <b>{!! url('/buscar') !!}</b>
+                <br/> "Bienes transferidos en la Amazonía 
+                <br/>para ser consumidos en la misma
+            </td>
+        </tr>
+    @endif
+
     @if($payments->count())
         <tr>
             <td class="desc pt-5">
