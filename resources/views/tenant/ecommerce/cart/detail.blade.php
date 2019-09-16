@@ -142,7 +142,7 @@
             </table>
 
             <div class="checkout-methods">
-                <a href="#" class="btn btn-block btn-sm btn-primary">Ir a Pagar</a>
+                <a  href="{{route('tenant_pay_cart')}}"   class="btn btn-block btn-sm btn-primary">Ir a Pagar</a>
                 <!--<a href="#" class="btn btn-link btn-block">Check Out with Multiple Addresses</a>-->
             </div><!-- End .checkout-methods -->
         </div><!-- End .cart-summary -->
