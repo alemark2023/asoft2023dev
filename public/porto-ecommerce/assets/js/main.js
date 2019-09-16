@@ -472,7 +472,10 @@ function(e) {
 		
 		loginPopup: function() {
 			e(".login-link").click(function(t) {
+
 				t.preventDefault(), o.ajaxLoading();
+
+				var n = e(this).attr("href");
 				
 				setTimeout(function() {
 					e.magnificPopup.open({
@@ -482,15 +485,13 @@ function(e) {
 						preloader: !1,
 						removalDelay: 350,
 						items: {
-							src: "/porto-ecommerce/ajax/login-popup.html"
+							src: n
 						},
-						
 						callbacks: {
 							beforeClose: function() {
 								e(".ajaxOverlay").remove()
 							}
 						},
-						
 						ajax: {
 							tError: ""
 						}

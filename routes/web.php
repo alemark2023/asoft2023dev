@@ -18,6 +18,8 @@ if ($hostname) {
         Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');
         Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
         Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
+        Route::get('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
+
 
 
 

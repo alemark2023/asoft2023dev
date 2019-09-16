@@ -53,6 +53,11 @@ class EcommerceController extends Controller
         return view('tenant.ecommerce.cart.pay');
     }
 
+    public function login()
+    {
+        return view('tenant.ecommerce.user.login');
+    }
+
 
 
 

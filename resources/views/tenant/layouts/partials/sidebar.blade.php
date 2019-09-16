@@ -4,8 +4,6 @@
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
 
-
-
 @endphp
 
 <aside id="sidebar-left" class="sidebar-left">
