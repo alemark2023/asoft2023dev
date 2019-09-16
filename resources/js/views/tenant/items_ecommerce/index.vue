@@ -37,11 +37,11 @@
                         <td>{{ row.name }}</td>
                         <td class="text-center">{{ row.sale_unit_price }}</td>
                         <td class="text-center">
-                             <img :src="row.image_url_small" alt="" width="170" height="170"> 
+                             <img :src="row.image_url_small" alt="" width="150" height="150"> 
                                <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
                         </td>
                         <td class="text-center"> 
-                            <el-checkbox @change="visibleStore($event, row.id)" :checked="row.apply_store"></el-checkbox>
+                            <el-checkbox size="medium" @change="visibleStore($event, row.id)" :checked="row.apply_store"></el-checkbox>
                         </td>
                         <td class="text-right">
                             <template > <!-- v-if="typeUser === 'admin'" -->
@@ -89,6 +89,9 @@
             }
         },
         created() {
+
+            localStorage.setItem('mami', 'aca')
+            console.log('sdsdsd')
         },
         methods: {
             visibleStore(apply_store, id)

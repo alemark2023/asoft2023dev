@@ -83,7 +83,7 @@
                         <input class="horizontal-quantity form-control" type="text">
                     </div><!-- End .product-single-qty -->
 
-                    <a href="https://www.portotheme.com/html/porto_ecommerce/demo-6/ajax/cart.html" class="paction add-cart" title="Add to Cart">
+                    <a href="#" data-product="{{ json_encode( $record ) }}" class="paction add-cart" title="Add to Cart">
                         <span>Add to Cart</span>
                     </a>
                     <a href="#" class="paction add-wishlist" title="Add to Wishlist">

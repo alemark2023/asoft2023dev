@@ -11,7 +11,7 @@
                  <a href="/ecommerce/item/{{ $item->id }}" class="product-image">
                      <img src="{{ asset('storage/uploads/items/'.$item->image) }}" alt="product">
                  </a>
-                 <a href="{{ asset('porto-ecommerce/ajax/product-quick-view.html') }}" class="btn-quickview">Quick
+                 <a href="{{route('item_partial', ['id' => $item->id])}}" class="btn-quickview">Quick
                      View</a>
              </figure>
              <div class="product-details">
@@ -32,7 +32,7 @@
                          <span>Add to Wishlist</span>
                      </a>
 
-                     <a href="product.html" class="paction add-cart" title="Add to Cart">
+                     <a href="#" class="paction add-cart" data-product="{{ json_encode( $item ) }}" title="Add to Cart">
                          <span>Add to Cart</span>
                      </a>
 

@@ -33,6 +33,11 @@ class EcommerceController extends Controller
         return view('tenant.ecommerce.items.partial', compact('record'));
     }
 
+    public function detailCart()
+    {
+        return view('tenant.ecommerce.cart.detail');
+    }
+
 
 
 

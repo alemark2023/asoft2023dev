@@ -21,6 +21,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
+use App\Models\Tenant\ItemTag;
+use App\Models\Tenant\Catalogs\Tag;
+
 
 
 class ItemController extends Controller
@@ -66,8 +69,9 @@ class ItemController extends Controller
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->get();
         $accounts = Account::all();
+        $tags = Tag::all();
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse', 'accounts');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse', 'accounts', 'tags');
     }
 
     public function record($id)
@@ -138,7 +142,23 @@ class ItemController extends Controller
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
         
-        }         
+        }
+
+
+
+      //  ItemTag::destroy( $item->tags->pluck('') );
+
+        
+       // foreach ($request->tags_id as $value) {
+
+            /*ItemTag::firstOrCreate(
+                ['item_id' => $item->id,  'tag_id' => $value]
+                //['created_at' => ]
+            );*/
+            //$tag = ItemTag::where('item_id', $item->id)->where('tag_id', $value)->first();
+           
+
+        //}
         
         $item->update();
 

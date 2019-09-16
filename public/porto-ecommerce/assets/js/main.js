@@ -5,7 +5,10 @@ function(e) {
 		initialised: !1,
 		mobile: !1,
 		init: function() {
-			this.initialised || (this.initialised = !0, this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), this.quantityInputs(), this.countTo(), this.tooltip(), this.popover(), this.changePassToggle(), this.changeBillToggle(), this.catAccordion(), this.ajaxLoadProduct(), this.toggleFilter(), this.toggleSidebar(), this.productTabSroll(), this.scrollToElement(), this.loginPopup(), this.windowClick(), e.fn.superfish && this.menuInit(), e.fn.owlCarousel && this.owlCarousels(), "object" == typeof noUiSlider && this.filterSlider(), e.fn.themeSticky && this.stickySidebar(), e.fn.magnificPopup && this.lightBox())
+			this.initialised || (this.initialised = !0, this.detailCart(), this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), 
+			this.quantityInputs(), this.countTo(), this.tooltip(), this.popover(), this.changePassToggle(), this.changeBillToggle(), this.catAccordion(), this.ajaxLoadProduct(), this.toggleFilter(), 
+			this.toggleSidebar(), this.productTabSroll(), this.scrollToElement(), this.loginPopup(), this.windowClick(), e.fn.superfish && this.menuInit(), e.fn.owlCarousel 
+			&& this.owlCarousels(), "object" == typeof noUiSlider && this.filterSlider(), e.fn.themeSticky && this.stickySidebar(), e.fn.magnificPopup && this.lightBox())
 		},
 		
 		checkMobile: function() {
@@ -479,7 +482,7 @@ function(e) {
 						preloader: !1,
 						removalDelay: 350,
 						items: {
-							src: "ajax/login-popup.html"
+							src: "/porto-ecommerce/ajax/login-popup.html"
 						},
 						
 						callbacks: {
@@ -492,7 +495,7 @@ function(e) {
 							tError: ""
 						}
 					})
-				}, 1500)
+				}, 1000)
 			})
 		},
 		
@@ -500,6 +503,84 @@ function(e) {
 			e(document).click(function(o) {
 				e(o.target).closest(".toolbox-item.select-custom").length || e(".select-custom").removeClass("opened")
 			})
+		},
+		productsCartDropDown: function()
+		{
+			//console.log('drop dowm')
+			//clean cart dropdown
+			jQuery(".dropdown-cart-products").empty();
+			jQuery(".cart-count").empty();
+			let count = 0;
+			//get data local syrogare prodicts
+			let array = localStorage.getItem('products_cart');
+			array = JSON.parse(array)
+			count = array.length;
+				
+			array.forEach(element => {
+				
+				jQuery(".dropdown-cart-products").append( `
+						<div class="product">
+							<div class="product-details">
+							<h4 class="product-title">
+								<a href="$">${element.name}</a>
+							</h4>
+							<span class="cart-product-info">
+								<span class="cart-product-qty">1</span> x ${element.sale_unit_price}
+							</span>
+							</div>
+							<figure class="product-image-container">
+								<a href="#" class="product-image">
+									<img alt="product" src="/storage/uploads/items/${element.image_small}" />
+								</a>
+								<a href="#" class="btn-remove" title="Remove Product">
+									<i class="icon-cancel"></i>
+								</a>
+							</figure>
+						</div>` 
+					);
+			});
+			
+			jQuery(".cart-count").append(count);
+
+		},
+		addToCart: function()
+		{
+			let contex = this
+			e(".add-cart").click(function(t) {
+
+				let array = localStorage.getItem('products_cart');
+				array = JSON.parse(array);
+
+				let item = jQuery(this).data('product')
+
+				let found = array.find( x=> x.id == item.id)
+				if(!found)
+				{
+					array.push( jQuery(this).data('product') );
+					localStorage.setItem('products_cart', JSON.stringify( array ) );
+					contex.productsCartDropDown();
+					contex.successAddProduct();
+				}
+
+
+
+				
+				
+			})
+		},
+		successAddProduct: function()
+		{
+			jQuery('#moda-succes-add-product').modal('show');
+		},
+		initShop: function(){
+			if(!localStorage.getItem('products_cart') )
+			{
+				localStorage.setItem('products_cart', JSON.stringify([]))
+			}
+		},
+		detailCart: function()
+		{
+
 		}
 	};
 	

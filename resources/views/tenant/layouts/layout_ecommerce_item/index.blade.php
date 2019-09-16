@@ -87,6 +87,7 @@
                         <div class="row row-sm">
 
                                 @yield('content')
+                                
                         </div><!-- End .row -->
 
                         <nav class="toolbox toolbox-pagination">

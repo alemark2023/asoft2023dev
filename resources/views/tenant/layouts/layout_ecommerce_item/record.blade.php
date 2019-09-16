@@ -87,6 +87,8 @@
     <!-- Main JS File -->
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
 
+     @stack('scripts')
+
     <!-- www.addthis.com share plugin -->
     <!--<script src="../../../../s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b927288a03dbde6"></script> -->
 </body>

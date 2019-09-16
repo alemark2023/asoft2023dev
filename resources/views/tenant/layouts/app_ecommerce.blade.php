@@ -2,6 +2,7 @@
 <html lang="en">
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:38 GMT -->
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,7 +13,7 @@
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
     <meta name="author" content="SW-THEMES">
-        
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.ico') }}">
 
@@ -22,24 +23,26 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
 </head>
+
 <body>
     <div class="page-wrapper">
-      
+
         @include('tenant.layouts.partials_ecommerce.header')
         <main class="main">
-           <br> <!-- layout-  info_boxez-->
+            <br> <!-- layout-  info_boxez-->
 
             <div class="container">
                 <div class="row">
                     <div class="col-lg-9">
-                        
-                         @include('tenant.layouts.partials_ecommerce.home_slider')
+
+                        @include('tenant.layouts.partials_ecommerce.home_slider')
 
                         <div class="row">
-                            <div class="col-md-4">
+                            {{--<div class="col-md-4">
                                 <div class="banner banner-image">
                                     <a href="#">
-                                        <img src="{{ asset('porto-ecommerce/assets/images/banners/banner-1.jpg' ) }}" alt="banner">
+                                        <img src="{{ asset('porto-ecommerce/assets/images/banners/banner-1.jpg' ) }}"
+                                            alt="banner">
                                     </a>
                                 </div><!-- End .banner -->
                             </div><!-- End .col-md-4 -->
@@ -60,26 +63,29 @@
                                             alt="banner">
                                     </a>
                                 </div><!-- End .banner -->
-                            </div><!-- End .col-md-4 -->
+                            </div><!-- End .col-md-4 --> --}}
                         </div><!-- End .row -->
 
                         <div class="mb-3"></div><!-- margin -->
 
-                        @include('tenant.layouts.partials_ecommerce.featured_products')
+                        {{-- @include('tenant.layouts.partials_ecommerce.featured_products') --}}
+                        <div class="row row-sm">
+                            @include('tenant.layouts.partials_ecommerce.list_products')
+                        </div>
 
                         <div class="mb-6"></div><!-- margin -->
-                        
+
                         <div class="row">
-                         <!-- layout-  products_main-->
-                           
+                            <!-- layout-  products_main-->
+
                         </div><!-- End .row -->
 
                         <div class="mb-3"></div><!-- margin -->
 
                         <div class="row">
                             <!-- layout-  features_box -->
-                           
-                           
+
+
                         </div><!-- End .row -->
                     </div><!-- End .col-lg-9 -->
 
@@ -87,7 +93,7 @@
                         <div class="side-menu-container">
                             <h2>CATEGORIES</h2>
                             @include('tenant.layouts.partials_ecommerce.sidemenu')
-                            
+
                         </div><!-- End .side-menu-container -->
                         <div class="widget widget-banners">
                             <div class="widget-banners-slider owl-carousel owl-theme">
@@ -121,11 +127,12 @@
 
                         {{-- <div class="widget widget-testimonials">
                             @include('tenant.layouts.partials_ecommerce.testimonials') 
-                        </div> --}} <!-- End .widget -->
+                        </div> --}}
+                        <!-- End .widget -->
 
                         <div class="widget">
                             <!-- layout-  news -->
-                        
+
                         </div><!-- End .widget -->
                     </aside><!-- End .col-lg-3 -->
                 </div><!-- End .row -->
@@ -135,26 +142,28 @@
         </main><!-- End .main -->
 
         <footer class="footer">
-             @include('tenant.layouts.partials_ecommerce.footer')
+            @include('tenant.layouts.partials_ecommerce.footer')
         </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
 
     <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
 
     <div class="mobile-menu-container">
-        
+
         @include('tenant.layouts.partials_ecommerce.mobile_menu')
 
     </div><!-- End .mobile-menu-container -->
 
-    <div class="newsletter-popup mfp-hide" id="newsletter-popup-form" > <!-- style="background-image: url(assets/images/newsletter_popup_bg.jpg)" -->
+    <div class="newsletter-popup mfp-hide" id="newsletter-popup-form">
+        <!-- style="background-image: url(assets/images/newsletter_popup_bg.jpg)" -->
         <div class="newsletter-popup-content">
             <img src="{{ asset('porto-ecommerce/assets/images/logo-black.png') }}" alt="Logo" class="logo-newsletter">
             <h2>BE THE FIRST TO KNOW</h2>
             <p>Subscribe to the Porto eCommerce newsletter to receive timely updates from your favorite products.</p>
             <form action="#">
                 <div class="input-group">
-                    <input type="email" class="form-control" id="newsletter-email" name="newsletter-email" placeholder="Email address" required>
+                    <input type="email" class="form-control" id="newsletter-email" name="newsletter-email"
+                        placeholder="Email address" required>
                     <input type="submit" class="btn" value="Go!">
                 </div><!-- End .from-group -->
             </form>
@@ -177,8 +186,11 @@
     <script src="{{ asset('porto-ecommerce/assets/js/plugins.min.js') }}"></script>
 
     <!-- Main JS File -->
-    <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/main.js') }}"></script>
+
+    @stack('scripts')
 </body>
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:39:54 GMT -->
+
 </html>

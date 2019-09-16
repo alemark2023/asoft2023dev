@@ -317,6 +317,15 @@
                                         <el-checkbox v-model="form.apply_store">Aplica en Tienda</el-checkbox><br>
                                     </div>
                                 </div>
+                                <div class="col-md-8">
+                                    <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
+                                        <label class="control-label">Tags</label>
+                                        <el-select multiple v-model="form.tags_id" filterable>
+                                            <el-option v-for="option in tags" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                        </el-select>
+                                        <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
+                                    </div>
+                                </div>
 
                             </div>
                         </div> 
@@ -363,6 +372,7 @@
 
         data() {
             return {
+                tags:[],
                 warehouse: [],
                 loading_submit: false,
                 showPercentagePerception: false,
@@ -402,6 +412,7 @@
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
                     this.warehouse = response.data.warehouse
+                    this.tags = response.data.tags
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -494,6 +505,7 @@
                     temp_path: null,
                     account_id: null,
                     apply_store: false,
+                    tags_id: []
                 }
                 this.show_has_igv = true
             },

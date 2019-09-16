@@ -15,7 +15,9 @@ if ($hostname) {
         Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
         Route::get('ecommerce/item/{id}', 'Tenant\EcommerceController@item')->name('tenant.ecommerce.item');
         Route::get('ecommerce/items', 'Tenant\EcommerceController@items')->name('tenant.ecommerce.item.index');
-        Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');;
+        Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');
+        Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
+
 
 
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');

@@ -43,7 +43,7 @@
             }
         },
         created() {
-            console.log(this.typeUser)
+            //console.log(this.typeUser)
         },
         methods: {
             close() {

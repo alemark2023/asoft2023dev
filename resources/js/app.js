@@ -120,6 +120,8 @@ Vue.component('x-input-service', require('./components/InputService.vue'));
 // Ecommerce
 
 Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecommerce/index.vue'));
+Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dropdown.vue'));
+
 
 const app = new Vue({
     el: '#main-wrapper'

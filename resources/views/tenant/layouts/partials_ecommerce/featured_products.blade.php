@@ -4,9 +4,8 @@
 
   <div class="home-featured-products owl-carousel owl-theme owl-dots-top">
 
-     <!-- <h1>{{ count($items) }}</h1> -->
-
     @foreach ($items as $item)
+
      <div class="product">
           <figure class="product-image-container">
               <a  href="/ecommerce/item/{{ $item->id }}" class="product-image">
@@ -21,7 +20,7 @@
                   </div><!-- End .product-ratings -->
               </div><!-- End .product-container -->
               <h2 class="product-title">
-                  <a href="product.html">{{$item->name}}</a>
+                  <a href="#">{{$item->name}}</a>
               </h2>
               <div class="price-box">
                   <span class="product-price">S/ {{ number_format($item->sale_unit_price, 2) }}</span>
@@ -32,7 +31,7 @@
                       <span>Add to Wishlist</span>
                   </a>
 
-                  <a href="product.html" class="paction add-cart" title="Add to Cart">
+                  <a href="#" data-product="{{ json_encode( $item ) }}" class="paction add-cart" title="Add to Cart">
                       <span>Add to Cart</span>
                   </a>
 
@@ -47,6 +46,9 @@
     
        
     @endforeach
+
+
+
      
 
     

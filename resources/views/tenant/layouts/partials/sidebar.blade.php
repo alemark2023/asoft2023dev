@@ -40,7 +40,7 @@
                         <ul class="nav nav-children" style="">
                             <li class="{{ ($path[0] === 'store')?'nav-active':'' }}">
                                 <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">
-                                    Tienda Virtual
+                                    Ir a Tienda
                                 </a>
                             </li>
                             <li class="{{ ($path[0] === 'items_store')?'nav-active':'' }}">

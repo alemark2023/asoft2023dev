@@ -93,7 +93,7 @@
                         <input class="horizontal-quantity form-control" type="text">
                     </div><!-- End .product-single-qty -->
 
-                    <a href="cart.html" class="paction add-cart" title="Add to Cart">
+                    <a href="#" class="paction add-cart" data-product="{{ json_encode( $record ) }}" title="Add to Cart">
                         <span>Add to Cart</span>
                     </a>
                     <a href="#" class="paction add-wishlist" title="Add to Wishlist">
