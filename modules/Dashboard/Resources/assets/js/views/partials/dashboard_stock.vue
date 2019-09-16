@@ -1,7 +1,11 @@
 <template> 
     <section class="card">
         <div class="card-body">
-            <h2 class="card-title">Productos por agotarse</h2>
+            <h2 class="card-title">Productos por agotarse
+                <el-tooltip class="item" effect="dark" content="No aplica filtros" placement="top-start">
+                    <i class="fa fa-info-circle"></i>
+                </el-tooltip>
+            </h2>
             <simple-data-table :resource="resource">
                 <tr slot="heading">
                     <th>#</th>

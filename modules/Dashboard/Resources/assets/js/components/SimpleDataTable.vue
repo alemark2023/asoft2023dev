@@ -39,7 +39,10 @@
         },
         computed: {
         },
-        created() { 
+        created() {
+            this.$eventHub.$on('reloadSimpleDataTable', () => {
+                this.getRecords()                
+            }) 
         },
         async mounted () { 
             await this.getRecords()

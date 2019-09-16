@@ -58,7 +58,7 @@ class DashboardSalePurchase
         // $sale_notes = SaleNote::get(); 
 
         $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
-        $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
         foreach ($sale_notes as $sn) { 
             $documents->push($sn);
@@ -90,8 +90,8 @@ class DashboardSalePurchase
  
     private function purchase_totals($establishment_id, $d_start, $d_end)
     {
-        $purchases = Purchase::get();
-        // $purchases = Purchase::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        // $purchases = Purchase::get();
+        $purchases = Purchase::query()->where('establishment_id', $establishment_id)->get();
 
         $purchases_total = round($purchases->sum('total'),2);
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
@@ -154,7 +154,7 @@ class DashboardSalePurchase
         // $sale_note_items = SaleNoteItem::get();
          
         $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
-        $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
         // dd($documents->count(),$sale_notes->count());
 

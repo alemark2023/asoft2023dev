@@ -214,7 +214,11 @@
                                         <div class="summary">
                                             <div class="row">
                                                 <div class="col-md-12 m-b-10">
-                                                    <h2 class="card-title">Compras</h2>
+                                                    <h2 class="card-title">Compras
+                                                        <el-tooltip class="item" effect="dark" content="Aplica filtro por establecimiento" placement="top-start">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </el-tooltip>
+                                                    </h2>
                                                 </div> 
                                                 <div class="col-lg-4">
                                                     <div class="summary">

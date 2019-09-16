@@ -15,9 +15,9 @@ class DashboardStock
     
     private function stock_by_products($request)
     {
-        $products = new DashboardStockCollection(ItemWarehouse::where('stock','<=', 20)->orderBy('stock')->paginate(5));
+        $products = ItemWarehouse::where('stock','<=', 20)->orderBy('stock')->paginate(config('tenant.items_per_page_simple_d_table'));
                  
-        return $products;
+        return new DashboardStockCollection($products);
     }
  
 }
