@@ -230,4 +230,11 @@ class SaleNote extends ModelTenant
         return $this->prefix.'-'.$this->id;
     }
  
+    
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();         
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
+
 }

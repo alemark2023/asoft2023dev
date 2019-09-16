@@ -76,6 +76,7 @@ class QuotationController extends Controller
     public function records(Request $request)
     {
         $records = Quotation::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()        
                             ->latest();
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));

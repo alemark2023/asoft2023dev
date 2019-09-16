@@ -35,6 +35,10 @@ class Cash extends ModelTenant
         return $this->hasMany(CashDocument::class);
     }
  
- 
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();         
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
  
 }

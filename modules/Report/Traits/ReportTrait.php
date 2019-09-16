@@ -4,6 +4,8 @@ namespace Modules\Report\Traits;
 
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment; 
+use App\Models\Tenant\Document; 
+use App\Models\Tenant\SaleNote; 
 use Carbon\Carbon;
 
 /**
@@ -77,6 +79,50 @@ trait ReportTrait
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest();
         }
        
+        return $data;
+        
+    }
+
+
+
+    public function getRecordsCash($request){
+
+        $document_type_id = $request['document_type_id'];
+        $user_id = $request['user_id']; 
+  
+        $records = $this->dataCash($document_type_id, $user_id);
+
+        return $records;
+
+    }
+
+
+    private function dataCash($document_type_id, $user_id)
+    {
+ 
+        $sale_notes = [];
+        
+        switch ($document_type_id) {
+            case '01':
+                $documents = Document::whereIn('document_type_id',['01','03'])->latest();
+                $sale_notes = SaleNote::latest();
+                break; 
+
+            case '02':
+                $documents = Document::whereIn('document_type_id',['01','03'])->latest();
+                break; 
+
+            case '03':
+                $sale_notes = SaleNote::latest();
+                break; 
+        }
+ 
+        foreach ($sale_notes as $sn) { 
+            $documents->push($sn);
+        }
+
+        $data = $documents;
+
         return $data;
         
     }

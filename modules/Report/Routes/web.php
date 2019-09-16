@@ -33,6 +33,12 @@ if($current_hostname) {
                 Route::get('quotations/excel', 'ReportQuotationController@excel')->name('tenant.reports.quotations.excel');
                 Route::get('quotations/filter', 'ReportQuotationController@filter')->name('tenant.reports.quotations.filter');
                 Route::get('quotations/records', 'ReportQuotationController@records')->name('tenant.reports.quotations.records');
+                
+                Route::get('cash', 'ReportCashController@index')->name('tenant.reports.cash.index');
+                Route::get('cash/pdf', 'ReportCashController@pdf')->name('tenant.reports.cash.pdf');
+                Route::get('cash/excel', 'ReportCashController@excel')->name('tenant.reports.cash.excel');
+                Route::get('cash/filter', 'ReportCashController@filter')->name('tenant.reports.cash.filter');
+                Route::get('cash/records', 'ReportCashController@records')->name('tenant.reports.cash.records');
 
             });
 

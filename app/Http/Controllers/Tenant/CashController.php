@@ -38,6 +38,7 @@ class CashController extends Controller
     public function records(Request $request)
     {
         $records = Cash::where($request->column, 'like', "%{$request->value}%")
+                        ->whereTypeUser()        
                         ->orderBy('date_opening');
 
         
