@@ -452,7 +452,7 @@
             await this.loadAll();
 
             this.$eventHub.$on('reloadDataUnpaid', () => {
-                this.loadUnpaid()
+                this.loadAll()
             })
         },
         methods: {
