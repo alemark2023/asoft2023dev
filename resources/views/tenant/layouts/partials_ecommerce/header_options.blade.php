@@ -134,7 +134,7 @@
          <div class="container">
              <nav class="main-nav">
                  <ul class="menu sf-arrows">
-                     <li><a href="/ecommerce">Home</a></li>
+                     {{--<li><a href="/ecommerce">Home</a></li>
                      <li>
                          <a href="#" class="sf-with-ul">Categories</a>
                          <div class="megamenu megamenu-fixed-width">
@@ -281,9 +281,12 @@
                              <li><a href="#">Header Types</a></li>
                              <li><a href="#">Footer Types</a></li>
                          </ul>
-                     </li>
-                     <li><a href="#">Special Offer!</a></li>
-                     <li><a href="#">Buy Porto!</a></li>
+                     </li>--}}
+
+                     @foreach ($items as $item)
+                        <li><a href="#">{{ $item->name }}</a></li>
+                    @endforeach
+                    
                  </ul>
              </nav>
          </div><!-- End .header-bottom -->
