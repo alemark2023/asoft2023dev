@@ -78,11 +78,14 @@
     </tr>
 </table>
 <table class="full-width">
-    <tr>
+    <tr >
         <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
+    </tr> 
+    <tr>
+        <td width="" ><p class="desc">H. Emisión:</p></td>
+        <td width="" ><p class="desc">{{ $document->time_of_issue }}</p></td>
     </tr>
-
     @isset($invoice->date_of_due)
     <tr>
         <td><p class="desc">F. Vencimiento:</p></td>
