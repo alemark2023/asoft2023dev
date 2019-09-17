@@ -67,10 +67,20 @@
                              <li><a href="#">MY WISHLIST </a></li>
                              <li><a href="#">BLOG</a></li>
                              <li><a href="contact.html">Contact</a></li>
-                              @guest
-                                <li><a  href="{{route('tenant_ecommerce_login')}}" class="login-link">LOG IN</a></li>
+                                @guest
+                              <li><a href="{{route('tenant_ecommerce_login')}}" class="login-link">LOG IN</a></li>
                               @else
-                                <li><a href="#">{{ Auth::user()->email }}</a></li>
+                              <li><a href="#">{{ Auth::user()->email }}</a></li>
+                              <li>
+                                  <a role="menuitem" href="{{ route('logout') }}"
+                                      onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                      <i class="fas fa-power-off"></i> @lang('app.buttons.logout')
+                                  </a>
+                                  <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                      style="display: none;">
+                                      @csrf
+                                  </form>
+                              </li>
                               @endguest
                          </ul>
                      </div><!-- End .header-menu -->
