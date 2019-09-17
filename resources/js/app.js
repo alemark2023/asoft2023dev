@@ -122,6 +122,9 @@ Vue.component('x-input-service', require('./components/InputService.vue'));
 Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecommerce/index.vue'));
 Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dropdown.vue'));
 
+Vue.component('tenant-tags-index', require('./views/tenant/tags/index.vue'));
+
+
 
 const app = new Vue({
     el: '#main-wrapper'

@@ -454,6 +454,15 @@ if ($hostname) {
            Route::get('cash/search/customers', 'Tenant\CashController@searchCustomers');
            Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
 
+           //Tags
+           Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
+           Route::get('tags/columns', 'Tenant\TagController@columns');
+          // Route::get('tags/tables', 'Tenant\TagController@tables');
+           Route::get('tags/records', 'Tenant\TagController@records');
+           Route::get('tags/record/{tag}', 'Tenant\TagController@record');
+           Route::post('tags', 'Tenant\TagController@store');
+           Route::delete('tags/{tag}', 'Tenant\TagController@destroy');
+
         });
     });
 } else {

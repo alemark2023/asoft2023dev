@@ -27,27 +27,7 @@
                         </a>
                     </li> -->
 
-                    <li class=" nav-parent
-                        {{ ($path[0] === 'store')?'nav-active nav-expanded':'' }}
-                        {{ ($path[0] === 'items_store')?'nav-active nav-expanded':'' }}
-                        ">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
-                            <span>Tienda</span>
-                        </a>
-                        <ul class="nav nav-children" style="">
-                            <li class="{{ ($path[0] === 'store')?'nav-active':'' }}">
-                                <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">
-                                    Ir a Tienda
-                                </a>
-                            </li>
-                            <li class="{{ ($path[0] === 'items_store')?'nav-active':'' }}">
-                                <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
-                                    Productos Tienda Virtual
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    
 
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
@@ -178,6 +158,33 @@
                         </ul>
                     </li>
                     @endif
+
+                    <li class="
+                        nav-parent
+                        {{ ($path[0] === 'ecommerce')?'nav-active nav-expanded':'' }}
+                        ">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <span>Tienda Virtual</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="">
+                                <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">
+                                    Ir a Tienda
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'items_store')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
+                                    Productos Tienda Virtual
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'tags')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.tags.index')}}">
+                                    Tags Tienda Virtual
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
                     @if(auth()->user()->type != 'integrator')
 

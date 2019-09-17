@@ -51,7 +51,7 @@ class Item extends ModelTenant
         // 'warehouse_id'
     ];
 
-     protected static function boot()
+    protected static function boot()
     {
         parent::boot();
 

@@ -39,6 +39,9 @@
             <th>Descripción</th>
             <th class="text-center">P.Unitario (Venta)</th>
             <th class="text-center">Imagen</th>
+            <th class="text-center">Tags</th>
+
+            
             <th class="text-center">Visible en Tienda</th>
             <th class="text-right">Acciones</th>
           </tr>
@@ -57,8 +60,12 @@
 
               <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
             </td>
+            <td>
+                <el-tag style="margin:1px" v-for="tag in row.tags" :key="tag.id">{{tag.tag.name}}</el-tag>
+            </td>
             <td class="text-center">
               <el-checkbox
+                
                 size="medium"
                 @change="visibleStore($event, row.id)"
                 :checked="row.apply_store"
@@ -99,20 +106,18 @@
         top="7vh"
       >
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <h4>Para Tienda</h4>
-            <img class="img-thumbnail" :src="recordImages.image_url" alt />
+            <img class="img-thumbnail" :src="recordImages.image_url" alt width="512" />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <h4>Para productos de Venta</h4>
-            <img class="img-thumbnail" :src="recordImages.image_url_medium" alt />
+            <img class="img-thumbnail" :src="recordImages.image_url_medium" alt  width="256" />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
               <h4>Thumbs</h4>
-            <img class="img-thumbnail" :src="recordImages.image_url_small" alt />
+            <img class="img-thumbnail" :src="recordImages.image_url_small" alt  width="128" />
           </div>
-
-        
         </div> <br>
         <div class="row text-right  pt-2">
             <div class="col align-self-end">
