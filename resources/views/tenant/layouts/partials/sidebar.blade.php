@@ -3,6 +3,7 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
+    
 
 @endphp
 
@@ -159,10 +160,7 @@
                     </li>
                     @endif
 
-                    <li class="
-                        nav-parent
-                        {{ ($path[0] === 'ecommerce')?'nav-active nav-expanded':'' }}
-                        ">
+                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                             <span>Tienda Virtual</span>
@@ -173,7 +171,7 @@
                                     Ir a Tienda
                                 </a>
                             </li>
-                            <li class="{{ ($path[0] === 'items_store')?'nav-active':'' }}">
+                            <li class="{{ ($path[0] === 'items_ecommerce')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
                                     Productos Tienda Virtual
                                 </a>
