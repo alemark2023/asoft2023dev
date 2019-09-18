@@ -58,6 +58,11 @@ class ViewServiceProvider extends ServiceProvider
             'tenant.layouts.partials_ecommerce.header_options',
             'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
         );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.home_slider',
+            'App\Http\ViewComposers\Tenant\Ecommerce\PromotionsViewComposer'
+        );
+
 
 
 

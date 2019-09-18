@@ -99,8 +99,8 @@
      <!-- <images-record :showDialog.sync="showImageDetail" :recordImages="recordImages"></images-record> -->
 
       <el-dialog
+        :visible.sync="showImageDetail"
         title="Imagenes de Producto"
-        :visible="showImageDetail"
         width="50%"
         append-to-body
         top="7vh"

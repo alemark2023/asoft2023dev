@@ -34,8 +34,7 @@ class PromotionController extends Controller
     public function tables()
     {
        
-        $items = Item::all();
-
+        $items = Item::where('apply_store', 1)->get();
         return compact('items');
     }
 
@@ -60,9 +59,19 @@ class PromotionController extends Controller
     }
 
     public function store(PromotionRequest $request) {
+
+        $count = Promotion::count();
+        if($count > 2)
+        {
+            return [
+                'success' => false,
+                'message' => 'Solo esta permitido 3 Promociones',
+            ];
+        }
+
         $id = $request->input('id');
-        $obj = Promotion::firstOrNew(['id' => $id]);
-        $obj->fill($request->all());
+        $item = Promotion::firstOrNew(['id' => $id]);
+        $item->fill($request->all());
 
         $temp_path = $request->input('temp_path');
         if($temp_path) {
@@ -80,12 +89,12 @@ class PromotionController extends Controller
             $item->image = 'imagen-no-disponible.jpg';
         }
 
-        $obj->save();
+        $item->save();
 
         return [
             'success' => true,
             'message' => ($id)?'Promocion editada con éxito':'Promocion registrada con éxito',
-            'id' => $obj->id
+            'id' => $item->id
         ];
     }
     

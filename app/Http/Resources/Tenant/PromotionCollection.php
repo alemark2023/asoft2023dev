@@ -20,7 +20,8 @@ class PromotionCollection extends ResourceCollection
                 'description' => $row->description,
                 'name' => $row->name,
                 'status' => $row->status,
-                'type'=> $row->type
+                'type'=> $row->type,
+                'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'promotions'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
             ];
         });
     }

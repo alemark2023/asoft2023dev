@@ -35,6 +35,7 @@
             <th>#</th>
             <th>Nombre</th>
             <th>Descripción</th>
+            <th class="text-center">Imagen</th>
             <th class="text-right">Acciones</th>
           </tr>
           <tr></tr>
@@ -42,6 +43,9 @@
             <td>{{ index }}</td>
             <td>{{ row.name }}</td>
             <td>{{ row.description }}</td>
+            <td class="text-center">
+              <img :src="row.image_url" alt width="170" height="130" />
+            </td>
             <td class="text-right">
               <template>
                 <!-- v-if="typeUser === 'admin'" -->
@@ -62,7 +66,6 @@
       </div>
 
       <promotions-form :showDialog.sync="showDialog" :recordId="recordId"></promotions-form>
-
     </div>
   </div>
 </template>
@@ -75,20 +78,19 @@ import { deletable } from "../../../mixins/deletable";
 export default {
   props: [], //'typeUser'
   mixins: [deletable],
-  components: { PromotionsForm, DataTable  }, //ItemsImport
+  components: { PromotionsForm, DataTable }, //ItemsImport
   data() {
     return {
       showDialog: false,
       showImportDialog: false,
-  
+
       showImageDetail: false,
       resource: "promotions",
-      recordId: null,
+      recordId: null
     };
   },
   created() {},
   methods: {
-
     clickCreate(recordId = null) {
       this.recordId = recordId;
       this.showDialog = true;
