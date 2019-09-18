@@ -89,9 +89,9 @@
                 </div><!-- End .product-filters-container -->
 
                 <div class="product-action product-all-icons">
-                    <div class="product-single-qty">
+                    <!--<div class="product-single-qty">
                         <input class="horizontal-quantity form-control" type="text">
-                    </div><!-- End .product-single-qty -->
+                    </div>--><!-- End .product-single-qty -->
 
                     <a href="#" class="paction add-cart" data-product="{{ json_encode( $record ) }}" title="Add to Cart">
                         <span>Add to Cart</span>

@@ -262,21 +262,18 @@ class ItemController extends Controller
     public function visibleStore(Request $request)
     {
         $item = Item::find($request->id);
-        $item->apply_store = $request->apply_store == true ? 1 : 0 ;
+        $visible = $request->apply_store == true ? 1 : 0 ;
+        $item->apply_store = $visible;
         $item->save();
 
         return [
             'success' => true,
-            'message' => 'Producto editado con éxito',
+            'message' => ($visible > 0 )?'El Producto ya es visible en tienda virtual' : 'El Producto ya no es visible en tienda virtual',
             'id' => $request->id
         ];
 
     }
 
-    private function resizeImage($width, $height)
-    {
-
-    }
 
 
 

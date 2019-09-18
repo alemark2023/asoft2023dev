@@ -160,7 +160,7 @@
                     </li>
                     @endif
 
-                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags'])?'nav-active nav-expanded':'' }}">
+                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                             <span>Tienda Virtual</span>
@@ -178,7 +178,12 @@
                             </li>
                             <li class="{{ ($path[0] === 'tags')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.tags.index')}}">
-                                    Tags Tienda Virtual
+                                    Tags
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'promotions')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.promotion.index')}}">
+                                    Promociones
                                 </a>
                             </li>
                         </ul>

@@ -124,6 +124,9 @@ Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dr
 
 Vue.component('tenant-tags-index', require('./views/tenant/tags/index.vue'));
 
+Vue.component('tenant-promotions-index', require('./views/tenant/promotions/index.vue'));
+
+
 
 
 const app = new Vue({

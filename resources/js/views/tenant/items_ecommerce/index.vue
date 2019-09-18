@@ -169,8 +169,15 @@ export default {
         .post(`/${this.resource}/visible_store`, { id, apply_store })
         .then(response => {
           if (response.data.success) {
-            // row.apply_store =
-            this.$message.success(response.data.message);
+
+            if(apply_store)
+            {
+              this.$message.success(response.data.message);
+            }
+            else{
+              this.$message.warning(response.data.message);
+            }
+
           } else {
             this.$message.error(response.data.message);
           }

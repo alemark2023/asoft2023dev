@@ -457,11 +457,20 @@ if ($hostname) {
            //Tags
            Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
            Route::get('tags/columns', 'Tenant\TagController@columns');
-          // Route::get('tags/tables', 'Tenant\TagController@tables');
            Route::get('tags/records', 'Tenant\TagController@records');
            Route::get('tags/record/{tag}', 'Tenant\TagController@record');
            Route::post('tags', 'Tenant\TagController@store');
            Route::delete('tags/{tag}', 'Tenant\TagController@destroy');
+
+           //Promotion
+           Route::get('promotions', 'Tenant\PromotionController@index')->name('tenant.promotion.index');
+           Route::get('promotions/columns', 'Tenant\PromotionController@columns');
+           Route::get('promotions/tables', 'Tenant\PromotionController@tables');
+           Route::get('promotions/records', 'Tenant\PromotionController@records');
+           Route::get('promotions/record/{tag}', 'Tenant\PromotionController@record');
+           Route::post('promotions', 'Tenant\PromotionController@store');
+           Route::delete('promotions/{promotion}', 'Tenant\PromotionController@destroy');
+           Route::post('promotions/upload', 'Tenant\PromotionController@upload');
 
         });
     });
