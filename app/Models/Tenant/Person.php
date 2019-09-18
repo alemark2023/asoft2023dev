@@ -30,6 +30,7 @@ class Person extends ModelTenant
         'perception_agent',
         'state',
         'condition',
+        'percentage_perception',
 
     ];
 
