@@ -5,7 +5,7 @@ function(e) {
 		initialised: !1,
 		mobile: !1,
 		init: function() {
-			this.initialised || (this.initialised = !0, this.detailCart(), this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), 
+			this.initialised || (this.initialised = !0, this.deleteItemCart(), this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), 
 			this.quantityInputs(), this.countTo(), this.tooltip(), this.popover(), this.changePassToggle(), this.changeBillToggle(), this.catAccordion(), this.ajaxLoadProduct(), this.toggleFilter(), 
 			this.toggleSidebar(), this.productTabSroll(), this.scrollToElement(), this.loginPopup(), this.windowClick(), e.fn.superfish && this.menuInit(), e.fn.owlCarousel 
 			&& this.owlCarousels(), "object" == typeof noUiSlider && this.filterSlider(), e.fn.themeSticky && this.stickySidebar(), e.fn.magnificPopup && this.lightBox())
@@ -563,9 +563,6 @@ function(e) {
 					contex.successAddProduct();
 				}
 
-
-
-				
 				
 			})
 		},
@@ -579,9 +576,25 @@ function(e) {
 				localStorage.setItem('products_cart', JSON.stringify([]))
 			}
 		},
-		detailCart: function()
+		deleteItemCart: function()
 		{
+			//idproduct
+			/*console.log('ssssssc    xcccc')
+			let contex = this
+			e(".btn-remove").click(function(t) {
 
+				let array = localStorage.getItem('products_cart');
+				array = JSON.parse(array);
+
+				let id = jQuery(this).data('idproduct')
+				let indexFound = array.findIndex( x=> x.id == id)
+				if(indexFound)
+				{
+					array.splice(indexFound, 1);
+					contex.productsCartDropDown();
+				}
+			
+			})*/
 		}
 	};
 	

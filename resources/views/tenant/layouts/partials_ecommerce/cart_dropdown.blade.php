@@ -28,10 +28,22 @@
 
 @push('scripts')
 <script type="text/javascript">
-	$(function(){
-    'use strict';
 
-   			$(".dropdown-cart-products").empty();
+	function remove(id)
+	{
+		debugger
+		let array = localStorage.getItem('products_cart');
+		array = JSON.parse(array);
+		let indexFound = array.findIndex( x=> x.id == id)
+		array.splice(indexFound, 1);
+		localStorage.setItem('products_cart', JSON.stringify( array ) );
+		populate();
+	
+	}
+
+	function populate()
+	{
+		$(".dropdown-cart-products").empty();
 			$(".cart-count").empty();
 			let count = 0;
 			//get data local syrogare prodicts
@@ -40,7 +52,7 @@
 			count = array.length;
 				
 			array.forEach(element => {
-				//element = JSON.parse(element)
+				
 				$(".dropdown-cart-products").append( `
 						<div class="product">
 							<div class="product-details">
@@ -55,7 +67,7 @@
 								<a href="#" class="product-image">
 									<img alt="product" src="/storage/uploads/items/${element.image_small}" />
 								</a>
-								<a href="#" class="btn-remove" title="Remove Product">
+								<a href="#" onclick="remove(${element.id})" class="btn-remove" title="Remove Product">
 									<i class="icon-cancel"></i>
 								</a>
 							</figure>
@@ -64,6 +76,12 @@
 			});
 			
 			$(".cart-count").append(count);
+	}
+
+	
+	$(function(){
+    'use strict';
+		populate();
     });
 </script>
 @endpush
