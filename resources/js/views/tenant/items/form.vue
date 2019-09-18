@@ -328,8 +328,11 @@
                                 </div> 
                                 <div class="short-div col-md-4">
                                     <div class="form-group" :class="{'has-danger': errors.percentage_of_profit}">
-                                        <label class="control-label">Porcentaje de ganancia (%)</label>
-                                        <el-input v-model="form.percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
+                                        <label class="control-label">
+                                            <el-checkbox v-model="enabled_percentage_of_profit" @change="changeEnabledPercentageOfProfit"></el-checkbox>
+                                            Porcentaje de ganancia (%)
+                                        </label>
+                                        <el-input v-model="form.percentage_of_profit" :disabled="!enabled_percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
                                         <small class="form-control-feedback" v-if="errors.percentage_of_profit" v-text="errors.percentage_of_profit[0]"></small>
                                     </div>
                                 </div> 
@@ -384,6 +387,7 @@
                 showPercentagePerception: false,
                 has_percentage_perception: false,
                 percentage_perception:null,
+                enabled_percentage_of_profit:false,
                 titleDialog: null,
                 resource: 'items',
                 errors: {},                
@@ -432,6 +436,9 @@
         methods: {
             changeHaveAccount(){
                 if(!this.have_account) this.form.account_id = null
+            },
+            changeEnabledPercentageOfProfit(){
+                // if(!this.enabled_percentage_of_profit) this.form.percentage_of_profit = 0
             },
             clickDelete(id) {
 
@@ -512,6 +519,7 @@
                     date_of_due:null
                 }
                 this.show_has_igv = true
+                this.enabled_percentage_of_profit = false
             },
             onSuccess(response, file, fileList) {
                 if (response.success) {
@@ -573,13 +581,15 @@
                 if(this.form.percentage_of_profit === '') {
                     this.form.percentage_of_profit = 0;
                 }
-                this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
+
+                if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
             calculatePercentageOfProfitByPercentage() {
                 if(this.form.percentage_of_profit === '') {
                     this.form.percentage_of_profit = 0;
                 }
-                this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
+
+                if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
             submit() {
                 if(this.has_percentage_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');

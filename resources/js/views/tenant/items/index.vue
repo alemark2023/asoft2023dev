@@ -51,7 +51,7 @@
                             
                         </td>
                         <td class="text-right">{{ row.sale_unit_price }}</td>
-                        <td class="text-center">{{ (row.has_igv)?'Si':'No' }}</td>
+                        <td class="text-center">{{ row.has_igv_description }}</td>
                         <td class="text-right">
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
