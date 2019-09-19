@@ -39,6 +39,7 @@ class Item extends ModelTenant
         'percentage_of_profit',
 
         'attributes',
+        'has_perception',        
         'percentage_perception',        
         'image',
         'account_id',

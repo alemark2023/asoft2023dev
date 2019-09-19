@@ -131,10 +131,10 @@
 
                     <div class="col-md-3 center-el-checkbox" >
                         <div class="form-group"  >
-                            <el-checkbox v-model="has_percentage_perception" @change="changePercentagePerception">Incluye percepción</el-checkbox><br>
+                            <el-checkbox v-model="form.has_perception" @change="changeHasPerception">Incluye percepción</el-checkbox><br>
                         </div>
                     </div>
-                    <div class="col-md-3 center-el-checkbox" v-show="has_percentage_perception">
+                    <div class="col-md-3 center-el-checkbox" v-show="form.has_perception">
                         <div class="form-group"  >
                             <label class="control-label">Porcentaje de percepción</label>
 
@@ -458,12 +458,10 @@
                         })
                 
             },
-            changePercentagePerception(){
-                // if(this.has_percentage_perception){
-                //     // this.percentage_perception = (this.recordId) ? this.form.percentage_perception:null 
-                // } else{
-                //     this.form.percentage_perception = null 
-                // }
+            changeHasPerception(){
+                if(!this.form.has_perception){
+                    this.form.percentage_perception = null 
+                } 
 
             },
             clickAddRow() {
@@ -509,6 +507,7 @@
                     stock: 0,
                     stock_min: 1,
                     has_igv: true,
+                    has_perception: false,
                     item_unit_types:[],
                     percentage_of_profit: 0,
                     percentage_perception: 0,
@@ -592,8 +591,8 @@
                 if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
             submit() {
-                if(this.has_percentage_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
-                if(!this.has_percentage_perception) this.form.percentage_perception = null
+                if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
+                // if(!this.has_percentage_perception) this.form.percentage_perception = null
                 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)

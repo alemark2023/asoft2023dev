@@ -113,17 +113,24 @@ $col_span = 25;
         <td>{{ $row['total_taxed'] }}</td>
         <td>{{ $row['total_exonerated'] }}</td>
         <td>{{ $row['total_unaffected'] }}</td>
-        <td></td>
-        <td></td>
+        <td>{{ $row['total_plastic_bag_taxes'] }}</td>
         <td></td>
         <td>{{ $row['total_igv'] }}</td>
+        <td></td>
         <td>{{ $row['total'] }}</td>
         <td>{{ $row['exchange_rate_sale'] }}</td>
         <td>{{ $row['currency_type_symbol'] }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        @if($row['affected_document'])
+            <td>{{ $row['affected_document']['date_of_issue']}}</td>
+            <td>{{ $row['affected_document']['document_type_id']}}</td>
+            <td>{{ $row['affected_document']['series']}}</td>
+            <td>{{ $row['affected_document']['number']}}</td>
+        @else
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        @endif
     </tr>
     @endforeach
 </table>

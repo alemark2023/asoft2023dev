@@ -182,7 +182,7 @@
                                     </div>
                                     <div class="col-lg-2 float-right">
                                         <div class="form-group" :class="{'has-danger': errors.total_perception}">
-                                            <el-input v-model="form.total_perception" @input="inputTotalPerception"></el-input>
+                                            <el-input v-model="form.total_perception" @input="inputTotalPerception" :readonly="true"></el-input>
 
                                             <small class="form-control-feedback" v-if="errors.total_perception" v-text="errors.total_perception[0]"></small>
                                         </div>
@@ -339,16 +339,7 @@
                 }
             },
             changeSupplier(){
-                let supplier = _.find(this.all_suppliers,{'id':this.form.supplier_id})
-                this.is_perception_agent = supplier.perception_agent
-                if(this.is_perception_agent){
-                    this.form.total_perception = 0
-                    this.form.perception_date = moment().format('YYYY-MM-DD')
-                }else{
-                    this.form.perception_date = null
-                    this.form.perception_number = null
-                    this.form.total_perception = null
-                }
+                this.calculatePerception() 
             },
             filterSuppliers() {
 
@@ -458,7 +449,7 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
-                let total_perception = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -493,9 +484,47 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
-                total_perception = total + parseFloat(this.form.total_perception)
-                this.total_amount = _.round(total_perception, 2)
-             },
+
+                this.calculatePerception()
+            },
+            calculatePerception(){
+                
+                let supplier = _.find(this.all_suppliers,{'id':this.form.supplier_id})
+
+                if(supplier){
+
+                    if(supplier.perception_agent) {
+
+                        let total_perception = 0
+                        let quantity_item_perception = 0
+                        let total_amount = 0
+                        this.form.total_perception = 0
+
+                        this.form.perception_date = moment().format('YYYY-MM-DD')
+
+                        this.form.items.forEach((row) => { 
+                            quantity_item_perception += (row.item.has_perception) ? 1:0 
+                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0 
+                        });
+
+                        this.is_perception_agent = (quantity_item_perception > 0) ? true : false
+                        this.form.total_perception = _.round(total_perception,2)
+                        total_amount = this.form.total + parseFloat(this.form.total_perception)
+                        this.total_amount = _.round(total_amount, 2)
+
+                    }else{
+
+                        this.is_perception_agent = false
+                        this.form.perception_date = null
+                        this.form.perception_number = null
+                        this.form.total_perception = null
+
+                    }
+
+                }
+                
+                
+            },
             async submit() {
 
                 this.loading_submit = true

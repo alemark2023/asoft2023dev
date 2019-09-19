@@ -38,6 +38,7 @@ class ItemResource extends JsonResource
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'calculate_quantity' => (bool) $this->calculate_quantity,
             'has_igv' => (bool) $this->has_igv,
+            'has_perception' => (bool) $this->has_perception,
             'percentage_perception' => $this->percentage_perception, 
             'item_unit_types' => $this->item_unit_types,
             'image' => $this->image,
