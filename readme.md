@@ -55,3 +55,10 @@ Visite el siguiente enlace: [Guía](https://docs.google.com/document/d/1IBXczY4b
 ## Manual de Tareas Programadas
 
 Visite el siguiente enlace: [Guía](https://docs.google.com/document/d/1Cu3Kpgv9HvMAV4fwVNbR-CFc0uTu_-qEVLT-MIuxBTQ/edit?usp=sharing "Clic")
+
+## Manuales adicionales
+
+Incrementar recursos - servidor: [Guía](https://drive.google.com/open?id=1IQad7UnljZEPd4hYWx5ZlR3LJliFGT25AjiI4-TlcJU "Clic")<br>
+Incrementar recursos - aplicación: [Guía](https://drive.google.com/open?id=1_A06M8AKR514XdctOpi8yIHOQd2cMIzm1BAdNCLUoew "Clic")<br>
+Guía acceso a base de datos: [Guía](https://drive.google.com/open?id=1uZ_qt34I8HucJYmt_RfI2orgfl9_dpqIh8RukwiG1uM "Clic")
+
