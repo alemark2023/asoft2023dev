@@ -2,25 +2,17 @@
       <div class="header-top">
           <div class="container">
               <div class="header-left header-dropdowns">
-                
 
-           
-
-             
               </div><!-- End .header-left -->
 
               <div class="header-right">
-               
+
 
                   <div class="header-dropdown dropdown-expanded">
                       <a href="#">Links</a>
                       <div class="header-menu">
                           <ul>
-                              <li><a href="#">MY ACCOUNT </a></li>
-                              <li><a href="#">DAILY DEAL</a></li>
-                              <li><a href="#">MY WISHLIST </a></li>
-                              <li><a href="#">BLOG</a></li>
-                              <li><a href="#">Contact</a></li>
+
                               @guest
                               <li><a href="{{route('tenant_ecommerce_login')}}" class="login-link">LOG IN</a></li>
                               @else
@@ -72,43 +64,22 @@
                   </button>
                   <div class="header-contact">
                       <span>Call us now</span>
-                      <a href="tel:#"><strong>+123 5555</strong></a>
+                      <a href="tel:#"><strong>+999 555 888</strong></a>
                   </div><!-- End .header-contact -->
                   @include('tenant.layouts.partials_ecommerce.cart_dropdown')
+                  
+
+
               </div><!-- End .header-right -->
           </div><!-- End .container -->
       </div><!-- End .header-middle -->
 
       <div class="header-bottom sticky-header">
-            <div class="container">
-                <nav class="main-nav">
-                    
-                </nav>
-            </div><!-- End .header-bottom -->
-        </div><!-- End .header-bottom -->
+          <div class="container">
+              <nav class="main-nav">
+
+              </nav>
+          </div><!-- End .header-bottom -->
+      </div><!-- End .header-bottom -->
   </header><!-- End .header -->
 
-
-  <div class="modal fade" id="moda-succes-add-product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog" role="document">
-          <div class="modal-content">
-              <!--<div class="modal-header ">
-                  <h5 class="modal-title" id="exampleModalLabel"></h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-              </div>-->
-              <div class="modal-body">
-
-                  <div class="alert alert-success" role="alert">
-                      <i class="icon-ok"></i> Tu producto se agregó al carrito
-                  </div>
-              </div>
-              <div class="modal-footer">
-
-                  <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
-              </div>
-          </div>
-      </div>
-  </div>

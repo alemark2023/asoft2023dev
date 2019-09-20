@@ -13,7 +13,7 @@
             <div class="dropdown-cart-total">
                 <span>Total</span>
 
-                <span class="cart-total-price">$1114.00</span>
+                <span class="cart-total-price">S/ 0</span>
             </div><!-- End .dropdown-cart-total -->
 
             <div class="dropdown-cart-action">
@@ -31,14 +31,32 @@
 
 	function remove(id)
 	{
-		debugger
+		
 		let array = localStorage.getItem('products_cart');
 		array = JSON.parse(array);
 		let indexFound = array.findIndex( x=> x.id == id)
 		array.splice(indexFound, 1);
 		localStorage.setItem('products_cart', JSON.stringify( array ) );
 		populate();
+		calculatetotal();
 	
+	}
+
+	function calculatetotal()
+	{
+		let array = localStorage.getItem('products_cart');
+		array = JSON.parse(array);
+		let total = 0;
+		array.forEach(element => {
+			total += parseFloat(element.sale_unit_price)
+		});
+
+		$(".cart-total-price").empty();
+		$(".cart-total-price").append(total.toFixed(2));
+
+
+
+		
 	}
 
 	function populate()
@@ -82,6 +100,7 @@
 	$(function(){
     'use strict';
 		populate();
+		calculatetotal();
     });
 </script>
 @endpush

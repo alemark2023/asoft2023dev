@@ -108,3 +108,50 @@
          <img src="{{ asset('porto-ecommerce/assets/images/payments.png') }}" alt="payment methods" class="footer-payments">
      </div><!-- End .footer-bottom -->
  </div><!-- End .container -->
+
+ <div class="modal fade" id="moda-succes-add-product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <!--<div class="modal-header ">
+                  <h5 class="modal-title" id="exampleModalLabel"></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>-->
+             <div class="modal-body">
+
+                 <div class="alert alert-success" role="alert">
+                     <i class="icon-ok"></i> Tu producto se agregó al carrito
+                 </div>
+             </div>
+             <div class="modal-footer">
+
+                 <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
+             </div>
+         </div>
+     </div>
+ </div>
+ <div class="modal fade" id="modal-already-product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <!--<div class="modal-header ">
+                  <h5 class="modal-title" id="exampleModalLabel"></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>-->
+             <div class="modal-body">
+
+                 <div class="alert alert-warning" role="alert">
+                     <i class="icon-ok"></i> Tu Producto ya ha sido esta agregado al carrito.
+                 </div>
+             </div>
+             <div class="modal-footer">
+
+                 <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
+             </div>
+         </div>
+     </div>
+ </div>

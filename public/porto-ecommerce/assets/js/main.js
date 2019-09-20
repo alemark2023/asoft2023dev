@@ -5,7 +5,7 @@ function(e) {
 		initialised: !1,
 		mobile: !1,
 		init: function() {
-			this.initialised || (this.initialised = !0, this.deleteItemCart(), this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), 
+			this.initialised || (this.initialised = !0, this.initShop(), this.addToCart(), this.checkMobile(), this.stickyHeader(), this.headerSearchToggle(), this.mMenuIcons(), this.mMenuToggle(), this.mobileMenu(), this.scrollToTop(), 
 			this.quantityInputs(), this.countTo(), this.tooltip(), this.popover(), this.changePassToggle(), this.changeBillToggle(), this.catAccordion(), this.ajaxLoadProduct(), this.toggleFilter(), 
 			this.toggleSidebar(), this.productTabSroll(), this.scrollToElement(), this.loginPopup(), this.windowClick(), e.fn.superfish && this.menuInit(), e.fn.owlCarousel 
 			&& this.owlCarousels(), "object" == typeof noUiSlider && this.filterSlider(), e.fn.themeSticky && this.stickySidebar(), e.fn.magnificPopup && this.lightBox())
@@ -561,6 +561,10 @@ function(e) {
 					localStorage.setItem('products_cart', JSON.stringify( array ) );
 					contex.productsCartDropDown();
 					contex.successAddProduct();
+					contex.calculateTotalCart();
+				}
+				else{
+					contex.alreadyProductCart();
 				}
 
 				
@@ -570,31 +574,28 @@ function(e) {
 		{
 			jQuery('#moda-succes-add-product').modal('show');
 		},
+		alreadyProductCart: function()
+		{
+			jQuery('#modal-already-product').modal('show');
+		},
 		initShop: function(){
 			if(!localStorage.getItem('products_cart') )
 			{
 				localStorage.setItem('products_cart', JSON.stringify([]))
 			}
 		},
-		deleteItemCart: function()
+		calculateTotalCart: function()
 		{
-			//idproduct
-			/*console.log('ssssssc    xcccc')
-			let contex = this
-			e(".btn-remove").click(function(t) {
 
-				let array = localStorage.getItem('products_cart');
-				array = JSON.parse(array);
-
-				let id = jQuery(this).data('idproduct')
-				let indexFound = array.findIndex( x=> x.id == id)
-				if(indexFound)
-				{
-					array.splice(indexFound, 1);
-					contex.productsCartDropDown();
-				}
-			
-			})*/
+			let array = localStorage.getItem('products_cart');
+			array = JSON.parse(array);
+			let total = 0;
+			array.forEach(element => {
+				total += parseFloat(element.sale_unit_price)
+			});
+	
+			$(".cart-total-price").empty();
+			$(".cart-total-price").append(total.toFixed(2));
 		}
 	};
 	
