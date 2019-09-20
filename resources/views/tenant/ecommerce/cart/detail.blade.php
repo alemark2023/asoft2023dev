@@ -31,6 +31,9 @@
                                 type="text">
                         </td>
                         <td>@{{ row.sub_total }}</td>
+                        <td>
+                            <button type="button" @click="deleteItem(row.id, index)" class="btn btn-outline-danger btn-sm"><i class="icon-cancel"></i></button>
+                        </td>
                     </tr>
 
                 </tbody>
@@ -205,6 +208,19 @@
 
         },
         methods: {
+            deleteItem(id, index)
+            {
+                //remove en fronted
+               this.records.splice(index, 1)
+                //set remove en localstorage
+                let array = localStorage.getItem('products_cart');
+                array = JSON.parse(array);
+                let indexFound = array.findIndex( x=> x.id == id)
+                array.splice(indexFound, 1);
+                localStorage.setItem('products_cart', JSON.stringify( array ) );
+
+
+            },
             clearShoppingCart()
             {
                 this.records = []
