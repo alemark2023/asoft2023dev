@@ -91,7 +91,7 @@ class DashboardSalePurchase
     private function purchase_totals($establishment_id, $d_start, $d_end)
     {
         // $purchases = Purchase::get();
-        $purchases = Purchase::query()->where('establishment_id', $establishment_id)->get();
+        $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])->where('establishment_id', $establishment_id)->get();
 
         $purchases_total = round($purchases->sum('total'),2);
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
