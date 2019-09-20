@@ -34,7 +34,7 @@ export default {
     console.log("cargado");
   },
   methods: {
-    getData() {}
+    //getData() {}
   }
 };
 </script>

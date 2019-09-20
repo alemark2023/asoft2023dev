@@ -41,7 +41,6 @@
             <th class="text-center">Imagen</th>
             <th class="text-center">Tags</th>
 
-            
             <th class="text-center">Visible en Tienda</th>
             <th class="text-right">Acciones</th>
           </tr>
@@ -61,11 +60,10 @@
               <!--<img :src="row.image_url_medium"  width="40" height="40" class="img-thumbail img-custom" /> -->
             </td>
             <td>
-                <el-tag style="margin:1px" v-for="tag in row.tags" :key="tag.id">{{tag.tag.name}}</el-tag>
+              <el-tag style="margin:1px" v-for="tag in row.tags" :key="tag.id">{{tag.tag.name}}</el-tag>
             </td>
             <td class="text-center">
               <el-checkbox
-                
                 size="medium"
                 @change="visibleStore($event, row.id)"
                 :checked="row.apply_store"
@@ -96,7 +94,7 @@
 
       <warehouses-detail :showDialog.sync="showWarehousesDetail" :warehouses="warehousesDetail"></warehouses-detail>
 
-     <!-- <images-record :showDialog.sync="showImageDetail" :recordImages="recordImages"></images-record> -->
+      <!-- <images-record :showDialog.sync="showImageDetail" :recordImages="recordImages"></images-record> -->
 
       <el-dialog
         :visible.sync="showImageDetail"
@@ -106,26 +104,25 @@
         top="7vh"
       >
         <div class="row">
+          <div class="col-md-3">
+            <h4>Thumbs</h4>
+            <img class="img-thumbnail" :src="recordImages.image_url_small" alt width="128" />
+          </div>
+          <div class="col-md-4">
+            <h4>Para productos de Venta</h4>
+            <img class="img-thumbnail" :src="recordImages.image_url_medium" alt width="256" />
+          </div>
           <div class="col-md-4">
             <h4>Para Tienda</h4>
             <img class="img-thumbnail" :src="recordImages.image_url" alt width="512" />
           </div>
-          <div class="col-md-4">
-            <h4>Para productos de Venta</h4>
-            <img class="img-thumbnail" :src="recordImages.image_url_medium" alt  width="256" />
+        </div>
+        <div class="row text-right pt-2">
+          <div class="col align-self-end">
+            <el-button type="primary" @click="showImageDetail = false">Cerrar</el-button>
           </div>
-          <div class="col-md-4">
-              <h4>Thumbs</h4>
-            <img class="img-thumbnail" :src="recordImages.image_url_small" alt  width="128" />
-          </div>
-        </div> <br>
-        <div class="row text-right  pt-2">
-            <div class="col align-self-end">
-                <el-button  type="primary" @click="showImageDetail = false">Cerrar</el-button>
-            </div>
         </div>
       </el-dialog>
-
     </div>
   </div>
 </template>
@@ -169,15 +166,11 @@ export default {
         .post(`/${this.resource}/visible_store`, { id, apply_store })
         .then(response => {
           if (response.data.success) {
-
-            if(apply_store)
-            {
+            if (apply_store) {
               this.$message.success(response.data.message);
-            }
-            else{
+            } else {
               this.$message.warning(response.data.message);
             }
-
           } else {
             this.$message.error(response.data.message);
           }

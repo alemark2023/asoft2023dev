@@ -63,8 +63,7 @@
                 </div><!-- End .price-box -->
 
                 <div class="product-desc">
-                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non.
+                    <p>{{$record->description}}
                     </p>
                 </div><!-- End .product-desc -->
 
@@ -105,7 +104,7 @@
                 </div><!-- End .product-action -->
 
                 <div class="product-single-share">
-                    <label>Share:</label>
+                    <!--<label>Share:</label> -->
                     <!-- www.addthis.com share plugin-->
                     <div class="addthis_inline_share_toolbox"></div>
                 </div><!-- End .product single-share -->
