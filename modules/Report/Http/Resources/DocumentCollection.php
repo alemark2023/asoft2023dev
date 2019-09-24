@@ -36,15 +36,14 @@ class DocumentCollection extends ResourceCollection
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
                 'currency_type_id' => $row->currency_type_id,
-                'total_exportation' => $row->total_exportation,
 
-
-                'total_exonerated' =>  $row->total_exonerated,
-                'total_unaffected' =>  $row->total_unaffected,
-                'total_free' =>  $row->total_free,
-                'total_taxed' => $row->total_taxed,
-                'total_igv' =>  $row->total_igv,
-                'total' =>  $row->total,
+                'total_exportation' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total_exportation,
+                'total_exonerated' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total_exonerated,
+                'total_unaffected' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total_unaffected,
+                'total_free' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total_free,
+                'total_taxed' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total_taxed,
+                'total_igv' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total_igv,
+                'total' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? 0 : $row->total,
  
  
 

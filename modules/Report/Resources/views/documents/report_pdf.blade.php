@@ -154,14 +154,27 @@
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
                                     <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td> -->
 
-                                    <!-- <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
-                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td> -->
+
+                                    @if($signal == '07')                                    
+                        
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                        <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td>
+
+                                    @else
+                                        <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed}}</td>                                      
+                                        <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv}}</td>
+                                        <td class="celda">{{ (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total}}</td>
+
+                                    @endif
                                     
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_taxed}}</td>
-                                      
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_igv}}</td>
-                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total}}</td>
+                                    
+                                    
+                                    @php
+                                        $value->total_taxed = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
+                                        $value->total_igv = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
+                                        $value->total = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
+                                    @endphp
                                 </tr>
                                 @php
                                     

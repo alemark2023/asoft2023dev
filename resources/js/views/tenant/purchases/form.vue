@@ -20,7 +20,7 @@
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.series}">
                                 <label class="control-label">Serie <span class="text-danger">*</span></label>
-                                <el-input v-model="form.series" :maxlength="4"></el-input>
+                                <el-input v-model="form.series" :maxlength="4" pattern="^[A-Za-z]+$" @input="inputSeries"></el-input>
 
                                 <small class="form-control-feedback" v-if="errors.series" v-text="errors.series[0]"></small>
                             </div>
@@ -284,6 +284,16 @@
            })
         },
         methods: {
+            inputSeries(){
+
+                const pattern = new RegExp('^[A-Z]+$', 'i');
+                if(!pattern.test(this.form.series)){ 
+                    this.form.series = this.form.series.substring(0, this.form.series.length - 1);
+                } else {
+                    this.form.series = this.form.series.toUpperCase()
+                }
+                
+            },
             changePaymentMethodType(flag_submit = true){
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
                 if(payment_method_type.number_days){

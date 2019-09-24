@@ -8,37 +8,45 @@
                     <data-table :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
-                            <th class="">Tipo Documento</th>
-                            <th class="">Número</th>
                             <th class="">F. Emisión</th>
                             <th class="">F. Vencimiento</th>
-
                             <th class="">Proveedor</th>
-                            <th class="">F. Pago</th>
                             <th class="">Estado</th>
-                            <th class="" >T.Exonerado</th>
+                            <th class="">Número</th>
 
-                            <th class="" >T.Inafecta</th>
-                            <th class="" >T.Gratuito</th>
-                            <th class="">Total Gravado</th>
-                            <th class="">Total IGV</th>
+                            <th class="">F. Pago</th>
+                            <th class="text-center">Moneda</th>
+                            <th class="" >T. Exonerado</th>
+
+                            <th class="" >T. Inafecta</th>
+                            <th class="" >T. Gratuito</th>
+                            <th class="">T. Gravado</th>
+                            <th class="">T. IGV</th>
+                            <th>Percepcion</th>
+
                             <th class="">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td> 
-                            <td>{{row.document_type_description}}</td>
-                            <td>{{row.number}}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.date_of_due}}</td>
                             <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td> 
-                            <td>{{row.payment_method_type_description}}</td>
                             <td>{{row.state_type_description}}</td>
+                            <td>{{row.number}}
+                                <small v-text="row.document_type_description"></small><br/> 
+
+                            </td>
+                            <td>{{row.payment_method_type_description}}</td>
+                            <td class="text-center">{{ row.currency_type_id }}</td>
+
                             <td>{{ row.total_exonerated}}</td>
 
                             <td>{{ row.total_unaffected}}</td>
                             <td>{{ row.total_free}}</td>
                             <td>{{ row.state_type_id == '11' ? 0 : row.total_taxed}}</td>
                             <td>{{ row.state_type_id == '11' ? 0 : row.total_igv}}</td>
+                            <td class="text-right">{{ (row.total_perception && row.state_type_id != '11') ? row.total_perception : 0 }}</td>
+
                             <td>{{ row.state_type_id == '11' ? 0 : row.total}}</td>
 
                         </tr>
