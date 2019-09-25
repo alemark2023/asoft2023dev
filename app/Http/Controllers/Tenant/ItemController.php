@@ -123,18 +123,24 @@ class ItemController extends Controller
     
     public function destroy($id)
     {
-        //return 'sd';
-        $item = Item::findOrFail($id);
-        $this->deleteRecordInitialKardex($item);
-        $item->status = 0;
-        $item->save();
+        try {
+            
+            $item = Item::findOrFail($id);
+            $this->deleteRecordInitialKardex($item); 
+            $item->delete();
 
-       // $item->delete();
+            return [
+                'success' => true,
+                'message' => 'Producto eliminado con éxito'
+            ];
 
-        return [
-            'success' => true,
-            'message' => 'Producto eliminado con éxito'
-        ];
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'El producto esta siendo usado por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar el producto'];
+
+        }
+
+        
     }
 
     public function destroyItemUnitType($id)
