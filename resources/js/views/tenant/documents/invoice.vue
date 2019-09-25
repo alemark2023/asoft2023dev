@@ -363,7 +363,7 @@
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
-                           :user="user"
+                           :typeUser="typeUser"
                            @add="addRow"></document-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -392,7 +392,7 @@
     import Logo from '../companies/logo.vue'
 
     export default {
-        // props: ['is_contingency'],
+        props: ['typeUser'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
@@ -430,13 +430,13 @@
                 loading_search:false,
                 is_amount:true,
                 enabled_discount_global:false,
-                user: {},
+                user: null,
                 is_receivable:false,
                 is_contingency: false,
             }
         },
         async created() {
-            //console.log(this.is_contingency )
+            // console.log(this.typeUser )
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {

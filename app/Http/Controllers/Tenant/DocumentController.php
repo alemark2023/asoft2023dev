@@ -144,7 +144,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get();
-        $user = \auth()->user();
+        $user = auth()->user()->type;
         $payment_method_types = PaymentMethodType::all();
         $enabled_discount_global = config('tenant.enabled_discount_global');
 
