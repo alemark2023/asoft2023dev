@@ -185,14 +185,15 @@ class DashboardSalePurchase
 
         foreach ($group_items as $items) {  
 
-            $item = Item::find($items[0]->item_id);
+            $item = Item::where('status',true)->find($items[0]->item_id);
 
-            $items_by_sales->push([
-                'total' => round($items->sum('total'),2),
-                'description' => $item->description,
-                'internal_id' => $item->internal_id,
-            ]);    
-        
+            if($item){
+                $items_by_sales->push([
+                    'total' => round($items->sum('total'),2),
+                    'description' => $item->description,
+                    'internal_id' => $item->internal_id,
+                ]);    
+            }
         }
 
         $sorted = $items_by_sales->sortByDesc('total');
