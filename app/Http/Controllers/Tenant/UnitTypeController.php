@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\UnitTypeRequest;
 use App\Http\Resources\Tenant\UnitTypeCollection;
 use App\Http\Resources\Tenant\UnitTypeResource;
+use Exception;
 
 class UnitTypeController extends Controller
 {
@@ -38,14 +39,22 @@ class UnitTypeController extends Controller
 
     public function destroy($id)
     {
-        $record = UnitType::findOrFail($id);
-        //$record->delete();
-        $record->active = 0;
-        $record->save();
+        try {
+            
+            $record = UnitType::findOrFail($id);
+            $record->delete();
 
-        return [
-            'success' => true,
-            'message' => 'Unidad eliminada con éxito'
-        ];
+            return [
+                'success' => true,
+                'message' => 'Unidad eliminada con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'La unidad esta siendo usada por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar la unidad'];
+
+        }
+
+        
     }
 }

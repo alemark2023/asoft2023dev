@@ -21,14 +21,15 @@ class BankAccount extends ModelTenant
         'status'
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::addGlobalScope('active', function (Builder $builder) {
-            $builder->where('status', 1);
-        });
-    }
+    //     static::addGlobalScope('active', function (Builder $builder) {
+    //         $builder->where('status', 1);
+    //     });
+    // }
+    
     public function bank()
     {
         return $this->belongsTo(Bank::class);

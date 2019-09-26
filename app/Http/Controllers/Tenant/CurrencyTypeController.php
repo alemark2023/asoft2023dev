@@ -6,6 +6,7 @@ use App\Http\Requests\Tenant\CurrencyTypeRequest;
 use App\Http\Resources\Tenant\CurrencyTypeCollection;
 use App\Http\Resources\Tenant\CurrencyTypeResource;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use Exception;
 
 class CurrencyTypeController extends Controller
 {
@@ -38,14 +39,20 @@ class CurrencyTypeController extends Controller
 
     public function destroy($id)
     {
-        $currency_type = CurrencyType::findOrFail($id);
-        //$currency_type->delete();
-        $currency_type->active = 0;
-        $currency_type->save();
+        try {
+            
+            $currency_type = CurrencyType::findOrFail($id);
+            $currency_type->delete(); 
 
-        return [
-            'success' => true,
-            'message' => 'Moneda eliminada con éxito'
-        ];
+            return [
+                'success' => true,
+                'message' => 'Moneda eliminada con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'La moneda esta siendo usada por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar la moneda'];
+
+        } 
     }
 }
