@@ -33,13 +33,29 @@
                             <td>{{row.state_type_description}}</td>
 
                             <td>{{ row.currency_type_id}}</td>
-                            <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total_exonerated : row.total_exonerated}}</td>
+                            <!-- <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total_exonerated : row.total_exonerated}}</td>
 
                             <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total_unaffected : row.total_unaffected }}</td>
                             <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total_free : row.total_free}}</td>
                             <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total_taxed : row.total_taxed }}</td>
                             <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total_igv : row.total_igv }}</td>
-                            <td>{{ (row.document_type_id == '07' || (row.document_type_id!='07' && row.state_type_id =='11')) ? -row.total : row.total }}</td> 
+ -->
+
+
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_exonerated == 0) ? '0.00': -row.total_exonerated) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_exonerated) }}</td> 
+                         
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_unaffected == 0) ? '0.00': -row.total_unaffected) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_free == 0) ? '0.00': -row.total_free) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_taxed == 0) ? '0.00': -row.total_taxed) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_taxed) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_igv == 0) ? '0.00': -row.total_igv) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_igv) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total == 0) ? '0.00': -row.total) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total) }}</td> 
+
+
+                            <!-- <td>{{ (row.document_type_id == '07') ? -row.total_unaffected : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? -row.total_free : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? -row.total_taxed : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_taxed) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? -row.total_igv : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_igv) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? -row.total : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total) }}</td>  -->
 
                         </tr>
                         

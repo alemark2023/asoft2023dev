@@ -20,7 +20,7 @@
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.series}">
                                 <label class="control-label">Serie <span class="text-danger">*</span></label>
-                                <el-input v-model="form.series" :maxlength="4" pattern="^[A-Za-z]+$" @input="inputSeries"></el-input>
+                                <el-input v-model="form.series" :maxlength="4"   @input="inputSeries"></el-input>
 
                                 <small class="form-control-feedback" v-if="errors.series" v-text="errors.series[0]"></small>
                             </div>
@@ -286,7 +286,7 @@
         methods: {
             inputSeries(){
 
-                const pattern = new RegExp('^[A-Z]+$', 'i');
+                const pattern = new RegExp('^[A-Z0-9]+$', 'i');
                 if(!pattern.test(this.form.series)){ 
                     this.form.series = this.form.series.substring(0, this.form.series.length - 1);
                 } else {

@@ -109,15 +109,17 @@ $col_span = 25;
         <td>{{ $row['customer_identity_document_type_id'] }}</td>
         <td>{{ $row['customer_number'] }}</td>
         <td>{{ $row['customer_name'] }}</td>
-        <td>{{ $row['total_exportation'] }}</td>
-        <td>{{ $row['total_taxed'] }}</td>
-        <td>{{ $row['total_exonerated'] }}</td>
-        <td>{{ $row['total_unaffected'] }}</td>
-        <td>{{ $row['total_plastic_bag_taxes'] }}</td>
+
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 : $row['total_exportation'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_taxed'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_exonerated'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_unaffected'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_plastic_bag_taxes'] }}</td>
         <td></td>
-        <td>{{ $row['total_igv'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_igv'] }}</td>
         <td></td>
-        <td>{{ $row['total'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total'] }}</td>
+
         <td>{{ $row['exchange_rate_sale'] }}</td>
         <td>{{ $row['currency_type_symbol'] }}</td>
         @if($row['affected_document'])
