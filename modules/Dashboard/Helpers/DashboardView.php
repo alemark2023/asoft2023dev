@@ -62,6 +62,8 @@ class DashboardView
             ->leftJoinSub($document_payments, 'payments', function ($join) {
                 $join->on('documents.id', '=', 'payments.document_id');
             })
+            ->whereIn('state_type_id', ['01','03','05','07','13'])
+            // ->whereIn('document_type_id', ['01','03','08'])
             ->select(DB::raw("documents.id as id, ".
                              "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
                              "persons.name as customer_name, ".
@@ -85,6 +87,7 @@ class DashboardView
             ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
                 $join->on('sale_notes.id', '=', 'payments.sale_note_id');
             })
+            ->whereIn('state_type_id', ['01','03','05','07','13'])
             ->select(DB::raw("sale_notes.id as id, ".
                              "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
                              "persons.name as customer_name, ".
@@ -107,8 +110,8 @@ class DashboardView
                     'date_of_issue' => $row->date_of_issue,
                     'customer_name' => $row->customer_name,
                     'number_full' => $row->number_full,
-                    'total' => (float) $row->total,
-                    'total_to_pay' => $total_to_pay,
+                    'total' => number_format((float) $row->total,2),
+                    'total_to_pay' => number_format($total_to_pay,2),
                     'type' => $row->type,
                 ];
 //            }

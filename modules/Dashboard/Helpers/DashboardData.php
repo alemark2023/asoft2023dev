@@ -108,7 +108,9 @@ class DashboardData
 
         foreach ($documents as $document)
         {
-            $document_total_payment += collect($document->payments)->sum('payment');
+            if(in_array($document->state_type_id,['01','03','05','07','13']))
+                $document_total_payment += collect($document->payments)->sum('payment');
+                
             $document_total_note_credit += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
         }
 

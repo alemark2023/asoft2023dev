@@ -57,8 +57,14 @@ class DashboardSalePurchase
         // $documents = Document::get(); 
         // $sale_notes = SaleNote::get(); 
 
-        $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
-        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        $documents = Document::query()->where('establishment_id', $establishment_id)
+                                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                                ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+
+                                
+        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+                                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                                ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
         foreach ($sale_notes as $sn) { 
             $documents->push($sn);
@@ -67,18 +73,27 @@ class DashboardSalePurchase
         $all_records = $documents;
 
         $group_customers = $all_records->groupBy('customer_id');
-
         $top_customers = collect([]);
 
         foreach ($group_customers as $customers) {  
 
+            // $customers es un cliente con todos sus documentos generados
+            // dd($customers[0]->total);
+
             $customer = Person::where('type','customers')->find($customers[0]->customer_id);
 
-            $top_customers->push([
-                'total' => round($customers->sum('total'),2),
-                'name' => $customer->name,
-                'number' => $customer->number,
-            ]);    
+            $totals = $customers->whereIn('document_type_id', ['01','03','08'])->sum('total'); //totales en documents
+            $totals_sale_note = $customers->where('prefix', 'NV')->sum('total'); //key diferenciar de documents 
+            $total_credit_note = $customers->where('document_type_id','07')->sum('total');
+
+            $difference = ($totals + $totals_sale_note) - $total_credit_note;
+
+            if($difference > 0)
+                $top_customers->push([
+                    'total' => round($difference,2),
+                    'name' => $customer->name,
+                    'number' => $customer->number,
+                ]);    
         
         }
 
@@ -153,8 +168,14 @@ class DashboardSalePurchase
         // $document_items = DocumentItem::get(); 
         // $sale_note_items = SaleNoteItem::get();
          
-        $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get();
-        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        $documents = Document::query()->where('establishment_id', $establishment_id)
+                            ->whereIn('state_type_id', ['01','03','05','07','13'])
+                            ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+
+
+        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+                            ->whereIn('state_type_id', ['01','03','05','07','13'])
+                            ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
         // dd($documents->count(),$sale_notes->count());
 
@@ -187,9 +208,31 @@ class DashboardSalePurchase
 
             $item = Item::where('status',true)->find($items[0]->item_id);
 
-            if($item){
+
+            $totals = 0;
+            $total_credit_note = 0;
+
+            foreach ($items as $it) {
+                
+                if($it->document){
+
+                    if(in_array($it->document->document_type_id,['01','03','08'])){
+                        $totals += $it->document->total;
+                    }else{
+                        $total_credit_note += $it->document->total;
+                    }
+
+                }else{
+                    $totals += $it->sale_note->total;
+                }
+                    
+            }
+ 
+            $difference = $totals - $total_credit_note;
+
+            if($item && $difference > 0){
                 $items_by_sales->push([
-                    'total' => round($items->sum('total'),2),
+                    'total' => round($difference,2),
                     'description' => $item->description,
                     'internal_id' => $item->internal_id,
                 ]);    

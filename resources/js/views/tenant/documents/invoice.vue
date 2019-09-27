@@ -124,12 +124,12 @@
                             </div>
                             <div class="col-lg-2 mt-2 mb-2"  v-if="form.document_type_id=='03'">
                                 <div class="form-group" > 
-                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold">¿Es venta por cobrar?</el-checkbox>
+                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold" @change="changeIsReceivable">¿Es venta por cobrar?</el-checkbox>
                                 </div>
                             </div> 
                         </div>
 
-                        <div class="row col-lg-8">
+                        <div class="row col-lg-8" v-if="!is_receivable">
 
                             <table>
                                 <thead>
@@ -470,6 +470,9 @@
             })
         },
         methods: {
+            changeIsReceivable(){
+
+            },
             clickAddPayment() {
                 this.form.payments.push({
                     id: null,
@@ -753,10 +756,14 @@
                 // console.log(this.form.discounts)
             }, 
             async submit() {
-                
-                let validate = await this.validate_payments()
-                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
-                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+               
+                if(this.is_receivable){
+                    this.form.payments = []
+                }else{                    
+                    let validate = await this.validate_payments()
+                    if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                        return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                    }
                 }
 
 
