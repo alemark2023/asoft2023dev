@@ -11,7 +11,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
-use App\Http\Resources\Tenant\QuotationCollection;
+use Modules\Report\Http\Resources\QuotationCollection;
 
 class ReportQuotationController extends Controller
 {

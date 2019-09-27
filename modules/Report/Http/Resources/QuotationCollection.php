@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Tenant;
+namespace Modules\Report\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -27,13 +27,13 @@ class QuotationCollection extends ResourceCollection
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
                 'currency_type_id' => $row->currency_type_id,
-                'total_exportation' => number_format($row->total_exportation,2),
-                // 'total_free' => number_format($row->total_free,2),
-                'total_unaffected' => number_format($row->total_unaffected,2),
-                'total_exonerated' => number_format($row->total_exonerated,2),
-                'total_taxed' => number_format($row->total_taxed,2),
-                'total_igv' => number_format($row->total_igv,2),
-                'total' => number_format($row->total,2),
+                'total_exportation' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total_exportation,2),
+                // 'total_free' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total_free,2),
+                'total_unaffected' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total_unaffected,2),
+                'total_exonerated' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total_exonerated,2),
+                'total_taxed' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total_taxed,2),
+                'total_igv' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total_igv,2),
+                'total' => (in_array($row->state_type_id,['09','11'])) ? number_format(0,2) : number_format($row->total,2),
                 'state_type_id' => $row->state_type_id, 
                 'state_type_description' => $row->state_type->description, 
                 'documents' => $row->documents->transform(function($row) {
