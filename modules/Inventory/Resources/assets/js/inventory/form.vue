@@ -28,6 +28,15 @@
                             <el-input v-model="form.quantity"></el-input>
                         </div>
                     </div>
+                    <div class="col-md-8">
+                        <div class="form-group" :class="{'has-danger': errors.inventory_transaction_id}">
+                            <label class="control-label">Motivo traslado</label>
+                            <el-select v-model="form.inventory_transaction_id" filterable>
+                                <el-option v-for="option in inventory_transactions" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.inventory_transaction_id" v-text="errors.inventory_transaction_id[0]"></small>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -52,14 +61,16 @@
                 form: {},
                 items: [],
                 warehouses: [],
+                inventory_transactions: [],
             }
         },
         created() {
             this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
+            this.$http.get(`/${this.resource}/tables/transaction/input`)
                 .then(response => {
                     this.items = response.data.items
                     this.warehouses = response.data.warehouses
+                    this.inventory_transactions = response.data.inventory_transactions
                 })
         },
         methods: {
@@ -69,11 +80,13 @@
                     id: null,
                     item_id: null,
                     warehouse_id: null,
+                    inventory_transaction_id: null,
                     quantity: null,
+                    type: 'input',
                 }
             },
             create() {
-                this.titleDialog = 'Registrar producto en almacén'
+                this.titleDialog = 'Ingreso de producto en almacén'
 //                this.$http.get(`/${this.resource}/record/${this.recordId}`)
 //                    .then(response => {
 //                        this.form = response.data.data
@@ -81,7 +94,7 @@
             },
             submit() {
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form)
+                this.$http.post(`/${this.resource}/transaction`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

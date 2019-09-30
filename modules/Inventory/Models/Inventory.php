@@ -14,6 +14,7 @@ class Inventory extends ModelTenant
         'warehouse_id',
         'warehouse_destination_id',
         'quantity',
+        'inventory_transaction_id',
     ];
 
     public function warehouse()
@@ -35,4 +36,10 @@ class Inventory extends ModelTenant
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
+
+    public function transaction()
+    {
+        return $this->belongsTo(InventoryTransaction::class);
+    }
+
 }

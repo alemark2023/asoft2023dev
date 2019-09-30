@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Models\Inventory;
+use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\Warehouse;
@@ -55,6 +56,16 @@ class InventoryController extends Controller
         return $record;
     }
 
+
+    public function tables_transaction($type)
+    {
+        return [
+            'items' => $this->optionsItem(),
+            'warehouses' => $this->optionsWarehouse(),
+            'inventory_transactions' => $this->optionsInventoryTransaction($type),
+        ];
+    }
+
     public function store(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
@@ -85,6 +96,48 @@ class InventoryController extends Controller
             return  [
                 'success' => true,
                 'message' => 'Producto registrado en almacén'
+            ];
+        });
+
+        return $result;
+    }
+
+
+    public function store_transaction(Request $request)
+    {
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+
+            $type = $request->input('type');
+            $item_id = $request->input('item_id');
+            $warehouse_id = $request->input('warehouse_id');
+            $inventory_transaction_id = $request->input('inventory_transaction_id');
+            $quantity = $request->input('quantity');
+
+            $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id,
+                                                         'warehouse_id' => $warehouse_id]);
+
+            $inventory_transaction = InventoryTransaction::findOrFail($inventory_transaction_id);
+
+            if($type == 'input') {                
+
+                $inventory = new Inventory();
+                $inventory->type = null;
+                $inventory->description = $inventory_transaction->name;
+                $inventory->item_id = $item_id;
+                $inventory->warehouse_id = $warehouse_id;
+                $inventory->quantity = $quantity;
+                $inventory->inventory_transaction_id = $inventory_transaction_id;
+                $inventory->save();
+                
+                // $item_warehouse->stock = $quantity;
+                // $item_warehouse->save();
+
+            }
+
+
+            return  [
+                'success' => true,
+                'message' => 'Ingreso registrado en almacén'
             ];
         });
 

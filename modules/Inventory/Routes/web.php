@@ -22,8 +22,10 @@ if($hostname) {
                 Route::get('records', 'InventoryController@records');
                 Route::get('columns', 'InventoryController@columns');
                 Route::get('tables', 'InventoryController@tables');
+                Route::get('tables/transaction/{type}', 'InventoryController@tables_transaction');
                 Route::get('record/{inventory}', 'InventoryController@record');
                 Route::post('/', 'InventoryController@store');
+                Route::post('/transaction', 'InventoryController@store_transaction');
                 Route::post('move', 'InventoryController@move');
                 Route::post('remove', 'InventoryController@remove');
                 Route::get('initialize', 'InventoryController@initialize'); 
