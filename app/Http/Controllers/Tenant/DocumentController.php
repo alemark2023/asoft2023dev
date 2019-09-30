@@ -226,13 +226,13 @@ class DocumentController extends Controller
                             'price3' => $row->price3,
                             'price_default' => $row->price_default,
                         ];
+                    }),
+                    'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        return [
+                            'warehouse_description' => $row->warehouse->description,
+                            'stock' => $row->stock,
+                        ];
                     })
-                    // 'warehouses' => collect($row->warehouses)->transform(function($row) {
-                    //     return [
-                    //         'warehouse_description' => $row->warehouse->description,
-                    //         'stock' => $row->stock,
-                    //     ];
-                    // })
                 ];
             });
 //            return $items;

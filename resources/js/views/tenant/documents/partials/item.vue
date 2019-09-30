@@ -86,9 +86,16 @@
                             <!--<small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>-->
                         <!--</div>-->
                     <!--</div>-->
-                    <div class="col-md-3 center-el-checkbox">
+                    <div class="col-md-4 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.has_igv}">
                             <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
+                        </div>
+                    </div> 
+                    <div class="col-md-2 pl-6" v-if="showListStock">
+                        <div class="form-group">
+                            <label class="control-label">Stock</label><br>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></button>
+
                         </div>
                     </div> 
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
@@ -114,7 +121,7 @@
                             <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
                         </div>
                     </div>-->
-                    <div class="col-md-12 mt-2" v-if="form.item.warehouses">
+                    <!-- <div class="col-md-12 mt-2" v-if="form.item.warehouses">
                         <table class="table">
                             <thead>
                             <tr>
@@ -129,7 +136,7 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </div> -->
                     <div class="col-md-12 mt-2">
                         <el-collapse  v-model="activePanel">
                             <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1">
@@ -358,6 +365,12 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
+
+                   
+        <warehouses-detail 
+                :showDialog.sync="showWarehousesDetail"
+                :warehouses="warehousesDetail">
+            </warehouses-detail>
     </el-dialog>
 </template>
 <style>
@@ -371,10 +384,11 @@
 
     import ItemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
+    import WarehousesDetail from '../../items/partials/warehouses.vue'
 
     export default {
         props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
-        components: {ItemForm},
+        components: {ItemForm, WarehousesDetail},
         data() {
             return {
                 titleAction: '',
@@ -397,6 +411,9 @@
                 activePanel: 0,
                 total_item: 0,
                 item_unit_types: [],
+                showWarehousesDetail: false,
+                warehousesDetail:[],
+                showListStock:false
                 //item_unit_type: {}
             }
         },
@@ -421,6 +438,13 @@
         },
         methods: {
              
+            clickWarehouseDetail(){
+
+                let item = _.find(this.items, {'id': this.form.item_id});
+
+                this.warehousesDetail = item.warehouses
+                this.showWarehousesDetail = true
+            },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
             },
@@ -543,6 +567,8 @@
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
                 this.cleanTotalItem();
+                this.showListStock = true
+
                 //this.item_unit_types = this.form.item.item_unit_types;
                 //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
             },
