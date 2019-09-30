@@ -85,6 +85,7 @@ class DocumentInput
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
+            'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),

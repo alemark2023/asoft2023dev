@@ -60,6 +60,7 @@ class Document extends ModelTenant
         'has_xml',
         'has_pdf',
         'has_cdr',
+        'has_prepayment',
         'data_json',
         'send_server',
         'shipping_status',

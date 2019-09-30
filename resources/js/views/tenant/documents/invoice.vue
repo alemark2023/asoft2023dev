@@ -129,9 +129,10 @@
                             </div> 
                         </div>
 
-                        <div class="row col-lg-8" v-if="!is_receivable">
+                        <div class="row" >
+                            <div class="col-lg-8" v-if="!is_receivable">
 
-                            <table>
+                                <table>
                                 <thead>
                                     <tr width="100%">
                                         <th v-if="form.payments.length>0">Método de pago</th>
@@ -169,6 +170,12 @@
                                 </tbody> 
                             </table> 
                             
+
+                            </div>
+                            
+                            <div class="col-lg-4 mt-3" >
+                                <el-checkbox v-model="form.has_prepayment"><strong>¿Es un pago anticipado?</strong></el-checkbox>
+                            </div>
                         </div>
 
 
@@ -553,6 +560,7 @@
                     guides: [],
                     payments: [],
                     additional_information:null,
+                    has_prepayment:false,
                     actions: {
                         format_pdf:'a4',
                     }
