@@ -23,9 +23,11 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
+                        <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input v-model="form.quantity"></el-input>
+                            <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
+
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -51,7 +53,7 @@
 <script>
 
     export default {
-        props: ['showDialog', 'recordId'],
+        props: ['showDialog', 'recordId','type'],
         data() {
             return {
                 loading_submit: false,
@@ -66,12 +68,6 @@
         },
         created() {
             this.initForm()
-            this.$http.get(`/${this.resource}/tables/transaction/input`)
-                .then(response => {
-                    this.items = response.data.items
-                    this.warehouses = response.data.warehouses
-                    this.inventory_transactions = response.data.inventory_transactions
-                })
         },
         methods: {
             initForm() {
@@ -82,18 +78,29 @@
                     warehouse_id: null,
                     inventory_transaction_id: null,
                     quantity: null,
-                    type: 'input',
+                    type: this.type,
                 }
             },
-            create() {
-                this.titleDialog = 'Ingreso de producto en almacén'
-//                this.$http.get(`/${this.resource}/record/${this.recordId}`)
-//                    .then(response => {
-//                        this.form = response.data.data
-//                    })
+            async create() {
+
+                this.titleDialog = (this.type == 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
+ 
+                await this.$http.get(`/${this.resource}/tables/transaction/${this.type}`)
+                    .then(response => {
+                        this.items = response.data.items
+                        this.warehouses = response.data.warehouses
+                        this.inventory_transactions = response.data.inventory_transactions
+                    })
+
             },
             submit() {
+
+                // if(this.form.quantity<0)
+                //     return this.$message.error('No puede ingresar cantidad negativa')
+
                 this.loading_submit = true
+                this.form.type = this.type
+                // console.log(this.form)
                 this.$http.post(`/${this.resource}/transaction`, this.form)
                     .then(response => {
                         if (response.data.success) {
@@ -106,7 +113,8 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data.errors
+                            this.errors = error.response.data
+                            // console.log(error.response.data)
                         } else {
                             console.log(error)
                         }

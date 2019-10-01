@@ -40,6 +40,13 @@ trait InventoryTrait
         });
     }
 
+    public function findInventoryTransaction($id) {
+
+        return InventoryTransaction::findOrFail($id);
+        
+    }
+    
+
     public function optionsInventoryTransaction($type) {
 
         $records = InventoryTransaction::where('type', $type)->get();

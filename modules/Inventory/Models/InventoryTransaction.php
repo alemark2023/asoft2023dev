@@ -16,5 +16,10 @@ class InventoryTransaction extends ModelTenant
         'type',
         'id', 
     ];
- 
+
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
 }

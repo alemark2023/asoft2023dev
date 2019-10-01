@@ -7,6 +7,8 @@ use App\Models\Tenant\ModelTenant;
 
 class Inventory extends ModelTenant
 {
+    protected $with = ['transaction'];
+
     protected $fillable = [
         'type',
         'description',
