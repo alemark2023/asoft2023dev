@@ -30,7 +30,7 @@ trait InventoryTrait
     }
     
     public function optionsItem() {
-        $records = Item::where('item_type_id', '01')->get();
+        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->get();
         
         return collect($records)->transform(function($row) {
             return  [

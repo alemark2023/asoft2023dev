@@ -34,7 +34,7 @@ class ReportKardexController extends Controller
     public function index() {
         
         $items = Item::query()
-            ->where('item_type_id', '01')
+            ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
             ->latest()
             ->get();
 
@@ -56,7 +56,7 @@ class ReportKardexController extends Controller
         $item_selected = $request->item_selected;
 
         $items = Item::query()
-            ->where('item_type_id', '01')
+            ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
             ->latest()
             ->get();
         
