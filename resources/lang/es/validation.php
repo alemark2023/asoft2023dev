@@ -184,7 +184,10 @@ return [
         'note.note_description' => 'descripción',
         'exchange_rate_sale' => 'tipo de cambio',
         'type' => 'perfil',
-        'second_name' => 'nombre secundario',
+        'item_id' => 'producto',
+        'warehouse_id' => 'almacén',
+        'inventory_transaction_id' => 'motivo traslado',
+        'quantity' => 'cantidad',
       
     ],
 ];

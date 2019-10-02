@@ -38,8 +38,8 @@
                         <td>{{ row.name }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
-                            <template v-if="typeUser=='seller'">{{ row.stock }}</template>
-                            <template v-else>
+                            <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
+                            <template v-else-if="typeUser!='seller'&& row.unit_type_id !='ZZ'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
                             </template>
 

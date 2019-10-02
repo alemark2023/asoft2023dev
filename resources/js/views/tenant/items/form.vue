@@ -113,14 +113,14 @@
                             <small class="form-control-feedback" v-if="errors.item_code" v-text="errors.item_code[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="recordId==null">
+                    <div class="col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.stock}">
                             <label class="control-label">Stock Inicial</label>
                             <el-input v-model="form.stock" ></el-input>
                             <small class="form-control-feedback" v-if="errors.stock" v-text="errors.stock[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.stock_min}">
                             <label class="control-label">Stock Mínimo</label>
                             <el-input v-model="form.stock_min"></el-input>

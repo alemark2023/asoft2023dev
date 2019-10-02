@@ -6,6 +6,7 @@ use Modules\Inventory\Models\{
     ItemWarehouse,
     Warehouse,
     InventoryConfiguration,
+    InventoryTransaction,
     Inventory
 };
 use App\Models\Tenant\{
@@ -29,7 +30,7 @@ trait InventoryTrait
     }
     
     public function optionsItem() {
-        $records = Item::where('item_type_id', '01')->get();
+        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->get();
         
         return collect($records)->transform(function($row) {
             return  [
@@ -37,6 +38,20 @@ trait InventoryTrait
                 'description' => $row->description
             ];
         });
+    }
+
+    public function findInventoryTransaction($id) {
+
+        return InventoryTransaction::findOrFail($id);
+        
+    }
+    
+
+    public function optionsInventoryTransaction($type) {
+
+        $records = InventoryTransaction::where('type', $type)->get();
+        
+        return $records;
     }
     
     public function optionsWarehouse() {
