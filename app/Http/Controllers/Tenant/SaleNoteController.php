@@ -156,6 +156,7 @@ class SaleNoteController extends Controller
 
 //            $this->sale_note =  SaleNote::create($data);
             $this->sale_note->items()->delete();
+            $this->sale_note->payments()->delete();
             foreach ($data['items'] as $row)
             {
                 $this->sale_note->items()->create($row);

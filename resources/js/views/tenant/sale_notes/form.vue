@@ -264,18 +264,23 @@
                 this.reloadDataCustomers(customer_id)
             })
 
-            if (this.id) {
-                // console.log(this.id);
-                await this.$http.get(`/${this.resource}/record2/${this.id}`)
-                    .then(response => {
-                        this.form = response.data.data;
-//                        this.filterProvinces();
-//                        this.filterDistricts();
-                    })
-            }
+            this.isUpdate()
+            
         },
         methods: {
+            async isUpdate(){
 
+                if (this.id) {
+                    // console.log(this.id);
+                    await this.$http.get(`/${this.resource}/record2/${this.id}`)
+                        .then(response => {
+                            this.form = response.data.data;
+    //                        this.filterProvinces();
+    //                        this.filterDistricts();
+                        })
+                }
+
+            },
             clickAddPayment() {
                 this.form.payments.push({
                     id: null,
@@ -462,6 +467,7 @@
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
+                        this.isUpdate()
 
                     }
                     else {

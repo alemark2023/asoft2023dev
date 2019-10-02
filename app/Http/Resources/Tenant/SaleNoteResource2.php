@@ -44,6 +44,7 @@ class SaleNoteResource2 extends JsonResource
             'operation_type_id' => $this->operation_type_id,
             'date_of_due' => $this->date_of_due,
             'items' => $this->items,
+            'payments' => $this->payments,
             'charges' => $this->charges,
             'discounts' => $this->discounts,
             'attributes' => $this->attributes,
