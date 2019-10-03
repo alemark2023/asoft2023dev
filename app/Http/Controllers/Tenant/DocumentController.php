@@ -203,6 +203,7 @@ class DocumentController extends Controller
                 return [
                     'id' => $row->id,
                     'full_description' => $full_description,
+                    'internal_id' => $row->internal_id,
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,

@@ -9,12 +9,28 @@
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select :disabled="recordItem != null" v-model="form.item_id" @change="changeItem"  filterable
-                                       popper-class="el-select-items"
-                                       dusk="item_id"
-                                       @visible-change="focusTotalItem">
-                                <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                            </el-select>
+
+                            <template v-if="!search_item_by_barcode">
+                                <el-select :disabled="recordItem != null" v-model="form.item_id" @change="changeItem"  filterable
+                                        popper-class="el-select-items"
+                                        dusk="item_id"
+                                        @visible-change="focusTotalItem">
+                                    <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                </el-select>
+                            </template>
+                            <template v-else>
+                                <el-select :disabled="recordItem != null" v-model="form.item_id"  
+                                        @change="changeItem"
+                                        filterable
+                                        :filter-method="filterMethod"   
+                                        popper-class="el-select-items"
+                                        dusk="item_id"
+                                        @visible-change="focusTotalItem">
+                                    <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                </el-select>
+                            </template>
+                            
+                            <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null">Buscar por código de barra</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
@@ -413,7 +429,8 @@
                 item_unit_types: [],
                 showWarehousesDetail: false,
                 warehousesDetail:[],
-                showListStock:false
+                showListStock:false,
+                search_item_by_barcode:false,
                 //item_unit_type: {}
             }
         },
@@ -437,7 +454,16 @@
             })
         },
         methods: {
-             
+            filterMethod(query){
+                 
+                let item = _.find(this.items, {'internal_id': query});
+
+                if(item){ 
+                    this.form.item_id = item.id
+                    this.changeItem()
+                }
+                // console.log(item)
+            },
             clickWarehouseDetail(){
 
                 let item = _.find(this.items, {'id': this.form.item_id});
@@ -488,7 +514,6 @@
                 let operation_type = _.find(this.operation_types, {id: this.operationTypeId})
                 this.affectation_igv_types = _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
                 if (this.recordItem) {
-                    console.log('form updasssste')
                     this.form.item_id = this.recordItem.item_id
                     this.changeItem()
                     this.form.quantity = this.recordItem.quantity
