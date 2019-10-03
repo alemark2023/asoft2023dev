@@ -151,6 +151,7 @@
                 showDialogNewItem: false,
                 loading: false,
                 is_payment: false,//aq
+                // is_payment: true,//aq
                 resource: 'pos',
                 recordId: null,
                 input_item: '',
