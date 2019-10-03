@@ -1,4 +1,4 @@
-# **eversysconsulting**
+# **Facturador PRO 3**
 
 ## Instalación reseller
 
@@ -65,3 +65,5 @@ Guía acceso a base de datos: [Guía](https://drive.google.com/open?id=1uZ_qt34I
 Configuracion de consulta RUC/DNI: [Guía](https://docs.google.com/document/d/15_MjQBamZI20UC08p-zC9N3yrMhIqh8iObikZ_eNKKg/edit?usp=sharing "Clic")<br>
 Guía generar backup: [Guía](https://drive.google.com/open?id=15dD0KPmDPIeM5y6QdLJivEI-ryS75s2uuJJlusNTr1g "Clic")<br>
 Regenerar documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_IyvEiQ2NSaiW_rsBhVNbK7YD-_l1kbrEGwQ "Clic")<br>
+Configuracion de correo electrónico emisor: [Guía](https://docs.google.com/document/d/1sBXGgKZwcgKZTMTT_qQldpRT13jzEL4Q1S_yPpY-nOo/edit?usp=sharing "Clic")<br>
+
