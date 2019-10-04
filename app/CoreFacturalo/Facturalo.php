@@ -110,6 +110,7 @@ class Facturalo
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
+                if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
                 $document->invoice()->create($inputs['invoice']);
                 $this->document = Document::find($document->id);
                 break;

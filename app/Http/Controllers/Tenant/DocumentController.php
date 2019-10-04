@@ -40,6 +40,8 @@ use Nexmo\Account\Price;
 use Illuminate\Support\Facades\Cache;
 use App\Imports\DocumentsImport;
 use Maatwebsite\Excel\Excel;
+use Modules\BusinessTurn\Models\BusinessTurn;
+
 
 class DocumentController extends Controller
 {
@@ -146,6 +148,7 @@ class DocumentController extends Controller
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get();
         $user = auth()->user()->type;
         $payment_method_types = PaymentMethodType::all();
+        $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
@@ -161,7 +164,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global');
+                        'document_types_guide', 'user','payment_method_types','enabled_discount_global','business_turns');
 
     }
 

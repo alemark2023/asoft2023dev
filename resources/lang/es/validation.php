@@ -188,6 +188,17 @@ return [
         'warehouse_id' => 'almacén',
         'inventory_transaction_id' => 'motivo traslado',
         'quantity' => 'cantidad',
+        
+        'sex' => 'sexo',
+        'age' => 'edad',
+        'civil_status' => 'estado civil',
+        'nacionality' => 'nacionalidad',
+        'origin' => 'procedencia',
+        'room_number' => 'N° de habitación',
+        'date_entry' => 'fecha ingreso',
+        'time_entry' => 'hora ingreso',
+        'date_exit' => 'fecha salida',
+        'time_exit' => 'hora salida',
       
     ],
 ];

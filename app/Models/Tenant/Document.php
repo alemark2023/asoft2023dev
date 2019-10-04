@@ -4,6 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Modules\BusinessTurn\Models\DocumentHotel;
 
 class Document extends ModelTenant
 {
@@ -260,12 +261,12 @@ class Document extends ModelTenant
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
+ 
 
-    public function quotation()
+    public function hotel()
     {
-        return $this->belongsTo(Quotation::class);
+        return $this->hasOne(DocumentHotel::class);
     }
-
 
     public function getNumberFullAttribute()
     {

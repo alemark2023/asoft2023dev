@@ -176,6 +176,11 @@
                             <div class="col-lg-4 mt-3" >
                                 <el-checkbox v-model="form.has_prepayment"><strong>¿Es un pago anticipado?</strong></el-checkbox>
                             </div>
+
+                            <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('hotel')">
+                                <a href="#" @click.prevent="clickAddDocumentHotel" class="text-center font-weight-bold text-info">[+ Datos personales para reserva de hospedaje]</a>
+                            </div>
+
                         </div>
 
 
@@ -382,6 +387,13 @@
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
                           :showClose="false"></document-options>
+
+        
+        <document-hotel-form   
+            :showDialog.sync="showDialogFormHotel"
+            :hotel="form.hotel"
+            @addDocumentHotel="addDocumentHotel" 
+            ></document-hotel-form>
     </div>
 </template>
 
@@ -397,13 +409,15 @@
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
+    import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
 
     export default {
         props: ['typeUser'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo},
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm},
         mixins: [functions, exchangeRate],
         data() {
             return {
+                showDialogFormHotel:false,
                 recordItem: null,
                 resource: 'documents',
                 showDialogAddItem: false,
@@ -419,6 +433,7 @@
                 discount_types: [],
                 charges_types: [],
                 all_customers: [],                
+                business_turns: [],                
                 form_payment: {},
                 document_types_guide: [],
                 customers: [],
@@ -450,6 +465,7 @@
                     this.document_types = response.data.document_types_invoice;
                     this.document_types_guide = response.data.document_types_guide;
                     this.currency_types = response.data.currency_types
+                    this.business_turns = response.data.business_turns
                     this.establishments = response.data.establishments
                     this.operation_types = response.data.operation_types
                     this.all_series = response.data.series
@@ -477,6 +493,17 @@
             })
         },
         methods: {
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
+            },
+            clickAddDocumentHotel(){
+                this.showDialogFormHotel = true
+            },
+            
+            addDocumentHotel(hotel) {
+                this.form.hotel = hotel 
+                // console.log(this.form.hotel)
+            },
             changeIsReceivable(){
 
             },
@@ -563,7 +590,8 @@
                     has_prepayment:false,
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    hotel: {}
                 }
  
                 this.clickAddPayment()
