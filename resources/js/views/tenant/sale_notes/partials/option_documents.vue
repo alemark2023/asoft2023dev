@@ -149,7 +149,8 @@
                     },
                     quotation_id:null,
                     sale_note_id:null,
-                    payments: []
+                    payments: [],
+                    hotel: {},
                 }
             },
             resetDocument(){

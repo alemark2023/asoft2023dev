@@ -53,6 +53,7 @@ class DocumentTransform
             'legends' => LegendTransform::transform($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
             'actions' => ActionTransform::transform($inputs),
+            'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
             'payments' => self::payments($inputs),
             'data_json' => $inputs
         ];

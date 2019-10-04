@@ -240,6 +240,7 @@
                     attributes: [],
                     guides: [],
                     payments: [],
+                    hotel: {},
                     additional_information:null,
                     actions: {
                         format_pdf:'a4',

@@ -417,6 +417,7 @@ export default {
         quotation_id: null,
         is_receivable: false,
         payments: [],
+        hotel: {},
       };
     },
     changeDateOfIssue() {
