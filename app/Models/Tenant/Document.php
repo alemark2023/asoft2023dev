@@ -262,6 +262,10 @@ class Document extends ModelTenant
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
  
+    public function quotation()
+    {
+        return $this->belongsTo(Quotation::class);
+    }
 
     public function hotel()
     {

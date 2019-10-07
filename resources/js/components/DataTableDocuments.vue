@@ -85,6 +85,15 @@
                             @change="changeDateOfIssue"    >
                         </el-date-picker> 
                     </div>
+                    
+                    <div class="col-lg-2 col-md-2 col-sm-12 pb-2">
+                        <div class="form-group"  >
+                            <label class="control-label">Estado</label>
+                            <el-select v-model="search.state_type_id" filterable clearable>
+                                <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select> 
+                        </div>
+                    </div>
                     <div class="col-lg-4 col-md-4 col-md-4 col-sm-12" style="margin-top:29px"> 
                         <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
                         <el-button class="submit" type="info" @click.prevent="cleanInputs"  icon="el-icon-delete" >Limpiar </el-button>
@@ -144,6 +153,7 @@
                 records: [],
                 customers: [],
                 document_types: [],
+                state_types: [],
                 pagination: {}, 
                 search: {}, 
                 all_series: [],
@@ -171,6 +181,7 @@
         async mounted () { 
 
             await this.$http.get(`/${this.resource}/data_table`).then((response) => {
+                this.state_types = response.data.state_types
                 this.document_types = response.data.document_types
                 this.all_series = response.data.series
                 this.establishments = response.data.establishments
@@ -190,6 +201,7 @@
                 this.search = { 
                     date_of_issue: null,
                     document_type_id:null,
+                    state_type_id:null,
                     series:null, 
                     number:null, 
                     d_start:null, 

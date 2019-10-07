@@ -137,7 +137,7 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items">
                                                 <td>{{ index + 1 }}</td>
-                                                <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                                <td>{{ row.item.description }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
                                                 <td class="text-right">{{ row.quantity }}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
@@ -386,7 +386,8 @@
                 this.customers = this.all_customers
             }, 
             addRow(row) {
-                this.form.items.push(row)
+                // this.form.items.push(row)
+                this.form.items.push(JSON.parse(JSON.stringify(row)));
                 this.calculateTotal()
             },
             clickRemoveItem(index) {

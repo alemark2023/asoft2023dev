@@ -25,6 +25,7 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\StateType;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
@@ -531,6 +532,7 @@ class DocumentController extends Controller
         $d_start = $request->d_start;
         $date_of_issue = $request->date_of_issue;
         $document_type_id = $request->document_type_id;
+        $state_type_id = $request->state_type_id;
         $number = $request->number;
         $series = $request->series;
  
@@ -540,6 +542,7 @@ class DocumentController extends Controller
             $records = Document::where('document_type_id', 'like', '%' . $document_type_id . '%')
                             ->where('series', 'like', '%' . $series . '%')
                             ->where('number', 'like', '%' . $number . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
                             ->whereBetween('date_of_issue', [$d_start , $d_end])
                             ->whereTypeUser()
                             ->latest();
@@ -548,6 +551,7 @@ class DocumentController extends Controller
 
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
                             ->where('document_type_id', 'like', '%' . $document_type_id . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
                             ->where('series', 'like', '%' . $series . '%')
                             ->where('number', 'like', '%' . $number . '%')
                             ->whereTypeUser()
@@ -563,12 +567,13 @@ class DocumentController extends Controller
         
         // $customers = $this->table('customers'); 
         $customers = []; 
+        $state_types = StateType::get();
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         // $series = Series::where('contingency', false)->whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
                        
-        return compact( 'customers', 'document_types','series','establishments');
+        return compact( 'customers', 'document_types','series','establishments', 'state_types');
 
     }
 
