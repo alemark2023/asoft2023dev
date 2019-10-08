@@ -322,7 +322,7 @@
                 
                 this.setAmount(acum_payment)
                 
-                console.log(this.form.payments)
+                // console.log(this.form.payments)
             },
             reloadDataCardBrands(card_brand_id) {
                 this.$http.get(`/${this.resource}/table/card_brands`).then((response) => {
