@@ -3,7 +3,7 @@
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function() {
-        Route::middleware('auth:api')->group(function() {
+        Route::middleware(['auth:api', 'locked.tenant'])->group(function() {
             Route::post('documents', 'Tenant\Api\DocumentController@store');
             Route::post('summaries', 'Tenant\Api\SummaryController@store');
             Route::post('voided', 'Tenant\Api\VoidedController@store');
@@ -32,6 +32,7 @@ if ($hostname) {
 
         //reseller
         Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
+        Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
         
     });
     

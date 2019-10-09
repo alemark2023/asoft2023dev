@@ -19,6 +19,7 @@ class Client extends Model
         'token',
         'locked',
         'locked_emission',
+        'locked_tenant',
         'plan_id'
     ];
 

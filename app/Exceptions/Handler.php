@@ -72,6 +72,9 @@ class Handler extends ExceptionHandler
         if($exception instanceof MethodNotAllowedHttpException) {
             return $this->errorResponse('El método especificado en la petición no es válido', 405, $exception);
         }
+        if ($exception->getStatusCode() == 403 && !$this->isFrontend($request)) {
+            return $this->errorResponse('Acceso denegado: Su cuenta está inactiva, comuníquese con el administrador', 403, $exception);
+        }
         if($exception instanceof HttpException) {
             return $this->errorResponse('', '', $exception);
         }

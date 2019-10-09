@@ -10,5 +10,6 @@ class Configuration extends ModelTenant
         'stock',
         'locked_emission',
         'limit_documents',
+        'locked_tenant',
     ];
 }

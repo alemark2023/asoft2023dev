@@ -150,6 +150,7 @@ class ClientController extends Controller
         DB::connection('tenant')->table('configurations')->insert([
             'send_auto' => true,
             'locked_emission' =>  $request->input('locked_emission'),
+            'locked_tenant' =>  false,
             'limit_documents' =>  $plan->limit_documents,
             'limit_users' =>  $plan->limit_users
         ]);
@@ -252,6 +253,24 @@ class ClientController extends Controller
         return [
             'success' => true,
             'message' => ($client->locked_emission) ? 'Limitar emisión de documentos activado' : 'Limitar emisión de documentos desactivado'
+        ];
+
+    }
+
+
+    public function lockedTenant(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_tenant = $request->locked_tenant;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_tenant' => $client->locked_tenant]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_tenant) ? 'Cuenta bloqueada' : 'Cuenta desbloqueada'
         ];
 
     }
