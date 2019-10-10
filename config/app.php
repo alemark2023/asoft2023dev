@@ -173,6 +173,7 @@ return [
         App\Providers\InventoryServiceProvider::class,
 
         App\Providers\LockedEmissionProvider::class,
+        App\Providers\RenewPlan::class,
 
     ],
 

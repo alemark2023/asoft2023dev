@@ -152,7 +152,9 @@ class ClientController extends Controller
             'locked_emission' =>  $request->input('locked_emission'),
             'locked_tenant' =>  false,
             'limit_documents' =>  $plan->limit_documents,
-            'limit_users' =>  $plan->limit_users
+            'limit_users' =>  $plan->limit_users,
+            'date_time_start' =>  date('Y-m-d H:i:s'),
+            'quantity_documents' =>  0,
         ]);
 
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([

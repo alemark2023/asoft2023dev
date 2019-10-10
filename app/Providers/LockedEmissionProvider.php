@@ -30,8 +30,22 @@ class LockedEmissionProvider extends ServiceProvider
     {
         $this->locked_emission();
         $this->locked_users();
+        $this->update_quantity_documents();
     }
 
+
+    private function update_quantity_documents()
+    {
+        Document::created(function ($document) {
+            
+            $configuration = Configuration::first();
+            $configuration->quantity_documents++; 
+            $configuration->save();
+        
+        }); 
+    }
+
+    
 
     private function locked_emission()
     {
@@ -39,7 +53,8 @@ class LockedEmissionProvider extends ServiceProvider
         Document::created(function ($document) {
             
             $configuration = Configuration::first();
-            $quantity_documents = Document::count();
+            // $quantity_documents = Document::count();
+            $quantity_documents = $configuration->quantity_documents;
 
             if($configuration->locked_emission && $configuration->limit_documents !== 0){
                 if($quantity_documents > $configuration->limit_documents)
@@ -49,6 +64,7 @@ class LockedEmissionProvider extends ServiceProvider
         
         });
     }
+
     private function locked_users()
     {
 

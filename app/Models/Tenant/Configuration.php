@@ -11,5 +11,7 @@ class Configuration extends ModelTenant
         'locked_emission',
         'limit_documents',
         'locked_tenant',
+        'quantity_documents',
+        'date_time_start',
     ];
 }

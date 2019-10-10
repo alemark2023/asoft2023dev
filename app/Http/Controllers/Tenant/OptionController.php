@@ -12,6 +12,7 @@ use App\Models\Tenant\Perception;
 use App\Models\Tenant\Summary;
 use App\Models\Tenant\Voided;
 use Illuminate\Http\Request;
+use App\Models\Tenant\Configuration;
 
 class OptionController extends Controller
 {
@@ -25,9 +26,15 @@ class OptionController extends Controller
         Summary::where('soap_type_id', '01')->delete();
         Voided::where('soap_type_id', '01')->delete();
         Purchase::where('soap_type_id', '01')->delete();
+
+        $quantity = Document::where('soap_type_id', '01')->count();
+
         Document::where('soap_type_id', '01')
-                ->whereIn('document_type_id', ['07', '08'])->delete();
+        ->whereIn('document_type_id', ['07', '08'])->delete();        
         Document::where('soap_type_id', '01')->delete();
+
+        $this->update_quantity_documents($quantity);
+
         Retention::where('soap_type_id', '01')->delete();
         Perception::where('soap_type_id', '01')->delete();
         SaleNote::where('soap_type_id', '01')->delete();
@@ -38,4 +45,13 @@ class OptionController extends Controller
             'message' => 'Documentos de prueba eliminados'
         ];
     }
+
+
+    private function update_quantity_documents($quantity)
+    {  
+        $configuration = Configuration::first();
+        $configuration->quantity_documents -= $quantity; 
+        $configuration->save();        
+    }
+    
 }
