@@ -1,8 +1,8 @@
 # **Facturador PRO 3**
 
-## Instalación reseller
+<!-- ## Instalación reseller
 
-[Manual instalación reseller](https://docs.google.com/document/d/10ufrI9g8cx-V9Lh-rXLY1jzcHyyny8PYsBotIVFn7yA/edit# "Clic")
+[Manual instalación reseller](https://docs.google.com/document/d/10ufrI9g8cx-V9Lh-rXLY1jzcHyyny8PYsBotIVFn7yA/edit# "Clic")-->
 
 
 ## Instalación individual
@@ -11,7 +11,7 @@ Para conocer el proceso de instalación, visite la documentación
 
 [Manual - Windows - Linux](https://docs.google.com/document/d/1izr-fbKyOAAQDG46SpMAZtLytMxGEUdCEVh2VWGik_E/edit "Clic")
 <br>
-[Manual - Docker - Linux](https://docs.google.com/document/d/1y-OJRGuPIA8hicOD8cKy1HMoIZt8xTIPhCz4FwFDg8E/edit "Clic")
+[Manual - Docker - Linux](https://docs.google.com/document/d/1eKZwozEZkDKjYMSkQG_oFdMbnMVYlMfkQK-BfCNTm5w/edit?usp=sharing "Clic")
 <br>
 
 ## Manejo del facturador
@@ -67,4 +67,5 @@ Guía generar backup: [Guía](https://drive.google.com/open?id=15dD0KPmDPIeM5y6Q
 Regenerar documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_IyvEiQ2NSaiW_rsBhVNbK7YD-_l1kbrEGwQ "Clic")<br>
 Configuracion de correo electrónico emisor: [Guía](https://docs.google.com/document/d/1sBXGgKZwcgKZTMTT_qQldpRT13jzEL4Q1S_yPpY-nOo/edit?usp=sharing "Clic")<br>
 Acceso red local - laragon: [Guía](https://docs.google.com/document/d/13kOE5N5LJtCJIr3hswrfNgBYxi9wx07YwUCrAfgyCoQ/edit "Clic")<br>
+Guía incrementar espacio disco: [Guía](https://docs.google.com/document/d/1hpEQUs9OFha_35yyLb1cMKeluD-dEku5lQsQ3TJFib8/edit "Clic")<br>
 
