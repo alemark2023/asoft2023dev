@@ -4,6 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Modules\BusinessTurn\Models\DocumentHotel;
 
 class Document extends ModelTenant
 {
@@ -60,12 +61,15 @@ class Document extends ModelTenant
         'has_xml',
         'has_pdf',
         'has_cdr',
+        'has_prepayment',
         'data_json',
         'send_server',
         'shipping_status',
         'sunat_shipping_status',
         'query_status',
         'total_plastic_bag_taxes',
+        'sale_note_id'
+
     ];
 
     protected $casts = [
@@ -257,12 +261,16 @@ class Document extends ModelTenant
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
-
+ 
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);
     }
 
+    public function hotel()
+    {
+        return $this->hasOne(DocumentHotel::class);
+    }
 
     public function getNumberFullAttribute()
     {
@@ -296,6 +304,11 @@ class Document extends ModelTenant
     {
         $user = auth()->user();         
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
+
+    public function scopeWhereNotSent($query)
+    {
+        return  $query->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d')); 
     }
 
     public function affected_documents()

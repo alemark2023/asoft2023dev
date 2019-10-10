@@ -87,15 +87,23 @@ class PersonController extends Controller
 
     public function destroy($id)
     {
-        $person = Person::findOrFail($id);
-        $person->delete();
-        $person->status = 0;
-        $person->save();
+        try {            
+            
+            $person = Person::findOrFail($id);
+            $person_type = ($person->type == 'customers') ? 'Cliente':'Proveedor';
+            $person->delete(); 
 
-        return [
-            'success' => true,
-            'message' => 'Cliente eliminado con éxito'
-        ];
+            return [
+                'success' => true,
+                'message' => $person_type.' eliminado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => "El {$person_type} esta siendo usado por otros registros, no puede eliminar"] : ['success' => false,'message' => "Error inesperado, no se pudo eliminar el {$person_type}"];
+
+        }
+        
     }
 
     public function import(Request $request)

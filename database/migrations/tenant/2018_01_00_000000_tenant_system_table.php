@@ -26,7 +26,7 @@ class TenantSystemTable extends Migration
             ['id' => '07', 'description' => 'Observado'],
             ['id' => '09', 'description' => 'Rechazado'],
             ['id' => '11', 'description' => 'Anulado'],
-            ['id' => '13', 'description' => 'Porsi anular'],
+            ['id' => '13', 'description' => 'Por anular'],
         ]);
 
         Schema::create('soap_types', function (Blueprint $table) {

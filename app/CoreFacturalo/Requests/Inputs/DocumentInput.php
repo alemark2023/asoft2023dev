@@ -66,6 +66,7 @@ class DocumentInput
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => $inputs['purchase_order'],
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
+            'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'exchange_rate_sale' => $inputs['exchange_rate_sale'],
             'total_prepayment' => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
             'total_discount' => Functions::valueKeyInArray($inputs, 'total_discount', 0),
@@ -84,6 +85,7 @@ class DocumentInput
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
+            'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -94,10 +96,12 @@ class DocumentInput
             'detraction' => self::detraction($inputs),
             'invoice' => $invoice,
             'note' => $note,
+            'hotel' => self::hotel($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
             'data_json' => Functions::valueKeyInArray($inputs, 'data_json'),
+            'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
         ];
     }
@@ -340,6 +344,13 @@ class DocumentInput
         return null;
     }
 
+
+    private static function hotel($inputs)
+    {
+        // dd($inputs);
+        return $inputs['hotel'];
+    }
+
     private static function invoice($inputs)
     {
         $operation_type_id = $inputs['operation_type_id'];
@@ -362,19 +373,35 @@ class DocumentInput
         $note_description = $inputs['note_description'];
         $affected_document_id = $inputs['affected_document_id'];
 
-        $affected_document = Document::find($affected_document_id);
+        $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
 
         $type = ($document_type_id === '07')?'credit':'debit';
 
+        if(!$data_affected_document){
+
+            $affected_document = Document::find($affected_document_id);
+            $group_id = $affected_document->group_id;
+            $$affected_document_id = $affected_document->id;
+
+        }else{
+
+            $affected_document_id = null;
+            $group_id = ($data_affected_document['document_type_id'] == '01') ? '01' : '02';
+
+        }
+
+
         return [
             'type' => $type,
-            'group_id' => $affected_document->group_id,
+            // 'group_id' => $affected_document->group_id,
+            'group_id' => $group_id,
             'note' => [
                 'note_type' => $type,
                 'note_credit_type_id' => ($type === 'credit')?$note_credit_or_debit_type_id:null,
                 'note_debit_type_id' => ($type === 'debit')?$note_credit_or_debit_type_id:null,
                 'note_description' => $note_description,
-                'affected_document_id' => $affected_document->id
+                'affected_document_id' => $affected_document_id,
+                'data_affected_document' => $data_affected_document
             ]
         ];
     }

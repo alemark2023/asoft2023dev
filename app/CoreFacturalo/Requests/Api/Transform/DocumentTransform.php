@@ -41,6 +41,7 @@ class DocumentTransform
             'total_taxes' => Functions::valueKeyInArray($totals, 'total_impuestos'),
             'total_value' => Functions::valueKeyInArray($totals, 'total_valor'),
             'total' => Functions::valueKeyInArray($totals, 'total_venta'),
+            'has_prepayment' => Functions::valueKeyInArray($inputs, 'pago_anticipado',0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -52,12 +53,14 @@ class DocumentTransform
             'legends' => LegendTransform::transform($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
             'actions' => ActionTransform::transform($inputs),
+            'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
+            'payments' => self::payments($inputs),
             'data_json' => $inputs
         ];
 
         $inputs_transform = self::invoice($inputs_transform, $inputs);
         $inputs_transform = self::note($inputs_transform, $inputs);
-
+        
         return $inputs_transform;
     }
 
@@ -69,6 +72,8 @@ class DocumentTransform
                 $items[] = [
                     'internal_id' => $row['codigo_interno'],
                     'description' => $row['descripcion'],
+                    'name' => Functions::valueKeyInArray($row, 'nombre'),
+                    'second_name' => Functions::valueKeyInArray($row, 'nombre_secundario'),
                     'item_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_item', '01'),
                     'item_code' => Functions::valueKeyInArray($row, 'codigo_producto_sunat'),
                     'item_code_gs1' => Functions::valueKeyInArray($row, 'codigo_producto_gsl'),
@@ -270,7 +275,45 @@ class DocumentTransform
             $inputs_transform['note_credit_or_debit_type_id'] = Functions::valueKeyInArray($inputs, 'codigo_tipo_nota');
             $inputs_transform['note_description'] = Functions::valueKeyInArray($inputs, 'motivo_o_sustento_de_nota');
             $inputs_transform['affected_document_external_id'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'external_id');
+
+            if(!$inputs_transform['affected_document_external_id']){
+                
+
+                $inputs_transform['data_affected_document']['number'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'numero_documento');
+                $inputs_transform['data_affected_document']['series'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'serie_documento');
+                $inputs_transform['data_affected_document']['document_type_id'] = Functions::valueKeyInArray($inputs['documento_afectado'], 'codigo_tipo_documento');
+
+                // dd($inputs);
+            }
         }
         return $inputs_transform;
     }
+
+
+    private static function payments($inputs)
+    {
+        if(in_array($inputs['codigo_tipo_documento'], ['01', '03'])) {
+
+            $payments = [];
+
+            if(key_exists('pagos', $inputs)) {
+
+                foreach ($inputs['pagos'] as $row) {
+                    $payments[] = [
+                        'date_of_payment' => Functions::valueKeyInArray($inputs, 'fecha_de_emision'),
+                        'payment_method_type_id' => $row['codigo_metodo_pago'],
+                        'reference' => Functions::valueKeyInArray($row, 'referencia'), 
+                        'payment' => Functions::valueKeyInArray($row, 'monto', 0), 
+                    ];
+                } 
+
+            }
+
+            return $payments;
+
+        } 
+
+        return [];
+    }
+
 }

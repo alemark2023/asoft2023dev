@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Dashboard\Helpers\DashboardSalePurchase;
 use Modules\Dashboard\Helpers\DashboardView;
+use Modules\Dashboard\Helpers\DashboardStock;
 
 class DashboardController extends Controller
 {
@@ -39,10 +40,15 @@ class DashboardController extends Controller
        ];
     }
 
-    public function data_aditional()
+    public function data_aditional(Request $request)
     {
         return [
-            'data' => (new DashboardSalePurchase())->data(),
+            'data' => (new DashboardSalePurchase())->data($request->all()),
         ];
+    }
+
+    public function stockByProduct(Request $request)
+    {
+        return  (new DashboardStock())->data($request);
     }
 }

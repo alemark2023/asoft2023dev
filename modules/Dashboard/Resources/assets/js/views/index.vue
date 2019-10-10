@@ -214,7 +214,11 @@
                                         <div class="summary">
                                             <div class="row">
                                                 <div class="col-md-12 m-b-10">
-                                                    <h2 class="card-title">Compras</h2>
+                                                    <h2 class="card-title">Compras
+                                                        <el-tooltip class="item" effect="dark" content="Aplica filtro por establecimiento" placement="top-start">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </el-tooltip>
+                                                    </h2>
                                                 </div> 
                                                 <div class="col-lg-4">
                                                     <div class="summary">
@@ -315,6 +319,11 @@
                     </div>
 
                     <div class="col-xl-12">
+                        
+                        <dashboard-stock></dashboard-stock>
+                    </div>
+
+                    <div class="col-xl-12">
                         <section class="card">
                             <div class="card-body">
                                 <h2 class="card-title">Por cobrar</h2>
@@ -387,10 +396,11 @@
 
     import DocumentPayments from '../../../../../../resources/js/views/tenant/documents/partials/payments.vue'
     import SaleNotePayments from '../../../../../../resources/js/views/tenant/sale_notes/partials/payments.vue'
+    import DashboardStock from './partials/dashboard_stock.vue'
 
     export default {
         props: ['typeUser'],
-        components: {DocumentPayments, SaleNotePayments},
+        components: {DocumentPayments, SaleNotePayments,DashboardStock},
         data() {
             return {
                 resource: 'dashboard',
@@ -440,10 +450,9 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                 });
             await this.loadAll();
-            await this.loadDataAditional();
 
             this.$eventHub.$on('reloadDataUnpaid', () => {
-                this.loadUnpaid()
+                this.loadAll()
             })
         },
         methods: {
@@ -491,6 +500,7 @@
             loadAll() {
                 this.loadData();
                 this.loadUnpaid();
+                this.loadDataAditional();
             },
             loadData() {
                 this.$http.post(`/${this.resource}/data`, this.form)
@@ -501,7 +511,7 @@
                     });
             },
             loadDataAditional() {
-                this.$http.get(`/${this.resource}/data_aditional`)
+                this.$http.post(`/${this.resource}/data_aditional`, this.form)
                     .then(response => { 
                         this.purchase = response.data.data.purchase;
                         this.items_by_sales = response.data.data.items_by_sales;

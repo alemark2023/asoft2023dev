@@ -5,7 +5,7 @@ namespace App\Models\Tenant;
 
 class Cash extends ModelTenant
 {
-    protected $with = ['cash_documents'];
+    // protected $with = ['cash_documents'];
 
     protected $table = 'cash';
 
@@ -29,10 +29,16 @@ class Cash extends ModelTenant
         return $this->belongsTo(User::class);
     }
 
+    //obtiene documentos y notas venta
     public function cash_documents()
     {
         return $this->hasMany(CashDocument::class);
     }
  
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();         
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
  
 }

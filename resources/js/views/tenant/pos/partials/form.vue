@@ -27,13 +27,48 @@
                                         <div class="col-md-9"> 
                                             <div class="row">
 
-                                                <div class="short-div col-md-8"> 
+                                                <!-- <div class="short-div col-md-6"> 
+                                                    <div class="form-group" :class="{'has-danger': errors.name}">
+                                                        <label class="control-label">Nombre <span class="text-danger">*</span></label>
+                                                        <el-input v-model="form.name" dusk="name"></el-input>
+                                                        <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                                                    </div>
+                                                </div> -->
+
+                                                <div class="short-div col-md-6"> 
+                                                    <div class="form-group" :class="{'has-danger': errors.description}">
+                                                        <label class="control-label">Nombre<span class="text-danger">*</span></label>
+                                                        <el-input v-model="form.description" dusk="description"></el-input>
+                                                        <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="short-div col-md-6"> 
+                                                    <div class="form-group" :class="{'has-danger': errors.second_name}">
+                                                        <label class="control-label">Nombre secundario</label>
+                                                        <el-input v-model="form.second_name" dusk="second_name"></el-input>
+                                                        <small class="form-control-feedback" v-if="errors.second_name" v-text="errors.second_name[0]"></small>
+                                                    </div>
+                                                </div>
+
+                                                <!-- <div class="short-div col-md-8"> 
                                                     <div class="form-group" :class="{'has-danger': errors.description}">
                                                         <label class="control-label">Descripción <span class="text-danger">*</span></label>
                                                         <el-input v-model="form.description" dusk="description"></el-input>
                                                         <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                     </div>
+                                                </div> -->
+
+                                                
+                                                <div class="short-div col-md-8"> 
+                                                    <div class="form-group" :class="{'has-danger': errors.name}">
+                                                        <label class="control-label">Descripción</label>
+                                                        <el-input v-model="form.name" dusk="name"></el-input>
+                                                        <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                                                    </div>
                                                 </div>
+
+
                                                 <div class="short-div col-md-4">
                                                     <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                                                         <label class="control-label">Unidad</label>
@@ -270,6 +305,8 @@
                     item_code: null,
                     item_code_gs1: null,
                     description: null,
+                    second_name:null,
+                    name:null,
                     unit_type_id: 'NIU',
                     currency_type_id: 'PEN',
                     sale_unit_price: 0,

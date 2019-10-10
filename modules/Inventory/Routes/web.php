@@ -4,7 +4,7 @@ $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
-        Route::middleware('auth')->group(function() {
+        Route::middleware(['auth', 'redirect.module'])->group(function() {
             // Config inventory
 
             Route::prefix('warehouses')->group(function () {
@@ -22,8 +22,10 @@ if($hostname) {
                 Route::get('records', 'InventoryController@records');
                 Route::get('columns', 'InventoryController@columns');
                 Route::get('tables', 'InventoryController@tables');
+                Route::get('tables/transaction/{type}', 'InventoryController@tables_transaction');
                 Route::get('record/{inventory}', 'InventoryController@record');
                 Route::post('/', 'InventoryController@store');
+                Route::post('/transaction', 'InventoryController@store_transaction');
                 Route::post('move', 'InventoryController@move');
                 Route::post('remove', 'InventoryController@remove');
                 Route::get('initialize', 'InventoryController@initialize'); 
@@ -36,7 +38,7 @@ if($hostname) {
                 Route::post('inventory/excel', 'ReportInventoryController@excel')->name('reports.inventory.report_excel');
 
                 Route::get('kardex', 'ReportKardexController@index')->name('reports.kardex.index');
-                Route::post('kardex/search', 'ReportKardexController@search')->name('reports.kardex.search');
+                Route::get('kardex/search', 'ReportKardexController@search')->name('reports.kardex.search');
                 Route::post('kardex/pdf', 'ReportKardexController@pdf')->name('reports.kardex.pdf');
                 Route::post('kardex/excel', 'ReportKardexController@excel')->name('reports.kardex.report_excel');
             });

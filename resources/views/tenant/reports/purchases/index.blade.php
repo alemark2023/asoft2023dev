@@ -48,10 +48,15 @@
                                         <th class="">Número</th>
                                         <th class="">F. Emisión</th>
                                         <th class="">F. Vencimiento</th>
+
                                         <th class="">Cliente</th>
                                         <th class="">RUC</th>
                                         <th class="">F. Pago</th>
                                         <th class="">Estado</th>
+                                        <th class="" >T.Exonerado</th>
+
+                                        <th class="" >T.Inafecta</th>
+                                        <th class="" >T.Gratuito</th>
                                         <th class="">Total Gravado</th>
                                         <th class="">Total IGV</th>
                                         <th class="">Total</th>
@@ -65,10 +70,15 @@
                                         <td>{{$value->series}}-{{$value->number}}</td>
                                         <td>{{$value->date_of_issue->format('Y-m-d')}}</td>
                                         <td>{{$value->date_of_due->format('Y-m-d')}}</td>
+
                                         <td>{{$value->supplier->name}}</td>
                                         <td>{{$value->supplier->number}}</td>
                                         <td>{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
                                         <td>{{$value->state_type->description}}</td>
+                                        <td>{{ $value->total_exonerated}}</td>
+
+                                        <td>{{ $value->total_unaffected}}</td>
+                                        <td>{{ $value->total_free}}</td>
                                         <td>{{ $value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
                                         <td>{{ $value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
                                         <td>{{ $value->state_type_id == '11' ? 0 : $value->total}}</td>

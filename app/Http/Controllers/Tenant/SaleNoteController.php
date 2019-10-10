@@ -14,6 +14,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
+use App\Http\Resources\Tenant\SaleNoteResource2;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
 use App\Models\Tenant\Catalogs\DocumentType;  
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,9 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\PaymentMethodType;
+use App\Mail\Tenant\SaleNoteEmail;
+use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class SaleNoteController extends Controller
 {
@@ -48,9 +52,9 @@ class SaleNoteController extends Controller
     }
 
 
-    public function create()
+    public function create($id = null)
     {
-        return view('tenant.sale_notes.form');
+        return view('tenant.sale_notes.form', compact('id'));
     }
 
     public function columns()
@@ -63,6 +67,7 @@ class SaleNoteController extends Controller
     public function records(Request $request)
     {
         $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()
                             ->latest();
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
@@ -102,7 +107,13 @@ class SaleNoteController extends Controller
                          'charge_types','company','payment_method_types');
     }
  
-    
+    public function changed($id)
+    {
+        $sale_note = SaleNote::find($id);
+        $sale_note->changed = true;
+        $sale_note->save();
+    }
+
 
     public function item_tables()
     {
@@ -126,22 +137,39 @@ class SaleNoteController extends Controller
         return $record;
     }
 
+    public function record2($id)
+    {
+        $record = new SaleNoteResource2(SaleNote::findOrFail($id));
+
+        return $record;
+    }
+
     public function store(SaleNoteRequest $request)
     {
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
-            $this->sale_note =  SaleNote::create($data);
+            $this->sale_note =  SaleNote::updateOrCreate(
+                ['id' => $request->input('id')],
+                $data);
+
+//            $this->sale_note =  SaleNote::create($data);
+            $this->sale_note->items()->delete();
+            $this->sale_note->payments()->delete();
             foreach ($data['items'] as $row)
             {
                 $this->sale_note->items()->create($row);
             }     
+            //pagos
+            foreach ($data['payments'] as $row) {
+                $this->sale_note->payments()->create($row);
+            } 
 
             $this->setFilename();
-            // $this->createPdf($this->sale_note, 'a4', $this->sale_note->filename);
+            $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
 
-        });     
+        });   
 
         return [
             'success' => true,
@@ -216,11 +244,12 @@ class SaleNoteController extends Controller
         
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
          
-        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58') OR ($format_pdf === 'ticket_80')) {
+        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
  
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
             
+            $company_logo      = ($this->company->logo) ? 40 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
@@ -234,6 +263,7 @@ class SaleNoteController extends Controller
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
+            $payments     = $this->document->payments()->count() * 2;
 
             $extra_by_item_description = 0;
             $discount_global = 0;
@@ -252,9 +282,11 @@ class SaleNoteController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    120 +
+                    30 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
                     ($discount_global * 3) +
+                    $company_logo +
+                    $payments +
                     $company_name +
                     $company_address +
                     $company_number +
@@ -364,6 +396,7 @@ class SaleNoteController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_igv' => (bool) $row->has_igv,
                         'warehouses' => collect($row->warehouses)->transform(function($row) {
                             return [
                                 'warehouse_id' => $row->warehouse->id,
@@ -403,5 +436,29 @@ class SaleNoteController extends Controller
 
         return compact('customers');
     }
+
+    public function option_tables()
+    {
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id',$establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+
+        return compact('series', 'document_types_invoice');
+    }
+
+    public function email(Request $request)
+    {
+        $company = Company::active();
+        $record = SaleNote::find($request->input('id'));
+        $customer_email = $request->input('customer_email');
+
+        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+
+        return [
+            'success' => true
+        ];
+    }
+
+
  
 }

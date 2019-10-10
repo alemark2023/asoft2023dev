@@ -124,36 +124,65 @@
                             </div>
                             <div class="col-lg-2 mt-2 mb-2"  v-if="form.document_type_id=='03'">
                                 <div class="form-group" > 
-                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold">¿Es venta por cobrar?</el-checkbox>
+                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold" @change="changeIsReceivable">¿Es venta por cobrar?</el-checkbox>
                                 </div>
                             </div> 
                         </div>
 
-                        <div class="row">
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
-                                    <label class="control-label">Método de pago</label>
-                                    <el-select v-model="form_payment.payment_method_type_id" >
-                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                    <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
-                                </div>
+                        <div class="row" >
+                            <div class="col-lg-8" v-if="!is_receivable">
+
+                                <table>
+                                <thead>
+                                    <tr width="100%">
+                                        <th v-if="form.payments.length>0">Método de pago</th>
+                                        <th v-if="form.payments.length>0">Referencia</th>
+                                        <th v-if="form.payments.length>0">Monto</th>
+                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                        <td>
+                                            <div class="form-group mb-2 mr-2">
+                                                <el-select v-model="row.payment_method_type_id">
+                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2"  >
+                                                <el-input v-model="row.reference"></el-input>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2" >
+                                                <el-input v-model="row.payment"></el-input>
+                                            </div>
+                                        </td>
+                                        <td class="series-table-actions text-center"> 
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td> 
+                                        <br>
+                                    </tr>
+                                </tbody> 
+                            </table> 
+                            
+
                             </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.reference}">
-                                    <label class="control-label">Referencia</label> 
-                                    <el-input v-model="form_payment.reference"></el-input>                           
-                                    <small class="form-control-feedback" v-if="errors.reference" v-text="errors.reference[0]"></small>
-                                </div>
+                            
+                            <div class="col-lg-4 mt-3" >
+                                <el-checkbox v-model="form.has_prepayment"><strong>¿Es un pago anticipado?</strong></el-checkbox>
                             </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.payment}">
-                                    <label class="control-label">Monto</label>
-                                    <el-input v-model="form_payment.payment"></el-input> 
-                                    <small class="form-control-feedback" v-if="errors.payment" v-text="errors.payment[0]"></small>
-                                </div>
+
+                            <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('hotel')">
+                                <a href="#" @click.prevent="clickAddDocumentHotel" class="text-center font-weight-bold text-info">[+ Datos personales para reserva de hospedaje]</a>
                             </div>
+
                         </div>
+
 
                         <div class="row mt-2">
                             <div class="col-md-12">
@@ -346,7 +375,7 @@
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
-                           :user="user"
+                           :typeUser="typeUser"
                            @add="addRow"></document-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -358,6 +387,13 @@
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
                           :showClose="false"></document-options>
+
+        
+        <document-hotel-form   
+            :showDialog.sync="showDialogFormHotel"
+            :hotel="form.hotel"
+            @addDocumentHotel="addDocumentHotel" 
+            ></document-hotel-form>
     </div>
 </template>
 
@@ -373,13 +409,15 @@
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
+    import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
 
     export default {
-        // props: ['is_contingency'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo},
+        props: ['typeUser'],
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm},
         mixins: [functions, exchangeRate],
         data() {
             return {
+                showDialogFormHotel:false,
                 recordItem: null,
                 resource: 'documents',
                 showDialogAddItem: false,
@@ -395,6 +433,7 @@
                 discount_types: [],
                 charges_types: [],
                 all_customers: [],                
+                business_turns: [],                
                 form_payment: {},
                 document_types_guide: [],
                 customers: [],
@@ -413,19 +452,20 @@
                 loading_search:false,
                 is_amount:true,
                 enabled_discount_global:false,
-                user: {},
+                user: null,
                 is_receivable:false,
                 is_contingency: false,
             }
         },
         async created() {
-            //console.log(this.is_contingency )
+            // console.log(this.typeUser )
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.document_types = response.data.document_types_invoice;
                     this.document_types_guide = response.data.document_types_guide;
                     this.currency_types = response.data.currency_types
+                    this.business_turns = response.data.business_turns
                     this.establishments = response.data.establishments
                     this.operation_types = response.data.operation_types
                     this.all_series = response.data.series
@@ -453,7 +493,33 @@
             })
         },
         methods: {
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
+            },
+            clickAddDocumentHotel(){
+                this.showDialogFormHotel = true
+            },
+            
+            addDocumentHotel(hotel) {
+                this.form.hotel = hotel 
+                // console.log(this.form.hotel)
+            },
+            changeIsReceivable(){
 
+            },
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    document_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: 0,
+                });
+            },            
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
+            },
             ediItem(row, index)
             {
                 row.indexi = index
@@ -519,21 +585,16 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payments: [],
                     additional_information:null,
+                    has_prepayment:false,
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    hotel: {}
                 }
-
-                this.form_payment = {
-                    id: null,
-                    document_id: null,
-                    date_of_payment:  moment().format('YYYY-MM-DD'),
-                    payment_method_type_id: '01',
-                    reference: null,
-                    payment: null,
-                }
-
+ 
+                this.clickAddPayment()
                 this.is_receivable = false
                 this.total_global_discount = 0
                 this.is_amount = true
@@ -569,11 +630,16 @@
             },
             changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
-                this.form_payment.date_of_payment = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
             },
+            assignmentDateOfPayment(){
+                this.form.payments.forEach((payment)=>{
+                    payment.date_of_payment = this.form.date_of_issue
+                })
+            },
+
             filterSeries() {
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id,
@@ -684,7 +750,6 @@
                 this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
                 
                 if(this.enabled_discount_global) this.discountGlobal()
-                this.form_payment.payment = this.form.total
 
             },
             changeTypeDiscount(){
@@ -726,17 +791,21 @@
 
                 // console.log(this.form.discounts)
             }, 
-            submit() {
-                
-                if(this.form_payment.payment > parseFloat(this.form.total) || this.form_payment.payment < 0) {
-                    return this.$message.error('El monto ingresado supera al monto a pagar o es incorrecto.');
+            async submit() {
+               
+                if(this.is_receivable){
+                    this.form.payments = []
+                }else{                    
+                    let validate = await this.validate_payments()
+                    if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                        return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                    }
                 }
+
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
-                        this.form_payment.document_id = response.data.data.id;
-                        this.document_payment()
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
@@ -757,29 +826,29 @@
                     this.loading_submit = false;
                 });
             },
-            document_payment(){
+            validate_payments(){
 
-                if(!this.is_receivable){
+                //eliminando items de pagos
+                for (let index = 0; index < this.form.payments.length; index++) {
+                    if(parseFloat(this.form.payments[index].payment) === 0)
+                        this.form.payments.splice(index, 1)                    
+                }   
 
-                    this.$http.post(`/document_payments`, this.form_payment)
-                    .then(response => {
-                        if (response.data.success) { 
-                        } else {
-                            this.$message.error(response.data.message);
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.records[index].errors = error.response.data;
-                        } else {
-                            console.log(error);
-                        }
-                    })
+                let error_by_item = 0
+                let acum_total = 0
 
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
                 }
-                
 
             },
+ 
             close() {
                 location.href = (this.is_contingency) ? `/contingencies` : `/${this.resource}`
             },

@@ -9,12 +9,28 @@
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select :disabled="recordItem != null" v-model="form.item_id" @change="changeItem"  filterable
-                                       popper-class="el-select-items"
-                                       dusk="item_id"
-                                       @visible-change="focusTotalItem">
-                                <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                            </el-select>
+
+                            <template v-if="!search_item_by_barcode">
+                                <el-select :disabled="recordItem != null" v-model="form.item_id" @change="changeItem"  filterable
+                                        popper-class="el-select-items"
+                                        dusk="item_id"
+                                        @visible-change="focusTotalItem">
+                                    <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                </el-select>
+                            </template>
+                            <template v-else>
+                                <el-select :disabled="recordItem != null" v-model="form.item_id"  
+                                        @change="changeItem"
+                                        filterable
+                                        :filter-method="filterMethod"   
+                                        popper-class="el-select-items"
+                                        dusk="item_id"
+                                        @visible-change="focusTotalItem">
+                                    <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                </el-select>
+                            </template>
+                            
+                            <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null">Buscar por código de barra</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
@@ -28,17 +44,17 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01" :disabled="form.item.calculate_quantity"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="userType === 'seller'">
+                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="typeUser === 'seller'">
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
@@ -86,9 +102,16 @@
                             <!--<small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>-->
                         <!--</div>-->
                     <!--</div>-->
-                    <div class="col-md-3 center-el-checkbox">
+                    <div class="col-md-4 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.has_igv}">
                             <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
+                        </div>
+                    </div> 
+                    <div class="col-md-2 pl-6" v-if="showListStock">
+                        <div class="form-group">
+                            <label class="control-label">Stock</label><br>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></button>
+
                         </div>
                     </div> 
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
@@ -114,7 +137,7 @@
                             <small class="form-control-feedback" v-if="errors.item_unit_type_id" v-text="errors.item_unit_type_id[0]"></small>
                         </div>
                     </div>-->
-                    <div class="col-md-12 mt-2" v-if="form.item.warehouses">
+                    <!-- <div class="col-md-12 mt-2" v-if="form.item.warehouses">
                         <table class="table">
                             <thead>
                             <tr>
@@ -129,7 +152,7 @@
                             </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </div> -->
                     <div class="col-md-12 mt-2">
                         <el-collapse  v-model="activePanel">
                             <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1">
@@ -358,6 +381,12 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
+
+                   
+        <warehouses-detail 
+                :showDialog.sync="showWarehousesDetail"
+                :warehouses="warehousesDetail">
+            </warehouses-detail>
     </el-dialog>
 </template>
 <style>
@@ -371,10 +400,11 @@
 
     import ItemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
+    import WarehousesDetail from '../../items/partials/warehouses.vue'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'userType'],
-        components: {ItemForm},
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
+        components: {ItemForm, WarehousesDetail},
         data() {
             return {
                 titleAction: '',
@@ -397,10 +427,14 @@
                 activePanel: 0,
                 total_item: 0,
                 item_unit_types: [],
+                showWarehousesDetail: false,
+                warehousesDetail:[],
+                showListStock:false,
+                search_item_by_barcode:false,
                 //item_unit_type: {}
             }
         },
-        created() {
+        created() { 
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                // console.log('tablas new edit')
@@ -420,25 +454,22 @@
             })
         },
         methods: {
-             selectedPrice(row)
-            {
-                let valor = 0
-                switch(row.price_default)
-                {
-                    case 1:
-                        valor = row.price1
-                        break
-                    case 2:
-                         valor = row.price2
-                        break
-                    case 3:
-                         valor = row.price3
-                        break
+            filterMethod(query){
+                 
+                let item = _.find(this.items, {'internal_id': query});
 
+                if(item){ 
+                    this.form.item_id = item.id
+                    this.changeItem()
                 }
+                // console.log(item)
+            },
+            clickWarehouseDetail(){
 
-                this.form.unit_price_value = valor
-                this.calculateQuantity()
+                let item = _.find(this.items, {'id': this.form.item_id});
+
+                this.warehousesDetail = item.warehouses
+                this.showWarehousesDetail = true
             },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
@@ -464,11 +495,8 @@
                     discounts: [],
                     attributes: [],
                     has_igv: null,
-<<<<<<< HEAD
-                    item_unit_types: []
-=======
+                    item_unit_types: [],
                     has_plastic_bag_taxes:false
->>>>>>> 834e088a74a30e449b98e830f1e5af66c68b01bd
                 };
                 
                 this.activePanel = 0;
@@ -486,7 +514,6 @@
                 let operation_type = _.find(this.operation_types, {id: this.operationTypeId})
                 this.affectation_igv_types = _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
                 if (this.recordItem) {
-                    console.log('form updasssste')
                     this.form.item_id = this.recordItem.item_id
                     this.changeItem()
                     this.form.quantity = this.recordItem.quantity
@@ -560,10 +587,13 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price_value = this.form.item.sale_unit_price;
+
                 this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
                 this.cleanTotalItem();
+                this.showListStock = true
+
                 //this.item_unit_types = this.form.item.item_unit_types;
                 //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
             },
@@ -574,7 +604,7 @@
             },
             calculateQuantity() {
                 if(this.form.item.calculate_quantity) {
-                    console.log('entro')
+                    //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
                 }
             },
@@ -582,6 +612,7 @@
                 this.total_item = null  
             }, 
             clickAddItem() {
+                
                 if (this.validateTotalItem().total_item) return;
                 
                 let unit_price = (this.form.has_igv)?this.form.unit_price_value:this.form.unit_price_value*1.18;
@@ -638,7 +669,32 @@
                 
                 this.form.unit_price_value = price;
                 this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
-            }
+            },
+            selectedPrice(row)
+            {
+                
+                
+                let valor = 0
+                switch(row.price_default)
+                {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                         valor = row.price2
+                        break
+                    case 3:
+                         valor = row.price3
+                        break
+
+                }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
+                this.calculateQuantity()
+            },
         }
     }
 

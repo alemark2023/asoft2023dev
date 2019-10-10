@@ -66,7 +66,14 @@
     </tr>
     @endif
 </table>
-
+<table class="full-width mt-3">
+    @if ($document->description)
+        <tr>
+            <td width="15%" class="align-top">Descripción: </td>
+            <td width="85%">{{ $document->description }}</td>
+        </tr>
+    @endif
+</table>  
 {{-- <table class="full-width mt-3">
     @if ($document->purchase_order)
         <tr>

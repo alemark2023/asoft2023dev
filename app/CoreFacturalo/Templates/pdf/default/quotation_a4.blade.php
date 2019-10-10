@@ -67,15 +67,14 @@
     @endif
 </table>
 
-{{-- <table class="full-width mt-3">
-    @if ($document->purchase_order)
+<table class="full-width mt-3">
+    @if ($document->description)
         <tr>
-            <td width="25%">Orden de Compra: </td>
-            <td>:</td>
-            <td class="text-left">{{ $document->purchase_order }}</td>
+            <td width="15%" class="align-top">Descripción: </td>
+            <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif
-</table> --}}
+</table>  
 
 @if ($document->guides)
 <br/>

@@ -57,10 +57,10 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="pagination-wrapper">
-                                {{-- {{ $reports->appends(['search' => Session::get('form_document_list')])->render()  }} --}}
-                                {{-- {{$reports->links()}} --}}
-                            </div>
+                            Total {{$reports->total()}}
+                            <label class="pagination-wrapper ml-2">
+                                {{$reports->appends($_GET)->render()}} 
+                            </label>
                         </div>
                     </div>
                     @else

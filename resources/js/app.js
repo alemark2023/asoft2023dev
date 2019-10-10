@@ -73,6 +73,8 @@ Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_ed
 Vue.component('tenant-purchases-items', require('./views/tenant/dispatches/items.vue'));
 Vue.component('tenant-attribute_types-index', require('./views/tenant/attribute_types/index.vue'));
 Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+Vue.component('tenant-calendar-quotation', require('./views/tenant/components/calendarquotations.vue'));
+
 //Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
 Vue.component('tenant-product', require('./views/tenant/components/products.vue'));
 
@@ -102,6 +104,15 @@ Vue.component('tenant-expenses-form', require('../../modules/Expense/Resources/a
 Vue.component('tenant-account-export', require('../../modules/Account/Resources/assets/js/views/account/export.vue'));
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
+
+Vue.component('tenant-documents-not-sent', require('../../modules/Document/Resources/assets/js/views/documents/not_sent.vue'));
+Vue.component('tenant-report-purchases-index', require('../../modules/Report/Resources/assets/js/views/purchases/index.vue'));
+Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
+Vue.component('tenant-report-sale_notes-index', require('../../modules/Report/Resources/assets/js/views/sale_notes/index.vue'));
+Vue.component('tenant-report-quotations-index', require('../../modules/Report/Resources/assets/js/views/quotations/index.vue'));
+Vue.component('tenant-report-cash-index', require('../../modules/Report/Resources/assets/js/views/cash/index.vue'));
+Vue.component('tenant-index-configuration', require('../../modules/BusinessTurn/Resources/assets/js/views/configurations/index.vue'));
+Vue.component('tenant-report-document_hotels-index', require('../../modules/Report/Resources/assets/js/views/document_hotels/index.vue'));
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));

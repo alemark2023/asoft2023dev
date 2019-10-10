@@ -267,6 +267,21 @@ class PurchaseController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_perception' => (bool) $row->has_perception,
+                        'percentage_perception' => $row->percentage_perception,
+                        'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'description' => "{$row->description}",
+                                'item_id' => $row->item_id,
+                                'unit_type_id' => $row->unit_type_id,
+                                'quantity_unit' => $row->quantity_unit,
+                                'price1' => $row->price1,
+                                'price2' => $row->price2,
+                                'price3' => $row->price3,
+                                'price_default' => $row->price_default,
+                            ];
+                        })
                         // 'warehouses' => collect($row->warehouses)->transform(function($row) {
                         //     return [
                         //         'warehouse_id' => $row->warehouse->id,

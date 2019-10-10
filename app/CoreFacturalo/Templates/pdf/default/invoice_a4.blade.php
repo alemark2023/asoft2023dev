@@ -9,11 +9,15 @@
     $accounts = \App\Models\Tenant\BankAccount::all();
 
     if($document_base) {
-        $affected_document_number = $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT);
+
+        $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
+
     } else {
+        
         $affected_document_number = null;
     }
 
+    $payments = $document->payments;
 
 @endphp
 <html>
@@ -309,6 +313,19 @@
             
             @endforeach
             <br/>
+            @if ($customer->department_id == 16)
+                <br/><br/><br/>                       
+                <div>
+                    <center>
+                        Representación impresa del Comprobante de Pago Electrónico. 
+                        <br/>Esta puede ser consultada en:
+                        <br/><b>{!! url('/buscar') !!}</b>
+                        <br/> "Bienes transferidos en la Amazonía 
+                        <br/>para ser consumidos en la misma".
+                    </center>
+                </div>
+                <br/>
+            @endif
             @foreach($document->additional_information as $information)
                 @if ($information)
                     @if ($loop->first)
@@ -330,5 +347,24 @@
         </td>
     </tr>
 </table>
+@if($payments->count())
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>PAGOS:</strong> 
+            </td>
+        </tr>
+            @php
+                $payment = 0;
+            @endphp
+            @foreach($payments as $row)
+                <tr>
+                    <td>- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+                </tr> 
+            @endforeach
+        </tr>
+
+    </table>
+@endif
 </body>
 </html>

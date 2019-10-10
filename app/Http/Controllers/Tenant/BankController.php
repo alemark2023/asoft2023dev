@@ -6,6 +6,7 @@ use App\Http\Requests\Tenant\BankRequest;
 use App\Http\Resources\Tenant\BankCollection;
 use App\Http\Resources\Tenant\BankResource;
 use App\Models\Tenant\Bank;
+use Exception;
 
 class BankController extends Controller
 {
@@ -38,14 +39,20 @@ class BankController extends Controller
 
     public function destroy($id)
     {
-        $bank = Bank::findOrFail($id);
-        //$bank->delete();
-        $bank->active = 0;
-        $bank->save();
+        try {            
+            
+            $bank = Bank::findOrFail($id);
+            $bank->delete(); 
 
-        return [
-            'success' => true,
-            'message' => 'Banco eliminado con éxito'
-        ];
+            return [
+                'success' => true,
+                'message' => 'Banco eliminado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'El banco esta siendo usado por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar el banco'];
+
+        }
     }
 }

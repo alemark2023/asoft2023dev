@@ -39,21 +39,23 @@ class Item extends ModelTenant
         'percentage_of_profit',
 
         'attributes',
+        'has_perception',        
         'percentage_perception',        
         'image',
         'account_id',
         'amount_plastic_bag_taxes',
+        'date_of_due',
         // 'warehouse_id'
     ];
 
-     protected static function boot()
-    {
-        parent::boot();
+    //  protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::addGlobalScope('active', function (Builder $builder) {
-            $builder->where('status', 1);
-        });
-    }
+    //     static::addGlobalScope('active', function (Builder $builder) {
+    //         $builder->where('status', 1);
+    //     });
+    // }
 
     public function getAttributesAttribute($value)
     {

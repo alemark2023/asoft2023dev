@@ -66,20 +66,23 @@
         </div>
         <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
             <div class="row d-flex justify-content-center pt-2">
-                <div class="col-lg-4 col-md-3">
+                <div class="col-lg-6 col-md-6 ">
 
-                    <el-radio-group v-model="form.document_type_id" size="small" class="full" @change="filterSeries">
+                    <el-radio-group v-model="form.document_type_id" size="small"   @change="filterSeries">
                         <el-radio-button label="01" >FACTURA  </el-radio-button>
                         <el-radio-button label="03">BOLETA  </el-radio-button>
+                        <el-radio-button label="NV">N. VENTA  </el-radio-button>
                     </el-radio-group>
                 </div>
 
-                <div class="col-lg-4 col-md-3">
+                <div class="col-lg-2 col-md-2" v-if="form.document_type_id != 'NV'">
 
-                    <el-select v-model="form.series_id" >
+                    <el-select v-model="form.series_id" class="c-width">
                         <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
                         </el-option>
                     </el-select>
+                </div>
+                <div class="col-lg-2 col-md-2" v-else> 
                 </div>
 
                 <div class="col-lg-8">
@@ -100,7 +103,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Ingrese monto</label> 
-                                    <el-input v-model="amount" @input="inputAmount">
+                                    <el-input v-model="amount" @input="inputAmount" :readonly="true">
                                         <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                                     </el-input> 
 
@@ -127,8 +130,37 @@
                         <div class="card-body">
                             <!-- <p class="text-center">Método de Pago</p> -->
                             <div class="input-group mb-3">
-
                                 <div class="col-lg-12 m-bottom">
+                                    <div class="row">
+                                        
+                                        <div class="col-lg-6">
+                                            <h5><strong>Pagos agregados </strong></h5> 
+                                        </div>
+                                        <div class="col-lg-1">
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <button class="btn btn-sm btn-block btn-primary" @click="clickAddPayment()"><i class="fas fa-plus"></i> Agregar</button>
+ 
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 m-bottom" >
+                                    <div class="row"> 
+                                        <template v-for="(pay,index) in form.payments">
+                                            <div class="col-lg-1" :key="pay.id">
+                                                <label>{{index + 1}}.-</label>
+                                            </div> 
+                                            <div class="col-lg-6" :key="pay.id">
+                                                <label>{{getDescriptionPaymentMethodType(pay.payment_method_type_id)}}</label>
+                                            </div> 
+                                            <div class="col-lg-5" :key="pay.id">
+                                                <label><strong>{{currencyTypeActive.symbol}} {{pay.payment}}</strong> </label>
+                                            </div> 
+                                        </template>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-12 m-bottom">
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <label class="control-label" >Método de Pago</label> 
@@ -177,7 +209,7 @@
                                             <button class="btn btn-block btn-secondary"  @click="setAmount(100)" >{{currencyTypeActive.symbol}}100</button>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                  
                             </div>
                         </div>
@@ -199,7 +231,18 @@
             :showDialog.sync="showDialogOptions"
             :recordId="documentNewId" 
             :statusDocument="statusDocument" 
+            :resource="resource_options" 
             ></options-form>
+
+        <multiple-payment-form   
+            :showDialog.sync="showDialogMultiplePayment"
+            :payments="payments"
+            @add="addRow" 
+            ></multiple-payment-form>
+
+        <!-- <sale-notes-options :showDialog.sync="showDialogSaleNote"
+                          :recordId="saleNotesNewId" 
+                          :showClose="true"></sale-notes-options>  -->
 
         <card-brands-form   :showDialog.sync="showDialogNewCardBrand"
                             :external="true"
@@ -216,22 +259,30 @@
 </style>
 
 <script>
+
     import CardBrandsForm from '../../card_brands/form.vue'
-  
+    import SaleNotesOptions from '../../sale_notes/partials/options.vue'  
     import OptionsForm from './options.vue'
+    import MultiplePaymentForm from './multiple_payment.vue'
 
     export default { 
-        components: {OptionsForm, CardBrandsForm},
+        components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm},
 
         props:['form','customer', 'currencyTypeActive', 'exchangeRateSale'],
         data() {
             return {
                 loading_submit: false,
                 showDialogOptions:false,
+                showDialogMultiplePayment:false,
+                showDialogSaleNote:false,
                 showDialogNewCardBrand:false,
                 documentNewId:null,
+                saleNotesNewId:null,
+                resource_options:null,
                 has_card: false,
                 resource: 'pos', 
+                resource_documents: 'documents', 
+                resource_payments: 'document_payments', 
                 amount: 0,
                 difference: 0,
                 button_payment: false,
@@ -244,18 +295,35 @@
                 form_cash_document:{},
                 statusDocument:{},
                 payment_method_types:[],
+                payments:[]
             }
         },
         async created() {
             await this.getTables()  
             this.initFormPayment()
             this.inputAmount()
-            
+            this.form.payments = []
             this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
                 this.reloadDataCardBrands(card_brand_id)
             })
         }, 
         methods: {
+            clickAddPayment(){
+                this.showDialogMultiplePayment = true
+            },
+            
+            addRow(payments) {
+                this.form.payments = payments
+                let acum_payment = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_payment += parseFloat(item.payment)
+                })
+                
+                this.setAmount(acum_payment)
+                
+                // console.log(this.form.payments)
+            },
             reloadDataCardBrands(card_brand_id) {
                 this.$http.get(`/${this.resource}/table/card_brands`).then((response) => {
                     this.cards_brand = response.data
@@ -263,13 +331,19 @@
                     this.changePaymentMethodType()
                 })
             },
+            getDescriptionPaymentMethodType(id){
+                let payment_method_type = _.find(this.payment_method_types,{'id':id})   
+                return payment_method_type.description
+
+            },
             changePaymentMethodType(){
                 let payment_method_type = _.find(this.payment_method_types,{'id':this.form_payment.payment_method_type_id})   
                 this.has_card = payment_method_type.has_card             
                 this.form_payment.card_brand_id = (payment_method_type.has_card) ? this.form_payment.card_brand_id:null
             },
             setAmount(amount){
-                this.amount = parseFloat(this.amount) + parseFloat(amount)
+                // this.amount = parseFloat(this.amount) + parseFloat(amount)
+                this.amount = parseFloat(amount)
                 this.inputAmount()
             },
             inputAmount(){
@@ -298,11 +372,13 @@
                     reference: null,
                     card_brand_id:null,
                     document_id:null,
+                    sale_note_id:null,
                     payment: this.form.total,  
                 } 
 
                 this.form_cash_document = { 
                     document_id:null, 
+                    sale_note_id:null 
                 } 
                  
             }, 
@@ -318,25 +394,50 @@
                 await this.sleep(800); 
                 this.loading_submit = false
                 this.$eventHub.$emit('cancelSale')
+
             },
             sleep(ms) { 
                 return new Promise(resolve => setTimeout(resolve, ms));                
             },
             async clickPayment(){
-                if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+                // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+
+                if (this.form.document_type_id === "NV") {
+                    this.form.prefix = "NV";
+                    this.resource_documents = "sale-notes";
+                    this.resource_payments = "sale_note_payments";
+                    this.resource_options = this.resource_documents;
+                } else {
+                    this.form.prefix = null;
+                    this.resource_documents = "documents";
+                    this.resource_payments = "document_payments";
+                    this.resource_options = this.resource_documents;
+                }
 
                 this.loading_submit = true
-                await this.$http.post(`/documents`, this.form).then(response => {
+                await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
-                        // console.log(response)
-                        this.form_payment.document_id = response.data.data.id;
-                        this.form_cash_document.document_id = response.data.data.id;
-                        this.savePaymentMethod();
-                        this.saveCashDocument();
-                        this.statusDocument = response.data.data.response
-                        this.documentNewId = response.data.data.id;
+
+                        if (this.form.document_type_id === "NV") { 
+                            
+                            // this.form_payment.sale_note_id = response.data.data.id;
+                            this.form_cash_document.sale_note_id = response.data.data.id; 
+
+                        } else { 
+
+                            // this.form_payment.document_id = response.data.data.id;
+                            this.form_cash_document.document_id = response.data.data.id;
+                            this.statusDocument = response.data.data.response
+
+                        }
+
+                        this.documentNewId = response.data.data.id;                        
                         this.showDialogOptions = true;
-                        this.initFormPayment() ;
+                        
+                        // this.savePaymentMethod();
+                        this.saveCashDocument();
+
+                        // this.initFormPayment() ;
                         this.$eventHub.$emit('saleSuccess');
                     }
                     else {
@@ -367,7 +468,7 @@
                     })
             },
             savePaymentMethod(){
-                this.$http.post(`/document_payments`, this.form_payment)
+                this.$http.post(`/${this.resource_payments}`, this.form_payment)
                     .then(response => {
                         if (response.data.success) {
                             // console.log(response)                             

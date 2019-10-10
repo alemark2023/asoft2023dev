@@ -117,11 +117,44 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6" v-if="form.state">
+                        <div class="form-group" >
+                            <label class="control-label">Estado del Contribuyente</label>
+                            <template v-if="form.state == 'ACTIVO'">
+                                <el-alert   :title="`${form.state}`"  type="success"   show-icon :closable="false"></el-alert>
+                            </template>
+                            <template v-else>
+                                <el-alert   :title="`${form.state}`"  type="error"   show-icon :closable="false"></el-alert>
+                            </template>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6" v-if="form.condition">
+                        <div class="form-group" >
+                            <label class="control-label">Condición del Contribuyente</label>
+                            <template v-if="form.condition == 'HABIDO'">
+                                <el-alert   :title="`${form.condition}`"  type="success"   show-icon :closable="false"></el-alert>
+                            </template>
+                            <template v-else>
+                                <el-alert   :title="`${form.condition}`"  type="error"   show-icon :closable="false"></el-alert>
+                            </template>
+                        </div>
+
+                    </div>
+                </div>
                 <div class="row mt-2" v-if="type === 'suppliers'">
-                    <div class="col-md-3 center-el-checkbox">
+                    <div class="col-md-6 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.perception_agent}">
                             <el-checkbox v-model="form.perception_agent">¿Es agente de percepción?</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.perception_agent" v-text="errors.perception_agent[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6" v-if="type === 'suppliers'" v-show="form.perception_agent">
+                        <div class="form-group"  >
+                            <label class="control-label">Porcentaje de percepción</label>
+
+                            <el-input v-model="form.percentage_perception"></el-input>
                         </div>
                     </div>
                 </div>
@@ -217,8 +250,11 @@
                     district_id: null,
                     address: null,
                     telephone: null,
+                    condition: null,
+                    state: null,
                     email: null,
                     perception_agent: false,
+                    percentage_perception:0,
                     more_address: []
                 }
             },
@@ -305,9 +341,11 @@
                 this.form.trade_name = (this.form.identity_document_type_id === '6')?data.nombre_o_razon_social:'';
                 this.form.location_id = data.ubigeo;
                 this.form.address = data.direccion;
-                this.form.department_id = data.ubigeo[0];
-                this.form.province_id = data.ubigeo[1];
-                this.form.district_id = data.ubigeo[2];
+                this.form.department_id = (data.ubigeo) ? data.ubigeo[0]:null;
+                this.form.province_id = (data.ubigeo) ? data.ubigeo[1]:null;
+                this.form.district_id = (data.ubigeo) ? data.ubigeo[2]:null;
+                this.form.condition = data.condicion;
+                this.form.state = data.estado;
 
                 this.filterProvinces()
                 this.filterDistricts()

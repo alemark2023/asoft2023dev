@@ -20,7 +20,7 @@
 @endpush
 
 @section('content')
-    <tenant-documents-invoice :is_contingency="{{ json_encode($is_contingency) }}"></tenant-documents-invoice>
+    <tenant-documents-invoice :is_contingency="{{ json_encode($is_contingency) }}" :type-user="{{json_encode(Auth::user()->type)}}"></tenant-documents-invoice>
 @endsection
 
 @push('scripts')

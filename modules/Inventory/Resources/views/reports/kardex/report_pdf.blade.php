@@ -82,9 +82,10 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Fecha y hora</th>
+                                <th>Fecha y hora transacción</th>
                                 <th>Tipo transacción</th>
                                 <th>Número</th>
+                                <th>Feha emisión</th>
                                 <th>Entrada</th>
                                 <th>Salida</th>
                                 <th>Saldo</th>
@@ -119,14 +120,14 @@
                                     <td class="celda">
                                         @switch($value->inventory_kardexable_type)
                                             @case($models[0])
-                                                {{ "{$value->inventory_kardexable->series}-{$value->inventory_kardexable->number}" }}
+                                                {{ optional($value->inventory_kardexable)->series."-".optional($value->inventory_kardexable)->number }}
                                                 @break
                                             @case($models[1])
-                                                {{"{$value->inventory_kardexable->series}-{$value->inventory_kardexable->number}"}}                                                    
+                                                {{optional($value->inventory_kardexable)->series."-".optional($value->inventory_kardexable)->number}}                                                    
                                                 @break 
                                                 
                                             @case($models[2])
-                                                {{  "{$value->inventory_kardexable->prefix}-{$value->inventory_kardexable->id}" }}                                                    
+                                                {{  optional($value->inventory_kardexable)->prefix."-".optional($value->inventory_kardexable)->id }}                                                    
                                                 @break  
 
                                             @case($models[3])
@@ -136,17 +137,53 @@
 
                                     </td>
                                     <td class="celda">
+
+                                        @switch($value->inventory_kardexable_type)
+                                            @case($models[0])
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                @break
+                                            @case($models[1])
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                @break
+                                            @case($models[2])
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                @break
+                                            @case($models[3])
+                                                {{"-"}}                                                 
+                                                @break  
+                                        @endswitch
+
+
+
+                                    </td>
+                                    @php
+                                        if($value->inventory_kardexable_type == $models[3]){                                             
+                                            if(!$value->inventory_kardexable->type){
+                                                $transaction = Modules\Inventory\Models\InventoryTransaction::findOrFail($value->inventory_kardexable->inventory_transaction_id);
+                                            }
+                                        }                                           
+                                    @endphp
+                                    <td class="celda">
                                         @switch($value->inventory_kardexable_type) 
 
                                             @case($models[0])
                                                 {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
                                                 @break
                                             @case($models[1])
-                                                {{  $value->quantity }}                                                    
+                                                {{ ($value->quantity > 0) ?  $value->quantity:"-"}}                                                    
                                                 @break 
                                                 
                                             @case($models[3])
-                                                {{ ($value->inventory_kardexable->type == 1) ? $value->quantity : "-" }}                                                    
+
+                                                @if($value->inventory_kardexable->type != null)
+
+                                                    {{ ($value->inventory_kardexable->type == 1) ? $value->quantity : "-" }}                                                    
+
+                                                @else
+
+                                                    {{($transaction->type == 'input') ? $value->quantity : "-" }} 
+
+                                                @endif
                                                 @break  
 
                                             @default
@@ -159,12 +196,24 @@
                                         @switch($value->inventory_kardexable_type) 
                                             @case($models[0])
                                                 {{ ($value->quantity < 0) ?  $value->quantity:"-" }}                                                    
-                                                @break  
+                                                @break
+                                            @case($models[1])
+                                                {{ ($value->quantity < 0) ?  $value->quantity:"-"}}                                                    
+                                                @break
                                             @case($models[2])
                                                 {{  $value->quantity }}                                                    
                                                 @break      
                                             @case($models[3])
-                                                {{ ($value->inventory_kardexable->type == 2 || $value->inventory_kardexable->type == 3) ? $value->quantity : "-" }}                                                    
+
+                                                @if($value->inventory_kardexable->type != null)
+
+                                                    {{($value->inventory_kardexable->type == 2 || $value->inventory_kardexable->type == 3) ? $value->quantity : "-" }} 
+
+                                                @else
+
+                                                    {{($transaction->type == 'output') ? $value->quantity : "-" }}  
+
+                                                @endif
                                                 @break  
                                             @default
                                                 {{"-"}}                                                 

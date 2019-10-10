@@ -25,6 +25,7 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\StateType;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
@@ -40,6 +41,8 @@ use Nexmo\Account\Price;
 use Illuminate\Support\Facades\Cache;
 use App\Imports\DocumentsImport;
 use Maatwebsite\Excel\Excel;
+use Modules\BusinessTurn\Models\BusinessTurn;
+
 
 class DocumentController extends Controller
 {
@@ -144,8 +147,9 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get();
-        $user = \auth()->user();
+        $user = auth()->user()->type;
         $payment_method_types = PaymentMethodType::all();
+        $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
@@ -161,7 +165,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global');
+                        'document_types_guide', 'user','payment_method_types','enabled_discount_global','business_turns');
 
     }
 
@@ -203,6 +207,7 @@ class DocumentController extends Controller
                 return [
                     'id' => $row->id,
                     'full_description' => $full_description,
+                    'internal_id' => $row->internal_id,
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
@@ -226,13 +231,13 @@ class DocumentController extends Controller
                             'price3' => $row->price3,
                             'price_default' => $row->price_default,
                         ];
+                    }),
+                    'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        return [
+                            'warehouse_description' => $row->warehouse->description,
+                            'stock' => $row->stock,
+                        ];
                     })
-                    // 'warehouses' => collect($row->warehouses)->transform(function($row) {
-                    //     return [
-                    //         'warehouse_description' => $row->warehouse->description,
-                    //         'stock' => $row->stock,
-                    //     ];
-                    // })
                 ];
             });
 //            return $items;
@@ -527,6 +532,7 @@ class DocumentController extends Controller
         $d_start = $request->d_start;
         $date_of_issue = $request->date_of_issue;
         $document_type_id = $request->document_type_id;
+        $state_type_id = $request->state_type_id;
         $number = $request->number;
         $series = $request->series;
  
@@ -536,6 +542,7 @@ class DocumentController extends Controller
             $records = Document::where('document_type_id', 'like', '%' . $document_type_id . '%')
                             ->where('series', 'like', '%' . $series . '%')
                             ->where('number', 'like', '%' . $number . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
                             ->whereBetween('date_of_issue', [$d_start , $d_end])
                             ->whereTypeUser()
                             ->latest();
@@ -544,6 +551,7 @@ class DocumentController extends Controller
 
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
                             ->where('document_type_id', 'like', '%' . $document_type_id . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
                             ->where('series', 'like', '%' . $series . '%')
                             ->where('number', 'like', '%' . $number . '%')
                             ->whereTypeUser()
@@ -559,12 +567,13 @@ class DocumentController extends Controller
         
         // $customers = $this->table('customers'); 
         $customers = []; 
+        $state_types = StateType::get();
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         // $series = Series::where('contingency', false)->whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
                        
-        return compact( 'customers', 'document_types','series','establishments');
+        return compact( 'customers', 'document_types','series','establishments', 'state_types');
 
     }
 

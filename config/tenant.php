@@ -3,6 +3,7 @@
 return [
     'app_url_base' => env('APP_URL_BASE'),
     'items_per_page' => env('ITEMS_PER_PAGE', 20),
+    'items_per_page_simple_d_table' => env('ITEMS_PER_PAGE_SIMPLE_D_TABLE', 5),
     'password_change' => env('PASSWORD_CHANGE', false),
     'prefix_database' => env('PREFIX_DATABASE', 'tenancy'),
     'signature_note' => env('SIGNATURE_NOTE', 'FACTURALO'),

@@ -18,12 +18,12 @@ class AttributeType extends ModelCatalog
         'description',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::addGlobalScope('active', function (Builder $builder) {
-            $builder->where('active', 1);
-        });
-    }
+    //     static::addGlobalScope('active', function (Builder $builder) {
+    //         $builder->where('active', 1);
+    //     });
+    // }
 }

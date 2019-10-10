@@ -3,9 +3,12 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\Quotation;
 use App\Models\Tenant\Kardex;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Retention;
+use App\Models\Tenant\Perception;
 use App\Models\Tenant\Summary;
 use App\Models\Tenant\Voided;
 use Illuminate\Http\Request;
@@ -26,6 +29,9 @@ class OptionController extends Controller
                 ->whereIn('document_type_id', ['07', '08'])->delete();
         Document::where('soap_type_id', '01')->delete();
         Retention::where('soap_type_id', '01')->delete();
+        Perception::where('soap_type_id', '01')->delete();
+        SaleNote::where('soap_type_id', '01')->delete();
+        Quotation::where('soap_type_id', '01')->delete();
 
         return [
             'success' => true,
