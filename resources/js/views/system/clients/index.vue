@@ -135,11 +135,13 @@
                             </td>
                             <td class="text-center">{{ row.created_at }}</td>
                             <td class="text-center">
-                                <el-switch
-                                    style="display: block"
-                                    v-model="row.locked_tenant" 
-                                    @change="changeLockedTenant(row)">
-                                </el-switch>
+                                <template v-if="!row.locked">
+                                    <el-switch
+                                        style="display: block"
+                                        v-model="row.locked_tenant" 
+                                        @change="changeLockedTenant(row)">
+                                    </el-switch>
+                                </template>
                             </td>
                             <td class="text-center">
                                 <el-switch

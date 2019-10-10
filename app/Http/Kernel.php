@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\LockedAdmin::class,
         ],
 
         'api' => [
@@ -66,5 +67,6 @@ class Kernel extends HttpKernel
 //        'module' => \App\Http\Middleware\CheckModule::class,
        'redirect.module' => \App\Http\Middleware\RedirectModule::class,
        'locked.tenant' => \App\Http\Middleware\LockedTenant::class,
+    //    'locked.admin' => \App\Http\Middleware\LockedAdmin::class,
     ];
 }
