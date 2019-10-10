@@ -86,6 +86,7 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
 
     @stack('scripts')
 

@@ -3,7 +3,7 @@
          <div class="container">
 
              <div class="header-right">
-              
+
 
                  <div class="header-dropdown dropdown-expanded">
                      <a href="#">Links</a>
@@ -39,17 +39,24 @@
                  </a>
              </div><!-- End .header-left -->
 
-             <div class="header-center">
-                 <div class="header-search">
-                     <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
-                     <form action="#" method="get">
-                         <div class="header-search-wrapper">
-                             <input type="search" class="form-control" name="q" id="q" placeholder="Search..." required>
+             <div id="header_bar" class="header-center">
 
-                             <button class="btn" type="submit"><i class="icon-magnifier"></i></button>
-                         </div><!-- End .header-search-wrapper -->
-                     </form>
-                 </div><!-- End .header-search -->
+
+                 <div class="dropdown">
+                     <input placeholder="Buscar..." v-model="value" v-on:keyup="autoComplete"
+                         class="form-control dropdown-toggle form-control-lg" type="text" id="dropdownMenuLink"
+                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                     <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">
+
+                         <a @click="suggestionClick(result)" v-for="result in results" class="dropdown-item"
+                             :href="'/ecommerce/item/' + result.id"> <img width="60" height="60"
+                                 :src="result.image_url_small" alt="" style="margin-right:5px;"> <span
+                                 style="font-size: 14px">@{{ result.description }} </span> </a>
+                     </div>
+                 </div>
+
+
              </div><!-- End .headeer-center -->
 
              <div class="header-right">
@@ -81,5 +88,58 @@
          </div><!-- End .header-bottom -->
      </div><!-- End .header-bottom -->
  </header><!-- End .header -->
+ @push('scripts')
+
+  <script type="text/javascript">
+      var app = new Vue({
+          el: '#header_bar',
+          data: {
+              value: '',
+              suggestions: [],
+              resource: 'ecommerce',
+              results: [],
+          },
+          created() {
+              this.getItems()
+          },
+          methods: {
+              autoComplete() {
+
+                  if (this.value) {
+
+                      this.results = this.suggestions.filter((obj) => {
+                          let city = obj.description.toUpperCase()
+                          let val = this.value.toUpperCase()
+                          return city.includes(val)
+                      })
+
+                  } else {
+                    this.results = this.suggestions
+                  }
 
 
+              },
+              getItems() {
+                  let contex = this
+                  fetch(`/${this.resource}/items_bar`)
+                      .then(function (response) {
+                          return response.json();
+                      })
+                      .then(function (myJson) {
+                          // console.log(myJson.data);
+                          contex.suggestions = myJson.data
+                          contex.results = contex.suggestions
+                      });
+              },
+              suggestionClick(item) {
+                  console.log(item)
+                  this.results = []
+                  this.value = item.description
+              }
+
+          }
+      })
+
+  </script>
+
+  @endpush

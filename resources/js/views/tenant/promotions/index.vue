@@ -30,7 +30,7 @@
         <h3 class="my-0">Listado de Promociones</h3>
       </div>
       <div class="card-body">
-        <data-table :resource="resource">
+        <data-table :apply-filter="false" :resource="resource">
           <tr slot="heading" width="100%">
             <th>#</th>
             <th>Nombre</th>

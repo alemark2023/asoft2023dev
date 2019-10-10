@@ -49,7 +49,7 @@
           </div>
           <div class="col-md-4">
             <div class="form-group" :class="{'has-danger': errors.item_id}">
-              <label class="control-label">Producto Tienda Virtual</label>
+              <label class="control-label">Link a Producto</label>
               <el-select v-model="form.item_id" dusk="item_id">
                 <el-option
                   v-for="option in items"

@@ -19,8 +19,8 @@ if ($hostname) {
         Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
         Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
         Route::get('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
-
-
+        Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
+        Route::post('ecommerce/culqi', 'Tenant\CulqiController@pago')->name('tenant_ecommerce_culqui');
 
 
 

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    
     <title>Porto - Bootstrap eCommerce Template</title>
 
     <meta name="keywords" content="HTML5 Template" />
@@ -253,6 +253,7 @@
 
      <!-- Main JS File -->
      <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
+     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
 </body>
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/category.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:40:07 GMT -->

@@ -54,9 +54,6 @@
 		$(".cart-total-price").empty();
 		$(".cart-total-price").append(total.toFixed(2));
 
-
-
-		
 	}
 
 	function populate()

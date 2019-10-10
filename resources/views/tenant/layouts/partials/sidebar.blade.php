@@ -178,7 +178,7 @@
                             </li>
                             <li class="{{ ($path[0] === 'tags')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.tags.index')}}">
-                                    Tags
+                                    Tags - Categorias
                                 </a>
                             </li>
                             <li class="{{ ($path[0] === 'promotions')?'nav-active':'' }}">

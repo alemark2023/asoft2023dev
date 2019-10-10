@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Item;
+use App\Http\Resources\Tenant\ItemCollection;
+
 
 
 class EcommerceController extends Controller
@@ -35,6 +37,13 @@ class EcommerceController extends Controller
     {
         $records = Item::where('apply_store', 1)->get();
         return view('tenant.ecommerce.items.index', compact('records'));
+    }
+
+    public function itemsBar()
+    {
+        $records = Item::where('apply_store', 1)->get();
+        return new ItemCollection($records);
+       
     }
 
     public function partialItem($id)
