@@ -54,7 +54,7 @@
             <cbc:AdditionalAccountID>{{ $doc->customer->identity_document_type_id }}</cbc:AdditionalAccountID>
         </cac:AccountingCustomerParty>
         @if(in_array($doc->document_type_id, ['07', '08']))
-        @php($affected_document = $doc->note->affected_document)
+        @php($affected_document = ($doc->note->affected_document) ? $doc->note->affected_document : $doc->note->data_affected_document)
         <cac:BillingReference>
             <cac:InvoiceDocumentReference>
                 <cbc:ID>{{ $affected_document->series }}-{{ $affected_document->number }}</cbc:ID>
@@ -164,6 +164,21 @@
                     <cac:TaxScheme>
                         <cbc:ID>9999</cbc:ID>
                         <cbc:Name>OTROS</cbc:Name>
+                        <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                    </cac:TaxScheme>
+                </cac:TaxCategory>
+            </cac:TaxSubtotal>
+        </cac:TaxTotal>
+        @endif
+        @if($doc->total_plastic_bag_taxes > 0)
+        <cac:TaxTotal>
+            <cbc:TaxAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_plastic_bag_taxes }}</cbc:TaxAmount>
+            <cac:TaxSubtotal>
+                <cbc:TaxAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_plastic_bag_taxes }}</cbc:TaxAmount>
+                <cac:TaxCategory>
+                    <cac:TaxScheme>
+                        <cbc:ID>7152</cbc:ID>
+                        <cbc:Name>ICBPER</cbc:Name>
                         <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
                     </cac:TaxScheme>
                 </cac:TaxCategory>

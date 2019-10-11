@@ -3,7 +3,7 @@
         <!-- <div class="card-header bg-info">
             <h3 class="my-0">Nuevo Comprobante</h3>
         </div> -->
-        <div class="tab-content" v-if="loading_form">
+        <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
                     <div class="row">
@@ -73,8 +73,51 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="row mt-2">
+                       
+                        <div class="row col-lg-8">
+
+                            <table>
+                                <thead>
+                                    <tr width="100%">
+                                        <th v-if="form.payments.length>0">Método de pago</th>
+                                        <th v-if="form.payments.length>0">Referencia</th>
+                                        <th v-if="form.payments.length>0">Monto</th>
+                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                        <td>
+                                            <div class="form-group mb-2 mr-2">
+                                                <el-select v-model="row.payment_method_type_id">
+                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2"  >
+                                                <el-input v-model="row.reference"></el-input>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2" >
+                                                <el-input v-model="row.payment"></el-input>
+                                            </div>
+                                        </td>
+                                        <td class="series-table-actions text-center"> 
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td> 
+                                        <br>
+                                    </tr>
+                                </tbody> 
+                            </table> 
+                            
+                        </div>
+
+
+                        <div class="row mt-4">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -94,7 +137,7 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items">
                                                 <td>{{ index + 1 }}</td>
-                                                <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                                <td>{{ row.item.description }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
                                                 <td class="text-right">{{ row.quantity }}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
@@ -168,6 +211,7 @@
     import Logo from '../companies/logo.vue'
 
     export default {
+        props: ['id'],
         components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
@@ -189,7 +233,9 @@
                 establishments: [],
                 establishment: null, 
                 currency_type: {},
-                saleNotesNewId: null,
+                saleNotesNewId: null,                
+                form_payment: {},
+                payment_method_types: [],
                 activePanel: 0,
                 loading_search:false
             }
@@ -203,6 +249,7 @@
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
+                    this.payment_method_types = response.data.payment_method_types
                     this.company = response.data.company
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
@@ -216,10 +263,38 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+
+            this.isUpdate()
+            
         },
         methods: {
+            async isUpdate(){
 
-              searchRemoteCustomers(input) {  
+                if (this.id) {
+                    // console.log(this.id);
+                    await this.$http.get(`/${this.resource}/record2/${this.id}`)
+                        .then(response => {
+                            this.form = response.data.data;
+    //                        this.filterProvinces();
+    //                        this.filterDistricts();
+                        })
+                }
+
+            },
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    document_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: 0,
+                });
+            },            
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
+            },
+            searchRemoteCustomers(input) {  
                   
                 if (input.length > 0) { 
                     this.loading_search = true
@@ -269,11 +344,15 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payments: [],
                     additional_information:null,
                     actions: {
                         format_pdf:'a4',
                     }
                 }
+
+                this.clickAddPayment()
+
             },
             resetForm() {
                 this.activePanel = 0
@@ -293,15 +372,22 @@
                 this.form.customer_id = null 
             },
             changeDateOfIssue() {
+
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
-            }, 
+            },           
+            assignmentDateOfPayment(){
+                this.form.payments.forEach((payment)=>{
+                    payment.date_of_payment = this.form.date_of_issue
+                })
+            },
             allCustomers() {
                 this.customers = this.all_customers
             }, 
             addRow(row) {
-                this.form.items.push(row)
+                // this.form.items.push(row)
+                this.form.items.push(JSON.parse(JSON.stringify(row)));
                 this.calculateTotal()
             },
             clickRemoveItem(index) {
@@ -363,14 +449,27 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+                this.form_payment.payment = this.form.total
              },
-            submit() {
+            async submit() {
+
+                let validate = await this.validate_payments()
+                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                }
+
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+
+                        this.form_payment.sale_note_id = response.data.data.id;
+                        // if(!this.id) this.sale_note_payment()
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
+                        this.isUpdate()
+
                     }
                     else {
                         this.$message.error(response.data.message);
@@ -386,6 +485,27 @@
                     this.loading_submit = false;
                 });
             },
+            validate_payments(){
+
+                for (let index = 0; index < this.form.payments.length; index++) {
+                    if(parseFloat(this.form.payments[index].payment) === 0)
+                        this.form.payments.splice(index, 1)                    
+                } 
+
+                let error_by_item = 0
+                let acum_total = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
+                }
+
+            }, 
             close() {
                 location.href = '/sale-notes'
             },

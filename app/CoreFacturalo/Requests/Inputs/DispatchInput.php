@@ -65,6 +65,7 @@ class DispatchInput
             'driver' => self::driver($inputs),
             'items' => self::items($inputs),
             'legends' => LegendInput::set($inputs),
+            'optional' => Functions::valueKeyInArray($inputs, 'optional'),
             'actions' => ActionInput::set($inputs),
         ];
     }
@@ -73,7 +74,7 @@ class DispatchInput
     {
         if(array_key_exists('origin', $inputs)) {
             $origin = $inputs['origin'];
-            $location_id = $origin['location_id'];
+            $location_id = $origin['location_id'][2];
             $address = $origin['address'];
 
             return [
@@ -88,7 +89,7 @@ class DispatchInput
     {
         if(array_key_exists('delivery', $inputs)) {
             $delivery = $inputs['delivery'];
-            $location_id = $delivery['location_id'];
+            $location_id = $delivery['location_id'][2];
             $address = $delivery['address'];
 
             return [

@@ -2,6 +2,11 @@
     $note = $document->note;
     $establishment = $document->establishment;
     $customer = $document->customer;
+
+    $series = ($note->affected_document) ? $note->affected_document->series : $note->data_affected_document->series;
+    $document_type_id = ($note->affected_document) ? $note->affected_document->document_type_id : $note->data_affected_document->document_type_id;
+    $number = ($note->affected_document) ? $note->affected_document->number : $note->data_affected_document->number;
+
 @endphp
 {!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <DebitNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:DebitNote-2"
@@ -24,7 +29,7 @@
     @endforeach
     <cbc:DocumentCurrencyCode>{{ $document->currency_type_id }}</cbc:DocumentCurrencyCode>
     <cac:DiscrepancyResponse>
-        <cbc:ReferenceID>{{ $note->affected_document->series.'-'.$note->affected_document->number }}</cbc:ReferenceID>
+        <cbc:ReferenceID>{{ $series.'-'.$number }}</cbc:ReferenceID>
         <cbc:ResponseCode>{{ $note->note_debit_type_id }}</cbc:ResponseCode>
         <cbc:Description>{{ $note->note_description }}</cbc:Description>
     </cac:DiscrepancyResponse>
@@ -35,8 +40,8 @@
     @endif
     <cac:BillingReference>
         <cac:InvoiceDocumentReference>
-            <cbc:ID>{{ $note->affected_document->series.'-'.$note->affected_document->number }}</cbc:ID>
-            <cbc:DocumentTypeCode>{{ $note->affected_document->document_type_id }}</cbc:DocumentTypeCode>
+            <cbc:ID>{{ $series.'-'.$number }}</cbc:ID>
+            <cbc:DocumentTypeCode>{{ $document_type_id }}</cbc:DocumentTypeCode>
         </cac:InvoiceDocumentReference>
     </cac:BillingReference>
     @if($document->guides)
@@ -237,6 +242,18 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         @endif
+        @if($document->total_plastic_bag_taxes > 0) 
+        <cac:TaxSubtotal>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_plastic_bag_taxes }}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>7152</cbc:ID>
+                    <cbc:Name>ICBPER</cbc:Name>
+                    <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        @endif
     </cac:TaxTotal>
     <cac:RequestedMonetaryTotal>
         @if($document->total_other_charges > 0)
@@ -295,6 +312,20 @@
                         <cac:TaxScheme>
                             <cbc:ID>9999</cbc:ID>
                             <cbc:Name>OTROS</cbc:Name>
+                            <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                        </cac:TaxScheme>
+                    </cac:TaxCategory>
+                </cac:TaxSubtotal>
+                @endif
+                @if($row->total_plastic_bag_taxes > 0)
+                <cac:TaxSubtotal>
+                    <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{$row->total_plastic_bag_taxes}}</cbc:TaxAmount>
+                    <cbc:BaseUnitMeasure unitCode="NIU">{{ round($row->quantity,0) }}</cbc:BaseUnitMeasure>
+                    <cac:TaxCategory>
+                        <cbc:PerUnitAmount currencyID="{{ $document->currency_type_id }}">{{$row->item->amount_plastic_bag_taxes}}</cbc:PerUnitAmount>
+                        <cac:TaxScheme>
+                            <cbc:ID>7152</cbc:ID>
+                            <cbc:Name>ICBPER</cbc:Name>
                             <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
                         </cac:TaxScheme>
                     </cac:TaxCategory>

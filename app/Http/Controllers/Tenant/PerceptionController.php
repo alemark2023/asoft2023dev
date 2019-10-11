@@ -26,7 +26,7 @@ class PerceptionController extends Controller
     public function columns()
     {
         return [
-            'id' => 'Código',
+            // 'id' => 'Código',
             'number' => 'Número'
         ];
     }
@@ -34,7 +34,7 @@ class PerceptionController extends Controller
     public function records(Request $request)
     {
         $records = Perception::where($request->column, 'like', "%{$request->value}%")
-                            ->orderBy('series_id')
+                            ->orderBy('series')
                             ->orderBy('number', 'desc');
 
         return new PerceptionCollection($records->paginate(config('tenant.items_per_page')));

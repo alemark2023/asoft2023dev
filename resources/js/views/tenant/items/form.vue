@@ -4,30 +4,47 @@
             <div class="form-body">
                 <div class="row">
 
-                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.name}">
-                            <label class="control-label">Nombre  <span class="text-danger">*</span></label>
-                            <el-input v-model="form.name" dusk="name"></el-input>
-                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
-                        </div>
-                    </div>
-
-                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.second_name}">
-                            <label class="control-label">Nombre secundario <span class="text-danger">*</span></label>
-                            <el-input v-model="form.second_name" dusk="second_name"></el-input>
-                            <small class="form-control-feedback" v-if="errors.second_name" v-text="errors.second_name[0]"></small>
-                        </div>
-                    </div>
-
-
-                    <div class="col-md-9">
+                    <!-- <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.description}">
                             <label class="control-label">Descripción <span class="text-danger">*</span></label>
                             <el-input v-model="form.description" dusk="description"></el-input>
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
+                    </div> -->
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.description}">
+                            <label class="control-label">Nombre<span class="text-danger">*</span></label>
+                            <el-input v-model="form.description" dusk="description"></el-input>
+                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                        </div>
                     </div>
+
+                     <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.second_name}">
+                            <label class="control-label">Nombre secundario </label>
+                            <el-input v-model="form.second_name" dusk="second_name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.second_name" v-text="errors.second_name[0]"></small>
+                        </div>
+                    </div>
+
+                    
+                     <!-- <div class="col-md-9">
+                        <div class="form-group" :class="{'has-danger': errors.name}">
+                            <label class="control-label">Nombre  <span class="text-danger">*</span></label>
+                            <el-input v-model="form.name" dusk="name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                        </div>
+                    </div> -->
+                     <div class="col-md-9">
+                        <div class="form-group" :class="{'has-danger': errors.name}">
+                            <label class="control-label">Descripción</label>
+                            <el-input v-model="form.name" dusk="name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                        </div>
+                    </div>
+
+
+                    
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                             <label class="control-label">Unidad</label>
@@ -96,39 +113,54 @@
                             <small class="form-control-feedback" v-if="errors.item_code" v-text="errors.item_code[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="recordId==null">
+                    <div class="col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.stock}">
                             <label class="control-label">Stock Inicial</label>
                             <el-input v-model="form.stock" ></el-input>
                             <small class="form-control-feedback" v-if="errors.stock" v-text="errors.stock[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.stock_min}">
                             <label class="control-label">Stock Mínimo</label>
                             <el-input v-model="form.stock_min"></el-input>
                             <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
-                            <label class="control-label">Almacen</label>
-                            <el-select v-model="form.warehouse_id" filterable>
-                                <el-option v-for="option in warehouse" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
-                        </div>
-                    </div>
+                    
+
                     <div class="col-md-3 center-el-checkbox" >
                         <div class="form-group"  >
-                            <el-checkbox v-model="has_percentage_perception" @change="changePercentagePerception">Incluye percepción</el-checkbox><br>
+                            <el-checkbox v-model="form.has_perception" @change="changeHasPerception">Incluye percepción</el-checkbox><br>
                         </div>
                     </div>
-                    <div class="col-md-3 center-el-checkbox" v-show="has_percentage_perception">
+                    <div class="col-md-3 center-el-checkbox" v-show="form.has_perception">
                         <div class="form-group"  >
                             <label class="control-label">Porcentaje de percepción</label>
 
                             <el-input v-model="form.percentage_perception"></el-input>
+                        </div>
+                    </div>
+                    <div class="col-md-3" v-show="recordId==null">
+                        <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
+                            <label class="control-label">
+                                Almacén
+                                <el-tooltip class="item" effect="dark" content="Si no selecciona almacén, se asignará por defecto el relacionado al establecimiento" placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-select v-model="form.warehouse_id" filterable >
+                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 " >
+                        <div class="form-group" :class="{'has-danger': errors.date_of_due}">
+                            <label class="control-label">Fec. Vencimiento</label>
+                            <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                            <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                         </div>
                     </div>
                     <!-- <div class="col-md-3 center-el-checkbox">
@@ -148,6 +180,9 @@
                     <div class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios
+                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
                              <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
                         </h5> 
                     </div>
@@ -158,7 +193,12 @@
                             <tr>
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Descripción</th>
-                                <th class="text-center">Factor</th>
+                                <th class="text-center">
+                                    Factor
+                                    <el-tooltip class="item" effect="dark" content="Cantidad de unidades" placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </th>
                                 <th class="text-center">Precio 1</th>
                                 <th class="text-center">Precio 2</th>
                                 <th class="text-center">Precio 3</th>
@@ -288,8 +328,11 @@
                                 </div> 
                                 <div class="short-div col-md-4">
                                     <div class="form-group" :class="{'has-danger': errors.percentage_of_profit}">
-                                        <label class="control-label">Porcentaje de ganancia (%)</label>
-                                        <el-input v-model="form.percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
+                                        <label class="control-label">
+                                            <el-checkbox v-model="enabled_percentage_of_profit" @change="changeEnabledPercentageOfProfit"></el-checkbox>
+                                            Porcentaje de ganancia (%)
+                                        </label>
+                                        <el-input v-model="form.percentage_of_profit" :disabled="!enabled_percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
                                         <small class="form-control-feedback" v-if="errors.percentage_of_profit" v-text="errors.percentage_of_profit[0]"></small>
                                     </div>
                                 </div> 
@@ -339,11 +382,12 @@
 
         data() {
             return {
-                warehouse: [],
+                warehouses: [],
                 loading_submit: false,
                 showPercentagePerception: false,
                 has_percentage_perception: false,
                 percentage_perception:null,
+                enabled_percentage_of_profit:false,
                 titleDialog: null,
                 resource: 'items',
                 errors: {},                
@@ -377,7 +421,7 @@
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
-                    this.warehouse = response.data.warehouse
+                    this.warehouses = response.data.warehouses
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -392,6 +436,9 @@
         methods: {
             changeHaveAccount(){
                 if(!this.have_account) this.form.account_id = null
+            },
+            changeEnabledPercentageOfProfit(){
+                // if(!this.enabled_percentage_of_profit) this.form.percentage_of_profit = 0
             },
             clickDelete(id) {
 
@@ -411,12 +458,10 @@
                         })
                 
             },
-            changePercentagePerception(){
-                // if(this.has_percentage_perception){
-                //     // this.percentage_perception = (this.recordId) ? this.form.percentage_perception:null 
-                // } else{
-                //     this.form.percentage_perception = null 
-                // }
+            changeHasPerception(){
+                if(!this.form.has_perception){
+                    this.form.percentage_perception = null 
+                } 
 
             },
             clickAddRow() {
@@ -462,6 +507,7 @@
                     stock: 0,
                     stock_min: 1,
                     has_igv: true,
+                    has_perception: false,
                     item_unit_types:[],
                     percentage_of_profit: 0,
                     percentage_perception: 0,
@@ -469,8 +515,10 @@
                     image_url: null,
                     temp_path: null,
                     account_id: null,
+                    date_of_due:null
                 }
                 this.show_has_igv = true
+                this.enabled_percentage_of_profit = false
             },
             onSuccess(response, file, fileList) {
                 if (response.success) {
@@ -525,24 +573,26 @@
                 if(parseFloat(this.form.purchase_unit_price) === 0) {
                     this.form.percentage_of_profit = 0;
                 } else {
-                    this.form.percentage_of_profit = difference / parseFloat(this.form.purchase_unit_price) * 100;
+                    if(this.enabled_percentage_of_profit) this.form.percentage_of_profit = difference / parseFloat(this.form.purchase_unit_price) * 100;
                 }
             },
             calculatePercentageOfProfitByPurchase() {
                 if(this.form.percentage_of_profit === '') {
                     this.form.percentage_of_profit = 0;
                 }
-                this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
+
+                if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
             calculatePercentageOfProfitByPercentage() {
                 if(this.form.percentage_of_profit === '') {
                     this.form.percentage_of_profit = 0;
                 }
-                this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
+
+                if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
             submit() {
-                if(this.has_percentage_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
-                if(!this.has_percentage_perception) this.form.percentage_perception = null
+                if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
+                // if(!this.has_percentage_perception) this.form.percentage_perception = null
                 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)

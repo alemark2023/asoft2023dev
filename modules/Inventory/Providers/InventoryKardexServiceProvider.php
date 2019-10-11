@@ -24,11 +24,14 @@ class InventoryKardexServiceProvider extends ServiceProvider
     
     private function purchase() {
         PurchaseItem::created(function ($purchase_item) {
+
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+
             $warehouse = $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id);
             // $warehouse = $this->findWarehouse();
             //$this->createInventory($purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
-            $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
-            $this->updateStock($purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
+            $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, /*$purchase_item->quantity*/ ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
+            $this->updateStock($purchase_item->item_id, ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
         });
     }
     
@@ -41,13 +44,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $warehouse = $this->findWarehouse();
             //$this->createInventory($document_item->item_id, $factor * $document_item->quantity, $warehouse->id);
             $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-            $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+            if(!$document_item->document->sale_note_id) $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
         });
     }
     
     private function sale_note() {
         SaleNoteItem::created(function ($sale_note_item) {
-            $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
+            $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
             
             $warehouse = $this->findWarehouse();
             //$this->createInventory($sale_note_item->item_id, -1 * $sale_note_item->quantity, $warehouse->id);

@@ -38,11 +38,13 @@ class ItemResource extends JsonResource
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'calculate_quantity' => (bool) $this->calculate_quantity,
             'has_igv' => (bool) $this->has_igv,
+            'has_perception' => (bool) $this->has_perception,
             'percentage_perception' => $this->percentage_perception, 
             'item_unit_types' => $this->item_unit_types,
             'image' => $this->image,
             'account_id' => $this->account_id,
-            'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image),
+            'date_of_due' => $this->date_of_due,
+            'image_url' => ($this->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image) : asset("/logo/{$this->image}"),
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

@@ -14,6 +14,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Http\Resources\Tenant\SaleNoteCollection;
 use App\Http\Resources\Tenant\SaleNoteResource;
+use App\Http\Resources\Tenant\SaleNoteResource2;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
 use App\Models\Tenant\Catalogs\DocumentType;  
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,10 @@ use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
+use App\Models\Tenant\PaymentMethodType;
+use App\Mail\Tenant\SaleNoteEmail;
+use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class SaleNoteController extends Controller
 {
@@ -47,9 +52,9 @@ class SaleNoteController extends Controller
     }
 
 
-    public function create()
+    public function create($id = null)
     {
-        return view('tenant.sale_notes.form');
+        return view('tenant.sale_notes.form', compact('id'));
     }
 
     public function columns()
@@ -62,6 +67,7 @@ class SaleNoteController extends Controller
     public function records(Request $request)
     {
         $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()
                             ->latest();
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
@@ -95,11 +101,19 @@ class SaleNoteController extends Controller
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active(); 
+        $payment_method_types = PaymentMethodType::all();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types','company');
+        return compact('customers', 'establishments','currency_types', 'discount_types',
+                         'charge_types','company','payment_method_types');
     }
  
-    
+    public function changed($id)
+    {
+        $sale_note = SaleNote::find($id);
+        $sale_note->changed = true;
+        $sale_note->save();
+    }
+
 
     public function item_tables()
     {
@@ -123,22 +137,39 @@ class SaleNoteController extends Controller
         return $record;
     }
 
+    public function record2($id)
+    {
+        $record = new SaleNoteResource2(SaleNote::findOrFail($id));
+
+        return $record;
+    }
+
     public function store(SaleNoteRequest $request)
     {
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
-            $this->sale_note =  SaleNote::create($data);
+            $this->sale_note =  SaleNote::updateOrCreate(
+                ['id' => $request->input('id')],
+                $data);
+
+//            $this->sale_note =  SaleNote::create($data);
+            $this->sale_note->items()->delete();
+            $this->sale_note->payments()->delete();
             foreach ($data['items'] as $row)
             {
                 $this->sale_note->items()->create($row);
             }     
+            //pagos
+            foreach ($data['payments'] as $row) {
+                $this->sale_note->payments()->create($row);
+            } 
 
             $this->setFilename();
-            $this->createPdf();
+            $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
 
-        });     
+        });   
 
         return [
             'success' => true,
@@ -182,43 +213,128 @@ class SaleNoteController extends Controller
 
     }
 
-    public function createPdf() {
+    public function toPrint($external_id, $format) {
+
+        $sale_note = SaleNote::where('external_id', $external_id)->first();
+        
+        if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
+        
+        $this->reloadPDF($sale_note, $format, $sale_note->filename);
+        $temp = tempnam(sys_get_temp_dir(), 'sale_note');
+        
+        file_put_contents($temp, $this->getStorage($sale_note->filename, 'sale_note'));
+        
+        return response()->file($temp);
+    }
+    
+    private function reloadPDF($sale_note, $format, $filename) {
+        $this->createPdf($sale_note, $format, $filename);
+    }
+
+    public function createPdf($sale_note = null, $format_pdf = null, $filename = null) {
 
         $template = new Template();
         $pdf = new Mpdf();   
-        $document = $this->sale_note;
+
+        $this->company = ($this->company != null) ? $this->company : Company::active();
+        $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
+
 
         $base_template = config('tenant.pdf_template');
         
-        $html = $template->pdf($base_template, "sale_note", $this->company, $document,"a4");
+        $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
+         
+        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
+ 
+            $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+            
+            $company_logo      = ($this->company->logo) ? 40 : 0;
+            $company_name      = (strlen($this->company->name) / 20) * 10;
+            $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
+            $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
-        $pdf_font_regular = config('tenant.pdf_name_regular');
-        $pdf_font_bold = config('tenant.pdf_name_bold');
+            $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
+            $total_free        = $this->document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $quantity_rows     = count($this->document->items);
+            $payments     = $this->document->payments()->count() * 2;
 
-        if ($pdf_font_regular != false) {
-            $defaultConfig = (new ConfigVariables())->getDefaults();
-            $fontDirs = $defaultConfig['fontDir'];
+            $extra_by_item_description = 0;
+            $discount_global = 0;
+            foreach ($this->document->items as $it) {
+                if(strlen($it->item->description)>100){
+                    $extra_by_item_description +=24;
+                }
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends = $this->document->legends != '' ? '10' : '0';
 
-            $defaultFontConfig = (new FontVariables())->getDefaults();
-            $fontData = $defaultFontConfig['fontdata'];
 
-            $pdf = new Mpdf([
-                'fontDir' => array_merge($fontDirs, [
-                    app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                             DIRECTORY_SEPARATOR.'pdf'.
-                                             DIRECTORY_SEPARATOR.$base_template.
-                                             DIRECTORY_SEPARATOR.'font')
-                ]),
-                'fontdata' => $fontData + [
-                    'custom_bold' => [
-                        'R' => $pdf_font_bold.'.ttf',
-                    ],
-                    'custom_regular' => [
-                        'R' => $pdf_font_regular.'.ttf',
-                    ],
-                ]
+            $pdf = new Mpdf([ 
+                'mode' => 'utf-8',
+                'format' => [
+                    $width,
+                    30 +
+                    (($quantity_rows * 8) + $extra_by_item_description) +
+                    ($discount_global * 3) +
+                    $company_logo +
+                    $payments +
+                    $company_name +
+                    $company_address +
+                    $company_number +
+                    $customer_name +
+                    $customer_address +
+                    $p_order +
+                    $legends +
+                    $total_exportation +
+                    $total_free +
+                    $total_unaffected +
+                    $total_exonerated +
+                    $total_taxed],
+                'margin_top' => 0,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
             ]);
-        }
+        } else {
+
+            $pdf_font_regular = config('tenant.pdf_name_regular');
+            $pdf_font_bold = config('tenant.pdf_name_bold');
+
+            if ($pdf_font_regular != false) {
+                $defaultConfig = (new ConfigVariables())->getDefaults();
+                $fontDirs = $defaultConfig['fontDir'];
+
+                $defaultFontConfig = (new FontVariables())->getDefaults();
+                $fontData = $defaultFontConfig['fontdata'];
+
+                $pdf = new Mpdf([
+                    'fontDir' => array_merge($fontDirs, [
+                        app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                DIRECTORY_SEPARATOR.'pdf'.
+                                                DIRECTORY_SEPARATOR.$base_template.
+                                                DIRECTORY_SEPARATOR.'font')
+                    ]),
+                    'fontdata' => $fontData + [
+                        'custom_bold' => [
+                            'R' => $pdf_font_bold.'.ttf',
+                        ],
+                        'custom_regular' => [
+                            'R' => $pdf_font_regular.'.ttf',
+                        ],
+                    ]
+                ]);
+            }
+            
+        } 
 
         $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
                                              DIRECTORY_SEPARATOR.'pdf'.
@@ -235,13 +351,14 @@ class SaleNoteController extends Controller
             $pdf->SetHTMLFooter($html_footer);
         } 
        
-        $this->uploadFile($pdf->output('', 'S'), 'sale_note');
+        $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
-    public function uploadFile($file_content, $file_type)
+    public function uploadFile($filename, $file_content, $file_type)
     {
-        $this->uploadStorage($this->sale_note->filename, $file_content, $file_type);
+        $this->uploadStorage($filename, $file_content, $file_type);
     }
+
 
 
     public function table($table)
@@ -279,6 +396,7 @@ class SaleNoteController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_igv' => (bool) $row->has_igv,
                         'warehouses' => collect($row->warehouses)->transform(function($row) {
                             return [
                                 'warehouse_id' => $row->warehouse->id,
@@ -318,5 +436,29 @@ class SaleNoteController extends Controller
 
         return compact('customers');
     }
+
+    public function option_tables()
+    {
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id',$establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+
+        return compact('series', 'document_types_invoice');
+    }
+
+    public function email(Request $request)
+    {
+        $company = Company::active();
+        $record = SaleNote::find($request->input('id'));
+        $customer_email = $request->input('customer_email');
+
+        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+
+        return [
+            'success' => true
+        ];
+    }
+
+
  
 }

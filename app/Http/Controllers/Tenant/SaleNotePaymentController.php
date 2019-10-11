@@ -101,7 +101,7 @@ class SaleNotePaymentController extends Controller
 
         $template = new Template();
         $pdf = null;
-        if($format == 'ticket')
+        if($format == 'a5')
         {
               $pdf = new Mpdf([
                 'mode' => 'utf-8',
@@ -174,9 +174,9 @@ class SaleNotePaymentController extends Controller
 //        $this->uploadFile($pdf->output('', 'S'), 'sale_note');
     }
 
-    public function toPrint($sale_note_id)
+    public function toPrint($sale_note_id, $format)
     {
-        $filename = $this->createPdf($sale_note_id, 'ticket');
+        $filename = $this->createPdf($sale_note_id, $format);
         $temp = tempnam(sys_get_temp_dir(), 'sale_note');
         file_put_contents($temp, $this->getStorage($filename, 'sale_note'));
         return response()->file($temp);

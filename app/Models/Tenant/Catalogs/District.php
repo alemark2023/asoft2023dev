@@ -21,4 +21,10 @@ class District extends ModelCatalog
         }
         return '150101';
     }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class)->with('department');
+    }
+
 }

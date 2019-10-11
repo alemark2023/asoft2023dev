@@ -18,6 +18,7 @@ class DispatchCollection extends ResourceCollection
 
             return [
                 'id' => $row->id,
+                'external_id' => $row->external_id,
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),

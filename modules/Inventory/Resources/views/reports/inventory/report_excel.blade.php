@@ -57,7 +57,7 @@
                             @foreach($records as $key => $value)
                             <tr> 
                                 <td>{{$loop->iteration}}</td>
-                                <td>{{$value->item->description}}</td>
+                                <td>{{$value->item->description ?? ''}}</td>
                                 <td>{{$value->stock}}</td>
                                 <td>{{$value->warehouse->description}}</td>
 

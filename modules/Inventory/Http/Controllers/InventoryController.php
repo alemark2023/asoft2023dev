@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Models\Inventory;
+use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\Warehouse;
+use Modules\Inventory\Http\Requests\InventoryRequest;
 
 class InventoryController extends Controller
 {
@@ -34,6 +36,7 @@ class InventoryController extends Controller
         $item_description = $request->input('value');
         $records = ItemWarehouse::with(['item', 'warehouse'])
                                 ->whereHas('item', function($query) use($item_description) {
+                                    $query->where('unit_type_id', '!=','ZZ');
                                     $query->where('description', 'like', '%' . $item_description . '%');
                                 })->orderBy('item_id');
 
@@ -53,6 +56,16 @@ class InventoryController extends Controller
         $record = new InventoryResource(ItemWarehouse::with(['item', 'warehouse'])->findOrFail($id));
 
         return $record;
+    }
+
+
+    public function tables_transaction($type)
+    {
+        return [
+            'items' => $this->optionsItem(),
+            'warehouses' => $this->optionsWarehouse(),
+            'inventory_transactions' => $this->optionsInventoryTransaction($type),
+        ];
     }
 
     public function store(Request $request)
@@ -90,6 +103,49 @@ class InventoryController extends Controller
 
         return $result;
     }
+
+
+    public function store_transaction(InventoryRequest $request)
+    {
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+            // dd($request->all());
+            $type = $request->input('type');
+            $item_id = $request->input('item_id');
+            $warehouse_id = $request->input('warehouse_id');
+            $inventory_transaction_id = $request->input('inventory_transaction_id');
+            $quantity = $request->input('quantity');
+
+            $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id,
+                                                         'warehouse_id' => $warehouse_id]);
+
+            $inventory_transaction = InventoryTransaction::findOrFail($inventory_transaction_id);
+
+            if($type == 'output' && ($quantity > $item_warehouse->stock)) {
+                return  [
+                    'success' => false,
+                    'message' => 'La cantidad no puede ser mayor a la que se tiene en el almacén.'
+                ];
+            }
+
+            $inventory = new Inventory();
+            $inventory->type = null;
+            $inventory->description = $inventory_transaction->name;
+            $inventory->item_id = $item_id;
+            $inventory->warehouse_id = $warehouse_id;
+            $inventory->quantity = $quantity;
+            $inventory->inventory_transaction_id = $inventory_transaction_id;
+            $inventory->save();
+                
+
+            return  [
+                'success' => true,
+                'message' => ($type == 'input') ? 'Ingreso registrado correctamente' : 'Salida registrada correctamente'
+            ];
+        });
+
+        return $result;
+    }
+
 
     public function move(Request $request)
     {

@@ -13,7 +13,7 @@ class SaleNotePayment extends ModelTenant
         'payment_method_type_id',
         'has_card',
         'card_brand_id',
-        'number',
+        'reference',
         'payment',
     ];
 

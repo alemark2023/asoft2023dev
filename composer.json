@@ -20,7 +20,8 @@
         "mpdf/mpdf": "^8.0.0",
         "mpdf/qrcode": "^1.0",
         "nwidart/laravel-modules": "^5.0",
-        "robrichards/xmlseclibs": "3.0.*"
+        "robrichards/xmlseclibs": "3.0.*",
+        "thiagoalessio/tesseract_ocr": "^2.7"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

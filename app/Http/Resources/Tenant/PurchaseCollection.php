@@ -16,9 +16,14 @@ class PurchaseCollection extends ResourceCollection
     {
         return $this->collection->transform(function($row, $key) {
         
-  
+            $total = $row->total;
+            if($row->total_perception)
+            {
+                $total += round($row->total_perception, 2);
+            }
             return [
                 'id' => $row->id,
+                'document_type_description' => $row->document_type->description,
                 'group_id' => $row->group_id,
                 'soap_type_id' => $row->soap_type_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
@@ -28,12 +33,13 @@ class PurchaseCollection extends ResourceCollection
                 'supplier_number' => $row->supplier->number,
                 'currency_type_id' => $row->currency_type_id,
                 'total_exportation' => $row->total_exportation,
-                'total_free' => $row->total_free,
-                'total_unaffected' => $row->total_unaffected,
-                'total_exonerated' => $row->total_exonerated,
-                'total_taxed' => $row->total_taxed,
-                'total_igv' => $row->total_igv,
-                'total' => $row->total,
+                'total_free' => number_format($row->total_free, 2),
+                'total_unaffected' => number_format($row->total_unaffected, 2),
+                'total_exonerated' => number_format($row->total_exonerated, 2),
+                'total_taxed' => number_format($row->total_taxed, 2),
+                'total_igv' => number_format($row->total_igv, 2),
+                'total_perception' => number_format($row->total_perception, 2),
+                'total' => number_format($total, 2),
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'document_type_description' => $row->document_type->description,

@@ -14,7 +14,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de  productos</h3>
+                <h3 class="my-0">Listado de productos</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -34,12 +34,12 @@
                         <td>{{ index }}</td>
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
-                        <td>{{ row.name }}</td>
                         <td>{{ row.description }}</td>
+                        <td>{{ row.name }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
-                            <template v-if="typeUser=='seller'">{{ row.stock }}</template>
-                            <template v-else>
+                            <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
+                            <template v-else-if="typeUser!='seller'&& row.unit_type_id !='ZZ'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
                             </template>
 
@@ -51,10 +51,10 @@
                             
                         </td>
                         <td class="text-right">{{ row.sale_unit_price }}</td>
-                        <td class="text-center">{{ (row.has_igv)?'Si':'No' }}</td>
+                        <td class="text-center">{{ row.has_igv_description }}</td>
                         <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                             <template v-if="typeUser === 'admin'">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
                         </td>

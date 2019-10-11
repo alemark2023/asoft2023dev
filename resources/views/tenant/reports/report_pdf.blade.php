@@ -82,19 +82,36 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
+                     
+                        $serie_affec = '';
+
+                        $acum_total_exonerado=0;
+                        $acum_total_inafecto=0;
+
+                        $acum_total_free=0;
+                       
+                        $acum_total_taxed_usd=0;
+                        $acum_total_igv_usd=0;
+                        $acum_total_usd=0;
                     @endphp
                     <table class="">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Tipo sssDoc</th>
+                                <th>Tipo Doc</th>
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
-                                <th>Documento Modifica</th>
+                                <th>Doc. Afectado</th>
+
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
+                                <th class="">Moneda</th>
+                                <!-- <th>Total Exonerado</th>
+                                <th>Total Inafecto</th>
+                                 <th>Total Gratutio</th> -->
                                 <th>Total Gravado</th>
+                               
                                 <th>Total IGV</th>
                                 <th>Total</th>
                             </tr>
@@ -106,26 +123,130 @@
                                     <td class="celda">{{$value->document_type->id}}</td>
                                     <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                     <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
-                                    <td class="celda">{{ $value->document_type->id == '07' ? $value->series.' - '.$value->number : '' }} </td>
+                                       
+                                        @if(in_array($value->document_type_id,["07","08"]) && $value->note)
+
+                                            @php 
+                                                $serie = ($value->note->affected_document) ? $value->note->affected_document->series : $value->note->data_affected_document->series;
+                                                $number =  ($value->note->affected_document) ? $value->note->affected_document->number : $value->note->data_affected_document->number;
+                                                $serie_affec = $serie.' - '.$number;
+
+                                            @endphp
+                                        
+
+                                        @endif
+
+                                    <td class="celda">{{  $serie_affec }} </td>
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->customer->number}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
+                                    
+                                    <td class="celda">{{$value->currency_type_id}}</td>
+                                    @php
+                                     $signal = $value->document_type_id;
+                                     $state = $value->state_type_id;
+                                    @endphp
+
+
+                                 
+
+                                    <!-- <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_exonerated}}</td>
+                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_unaffected}}</td>
+                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_free}}</td> -->
+
+                                    <!-- <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total_igv}}</td>
+                                    <td class="celda">{{$signal == '07' ? "-" : ""  }}{{$value->total}}</td> -->
+                                    
+                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_taxed}}</td>
+                                      
+                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total_igv}}</td>
+                                    <td class="celda">{{($signal == '07' || ($signal!='07' && $state =='11')) ? "-" : ""  }}{{$value->total}}</td>
+                                </tr>
+                                @php
+                                    
+                                
+                                    $serie_affec =  '';
+                                @endphp
+
+                           
+                                <!-- <tr>
+                                    <td colspan="7" class="celda"></td>
+                                    <td class="celda">Totales</td>
+                                    <td class="celda">{{$acum_total_exonerado}}</td>
+                                    <td class="celda">{{$acum_total_inafecto}}</td>
+                                    <td class="celda">{{$acum_total_free}}</td> 
                                     <td class="celda">{{$value->total_taxed}}</td>
                                     <td class="celda">{{$value->total_igv}}</td>
                                     <td class="celda">{{$value->total}}</td>
-                                </tr>
-                            @php
-                                $acum_total_taxed += $value->total_taxed;
-                                $acum_total_igv += $value->total_igv;
-                                $acum_total += $value->total;
-                            @endphp
+                                </tr> -->
+                                @php
+                                
+                                    if($value->currency_type_id == 'PEN'){
+
+                                        /*$acum_total_taxed +=  $signal != '07' ? $value->total_taxed : -$value->total_taxed ;
+                                        $acum_total_igv +=  $signal != '07' ? $value->total_igv : -$value->total_igv ;
+                                        $acum_total += $signal != '07' ? $value->total : -$value->total ;*/
+
+                                        if(($signal == '07' && $state !== '11')){
+
+                                            $acum_total += -$value->total;
+                                            $acum_total_taxed += -$value->total_taxed;
+                                            $acum_total_igv += -$value->total_igv;
+  
+
+                                        }elseif($signal != '07' && $state == '11'){
+
+                                            $acum_total += 0;
+                                            $acum_total_taxed += 0;
+                                            $acum_total_igv += 0;
+ 
+
+                                        }else{
+
+                                            $acum_total += $value->total;
+                                            $acum_total_taxed += $value->total_taxed;
+                                            $acum_total_igv += $value->total_igv; 
+                                        }
+
+                                    }else if($value->currency_type_id == 'USD'){
+
+                                        if(($signal == '07' && $state !== '11')){
+
+                                            $acum_total_usd += -$value->total;
+                                            $acum_total_taxed_usd += -$value->total_taxed;
+                                            $acum_total_igv_usd += -$value->total_igv;
+
+                                        }elseif($signal != '07' && $state == '11'){
+
+                                            $acum_total_usd += 0;
+                                            $acum_total_taxed_usd += 0;
+                                            $acum_total_igv_usd += 0;
+
+                                        }else{
+
+                                            $acum_total_usd += $value->total;
+                                            $acum_total_taxed_usd += $value->total_taxed;
+                                            $acum_total_igv_usd += $value->total_igv;
+
+                                        }
+
+                                    }
+                                @endphp
                             @endforeach
                             <tr>
-                                <td colspan="6" class="celda"></td>
-                                <td class="celda">Totales</td>
+                                <td class="celda" colspan="8"></td>
+                                <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda" colspan="8"></td>
+                                <td class="celda" >Totales USD</td>
+                                <td class="celda">{{$acum_total_taxed_usd}}</td>
+                                <td class="celda">{{$acum_total_igv_usd}}</td>
+                                <td class="celda">{{$acum_total_usd}}</td>
                             </tr>
                         </tbody>
                     </table>

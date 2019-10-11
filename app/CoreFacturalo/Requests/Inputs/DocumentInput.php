@@ -22,11 +22,13 @@ class DocumentInput
 
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
-        $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
+        // $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
 
-        Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Document::class);
+        if($number !== '#') {
+            Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Document::class);
+        }
 
-        $filename = Functions::filename($company, $document_type_id, $series, $number);
+        // $filename = Functions::filename($company, $document_type_id, $series, $number);
         $establishment = EstablishmentInput::set($inputs['establishment_id']);
         $customer = PersonInput::set($inputs['customer_id']);
 
@@ -53,7 +55,7 @@ class DocumentInput
             'soap_type_id' => $soap_type_id,
             'state_type_id' => '01',
             'ubl_version' => '2.1',
-            'filename' => $filename,
+            'filename' => '',//$filename,
             'document_type_id' => $document_type_id,
             'series' => $series,
             'number' => $number,
@@ -64,6 +66,7 @@ class DocumentInput
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => $inputs['purchase_order'],
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
+            'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'exchange_rate_sale' => $inputs['exchange_rate_sale'],
             'total_prepayment' => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
             'total_discount' => Functions::valueKeyInArray($inputs, 'total_discount', 0),
@@ -78,9 +81,11 @@ class DocumentInput
             'total_isc' => Functions::valueKeyInArray($inputs, 'total_isc', 0),
             'total_base_other_taxes' => Functions::valueKeyInArray($inputs, 'total_base_other_taxes', 0),
             'total_other_taxes' => Functions::valueKeyInArray($inputs, 'total_other_taxes', 0),
+            'total_plastic_bag_taxes' => Functions::valueKeyInArray($inputs, 'total_plastic_bag_taxes', 0),
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
+            'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -91,10 +96,12 @@ class DocumentInput
             'detraction' => self::detraction($inputs),
             'invoice' => $invoice,
             'note' => $note,
+            'hotel' => self::hotel($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
             'data_json' => Functions::valueKeyInArray($inputs, 'data_json'),
+            'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
         ];
     }
@@ -114,7 +121,8 @@ class DocumentInput
                         'item_code' => trim($item->item_code),
                         'item_code_gs1' => $item->item_code_gs1,
                         'unit_type_id' => (key_exists('item', $row))?$row['item']['unit_type_id']:$item->unit_type_id,
-                        'presentation' => (key_exists('item', $row))?$row['item']['presentation']:[]
+                        'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation']:[]):[],
+                        'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -131,6 +139,7 @@ class DocumentInput
                     'total_base_other_taxes' => Functions::valueKeyInArray($row, 'total_base_other_taxes', 0),
                     'percentage_other_taxes' => Functions::valueKeyInArray($row, 'percentage_other_taxes', 0),
                     'total_other_taxes' => Functions::valueKeyInArray($row, 'total_other_taxes', 0),
+                    'total_plastic_bag_taxes' => Functions::valueKeyInArray($row, 'total_plastic_bag_taxes', 0),
                     'total_taxes' => $row['total_taxes'],
                     'total_value' => $row['total_value'],
                     'total_charge' => Functions::valueKeyInArray($row, 'total_charge', 0),
@@ -335,6 +344,13 @@ class DocumentInput
         return null;
     }
 
+
+    private static function hotel($inputs)
+    {
+        // dd($inputs);
+        return $inputs['hotel'];
+    }
+
     private static function invoice($inputs)
     {
         $operation_type_id = $inputs['operation_type_id'];
@@ -357,19 +373,35 @@ class DocumentInput
         $note_description = $inputs['note_description'];
         $affected_document_id = $inputs['affected_document_id'];
 
-        $affected_document = Document::find($affected_document_id);
+        $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
 
         $type = ($document_type_id === '07')?'credit':'debit';
 
+        if(!$data_affected_document){
+
+            $affected_document = Document::find($affected_document_id);
+            $group_id = $affected_document->group_id;
+            $$affected_document_id = $affected_document->id;
+
+        }else{
+
+            $affected_document_id = null;
+            $group_id = ($data_affected_document['document_type_id'] == '01') ? '01' : '02';
+
+        }
+
+
         return [
             'type' => $type,
-            'group_id' => $affected_document->group_id,
+            // 'group_id' => $affected_document->group_id,
+            'group_id' => $group_id,
             'note' => [
                 'note_type' => $type,
                 'note_credit_type_id' => ($type === 'credit')?$note_credit_or_debit_type_id:null,
                 'note_debit_type_id' => ($type === 'debit')?$note_credit_or_debit_type_id:null,
                 'note_description' => $note_description,
-                'affected_document_id' => $affected_document->id
+                'affected_document_id' => $affected_document_id,
+                'data_affected_document' => $data_affected_document
             ]
         ];
     }

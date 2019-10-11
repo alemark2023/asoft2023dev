@@ -30,7 +30,10 @@
                         </el-tab-pane> 
                         <el-tab-pane label="Imprimir A4" name="second">                                    
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
-                        </el-tab-pane>                        
+                        </el-tab-pane>  
+                        <el-tab-pane label="Imprimir A5" name="third">                                    
+                            <embed :src="form.print_a5" type="application/pdf" width="100%" height="450px"/>
+                        </el-tab-pane>                       
                     </el-tabs>
                 </div> 
                 <div class="row col-md-12"> 
@@ -55,12 +58,11 @@
 
 <script>
     export default {
-        props: ['showDialog', 'recordId', 'statusDocument'],
+        props: ['showDialog', 'recordId', 'statusDocument','resource'],
         data() {
             return {
                 titleDialog: null,
                 loading: false,
-                resource: 'documents',
                 errors: {},
                 form: {},
                 company: {},
@@ -85,6 +87,7 @@
                     customer_email: null,
                     download_pdf: null,
                     print_a4: null,
+                    print_a5: null,
                     print_ticket: null,
                     external_id: null,
                     number: null, 

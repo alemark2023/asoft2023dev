@@ -23,11 +23,12 @@
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <!-- <th class="text-right">T.Exportación</th> -->
-                        <!-- <th class="text-right">T.Gratuita</th> -->
-                        <!-- <th class="text-right">T.Inafecta</th> -->
-                        <!-- <th class="text-right">T.Exonerado</th> -->
+                        <th class="text-right">T.Gratuita</th>
+                        <th class="text-right">T.Inafecta</th>
+                        <th class="text-right">T.Exonerado</th>
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
+                        <th>Percepcion</th>
                         <th class="text-right">Total</th>
                         <!-- <th class="text-center">Descargas</th> -->
                         <th class="text-right">Acciones</th>
@@ -44,17 +45,18 @@
                         <td>{{ row.payment_method_type_description }}</td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
-                        <!-- <td class="text-right">{{ row.total_exportation }}</td>
+                        <!-- <td class="text-right">{{ row.total_exportation }}</td> -->
                         <td class="text-right">{{ row.total_free }}</td>
                         <td class="text-right">{{ row.total_unaffected }}</td>
-                        <td class="text-right">{{ row.total_exonerated }}</td> -->
+                        <td class="text-right">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
-                        <td class="text-right">{{ row.total }}</td>
+                        <td class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td>
+                        <td class="text-right">{{ row.total   }}</td>
                         <td>
                             
-                            <a :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
 
                         </td>
                         

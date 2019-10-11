@@ -37,6 +37,7 @@ class PosController extends Controller
          
         $items = Item::where('description','like', "%{$request->input_item}%")
                             ->orWhere('internal_id','like', "%{$request->input_item}%") 
+                            ->whereWarehouse()
                             ->get()->transform(function($row) {
                                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                                 return [
@@ -55,7 +56,7 @@ class PosController extends Controller
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,            
-                                    'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image),
+                                    'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
 
                                 ];
                             }); 
@@ -82,7 +83,7 @@ class PosController extends Controller
     public function payment_tables(){
 
         $series = Series::whereIn('document_type_id',['01','03'])
-                        ->where('establishment_id', auth()->user()->establishment_id)                
+                        ->where([['establishment_id', auth()->user()->establishment_id],['contingency',false]])                
                         ->get();
 
         $payment_method_types = PaymentMethodType::all();
@@ -111,7 +112,7 @@ class PosController extends Controller
 
         if ($table === 'items') {
         
-            $items = Item::orderBy('description')->take(20)
+            $items = Item::whereWarehouse()->orderBy('description')->take(20)
                             ->get()->transform(function($row) {
                                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                                 return [
@@ -130,7 +131,7 @@ class PosController extends Controller
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,
-                                    'image_url' => asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image),
+                                    'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
                                 ];
                             }); 
             return $items;

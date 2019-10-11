@@ -43,3 +43,13 @@ html {
     margin: 15px 0;
 }
 
+.el-date-picker .el-picker-panel__content{
+    width: 90% !important;
+
+}
+
+
+.el-select-dropdown { 
+    max-width: 80% !important;
+    margin-right: 5% !important;
+}

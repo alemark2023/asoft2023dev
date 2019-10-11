@@ -2,6 +2,11 @@
     $note = $document->note;
     $establishment = $document->establishment;
     $customer = $document->customer;
+
+    $series = ($note->affected_document) ? $note->affected_document->series : $note->data_affected_document->series;
+    $document_type_id = ($note->affected_document) ? $note->affected_document->document_type_id : $note->data_affected_document->document_type_id;
+    $number = ($note->affected_document) ? $note->affected_document->number : $note->data_affected_document->number;
+
 @endphp
 {!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2"
@@ -24,7 +29,7 @@
     @endforeach
     <cbc:DocumentCurrencyCode>{{ $document->currency_type_id }}</cbc:DocumentCurrencyCode>
     <cac:DiscrepancyResponse>
-        <cbc:ReferenceID>{{ $note->affected_document->series.'-'.$note->affected_document->number }}</cbc:ReferenceID>
+        <cbc:ReferenceID>{{ $series.'-'.$number }}</cbc:ReferenceID>
         <cbc:ResponseCode>{{ $note->note_credit_type_id }}</cbc:ResponseCode>
         <cbc:Description>{{ $note->note_description }}</cbc:Description>
     </cac:DiscrepancyResponse>
@@ -35,8 +40,8 @@
     @endif
     <cac:BillingReference>
         <cac:InvoiceDocumentReference>
-            <cbc:ID>{{ $note->affected_document->series.'-'.$note->affected_document->number }}</cbc:ID>
-            <cbc:DocumentTypeCode>{{ $note->affected_document->document_type_id }}</cbc:DocumentTypeCode>
+            <cbc:ID>{{ $series.'-'.$number }}</cbc:ID>
+            <cbc:DocumentTypeCode>{{ $document_type_id }}</cbc:DocumentTypeCode>
         </cac:InvoiceDocumentReference>
     </cac:BillingReference>
     @if($document->guides)
@@ -91,9 +96,11 @@
                     <cbc:CityName>{{ $establishment->province->description }}</cbc:CityName>
                     <cbc:CountrySubentity>{{ $establishment->department->description }}</cbc:CountrySubentity>
                     <cbc:District>{{ $establishment->district->description }}</cbc:District>
+                    @if($establishment->address && $establishment->address !== '-')
                     <cac:AddressLine>
                         <cbc:Line><![CDATA[{{ $establishment->address }}]]></cbc:Line>
                     </cac:AddressLine>
+                    @endif
                     <cac:Country>
                         <cbc:IdentificationCode>{{ $establishment->country_id }}</cbc:IdentificationCode>
                     </cac:Country>
@@ -118,7 +125,7 @@
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName><![CDATA[{{ $customer->name }}]]></cbc:RegistrationName>
-                @if($customer->address)
+                @if($customer->address && $customer->address !== '-')
                 <cac:RegistrationAddress>
                     @if($customer->district_id)
                     <cbc:ID>{{ $customer->district_id }}</cbc:ID>
@@ -198,10 +205,10 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         @endif
-        @if($note->total_free > 0)
+        @if($document->total_free > 0)
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $note->total_free }}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_free }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv }}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cac:TaxScheme>
                     <cbc:ID>9996</cbc:ID>
@@ -237,8 +244,21 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         @endif
+        @if($document->total_plastic_bag_taxes > 0) 
+        <cac:TaxSubtotal>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_plastic_bag_taxes }}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>7152</cbc:ID>
+                    <cbc:Name>ICBPER</cbc:Name>
+                    <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        @endif
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
+        <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_value }}</cbc:LineExtensionAmount>
         @if($document->total_charges > 0)
         <cbc:ChargeTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_charges }}</cbc:ChargeTotalAmount>
         @endif
@@ -248,7 +268,9 @@
     <cac:CreditNoteLine>
         <cbc:ID>{{ $loop->iteration }}</cbc:ID>
         <cbc:CreditedQuantity unitCode="{{ $row->item->unit_type_id }}">{{ $row->quantity }}</cbc:CreditedQuantity>
+        @if($row->total_value > 0)
         <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $row->total_value }}</cbc:LineExtensionAmount>
+        @endif
         <cac:PricingReference>
             <cac:AlternativeConditionPrice>
                 <cbc:PriceAmount currencyID="{{ $document->currency_type_id }}">{{ $row->unit_price }}</cbc:PriceAmount>
@@ -295,6 +317,20 @@
                     <cac:TaxScheme>
                         <cbc:ID>9999</cbc:ID>
                         <cbc:Name>OTROS</cbc:Name>
+                        <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
+                    </cac:TaxScheme>
+                </cac:TaxCategory>
+            </cac:TaxSubtotal>
+            @endif
+            @if($row->total_plastic_bag_taxes > 0)
+            <cac:TaxSubtotal>
+                <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $row->total_plastic_bag_taxes }}</cbc:TaxAmount>
+                <cbc:BaseUnitMeasure unitCode="NIU">{{ round($row->quantity,0) }}</cbc:BaseUnitMeasure>
+                <cac:TaxCategory>
+                    <cbc:PerUnitAmount currencyID="{{ $document->currency_type_id }}">{{$row->item->amount_plastic_bag_taxes}}</cbc:PerUnitAmount>
+                    <cac:TaxScheme>
+                        <cbc:ID>7152</cbc:ID>
+                        <cbc:Name>ICBPER</cbc:Name>
                         <cbc:TaxTypeCode>OTH</cbc:TaxTypeCode>
                     </cac:TaxScheme>
                 </cac:TaxCategory>

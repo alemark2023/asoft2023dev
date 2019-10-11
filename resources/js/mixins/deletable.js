@@ -10,7 +10,10 @@ export const deletable = {
                     this.$http.delete(url)
                         .then(res => {
                             if(res.data.success) {
-                                this.$message.success('Se eliminó correctamente el registro')
+                                this.$message.success(res.data.message)
+                                resolve()
+                            }else{
+                                this.$message.error(res.data.message)
                                 resolve()
                             }
                         })

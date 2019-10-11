@@ -33,7 +33,7 @@
         </cac:DigitalSignatureAttachment>
     </cac:Signature>
     <cbc:ID>{{ $document->series }}-{{ $document->number }}</cbc:ID>
-    <cbc:IssueDate>{{ $document->date_of_issue }}</cbc:IssueDate>
+    <cbc:IssueDate>{{ $document->date_of_issue->format('Y-m-d') }}</cbc:IssueDate>
     <cbc:IssueTime>{{ $document->time_of_issue }}</cbc:IssueTime>
     <cac:AgentParty>
         <cac:PartyIdentification>
@@ -58,45 +58,44 @@
     </cac:AgentParty>
     <cac:ReceiverParty>
         <cac:PartyIdentification>
-            <cbc:ID schemeID="{{ $document->supplier->document_type_id }}">{{ $document->supplier->number }}</cbc:ID>
+            <cbc:ID schemeID="{{ $document->customer->identity_document_type_id }}">{{ $document->customer->number }}</cbc:ID>
         </cac:PartyIdentification>
         <cac:PartyLegalEntity>
-            <cbc:RegistrationName><![CDATA[{{ $document->supplier->name }}]]></cbc:RegistrationName>
+            <cbc:RegistrationName><![CDATA[{{ $document->customer->name }}]]></cbc:RegistrationName>
         </cac:PartyLegalEntity>
     </cac:ReceiverParty>
     <sac:SUNATPerceptionSystemCode>{{ $document->perception_type_id }}</sac:SUNATPerceptionSystemCode>
-    <sac:SUNATPerceptionPercent>{{ $document->percentage }}</sac:SUNATPerceptionPercent>
+    <sac:SUNATPerceptionPercent>{{ $document->perception_type->percentage }}</sac:SUNATPerceptionPercent>
     @if($document->observation)
     <cbc:Note><![CDATA[{{ $document->observation }}]]></cbc:Note>
     @endif
-    <cbc:TotalInvoiceAmount currencyID="PEN">{{ $document->total }}</cbc:TotalInvoiceAmount>
-    <sac:SUNATTotalCashed currencyID="PEN">{{ $document->total_payment }}</sac:SUNATTotalCashed>
-    @foreach($document->details as $detail)
-    @php($doc = $detail->document)
+    <cbc:TotalInvoiceAmount currencyID="PEN">{{ $document->total_perception }}</cbc:TotalInvoiceAmount>
+    <sac:SUNATTotalCashed currencyID="PEN">{{ $document->total }}</sac:SUNATTotalCashed>
+    @foreach($document->documents as $doc)
     <sac:SUNATPerceptionDocumentReference>
-        <cbc:ID schemeID="{{ $doc->document_type_id }}">{{ $doc->number_full }}</cbc:ID>
+        <cbc:ID schemeID="{{ $doc->document_type_id }}">{{ $doc->series }}-{{ $doc->number }}</cbc:ID>
         <cbc:IssueDate>{{ $doc->date_of_issue->format('Y-m-d') }}</cbc:IssueDate>
-        <cbc:TotalInvoiceAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total }}</cbc:TotalInvoiceAmount>
+        <cbc:TotalInvoiceAmount currencyID="{{ $doc->currency_type_id }}">{{ $doc->total_document }}</cbc:TotalInvoiceAmount>
         @if($doc->payments)
         @foreach($doc->payments as $payment)
         <cac:Payment>
             <cbc:ID>{{ $loop->iteration }}</cbc:ID>
-            <cbc:PaidAmount currencyID="{{ $payment->currency_type_id }}">{{ $payment->total }}</cbc:PaidAmount>
-            <cbc:PaidDate>{{ $payment->date_of_issue->format('Y-m-d') }}</cbc:PaidDate>
+            <cbc:PaidAmount currencyID="{{ $payment->currency_type_id }}">{{ $payment->total_payment }}</cbc:PaidAmount>
+            <cbc:PaidDate>{{ $payment->date_of_payment }}</cbc:PaidDate>
         </cac:Payment>
         @endforeach
         @endif
-        @if($doc->amount && $doc->payment && $doc->date_of_perception)
+        @if($doc->total_perception && $doc->total_payment && $doc->date_of_perception)
         <sac:SUNATPerceptionInformation>
-            <sac:SUNATPerceptionAmount currencyID="PEN">{{ $doc->amount  }}</sac:SUNATPerceptionAmount>
+            <sac:SUNATPerceptionAmount currencyID="PEN">{{ $doc->total_perception  }}</sac:SUNATPerceptionAmount>
             <sac:SUNATPerceptionDate>{{ $doc->date_of_perception->format('Y-m-d') }}</sac:SUNATPerceptionDate>
-            <sac:SUNATNetTotalCashed currencyID="PEN">{{ $doc->payment }}</sac:SUNATNetTotalCashed>
+            <sac:SUNATNetTotalCashed currencyID="PEN">{{ $doc->total_payment }}</sac:SUNATNetTotalCashed>
             @if($doc->exchange_rate)
             <cac:ExchangeRate>
-                <cbc:SourceCurrencyCode>{{ $doc->exchange_rate->source_currency_type_id }}</cbc:SourceCurrencyCode>
-                <cbc:TargetCurrencyCode>{{ $doc->exchange_rate->target_currency_type_id }}</cbc:TargetCurrencyCode>
-                <cbc:CalculationRate>{{ $doc->exchange_rate->rate }}</cbc:CalculationRate>
-                <cbc:Date>{{ $doc->exchange_rate->date->format('Y-m-d') }}</cbc:Date>
+                <cbc:SourceCurrencyCode>{{ $doc->exchange_rate->currency_type_id_source }}</cbc:SourceCurrencyCode>
+                <cbc:TargetCurrencyCode>{{ $doc->exchange_rate->currency_type_id_target }}</cbc:TargetCurrencyCode>
+                <cbc:CalculationRate>{{ $doc->exchange_rate->factor }}</cbc:CalculationRate>
+                <cbc:Date>{{ $doc->exchange_rate->date_of_exchange_rate }}</cbc:Date>
             </cac:ExchangeRate>
             @endif
         </sac:SUNATPerceptionInformation>

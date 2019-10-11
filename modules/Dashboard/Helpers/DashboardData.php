@@ -25,7 +25,7 @@ class DashboardData
         switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
-                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
                 break;
             case 'between_months':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
@@ -33,7 +33,7 @@ class DashboardData
                 break;
             case 'date':
                 $d_start = $date_start;
-                $d_end = $date_end;
+                $d_end = $date_start;
                 break;
             case 'between_dates':
                 $d_start = $date_start;
@@ -100,15 +100,23 @@ class DashboardData
     private function document_totals($establishment_id, $date_start, $date_end)
     {
         $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
-        $document_total = round(collect($documents)->sum('total'),2);
+        // $document_total = round(collect($documents)->sum('total'),2);
+        $document_total = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->sum('total');
 
+        $document_total_note_credit = 0;
         $document_total_payment = 0;
+
         foreach ($documents as $document)
         {
-            $document_total_payment += collect($document->payments)->sum('payment');
+            if(in_array($document->state_type_id,['01','03','05','07','13']))
+                $document_total_payment += collect($document->payments)->sum('payment');
+                
+            $document_total_note_credit += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
         }
 
-        $document_total_to_pay = round($document_total - $document_total_payment,2);
+        $document_total = round(($document_total - $document_total_note_credit),2);
+
+        $document_total_to_pay = round( $document_total - $document_total_payment,2);
 
         return [
             'totals' => [
@@ -149,7 +157,21 @@ class DashboardData
         $sale_notes_total = round($sale_notes->sum('total'),2);
 
         $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
-        $documents_total = round($documents->sum('total'),2);
+        // $documents_total = round($documents->sum('total'),2);
+        $documents_total = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->sum('total');
+
+// dd($documents->count());
+
+        $document_total_note_credit = 0; 
+
+        foreach ($documents as $document)
+        {
+            $document_total_note_credit += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
+        }
+
+        $documents_total = round(($documents_total - $document_total_note_credit),2);
+
+
 
         $total = round($sale_notes_total + $documents_total,2);
 
@@ -214,6 +236,8 @@ class DashboardData
         $sale_notes_array = [];
         $documents_array = [];
         $total_array = [];
+        $document_total = 0;
+        $document_total_note_credit = 0;
 
         $h_start = 0;
         $h_end = 23;
@@ -229,7 +253,16 @@ class DashboardData
 
             $document_total = $documents->filter(function ($row) use($h_format) {
                 return substr($row->time_of_issue, 0, 2) === $h_format;
-            })->sum('total');
+            })->whereIn('state_type_id', ['01','03','05','07','13'])
+            ->whereIn('document_type_id', ['01','03','08'])->sum('total');
+
+            $document_total_note_credit = $documents->filter(function ($row) use($h_format) {
+                return substr($row->time_of_issue, 0, 2) === $h_format;
+            })->where('document_type_id', '07')->sum('total');
+
+            $document_total = $document_total - $document_total_note_credit;
+
+
             $documents_array[$h_format.'h'] = $document_total;
 
             $total_array[$h_format.'h'] = $sale_note_total + $document_total;
@@ -243,6 +276,8 @@ class DashboardData
         $sale_notes_array = [];
         $documents_array = [];
         $total_array = [];
+        $document_total = 0;
+        $document_total_note_credit = 0;
 
         $d_start = Carbon::parse($date_start);
         $d_end = Carbon::parse($date_end);
@@ -252,7 +287,14 @@ class DashboardData
             $sale_note_total = collect($sale_notes)->where('date_of_issue', $d_start)->sum('total');
             $sale_notes_array[$d_start->format('d').'d'] = $sale_note_total;
 
-            $document_total = collect($documents)->where('date_of_issue', $d_start)->sum('total');
+            $document_total = collect($documents)->whereIn('state_type_id', ['01','03','05','07','13'])
+                                                 ->whereIn('document_type_id', ['01','03','08'])
+                                                 ->where('date_of_issue', $d_start)->sum('total');
+
+            $document_total_note_credit = collect($documents)->where('document_type_id', '07')->where('date_of_issue', $d_start)->sum('total');
+
+            $document_total = $document_total - $document_total_note_credit;
+
             $documents_array[$d_start->format('d').'d'] = $document_total;
 
             $total_array[$d_start->format('d').'d'] = $sale_note_total + $document_total;
@@ -268,6 +310,8 @@ class DashboardData
         $sale_notes_array = [];
         $documents_array = [];
         $total_array = [];
+        $document_total = 0;
+        $document_total_note_credit = 0;
 
         $m_start = (int) substr($month_start, 5, 2);
         $m_end = (int) substr($month_end, 5, 2);
@@ -284,7 +328,15 @@ class DashboardData
 
             $document_total = $documents->filter(function ($row) use($m_format) {
                 return $row->date_of_issue->format('m') === $m_format;
-            })->sum('total');
+            })->whereIn('state_type_id', ['01','03','05','07','13'])
+            ->whereIn('document_type_id', ['01','03','08'])->sum('total');
+
+            $document_total_note_credit = $documents->filter(function ($row) use($m_format) {
+                return $row->date_of_issue->format('m') === $m_format;
+            })->where('document_type_id', '07')->sum('total');
+
+            $document_total = $document_total - $document_total_note_credit;
+
             $documents_array[$m_format.'m'] = $document_total;
 
             $total_array[$m_format.'m'] = $sale_note_total + $document_total;

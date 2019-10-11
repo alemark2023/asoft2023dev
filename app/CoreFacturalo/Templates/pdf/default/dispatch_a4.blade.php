@@ -4,6 +4,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+    $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
 @endphp
 <html>
 <head>
@@ -97,8 +98,8 @@
     </thead>
     <tbody>
     <tr>
-        <td>Razón Social: {{ $document->dispatcher->name }}</td>
-        <td>RUC: {{ $document->dispatcher->number }}</td>
+        <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
+        <td>{{ $document_type_driver->description }}: {{ $document->dispatcher->number }}</td>
     </tr>
     <tbody>
     <tr>

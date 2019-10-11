@@ -4,9 +4,12 @@
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
                 <li class="active"><span>Comprobantes</span> </li>
-                <li><span class="text-muted">Facturas - Notas <small>(crédito y débito)</small> - Boletas - Anulaciones</small></span></li>
+                <li><span class="text-muted">Facturas - Notas <small>(crédito y débito)</small> - Boletas - Anulaciones</span></li>
             </ol>
             <div class="right-wrapper pull-right" v-if="typeUser != 'integrator'">
+                <span v-if="import_documents == true">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
+                </span>
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
             </div>
         </div>
@@ -31,7 +34,7 @@
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
                         <th>Número</th>
-                        <th>Documento que modifica</th>
+                        <th v-if="columns.notes.visible">Notas C/D</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
@@ -55,11 +58,17 @@
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>
+                            
+                        </td>
+                        <td v-if="columns.notes.visible">
+                            <template v-for="(row,index) in row.notes">
+                                <label class="d-block"   :key="index">{{row.note_type_description}}: {{row.description}}</label>
+                            </template>
                         </td>
 
-                        <td>
+                        <!-- <td>
                             {{ row.document_type_id == '07' ?  row.number : ''}}
-                        </td>
+                        </td> -->
                         
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
@@ -74,7 +83,9 @@
                         </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
+
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
+                        
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
@@ -119,6 +130,9 @@
                                     v-if="row.btn_voided"  >Anular</button>
                             <a :href="`/${resource}/note/${row.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
                                v-if="row.btn_note">Nota</a>
+                            <a :href="`/dispatches/create/${row.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                               v-if="row.btn_note">Guía</a>
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickResend(row.id)"
                                     v-if="row.btn_resend && !isClient">Reenviar</button>
@@ -137,6 +151,8 @@
 
             <documents-voided :showDialog.sync="showDialogVoided"
                             :recordId="recordId"></documents-voided>
+                            
+            <items-import :showDialog.sync="showImportDialog"></items-import>
 
             <document-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
@@ -153,19 +169,25 @@
     import DocumentsVoided from './partials/voided.vue'
     import DocumentOptions from './partials/options.vue'
     import DocumentPayments from './partials/payments.vue'
-    import DataTable from '../../../components/DataTable.vue'
+    import DataTable from '../../../components/DataTableDocuments.vue'
+    import ItemsImport from './import.vue'
 
     export default {
-        props: ['isClient','typeUser'],
-        components: {DocumentsVoided, DocumentOptions, DocumentPayments, DataTable},
+        props: ['isClient','typeUser','import_documents'],
+        components: {DocumentsVoided, ItemsImport, DocumentOptions, DocumentPayments, DataTable},
         data() {
             return {
                 showDialogVoided: false,
+                showImportDialog: false,
                 resource: 'documents',
                 recordId: null,
                 showDialogOptions: false,
                 showDialogPayments: false,
                 columns: {
+                    notes: {
+                        title: 'Notas C/D',
+                        visible: false
+                    },
                     user_name: {
                         title: 'Usuario',
                         visible: false
@@ -290,6 +312,9 @@
                     .catch(error => {
                         this.$message.error(error.response.data.message)
                     })
+            },
+            clickImport() {
+                this.showImportDialog = true
             }
         }
     }

@@ -8,7 +8,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     //     unit_price = parseFloat(row_old.item.unit_price) * 1.18
     // }
 
-
+    // console.log(row_old)
 
     if (currency_type_id_old === 'PEN' && currency_type_id_old !== currency_type_id_new)
     {
@@ -20,7 +20,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         unit_price = unit_price * exchange_rate_sale;
     }
 
-    unit_price = _.round(unit_price, 4);
+    // unit_price = _.round(unit_price, 4);
 
     // $table->increments('id');
     // $table->unsignedInteger('document_id');
@@ -73,6 +73,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         total_base_other_taxes: 0,
         percentage_other_taxes: 0,
         total_other_taxes: 0,
+        total_plastic_bag_taxes: 0,
         total_taxes: 0,
         price_type_id: '01',
         unit_price: unit_price,
@@ -92,27 +93,68 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         unit_value = row.unit_price / (1 + percentage_igv / 100)
     }
 
-    row.unit_value = _.round(unit_value, 4)
+    // row.unit_value = _.round(unit_value, 4)
+
+    row.unit_value = unit_value
 
     let total_value_partial = unit_value * row.quantity
 
     /* Discounts */
     let discount_base = 0
     let discount_no_base = 0
+    // row.discounts.forEach((discount, index) => {
+    //     discount.percentage = parseFloat(discount.percentage)
+    //     discount.factor = discount.percentage / 100
+    //     discount.base = _.round(total_value_partial, 2)
+    //     discount.amount = _.round(discount.base * discount.factor, 2)
+    //     if (discount.discount_type.base) {
+    //         discount_base += discount.amount
+    //     } else {
+    //         discount_no_base += discount.amount
+    //     }
+    //     row.discounts.splice(index, discount)
+    // })
+
     row.discounts.forEach((discount, index) => {
-        discount.percentage = parseFloat(discount.percentage)
-        discount.factor = discount.percentage / 100
-        discount.base = _.round(total_value_partial, 2)
-        discount.amount = _.round(discount.base * discount.factor, 2)
-        if (discount.discount_type.base) {
-            discount_base += discount.amount
-        } else {
-            discount_no_base += discount.amount
+
+        if(discount.is_amount){
+
+            discount.base = _.round(total_value_partial, 2)            
+            //amount and percentage are equals in input
+            discount.amount = _.round(discount.percentage, 2)
+            
+            discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
+
+            discount.factor = _.round(discount.percentage / 100, 2)
+
+            if (discount.discount_type.base) {
+                discount_base += discount.amount
+            } else {
+                discount_no_base += discount.amount
+            }
+
+        }else{
+
+            discount.percentage = parseFloat(discount.percentage)
+            discount.factor = discount.percentage / 100
+            discount.base = _.round(total_value_partial, 2)
+            discount.amount = _.round(discount.base * discount.factor, 2)
+            if (discount.discount_type.base) {
+                discount_base += discount.amount
+            } else {
+                discount_no_base += discount.amount
+            }
+
         }
+        
         row.discounts.splice(index, discount)
     })
+
     // console.log('total base discount:'+discount_base)
     // console.log('total no base discount:'+discount_no_base)
+
+
+
 
     /* Charges */
     let charge_base = 0
@@ -129,8 +171,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         }
         row.charges.splice(index, charge)
     })
-    console.log('total base charge:'+charge_base)
-    console.log('total no base charge:'+charge_no_base)
+    // console.log('total base charge:'+charge_base)
+    // console.log('total no base charge:'+charge_no_base)
 
     let total_isc = 0
     let total_other_taxes = 0
@@ -169,6 +211,11 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         row.unit_value = 0
         // row.total_value = 0
         row.total = 0
+    }
+
+    //impuesto bolsa
+    if(row_old.has_plastic_bag_taxes){
+        row.total_plastic_bag_taxes = _.round(row.quantity * row.item.amount_plastic_bag_taxes, 1)
     }
     
     // console.log(row)

@@ -25,14 +25,14 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price">
@@ -237,24 +237,28 @@
         },
         created() {
             this.initForm()
-            this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.items = response.data.items
-                this.affectation_igv_types = response.data.affectation_igv_types
-                this.system_isc_types = response.data.system_isc_types
-                this.discount_types = response.data.discount_types
-                this.charge_types = response.data.charge_types
-                this.attribute_types = response.data.attribute_types
-                // this.filterItems()
-
-            })
-
+            this.getTables()
             this.$eventHub.$on('reloadDataItems', (item_id) => {
                 this.reloadDataItems(item_id)
             })
         },
         methods: {
+            getTables(){
+
+                this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                    this.items = response.data.items
+                    this.affectation_igv_types = response.data.affectation_igv_types
+                    this.system_isc_types = response.data.system_isc_types
+                    this.discount_types = response.data.discount_types
+                    this.charge_types = response.data.charge_types
+                    this.attribute_types = response.data.attribute_types
+                    // this.filterItems()
+
+                })
+            },
             selectedPrice(row)
             {
+                // debugger 
                 let valor = 0
                 switch(row.price_default)
                 {
@@ -270,7 +274,12 @@
 
                 }
 
+                this.item_unit_type = row
                 this.form.unit_price = valor
+                this.form.item.unit_type_id = row.unit_type_id
+                this.form.item_unit_type_id = row.id
+                this.getTables()
+
             },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
@@ -291,8 +300,10 @@
                     charges: [],
                     discounts: [],
                     attributes: [],
+                    has_igv: null,
                     item_unit_types: []
                 }
+                 this.item_unit_type = {};
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -359,14 +370,24 @@
                 this.$emit('update:showDialog', false)
             },
             changeItem() {
-                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.item = _.find(this.items, {'id': this.form.item_id})
+                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price = this.form.item.sale_unit_price
+
+                this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id
+                this.form.quantity = 1;
             },
             clickAddItem() {
-                this.form.item.unit_price = this.form.unit_price
+
+                let unit_price = (this.form.has_igv)?this.form.unit_price:this.form.unit_price*1.18;
+
+                // this.form.item.unit_price = this.form.unit_price
+                this.form.unit_price = unit_price;
+                this.form.item.unit_price = unit_price;
+
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
+                this.form.item.presentation = this.item_unit_type;
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
                 this.initForm()
                 // this.initializeFields()

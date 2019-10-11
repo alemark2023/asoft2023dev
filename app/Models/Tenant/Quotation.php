@@ -199,12 +199,23 @@ class Quotation extends ModelTenant
         return $this->hasMany(Document::class);
     }
 
+    public function sale_notes()
+    {
+        return $this->hasMany(SaleNote::class);
+    }
+
   
     public function getNumberToLetterAttribute()
     {
         $legends = $this->legends;
         $legend = collect($legends)->where('code', '1000')->first();
         return $legend->value;
+    }
+
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();         
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
     }
  
 }

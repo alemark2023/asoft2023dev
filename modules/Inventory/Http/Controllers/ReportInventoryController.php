@@ -22,10 +22,10 @@ class ReportInventoryController extends Controller
      */
     public function index() {
 
-        $reports = ItemWarehouse::with(['item'=>function($q){
-                                    $q->where('item_type_id', '01');
-                                }])->latest()->get();
-                    
+        $reports = ItemWarehouse::with(['item'])->whereHas('item',function($q){
+                                    $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                                })->latest()->paginate(config('tenant.items_per_page'));
+
         return view('inventory::reports.inventory.index', compact('reports'));
     }
     
@@ -36,9 +36,9 @@ class ReportInventoryController extends Controller
      */
     public function search(Request $request) {
         
-        $reports = ItemWarehouse::with(['item'=>function($q){
-            $q->where('item_type_id', '01');
-        }])->latest()->get();
+        $reports = ItemWarehouse::with(['item'])->whereHas('item', function($q){
+            $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+        })->latest()->get();
         
         return view('inventory::reports.inventory.index', compact('reports'));
     }
@@ -53,9 +53,9 @@ class ReportInventoryController extends Controller
         $company = Company::first();
         $establishment = Establishment::first();
         
-        $reports = ItemWarehouse::with(['item'=>function($q){
-            $q->where('item_type_id', '01');
-        }])->latest()->get();
+        $reports = ItemWarehouse::with(['item'])->whereHas('item', function($q){
+            $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+        })->latest()->get();
         
         $pdf = PDF::loadView('inventory::reports.inventory.report_pdf', compact("reports", "company", "establishment"));
         $filename = 'Reporte_Inventario'.date('YmdHis');
@@ -72,9 +72,9 @@ class ReportInventoryController extends Controller
         $company = Company::first();
         $establishment = Establishment::first();
        
-        $records = ItemWarehouse::with(['item'=>function($q){
-            $q->where('item_type_id', '01');
-        }])->latest()->get();
+        $records = ItemWarehouse::with(['item'])->whereHas('item', function($q){
+            $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+        })->latest()->get();
 
         return (new InventoryExport)
             ->records($records)

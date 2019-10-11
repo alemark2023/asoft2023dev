@@ -8,6 +8,7 @@ use App\CoreFacturalo\WS\Zip\ZipFly;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Facturalo;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\StateType;
 use Illuminate\Http\Request;
 use Exception;
 
@@ -45,6 +46,8 @@ class DocumentController extends Controller
                 'number' => $document->number_full,
                 'filename' => $document->filename,
                 'external_id' => $document->external_id,
+                'state_type_id' => $document->state_type_id,
+                'state_type_description' => $this->getStateTypeDescription($document->state_type_id),
                 'number_to_letter' => $document->number_to_letter,
                 'hash' => $document->hash,
                 'qr' => $document->qr,
@@ -80,6 +83,8 @@ class DocumentController extends Controller
                     'number' => $document->number_full,
                     'filename' => $document->filename,
                     'external_id' => $document->external_id,
+                    'state_type_id' => $document->state_type_id,
+                    'state_type_description' => $this->getStateTypeDescription($document->state_type_id)
                 ],
                 'links' => [
                     'cdr' => $document->download_external_cdr,
@@ -134,4 +139,9 @@ class DocumentController extends Controller
             'file_cdr' => $file_cdr
         ];
     }
+
+    private function getStateTypeDescription($id){
+        return StateType::find($id)->description;
+    }
+
 }

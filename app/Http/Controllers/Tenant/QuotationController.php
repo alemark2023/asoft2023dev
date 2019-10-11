@@ -14,6 +14,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Http\Resources\Tenant\QuotationCollection;
 use App\Http\Resources\Tenant\QuotationResource;
+use App\Http\Resources\Tenant\QuotationResource2;
 use App\Models\Tenant\Catalogs\AffectationIgvType;  
 use App\Models\Tenant\Catalogs\DocumentType;  
 use Illuminate\Support\Facades\DB;
@@ -35,6 +36,8 @@ use Mpdf\Config\FontVariables;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
+use App\Models\Tenant\PaymentMethodType;
+
 
 
 
@@ -73,6 +76,7 @@ class QuotationController extends Controller
     public function records(Request $request)
     {
         $records = Quotation::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()        
                             ->latest();
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));
@@ -116,8 +120,9 @@ class QuotationController extends Controller
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();   
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+        $payment_method_types = PaymentMethodType::all();
 
-        return compact('series', 'document_types_invoice');
+        return compact('series', 'document_types_invoice', 'payment_method_types');
     }
     
     public function item_tables() {
@@ -140,6 +145,13 @@ class QuotationController extends Controller
         return $record;
     }
 
+    public function record2($id)
+    {
+        $record = new QuotationResource(Quotation::findOrFail($id));
+
+        return $record;
+    }
+
     public function store(QuotationRequest $request) {
         DB::connection('tenant')->transaction(function () use ($request) {
             $data = $this->mergeData($request);
@@ -151,6 +163,8 @@ class QuotationController extends Controller
             }
             
             $this->setFilename();
+            $this->createPdf($this->quotation, "a4", $this->quotation->filename);
+
         });
         
         return [
@@ -165,14 +179,14 @@ class QuotationController extends Controller
     {
         
          DB::connection('tenant')->transaction(function () use ($request) {
-            $data = $this->mergeData($request);
+           // $data = $this->mergeData($request);
            // return $request['id'];
 
            $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
-           $this->quotation->fill($data);
+           $this->quotation->fill($request->all());
            $this->quotation->items()->delete();
             
-            foreach ($data['items'] as $row) {
+            foreach ($request['items'] as $row) {
                 
                 $this->quotation->items()->create($row);
             }
@@ -180,6 +194,34 @@ class QuotationController extends Controller
             $this->setFilename();
         });
         
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->quotation->id,
+            ],
+        ];
+
+    }
+
+
+    public function duplicate(Request $request)
+    {   
+       // return $request->id;
+       $obj = Quotation::find($request->id);
+       $this->quotation = $obj->replicate();
+       $this->quotation->external_id = Str::uuid()->toString();
+       $this->quotation->state_type_id = '01' ;
+       $this->quotation->save();
+      
+       foreach($obj->items as $row)
+       {
+         $new = $row->replicate();
+         $new->quotation_id = $this->quotation->id;
+         $new->save();
+       }
+
+        $this->setFilename();
+
         return [
             'success' => true,
             'data' => [
@@ -270,6 +312,7 @@ class QuotationController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_igv' => (bool) $row->has_igv,
                         'calculate_quantity' => (bool) $row->calculate_quantity,
                         'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                             return [
@@ -362,7 +405,11 @@ class QuotationController extends Controller
         
         $html = $template->pdf($base_template, "quotation", $company, $document, $format_pdf);
         
-        if ($format_pdf === 'ticket') {
+        if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80') {
+
+            $width = 78;
+            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+
             $company_name      = (strlen($company->name) / 20) * 10;
             $company_address   = (strlen($document->establishment->address) / 30) * 10;
             $company_number    = $document->establishment->telephone != '' ? '10' : '0';
@@ -387,7 +434,7 @@ class QuotationController extends Controller
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
-                    78,
+                    $width,
                     120 +
                     ($quantity_rows * 8) +
                     ($discount_global * 3) +
@@ -525,7 +572,7 @@ class QuotationController extends Controller
         $quotation = Quotation::find($request->id);
         $customer_email = $request->input('customer_email');
 
-        $this->reloadPDF($quotation, null, $quotation->filename);
+        // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
         Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
         return [

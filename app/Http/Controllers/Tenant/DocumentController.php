@@ -25,6 +25,8 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\StateType;
+use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
@@ -37,6 +39,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Nexmo\Account\Price;
 use Illuminate\Support\Facades\Cache;
+use App\Imports\DocumentsImport;
+use Maatwebsite\Excel\Excel;
+use Modules\BusinessTurn\Models\BusinessTurn;
+
 
 class DocumentController extends Controller
 {
@@ -50,8 +56,9 @@ class DocumentController extends Controller
     public function index()
     {
         $is_client = config('tenant.is_client');
+        $import_documents = config('tenant.import_documents');
 
-        return view('tenant.documents.index', compact('is_client'));
+        return view('tenant.documents.index', compact('is_client','import_documents'));
     }
 
     public function columns()
@@ -65,14 +72,8 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
-        //return 'asd';
-//        $series = Series::select('number')->where('contingency', false)->get();
-        $series = Series::select('number')->get();
-
-        $records = Document::where($request->column, 'like', "%{$request->value}%")
-                            ->whereIn('series',$series)
-                            ->whereTypeUser()
-                            ->latest();
+        
+        $records = $this->getRecords($request);
 
         return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -81,8 +82,9 @@ class DocumentController extends Controller
     {
 
         //tru de boletas en env esta en true filtra a los con dni   , false a todos
-        $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);     
-         
+        $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id, $request->operation_type_id);
+//        $operation_type_id_id = $this->getIdentityDocumentTypeId($request->operation_type_id);
+
         $customers = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
@@ -110,6 +112,15 @@ class DocumentController extends Controller
         $is_contingency = 0;
         return view('tenant.documents.form', compact('is_contingency'));
     }
+
+    public function create_tensu()
+    {
+        if(auth()->user()->type == 'integrator')
+            return redirect('/documents');
+
+        $is_contingency = 0;
+        return view('tenant.documents.form_tensu', compact('is_contingency'));
+    }
     
 
     public function tables()
@@ -136,7 +147,10 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get();
-        $user = \auth()->user();
+        $user = auth()->user()->type;
+        $payment_method_types = PaymentMethodType::all();
+        $business_turns = BusinessTurn::where('active', true)->get();
+        $enabled_discount_global = config('tenant.enabled_discount_global');
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
 //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
@@ -151,7 +165,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user');
+                        'document_types_guide', 'user','payment_method_types','enabled_discount_global','business_turns');
 
     }
 
@@ -193,6 +207,7 @@ class DocumentController extends Controller
                 return [
                     'id' => $row->id,
                     'full_description' => $full_description,
+                    'internal_id' => $row->internal_id,
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
@@ -203,6 +218,7 @@ class DocumentController extends Controller
                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                     'calculate_quantity' => (bool) $row->calculate_quantity,
                     'has_igv' => (bool) $row->has_igv,
+                    'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
                     'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                         return [
                             'id' => $row->id,
@@ -215,13 +231,13 @@ class DocumentController extends Controller
                             'price3' => $row->price3,
                             'price_default' => $row->price_default,
                         ];
+                    }),
+                    'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        return [
+                            'warehouse_description' => $row->warehouse->description,
+                            'stock' => $row->stock,
+                        ];
                     })
-                    // 'warehouses' => collect($row->warehouses)->transform(function($row) {
-                    //     return [
-                    //         'warehouse_description' => $row->warehouse->description,
-                    //         'stock' => $row->stock,
-                    //     ];
-                    // })
                 ];
             });
 //            return $items;
@@ -433,17 +449,21 @@ class DocumentController extends Controller
         return compact('customers');
     }
 
-    public function getIdentityDocumentTypeId($document_type_id){
+    public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
 
-        if($document_type_id == '01'){
-            $identity_document_type_id = [6];
-        }else{
-            if(config('tenant.document_type_03_filter')){
-                $identity_document_type_id = [1];
+        if($operation_type_id === '0101') {
+            if($document_type_id == '01'){
+                $identity_document_type_id = [6];
             }else{
-                $identity_document_type_id = [1,4,6,7,0];
+                if(config('tenant.document_type_03_filter')){
+                    $identity_document_type_id = [1];
+                }else{
+                    $identity_document_type_id = [1,4,6,7,0];
+                }
             }
-        } 
+        } else {
+            $identity_document_type_id = [1,4,6,7,0];
+        }
 
         return $identity_document_type_id;
     }
@@ -462,6 +482,31 @@ class DocumentController extends Controller
         }
     }
 
+    public function import(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new DocumentsImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
     public function messageLockedEmission(){
 
         $configuration = Configuration::first();
@@ -478,6 +523,58 @@ class DocumentController extends Controller
             'success' => true,
             'message' => '',
         ];
+    }
+
+    public function getRecords($request){
+
+
+        $d_end = $request->d_end;
+        $d_start = $request->d_start;
+        $date_of_issue = $request->date_of_issue;
+        $document_type_id = $request->document_type_id;
+        $state_type_id = $request->state_type_id;
+        $number = $request->number;
+        $series = $request->series;
+ 
+
+        if($d_start && $d_end){
+
+            $records = Document::where('document_type_id', 'like', '%' . $document_type_id . '%')
+                            ->where('series', 'like', '%' . $series . '%')
+                            ->where('number', 'like', '%' . $number . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                            ->whereBetween('date_of_issue', [$d_start , $d_end])
+                            ->whereTypeUser()
+                            ->latest();
+
+        }else{
+
+            $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%')
+                            ->where('document_type_id', 'like', '%' . $document_type_id . '%')
+                            ->where('state_type_id', 'like', '%' . $state_type_id . '%')
+                            ->where('series', 'like', '%' . $series . '%')
+                            ->where('number', 'like', '%' . $number . '%')
+                            ->whereTypeUser()
+                            ->latest();
+        }        
+
+        return $records;
+
+    }
+
+    public function data_table()
+    {
+        
+        // $customers = $this->table('customers'); 
+        $customers = []; 
+        $state_types = StateType::get();
+        $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
+        // $series = Series::where('contingency', false)->whereIn('document_type_id', ['01', '03','07', '08'])->get();
+        $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
+        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
+                       
+        return compact( 'customers', 'document_types','series','establishments', 'state_types');
+
     }
 
 }

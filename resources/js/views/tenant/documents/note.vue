@@ -172,9 +172,10 @@
             </form>
         </div>
 
-        <document-form-item :user-type="user.type" :showDialog.sync="showDialogAddItem"
+        <document-form-item :showDialog.sync="showDialogAddItem"
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
+                            :user="user"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             @add="addRow"></document-form-item>
 
@@ -193,7 +194,7 @@
     export default {
         components: {DocumentFormItem, DocumentOptions},
         mixins: [functions, exchangeRate],
-        props: ['document', 'user'],
+        props: ['document_affected'],
         data() {
             return {
                 showDialogAddItem: false,
@@ -211,11 +212,14 @@
                 documentNewId: null,
                 note_credit_types: [],
                 note_debit_types: [],
+                user: {},
+                document: {},
                 operation_types: [],
                 is_contingency: false,
             }
         },
         created() {
+            this.document = this.document_affected
             this.initForm()
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -226,6 +230,7 @@
                     this.note_credit_types = response.data.note_credit_types
                     this.note_debit_types = response.data.note_debit_types
                     this.operation_types = response.data.operation_types
+                    this.user = response.data.user;
 
                     this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
@@ -267,6 +272,7 @@
                     total_isc: this.document.total_isc,
                     total_base_other_taxes: this.document.total_base_other_taxes,
                     total_other_taxes: this.document.total_other_taxes,
+                    total_plastic_bag_taxes: this.document.total_plastic_bag_taxes,
                     total_taxes: this.document.total_taxes,
                     total_value: this.document.total_value,
                     total: this.document.total,
@@ -278,14 +284,23 @@
                         format_pdf: 'a4'
                     },
                     operation_type_id: null,
+                    hotel: {},
                 }
             },
-            resetForm() {
-                this.initForm()
+            async resetForm() {
+                await this.getNote()
+                await this.initForm()
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
                 this.changeDateOfIssue()
+            },
+            getNote(){
+                this.$http.get(`/${this.resource}/note/record/${this.form.affected_document_id}`)
+                    .then(response => { 
+                        // console.log(response)
+                        this.document = response.data
+                    })
             },
             changeDocumentType() {
                 this.form.note_credit_or_debit_type_id = null
@@ -328,6 +343,7 @@
                 let total_igv = 0
                 let total_value = 0
                 let total = 0
+                let total_plastic_bag_taxes = 0
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -350,6 +366,7 @@
                     total_value += parseFloat(row.total_value)
                     total_igv += parseFloat(row.total_igv)
                     total += parseFloat(row.total)
+                    total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
                 });
 
                 this.form.total_exportation = _.round(total_exportation, 2)
@@ -360,7 +377,10 @@
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
-                this.form.total = _.round(total, 2)
+                this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+                // this.form.total = _.round(total, 2)
+                this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
+                
             },
             submit() {
                 this.loading_submit = true

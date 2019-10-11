@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant\CardBrand;
 use Illuminate\Http\Request;
 use App\Http\Requests\Tenant\CardBrandRequest;
+use Exception;
 
 class CardBrandController extends Controller
 {
@@ -41,14 +42,20 @@ class CardBrandController extends Controller
 
     public function destroy($id)
     {
-        $card_brand = CardBrand::findOrFail($id);
-        //$card_brand->delete();
-        $card_brand->active = 0;
-        $card_brand->save();
+        try {
+            
+            $card_brand = CardBrand::findOrFail($id);
+            $card_brand->delete(); 
 
-        return [
-            'success' => true,
-            'message' => 'Tarjeta eliminada con éxito'
-        ];
+            return [
+                'success' => true,
+                'message' => 'Tarjeta eliminada con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'La Tarjeta esta siendo usada por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar la tarjeta'];
+
+        } 
     }
 }

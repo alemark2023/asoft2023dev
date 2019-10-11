@@ -26,10 +26,16 @@ class InventoryVoidedServiceProvider extends ServiceProvider
             if($document['document_type_id'] == '01' || $document['document_type_id'] == '03'){
                 if(in_array($document['state_type_id'], [ '09', '11' ], true)){
                     $warehouse = $this->findWarehouse($document['establishment_id']);
+
                     foreach ($document['items'] as $detail) {
-                        $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'], $warehouse->id);
-                        $this->updateStock($detail['item_id'], $detail['quantity'], $warehouse->id);
+                        // dd($detail['item']->presentation);
+                        $presentationQuantity = (!empty($detail['item']->presentation)) ? $detail['item']->presentation->quantity_unit : 1;
+
+                        $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+                        $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+
                     }
+
                 }
             }         
         });

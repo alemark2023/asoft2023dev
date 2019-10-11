@@ -8,6 +8,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
+use App\Models\Tenant\Catalogs\District;
 use Exception;
 
 class Functions
@@ -24,6 +25,7 @@ class Functions
 
     public static function person($inputs, $type) {
         $district_id = $inputs['district_id'];
+        $ubigeo = Functions::validateUbigeo($district_id);
         $province_id = ($district_id)?substr($district_id, 0 ,4):null;
         $department_id = ($district_id)?substr($district_id, 0 ,2):null;
 
@@ -46,6 +48,17 @@ class Functions
         return $person->id;
     }
 
+    public static function validateUbigeo($ubigeo) {
+
+        if (strlen($ubigeo) != 6) throw new Exception("El código ubigeo debe contener 6 dígitos");
+
+        $query_distric = District::where('id', $ubigeo)->first();
+
+        if (!$query_distric) throw new Exception("No ha ingresado el código ubigeo o es incorrecto");
+
+        return true;
+    }
+
     public static function item($inputs) {
 
         // $establishment_id = auth()->user()->establishment->id;
@@ -55,6 +68,8 @@ class Functions
             'internal_id' => $inputs['internal_id'],
         ], [
             'description' => $inputs['description'],
+            'name' => $inputs['name'],
+            'second_name' => $inputs['second_name'],
             'item_type_id' => $inputs['item_type_id'],
             'item_code' => $inputs['item_code'],
             'item_code_gs1' => $inputs['item_code_gs1'],
