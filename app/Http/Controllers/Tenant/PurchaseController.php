@@ -267,6 +267,8 @@ class PurchaseController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_perception' => (bool) $row->has_perception,
+                        'percentage_perception' => $row->percentage_perception,
                         'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                             return [
                                 'id' => $row->id,

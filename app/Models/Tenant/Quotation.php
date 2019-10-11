@@ -211,5 +211,11 @@ class Quotation extends ModelTenant
         $legend = collect($legends)->where('code', '1000')->first();
         return $legend->value;
     }
+
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();         
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
  
 }

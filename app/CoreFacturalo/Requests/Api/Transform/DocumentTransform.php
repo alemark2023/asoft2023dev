@@ -41,6 +41,7 @@ class DocumentTransform
             'total_taxes' => Functions::valueKeyInArray($totals, 'total_impuestos'),
             'total_value' => Functions::valueKeyInArray($totals, 'total_valor'),
             'total' => Functions::valueKeyInArray($totals, 'total_venta'),
+            'has_prepayment' => Functions::valueKeyInArray($inputs, 'pago_anticipado',0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -52,6 +53,7 @@ class DocumentTransform
             'legends' => LegendTransform::transform($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
             'actions' => ActionTransform::transform($inputs),
+            'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
             'payments' => self::payments($inputs),
             'data_json' => $inputs
         ];

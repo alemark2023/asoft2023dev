@@ -78,11 +78,14 @@
     </tr>
 </table>
 <table class="full-width">
-    <tr>
+    <tr >
         <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
+    </tr> 
+    <tr>
+        <td width="" ><p class="desc">H. Emisión:</p></td>
+        <td width="" ><p class="desc">{{ $document->time_of_issue }}</p></td>
     </tr>
-
     @isset($invoice->date_of_due)
     <tr>
         <td><p class="desc">F. Vencimiento:</p></td>
@@ -295,6 +298,18 @@
     <tr>
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
+
+    @if ($customer->department_id == 16)
+        <tr>
+            <td class="text-center desc pt-5">
+                Representación impresa del Comprobante de Pago Electrónico. 
+                <br/>Esta puede ser consultada en:
+                <br/> <b>{!! url('/buscar') !!}</b>
+                <br/> "Bienes transferidos en la Amazonía 
+                <br/>para ser consumidos en la misma
+            </td>
+        </tr>
+    @endif
 
     @if($payments->count())
         <tr>

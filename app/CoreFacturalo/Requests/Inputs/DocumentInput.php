@@ -85,6 +85,7 @@ class DocumentInput
             'total_taxes' => $inputs['total_taxes'],
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
+            'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -95,6 +96,7 @@ class DocumentInput
             'detraction' => self::detraction($inputs),
             'invoice' => $invoice,
             'note' => $note,
+            'hotel' => self::hotel($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
@@ -340,6 +342,13 @@ class DocumentInput
             }
         }
         return null;
+    }
+
+
+    private static function hotel($inputs)
+    {
+        // dd($inputs);
+        return $inputs['hotel'];
     }
 
     private static function invoice($inputs)

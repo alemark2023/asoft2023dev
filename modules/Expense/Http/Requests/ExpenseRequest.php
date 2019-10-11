@@ -20,6 +20,9 @@ class ExpenseRequest extends FormRequest
             'supplier_id' => [
                 'required',
             ],
+            'expense_reason_id' => [
+                'required',
+            ],
             'number' => [
                 'required',
                 'numeric'

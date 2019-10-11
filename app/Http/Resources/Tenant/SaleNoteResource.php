@@ -21,6 +21,7 @@ class SaleNoteResource extends JsonResource
         return [
             'id' => $this->id,
             'external_id' => $this->external_id, 
+            'number' => $this->number_full,
             'identifier' => $this->identifier,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'), 
             'print_ticket' => url('')."/sale-notes/print/{$this->external_id}/ticket",

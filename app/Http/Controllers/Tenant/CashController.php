@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\User;
+use App\Models\Tenant\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\CashRequest;
 use App\Http\Resources\Tenant\CashCollection;
@@ -17,6 +18,7 @@ use App\Models\Tenant\CashDocument;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class CashController extends Controller
 {
@@ -29,13 +31,14 @@ class CashController extends Controller
     {
         return [
             'income' => 'Ingresos',
-            'expense' => 'Egresos',
+            // 'expense' => 'Egresos',
         ];
     }
 
     public function records(Request $request)
     {
         $records = Cash::where($request->column, 'like', "%{$request->value}%")
+                        ->whereTypeUser()        
                         ->orderBy('date_opening');
 
         
@@ -103,7 +106,7 @@ class CashController extends Controller
         $income = 0;
 
         foreach ($cash->cash_documents as $cash_document) {
-            $final_balance += $cash_document->document->total;
+            $final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
         }
 
         $cash->final_balance = $final_balance + $cash->beginning_balance; 
@@ -122,7 +125,7 @@ class CashController extends Controller
     public function cash_document(Request $request) {
                
         $cash = Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
-        $cash->cash_documents()->create(['document_id'=>$request->document_id]);
+        $cash->cash_documents()->create($request->all());
           
         return [
             'success' => true,
@@ -140,6 +143,22 @@ class CashController extends Controller
             'success' => true,
             'message' => 'Caja eliminada con éxito'
         ];
+    }
+
+
+    public function report($cash) {
+       
+        $cash = Cash::findOrFail($cash);
+        $company = Company::first();
+        // dd($cash);
+
+        set_time_limit(0); 
+        
+        $pdf = PDF::loadView('tenant.cash.report_pdf', compact("cash", "company"));
+
+        $filename = "Reporte_POS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+        
+        return $pdf->download($filename.'.pdf');
     }
 
    

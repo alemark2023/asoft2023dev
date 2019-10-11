@@ -284,6 +284,7 @@
                         format_pdf: 'a4'
                     },
                     operation_type_id: null,
+                    hotel: {},
                 }
             },
             async resetForm() {

@@ -106,6 +106,13 @@ Vue.component('tenant-account-format', require('../../modules/Account/Resources/
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 
 Vue.component('tenant-documents-not-sent', require('../../modules/Document/Resources/assets/js/views/documents/not_sent.vue'));
+Vue.component('tenant-report-purchases-index', require('../../modules/Report/Resources/assets/js/views/purchases/index.vue'));
+Vue.component('tenant-report-documents-index', require('../../modules/Report/Resources/assets/js/views/documents/index.vue'));
+Vue.component('tenant-report-sale_notes-index', require('../../modules/Report/Resources/assets/js/views/sale_notes/index.vue'));
+Vue.component('tenant-report-quotations-index', require('../../modules/Report/Resources/assets/js/views/quotations/index.vue'));
+Vue.component('tenant-report-cash-index', require('../../modules/Report/Resources/assets/js/views/cash/index.vue'));
+Vue.component('tenant-index-configuration', require('../../modules/BusinessTurn/Resources/assets/js/views/configurations/index.vue'));
+Vue.component('tenant-report-document_hotels-index', require('../../modules/Report/Resources/assets/js/views/document_hotels/index.vue'));
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
@@ -117,17 +124,10 @@ Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
 Vue.component('x-input-service', require('./components/InputService.vue'));
 
-// Ecommerce
-
 Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecommerce/index.vue'));
 Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dropdown.vue'));
-
 Vue.component('tenant-tags-index', require('./views/tenant/tags/index.vue'));
-
 Vue.component('tenant-promotions-index', require('./views/tenant/promotions/index.vue'));
-
-
-
 
 const app = new Vue({
     el: '#main-wrapper'

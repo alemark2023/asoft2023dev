@@ -138,6 +138,9 @@
                     .then(response => {
                         this.records = response.data.data
                     });
+
+                this.$eventHub.$emit('reloadDataUnpaid')
+
             },
             clickAddRow() {
                 this.records.push({

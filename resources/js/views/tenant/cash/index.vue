@@ -43,9 +43,11 @@
                         <td>{{ row.expense }}</td> -->
                         <td>{{ row.state_description }}</td>
                         <td class="text-center">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownload(row.id)">Reporte</button>
+
                             <template v-if="row.state">                
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                             </template>
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
@@ -92,6 +94,9 @@
 
         },
         methods: {
+            clickDownload(id) { 
+                window.open(`/${this.resource}/report/${id}`, '_blank');
+            },
             clickCreate(recordId = null) {
                 this.recordId = recordId
                 this.showDialog = true

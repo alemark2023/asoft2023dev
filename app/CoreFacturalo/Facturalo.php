@@ -28,6 +28,7 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
+use App\Models\Tenant\Perception;
 
 class Facturalo
 {
@@ -109,6 +110,7 @@ class Facturalo
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
+                if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
                 $document->invoice()->create($inputs['invoice']);
                 $this->document = Document::find($document->id);
                 break;
@@ -132,6 +134,13 @@ class Facturalo
                     $document->documents()->create($row);
                 }
                 $this->document = Retention::find($document->id);
+                break;
+            case 'perception':
+                $document = Perception::create($inputs);
+                foreach ($inputs['documents'] as $row) {
+                    $document->documents()->create($row);
+                }
+                $this->document = Perception::find($document->id);
                 break;
             default:
                 $document = Dispatch::create($inputs);
@@ -268,6 +277,7 @@ class Facturalo
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
             $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
             $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0; 
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
             $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
@@ -275,6 +285,8 @@ class Facturalo
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $perception       = $this->document->perception != '' ? '10' : '0';
+
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
 
@@ -308,7 +320,9 @@ class Facturalo
                     $total_free +
                     $total_unaffected +
                     $total_exonerated +
+                    $perception +
                     $total_taxed+
+                    $customer_department_id+
                     $total_plastic_bag_taxes],
                 'margin_top' => 0,
                 'margin_right' => 1,
@@ -654,6 +668,7 @@ class Facturalo
 //            dd($this->soapPassword);
         } else {
             switch ($this->type) {
+                case 'perception':
                 case 'retention':
                     $this->endpoint = ($this->isDemo)?SunatEndpoints::RETENCION_BETA:SunatEndpoints::RETENCION_PRODUCCION;
                     break;

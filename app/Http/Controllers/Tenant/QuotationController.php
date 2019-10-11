@@ -76,6 +76,7 @@ class QuotationController extends Controller
     public function records(Request $request)
     {
         $records = Quotation::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()        
                             ->latest();
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));
@@ -311,6 +312,7 @@ class QuotationController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_igv' => (bool) $row->has_igv,
                         'calculate_quantity' => (bool) $row->calculate_quantity,
                         'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                             return [

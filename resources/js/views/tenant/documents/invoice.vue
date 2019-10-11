@@ -124,14 +124,15 @@
                             </div>
                             <div class="col-lg-2 mt-2 mb-2"  v-if="form.document_type_id=='03'">
                                 <div class="form-group" > 
-                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold">¿Es venta por cobrar?</el-checkbox>
+                                    <el-checkbox v-model="is_receivable" class=" font-weight-bold" @change="changeIsReceivable">¿Es venta por cobrar?</el-checkbox>
                                 </div>
                             </div> 
                         </div>
 
-                        <div class="row col-lg-8">
+                        <div class="row" >
+                            <div class="col-lg-8" v-if="!is_receivable">
 
-                            <table>
+                                <table>
                                 <thead>
                                     <tr width="100%">
                                         <th v-if="form.payments.length>0">Método de pago</th>
@@ -169,6 +170,17 @@
                                 </tbody> 
                             </table> 
                             
+
+                            </div>
+                            
+                            <div class="col-lg-4 mt-3" >
+                                <el-checkbox v-model="form.has_prepayment"><strong>¿Es un pago anticipado?</strong></el-checkbox>
+                            </div>
+
+                            <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('hotel')">
+                                <a href="#" @click.prevent="clickAddDocumentHotel" class="text-center font-weight-bold text-info">[+ Datos personales para reserva de hospedaje]</a>
+                            </div>
+
                         </div>
 
 
@@ -363,7 +375,7 @@
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
-                           :user="user"
+                           :typeUser="typeUser"
                            @add="addRow"></document-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -375,6 +387,13 @@
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
                           :showClose="false"></document-options>
+
+        
+        <document-hotel-form   
+            :showDialog.sync="showDialogFormHotel"
+            :hotel="form.hotel"
+            @addDocumentHotel="addDocumentHotel" 
+            ></document-hotel-form>
     </div>
 </template>
 
@@ -390,13 +409,15 @@
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
+    import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
 
     export default {
-        // props: ['is_contingency'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo},
+        props: ['typeUser'],
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm},
         mixins: [functions, exchangeRate],
         data() {
             return {
+                showDialogFormHotel:false,
                 recordItem: null,
                 resource: 'documents',
                 showDialogAddItem: false,
@@ -412,6 +433,7 @@
                 discount_types: [],
                 charges_types: [],
                 all_customers: [],                
+                business_turns: [],                
                 form_payment: {},
                 document_types_guide: [],
                 customers: [],
@@ -430,19 +452,20 @@
                 loading_search:false,
                 is_amount:true,
                 enabled_discount_global:false,
-                user: {},
+                user: null,
                 is_receivable:false,
                 is_contingency: false,
             }
         },
         async created() {
-            //console.log(this.is_contingency )
+            // console.log(this.typeUser )
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.document_types = response.data.document_types_invoice;
                     this.document_types_guide = response.data.document_types_guide;
                     this.currency_types = response.data.currency_types
+                    this.business_turns = response.data.business_turns
                     this.establishments = response.data.establishments
                     this.operation_types = response.data.operation_types
                     this.all_series = response.data.series
@@ -470,6 +493,20 @@
             })
         },
         methods: {
+            isActiveBussinessTurn(value){
+                return (_.find(this.business_turns,{'value':value})) ? true:false
+            },
+            clickAddDocumentHotel(){
+                this.showDialogFormHotel = true
+            },
+            
+            addDocumentHotel(hotel) {
+                this.form.hotel = hotel 
+                // console.log(this.form.hotel)
+            },
+            changeIsReceivable(){
+
+            },
             clickAddPayment() {
                 this.form.payments.push({
                     id: null,
@@ -550,9 +587,11 @@
                     guides: [],
                     payments: [],
                     additional_information:null,
+                    has_prepayment:false,
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    hotel: {}
                 }
  
                 this.clickAddPayment()
@@ -753,10 +792,14 @@
                 // console.log(this.form.discounts)
             }, 
             async submit() {
-                
-                let validate = await this.validate_payments()
-                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
-                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+               
+                if(this.is_receivable){
+                    this.form.payments = []
+                }else{                    
+                    let validate = await this.validate_payments()
+                    if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                        return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                    }
                 }
 
 

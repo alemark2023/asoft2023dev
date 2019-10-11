@@ -64,7 +64,7 @@ class FormatController extends Controller
     {
         return Document::query()
                                 ->whereBetween('date_of_issue', [$d_start, $d_end])
-                                ->whereIn('document_type_id', ['01', '03'])
+                                // ->whereIn('document_type_id', ['01', '03'])
                                 ->whereIn('currency_type_id', ['PEN'])
                                 ->orderBy('series')
                                 ->orderBy('number')
@@ -72,6 +72,7 @@ class FormatController extends Controller
                                     return [
                                         'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                                         'document_type_id' => $row->document_type_id,
+                                        'state_type_id' => $row->state_type_id,
                                         'series' => $row->series,
                                         'number' => $row->number,
                                         'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
@@ -81,11 +82,20 @@ class FormatController extends Controller
                                         'total_taxed' => $row->total_taxed,
                                         'total_exonerated' => $row->total_exonerated,
                                         'total_unaffected' => $row->total_unaffected,
+                                        'total_plastic_bag_taxes' => $row->total_plastic_bag_taxes,
                                         'total_isc' => $row->total_isc,
                                         'total_igv' => $row->total_igv,
                                         'total' => $row->total,
                                         'exchange_rate_sale' => $row->exchange_rate_sale,
-                                        'currency_type_symbol' => $row->currency_type->symbol
+                                        'currency_type_symbol' => $row->currency_type->symbol,
+                                        'affected_document' => (in_array($row->document_type_id, ['07', '08'])) ? [
+
+                                            'date_of_issue' => $row->note->affected_document->date_of_issue->format('d/m/Y'),
+                                            'document_type_id' => $row->note->affected_document->document_type_id,
+                                            'series' => $row->note->affected_document->series,
+                                            'number' => $row->note->affected_document->number,
+
+                                        ] : null
                                     ];
             });
 
@@ -102,6 +112,7 @@ class FormatController extends Controller
             ->get()->transform(function($row) {
                 return [
                     'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                    'state_type_id' => $row->state_type_id,
                     'document_type_id' => $row->document_type_id,
                     'series' => $row->series,
                     'number' => $row->number,

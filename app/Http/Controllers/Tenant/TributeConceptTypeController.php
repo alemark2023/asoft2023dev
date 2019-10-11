@@ -8,6 +8,7 @@ use App\Models\Tenant\Catalogs\AttributeType;
 use App\Http\Resources\Tenant\TributeConceptTypeResource;
 use App\Http\Resources\Tenant\TributeConceptTypeCollection;
 use App\Http\Requests\Tenant\TributeConceptTypeRequest;
+use Exception;
 
 class TributeConceptTypeController extends Controller
 {
@@ -42,14 +43,21 @@ class TributeConceptTypeController extends Controller
 
     public function destroy($id)
     {
-        $record = AttributeType::findOrFail($id);
-        //$record->delete();
-        $record->active = 0;
-        $record->save();
+        
+        try {
+            
+            $record = AttributeType::findOrFail($id);
+            $record->delete(); 
 
-        return [
-            'success' => true,
-            'message' => 'Atributo eliminado con éxito'
-        ];
+            return [
+                'success' => true,
+                'message' => 'Atributo eliminado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'El atributo esta siendo usado por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar el atributo'];
+
+        }
     }
 }

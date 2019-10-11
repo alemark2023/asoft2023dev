@@ -124,15 +124,15 @@ $col_span = 25;
         <td>{{ $row['supplier_name'] }}</td>
         <td></td>
         <td></td>
-        <td>{{ $row['total_taxed'] }}</td>
-        <td>{{ $row['total_igv'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_taxed'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total_igv'] }}</td>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
-        <td>{{ $row['total'] }}</td>
+        <td>{{ (in_array($row['document_type_id'],['01','03']) && in_array($row['state_type_id'],['09','11'])) ? 0 :  $row['total'] }}</td>
         <td>{{ $row['currency_type_symbol'] }}</td>
         <td></td>
         <td></td>

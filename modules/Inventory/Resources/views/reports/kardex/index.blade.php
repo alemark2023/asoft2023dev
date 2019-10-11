@@ -17,7 +17,13 @@
                                     
                                    <!-- {{Form::label('item_id', 'Producto')}}-->
                                     <!--{{Form::select('item_id', $items->pluck('description', 'id'), old('item_id', request()->item_id), ['class' => 'form-control col-md-6'])}} -->
-                                    <tenant-product :data_products="{{json_encode($items)}}" :item_selected="{{json_encode(isset($_GET['item_selected']) ? $_GET['item_selected']:null)}}"></tenant-product>
+                                    <tenant-product 
+                                        :data_d="{{json_encode(isset($_GET['d']) ? $_GET['d']:null)}}" 
+                                        :data_a="{{json_encode(isset($_GET['a']) ? $_GET['a']:null)}}" 
+                                        :data_products="{{json_encode($items)}}" 
+                                        :item_selected="{{json_encode(isset($_GET['item_selected']) ? $_GET['item_selected']:null)}}"
+                                    
+                                    ></tenant-product>
                                 </div>
                                 <div class="el-form-item col-xs-12">
                                     <div class="el-form-item__content">
@@ -34,15 +40,19 @@
                                 @if(isset($reports))
                                     <form action="{{route('reports.kardex.pdf')}}" class="d-inline" method="POST">
                                         {{csrf_field()}}
+                                        
+                                        <input type="hidden" value="{{$d}}" name="d">
+                                        <input type="hidden" value="{{$a}}" name="a">
                                         <input type="hidden" name="item_id" value="{{$_GET['item_selected']}}">
                                         <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
-                                        {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                     </form>
                                 <form action="{{route('reports.kardex.report_excel')}}" class="d-inline" method="POST">
                                     {{csrf_field()}}
+                                    
+                                    <input type="hidden" value="{{$d}}" name="d">
+                                    <input type="hidden" value="{{$a}}" name="a">
                                     <input type="hidden" name="item_id" value="{{$_GET['item_selected']}}">
                                     <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-excel"></i> Exportar Excel</button>
-                                    {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                 </form>
                                 @endif
                             </div>
@@ -124,6 +134,15 @@
 
                                         </td>
 
+                                        @php
+                                        if($value->inventory_kardexable_type == $models[3]){                                             
+                                            if(!$value->inventory_kardexable->type){
+                                                $transaction = Modules\Inventory\Models\InventoryTransaction::findOrFail($value->inventory_kardexable->inventory_transaction_id);
+                                            }
+                                        }                                           
+                                        @endphp
+                                        
+
                                         <td>
                                             @switch($value->inventory_kardexable_type) 
 
@@ -136,7 +155,15 @@
                                                     @break 
                                                     
                                                 @case($models[3])
-                                                    {{ ($value->inventory_kardexable->type == 1) ? $value->quantity : "-" }}                                                    
+                                                    @if($value->inventory_kardexable->type != null)
+
+                                                        {{ ($value->inventory_kardexable->type == 1) ? $value->quantity : "-" }}                                                    
+
+                                                    @else
+
+                                                        {{($transaction->type == 'input') ? $value->quantity : "-" }} 
+
+                                                    @endif
                                                     @break  
 
                                                 @default
@@ -145,7 +172,6 @@
                                             @endswitch
                                         </td>
                                         <td>
-                                        
                                             @switch($value->inventory_kardexable_type) 
                                                 @case($models[0])
                                                     {{ ($value->quantity < 0) ?  $value->quantity:"-" }}                                                    
@@ -157,7 +183,15 @@
                                                     {{  $value->quantity }}                                                    
                                                     @break      
                                                 @case($models[3])
-                                                    {{ ($value->inventory_kardexable->type == 2 || $value->inventory_kardexable->type == 3) ? $value->quantity : "-" }}                                                    
+                                                    @if($value->inventory_kardexable->type != null)
+
+                                                        {{($value->inventory_kardexable->type == 2 || $value->inventory_kardexable->type == 3) ? $value->quantity : "-" }} 
+
+                                                    @else
+
+                                                        {{($transaction->type == 'output') ? $value->quantity : "-" }}  
+
+                                                    @endif
                                                     @break  
                                                 @default
                                                     {{"-"}}                                                 

@@ -65,6 +65,7 @@ class DocumentNotSentCollection extends ResourceCollection
                 'user_email' => ($row->user) ? $row->user->email : '',
                 'text_tooltip' => $text_tooltip,
                 'expiration_days' => $days_send,
+                'is_expiration' => ($difference_days <= 0) ? true:false,
             ];
         });
     }

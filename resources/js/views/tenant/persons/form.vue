@@ -144,10 +144,17 @@
                     </div>
                 </div>
                 <div class="row mt-2" v-if="type === 'suppliers'">
-                    <div class="col-md-3 center-el-checkbox">
+                    <div class="col-md-6 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.perception_agent}">
                             <el-checkbox v-model="form.perception_agent">¿Es agente de percepción?</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.perception_agent" v-text="errors.perception_agent[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6" v-if="type === 'suppliers'" v-show="form.perception_agent">
+                        <div class="form-group"  >
+                            <label class="control-label">Porcentaje de percepción</label>
+
+                            <el-input v-model="form.percentage_perception"></el-input>
                         </div>
                     </div>
                 </div>
@@ -247,6 +254,7 @@
                     state: null,
                     email: null,
                     perception_agent: false,
+                    percentage_perception:0,
                     more_address: []
                 }
             },

@@ -172,6 +172,11 @@ class SaleNote extends ModelTenant
         return $this->belongsTo(SoapType::class);
     }
 
+    public function establishment()
+    {
+        return $this->belongsTo(Establishment::class);
+    }
+
     public function state_type()
     {
         return $this->belongsTo(StateType::class);
@@ -219,5 +224,17 @@ class SaleNote extends ModelTenant
         $legend = collect($legends)->where('code', '1000')->first();
         return $legend->value;
     }
+
+    public function getNumberFullAttribute()
+    {
+        return $this->prefix.'-'.$this->id;
+    }
  
+    
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();         
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
+
 }

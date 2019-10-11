@@ -67,6 +67,7 @@ class SaleNoteController extends Controller
     public function records(Request $request)
     {
         $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()
                             ->latest();
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
@@ -155,6 +156,7 @@ class SaleNoteController extends Controller
 
 //            $this->sale_note =  SaleNote::create($data);
             $this->sale_note->items()->delete();
+            $this->sale_note->payments()->delete();
             foreach ($data['items'] as $row)
             {
                 $this->sale_note->items()->create($row);
@@ -247,6 +249,7 @@ class SaleNoteController extends Controller
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
             
+            $company_logo      = ($this->company->logo) ? 40 : 0;
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
@@ -260,6 +263,7 @@ class SaleNoteController extends Controller
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items);
+            $payments     = $this->document->payments()->count() * 2;
 
             $extra_by_item_description = 0;
             $discount_global = 0;
@@ -278,9 +282,11 @@ class SaleNoteController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    120 +
+                    30 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
                     ($discount_global * 3) +
+                    $company_logo +
+                    $payments +
                     $company_name +
                     $company_address +
                     $company_number +
@@ -390,6 +396,7 @@ class SaleNoteController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_igv' => (bool) $row->has_igv,
                         'warehouses' => collect($row->warehouses)->transform(function($row) {
                             return [
                                 'warehouse_id' => $row->warehouse->id,

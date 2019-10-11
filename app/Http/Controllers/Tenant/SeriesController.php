@@ -23,7 +23,7 @@ class SeriesController extends Controller
 
     public function tables()
     {
-        $document_types = DocumentType::whereActive()->whereIn('id', ['01', '03', '07', '08', '09', '20'])->get();
+        $document_types = DocumentType::whereActive()->whereIn('id', ['01', '03', '07', '08', '09', '20','40'])->get();
 
         return compact('document_types');
     }

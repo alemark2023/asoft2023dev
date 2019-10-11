@@ -297,6 +297,7 @@
                     charges: [],
                     discounts: [],
                     attributes: [],
+                    has_igv: null,
                     item_unit_type_id: null,
                     unit_type_id: null,
                 };
@@ -373,6 +374,9 @@
                 this.getItems();
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.unit_price = this.form.item.sale_unit_price;
+
+                this.form.has_igv = this.form.item.has_igv;
+
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
                 this.item_unit_types = this.form.item.item_unit_types;
@@ -424,7 +428,13 @@
             clickAddItem() {
                 if (this.validateTotalItem().total_item) return;
                 
-                this.form.item.unit_price = this.form.unit_price;
+                // this.form.item.unit_price = this.form.unit_price;
+                let unit_price = (this.form.has_igv)?this.form.unit_price:this.form.unit_price*1.18;
+
+                // this.form.item.unit_price = this.form.unit_price
+                this.form.unit_price = unit_price;
+                this.form.item.unit_price = unit_price;
+                
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
