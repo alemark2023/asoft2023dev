@@ -18,10 +18,11 @@ if ($hostname) {
         Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');
         Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
         Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
-        Route::get('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
+        Route::get('ecommerce/login', 'Tenant\EcommerceController@showLogin')->name('tenant_ecommerce_login');
         Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
         Route::post('ecommerce/culqi', 'Tenant\CulqiController@pago')->name('tenant_ecommerce_culqui');
-
+        Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
+        Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
 
 
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');

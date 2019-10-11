@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Item;
 use App\Http\Resources\Tenant\ItemCollection;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Tenant\User;
+
+
 
 
 
@@ -62,9 +66,62 @@ class EcommerceController extends Controller
         return view('tenant.ecommerce.cart.pay');
     }
 
-    public function login()
+    public function showLogin()
     {
         return view('tenant.ecommerce.user.login');
+    }
+
+    public function login(Request $request)
+    {   
+       
+       
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+           return[
+               'success' => true,
+               'message' => 'Login Success'
+           ];
+        }
+        else{
+            return[
+                'success' => false,
+                'message' => 'Usuario o Password incorrectos'
+            ];
+        }
+
+    }
+
+    public function storeUser(Request $request)
+    {
+        try{
+
+         
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->establishment_id = 1;
+            $user->type = 'client';
+            $user->api_token = str_random(50);
+            $user->password = bcrypt($request->input('password'));
+            $user->save();
+            $user->modules()->sync([1]);
+
+            $credentials = [ 'email' => $user->email, 'password' => $request->input('password') ];
+            Auth::attempt($credentials);
+
+            return [
+                'success' => true,
+                'message' => 'Usuario registrado'
+            ];
+
+        }catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' =>  $e->getMessage()
+            ];
+        }
+       
     }
 
 

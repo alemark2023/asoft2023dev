@@ -140,13 +140,15 @@ class Item extends ModelTenant
 
     public function getStockByWarehouse()
     {
-        $establishment_id = auth()->user()->establishment_id;
-        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
-        if ($warehouse) {
-            $item_warehouse = $this->warehouses->where('warehouse_id',$warehouse->id)->first();
-            return ($item_warehouse) ? $item_warehouse->stock : 0;
-        } 
+        if(auth()->user())
+        {
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+            if ($warehouse) {
+                $item_warehouse = $this->warehouses->where('warehouse_id',$warehouse->id)->first();
+                return ($item_warehouse) ? $item_warehouse->stock : 0;
+            } 
+        }
         
         return 0;
     }

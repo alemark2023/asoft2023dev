@@ -471,32 +471,12 @@ function(e) {
 		},
 		
 		loginPopup: function() {
+
+			
 			e(".login-link").click(function(t) {
 
-				t.preventDefault(), o.ajaxLoading();
-
-				var n = e(this).attr("href");
-				
-				setTimeout(function() {
-					e.magnificPopup.open({
-						type: "ajax",
-						mainClass: "login-popup",
-						tLoading: "",
-						preloader: !1,
-						removalDelay: 350,
-						items: {
-							src: n
-						},
-						callbacks: {
-							beforeClose: function() {
-								e(".ajaxOverlay").remove()
-							}
-						},
-						ajax: {
-							tError: ""
-						}
-					})
-				}, 1000)
+				$('#login_register_modal').modal('show');
+				 t.preventDefault()
 			})
 		},
 		
