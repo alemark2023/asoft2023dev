@@ -8,9 +8,10 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use Modules\Account\Models\Account;
 
+
 class Item extends ModelTenant
 {
-    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types'];
+    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags'];
     protected $fillable = [
         'warehouse_id',
         'name',
@@ -42,9 +43,13 @@ class Item extends ModelTenant
         'has_perception',        
         'percentage_perception',        
         'image',
+        'image_medium',
+        'image_small',
+
         'account_id',
         'amount_plastic_bag_taxes',
         'date_of_due',
+        'apply_store'
         // 'warehouse_id'
     ];
 
@@ -137,13 +142,15 @@ class Item extends ModelTenant
 
     public function getStockByWarehouse()
     {
-        $establishment_id = auth()->user()->establishment_id;
-        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-
-        if ($warehouse) {
-            $item_warehouse = $this->warehouses->where('warehouse_id',$warehouse->id)->first();
-            return ($item_warehouse) ? $item_warehouse->stock : 0;
-        } 
+        if(auth()->user())
+        {
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+            if ($warehouse) {
+                $item_warehouse = $this->warehouses->where('warehouse_id',$warehouse->id)->first();
+                return ($item_warehouse) ? $item_warehouse->stock : 0;
+            } 
+        }
         
         return 0;
     }
@@ -157,5 +164,10 @@ class Item extends ModelTenant
     public function item_unit_types()
     {
         return $this->hasMany(ItemUnitType::class);
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(ItemTag::class);
     }
 }

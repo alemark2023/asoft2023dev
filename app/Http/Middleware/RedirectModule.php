@@ -70,6 +70,9 @@ class RedirectModule
 
             case 'accounting':
                 return redirect()->route('tenant.account.index');
+
+            /*case 'ecommerce':
+                return redirect()->route('tenant.ecommerce.index');*/
              
         }
     }

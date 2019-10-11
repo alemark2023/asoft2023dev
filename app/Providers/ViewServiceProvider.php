@@ -36,6 +36,41 @@ class ViewServiceProvider extends ServiceProvider
             'tenant.layouts.partials.sidebar',
             'Modules\BusinessTurn\Http\ViewComposers\BusinessTurnViewComposer'
         );
+
+        //Ecommerce
+
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.featured_products',
+            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.featured_products_bottom',
+            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.widget_products',
+            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.list_products',
+            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.sidemenu',
+            'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.header_options',
+            'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
+        );
+        view()->composer(
+            'tenant.layouts.partials_ecommerce.home_slider',
+            'App\Http\ViewComposers\Tenant\Ecommerce\PromotionsViewComposer'
+        );
+
+
+
+
     }
 
     /**

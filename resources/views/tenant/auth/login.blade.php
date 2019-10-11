@@ -5,7 +5,7 @@
         <div class="center-sign">
             <div class="card">
                 <div class="card card-header card-primary" style="background:#0088CC">
-                    <p class="card-title text-center">Acceso al Sistema</p>
+                    <p class="card-title text-center">Acceso alsss Sistema</p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">

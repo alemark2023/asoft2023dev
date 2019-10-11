@@ -2,7 +2,8 @@
     $path = explode('/', request()->path());
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
-    $path[0] = ($path[0] === '')?'documents':$path[0]; 
+    $path[0] = ($path[0] === '')?'documents':$path[0];
+    
 
 @endphp
 
@@ -20,6 +21,15 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
+                   <!-- <li class="{{ ($path[0] === 'ecommerce')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{ route('tenant.ecommerce.index') }}">
+                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                            <span>Ecommerce</span>
+                        </a>
+                    </li> -->
+
+                    
+
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.dashboard.index') }}">
@@ -149,6 +159,35 @@
                         </ul>
                     </li>
                     @endif
+
+                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <span>Tienda Virtual</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="">
+                                <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">
+                                    Ir a Tienda
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'items_ecommerce')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
+                                    Productos Tienda Virtual
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'tags')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.tags.index')}}">
+                                    Tags - Categorias
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'promotions')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.promotion.index')}}">
+                                    Promociones
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
                     @if(auth()->user()->type != 'integrator')
 
