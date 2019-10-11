@@ -168,8 +168,6 @@
 
 
 @push('scripts')
-@push('scripts')
-<script src="{{ asset('porto-ecommerce/assets/js/vue.js') }}"></script>
 <script type="text/javascript">
     function check(event) {
         console.log(event)
