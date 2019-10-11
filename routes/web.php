@@ -462,6 +462,7 @@ if ($hostname) {
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');
             Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
+            Route::post('clients/renew_plan', 'System\ClientController@renewPlan');
 
             
             Route::get('client_payments/records/{client_id}', 'System\ClientPaymentController@records');

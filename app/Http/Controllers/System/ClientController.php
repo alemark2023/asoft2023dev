@@ -45,7 +45,8 @@ class ClientController extends Controller
         foreach ($records as &$row) {
             $tenancy = app(Environment::class);
             $tenancy->tenant($row->hostname->website);
-            $row->count_doc = DB::connection('tenant')->table('documents')->count();
+            // $row->count_doc = DB::connection('tenant')->table('documents')->count();
+            $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->count_user = DB::connection('tenant')->table('users')->count();
         }
         return new ClientCollection($records);
@@ -157,6 +158,7 @@ class ClientController extends Controller
             'quantity_documents' =>  0,
         ]);
 
+
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([
             'description' => 'Oficina Principal',
             'country_id' => 'PE',
@@ -241,6 +243,31 @@ class ClientController extends Controller
 
     }
 
+    public function renewPlan(Request $request){
+        
+        // dd($request->all());
+        $client = Client::findOrFail($request->id); 
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+
+        DB::connection('tenant')->table('billing_cycles')->insert([            
+            'date_time_start' => date('Y-m-d H:i:s'),
+            'renew' => true,
+            'quantity_documents' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_documents,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_documents' =>0]);
+
+
+        return [
+            'success' => true,
+            'message' => 'Plan renovado con exito'
+        ];
+
+    }
+
 
     public function lockedEmission(Request $request){
 
@@ -276,6 +303,7 @@ class ClientController extends Controller
         ];
 
     }
+
 
 
     public function destroy($id)

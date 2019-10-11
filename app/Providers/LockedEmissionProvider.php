@@ -57,7 +57,7 @@ class LockedEmissionProvider extends ServiceProvider
             $quantity_documents = $configuration->quantity_documents;
 
             if($configuration->locked_emission && $configuration->limit_documents !== 0){
-                if($quantity_documents > $configuration->limit_documents)
+                if($quantity_documents >= $configuration->limit_documents)
                     throw new Exception("Ha superado el límite permitido para la emisión de comprobantes");
                     
             }

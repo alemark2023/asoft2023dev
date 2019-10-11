@@ -151,6 +151,7 @@
                                 </el-switch>
                             </td>
                             <td class="text-right">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary m-1__2" @click.prevent="clickRenewPlan(row.id)">Renovar plan</button>
                                 <template v-if="!row.locked">
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2" @click.prevent="clickPassword(row.id)">Resetear clave</button>
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click.prevent="clickDelete(row.id)">Eliminar</button>
@@ -243,6 +244,35 @@
             this.text_limit_users = 'El límite de usuarios fue superado'
         },
         methods: {
+            clickRenewPlan(id){
+                this.$confirm('¿Está seguro de renovar el plan?', 'Renovar plan', {
+                    confirmButtonText: 'Renovar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {                    
+                    this.$http.post(`${this.resource}/renew_plan`, {id})
+                        .then(response => {
+                            if (response.data.success) {
+                                this.$message.success(response.data.message)
+                                this.$eventHub.$emit('reloadData')
+                            } else {
+                                this.$message.error(response.data.message)
+                            }
+                        })
+                        .catch(error => {
+                            if(error.response.status === 500){
+                                this.$message.error(error.response.data.message);
+                            }
+                            else {
+                                console.log(error.response)
+                            }
+                        })
+                        .then(() => {
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            },
             changeLockedEmission(row){
                 this.$http.post(`${this.resource}/locked_emission`, row)
                     .then(response => {
