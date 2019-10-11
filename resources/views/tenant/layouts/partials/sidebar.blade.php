@@ -50,8 +50,7 @@
                         {{ ($path[0] === 'quotations')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
-                        {{ ($path[0] === 'pos')?'nav-active nav-expanded':'' }}
-                        {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
+                      
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-receipt" aria-hidden="true"></i>
@@ -61,7 +60,7 @@
                             @if(auth()->user()->type != 'integrator')
 
                                 @if(in_array('pos', $vc_modules))
-                                    <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
+                                   <!-- <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
                                         <a class="nav-link" href="{{route('tenant.cash.index')}}">
                                             Caja chica
                                         </a>
@@ -70,7 +69,7 @@
                                         <a class="nav-link" href="{{route('tenant.pos.index')}}">
                                             Punto de venta (POS)
                                         </a>
-                                    </li>
+                                    </li> -->
                                 @endif
 
                                 @if(in_array('documents', $vc_modules))
@@ -159,6 +158,36 @@
                         </ul>
                     </li>
                     @endif
+
+                    @if(auth()->user()->type != 'integrator')
+                        @if(in_array('pos', $vc_modules))
+                        <li class="
+                        nav-parent
+                        {{ ($path[0] === 'pos')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
+                        ">
+                            <a class="nav-link" href="#">
+                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                                <span>POS</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ ($path[0] === 'pos'  )?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.pos.index')}}">
+                                        Punto de venta
+                                    </a>
+                                </li>
+                                <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.cash.index')}}">
+                                        Caja chica
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </li>
+                        @endif
+                    @endif
+
+                    
 
                     <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
