@@ -23,13 +23,18 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         view()->composer(
+            'tenant.layouts.partials.header',
+            'Modules\Document\Http\ViewComposers\DocumentViewComposer'
+        );
+        
+        view()->composer(
             'tenant.layouts.partials.sidebar',
-            'App\Http\ViewComposers\Tenant\ModuleViewComposer'
+            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
         );
 
         view()->composer(
-            'tenant.layouts.partials.header',
-            'Modules\Document\Http\ViewComposers\DocumentViewComposer'
+            'tenant.layouts.partials.sidebar',
+            'App\Http\ViewComposers\Tenant\ModuleViewComposer'
         );
 
         view()->composer(
