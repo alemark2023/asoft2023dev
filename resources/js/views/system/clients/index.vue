@@ -91,6 +91,7 @@
                             <th class="text-center">F.Creación</th>
                             <th class="text-center">Bloquear cuenta</th>
                             <th class="text-right">Limitar Doc.</th>
+                            <th class="text-center">Limitar Usuarios</th>
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
@@ -148,6 +149,13 @@
                                     style="display: block"
                                     v-model="row.locked_emission" 
                                     @change="changeLockedEmission(row)">
+                                </el-switch>
+                            </td>
+                            <td class="text-center">
+                                <el-switch
+                                    style="display: block"
+                                    v-model="row.locked_users" 
+                                    @change="changeLockedUser(row)">
                                 </el-switch>
                             </td>
                             <td class="text-right">
@@ -272,6 +280,27 @@
                 }).catch(error => {
                     console.log(error)
                 });
+            },
+            changeLockedUser(row){
+                this.$http.post(`${this.resource}/locked_user`, row)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if(error.response.status === 500){
+                            this.$message.error(error.response.data.message);
+                        }
+                         else {
+                            console.log(error.response)
+                        }
+                    })
+                    .then(() => {
+                    })
             },
             changeLockedEmission(row){
                 this.$http.post(`${this.resource}/locked_emission`, row)

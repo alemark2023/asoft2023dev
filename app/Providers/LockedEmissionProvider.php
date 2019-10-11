@@ -68,12 +68,12 @@ class LockedEmissionProvider extends ServiceProvider
     private function locked_users()
     {
 
-        User::created(function ($document) {
+        User::creating(function ($document) {
             
             $configuration = Configuration::first();
             $quantity_users = User::count();
 
-            if($configuration->limit_users !== 0){
+            if($configuration->locked_users &&  $configuration->limit_users !== 0){
 
                 if( $quantity_users > $configuration->limit_users )
                 {

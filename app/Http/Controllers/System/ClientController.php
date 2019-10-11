@@ -152,6 +152,7 @@ class ClientController extends Controller
             'send_auto' => true,
             'locked_emission' =>  $request->input('locked_emission'),
             'locked_tenant' =>  false,
+            'locked_users' =>  false,
             'limit_documents' =>  $plan->limit_documents,
             'limit_users' =>  $plan->limit_users,
             'date_time_start' =>  date('Y-m-d H:i:s'),
@@ -264,6 +265,24 @@ class ClientController extends Controller
         return [
             'success' => true,
             'message' => 'Plan renovado con exito'
+        ];
+
+    }
+
+
+    public function lockedUser(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_users = $request->locked_users;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_users' => $client->locked_users]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_users) ? 'Limitar creación de usuarios activado' : 'Limitar creación de usuarios desactivado'
         ];
 
     }

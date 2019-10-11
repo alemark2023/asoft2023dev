@@ -20,6 +20,7 @@ class Client extends Model
         'locked',
         'locked_emission',
         'locked_tenant',
+        'locked_users',
         'plan_id'
     ];
 
