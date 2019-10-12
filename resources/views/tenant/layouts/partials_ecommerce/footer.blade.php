@@ -10,12 +10,12 @@
 <div class="footer-middle">
     <div class="container">
         <div class="footer-ribbon">
-            Get in touch
+            Contáctanos
         </div><!-- End .footer-ribbon -->
         <div class="row">
             <div class="col-lg-3">
                 <div class="widget">
-                    <h4 class="widget-title">Contact Us</h4>
+                    <h4 class="widget-title">Contacto</h4>
                     <ul class="contact-info">
                         <li>
                             <span class="contact-info-label">Address:</span>123 Street Name, City, England
@@ -23,14 +23,14 @@
                         <li>
                             <span class="contact-info-label">Phone:</span>Toll Free <a href="tel:">(123) 456-7890</a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <span class="contact-info-label">Email:</span> <a
                                 href="mailto:mail@example.com">mail@example.com</a>
                         </li>
                         <li>
                             <span class="contact-info-label">Working Days/Hours:</span>
                             Mon - Sun / 9:00AM - 8:00PM
-                        </li>
+                        </li> --}}
                     </ul>
                     <div class="social-icons">
                         <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
@@ -41,7 +41,7 @@
             </div><!-- End .col-lg-3 -->
 
             <div class="col-lg-9">
-                <div class="widget widget-newsletter">
+                {{-- <div class="widget widget-newsletter">
                     <h4 class="widget-title">Subscribe newsletter</h4>
                     <div class="row">
                         <div class="col-md-6">
@@ -57,7 +57,7 @@
                             </form>
                         </div><!-- End .col-md-6 -->
                     </div><!-- End .row -->
-                </div><!-- End .widget -->
+                </div><!-- End .widget --> --}}
 
                 <div class="row">
                     <div class="col-md-5">
