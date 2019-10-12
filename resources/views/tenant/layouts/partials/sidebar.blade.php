@@ -33,6 +33,7 @@
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.dashboard.index') }}">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                             <i class="fas fa-chart-line" aria-hidden="true"></i>
                             <span>DASHBOARD</span>
                         </a>
@@ -167,6 +168,7 @@
                         {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
                         ">
                             <a class="nav-link" href="#">
+                                <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                                 <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                                 <span>POS</span>
                             </a>
@@ -191,6 +193,7 @@
 
                     <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                             <i class="fas fa-shopping-cart" aria-hidden="true"></i>
                             <span>Tienda Virtual</span>
                         </a>
@@ -228,7 +231,7 @@
                             {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
-                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                                <i class="fas fa-cart-arrow-down" aria-hidden="true"></i>
                                 <span>Compras</span>
                             </a>
                             <ul class="nav nav-children" style="">
@@ -399,7 +402,8 @@
                         {{ ($path[0] === 'account')?'nav-active nav-expanded':'' }}
                         ">
                         <a class="nav-link" href="#">
-                            <i class="fas fa-chart-area" aria-hidden="true"></i>
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                            <i class="fas fa-chart-bar" aria-hidden="true"></i>
                             <span>Contabilidad</span>
                         </a>
                         <ul class="nav nav-children" style="">
@@ -466,6 +470,21 @@
                     @endif
                 </ul>
             </nav>
+            <hr class="separator">
+            <div class="sidebar-widget widget-tasks">
+                <div class="widget-header">
+                    <h6>Entorno</h6>
+                </div>
+                <div class="widget-content">
+                    <ul class="list-unstyled m-0">
+                        @if($vc_company->soap_type_id == "01")
+                        <li><a href="#">Demostración</a></li>
+                        @else
+                        <li><a href="#">Producción</a></li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
         </div>
         <script>
             // Maintain Scroll Position

@@ -13,14 +13,14 @@
         </div>
     </div> 
     <div class="header-right">
-        @if($vc_company->soap_type_id == "01")
+        {{-- @if($vc_company->soap_type_id == "01")
         <ul class="notifications">
             <span class="separator"></span>
             <li class="warning-demo"> 
                 Demo
             </li> 
         </ul>
-        @endif
+        @endif --}}
         @if($vc_document > 0)
         <ul class="notifications">
             <li class="open">
