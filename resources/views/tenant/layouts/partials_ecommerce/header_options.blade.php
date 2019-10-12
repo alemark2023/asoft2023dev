@@ -44,7 +44,7 @@
 
 
                  <div class="header-dropdown" style="width:400px;">
-                     <input placeholder="Buscar..." type="text" class="form-control form-control-lg" v-model="value"
+                     <input style="border-radius: 20px 20px 20px 20px" placeholder="Buscar..." type="text" class="form-control form-control-lg" v-model="value"
                          v-on:keyup="autoComplete" />
                      <div class="header-menu">
                          <ul>
