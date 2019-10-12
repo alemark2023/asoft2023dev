@@ -46,8 +46,8 @@ class ItemCollection extends ResourceCollection
                 'has_igv_description' => $has_igv_description,
                 'sale_unit_price' => "{$row->currency_type->symbol} {$row->sale_unit_price}",
                 'purchase_unit_price' => "{$row->currency_type->symbol} {$row->purchase_unit_price}",
-                'created_at' => $row->created_at->format('Y-m-d H:i:s'),
-                'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+                'created_at' => ($row->created_at) ? $row->created_at->format('Y-m-d H:i:s') : '',
+                'updated_at' => ($row->created_at) ? $row->updated_at->format('Y-m-d H:i:s') : '',
                 'warehouses' => collect($row->warehouses)->transform(function($row) {
                     return [
                         'warehouse_description' => $row->warehouse->description,
