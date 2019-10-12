@@ -1,6 +1,21 @@
  <style>
 
+.header-dropdown a img {
+    border-radius: 8px;
+    padding: 4px;
+}
 
+
+.header-menu ul a {
+    padding: 3px 6px;
+}
+
+.header-menu {
+    box-shadow: 0 0 2px rgba(0,0,0,0.1);
+    padding: 0 !important;
+    border: none;
+    border-radius:10px;
+ }
 
 
  </style>
@@ -61,7 +76,7 @@
                          v-on:keyup="autoComplete" />
                      <div class="header-menu">
                          <ul>
-                             <li v-for="result in results"><a @click="suggestionClick(result)"
+                             <li v-for="result in results"><a 
                                      :href="'/ecommerce/item/' + result.id"><img style="max-width: 90px"
                                          :src="result.image_url_small" alt="England flag"> <span
                                          style="font-size: 1.0em;"> @{{ result.description }} </span></a></li>
