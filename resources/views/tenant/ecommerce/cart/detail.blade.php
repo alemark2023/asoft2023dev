@@ -181,7 +181,7 @@
         el: '#app',
         data: {
             records: [],
-           // message: 'Hello Vue!',
+            // message: 'Hello Vue!',
             summary: {
                 subtotal: '0.0',
                 tax: '0.0',
@@ -257,112 +257,120 @@
 </script>
 
 <script>
-        //  Culqi.publicKey = 'pk_test_XBWsfPU0w7KmcLF9';
-        Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
-        // var producto = "Inscripción al congreso";
-        //var precio = 9000;
-        //var precio_culqi = "";
-    
-        //var descripcion = "Facturación Electronica Colombia ";
-        Culqi.options({
-            installments: true
-        });
-    
-        function execCulqi() {
+    //  Culqi.publicKey = 'pk_test_XBWsfPU0w7KmcLF9';
+    Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
+    // var producto = "Inscripción al congreso";
+    //var precio = 9000;
+    //var precio_culqi = "";
 
-           
+    //var descripcion = "Facturación Electronica Colombia ";
+    Culqi.options({
+        installments: true
+    });
 
-           
+    function execCulqi() {
 
-            let precio = Math.round( (Number($("#total_amount").data('total')) * 100).toFixed(2) );
-          //  console.log(precio)
-            if (precio > 0) {
-    
-                //  ruc = $("#ruc").val();
-                //  telefono = $("#telefono").val();
-                //  contacto = $("#contacto_culqi").val();
-                Culqi.settings({
-                    title: "Productos Ecommerce",
-                    currency: 'PEN',
-                    description: 'Compras Ecommerce Facturador Pro',
-                    amount: precio
-                });
-    
-                // Abre el formulario con la configuración en Culqi.settings
-                Culqi.open();
-               // e.preventDefault();
-            }
-    
+
+
+
+
+        let precio = Math.round((Number($("#total_amount").data('total')) * 100).toFixed(2));
+        //  console.log(precio)
+        if (precio > 0) {
+
+            //  ruc = $("#ruc").val();
+            //  telefono = $("#telefono").val();
+            //  contacto = $("#contacto_culqi").val();
+            Culqi.settings({
+                title: "Productos Ecommerce",
+                currency: 'PEN',
+                description: 'Compras Ecommerce Facturador Pro',
+                amount: precio
+            });
+
+            // Abre el formulario con la configuración en Culqi.settings
+            Culqi.open();
+            // e.preventDefault();
         }
-    
-        function culqi() {
-            if (Culqi.token) { // ¡Objeto Token creado exitosamente!
-                /* swal({
-                     title: "Estamos hablando con su banco",
-                     text: "Por favor no cierre esta ventana hasta que el proceso termine.",
-                     focusConfirm: false,
-                     onOpen: () => {
-                         Swal.showLoading()
-                     }
-                 });*/
-    
-                let precio = Math.round( (Number($("#total_amount").data('total')) * 100).toFixed(2) );
-                let precio_culqi = Number($("#total_amount").data('total')).toFixed(2);
-    
-                var url = "/culqi";
-                var token = Culqi.token.id;
-                var email = Culqi.token.email;
-                var installments = Culqi.token.metadata.installments;
-                var data = {
-                    producto: 'Compras Ecommerce Facturador Pro',
-                    //contacto:contacto,
-                    //telefono:telefono,
-                    precio: precio,
-                    precio_culqi: precio_culqi,
-                    token: token,
-                    email: email,
-                    installments: installments,
-                    //ruc:ruc
-                }
-    
-                $.ajax({
-                    url: "{{route('tenant_ecommerce_culqui')}}",
-                    method: 'post',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: data,
-                    dataType: 'JSON',
-                    success: function (data) {
-    
-                        if (data.capture == true) {
-                            swal("Gracias por su pago!",
-                                "En breve le enviaremos un correo electronico con los detalles de su compra.",
-                                "success");
 
-                            app_cart.clearShoppingCart();
-                            window.location = "{{ route('tenant.ecommerce.index') }}";
-                            
-                        } else {
-                            const datos_recibidos = JSON.parse(data);
-                            //  console.log(datos_recibidos);
-                            swal("Pago No realizado", datos_recibidos.user_message, "error");
-                        }
-                    },
-                    error: function (error_data) {
-                        //	console.log(error_data);
-                        swal("Pago No realizado", error_data, "error");
-                    }
-                });
-    
-            } else { // ¡Hubo algún problema!
-                // Mostramos JSON de objeto error en consola
-                console.log(Culqi.error);
-                // alert(Culqi.error.user_message);
-                swal("Pago No realizado", Culqi.error.user_message, "error");
+    }
+
+    function culqi() {
+        if (Culqi.token) { // ¡Objeto Token creado exitosamente!
+            /* swal({
+                 title: "Estamos hablando con su banco",
+                 text: "Por favor no cierre esta ventana hasta que el proceso termine.",
+                 focusConfirm: false,
+                 onOpen: () => {
+                     Swal.showLoading()
+                 }
+             });*/
+
+            let precio = Math.round((Number($("#total_amount").data('total')) * 100).toFixed(2));
+            let precio_culqi = Number($("#total_amount").data('total')).toFixed(2);
+
+            var url = "/culqi";
+            var token = Culqi.token.id;
+            var email = Culqi.token.email;
+            var installments = Culqi.token.metadata.installments;
+            var data = {
+                producto: 'Compras Ecommerce Facturador Pro',
+                //contacto:contacto,
+                //telefono:telefono,
+                precio: precio,
+                precio_culqi: precio_culqi,
+                token: token,
+                email: email,
+                installments: installments,
+                //ruc:ruc
             }
-        };
-    
-    </script>
-    
+
+            $.ajax({
+                url: "{{route('tenant_ecommerce_culqui')}}",
+                method: 'post',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: data,
+                dataType: 'JSON',
+                success: function (data) {
+
+                    if (data.capture == true) {
+
+                        app_cart.clearShoppingCart();
+
+                        swal({
+                            title: "Gracias por su pago!",
+                            text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
+                            type: "success"
+                        }).then((x) => {
+
+                            window.location = "{{ route('tenant.ecommerce.index') }}";
+
+                        })
+
+
+
+                    } else {
+                        const datos_recibidos = JSON.parse(data);
+                        //  console.log(datos_recibidos);
+                        swal("Pago No realizado", datos_recibidos.user_message, "error");
+                    }
+                },
+                error: function (error_data) {
+                    //	console.log(error_data);
+                    swal("Pago No realizado", error_data, "error");
+                }
+            });
+
+        } else { // ¡Hubo algún problema!
+            // Mostramos JSON de objeto error en consola
+            console.log(Culqi.error);
+            // alert(Culqi.error.user_message);
+            swal("Pago No realizado", Culqi.error.user_message, "error");
+        }
+    };
+
+</script>
+
 @endpush
