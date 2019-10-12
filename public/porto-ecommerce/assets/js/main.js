@@ -513,7 +513,7 @@ function(e) {
 								<a href="#" class="product-image">
 									<img alt="product" src="/storage/uploads/items/${element.image_small}" />
 								</a>
-								<a href="#" class="btn-remove" title="Remove Product">
+								<a href="#" onclick="remove(${element.id})" class="btn-remove" title="Remove Product">
 									<i class="icon-cancel"></i>
 								</a>
 							</figure>

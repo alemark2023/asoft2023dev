@@ -65,7 +65,7 @@
                  </button>
                  <div class="header-contact">
                      <span>Call us now</span>
-                     <a href="tel:#"><strong>+999 555 888</strong></a>
+                     <a href="tel:#"><strong>+999 111 888</strong></a>
                  </div><!-- End .header-contact -->
 
                  @include('tenant.layouts.partials_ecommerce.cart_dropdown')
