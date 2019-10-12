@@ -1,20 +1,50 @@
 <style>
-    .header-dropdown a img {
-        border-radius: 8px;
-        padding: 4px;
-    }
+    #header_bar .header-menu {
+    max-height: 300px !important;
+    overflow: scroll;
+    overflow-y: auto;
+}
+#header_bar .header-menu::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+	background-color: #fdfdfd;
+}
+
+#header_bar .header-menu::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #fdfdfd;
+}
+
+#header_bar .header-menu::-webkit-scrollbar-thumb
+{
+	background-color: #0187cc;
+}
+.header-dropdown a img {
+    border-radius: 8px;
+    padding: 4px;
+}
 
 
-    .header-menu ul a {
-        padding: 3px 6px;
-    }
+.header-menu ul a {
+    padding: 3px 6px;
+}
 
-    .header-menu {
-        box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
-        padding: 0 !important;
-        border: none;
-        border-radius: 10px;
-    }
+.header-menu {
+    box-shadow: 0 0 2px rgba(0,0,0,0.1);
+    padding: 0 !important;
+    border: none;
+    border-radius:10px;
+ }
+
+ .header-menu a:hover, .header-menu a:focus {
+    background-color: #0187cc;
+}
+
+.header-menu ul a {
+    text-transform: capitalize !important;
+}
+
 
 </style>
 
