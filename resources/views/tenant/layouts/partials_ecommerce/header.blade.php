@@ -1,7 +1,11 @@
+ <style>
+
+
+
+
+ </style>
+
  <header class="header">
-
-
-
      <div class="header-top">
          <div class="container">
              <div class="header-left header-dropdowns">
@@ -48,23 +52,24 @@
                  </a>
              </div><!-- End .header-left -->
 
-             <div id="header_bar" class="header-center" >
-                
+             <div id="header_bar" class="header-center header-dropdowns">
 
-                 <div class="dropdown" >
-                     <input v-model="value" v-on:keyup="autoComplete" class="btn btn-default dropdown-toggle" type="text" id="dropdownMenuButton"
-                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    
-                     </input>
-                     <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-                            <a @click="suggestionClick(result)" v-for="result in results" class="dropdown-item"
-                            :href="'/ecommerce/item/' + result.id"> <img width="50" height="50"
-                                :src="result.image_url_small" alt="" style="margin-right:5px;"> <span
-                                style="font-size: 14px">@{{ result.description }} </span> </a>
-                     </div>
-                 </div>
 
-               
+
+                 <div class="header-dropdown" style="width:400px;">
+                     <input style="border-radius: 20px 20px 20px 20px" placeholder="Buscar..." type="text" class="form-control form-control-lg" v-model="value"
+                         v-on:keyup="autoComplete" />
+                     <div class="header-menu">
+                         <ul>
+                             <li v-for="result in results"><a @click="suggestionClick(result)"
+                                     :href="'/ecommerce/item/' + result.id"><img style="max-width: 90px"
+                                         :src="result.image_url_small" alt="England flag"> <span
+                                         style="font-size: 1.0em;"> @{{ result.description }} </span></a></li>
+
+                         </ul>
+                     </div><!-- End .header-menu -->
+                 </div><!-- End .header-dropown -->
+
 
              </div><!-- End .headeer-center -->
 

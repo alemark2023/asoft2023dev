@@ -39,22 +39,23 @@
                  </a>
              </div><!-- End .header-left -->
 
-             <div id="header_bar" class="header-center">
+             <div id="header_bar" class="header-center header-dropdowns">
 
 
-                 <div class="dropdown">
-                     <input placeholder="Buscar..." v-model="value" v-on:keyup="autoComplete"
-                         class="form-control dropdown-toggle form-control-lg" type="text" id="dropdownMenuLink"
-                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
-                     <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuLink">
+                 <div class="header-dropdown" style="width:400px;">
+                     <input placeholder="Buscar..." type="text" class="form-control form-control-lg" v-model="value"
+                         v-on:keyup="autoComplete" />
+                     <div class="header-menu">
+                         <ul>
+                             <li v-for="result in results"><a @click="suggestionClick(result)"
+                                     :href="'/ecommerce/item/' + result.id"><img style="max-width: 90px"
+                                         :src="result.image_url_small" alt="England flag"> <span
+                                         style="font-size: 1.0em;"> @{{ result.description }} </span></a></li>
 
-                         <a @click="suggestionClick(result)" v-for="result in results" class="dropdown-item"
-                             :href="'/ecommerce/item/' + result.id"> <img width="60" height="60"
-                                 :src="result.image_url_small" alt="" style="margin-right:5px;"> <span
-                                 style="font-size: 14px">@{{ result.description }} </span> </a>
-                     </div>
-                 </div>
+                         </ul>
+                     </div><!-- End .header-menu -->
+                 </div><!-- End .header-dropown -->
 
 
              </div><!-- End .headeer-center -->
@@ -90,56 +91,56 @@
  </header><!-- End .header -->
  @push('scripts')
 
-  <script type="text/javascript">
-      var app = new Vue({
-          el: '#header_bar',
-          data: {
-              value: '',
-              suggestions: [],
-              resource: 'ecommerce',
-              results: [],
-          },
-          created() {
-              this.getItems()
-          },
-          methods: {
-              autoComplete() {
+ <script type="text/javascript">
+     var app = new Vue({
+         el: '#header_bar',
+         data: {
+             value: '',
+             suggestions: [],
+             resource: 'ecommerce',
+             results: [],
+         },
+         created() {
+             this.getItems()
+         },
+         methods: {
+             autoComplete() {
 
-                  if (this.value) {
+                 if (this.value) {
 
-                      this.results = this.suggestions.filter((obj) => {
-                          let city = obj.description.toUpperCase()
-                          let val = this.value.toUpperCase()
-                          return city.includes(val)
-                      })
+                     this.results = this.suggestions.filter((obj) => {
+                         let city = obj.description.toUpperCase()
+                         let val = this.value.toUpperCase()
+                         return city.includes(val)
+                     })
 
-                  } else {
-                    this.results = this.suggestions
-                  }
+                 } else {
+                     this.results = this.suggestions
+                 }
 
 
-              },
-              getItems() {
-                  let contex = this
-                  fetch(`/${this.resource}/items_bar`)
-                      .then(function (response) {
-                          return response.json();
-                      })
-                      .then(function (myJson) {
-                          // console.log(myJson.data);
-                          contex.suggestions = myJson.data
-                          contex.results = contex.suggestions
-                      });
-              },
-              suggestionClick(item) {
-                  console.log(item)
-                  this.results = []
-                  this.value = item.description
-              }
+             },
+             getItems() {
+                 let contex = this
+                 fetch(`/${this.resource}/items_bar`)
+                     .then(function (response) {
+                         return response.json();
+                     })
+                     .then(function (myJson) {
+                         // console.log(myJson.data);
+                         contex.suggestions = myJson.data
+                         contex.results = contex.suggestions
+                     });
+             },
+             suggestionClick(item) {
+                 console.log(item)
+                 this.results = []
+                 this.value = item.description
+             }
 
-          }
-      })
+         }
+     })
 
-  </script>
+ </script>
 
-  @endpush
+ @endpush
