@@ -38,7 +38,9 @@
  }
 
  .header-menu a:hover, .header-menu a:focus {
-    background-color: #0187cc;
+    color: #0187cc;   
+    background-color: #f4f4f4;
+    
 }
 
 .header-menu ul a {
