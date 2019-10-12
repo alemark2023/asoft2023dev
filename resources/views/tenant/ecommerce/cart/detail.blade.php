@@ -297,14 +297,14 @@
 
     function culqi() {
         if (Culqi.token) { // ¡Objeto Token creado exitosamente!
-            /* swal({
+             swal({
                  title: "Estamos hablando con su banco",
                  text: "Por favor no cierre esta ventana hasta que el proceso termine.",
                  focusConfirm: false,
                  onOpen: () => {
                      Swal.showLoading()
                  }
-             });*/
+             });
 
             let precio = Math.round((Number($("#total_amount").data('total')) * 100).toFixed(2));
             let precio_culqi = Number($("#total_amount").data('total')).toFixed(2);
