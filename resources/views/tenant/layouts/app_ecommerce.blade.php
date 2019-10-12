@@ -8,10 +8,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Porto - Bootstrap eCommerce Template</title>
+    <title>eCommerce</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="keywords" content="HTML5 Template" />
-    <meta name="description" content="Porto - Bootstrap eCommerce Template">
+    <meta name="keywords" content="ecommerce" />
+    <meta name="description" content="eCommerce">
     <meta name="author" content="SW-THEMES">
 
     <!-- Favicon -->

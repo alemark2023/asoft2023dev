@@ -91,8 +91,12 @@
      <div class="header-middle">
          <div class="container">
              <div class="header-left">
-                 <a href="/ecommerce" class="logo">
-                     <img src="{{ asset('porto-ecommerce/assets/images/logo.png') }}" alt="Porto Logo">
+                 <a href="{{ route("tenant.ecommerce.index") }}" class="logo" style="max-width: 180px">
+                    @if($vc_company->logo)
+                        <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}" alt="Logo" />
+                    @else
+                        <img src="{{asset('logo/700x300.jpg')}}" alt="Logo" />
+                    @endif
                  </a>
              </div><!-- End .header-left -->
 
