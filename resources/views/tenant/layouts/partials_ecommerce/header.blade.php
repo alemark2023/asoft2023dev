@@ -46,6 +46,20 @@
     text-transform: capitalize !important;
 }
 
+.search_input{
+    margin-bottom: 0.1rem; border-radius: 20px 20px 20px 20px;
+
+}
+.search_title{
+
+}
+.search_price{
+    
+}
+.search_btn{
+    
+}
+
 
  </style>
 
@@ -105,14 +119,14 @@
 
 
                  <div class="header-dropdown" style="width:400px;">
-                     <input style="border-radius: 20px 20px 20px 20px" placeholder="Buscar..." type="text" class="form-control form-control-lg" v-model="value"
+                     <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value"
                          v-on:keyup="autoComplete" />
                      <div class="header-menu">
                          <ul>
                              <li v-for="result in results"><a 
                                      :href="'/ecommerce/item/' + result.id"><img style="max-width: 90px"
-                                         :src="result.image_url_small" alt="England flag"> <span
-                                         style="font-size: 1.0em;"> @{{ result.description }} </span></a></li>
+                                         :src="result.image_url_small" alt="England flag"> <span class="search_title"
+                                         style="font-size: 1.0em;"> @{{ result.description }} </span>  <span class="search_price" >@{{result.sale_unit_price}}</span>  <div class="search_btn btn btn-default">Comprar</div>  </a>   </li>
 
                          </ul>
                      </div><!-- End .header-menu -->
@@ -160,20 +174,17 @@
          },
          methods: {
              autoComplete() {
-
                  if (this.value) {
-
-                     this.results = this.suggestions.filter((obj) => {
-                         let city = obj.description.toUpperCase()
-                         let val = this.value.toUpperCase()
-                         return city.includes(val)
-                     })
+                    let val = this.value.toUpperCase()
+                    this.results = this.suggestions.filter((obj) => {
+                         let desc = obj.description.toUpperCase()
+                         let internal_id = obj.internal_id ? obj.internal_id.toUpperCase() : ''
+                         return desc.includes(val) ||  internal_id.includes(val)
+                    })
 
                  } else {
                      this.results = this.suggestions
                  }
-
-
              },
              getItems() {
                  let contex = this

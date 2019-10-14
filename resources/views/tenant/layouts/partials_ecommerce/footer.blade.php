@@ -18,19 +18,12 @@
                     <h4 class="widget-title">Contacto</h4>
                     <ul class="contact-info">
                         <li>
-                            <span class="contact-info-label">Address:</span>123 Street Name, City, England
+                            <span class="contact-info-label">Direccion:</span> Jr. Trujillo 123 Lima, Peru
                         </li>
                         <li>
-                            <span class="contact-info-label">Phone:</span>Toll Free <a href="tel:">(123) 456-7890</a>
+                            <span class="contact-info-label">Telefono:</span> <a href="tel:">(01) 456-7890</a>
                         </li>
-                        {{-- <li>
-                            <span class="contact-info-label">Email:</span> <a
-                                href="mailto:mail@example.com">mail@example.com</a>
-                        </li>
-                        <li>
-                            <span class="contact-info-label">Working Days/Hours:</span>
-                            Mon - Sun / 9:00AM - 8:00PM
-                        </li> --}}
+                      
                     </ul>
                     <div class="social-icons">
                         <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
@@ -60,7 +53,7 @@
                 </div><!-- End .widget --> --}}
 
                 <div class="row">
-                    <div class="col-md-5">
+                {{-- <div class="col-md-5">
                         <div class="widget">
                             <h4 class="widget-title">My Account</h4>
 
@@ -81,10 +74,10 @@
                                 </div><!-- End .col-sm-6 -->
                             </div><!-- End .row -->
                         </div><!-- End .widget -->
-                    </div><!-- End .col-md-5 -->
+                    </div><!-- End .col-md-5 --> --}}
 
                     <div class="col-md-7">
-                        <div class="widget">
+                    {{-- <div class="widget">
                             <h4 class="widget-title">Main Features</h4>
 
                             <div class="row">
@@ -102,7 +95,7 @@
                                     </ul>
                                 </div><!-- End .col-sm-6 -->
                             </div><!-- End .row -->
-                        </div><!-- End .widget -->
+                        </div><!-- End .widget --> --}}
                     </div><!-- End .col-md-7 -->
                 </div><!-- End .row -->
             </div><!-- End .col-lg-9 -->

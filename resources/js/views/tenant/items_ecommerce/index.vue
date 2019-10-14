@@ -66,7 +66,7 @@
               <el-checkbox
                 size="medium"
                 @change="visibleStore($event, row.id)"
-                :checked="row.apply_store"
+                 v-model="row.apply_store"
               ></el-checkbox>
             </td>
             <td class="text-right">
