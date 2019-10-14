@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Providers;
  
 use App\Models\Tenant\DocumentItem;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\SaleNoteItem;
 use Illuminate\Support\ServiceProvider;
@@ -37,25 +38,68 @@ class InventoryKardexServiceProvider extends ServiceProvider
     
     private function sale() {
         DocumentItem::created(function($document_item) {
-            $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
+
+            if(!$document_item->item->is_set){
+
+                $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
             
-            $document = $document_item->document;
-            $factor = ($document->document_type_id === '07') ? 1 : -1;
-            $warehouse = $this->findWarehouse();
-            //$this->createInventory($document_item->item_id, $factor * $document_item->quantity, $warehouse->id);
-            $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-            if(!$document_item->document->sale_note_id) $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                $document = $document_item->document;
+                $factor = ($document->document_type_id === '07') ? 1 : -1;
+                $warehouse = $this->findWarehouse();
+                //$this->createInventory($document_item->item_id, $factor * $document_item->quantity, $warehouse->id);
+                $this->createInventoryKardex($document_item->document, $document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                if(!$document_item->document->sale_note_id) $this->updateStock($document_item->item_id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+            
+            }
+            else{
+
+                $item = Item::findOrFail($document_item->item_id);
+                
+                foreach ($item->sets as $it) {
+
+                    $ind_item  = $it->individual_item;
+                    $presentationQuantity = 1;            
+                    $document = $document_item->document;
+                    $factor = ($document->document_type_id === '07') ? 1 : -1;
+                    $warehouse = $this->findWarehouse();
+                    $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                    if(!$document_item->document->sale_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                
+                }
+
+            }
+
         });
     }
     
     private function sale_note() {
         SaleNoteItem::created(function ($sale_note_item) {
-            $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
-            
-            $warehouse = $this->findWarehouse();
-            //$this->createInventory($sale_note_item->item_id, -1 * $sale_note_item->quantity, $warehouse->id);
-            $this->createInventoryKardex($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
-            $this->updateStock($sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+            if(!$sale_note_item->item->is_set){
+
+                $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
+                
+                $warehouse = $this->findWarehouse();
+                //$this->createInventory($sale_note_item->item_id, -1 * $sale_note_item->quantity, $warehouse->id);
+                $this->createInventoryKardex($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                $this->updateStock($sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+            }else{
+
+                $item = Item::findOrFail($sale_note_item->item_id);
+                
+                foreach ($item->sets as $it) {
+
+                    $ind_item  = $it->individual_item;
+                    $presentationQuantity = 1;                                
+                    $warehouse = $this->findWarehouse();
+                    $this->createInventoryKardex($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                    $this->updateStock($ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+                }
+
+            }
+
         });
     }
     

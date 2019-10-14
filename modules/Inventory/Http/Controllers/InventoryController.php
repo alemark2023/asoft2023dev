@@ -42,6 +42,7 @@ class InventoryController extends Controller
             $records = ItemWarehouse::with(['item', 'warehouse'])
                             ->whereHas('item', function($query) use($request) {
                                 $query->where('unit_type_id', '!=','ZZ');
+                                $query->whereNotIsSet();
                             })
                             ->whereHas('warehouse', function($query) use($request) {
                                 $query->where('description', 'like', '%' . $request->value . '%');
@@ -53,6 +54,7 @@ class InventoryController extends Controller
             $records = ItemWarehouse::with(['item', 'warehouse'])
                             ->whereHas('item', function($query) use($request) {
                                 $query->where('unit_type_id', '!=','ZZ');
+                                $query->whereNotIsSet();
                                 $query->where($request->column, 'like', '%' . $request->value . '%');
                             })->orderBy('item_id');
 

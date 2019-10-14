@@ -123,6 +123,7 @@ class DocumentInput
                         'unit_type_id' => (key_exists('item', $row))?$row['item']['unit_type_id']:$item->unit_type_id,
                         'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation']:[]):[],
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
+                        'is_set' => $item->is_set,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
