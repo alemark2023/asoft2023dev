@@ -470,21 +470,6 @@
                     @endif
                 </ul>
             </nav>
-            <hr class="separator">
-            <div class="sidebar-widget widget-tasks">
-                <div class="widget-header">
-                    <h6>Entorno</h6>
-                </div>
-                <div class="widget-content">
-                    <ul class="list-unstyled m-0">
-                        @if($vc_company->soap_type_id == "01")
-                        <li><a href="#">Demostración</a></li>
-                        @else
-                        <li><a href="#">Producción</a></li>
-                        @endif
-                    </ul>
-                </div>
-            </div>
         </div>
         <script>
             // Maintain Scroll Position
