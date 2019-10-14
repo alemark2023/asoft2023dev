@@ -12,6 +12,19 @@ if ($hostname) {
         Route::get('search/tables', 'Tenant\SearchController@tables');
         Route::post('search', 'Tenant\SearchController@store');
 
+        Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
+        Route::get('ecommerce/item/{id}', 'Tenant\EcommerceController@item')->name('tenant.ecommerce.item');
+        Route::get('ecommerce/items', 'Tenant\EcommerceController@items')->name('tenant.ecommerce.item.index');
+        Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');
+        Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
+        Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
+        Route::get('ecommerce/login', 'Tenant\EcommerceController@showLogin')->name('tenant_ecommerce_login');
+        Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
+        Route::post('ecommerce/culqi', 'Tenant\CulqiController@pago')->name('tenant_ecommerce_culqui');
+        Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
+        Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
+
+
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
 
@@ -97,6 +110,10 @@ if ($hostname) {
             Route::post('charge_discounts', 'Tenant\ChargeDiscountController@store');
             Route::delete('charge_discounts/{charge}', 'Tenant\ChargeDiscountController@destroy');
 
+
+            //Items Ecommerce
+            Route::get('items_ecommerce', 'Tenant\ItemController@index_ecommerce')->name('tenant.items_ecommerce.index');
+
             //Items
             Route::get('items', 'Tenant\ItemController@index')->name('tenant.items.index');
             Route::get('items/columns', 'Tenant\ItemController@columns');
@@ -108,6 +125,9 @@ if ($hostname) {
             Route::delete('items/item-unit-type/{item}', 'Tenant\ItemController@destroyItemUnitType');
             Route::post('items/import', 'Tenant\ItemController@import');
             Route::post('items/upload', 'Tenant\ItemController@upload');
+            Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
+
+
 
             //Customers
 //            Route::get('customers', 'Tenant\CustomerController@index')->name('tenant.customers.index');
@@ -436,6 +456,24 @@ if ($hostname) {
            Route::get('cash/item/tables', 'Tenant\CashController@item_tables');
            Route::get('cash/search/customers', 'Tenant\CashController@searchCustomers');
            Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
+
+           //Tags
+           Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
+           Route::get('tags/columns', 'Tenant\TagController@columns');
+           Route::get('tags/records', 'Tenant\TagController@records');
+           Route::get('tags/record/{tag}', 'Tenant\TagController@record');
+           Route::post('tags', 'Tenant\TagController@store');
+           Route::delete('tags/{tag}', 'Tenant\TagController@destroy');
+
+           //Promotion
+           Route::get('promotions', 'Tenant\PromotionController@index')->name('tenant.promotion.index');
+           Route::get('promotions/columns', 'Tenant\PromotionController@columns');
+           Route::get('promotions/tables', 'Tenant\PromotionController@tables');
+           Route::get('promotions/records', 'Tenant\PromotionController@records');
+           Route::get('promotions/record/{tag}', 'Tenant\PromotionController@record');
+           Route::post('promotions', 'Tenant\PromotionController@store');
+           Route::delete('promotions/{promotion}', 'Tenant\PromotionController@destroy');
+           Route::post('promotions/upload', 'Tenant\PromotionController@upload');
 
         });
     });

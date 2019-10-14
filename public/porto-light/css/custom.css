@@ -112,3 +112,7 @@ ul.nav-main li i {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
+
+.badge-red {
+  background: #E7355B;
+}

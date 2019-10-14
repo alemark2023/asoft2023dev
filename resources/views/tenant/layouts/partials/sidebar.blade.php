@@ -2,7 +2,8 @@
     $path = explode('/', request()->path());
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
-    $path[0] = ($path[0] === '')?'documents':$path[0]; 
+    $path[0] = ($path[0] === '')?'documents':$path[0];
+    
 
 @endphp
 
@@ -20,9 +21,19 @@
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
+                   <!-- <li class="{{ ($path[0] === 'ecommerce')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{ route('tenant.ecommerce.index') }}">
+                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                            <span>Ecommerce</span>
+                        </a>
+                    </li> -->
+
+                    
+
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.dashboard.index') }}">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                             <i class="fas fa-chart-line" aria-hidden="true"></i>
                             <span>DASHBOARD</span>
                         </a>
@@ -40,8 +51,7 @@
                         {{ ($path[0] === 'quotations')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
-                        {{ ($path[0] === 'pos')?'nav-active nav-expanded':'' }}
-                        {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
+                      
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-receipt" aria-hidden="true"></i>
@@ -51,7 +61,7 @@
                             @if(auth()->user()->type != 'integrator')
 
                                 @if(in_array('pos', $vc_modules))
-                                    <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
+                                   <!-- <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
                                         <a class="nav-link" href="{{route('tenant.cash.index')}}">
                                             Caja chica
                                         </a>
@@ -60,7 +70,7 @@
                                         <a class="nav-link" href="{{route('tenant.pos.index')}}">
                                             Punto de venta (POS)
                                         </a>
-                                    </li>
+                                    </li> -->
                                 @endif
 
                                 @if(in_array('documents', $vc_modules))
@@ -151,6 +161,67 @@
                     @endif
 
                     @if(auth()->user()->type != 'integrator')
+                        @if(in_array('pos', $vc_modules))
+                        <li class="
+                        nav-parent
+                        {{ ($path[0] === 'pos')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
+                        ">
+                            <a class="nav-link" href="#">
+                                <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                                <span>POS</span>
+                            </a>
+                            <ul class="nav nav-children">
+                                <li class="{{ ($path[0] === 'pos'  )?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.pos.index')}}">
+                                        Punto de venta
+                                    </a>
+                                </li>
+                                <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.cash.index')}}">
+                                        Caja chica
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </li>
+                        @endif
+                    @endif
+
+                    
+
+                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
+                        <a class="nav-link" href="#">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <span>Tienda Virtual</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="">
+                                <a class="nav-link" onclick="window.open( '{{ route("tenant.ecommerce.index") }} ')">
+                                    Ir a Tienda
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'items_ecommerce')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
+                                    Productos Tienda Virtual
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'tags')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.tags.index')}}">
+                                    Tags - Categorias
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'promotions')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.promotion.index')}}">
+                                    Promociones
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    @if(auth()->user()->type != 'integrator')
 
                         @if(in_array('purchases', $vc_modules))
                         <li class="
@@ -160,7 +231,7 @@
                             {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
-                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                                <i class="fas fa-cart-arrow-down" aria-hidden="true"></i>
                                 <span>Compras</span>
                             </a>
                             <ul class="nav nav-children" style="">
@@ -331,7 +402,8 @@
                         {{ ($path[0] === 'account')?'nav-active nav-expanded':'' }}
                         ">
                         <a class="nav-link" href="#">
-                            <i class="fas fa-chart-area" aria-hidden="true"></i>
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                            <i class="fas fa-chart-bar" aria-hidden="true"></i>
                             <span>Contabilidad</span>
                         </a>
                         <ul class="nav nav-children" style="">
@@ -398,6 +470,21 @@
                     @endif
                 </ul>
             </nav>
+            <hr class="separator">
+            <div class="sidebar-widget widget-tasks">
+                <div class="widget-header">
+                    <h6>Entorno</h6>
+                </div>
+                <div class="widget-content">
+                    <ul class="list-unstyled m-0">
+                        @if($vc_company->soap_type_id == "01")
+                        <li><a href="#">Demostración</a></li>
+                        @else
+                        <li><a href="#">Producción</a></li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
         </div>
         <script>
             // Maintain Scroll Position

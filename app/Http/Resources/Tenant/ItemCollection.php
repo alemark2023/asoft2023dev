@@ -46,14 +46,23 @@ class ItemCollection extends ResourceCollection
                 'has_igv_description' => $has_igv_description,
                 'sale_unit_price' => "{$row->currency_type->symbol} {$row->sale_unit_price}",
                 'purchase_unit_price' => "{$row->currency_type->symbol} {$row->purchase_unit_price}",
-                'created_at' => $row->created_at->format('Y-m-d H:i:s'),
-                'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+                'created_at' => ($row->created_at) ? $row->created_at->format('Y-m-d H:i:s') : '',
+                'updated_at' => ($row->created_at) ? $row->updated_at->format('Y-m-d H:i:s') : '',
                 'warehouses' => collect($row->warehouses)->transform(function($row) {
                     return [
                         'warehouse_description' => $row->warehouse->description,
                         'stock' => $row->stock,
                     ];
-                })
+                }),
+                'apply_store' => (bool)$row->apply_store,
+                'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
+                'image_url_medium' => ($row->image_medium !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image_medium) : asset("/logo/{$row->image_medium}"),
+                'image_url_small' => ($row->image_small !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image_small) : asset("/logo/{$row->image_small}"),
+                'tags' => $row->tags,
+                'tags_id' => $row->tags->pluck('tag_id'),
+                 
+
+
             ];
         });
     }
