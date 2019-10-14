@@ -6,6 +6,7 @@ use App\Models\Tenant\Item;
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Models\Inventory;
 use Modules\Inventory\Traits\InventoryTrait;
+use Modules\Inventory\Models\ItemWarehouse;
 
 class InventoryChangeServiceProvider extends ServiceProvider
 {
@@ -24,9 +25,15 @@ class InventoryChangeServiceProvider extends ServiceProvider
     private function createdItem()
     {
         Item::created(function ($item) {
-
+            // dd($item->is_set);
             $warehouse = ($item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($item->warehouse_id)->establishment_id) : $this->findWarehouse();           
-            $this->createInitialInventory($item->id, $item->stock, $warehouse->id);
+            if(!$item->is_set){
+                $this->createInitialInventory($item->id, $item->stock, $warehouse->id);
+            }else{
+                $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item->id, 'warehouse_id' => $warehouse->id]);
+                $item_warehouse->stock = 0;
+                $item_warehouse->save();
+            }
             
         });
     }

@@ -382,7 +382,7 @@ class SaleNoteController extends Controller
             
             case 'items':
 
-                $items = Item::whereWarehouse()->orderBy('description')->get();
+                $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
                 return collect($items)->transform(function($row) {
                     $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
@@ -397,6 +397,7 @@ class SaleNoteController extends Controller
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'has_igv' => (bool) $row->has_igv,
+                        'is_set' => (bool) $row->is_set,
                         'warehouses' => collect($row->warehouses)->transform(function($row) {
                             return [
                                 'warehouse_id' => $row->warehouse->id,

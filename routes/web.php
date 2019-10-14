@@ -475,6 +475,19 @@ if ($hostname) {
            Route::delete('promotions/{promotion}', 'Tenant\PromotionController@destroy');
            Route::post('promotions/upload', 'Tenant\PromotionController@upload');
 
+
+           Route::get('item-sets', 'Tenant\ItemSetController@index')->name('tenant.item_sets.index');
+           Route::get('item-sets/columns', 'Tenant\ItemSetController@columns');
+           Route::get('item-sets/records', 'Tenant\ItemSetController@records');
+           Route::get('item-sets/tables', 'Tenant\ItemSetController@tables');
+           Route::get('item-sets/record/{item}', 'Tenant\ItemSetController@record');
+           Route::post('item-sets', 'Tenant\ItemSetController@store');
+           Route::delete('item-sets/{item}', 'Tenant\ItemSetController@destroy');
+           Route::delete('item-sets/item-unit-type/{item}', 'Tenant\ItemSetController@destroyItemUnitType');
+           Route::post('item-sets/import', 'Tenant\ItemSetController@import');
+           Route::post('item-sets/upload', 'Tenant\ItemSetController@upload');
+           Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
+
         });
     });
 } else {

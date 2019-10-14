@@ -166,6 +166,7 @@
                         nav-parent
                         {{ ($path[0] === 'pos')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'cash')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'item-sets')?'nav-active nav-expanded':'' }}
                         ">
                             <a class="nav-link" href="#">
                                 <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
@@ -181,6 +182,11 @@
                                 <li class="{{ ($path[0] === 'cash'  )?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.cash.index')}}">
                                         Caja chica
+                                    </a>
+                                </li>
+                                <li class="{{ ($path[0] === 'item-sets'  )?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.item_sets.index')}}">
+                                        Conjuntos/Packs/Promociones
                                     </a>
                                 </li>
                                 
@@ -470,21 +476,6 @@
                     @endif
                 </ul>
             </nav>
-            <hr class="separator">
-            <div class="sidebar-widget widget-tasks">
-                <div class="widget-header">
-                    <h6>Entorno</h6>
-                </div>
-                <div class="widget-content">
-                    <ul class="list-unstyled m-0">
-                        @if($vc_company->soap_type_id == "01")
-                        <li><a href="#">Demostración</a></li>
-                        @else
-                        <li><a href="#">Producción</a></li>
-                        @endif
-                    </ul>
-                </div>
-            </div>
         </div>
         <script>
             // Maintain Scroll Position

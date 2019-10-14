@@ -514,6 +514,7 @@
                     image: null,
                     image_url: null,
                     temp_path: null,
+                    is_set: false,
                     account_id: null,
                     date_of_due:null
                 }

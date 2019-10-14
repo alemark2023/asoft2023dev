@@ -130,6 +130,8 @@ Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dr
 Vue.component('tenant-tags-index', require('./views/tenant/tags/index.vue'));
 Vue.component('tenant-promotions-index', require('./views/tenant/promotions/index.vue'));
 
+Vue.component('tenant-item-sets-index', require('./views/tenant/item_sets/index.vue'));
+
 const app = new Vue({
     el: '#main-wrapper'
 });

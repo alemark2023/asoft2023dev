@@ -50,6 +50,7 @@ class ItemController extends Controller
     public function records(Request $request)
     {
         $records = Item::whereTypeUser()
+                        ->whereNotIsSet()
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->orderBy('description');
         

@@ -33,7 +33,7 @@ class ReportKardexController extends Controller
 
     public function index() {
         
-        $items = Item::query()
+        $items = Item::query()->whereNotIsSet()
             ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
             ->latest()
             ->get();
@@ -55,7 +55,7 @@ class ReportKardexController extends Controller
         $a = $request->a;
         $item_selected = $request->item_selected;
 
-        $items = Item::query()
+        $items = Item::query()->whereNotIsSet()
             ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
             ->latest()
             ->get();

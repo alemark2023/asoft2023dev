@@ -13,14 +13,25 @@
         </div>
     </div> 
     <div class="header-right">
-        {{-- @if($vc_company->soap_type_id == "01")
-        <ul class="notifications">
-            <span class="separator"></span>
-            <li class="warning-demo"> 
-                Demo
-            </li> 
-        </ul>
-        @endif --}}
+        @if($vc_company->soap_type_id == "01")
+        <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="ENTORNO DE DEMOSTRACIÓN, para cambiar acceda a Configuración/Empresa">
+            <div class="ios-switch off">
+                <div class="on-background background-fill"></div>
+                <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #ccc;">DEMO</span></div>
+                <div class="handle"></div>
+            </div>
+            <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
+        </div>
+        @else
+        <div class="switch switch-sm switch-success">
+            <div class="ios-switch on">
+                <div class="on-background background-fill"><span class="text-white" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
+                <div class="state-background background-fill"></div>
+                <div class="handle"></div>
+            </div>
+            <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
+        </div>
+        @endif
         @if($vc_document > 0)
         <ul class="notifications">
             <li class="open">
