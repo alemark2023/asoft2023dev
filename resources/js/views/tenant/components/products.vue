@@ -7,7 +7,7 @@
                 <div>
                     <span>Producto</span>
                     <el-select @change="setProduct" v-model="product" filterable  :clearable="false" placeholder="Productos" class="m-custom">
-                        <el-option v-for="item in data_products" :key="item.id" :label="item.description" :value="item.id" class="m-custom"></el-option>
+                        <el-option v-for="item in data_products" :key="item.id" :label="getItemDescription(item)" :value="item.id" class="m-custom"></el-option>
                     </el-select>
                 </div>
             </div>
@@ -69,6 +69,9 @@
 
         },
         methods:{ 
+            getItemDescription(item){
+                return (item.internal_id) ? `${item.internal_id} - ${item.description}` : item.description
+            },
             setProduct()
             {
                 this.$refs.item_selected.value = this.product

@@ -73,6 +73,7 @@ Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_ed
 Vue.component('tenant-purchases-items', require('./views/tenant/dispatches/items.vue'));
 Vue.component('tenant-attribute_types-index', require('./views/tenant/attribute_types/index.vue'));
 Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+Vue.component('tenant-warehouses', require('./views/tenant/components/warehouses.vue'));
 Vue.component('tenant-calendar-quotation', require('./views/tenant/components/calendarquotations.vue'));
 
 //Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));

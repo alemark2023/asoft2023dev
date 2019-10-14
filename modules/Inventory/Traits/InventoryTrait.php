@@ -40,6 +40,18 @@ trait InventoryTrait
         });
     }
 
+    
+    public function optionsItemFull() {
+        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->get();
+        
+        return collect($records)->transform(function($row) {
+            return  [
+                'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description
+            ];
+        });
+    }
+
     public function findInventoryTransaction($id) {
 
         return InventoryTransaction::findOrFail($id);

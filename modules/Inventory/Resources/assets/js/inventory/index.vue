@@ -26,7 +26,7 @@
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                        <td>{{ row.item_description }}</td>
+                        <td>{{ row.item_fulldescription }}</td>
                         <td>{{ row.warehouse_description }}</td>
                         <td class="text-right">{{ row.stock }}</td>
                         <td class="text-right">
