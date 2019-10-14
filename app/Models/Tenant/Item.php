@@ -49,6 +49,8 @@ class Item extends ModelTenant
         'account_id',
         'amount_plastic_bag_taxes',
         'date_of_due',
+        'is_set',
+        'sale_unit_price_set',
         'apply_store'
         // 'warehouse_id'
     ];
@@ -140,6 +142,16 @@ class Item extends ModelTenant
         return ($user->type == 'seller') ? $this->scopeWhereWarehouse($query) : null; 
     }
 
+    public function scopeWhereNotIsSet($query)
+    {
+        return $query->where('is_set', false); 
+    }
+
+    public function scopeWhereIsSet($query)
+    {
+        return $query->where('is_set', true); 
+    }
+
     public function getStockByWarehouse()
     {
         if(auth()->user())
@@ -169,5 +181,10 @@ class Item extends ModelTenant
     public function tags()
     {
         return $this->hasMany(ItemTag::class);
+    }
+    
+    public function sets()
+    {
+        return $this->hasMany(ItemSet::class);
     }
 }

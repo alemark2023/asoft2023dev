@@ -30,12 +30,24 @@ trait InventoryTrait
     }
     
     public function optionsItem() {
-        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->get();
+        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->whereNotIsSet()->get();
         
         return collect($records)->transform(function($row) {
             return  [
                 'id' => $row->id,
                 'description' => $row->description
+            ];
+        });
+    }
+
+    
+    public function optionsItemFull() {
+        $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->whereNotIsSet()->get();
+        
+        return collect($records)->transform(function($row) {
+            return  [
+                'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description
             ];
         });
     }

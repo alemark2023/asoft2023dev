@@ -300,6 +300,7 @@
                     has_igv: null,
                     item_unit_type_id: null,
                     unit_type_id: null,
+                    is_set: false,
                 };
                 
                 this.total_item = 0;

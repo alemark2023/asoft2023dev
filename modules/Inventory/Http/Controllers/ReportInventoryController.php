@@ -24,6 +24,7 @@ class ReportInventoryController extends Controller
 
         $reports = ItemWarehouse::with(['item'])->whereHas('item',function($q){
                                     $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                                    $q->whereNotIsSet();
                                 })->latest()->paginate(config('tenant.items_per_page'));
 
         return view('inventory::reports.inventory.index', compact('reports'));
@@ -38,6 +39,7 @@ class ReportInventoryController extends Controller
         
         $reports = ItemWarehouse::with(['item'])->whereHas('item', function($q){
             $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+            $q->whereNotIsSet();
         })->latest()->get();
         
         return view('inventory::reports.inventory.index', compact('reports'));
@@ -55,6 +57,7 @@ class ReportInventoryController extends Controller
         
         $reports = ItemWarehouse::with(['item'])->whereHas('item', function($q){
             $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+            $q->whereNotIsSet();
         })->latest()->get();
         
         $pdf = PDF::loadView('inventory::reports.inventory.report_pdf', compact("reports", "company", "establishment"));
@@ -74,6 +77,7 @@ class ReportInventoryController extends Controller
        
         $records = ItemWarehouse::with(['item'])->whereHas('item', function($q){
             $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+            $q->whereNotIsSet();
         })->latest()->get();
 
         return (new InventoryExport)

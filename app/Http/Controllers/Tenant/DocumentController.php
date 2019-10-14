@@ -201,7 +201,7 @@ class DocumentController extends Controller
             return $customers;
         }
         if ($table === 'items') {
-            $items = Item::whereWarehouse()->orderBy('description')->get();
+            $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
             return collect($items)->transform(function($row) {
                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                 return [

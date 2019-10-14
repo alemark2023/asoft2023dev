@@ -73,6 +73,7 @@ Vue.component('tenant-purchases-edit', require('./views/tenant/purchases/form_ed
 Vue.component('tenant-purchases-items', require('./views/tenant/dispatches/items.vue'));
 Vue.component('tenant-attribute_types-index', require('./views/tenant/attribute_types/index.vue'));
 Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
+Vue.component('tenant-warehouses', require('./views/tenant/components/warehouses.vue'));
 Vue.component('tenant-calendar-quotation', require('./views/tenant/components/calendarquotations.vue'));
 
 //Vue.component('tenant-calendar', require('./views/tenant/components/calendar.vue'));
@@ -128,6 +129,8 @@ Vue.component('tenant-items-ecommerce-index', require('./views/tenant/items_ecom
 Vue.component('tenant-ecommerce-cart', require('./views/tenant/ecommerce/cart_dropdown.vue'));
 Vue.component('tenant-tags-index', require('./views/tenant/tags/index.vue'));
 Vue.component('tenant-promotions-index', require('./views/tenant/promotions/index.vue'));
+
+Vue.component('tenant-item-sets-index', require('./views/tenant/item_sets/index.vue'));
 
 const app = new Vue({
     el: '#main-wrapper'

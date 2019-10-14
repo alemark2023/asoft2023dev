@@ -301,6 +301,7 @@
                     discounts: [],
                     attributes: [],
                     has_igv: null,
+                    is_set: false,
                     item_unit_types: []
                 }
                  this.item_unit_type = {};

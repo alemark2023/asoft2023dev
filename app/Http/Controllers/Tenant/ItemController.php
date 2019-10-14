@@ -41,7 +41,8 @@ class ItemController extends Controller
     public function columns()
     {
         return [
-            'description' => 'Nombre'
+            'description' => 'Nombre',
+            'internal_id' => 'Código interno',
             // 'description' => 'Descripción'
         ];
     }
@@ -49,6 +50,7 @@ class ItemController extends Controller
     public function records(Request $request)
     {
         $records = Item::whereTypeUser()
+                        ->whereNotIsSet()
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->orderBy('description');
         
@@ -144,11 +146,17 @@ class ItemController extends Controller
             $item_unit_type->save();
         
         }
-        ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));
-        foreach ($request->tags_id as $value) {
-            ItemTag::create(['item_id' => $item->id,  'tag_id' => $value]);
-            //$tag = ItemTag::where('item_id', $item->id)->where('tag_id', $value)->first();
+
+        if($request->tags_id)
+        {
+            ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));
+            foreach ($request->tags_id as $value) {
+                ItemTag::create(['item_id' => $item->id,  'tag_id' => $value]);
+                //$tag = ItemTag::where('item_id', $item->id)->where('tag_id', $value)->first();
+            }
         }
+
+      
         
         $item->update();
 
