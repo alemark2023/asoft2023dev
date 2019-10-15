@@ -206,6 +206,7 @@ class ClientController extends Controller
                 ['module_id' => 7, 'user_id' => $user_id], 
                 ['module_id' => 8, 'user_id' => $user_id], 
                 ['module_id' => 9, 'user_id' => $user_id], 
+                ['module_id' => 10, 'user_id' => $user_id], 
             ]);
             
         }else{

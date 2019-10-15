@@ -40,7 +40,7 @@
                     </li>
                     @endif
 
-                    @if(in_array('documents', $vc_modules) || in_array('pos', $vc_modules))
+                    @if(in_array('documents', $vc_modules))
                     <li class="
                         nav-parent
                         {{ ($path[0] === 'documents')?'nav-active nav-expanded':'' }}
@@ -196,7 +196,7 @@
                     @endif
 
                     
-
+                    @if(in_array('ecommerce', $vc_modules))
                     <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
@@ -226,6 +226,7 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
 
                     @if(auth()->user()->type != 'integrator')
 
