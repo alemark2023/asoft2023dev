@@ -12,6 +12,7 @@ class DashboardData
 {
     public function data($request)
     {
+// dd($request);
         $establishment_id = $request['establishment_id'];
         $period = $request['period'];
         $date_start = $request['date_start'];
@@ -56,9 +57,16 @@ class DashboardData
      */
     private function sale_note_totals($establishment_id, $date_start, $date_end)
     {
-        $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
-                                       ->where('changed', false)
-                                       ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+
+        if($date_start && $date_end){
+            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+                                           ->where('changed', false)
+                                           ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+        }else{
+            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+                                           ->where('changed', false)->get();
+        }
+
         $sale_note_total = collect($sale_notes)->sum('total');
 
         $sale_note_total_payment = 0;
@@ -99,7 +107,12 @@ class DashboardData
      */
     private function document_totals($establishment_id, $date_start, $date_end)
     {
-        $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+
+        if($date_start && $date_end){
+            $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+        }else{
+            $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+        }
         // $document_total = round(collect($documents)->sum('total'),2);
         $document_total = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->sum('total');
 
@@ -151,12 +164,23 @@ class DashboardData
      */
     private function totals($establishment_id, $date_start, $date_end, $period, $month_start, $month_end)
     {
-        $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
-                                       ->where('changed', false)
-                                       ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+
+        if($date_start && $date_end){
+            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+                                           ->where('changed', false)
+                                           ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+    
+            $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+
+        }else{
+            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+                                           ->where('changed', false)->get();
+    
+            $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+        }        
+
         $sale_notes_total = round($sale_notes->sum('total'),2);
 
-        $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
         // $documents_total = round($documents->sum('total'),2);
         $documents_total = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->sum('total');
 

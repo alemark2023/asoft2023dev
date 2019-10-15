@@ -21,6 +21,7 @@
                             <div class="col-md-3">
                                 <label class="control-label">Periodo</label>
                                 <el-select v-model="form.period" @change="changePeriod">
+                                    <el-option key="all" value="all" label="Todos"></el-option>
                                     <el-option key="month" value="month" label="Por mes"></el-option>
                                     <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
                                     <el-option key="date" value="date" label="Por fecha"></el-option>
@@ -326,7 +327,7 @@
                     <div class="col-xl-12">
                         <section class="card">
                             <div class="card-body">
-                                <h2 class="card-title">Por cobrar</h2>
+                                <h2 class="card-title">Cuentas por cobrar</h2>
                                 <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -459,7 +460,7 @@
             initForm() {
                 this.form = {
                     establishment_id: null,
-                    period: 'month',
+                    period: 'all',
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
