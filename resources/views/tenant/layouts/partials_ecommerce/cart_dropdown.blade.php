@@ -1,6 +1,6 @@
 <div class="dropdown cart-dropdown">
-    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-        data-display="static">
+    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+        <i class="icon-bag-2 fa-2x text-white"></i>
         <span class="cart-count">0</span>
     </a>
     <div class="dropdown-menu">
@@ -23,7 +23,6 @@
         </div><!-- End .dropdownmenu-wrapper -->
     </div><!-- End .dropdown-menu -->
 </div><!-- End .dropdown -->
-
 
 
 @push('scripts')

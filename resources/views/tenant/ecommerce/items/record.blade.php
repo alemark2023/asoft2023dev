@@ -54,7 +54,7 @@
                         <span class="ratings" style="width:60%"></span><!-- End .ratings -->
                     </div><!-- End .product-ratings -->
 
-                    <a href="#" class="rating-link">( 6 Reviews )</a>
+                    <a href="#" class="rating-link">( 6 vistas )</a>
                 </div><!-- End .product-container -->
 
                 <div class="price-box">
