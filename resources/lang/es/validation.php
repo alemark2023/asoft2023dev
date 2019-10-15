@@ -199,6 +199,8 @@ return [
         'time_entry' => 'hora ingreso',
         'date_exit' => 'fecha salida',
         'time_exit' => 'hora salida',
+        'person_type_id' => 'tipo de cliente',
+        'customers' => 'cliente',
       
     ],
 ];

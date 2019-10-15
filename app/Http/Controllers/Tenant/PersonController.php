@@ -12,6 +12,7 @@ use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\Province;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\PersonType;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
@@ -54,9 +55,10 @@ class PersonController extends Controller
         $provinces = Province::whereActive()->orderByDescription()->get();
         $districts = District::whereActive()->orderByDescription()->get();
         $identity_document_types = IdentityDocumentType::whereActive()->get();
+        $person_types = PersonType::get();
         $locations = $this->getLocationCascade();
 
-        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations');
+        return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types');
     }
 
     public function record($id)

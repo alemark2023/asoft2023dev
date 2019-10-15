@@ -488,6 +488,14 @@ if ($hostname) {
            Route::post('item-sets/upload', 'Tenant\ItemSetController@upload');
            Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
 
+           
+           Route::get('person-types/columns', 'Tenant\PersonTypeController@columns');
+           Route::get('person-types', 'Tenant\PersonTypeController@index')->name('tenant.person_types.index');
+           Route::get('person-types/records', 'Tenant\PersonTypeController@records');
+           Route::get('person-types/record/{person}', 'Tenant\PersonTypeController@record');
+           Route::post('person-types', 'Tenant\PersonTypeController@store');
+           Route::delete('person-types/{person}', 'Tenant\PersonTypeController@destroy');
+
         });
     });
 } else {

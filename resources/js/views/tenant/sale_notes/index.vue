@@ -79,6 +79,11 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickGenerate(row.id)" v-if="!row.changed">Generar comprobante</button>
 
+                            <template v-for="(document,i) in row.documents">
+                                <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                    v-if="row.changed" :key="i">Generar Guía Remisión</a>
+                            </template>
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>

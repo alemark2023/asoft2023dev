@@ -131,6 +131,7 @@ Vue.component('tenant-tags-index', require('./views/tenant/tags/index.vue'));
 Vue.component('tenant-promotions-index', require('./views/tenant/promotions/index.vue'));
 
 Vue.component('tenant-item-sets-index', require('./views/tenant/item_sets/index.vue'));
+Vue.component('tenant-person-types-index', require('./views/tenant/person_types/index.vue'));
 
 const app = new Vue({
     el: '#main-wrapper'

@@ -54,6 +54,25 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="row" v-if="type === 'customers'">
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.person_type_id}">
+                            <label class="control-label">Tipo de cliente</label>
+                            <el-select v-model="form.person_type_id" filterable  >
+                                <el-option v-for="option in person_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.person_type_id" v-text="errors.person_type_id[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group"  >
+                            <label class="control-label">Comentario</label>
+                            <el-input v-model="form.comment"></el-input>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.country_id}">
@@ -209,6 +228,7 @@
                 provinces: [],
                 districts: [],
                 locations: [],
+                person_types: [],
                 identity_document_types: []
             }
         },
@@ -222,6 +242,7 @@
                     this.all_districts = response.data.districts;
                     this.identity_document_types = response.data.identity_document_types;
                     this.locations = response.data.locations;
+                    this.person_types = response.data.person_types;
                 })
         },
         computed: {
@@ -255,6 +276,8 @@
                     email: null,
                     perception_agent: false,
                     percentage_perception:0,
+                    person_type_id:null,
+                    comment:null,
                     more_address: []
                 }
             },

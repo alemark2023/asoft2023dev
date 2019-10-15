@@ -51,6 +51,7 @@
                         {{ ($path[0] === 'quotations')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'person-types')?'nav-active nav-expanded':'' }}
                       
                         ">
                         <a class="nav-link" href="#">
@@ -118,6 +119,11 @@
                             <li class="{{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'customers'])}}">
                                     Clientes
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'person-types')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.person_types.index')}}">
+                                    Tipos de clientes
                                 </a>
                             </li>
                             <li class="nav-parent

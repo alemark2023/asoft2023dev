@@ -28,6 +28,7 @@
                             <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                         </el-select>
                         <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
+                        <el-checkbox  v-model="generate_dispatch">Generar Guía Remisión</el-checkbox>
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -55,6 +56,7 @@
 
             <document-options :showDialog.sync="showDialogDocumentOptions"
                               :recordId="documentNewId"
+                              :generatDispatch="generate_dispatch"
                               :isContingency="false"
                               :showClose="true"></document-options>
 
@@ -87,7 +89,8 @@
                 loading_submit:false,
                 showDialogDocumentOptions: false,
                 documentNewId: null,
-                flag_generate:true
+                flag_generate:true,
+                generate_dispatch:false
             }
         },
         created() {
@@ -107,6 +110,7 @@
                     date_of_issue:null,
                     sale_note:null,
                 }
+                this.generate_dispatch = false
             },
             initDocument(){
                 this.document = {

@@ -31,6 +31,8 @@ class Person extends ModelTenant
         'state',
         'condition',
         'percentage_perception',
+        'person_type_id',
+        'comment',
 
     ];
 
@@ -86,5 +88,10 @@ class Person extends ModelTenant
     public function more_address()
     {
         return $this->hasMany(PersonAddress::class);
+    }
+
+    public function person_type()
+    {
+        return $this->belongsTo(PersonType::class);
     }
 }
