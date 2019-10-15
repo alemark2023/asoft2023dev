@@ -32,7 +32,8 @@ class ItemController extends Controller
     public function columns()
     {
         return [
-            'description' => 'Nombre'
+            'description' => 'Nombre',
+            'internal_id' => 'Código interno',
             // 'description' => 'Descripción'
         ];
     }

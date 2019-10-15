@@ -27,18 +27,36 @@ class InventoryController extends Controller
     public function columns()
     {
         return [
-            'item_id' => 'Producto'
+            'description' => 'Producto',
+            'internal_id' => 'Código interno',
+            'warehouse' => 'Almacén',
         ];
     }
     
     public function records(Request $request)
     {
-        $item_description = $request->input('value');
-        $records = ItemWarehouse::with(['item', 'warehouse'])
-                                ->whereHas('item', function($query) use($item_description) {
-                                    $query->where('unit_type_id', '!=','ZZ');
-                                    $query->where('description', 'like', '%' . $item_description . '%');
-                                })->orderBy('item_id');
+        $column = $request->input('column');
+
+        if($column == 'warehouse'){
+            
+            $records = ItemWarehouse::with(['item', 'warehouse'])
+                            ->whereHas('item', function($query) use($request) {
+                                $query->where('unit_type_id', '!=','ZZ');
+                            })
+                            ->whereHas('warehouse', function($query) use($request) {
+                                $query->where('description', 'like', '%' . $request->value . '%');
+                            })
+                            ->orderBy('item_id');
+
+        }else{
+
+            $records = ItemWarehouse::with(['item', 'warehouse'])
+                            ->whereHas('item', function($query) use($request) {
+                                $query->where('unit_type_id', '!=','ZZ');
+                                $query->where($request->column, 'like', '%' . $request->value . '%');
+                            })->orderBy('item_id');
+
+        }
 
         return new InventoryCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -62,7 +80,7 @@ class InventoryController extends Controller
     public function tables_transaction($type)
     {
         return [
-            'items' => $this->optionsItem(),
+            'items' => $this->optionsItemFull(),
             'warehouses' => $this->optionsWarehouse(),
             'inventory_transactions' => $this->optionsInventoryTransaction($type),
         ];
