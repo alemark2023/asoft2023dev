@@ -1,24 +1,24 @@
 <style>
-    #header_bar .header-menu {
+#header_bar .header-menu {
     max-height: 300px !important;
-    overflow: scroll;
+   
     overflow-y: auto;
 }
 #header_bar .header-menu::-webkit-scrollbar-track
 {
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
-	background-color: #fdfdfd;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+    background-color: #fdfdfd;
 }
 
 #header_bar .header-menu::-webkit-scrollbar
 {
-	width: 6px;
-	background-color: #fdfdfd;
+    width: 6px;
+    background-color: #fdfdfd;
 }
 
 #header_bar .header-menu::-webkit-scrollbar-thumb
 {
-	background-color: #0187cc;
+    background-color: #0187cc;
 }
 .header-dropdown a img {
     border-radius: 8px;
@@ -34,17 +34,35 @@
     box-shadow: 0 0 2px rgba(0,0,0,0.1);
     padding: 0 !important;
     border: none;
-    border-radius:10px;
+    /*border-radius:10px;*/
  }
 
  .header-menu a:hover, .header-menu a:focus {
     color: #0187cc;   
     background-color: #f4f4f4;
-    
 }
 
 .header-menu ul a {
     text-transform: capitalize !important;
+}
+
+.search_input {
+    margin-bottom: 0.1rem;
+}
+.search_title{
+
+}
+.search_price{
+    
+}
+.search_btn{
+    
+}
+
+.search_input:focus {
+    background-color: #fff;
+    border-color: #fff;
+    box-shadow: none;
 }
 
 
@@ -97,17 +115,17 @@
 
             <div id="header_bar" class="header-center header-dropdowns">
 
-
-
                 <div class="header-dropdown" style="width:400px;">
-                    <input style="border-radius: 20px 20px 20px 20px" placeholder="Buscar..." type="text"
-                        class="form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
+
+                    <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
                     <div class="header-menu">
                         <ul>
-                            <li v-for="result in results"><a :href="'/ecommerce/item/' + result.id"><img
-                                        style="max-width: 90px" :src="result.image_url_small" alt="England flag"> <span
-                                        style="font-size: 1.0em;"> @{{ result.description }} </span></a></li>
-
+                            <li v-for="result in results">
+                                <a :href="'/ecommerce/item/' + result.id">
+                                    <img style="max-width: 80px" :src="result.image_url_small" alt="England flag">
+                                    <span style="font-size: 1.0em;"> @{{ result.description }} </span>
+                                </a>
+                            </li>
                         </ul>
                     </div><!-- End .header-menu -->
                 </div><!-- End .header-dropown -->

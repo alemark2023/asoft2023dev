@@ -34,7 +34,7 @@
     box-shadow: 0 0 2px rgba(0,0,0,0.1);
     padding: 0 !important;
     border: none;
-    border-radius:10px;
+    /*border-radius:10px;*/
  }
 
  .header-menu a:hover, .header-menu a:focus {
@@ -46,9 +46,8 @@
     text-transform: capitalize !important;
 }
 
-.search_input{
-    margin-bottom: 0.1rem; border-radius: 20px 20px 20px 20px;
-
+.search_input {
+    margin-bottom: 0.1rem;
 }
 .search_title{
 
@@ -58,6 +57,12 @@
 }
 .search_btn{
     
+}
+
+.search_input:focus {
+    background-color: #fff;
+    border-color: #fff;
+    box-shadow: none;
 }
 
 
@@ -116,18 +121,19 @@
 
              <div id="header_bar" class="header-center header-dropdowns">
 
+                 <div class="header-dropdown" style="min-width:400px;">
 
-
-                 <div class="header-dropdown" style="width:400px;">
-                     <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value"
-                         v-on:keyup="autoComplete" />
+                    <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
                      <div class="header-menu">
                          <ul>
-                             <li v-for="result in results"><a 
-                                     :href="'/ecommerce/item/' + result.id"><img style="max-width: 90px"
-                                         :src="result.image_url_small" alt="England flag"> <span class="search_title"
-                                         style="font-size: 1.0em;"> @{{ result.description }} </span>  <span class="search_price" >@{{result.sale_unit_price}}</span>  <div class="search_btn btn btn-default">Comprar</div>  </a>   </li>
-
+                            <li v-for="result in results">
+                                <a :href="'/ecommerce/item/' + result.id">
+                                    <img style="max-width: 80px" :src="result.image_url_small" alt="England flag"> 
+                                    <span class="search_title" style="font-size: 1.0em;"> @{{ result.description }} </span>
+                                    <span class="search_price" >@{{result.sale_unit_price}}</span>
+                                    {{-- <div class="search_btn btn btn-default">Comprar</div> --}}
+                                </a>
+                            </li>
                          </ul>
                      </div><!-- End .header-menu -->
                  </div><!-- End .header-dropown -->
