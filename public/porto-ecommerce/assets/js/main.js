@@ -533,7 +533,6 @@ function(e) {
 				array = JSON.parse(array);
 
 				let item = jQuery(this).data('product')
-
 				let found = array.find( x=> x.id == item.id)
 				if(!found)
 				{
@@ -542,11 +541,21 @@ function(e) {
 					contex.productsCartDropDown();
 					contex.successAddProduct();
 					contex.calculateTotalCart();
+
+					$('#product_added').html(`
+						<h1 class="product-title">${item.name}</h1>
+						<div class="price-box">
+							<span class="product-price">S/ ${ Number(item.sale_unit_price).toFixed(2) }</span>
+						</div>
+						<div class="product-desc">
+							<p> ${item.description}  </p>
+						</div>	`);
+
+					$('#product_added_image').html( `<img src="/storage/uploads/items/${item.image_medium}" class="img" alt="product">`)
 				}
 				else{
 					contex.alreadyProductCart();
 				}
-
 				
 			})
 		},

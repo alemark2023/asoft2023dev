@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="widget">
-                    <h4 class="widget-title">Contacto</h4>
+                    <!--<h4 class="widget-title">Contacto</h4> -->
                     <ul class="contact-info">
                         <li>
                             <span class="contact-info-label">Direccion:</span> Jr. Trujillo 123 Lima, Peru
@@ -23,7 +23,7 @@
                         <li>
                             <span class="contact-info-label">Telefono:</span> <a href="tel:">(01) 456-7890</a>
                         </li>
-                      
+
                     </ul>
                     <div class="social-icons">
                         <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
@@ -53,7 +53,7 @@
                 </div><!-- End .widget --> --}}
 
                 <div class="row">
-                {{-- <div class="col-md-5">
+                    {{-- <div class="col-md-5">
                         <div class="widget">
                             <h4 class="widget-title">My Account</h4>
 
@@ -77,7 +77,7 @@
                     </div><!-- End .col-md-5 --> --}}
 
                     <div class="col-md-7">
-                    {{-- <div class="widget">
+                        {{-- <div class="widget">
                             <h4 class="widget-title">Main Features</h4>
 
                             <div class="row">
@@ -105,7 +105,7 @@
 
 <div class="container">
     <div class="footer-bottom">
-        <p class="footer-copyright">Porto eCommerce. &copy; 2018. All Rights Reserved</p>
+        <p class="footer-copyright">Facturador Pro 3. &copy; 2019. Todos los Derechos Reservados</p>
 
         <img src="{{ asset('porto-ecommerce/assets/images/payments.png') }}" alt="payment methods"
             class="footer-payments">
@@ -126,6 +126,18 @@
 
                 <div class="alert alert-success" role="alert">
                     <i class="icon-ok"></i> Tu producto se agregó al carrito
+                </div>
+                <div class="row">
+                    <div id="product_added_image" class="col-md-4">
+                       
+
+                    </div>
+                    <div class="col-md-8">
+                        <div id="product_added" class="product-single-details">
+                            
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="modal-footer">
@@ -292,8 +304,7 @@
 
     }
 
-    function submitRegister()
-    {
+    function submitRegister() {
         $('#msg_register').hide();
 
         $('#form_register').submit(function (e) {
