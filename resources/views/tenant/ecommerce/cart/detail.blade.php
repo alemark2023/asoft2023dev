@@ -149,11 +149,9 @@
             <div class="checkout-methods">
 
                 @guest
-                <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Ir a
-                    Pagar</a>
+                <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Pagar con VISA</a>
                 @else
-                {{-- <a href="{{route('tenant_pay_cart')}}" class="btn btn-block btn-sm btn-primary">Ir a Pagar</a>--}}
-                <button class="btn btn-block btn-sm btn-primary" onclick="execCulqi()"> Ir a Pagar </button>
+                <button class="btn btn-block btn-sm btn-primary" onclick="execCulqi()"> Pagar con VISA </button>
                 @endguest
 
 

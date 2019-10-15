@@ -17,7 +17,7 @@
             </div><!-- End .dropdown-cart-total -->
 
             <div class="dropdown-cart-action">
-                <a  href="{{ route('tenant_detail_cart') }}" class="btn">View Cart</a>
+                <a  href="{{ route('tenant_detail_cart') }}" class="btn">Ver Carrito</a>
                 <!--<a href="#" class="btn">Checkout</a> -->
             </div><!-- End .dropdown-cart-total -->
         </div><!-- End .dropdownmenu-wrapper -->
