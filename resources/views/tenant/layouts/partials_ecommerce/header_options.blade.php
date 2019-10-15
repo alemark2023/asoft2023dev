@@ -65,42 +65,14 @@
     box-shadow: none;
 }
 
+.header-contact span {
+    font-weight: normal;
+}
 
 </style>
 
 <header class="header">
-    <div class="header-top">
-        <div class="container">
-
-            <div class="header-right">
-
-
-                <div class="header-dropdown dropdown-expanded">
-                    <a href="#">Links</a>
-                    <div class="header-menu">
-                        <ul>
-                            @guest
-                            <li><a href="{{route('tenant_ecommerce_login')}}" class="login-link">LOG IN</a></li>
-                            @else
-                            <li><a href="#">{{ Auth::user()->email }}</a></li>
-                            <li>
-                                <a role="menuitem" href="{{ route('logout') }}"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-power-off"></i> @lang('app.buttons.logout')
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                    style="display: none;">
-                                    @csrf
-                                </form>
-                            </li>
-                            @endguest
-                        </ul>
-                    </div><!-- End .header-menu -->
-                </div><!-- End .header-dropown -->
-            </div><!-- End .header-right -->
-        </div><!-- End .container -->
-    </div><!-- End .header-top -->
-
+    
     <div class="header-middle">
         <div class="container">
             <div class="header-left">
@@ -138,11 +110,13 @@
                     <i class="icon-menu"></i>
                 </button>
                 <div class="header-contact">
-                    <span>Call us now</span>
-                    <a href="tel:#"><strong>+999 111 888</strong></a>
+                     <span><i class="fab fa-whatsapp"></i> Atención</span>
+                     <a href="tel:#"><strong>+999 111 888</strong></a>
                 </div><!-- End .header-contact -->
 
                 @include('tenant.layouts.partials_ecommerce.cart_dropdown')
+
+                @include('tenant.ecommerce.partials.headers.session')
 
             </div><!-- End .header-right -->
         </div><!-- End .container -->
