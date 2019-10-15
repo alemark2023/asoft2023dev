@@ -153,6 +153,7 @@
                             </tbody>
                         </table>
                     </div> -->
+                    
                     <div class="col-md-12 mt-2">
                         <el-collapse  v-model="activePanel">
                             <!-- <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1"> -->
