@@ -25,7 +25,8 @@
         </div>
         </a>
         @else
-        <div class="switch switch-sm switch-success">
+        <a href="{{route('tenant.companies.create')}}">
+        <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
             <div class="ios-switch on">
                 <div class="on-background background-fill"><span class="text-white" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
                 <div class="state-background background-fill"></div>
@@ -33,6 +34,7 @@
             </div>
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
         </div>
+        </a>
         @endif
 
         <span class="separator"></span>

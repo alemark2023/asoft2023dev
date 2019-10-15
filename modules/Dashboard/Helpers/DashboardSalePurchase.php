@@ -56,15 +56,26 @@ class DashboardSalePurchase
 
         // $documents = Document::get(); 
         // $sale_notes = SaleNote::get(); 
+        if($d_start && $d_end){
 
-        $documents = Document::query()->where('establishment_id', $establishment_id)
-                                ->whereIn('state_type_id', ['01','03','05','07','13'])
-                                ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+            $documents = Document::query()->where('establishment_id', $establishment_id)
+                                    ->whereIn('state_type_id', ['01','03','05','07','13'])
+                                    ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+    
+                                    
+            $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+                                    ->whereIn('state_type_id', ['01','03','05','07','13'])
+                                    ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        }else{
+            
+            $documents = Document::query()->where('establishment_id', $establishment_id)
+                    ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
 
-                                
-        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
-                                ->whereIn('state_type_id', ['01','03','05','07','13'])
-                                ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+                    
+            $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+                    ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
+
+        }
 
         foreach ($sale_notes as $sn) { 
             $documents->push($sn);
@@ -167,15 +178,26 @@ class DashboardSalePurchase
 
         // $document_items = DocumentItem::get(); 
         // $sale_note_items = SaleNoteItem::get();
-         
-        $documents = Document::query()->where('establishment_id', $establishment_id)
-                            ->whereIn('state_type_id', ['01','03','05','07','13'])
-                            ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        if($d_start && $d_end){
+
+            $documents = Document::query()->where('establishment_id', $establishment_id)
+                        ->whereIn('state_type_id', ['01','03','05','07','13'])
+                        ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
 
-        $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
-                            ->whereIn('state_type_id', ['01','03','05','07','13'])
-                            ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+            $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+                        ->whereIn('state_type_id', ['01','03','05','07','13'])
+                        ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
+        }else{
+
+            $documents = Document::query()->where('establishment_id', $establishment_id)
+                        ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
+
+
+            $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+                        ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
+
+        }         
 
         // dd($documents->count(),$sale_notes->count());
 

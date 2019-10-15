@@ -3,7 +3,7 @@
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-6 col-xl-6 col-sm-6">
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">
                                 Producto/Servicio
@@ -30,11 +30,18 @@
                                 </el-select>
                             </template>
                             
-                            <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null">Buscar por código de barra</el-checkbox>
+                            <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null" >Buscar por código de barras</el-checkbox>
+                            <el-checkbox v-model="form.has_plastic_bag_taxes" >Impuesto a la Bolsa Plástica</el-checkbox> 
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1" >
+                        <div class="form-group">
+                            <label class="control-label">Stock</label><br>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div> 
+                    <div class="col-md-5">
                         <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id" :disabled="!change_affectation_igv_type_id" filterable>
@@ -58,6 +65,15 @@
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
+                        <div class="form-group"  :class="{'has-danger': errors.total_item}">
+                            <label class="control-label">Total venta producto</label>
+                            <el-input v-model="total_item" @input="calculateQuantity" :min="0.01" ref="total_item">
+                                <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
                      <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
@@ -102,27 +118,11 @@
                             <!--<small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>-->
                         <!--</div>-->
                     <!--</div>-->
-                    <div class="col-md-4 center-el-checkbox">
+                    <!-- <div class="col-md-4 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.has_igv}">
                             <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
                         </div>
-                    </div> 
-                    <div class="col-md-2 pl-6" v-if="showListStock">
-                        <div class="form-group">
-                            <label class="control-label">Stock</label><br>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></button>
-
-                        </div>
-                    </div> 
-                    <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
-                        <div class="form-group"  :class="{'has-danger': errors.total_item}">
-                            <label class="control-label">Total venta producto</label>
-                            <el-input v-model="total_item" @input="calculateQuantity" :min="0.01" ref="total_item">
-                                <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
-                            </el-input>
-                            <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
-                        </div>
-                    </div>
+                    </div>  -->
                     <!--<div class="col-md-6" v-show="has_list_prices">
                         <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
                             <label class="control-label">Presentación</label>
@@ -155,7 +155,8 @@
                     </div> -->
                     <div class="col-md-12 mt-2">
                         <el-collapse  v-model="activePanel">
-                            <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1">
+                            <!-- <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1"> -->
+                            <el-collapse-item :disabled="recordItem != null" title="+ Agregar Descuentos/Cargos/Atributos especiales" name="1">
                                 <!--<div>-->
                                     <!--<div class="row">-->
                                         <div v-if="discount_types.length > 0">
