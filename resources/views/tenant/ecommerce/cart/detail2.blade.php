@@ -73,59 +73,6 @@
     <div class="col-lg-4">
         <div class="cart-summary">
             <h3>Resumen</h3>
-
-            {{--<h4>
-                <a data-toggle="collapse" href="#total-estimate-section" class="collapsed" role="button"
-                    aria-expanded="false" aria-controls="total-estimate-section">Estimate Shipping and Tax</a>
-            </h4>
-
-            <div class="collapse" id="total-estimate-section">
-                <form action="#">
-                    <div class="form-group form-group-sm">
-                        <label>Country</label>
-                        <div class="select-custom">
-                            <select class="form-control form-control-sm">
-                                <option value="USA">United States</option>
-                                <option value="Turkey">Turkey</option>
-                                <option value="China">China</option>
-                                <option value="Germany">Germany</option>
-                            </select>
-                        </div><!-- End .select-custom -->
-                    </div><!-- End .form-group -->
-
-                    <div class="form-group form-group-sm">
-                        <label>State/Province</label>
-                        <div class="select-custom">
-                            <select class="form-control form-control-sm">
-                                <option value="CA">California</option>
-                                <option value="TX">Texas</option>
-                            </select>
-                        </div><!-- End .select-custom -->
-                    </div><!-- End .form-group -->
-
-                    <div class="form-group form-group-sm">
-                        <label>Zip/Postal Code</label>
-                        <input type="text" class="form-control form-control-sm">
-                    </div><!-- End .form-group -->
-
-                    <div class="form-group form-group-custom-control">
-                        <label>Flat Way</label>
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="flat-rate">
-                            <label class="custom-control-label" for="flat-rate">Fixed $5.00</label>
-                        </div><!-- End .custom-checkbox -->
-                    </div><!-- End .form-group -->
-
-                    <div class="form-group form-group-custom-control">
-                        <label>Best Rate</label>
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="best-rate">
-                            <label class="custom-control-label" for="best-rate">Table Rate $15.00</label>
-                        </div><!-- End .custom-checkbox -->
-                    </div><!-- End .form-group -->
-                </form>
-            </div> --><!-- End #total-estimate-section -->  --}}
-
             <table class="table table-totals">
                 <tbody>
                     <tr>
@@ -140,7 +87,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>Order Total</td>
+                        <td>Orden Total</td>
                         <td>S/ @{{summary.total}}</td>
                     </tr>
                 </tfoot>
@@ -152,7 +99,7 @@
                 <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Pagar
                     con VISA</a>
                 @else
-                <button class="btn btn-block btn-sm btn-primary" onclick="execCulqi"> Pagar con VISA </button>
+                <button class="btn btn-block btn-sm btn-primary" onclick="execCulqi()"> Pagar con VISA </button>
 
                 <form class="btn btn-block btn-sm " action="https://www.paypal.com/cgi-bin/webscr" method="post"
                     target="_blank">
@@ -163,7 +110,7 @@
                     <input type="hidden" name="item_number" value="0001">
                     <input type="hidden" name="button_subtype" value="services">
                     <input type="hidden" name="no_note" value="0">
-                    <input type="hidden" name="currency_code" value="USD">
+                    <input type="hidden" name="currency_code" value="PEN">
                     <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHostedGuest">
                     <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0"
                         name="submit" alt="PayPal - The safer, easier way to pay online!">
@@ -172,11 +119,89 @@
                 </form>
                 @endguest
 
-
-
             </div><!-- End .checkout-methods -->
         </div><!-- End .cart-summary -->
     </div><!-- End .col-lg-4 -->
+
+
+    <div class="modal fade" id="modal_ask_document" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalCenterTitle">Generar Comprobante Electronico</h2>
+
+                </div>
+                <div class="modal-body">
+                    <h3>La Transacción de se realizó correctamente.</h3>
+                    <h4>¿ Desea generar un comprobante y enviarlo a su email ? </h4> <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="checkDocument('6')">SI, FACTURA</button>
+                    <button type="button" class="btn btn-primary" @click="checkDocument('1')">SI, BOLETA
+                        ELECTRONICA</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, NINGUNA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_identity_document" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        data-backdrop="static" data-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLabel">Datos Generales para el Comprobante</h3>
+                </div>
+                <div class="modal-body">
+
+                    <form>
+                        <div class="form-group">
+                            <label class="control-label">Tipo Doc. Identidad <span class="text-danger">*</span></label>
+                            <select class="form-control" :disabled="formIdentity.identity_document_type_id == '6'"
+                                v-model="formIdentity.identity_document_type_id">
+                                <option v-for="option in identity_document_types" :value="option.id"
+                                    :label="option.description"></option>
+                            </select>
+
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Número <span class="text-danger">*</span></label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" v-model="formIdentity.number"
+                                    :maxlength="maxLength" aria-label="Recipient's username"
+                                    aria-describedby="button-addon2">
+                                <div class="input-group-append">
+
+                                    <button :disabled="!formIdentity.number" @click.prevent="searchCustomer"
+                                        class="btn btn-outline-secondary" type="button" id="button-addon2">
+
+                                        <template v-if="formIdentity.identity_document_type_id === '6'">
+                                            <i class="icon-search"></i> <span>SUNAT</span>
+                                        </template>
+                                        <template v-if="formIdentity.identity_document_type_id === '1'">
+                                            <i class="icon-search"></i> <span>RENIEC</span>
+                                        </template>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+                    <div v-show="response_search.message" class="alert"
+                        :class="{'alert-danger' : !response_search.success, 'alert-success': response_search.success}"
+                        role="alert">
+                        @{{ response_search.message }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCELAR</button>
+                    <button type="button" class="btn btn-primary" @click="sendDocument"
+                        v-show="formIdentity.validate">ENVIAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div><!-- End .row -->
 
 <input type="hidden" id="total_amount" data-total="0.0">
@@ -194,20 +219,41 @@
     var app_cart = new Vue({
         el: '#app',
         data: {
+            response_search: {},
+            loading_search: false,
+            identity_document_types: [{
+                id: '1',
+                description: 'DNI'
+            }, {
+                id: '6',
+                description: 'RUC'
+            }],
+            formIdentity: {
+                identity_document_type_id: '6'
+            },
             records: [],
+            records_old: [],
+            order_generated: {},
             summary: {
                 subtotal: '0.0',
                 tax: '0.0',
                 total: '0.0'
             },
-            form_document: {}
+            form_document: {},
+            user: {},
+            typeDocumentSelected: ''
+        },
+        computed: {
+            maxLength: function () {
+                if (this.formIdentity.identity_document_type_id === '6') {
+                    return 11
+                }
+                if (this.formIdentity.identity_document_type_id === '1') {
+                    return 8
+                }
+            }
         },
         mounted() {
-
-            Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
-            Culqi.options({
-                installments: true
-            });
 
             let contex = this
             $(".input_quantity").change(function (e) {
@@ -234,11 +280,103 @@
             this.initForm();
         },
         methods: {
-            execCulqi()
-            {
+            async searchCustomer() {
+                this.response_search = {
+                    succes: false,
+                    message: ''
+                }
+                let identity_document_type_name = ''
+                if (this.formIdentity.identity_document_type_id === '6') {
+                    identity_document_type_name = 'ruc'
+                }
+                if (this.formIdentity.identity_document_type_id === '1') {
+                    identity_document_type_name = 'dni'
+                }
+
+                let response = await axios.get(
+                    `/services/${identity_document_type_name}/${this.formIdentity.number}`)
+
+                if (response.data.success) {
+                    this.response_search.success = response.data.success
+                    this.response_search.message = 'Datos Encontrados'
+                    // let data = response.data.data
+                    this.formIdentity.validate = true
+                    this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this
+                        .formIdentity.identity_document_type_id
+                    this.form_document.datos_del_cliente_o_receptor.numero_documento = this.formIdentity
+                        .number
+                    /* this.form.name = data.name
+                     this.form.trade_name = data.trade_name
+                     this.form.address = data.address
+                     this.form.department_id = data.department_id
+                     this.form.province_id = data.province_id
+                     this.form.district_id = data.district_id
+                     this.form.phone = data.phone*/
+                } else {
+                    this.response_search.success = response.data.success
+                    this.response_search.message = response.data.message
+
+                    this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = "0"
+                    this.form_document.datos_del_cliente_o_receptor.numero_documento = "0"
+                }
 
             },
-            sendDocument(document, order) {
+            getHeaderConfig() {
+                let token = this.user.api_token
+                let axiosConfig = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+                };
+                return axiosConfig;
+            },
+            checkDocument(typeDocument) {
+                this.formIdentity.identity_document_type_id = typeDocument
+                //this.typeDocumentSelected = typeDocument
+                let total = this.summary.total
+
+                if (total > 700 || typeDocument === '6') {
+                    let tipoDocumento = this.user.identity_document_type_id
+                    let number = this.user.number
+
+                    if (!tipoDocumento || !number) {
+                        $('#modal_identity_document').modal('show');
+                    } else {
+                        this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = tipoDocumento
+                        this.form_document.datos_del_cliente_o_receptor.numero_documento = number
+                        this.sendDocument()
+                    }
+
+                } else {
+                    this.sendDocument()
+                }
+
+            },
+            finallyProcess(form) {
+                let url_finally = '{{ route("tenant_ecommerce_transaction_finally")}}';
+                axios.post(url_finally, form, this.getHeaderConfig())
+                    .then(response => {
+                        console.log('transaccion finalizada correctamente')
+                        swal({
+                            title: "Gracias por su pago!",
+                            text: "La Transacción de su compra se finalizó correctamente. El Comprobante se envió a su correo.",
+                            type: "success"
+                        }).then((x) => {
+                            window.location = "{{ route('tenant.ecommerce.index') }}";
+                        })
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        console.log('error al finalizar la transaccion')
+                    });
+
+            },
+            sendDocument() {
+
+                $('#modal_ask_document').modal('hide');
+                $('#modal_identity_document').modal('hide');
+
                 swal({
                     title: "Estamos enviando el Comprobante a su Email",
                     text: `Por favor no cierre esta ventana hasta que el proceso termine.`,
@@ -248,37 +386,48 @@
                     }
                 });
 
-                ///poner el request de envciar mail
-
-
-                axios.post(url, contex.updMaster)
+                axios.post('/api/documents', this.getDocument(), this.getHeaderConfig())
                     .then(response => {
-                        location.reload();
+                        console.log('documento generado correctamente')
+                        this.finallyProcess(this.getDataFinally(response.data))
                     })
                     .catch(error => {
-                        console.log(err)
-                        location.reload();
+                        console.log(error)
+                        console.log('error al generar documento')
+                        swal({
+                            type: 'error',
+                            title: 'Oops...',
+                            text: 'Sucedió un error al generar el comprobante electronico!',
+                        }).then((x) => {
+                            window.location = "{{ route('tenant.ecommerce.index') }}";
+                        })
+
                     });
 
+            },
+            getDataFinally(document) {
+                return {
+                    document_external_id: document.data.external_id,
+                    orderId: this.order_generated.id,
+                    product: 'Compras Ecommerce Facturador Pro',
+                    precio_culqi: this.summary.total,
+                    identity_document_type_id: this.formIdentity.identity_document_type_id,
+                    number: this.formIdentity.number,
 
-
-
-
-                // fin ,logica
-
-
-                swal({
-                    title: "Gracias por su pago!",
-                    text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
-                    type: "success"
-                }).then((x) => {
-                    window.location = "{{ route('tenant.ecommerce.index') }}";
-                })
-
+                }
             },
             getDocument() {
                 this.form_document.items = this.getItemsDocument()
                 this.form_document.totales = this.getTotales()
+
+                if (this.formIdentity.identity_document_type_id === '6') {
+                    this.form_document.serie_documento = 'F001'
+                    this.form_document.codigo_tipo_documento = '01'
+                }
+                if (this.formIdentity.identity_document_type_id === '1') {
+                    this.form_document.serie_documento = 'B001'
+                    this.form_document.codigo_tipo_documento = '03'
+                }
                 return this.form_document
             },
             getTotales() {
@@ -295,8 +444,7 @@
                 }
             },
             getItemsDocument() {
-
-                return this.records.map((item) => {
+                return this.records_old.map((item) => {
                     return {
                         "codigo_interno": "0",
                         "descripcion": item.description,
@@ -318,9 +466,9 @@
 
             },
             initForm() {
-                let user = '{!! json_encode( Auth::user() ) !!}'
+                this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
                 this.form_document = {
-                    "serie_documento": "F001",
+                    "serie_documento": "",
                     "numero_documento": "#",
                     "fecha_de_emision": moment().format('YYYY-MM-DD'),
                     "hora_de_emision": moment().format('HH:mm:ss'),
@@ -330,14 +478,14 @@
                     "fecha_de_vencimiento": moment().format('YYYY-MM-DD'),
                     "numero_orden_de_compra": "000001",
                     "datos_del_cliente_o_receptor": {
-                        "codigo_tipo_documento_identidad": "6",
-                        "numero_documento": "10414711225",
-                        "apellidos_y_nombres_o_razon_social": user.name,
+                        "codigo_tipo_documento_identidad": "0",
+                        "numero_documento": "0",
+                        "apellidos_y_nombres_o_razon_social": this.user.name,
                         "codigo_pais": "PE",
                         "ubigeo": "150101",
-                        "direccion": "Av. 2 de Mayo",
-                        "correo_electronico": user.email,
-                        "telefono": "427-1148"
+                        "direccion": "",
+                        "correo_electronico": this.user.email,
+                        "telefono": ""
                     },
                     "totales": {},
                     "items": [],
@@ -360,6 +508,7 @@
 
             },
             clearShoppingCart() {
+                this.records_old = this.records
                 this.records = []
                 localStorage.setItem('products_cart', JSON.stringify([]))
                 this.calculateSummary()
@@ -383,29 +532,14 @@
 </script>
 
 <script>
-    
-
+    Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
+    Culqi.options({
+        installments: true
+    });
 
     async function askedDocument(order) {
-        const {
-            value: documento
-        } = await Swal.fire({
-            title: 'DESEA FACTURA O BOLETA ELECTRÓNICA',
-            input: 'select',
-            inputOptions: {
-                factura: 'FACTURA',
-                boleta: 'BOLETA ELECTRÓNICA',
-            },
-            inputPlaceholder: 'Seleccione un Documento',
-            showCancelButton: false,
-            inputValidator: (value) => {
-                return new Promise((resolve) => {
-                    resolve()
-                })
-            }
-        })
-
-        app_cart.sendDocument(documento, order)
+        app_cart.order_generated = order
+        $('#modal_ask_document').modal('show')
     }
 
     function execCulqi() {
@@ -448,8 +582,8 @@
                 token: token,
                 email: email,
                 installments: installments,
-                customer: getCustomer(),
-                items: 
+                customer: JSON.stringify(getCustomer()),
+                items: JSON.stringify(getItems())
             }
 
             $.ajax({
@@ -502,6 +636,10 @@
             "correo_electronico": user.email,
             "telefono": ""
         }
+    }
+
+    function getItems() {
+        return app_cart.records
     }
 
 </script>
