@@ -114,5 +114,21 @@ ul.nav-main li i {
 }
 
 .badge-red {
-  background: #E7355B;
+  background: #E7355B !important;
+}
+
+.notifications .notification-menu .notification-title {
+  background: #0088CC;
+  border-radius: 3px 3px 0 0;
+  color: #FFF;
+  font-size: 11.2px;
+  font-size: 0.7rem;
+  line-height: 24px;
+  line-height: 1.5rem;
+  padding: 8px 6px 8px 12px;
+  text-transform: uppercase;
+}
+
+.notifications .notification-menu:before, .notifications .notification-icon:before {
+    border-bottom-color: #0088CC;
 }

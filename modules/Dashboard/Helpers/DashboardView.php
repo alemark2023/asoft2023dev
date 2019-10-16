@@ -48,7 +48,7 @@ class DashboardView
                 $d_end = $date_end;
                 break;
         }
-
+ 
         /*
          * Documents
          */
@@ -56,23 +56,46 @@ class DashboardView
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
 
-        $documents = DB::connection('tenant')
-            ->table('documents')
-            ->join('persons', 'persons.id', '=', 'documents.customer_id')
-            ->leftJoinSub($document_payments, 'payments', function ($join) {
-                $join->on('documents.id', '=', 'payments.document_id');
-            })
-            ->whereIn('state_type_id', ['01','03','05','07','13'])
-            // ->whereIn('document_type_id', ['01','03','08'])
-            ->select(DB::raw("documents.id as id, ".
-                             "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
-                             "persons.name as customer_name, ".
-                             "CONCAT(documents.series,'-',documents.number) AS number_full, ".
-                             "documents.total as total, ".
-                             "IFNULL(payments.total_payment, 0) as total_payment, ".
-                             "'document' AS 'type'"))
-            ->where('documents.establishment_id', $establishment_id)
-            ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+        if($d_start && $d_end){
+    
+            $documents = DB::connection('tenant')
+                ->table('documents')
+                ->join('persons', 'persons.id', '=', 'documents.customer_id')
+                ->leftJoinSub($document_payments, 'payments', function ($join) {
+                    $join->on('documents.id', '=', 'payments.document_id');
+                })
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                // ->whereIn('document_type_id', ['01','03','08'])
+                ->select(DB::raw("documents.id as id, ".
+                                    "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                    "persons.name as customer_name, ".
+                                    "CONCAT(documents.series,'-',documents.number) AS number_full, ".
+                                    "documents.total as total, ".
+                                    "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                    "'document' AS 'type'"))
+                ->where('documents.establishment_id', $establishment_id)
+                ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+
+        }else{
+            
+            $documents = DB::connection('tenant')
+                ->table('documents')
+                ->join('persons', 'persons.id', '=', 'documents.customer_id')
+                ->leftJoinSub($document_payments, 'payments', function ($join) {
+                    $join->on('documents.id', '=', 'payments.document_id');
+                })
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                // ->whereIn('document_type_id', ['01','03','08'])
+                ->select(DB::raw("documents.id as id, ".
+                                    "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                    "persons.name as customer_name, ".
+                                    "CONCAT(documents.series,'-',documents.number) AS number_full, ".
+                                    "documents.total as total, ".
+                                    "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                    "'document' AS 'type'"))
+                ->where('documents.establishment_id', $establishment_id);
+
+        }
 
         /*
          * Sale Notes
@@ -81,24 +104,48 @@ class DashboardView
             ->select('sale_note_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('sale_note_id');
 
-        $sale_notes = DB::connection('tenant')
-            ->table('sale_notes')
-            ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
-            ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
-                $join->on('sale_notes.id', '=', 'payments.sale_note_id');
-            })
-            ->whereIn('state_type_id', ['01','03','05','07','13'])
-            ->select(DB::raw("sale_notes.id as id, ".
-                             "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
-                             "persons.name as customer_name, ".
-                             "sale_notes.filename as number_full, ".
-                             "sale_notes.total as total, ".
-                             "IFNULL(payments.total_payment, 0) as total_payment, ".
-                             "'sale_note' AS 'type'"))
-            ->where('sale_notes.establishment_id', $establishment_id)
-            ->where('sale_notes.changed', false)
-            ->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end])
-            ->where('sale_notes.total_canceled', false);
+        if($d_start && $d_end){
+        
+            $sale_notes = DB::connection('tenant')
+                ->table('sale_notes')
+                ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
+                ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
+                    $join->on('sale_notes.id', '=', 'payments.sale_note_id');
+                })
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                ->select(DB::raw("sale_notes.id as id, ".
+                                "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                "persons.name as customer_name, ".
+                                "sale_notes.filename as number_full, ".
+                                "sale_notes.total as total, ".
+                                "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                "'sale_note' AS 'type'"))
+                ->where('sale_notes.establishment_id', $establishment_id)
+                ->where('sale_notes.changed', false)
+                ->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end])
+                ->where('sale_notes.total_canceled', false);
+
+        }else{
+
+            $sale_notes = DB::connection('tenant')
+                ->table('sale_notes')
+                ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
+                ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
+                    $join->on('sale_notes.id', '=', 'payments.sale_note_id');
+                })
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                ->select(DB::raw("sale_notes.id as id, ".
+                                "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                "persons.name as customer_name, ".
+                                "sale_notes.filename as number_full, ".
+                                "sale_notes.total as total, ".
+                                "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                "'sale_note' AS 'type'"))
+                ->where('sale_notes.establishment_id', $establishment_id)
+                ->where('sale_notes.changed', false)
+                ->where('sale_notes.total_canceled', false);
+
+        }
 
         $records = $documents->union($sale_notes)->get();
 

@@ -14,7 +14,8 @@
     </div> 
     <div class="header-right">
         @if($vc_company->soap_type_id == "01")
-        <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="ENTORNO DE DEMOSTRACIÓN, para cambiar acceda a Configuración/Empresa">
+        <a href="{{route('tenant.companies.create')}}">
+        <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
             <div class="ios-switch off">
                 <div class="on-background background-fill"></div>
                 <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #ccc;">DEMO</span></div>
@@ -22,8 +23,10 @@
             </div>
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
         </div>
+        </a>
         @else
-        <div class="switch switch-sm switch-success">
+        <a href="{{route('tenant.companies.create')}}">
+        <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
             <div class="ios-switch on">
                 <div class="on-background background-fill"><span class="text-white" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
                 <div class="state-background background-fill"></div>
@@ -31,29 +34,35 @@
             </div>
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
         </div>
+        </a>
         @endif
+
+        <span class="separator"></span>
         @if($vc_document > 0)
         <ul class="notifications">
             <li class="open">
                                   
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-file-alt"></i>                        
-                    <span class="badge">{{ $vc_document }}</span>
+                    <i class="fas fa-bell text-secondary"></i>                        
+                    <span class="badge badge-red">&nbsp;!&nbsp;</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-                    <div class="notification-title bg-primary">Pendientes de envío</div>
+                    <div class="notification-title"><span class="float-right badge badge-default">{{ $vc_document }}</span>Pendientes de envío</div>
                     <div class="content">
-                        <ul>
+                        {{-- <ul>
                             <li>
                                 <a href="{{route('tenant.documents.not_sent')}}" class="clearfix">
                                     <div class="image">
-                                        <i class="fas fa-file-alt bg-primary"></i>
+                                        <i class="fas fa-file-alt bg-primary text-ligth"></i>
                                     </div>
                                     <span class="title">Tiene {{ $vc_document }} comprobante(s) pendientes de envío<span class="badge badge-warning"></span></span>
                                     <!-- <span class="message">Pendientes de envio a SUNAT/OSE</span> -->
                                 </a>
                             </li>
-                        </ul>
+                        </ul> --}}
+                        <div class="text-right">
+                            <a href="{{route('tenant.documents.not_sent')}}" class="view-more">Ir al listado de pendientes</a>
+                        </div>
                     </div>
                 </div>
             </li>

@@ -34,7 +34,7 @@
     box-shadow: 0 0 2px rgba(0,0,0,0.1);
     padding: 0 !important;
     border: none;
-    border-radius:10px;
+    /*border-radius:10px;*/
  }
 
  .header-menu a:hover, .header-menu a:focus {
@@ -46,9 +46,8 @@
     text-transform: capitalize !important;
 }
 
-.search_input{
-    margin-bottom: 0.1rem; border-radius: 20px 20px 20px 20px;
-
+.search_input {
+    margin-bottom: 0.1rem;
 }
 .search_title{
 
@@ -60,47 +59,20 @@
     
 }
 
+.search_input:focus {
+    background-color: #fff;
+    border-color: #fff;
+    box-shadow: none;
+}
+
+.header-contact span {
+    font-weight: normal;
+}
+
 
  </style>
 
  <header class="header">
-     <div class="header-top">
-         <div class="container">
-             <div class="header-left header-dropdowns">
-
-             </div><!-- End .header-left -->
-
-             <div class="header-right">
-
-
-                 <div class="header-dropdown dropdown-expanded">
-                     <a href="#">Links</a>
-                     <div class="header-menu">
-                         <ul>
-
-                             @guest
-                             <li><a href="{{route('tenant_ecommerce_login')}}" class="login-link">LOG IN</a></li>
-                             @else
-                             <li><a href="#">{{ Auth::user()->email }}</a></li>
-                             <li>
-                                 <a role="menuitem" href="{{ route('logout') }}"
-                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                     <i class="fas fa-power-off"></i> @lang('app.buttons.logout')
-                                 </a>
-                                 <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                     style="display: none;">
-                                     @csrf
-                                 </form>
-                             </li>
-                             @endguest
-
-
-                         </ul>
-                     </div><!-- End .header-menu -->
-                 </div><!-- End .header-dropown -->
-             </div><!-- End .header-right -->
-         </div><!-- End .container -->
-     </div><!-- End .header-top -->
 
      <div class="header-middle">
          <div class="container">
@@ -116,18 +88,19 @@
 
              <div id="header_bar" class="header-center header-dropdowns">
 
+                 <div class="header-dropdown" style="min-width:400px;">
 
-
-                 <div class="header-dropdown" style="width:400px;">
-                     <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value"
-                         v-on:keyup="autoComplete" />
+                    <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
                      <div class="header-menu">
                          <ul>
-                             <li v-for="result in results"><a 
-                                     :href="'/ecommerce/item/' + result.id"><img style="max-width: 90px"
-                                         :src="result.image_url_small" alt="England flag"> <span class="search_title"
-                                         style="font-size: 1.0em;"> @{{ result.description }} </span>  <span class="search_price" >@{{result.sale_unit_price}}</span>  <div class="search_btn btn btn-default">Comprar</div>  </a>   </li>
-
+                            <li v-for="result in results">
+                                <a :href="'/ecommerce/item/' + result.id">
+                                    <img style="max-width: 80px" :src="result.image_url_small" alt="England flag"> 
+                                    <span class="search_title" style="font-size: 1.0em;"> @{{ result.description }} </span>
+                                    <span class="search_price" >@{{result.sale_unit_price}}</span>
+                                    {{-- <div class="search_btn btn btn-default">Comprar</div> --}}
+                                </a>
+                            </li>
                          </ul>
                      </div><!-- End .header-menu -->
                  </div><!-- End .header-dropown -->
@@ -140,10 +113,13 @@
                      <i class="icon-menu"></i>
                  </button>
                  <div class="header-contact">
-                     <span>Call us now</span>
+                     <span><i class="fab fa-whatsapp"></i> Atención</span>
                      <a href="tel:#"><strong>+999 111 888</strong></a>
                  </div><!-- End .header-contact -->
-                 @include('tenant.layouts.partials_ecommerce.cart_dropdown')
+
+                @include('tenant.layouts.partials_ecommerce.cart_dropdown')
+
+                @include('tenant.ecommerce.partials.headers.session')
 
              </div><!-- End .header-right -->
          </div><!-- End .container -->

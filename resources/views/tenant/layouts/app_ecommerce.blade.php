@@ -22,6 +22,10 @@
 
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
+
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
 </head>
 
 <body>

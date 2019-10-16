@@ -21,6 +21,7 @@
                         </div>
                         <div class="col-sm-4">
                             <el-checkbox v-model="is_contingency" @change="changeEstablishment">¿Es comprobante de contigencia?</el-checkbox>
+                            <el-checkbox v-model="form.has_prepayment">¿Es un pago anticipado?</el-checkbox>
                         </div>
                     </div>
                 </header>
@@ -173,9 +174,9 @@
 
                             </div>
                             
-                            <div class="col-lg-4 mt-3" >
+                            <!-- <div class="col-lg-4 mt-3" >
                                 <el-checkbox v-model="form.has_prepayment"><strong>¿Es un pago anticipado?</strong></el-checkbox>
-                            </div>
+                            </div> -->
 
                             <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('hotel')">
                                 <a href="#" @click.prevent="clickAddDocumentHotel" class="text-center font-weight-bold text-info">[+ Datos personales para reserva de hospedaje]</a>

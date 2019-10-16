@@ -60,7 +60,7 @@ class RedirectModule
                 return redirect()->route('tenant.retentions.index');            
 
             case 'reports':
-                return redirect()->route('tenant.reports.index');           
+                return redirect()->route('tenant.reports.purchases.index');           
 
             case 'configuration':
                 return redirect()->route('tenant.companies.create');
