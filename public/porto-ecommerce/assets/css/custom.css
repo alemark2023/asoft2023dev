@@ -41,3 +41,7 @@
 .cart-dropdown .dropdownmenu-wrapper::after {
     right: 15px;
 }
+
+.main-nav {
+    min-width: 75%;
+}
