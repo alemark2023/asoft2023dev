@@ -113,7 +113,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-warning">Ir a Carrito</a>
+                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-primary text-white">Ir a Carrito</a>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
             </div>
         </div>
@@ -136,7 +136,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-warning">Ir a Carrito</a>
+                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-primary text-white">Ir al Carrito</a>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
             </div>
         </div>

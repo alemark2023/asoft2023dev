@@ -34,7 +34,7 @@
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
                         <a class="nav-link" href="{{ route('tenant.dashboard.index') }}">
                             <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
-                            <i class="fas fa-chart-line" aria-hidden="true"></i>
+                            <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
                             <span>DASHBOARD</span>
                         </a>
                     </li>

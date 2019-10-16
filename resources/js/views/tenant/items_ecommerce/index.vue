@@ -103,7 +103,7 @@
         append-to-body
         top="7vh"
       >
-        <div class="row">
+        <div class="row d-flex align-items-end justify-content-end">
           <div class="col-md-3">
             <h4>Thumbs</h4>
             <img class="img-thumbnail" :src="recordImages.image_url_small" alt width="128" />
