@@ -473,7 +473,7 @@
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
                 this.form_document = {
                     "acciones": {
-                        "enviar_email": false,
+                        "enviar_email": true,
                         "formato_pdf": "a4"
                     },
                     "serie_documento": "",
