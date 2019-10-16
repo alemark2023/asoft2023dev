@@ -56,18 +56,6 @@
                 </tfoot>
             </table>
         </div><!-- End .cart-table-container -->
-
-        <!-- <div class="cart-discount">
-            <h4>Apply Discount Code</h4>
-            <form action="#">
-                <div class="input-group">
-                    <input type="text" class="form-control form-control-sm" placeholder="Enter discount code" required>
-                    <div class="input-group-append">
-                        <button class="btn btn-sm btn-primary" type="submit">Apply Discount</button>
-                    </div>
-                </div>
-            </form>
-        </div> -->
     </div><!-- End .col-lg-8 -->
 
     <div class="col-lg-4">
@@ -117,6 +105,27 @@
                     <img alt="" border="0" src="https://www.paypalobjects.com/es_XC/i/scr/pixel.gif" width="1"
                         height="1">
                 </form>
+
+                <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary">
+                    Pagar con EFECTIVO </button>
+
+                <div v-show="payment_cash.clicked" style="margin: 3%" class="form-group">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input placeholder="0.0" v-model="payment_cash.amount" type="text"
+                            onkeypress="return isNumberKey(event)" maxlength="14" class="form-control"
+                            aria-label="Amount">
+                        <button @click="paymentCash" class="btn btn-success">OK!</button>
+                    </div>
+
+
+                </div>
+
+
+
+
                 @endguest
 
             </div><!-- End .checkout-methods -->
@@ -140,7 +149,8 @@
                     <button type="button" class="btn btn-primary" @click="checkDocument('6')">SI, FACTURA</button>
                     <button type="button" class="btn btn-primary" @click="checkDocument('1')">SI, BOLETA
                         ELECTRONICA</button>
-                    <button type="button" class="btn btn-secondary" @click="redirectHome" data-dismiss="modal">No, NINGUNA</button>
+                    <button type="button" class="btn btn-secondary" @click="redirectHome" data-dismiss="modal">No,
+                        NINGUNA</button>
                 </div>
             </div>
         </div>
@@ -219,6 +229,10 @@
     var app_cart = new Vue({
         el: '#app',
         data: {
+            payment_cash: {
+                amount: '',
+                clicked: false
+            },
             response_search: {},
             loading_search: false,
             identity_document_types: [{
@@ -280,8 +294,47 @@
             this.initForm();
         },
         methods: {
-            redirectHome()
-            {
+            getFormPaymentCash()
+            {   
+                let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
+                let precio_culqi = Number(this.summary.total)
+                return {
+                    producto: 'Compras Ecommerce Facturador Pro',
+                    precio: precio,
+                    precio_culqi: precio_culqi,
+                    customer: this.form_document.datos_del_cliente_o_receptor,
+                    items: this.records
+                }
+            },
+            async paymentCash() {
+
+                swal({
+                    title: "Estamos generando el Pago.",
+                    text: `Por favor no cierre esta ventana hasta que el proceso termine.`,
+                    focusConfirm: false,
+                    onOpen: () => {
+                        Swal.showLoading()
+                    }
+                });
+
+                let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
+                let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig())
+                if (response.data.success) {
+
+                    this.clearShoppingCart()
+                    swal({
+                        title: "Gracias por su pago!",
+                        text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
+                        type: "success"
+                    }).then((x) => {
+                        askedDocument(response.data.order);
+                    })
+                } else {
+                    swal("Pago No realizado", 'Sucedio algo inesperado.', "error");
+                }
+
+            },
+            redirectHome() {
                 window.location = "{{ route('tenant.ecommerce.index') }}";
             },
             async searchCustomer() {
@@ -344,10 +397,11 @@
                     let tipoDocumento = this.user.identity_document_type_id
                     let number = this.user.number
 
-                    if (!tipoDocumento || !number) {
+                    if (!tipoDocumento || !number || number.length !== 11) {
                         $('#modal_identity_document').modal('show');
                     } else {
-                        this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = tipoDocumento
+                        this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad =
+                            tipoDocumento
                         this.form_document.datos_del_cliente_o_receptor.numero_documento = number
                         this.sendDocument()
                     }
@@ -467,7 +521,6 @@
                         "total_item": 118
                     }
                 })
-
             },
             initForm() {
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
@@ -564,6 +617,7 @@
         }
     }
 
+
     function culqi() {
         if (Culqi.token) {
 
@@ -631,7 +685,7 @@
     };
 
     function getCustomer() {
-        let user = JSON.parse ('{!! json_encode( Auth::user() ) !!}')
+        let user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
         return {
             "codigo_tipo_documento_identidad": "0",
             "numero_documento": "0",
@@ -646,6 +700,14 @@
 
     function getItems() {
         return app_cart.records
+    }
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode != 46 && charCode > 31 &&
+            (charCode < 48 || charCode > 57))
+            return false;
+        return true;
     }
 
 </script>

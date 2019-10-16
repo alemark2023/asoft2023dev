@@ -65,7 +65,7 @@ class CulqiController extends Controller
         ]);
 
          
-        $customer_email = $user->email;
+        $customer_email = $request->email;
         $document = new stdClass;
         $document->client = $user->name;
         $document->product = $request->producto;

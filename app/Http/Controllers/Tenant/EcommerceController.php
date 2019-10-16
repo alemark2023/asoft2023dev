@@ -9,8 +9,11 @@ use App\Http\Resources\Tenant\ItemCollection;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Person;
-
+use Illuminate\Support\Str;
 use App\Models\Tenant\Order;
+use stdClass;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Tenant\CulqiEmail;
 
 
 
@@ -150,6 +153,42 @@ class EcommerceController extends Controller
             ];
         }
       
+    }
+
+    public function paymentCash(Request $request)
+    {
+        try{
+
+            $user = auth()->user();
+            $order = Order::create([
+                'external_id' => Str::uuid()->toString(),
+                'customer' => $request->customer,
+                'shipping_address' => 'direccion 1',
+                'items' => $request->items,
+                'total' => $request->precio_culqi,
+                'reference_payment' => 'culqui',
+              ]);
+      
+            $customer_email = $user->email;
+            $document = new stdClass;
+            $document->client = $user->name;
+            $document->product = $request->producto;
+            $document->total = $request->precio_culqi;
+            Mail::to($customer_email)->send(new CulqiEmail($document));
+      
+            return [
+                'success' => true,
+                'order' => $order
+            ];
+
+        }catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' =>  $e->getMessage()
+            ];
+        }
+       
     }
 
 
