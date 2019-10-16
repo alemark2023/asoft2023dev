@@ -54,7 +54,7 @@
                       
                         ">
                         <a class="nav-link" href="#">
-                            <i class="fas fa-receipt" aria-hidden="true"></i>
+                            <i class="fas fa-file-invoice" aria-hidden="true"></i>
                             <span>VENTAS</span>
                         </a>
                         <ul class="nav nav-children" style="">
@@ -170,7 +170,7 @@
                         ">
                             <a class="nav-link" href="#">
                                 <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
-                                <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                                <i class="fas fa-cash-register" aria-hidden="true"></i>
                                 <span>POS</span>
                             </a>
                             <ul class="nav nav-children">
@@ -200,7 +200,7 @@
                     <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions', 'orders'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
-                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+                            <i class="fas fa-store" aria-hidden="true"></i>
                             <span>Tienda Virtual</span>
                         </a>
                         <ul class="nav nav-children">
@@ -243,7 +243,7 @@
                             {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
-                                <i class="fas fa-cart-arrow-down" aria-hidden="true"></i>
+                                <i class="fas fa-cart-plus" aria-hidden="true"></i>
                                 <span>Compras</span>
                             </a>
                             <ul class="nav nav-children" style="">
@@ -277,7 +277,7 @@
                         <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses']) ||
                                                 ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory'])))?'nav-active nav-expanded':'' }}">
                             <a class="nav-link" href="#">
-                                <i class="fas fa-boxes" aria-hidden="true"></i>
+                                <i class="fas fa-warehouse" aria-hidden="true"></i>
                                 <span>Inventario</span>
                             </a>
                             <ul class="nav nav-children" style="">
@@ -331,7 +331,7 @@
                         {{ ($path[0] === 'perceptions')?'nav-active nav-expanded':'' }}
                         ">
                         <a class="nav-link" href="#">
-                            <i class="fas fa-file-alt" aria-hidden="true"></i>
+                            <i class="fas fa-receipt" aria-hidden="true"></i>
                             <span>Comprobantes avanzados</span>
                         </a>
                         <ul class="nav nav-children" style="">

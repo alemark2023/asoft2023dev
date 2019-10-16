@@ -94,11 +94,12 @@
                      <div class="header-menu">
                          <ul>
                             <li v-for="result in results">
-                                <a :href="'/ecommerce/item/' + result.id">
-                                    <img style="max-width: 80px" :src="result.image_url_small" alt="England flag"> 
+                                <a :href="'/ecommerce/item/' + result.id" class="d-flex">
+                                    <div class="flex-grow-1"><img style="max-width: 80px" :src="result.image_url_small" alt="England flag"> 
                                     <span class="search_title" style="font-size: 1.0em;"> @{{ result.description }} </span>
-                                    <span class="search_price" >@{{result.sale_unit_price}}</span>
-                                    {{-- <div class="search_btn btn btn-default">Comprar</div> --}}
+                                    </div>
+                                    <span class="search_price">@{{result.sale_unit_price}}</span>
+                                    {{-- <div class="search_btn btn btn-default">@{{result.sale_unit_price}}</div> --}}
                                 </a>
                             </li>
                          </ul>
