@@ -8,8 +8,9 @@ use App\Models\Tenant\Item;
 use App\Http\Resources\Tenant\ItemCollection;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenant\User;
+use App\Models\Tenant\Person;
 
-
+use App\Models\Tenant\Order;
 
 
 
@@ -104,7 +105,7 @@ class EcommerceController extends Controller
             $user->api_token = str_random(50);
             $user->password = bcrypt($request->input('password'));
             $user->save();
-            $user->modules()->sync([1]);
+            $user->modules()->sync([10]);
 
             $credentials = [ 'email' => $user->email, 'password' => $request->input('password') ];
             Auth::attempt($credentials);
@@ -122,6 +123,33 @@ class EcommerceController extends Controller
             ];
         }
        
+    }
+
+    public function transactionFinally(Request $request)
+    {
+        try{
+            $user = auth()->user();
+
+            //1. confirmar dato de compriante en order
+            $order_generated = Order::find($request->orderId);
+            $order_generated->document_external_id = $request->document_external_id;
+            $order_generated->save();
+            
+            $user->update(['identity_document_type_id' => $request->identity_document_type_id, 'number'=>$request->number]);
+            
+            return [
+                'success' => true,
+                'message' => 'Order Actualizada'
+            ];
+        }
+        catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' =>  $e->getMessage()
+            ];
+        }
+      
     }
 
 

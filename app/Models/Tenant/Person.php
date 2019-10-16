@@ -31,7 +31,6 @@ class Person extends ModelTenant
         'state',
         'condition',
         'percentage_perception',
-
     ];
 
     // protected static function boot()

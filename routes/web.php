@@ -12,6 +12,7 @@ if ($hostname) {
         Route::get('search/tables', 'Tenant\SearchController@tables');
         Route::post('search', 'Tenant\SearchController@store');
 
+        //Ecommerce
         Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
         Route::get('ecommerce/item/{id}', 'Tenant\EcommerceController@item')->name('tenant.ecommerce.item');
         Route::get('ecommerce/items', 'Tenant\EcommerceController@items')->name('tenant.ecommerce.item.index');
@@ -20,7 +21,6 @@ if ($hostname) {
         Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
         Route::get('ecommerce/login', 'Tenant\EcommerceController@showLogin')->name('tenant_ecommerce_login');
         Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
-        Route::post('ecommerce/culqi', 'Tenant\CulqiController@pago')->name('tenant_ecommerce_culqui');
         Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
         Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
 
@@ -34,6 +34,7 @@ if ($hostname) {
             //     return redirect()->route('tenant.documents.create');
             // });
             // Route::get('dashboard', 'Tenant\HomeController@index')->name('tenant.dashboard');
+
             Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
             
@@ -42,6 +43,11 @@ if ($hostname) {
             Route::post('tasks/tables', 'Tenant\TaskController@tables');
             Route::post('tasks', 'Tenant\TaskController@store');
             Route::delete('tasks/{task}', 'Tenant\TaskController@destroy');
+
+            //Ecommerce
+            Route::post('ecommerce/culqi', 'Tenant\CulqiController@payment')->name('tenant_ecommerce_culqui');
+            Route::post('ecommerce/transaction_finally', 'Tenant\EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
+
             
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');

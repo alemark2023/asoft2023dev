@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
 use stdClass;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Tenant\Order;
+use Illuminate\Support\Str;
+use App\Models\Tenant\Person;
+use Exception;
+
 
 
 
@@ -26,7 +31,7 @@ class CulqiController extends Controller
       
     }
 
-    public function pago(Request $request)
+    public function payment(Request $request)
     {
       try{
 
@@ -49,17 +54,32 @@ class CulqiController extends Controller
                 "installments" => $request->installments
               )
         );
-        $customer_email = $request->email;
+
+        $order = Order::create([
+          'external_id' => Str::uuid()->toString(),
+          'customer' => $request->customer,
+          'shipping_address' => 'direccion 1',
+          'items' => $request->items,
+          'total' => $request->precio_culqi,
+          'reference_payment' => 'culqui',
+        ]);
+
+         
+        $customer_email = $user->email;
         $document = new stdClass;
         $document->client = $user->name;
         $document->product = $request->producto;
         $document->total = $request->precio_culqi;
-
         Mail::to($customer_email)->send(new CulqiEmail($document));
-        return json_encode($charge);
 
+        return [
+            'success' => true,
+            'culqui' => $charge,
+            'order' => $order,
+        ];
+      //  return json_encode($charge);
       }
-      catch(CulqiException $e)
+      catch(Exception $e)
       {
         return [
             'success' => false,
