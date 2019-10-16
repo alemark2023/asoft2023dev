@@ -48,6 +48,12 @@ if ($hostname) {
             Route::post('ecommerce/culqi', 'Tenant\CulqiController@payment')->name('tenant_ecommerce_culqui');
             Route::post('ecommerce/transaction_finally', 'Tenant\EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
 
+            //Orders
+            Route::get('orders', 'Tenant\OrderController@index')->name('tenant_orders_index');
+            Route::get('orders/columns', 'Tenant\OrderController@columns');
+            Route::get('orders/records', 'Tenant\OrderController@records');
+
+
             
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');

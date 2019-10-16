@@ -132,6 +132,9 @@ Vue.component('tenant-promotions-index', require('./views/tenant/promotions/inde
 
 Vue.component('tenant-item-sets-index', require('./views/tenant/item_sets/index.vue'));
 
+Vue.component('tenant-orders-index', require('./views/tenant/orders/index.vue'));
+
+
 const app = new Vue({
     el: '#main-wrapper'
 });

@@ -20,5 +20,10 @@ class Order extends ModelTenant
         'document_external_id'
     ];
 
+    protected $casts = [
+        'customer' => 'object',
+        'items' => 'object'
+    ];
+
 
 }

@@ -197,7 +197,7 @@
 
                     
                     @if(in_array('ecommerce', $vc_modules))
-                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions'])?'nav-active nav-expanded':'' }}">
+                    <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions', 'orders'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                             <i class="fas fa-shopping-cart" aria-hidden="true"></i>
@@ -222,6 +222,11 @@
                             <li class="{{ ($path[0] === 'promotions')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.promotion.index')}}">
                                     Promociones
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'orders')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant_orders_index')}}">
+                                    Pedidos
                                 </a>
                             </li>
                         </ul>

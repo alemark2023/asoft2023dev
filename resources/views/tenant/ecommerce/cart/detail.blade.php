@@ -140,7 +140,7 @@
                     <button type="button" class="btn btn-primary" @click="checkDocument('6')">SI, FACTURA</button>
                     <button type="button" class="btn btn-primary" @click="checkDocument('1')">SI, BOLETA
                         ELECTRONICA</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, NINGUNA</button>
+                    <button type="button" class="btn btn-secondary" @click="redirectHome" data-dismiss="modal">No, NINGUNA</button>
                 </div>
             </div>
         </div>
@@ -280,6 +280,10 @@
             this.initForm();
         },
         methods: {
+            redirectHome()
+            {
+                window.location = "{{ route('tenant.ecommerce.index') }}";
+            },
             async searchCustomer() {
                 this.response_search = {
                     succes: false,
@@ -363,7 +367,7 @@
                             text: "La Transacción de su compra se finalizó correctamente. El Comprobante se envió a su correo.",
                             type: "success"
                         }).then((x) => {
-                            window.location = "{{ route('tenant.ecommerce.index') }}";
+                            this.redirectHome()
                         })
                     })
                     .catch(error => {
@@ -468,6 +472,10 @@
             initForm() {
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
                 this.form_document = {
+                    "acciones": {
+                        "enviar_email": false,
+                        "formato_pdf": "a4"
+                    },
                     "serie_documento": "",
                     "numero_documento": "#",
                     "fecha_de_emision": moment().format('YYYY-MM-DD'),
@@ -623,9 +631,7 @@
     };
 
     function getCustomer() {
-
-        let user = '{!! json_encode( Auth::user() ) !!}'
-
+        let user = JSON.parse ('{!! json_encode( Auth::user() ) !!}')
         return {
             "codigo_tipo_documento_identidad": "0",
             "numero_documento": "0",
