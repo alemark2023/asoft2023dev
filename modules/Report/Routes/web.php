@@ -48,6 +48,14 @@ if($current_hostname) {
                 Route::get('document-hotels/filter', 'ReportDocumentHotelController@filter')->name('tenant.reports.document_hotels.filter');
                 Route::get('document-hotels/records', 'ReportDocumentHotelController@records')->name('tenant.reports.document_hotels.records');
 
+                
+                
+                Route::get('commercial-analysis', 'ReportCommercialAnalysisController@index')->name('tenant.reports.commercial_analysis.index');
+                Route::get('commercial-analysis/pdf', 'ReportCommercialAnalysisController@pdf')->name('tenant.reports.commercial_analysis.pdf');
+                Route::get('commercial-analysis/excel', 'ReportCommercialAnalysisController@excel')->name('tenant.reports.commercial_analysis.excel');
+                Route::get('commercial-analysis/filter', 'ReportCommercialAnalysisController@filter')->name('tenant.reports.commercial_analysis.filter');
+                Route::get('commercial-analysis/records', 'ReportCommercialAnalysisController@records')->name('tenant.reports.commercial_analysis.records');
+
             });
 
         });

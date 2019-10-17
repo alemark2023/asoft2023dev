@@ -50,6 +50,11 @@ class Person extends ModelTenant
         return $this->belongsTo(IdentityDocumentType::class, 'identity_document_type_id');
     }
 
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'customer_id');
+    }
+
     public function country()
     {
         return $this->belongsTo(Country::class);

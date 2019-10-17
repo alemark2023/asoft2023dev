@@ -356,7 +356,7 @@
                     </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','consistency-documents', 'quotations', 'sale-notes','cash','document-hotels'])) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','consistency-documents', 'quotations', 'sale-notes','cash','document-hotels','commercial-analysis'])) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
@@ -394,6 +394,12 @@
                                 </a>
                             </li>
                             @endif
+                            <li class="{{(($path[0] === 'reports') && ($path[1] == 'commercial-analysis')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.reports.commercial_analysis.index')}}">
+                                    Análisis comercial
+                                </a>
+                            </li>
+
                              <!-- <li class="{{(($path[0] === 'reports') && ($path[1] == 'cash')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.cash.index')}}">
                                     Caja - POS
