@@ -166,7 +166,7 @@ class EcommerceController extends Controller
                 'shipping_address' => 'direccion 1',
                 'items' => $request->items,
                 'total' => $request->precio_culqi,
-                'reference_payment' => 'culqui',
+                'reference_payment' => 'efectivo',
               ]);
       
             $customer_email = $user->email;
