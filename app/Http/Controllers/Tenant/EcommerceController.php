@@ -162,9 +162,9 @@ class EcommerceController extends Controller
             $user = auth()->user();
             $order = Order::create([
                 'external_id' => Str::uuid()->toString(),
-                'customer' => $request->customer,
+                'customer' => json_decode( $request->customer ),
                 'shipping_address' => 'direccion 1',
-                'items' => $request->items,
+                'items' =>json_decode( $request->items ),
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
               ]);
