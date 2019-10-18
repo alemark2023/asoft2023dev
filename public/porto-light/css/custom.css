@@ -132,3 +132,32 @@ ul.nav-main li i {
 .notifications .notification-menu:before, .notifications .notification-icon:before {
     border-bottom-color: #0088CC;
 }
+
+#custom-input {
+  padding-left: 0px;
+  padding-right: 0px;
+  width: 0px;
+  border-left: 0px;
+}
+
+#select-width {
+  width: 100%;
+}
+
+#custom-select {
+
+}
+
+#custom-select .el-input-group__prepend {
+  width: 100%;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+#custom-select .el-input-group__append {
+  background: #fff;  
+}
+
+#custom-select .el-input-group__prepend .el-select {
+  margin-left: 0px;
+}
