@@ -45,3 +45,7 @@
 .main-nav {
     min-width: 75%;
 }
+
+.logo img {
+    max-height: 100px;
+}
