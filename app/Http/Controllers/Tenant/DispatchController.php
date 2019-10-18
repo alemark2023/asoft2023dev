@@ -32,7 +32,7 @@ class DispatchController extends Controller
     use StorageDocument;
     
     public function __construct() {
-        $this->middleware('input.request:dispatch,web', ['only' => ['store']]);
+       // $this->middleware('input.request:dispatch,web', ['only' => ['store']]);
     }
     
     public function index() {
@@ -62,6 +62,7 @@ class DispatchController extends Controller
 
     
     public function store(DispatchRequest $request) {
+        
         $fact = DB::connection('tenant')->transaction(function () use($request) {
             $facturalo = new Facturalo();
             $facturalo->save($request->all());
