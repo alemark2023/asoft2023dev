@@ -165,6 +165,8 @@ class QuotationController extends Controller
     }
 
     public function store(QuotationRequest $request) {
+
+        return 1;
         DB::connection('tenant')->transaction(function () use ($request) {
             $data = $this->mergeData($request);
             
