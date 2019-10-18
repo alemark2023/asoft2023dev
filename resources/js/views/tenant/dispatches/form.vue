@@ -416,7 +416,6 @@
             initForm() {
                 this.errors = {}
                 this.form = {
-                    user_id: 1,
                     establishment_id: null,
                     document_type_id: '09',
                     series_id: null,
@@ -459,7 +458,7 @@
                 }
             },
             changeEstablishment() {
-                this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
+                this.form.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
             },
             changeDateOfIssue() {
