@@ -57,6 +57,13 @@ class ItemRequest extends FormRequest
             'purchase_affectation_igv_type_id' => [
                 'required'
             ],
+            'category_id' => [
+                'required_if:is_set,false',
+            ],
+            'brand_id' => [
+                'required_if:is_set,false',
+            ],
+            
         ];
     }
 

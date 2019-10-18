@@ -188,6 +188,8 @@ return [
         'warehouse_id' => 'almacén',
         'inventory_transaction_id' => 'motivo traslado',
         'quantity' => 'cantidad',
+        'category_id' => 'categoría',
+        'brand_id' => 'marca',
         
         'sex' => 'sexo',
         'age' => 'edad',

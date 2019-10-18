@@ -152,6 +152,18 @@ class QuotationController extends Controller
         return $record;
     }
 
+    
+    public function getFullDescription($row){
+
+        $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
+        $category = ($row->category) ? " - {$row->category->name}" : "";
+        $brand = ($row->brand) ? " - {$row->brand->name}" : "";
+
+        $desc = "{$desc} {$category} {$brand}";
+
+        return $desc;        
+    }
+
     public function store(QuotationRequest $request) {
 
         return 1;
@@ -302,7 +314,8 @@ class QuotationController extends Controller
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
                     ->get()->transform(function($row) {
-                    $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+                    $full_description = $this->getFullDescription($row);
+                    // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
                         'full_description' => $full_description,
@@ -314,6 +327,7 @@ class QuotationController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'is_set' => (bool) $row->is_set,
                         'has_igv' => (bool) $row->has_igv,
                         'calculate_quantity' => (bool) $row->calculate_quantity,
                         'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {

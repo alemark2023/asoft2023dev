@@ -3,6 +3,7 @@
         <!-- <div class="card-header bg-info">
             <h3 class="my-0">Nuevo Comprobante</h3>
         </div> -->
+        
         <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">

@@ -79,6 +79,34 @@
                             <small class="form-control-feedback" v-if="errors.sale_affectation_igv_type_id" v-text="errors.sale_affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
+
+                    
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.category_id}">
+                            <label class="control-label">
+                                Categoría 
+                            </label>
+                            <el-select v-model="form.category_id" filterable >
+                                <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.category_id" v-text="errors.category_id[0]"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.brand_id}">
+                            <label class="control-label">
+                                Marca 
+                            </label>
+                            <el-select v-model="form.brand_id" filterable >
+                                <el-option v-for="option in brands" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.brand_id" v-text="errors.brand_id[0]"></small>
+                        </div>
+                    </div>                    
+
+
+
                     <div class="col-md-3 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.calculate_quantity}">
                             <el-checkbox v-model="form.calculate_quantity">Calcular cantidad por precio</el-checkbox><br>
@@ -397,6 +425,8 @@
                 currency_types: [],
                 system_isc_types: [],
                 affectation_igv_types: [],
+                categories: [],
+                brands: [],
                 accounts: [],
                 show_has_igv:true,
                 have_account:false,
@@ -422,6 +452,8 @@
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
                     this.warehouses = response.data.warehouses
+                    this.categories = response.data.categories
+                    this.brands = response.data.brands
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -516,6 +548,8 @@
                     temp_path: null,
                     is_set: false,
                     account_id: null,
+                    category_id: null,
+                    brand_id: null,
                     date_of_due:null
                 }
                 this.show_has_igv = true
