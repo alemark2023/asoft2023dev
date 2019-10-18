@@ -23,7 +23,8 @@ use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
-
+use Modules\Item\Models\Category; 
+use Modules\Item\Models\Brand; 
 
 
 class ItemController extends Controller
@@ -73,8 +74,11 @@ class ItemController extends Controller
         $warehouses = Warehouse::all();
         $accounts = Account::all();
         $tags = Tag::all();
+        $categories = Category::all();
+        $brands = Brand::all();
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types','warehouse', 'accounts', 'tags');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 
+                        'affectation_igv_types','warehouse', 'accounts', 'tags', 'categories', 'brands');
     }
 
     public function record($id)

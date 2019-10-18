@@ -51,6 +51,8 @@
                         {{ ($path[0] === 'quotations')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
                       
                         ">
                         <a class="nav-link" href="#">
@@ -113,6 +115,16 @@
                             <li class="{{ ($path[0] === 'items')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.items.index')}}">
                                     Productos
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'categories')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.categories.index')}}">
+                                    Categorías
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'brands')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.brands.index')}}">
+                                    Marcas
                                 </a>
                             </li>
                             <li class="{{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active':'' }}">

@@ -7,7 +7,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use Modules\Account\Models\Account;
-
+use Modules\Item\Models\Category;
+use Modules\Item\Models\Brand;
 
 class Item extends ModelTenant
 {
@@ -51,7 +52,9 @@ class Item extends ModelTenant
         'date_of_due',
         'is_set',
         'sale_unit_price_set',
-        'apply_store'
+        'apply_store',
+        'brand_id',
+        'category_id',
         // 'warehouse_id'
     ];
 
@@ -187,4 +190,15 @@ class Item extends ModelTenant
     {
         return $this->hasMany(ItemSet::class);
     }
+    
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+    
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
 }

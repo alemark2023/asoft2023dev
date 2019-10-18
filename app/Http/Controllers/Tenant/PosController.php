@@ -37,6 +37,12 @@ class PosController extends Controller
          
         $items = Item::where('description','like', "%{$request->input_item}%")
                             ->orWhere('internal_id','like', "%{$request->input_item}%") 
+                            ->orWhereHas('category', function($query) use($request) {
+                                $query->where('name', 'like', '%' . $request->input_item . '%');
+                            })
+                            ->orWhereHas('brand', function($query) use($request) {
+                                $query->where('name', 'like', '%' . $request->input_item . '%');
+                            })
                             ->whereWarehouse()
                             ->get()->transform(function($row) {
                                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
