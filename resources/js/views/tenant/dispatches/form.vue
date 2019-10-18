@@ -419,7 +419,7 @@
                     establishment_id: null,
                     document_type_id: '09',
                     series_id: null,
-                    number: '1', //'#'
+                    number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     date_of_shipping: moment().format('YYYY-MM-DD'),
