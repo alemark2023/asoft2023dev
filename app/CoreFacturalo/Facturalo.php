@@ -89,8 +89,8 @@ class Facturalo
 
     public function save($inputs)
     {
-        //$this->actions = array_key_exists('actions', $inputs)?$inputs['actions']:[];
-       // $this->type = $inputs['type'];
+        $this->actions = array_key_exists('actions', $inputs)?$inputs['actions']:[];
+        $this->type = $inputs['type'];
 
         switch ($this->type) {
             case 'debit':
