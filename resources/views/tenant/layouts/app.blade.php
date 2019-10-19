@@ -144,9 +144,6 @@
     {{--<script src="{{ asset('porto-light/vendor/bootstrap-timepicker/bootstrap-timepicker.js') }}"></script>--}}
     {{--<script src="{{ asset('porto-light/vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>--}}
 
-    <!-- Theme Custom -->
-    <script src="{{asset('porto-light/js/custom.js')}}"></script>
-
     <!-- Theme Initialization Files -->
     {{-- <script src="{{asset('porto-light/js/theme.init.js')}}"></script> --}}
 
@@ -158,6 +155,9 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
+
+    <!-- Theme Custom -->
+    <script src="{{asset('porto-light/js/custom.js')}}"></script>
     <script>
      
     </script>
