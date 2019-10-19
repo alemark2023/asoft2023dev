@@ -365,6 +365,8 @@ if ($hostname) {
             Route::get('purchases/record/{document}', 'Tenant\PurchaseController@record');
             Route::get('purchases/edit/{id}', 'Tenant\PurchaseController@edit');
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular'); 
+            Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete'); 
+
 
             // Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
             // Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');

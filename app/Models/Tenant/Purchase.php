@@ -4,9 +4,12 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Purchase extends ModelTenant
 {
+    use SoftDeletes;
+    
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
 
     protected $fillable = [

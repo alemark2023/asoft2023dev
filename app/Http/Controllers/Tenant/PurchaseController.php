@@ -301,4 +301,25 @@ class PurchaseController extends Controller
                 break;
         } 
     }
+
+    public function delete($id)
+    {
+        try {
+            
+            $row = Purchase::findOrFail($id);
+            $row->delete(); 
+
+            return [
+                'success' => true,
+                'message' => 'Compra eliminada con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        } 
+    }
 }

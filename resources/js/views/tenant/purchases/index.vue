@@ -57,6 +57,9 @@
                             
                             <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+
+
 
                         </td>
                         
@@ -97,7 +100,7 @@
      import {deletable} from '../../../mixins/deletable'
 
     export default {
-          mixins: [deletable],
+        mixins: [deletable],
         // components: {DocumentsVoided, DocumentOptions, DataTable},
         components: {DataTable},
         data() {
@@ -125,6 +128,12 @@
             clickAnulate(id)
             {
                 this.anular(`/${this.resource}/anular/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            },
+            clickDelete(id)
+            {
+                this.delete(`/${this.resource}/delete/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
             }

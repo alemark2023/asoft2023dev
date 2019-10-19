@@ -13,7 +13,6 @@ class CardBrand extends ModelTenant
     protected $fillable = [
         'description',        
         'id',
-
     ];
 
     // protected static function boot()
