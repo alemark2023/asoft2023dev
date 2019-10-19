@@ -206,7 +206,7 @@
 
             },
             blurCalculateQuantity(index){
-                this.row = calculateRowItem(this.form.items[index], this.form.currency_type_id, 1);
+                this.row = calculateRowItem(this.form.items[index], this.form.currency_type_id, 1, true);
                 this.form.items[index] = this.row 
                 this.calculateTotal()
             },
@@ -334,7 +334,7 @@
                 this.form.customer_id = null
             },
             async clickAddItem(item,index, input = false){
-                
+
                 this.loading = true
                 let exchangeRateSale = this.form.exchange_rate_sale
                 let exist_item = _.find(this.form.items,{'item_id':item.item_id})  
@@ -369,7 +369,7 @@
                         exist_item.item.aux_quantity  ++; 
                     }
 
-                    this.row = calculateRowItem(exist_item, this.form.currency_type_id, exchangeRateSale);
+                    this.row = calculateRowItem(exist_item, this.form.currency_type_id, exchangeRateSale, true);
                     this.form.items[pos] = this.row 
 
                 }else{
@@ -399,7 +399,7 @@
                     this.form_item.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form_item.affectation_igv_type_id});
 
                     // console.log(this.form_item)
-                    this.row = calculateRowItem(this.form_item, this.form.currency_type_id, exchangeRateSale);
+                    this.row = calculateRowItem(this.form_item, this.form.currency_type_id, exchangeRateSale, true);
                     // console.log(this.row)
 
                     this.form.items.push(this.row)
@@ -430,6 +430,7 @@
             },
             
             calculateTotal() {
+                debugger
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0
@@ -444,12 +445,12 @@
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
 
-                    if (row.affectation_igv_type_id === '10') {
+                    if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '20' ) {
                         total_taxed += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '20') {
+                   /* if (row.affectation_igv_type_id === '20') {
                         total_exonerated += parseFloat(row.total_value)
-                    }
+                    }*/
                     if (row.affectation_igv_type_id === '30') {
                         total_unaffected += parseFloat(row.total_value)
                     }
