@@ -102,6 +102,11 @@ class DocumentItem extends ModelTenant
         return $this->belongsTo(PriceType::class, 'price_type_id');
     }
 
+    public function m_item()
+    {
+        return $this->belongsTo(Item::class,'item_id');
+    }
+
     public function document()
     {
         return $this->belongsTo(Document::class);

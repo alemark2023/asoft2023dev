@@ -11,6 +11,8 @@ use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\PersonType;
+use Modules\Item\Models\Category;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use Modules\Report\Http\Resources\CommercialAnalysisCollection;
@@ -48,69 +50,38 @@ class ReportCommercialAnalysisController extends Controller
 
     
     public function getRecords($request, $model){
-
-        // dd($request['period']);
-        $document_type_id = $request['document_type_id'];
-        $establishment_id = $request['establishment_id'];
-        $period = $request['period'];
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        $month_start = $request['month_start'];
-        $month_end = $request['month_end'];
-
-        $d_start = null;
-        $d_end = null;
-
-        switch ($period) {
-            case 'month':
-                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
-                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
-                // $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
-                break;
-            case 'between_months':
-                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
-                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
-                break;
-            case 'date':
-                $d_start = $date_start;
-                $d_end = $date_start;
-                // $d_end = $date_end;
-                break;
-            case 'between_dates':
-                $d_start = $date_start;
-                $d_end = $date_end;
-                break;
-        }
  
-        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $model);
+ 
+        $records = $this->data($request, $model);
 
         return $records;
 
     }
 
 
-    private function data($document_type_id, $establishment_id, $date_start, $date_end, $model)
+    private function data($request, $model)
     {
+        $number = $request['number'];
+        $person_type_id = $request['person_type_id'];
+        $category_id = $request['category_id'];
+        // dd($request);
 
-        // if($document_type_id && $establishment_id){
+        if($category_id){
 
-        //     $data = $model::where([['establishment_id', $establishment_id],['document_type_id', $document_type_id]])
-        //                         ->whereBetween('date_of_issue', [$date_start, $date_end])->latest();
+            $data = $model::whereType('customers')        
+                        ->where('person_type_id', 'like', '%' . $person_type_id . '%')
+                        ->where('number', 'like', '%' . $number . '%')
+                        ->whereHas('documents.items.m_item.category',function($q) use($category_id){
+                            $q->where('id', $category_id);
+                        })
+                        ->latest();
+        }else{
 
-        // }elseif($document_type_id){
-            
-        //     $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-        //                         ->where('document_type_id', 'like', '%' . $document_type_id . '%');
-
-        // }elseif($establishment_id){
-            
-        //     $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-        //                         ->where('establishment_id', 'like', '%' . $establishment_id . '%');
-
-        // }else{
-            // $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest();
-        // }
-        $data = $model::whereType('customers')->latest();
+            $data = $model::whereType('customers')        
+                        ->where('person_type_id', 'like', '%' . $person_type_id . '%')
+                        ->where('number', 'like', '%' . $number . '%') 
+                        ->latest();
+        }
        
         return $data;
         
@@ -124,10 +95,24 @@ class ReportCommercialAnalysisController extends Controller
         
         $records = $this->getRecords($request->all(), Person::class)->get();
 
+        // dd($records);
+
         return (new CommercialAnalysisExport)
                 ->records($records)
                 ->company($company)
                 ->download('Reporte_Analisis_comercial_'.Carbon::now().'.xlsx');
+    }
+
+
+    public function data_table()
+    {
+        
+        // $customers = $this->table('customers'); 
+        $person_types = PersonType::get();
+        $categories = Category::get(); 
+
+        return compact( 'person_types', 'categories');
+
     }
 
 }

@@ -3,80 +3,64 @@
         <div class="row">
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
-                  
-                <div class="row mt-2"> 
-                        <!-- <div class="col-md-3">
-                            <label class="control-label">Periodo</label>
-                            <el-select v-model="form.period" @change="changePeriod">
-                                <el-option key="month" value="month" label="Por mes"></el-option>
-                                <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
-                                <el-option key="date" value="date" label="Por fecha"></el-option>
-                                <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
+                  <div class="row">
+                    <div class="col-lg-8 col-md-8 mb-2">
+                        <div class="form-group"> 
+                            <label class="control-label font-custom"><strong>Filtros de busqueda</strong></label> 
+                            <template v-if="!see_more">
+                                <a class="control-label font-weight-bold text-info font-custom" href="#" @click="clickSeeMore"><strong> [+ Ver más]</strong></a> 
+                            </template>
+                            <template v-else>
+                                <a class="control-label font-weight-bold text-info font-custom" href="#" @click="clickSeeMore"><strong> [- Ver menos]</strong></a> 
+                            </template>
+                        </div>
+                    </div> 
+                </div>
+                <div class="row mt-2" v-if="see_more"> 
+                    <div class="col-lg-4 col-md-4">
+                        <div class="form-group"  >
+                            <label class="control-label">RUC Cliente</label> 
+                            <el-input placeholder="Ingresar"
+                                v-model="form.number">
+                            </el-input>
+                        </div>
+                    </div> 
+                    <div class="col-lg-4 col-md-4 ">
+                        <div class="form-group"> 
+                            <label class="control-label">Tipo cliente</label>
+                            <el-select v-model="form.person_type_id" filterable clearable>
+                                <el-option v-for="option in person_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
                         </div>
-                        <template v-if="form.period === 'month' || form.period === 'between_months'">
-                            <div class="col-md-3">
-                                <label class="control-label">Mes de</label>
-                                <el-date-picker v-model="form.month_start" type="month"
-                                                @change="changeDisabledMonths"
-                                                value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
-                            </div>
-                        </template>
-                        <template v-if="form.period === 'between_months'">
-                            <div class="col-md-3">
-                                <label class="control-label">Mes al</label>
-                                <el-date-picker v-model="form.month_end" type="month"
-                                                :picker-options="pickerOptionsMonths"
-                                                value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
-                            </div>
-                        </template>
-                        <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                            <div class="col-md-3">
-                                <label class="control-label">Fecha del</label>
-                                <el-date-picker v-model="form.date_start" type="date"
-                                                @change="changeDisabledDates"
-                                                value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
-                            </div>
-                        </template>
-                        <template v-if="form.period === 'between_dates'">
-                            <div class="col-md-3">
-                                <label class="control-label">Fecha al</label>
-                                <el-date-picker v-model="form.date_end" type="date"
-                                                :picker-options="pickerOptionsDates"
-                                                value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
-                            </div>
-                        </template>
-                        
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="control-label">Establecimiento</label>
-                                <el-select v-model="form.establishment_id" clearable>
-                                    <el-option v-for="option in establishments" :key="option.id" :value="option.id" :label="option.name"></el-option>
-                                </el-select>
-                            </div>
+                    </div> 
+                    
+                    <div class="col-lg-4 col-md-4 col-sm-4 pb-2">
+                        <div class="form-group"  >
+                            <label class="control-label">Tipo producto</label>
+                            <el-select v-model="form.category_id" filterable clearable>
+                                <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select> 
                         </div>
-                        <div class="col-md-3" v-show="resource == 'reports/sales' || resource == 'reports/purchases'">
-                            <div class="form-group">
-                                <label class="control-label">Tipo de documento</label>
-                                <el-select v-model="form.document_type_id" clearable>
-                                    <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                </el-select>
-                            </div>
-                        </div> -->
-
-                        <div class="col-lg-9 col-md-9 col-md-9 col-sm-12" style="margin-top:29px"> 
-                            <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
-                            
-                            <template v-if="records.length>0"> 
-
-
-                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
-
-                            </template>
-
-                        </div>             
+                    </div>      
                     
                 </div>
+                <div class="row mt-1 mb-3">
+                    
+                    <div class="col-lg-9 col-md-9 col-md-9 col-sm-12" style="margin-top:29px"> 
+                        <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
+                        
+                        <template v-if="records.length>0"> 
+                            <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                        </template>
+
+                    </div>     
+                </div> 
+            </div>
+            <div class="row mt-2">  
+
+                                
+                
+            </div>
                 <div class="row mt-1 mb-4">
                     
                 </div> 
@@ -91,32 +75,7 @@
                         </thead>
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
-                        </tbody>
-                        <tfoot v-if="resource == 'reports/sales'">
-                            <tr>
-                                <td colspan="7"></td>                                
-                                <td ><strong>Totales PEN</strong></td>
-                                <td>{{totals.acum_total_exonerated}}</td>
-                                <td>{{totals.acum_total_unaffected}}</td>
-                                <td>{{totals.acum_total_free}}</td>
-
-                                <td>{{totals.acum_total_taxed}}</td>
-                                <td>{{totals.acum_total_igv}}</td>
-                                <td>{{totals.acum_total}}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="7"></td>
-                                <td ><strong>Totales USD</strong></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                
-                                <td>{{totals.acum_total_taxed_usd}}</td>
-                                <td>{{totals.acum_total_igv_usd}}</td>
-                                <td>{{totals.acum_total_usd}}</td>
-
-                            </tr>
-                        </tfoot>
+                        </tbody> 
                     </table>
                     <div>
                         <el-pagination
@@ -155,10 +114,13 @@
                 headers: headers_token,
                 document_types: [],
                 pagination: {}, 
+                see_more:false,
                 search: {}, 
                 totals: {}, 
                 establishment: null,
                 establishments: [],       
+                person_types: [],       
+                categories: [],       
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -185,6 +147,13 @@
         },
         async mounted () { 
 
+            
+            await this.$http.get(`/${this.resource}/data_table`).then((response) => {
+                this.categories = response.data.categories
+                this.person_types = response.data.person_types 
+
+            });
+
             await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
                     this.establishments = response.data.establishments;
@@ -198,91 +167,9 @@
 
         },
         methods: { 
-            getTotals(records){
-
-                this.initTotals()
-                // console.log(records)
-
-                records.forEach(row =>{
-                    
-                    let signal = row.document_type_id;
-                    let state = row.state_type_id;
-
-                    if(row.currency_type_id == 'PEN'){ 
-
-                        if((signal == '07' && state != '11')){
-
-                            this.totals.acum_total += parseFloat(-row.total);
-                            this.totals.acum_total_taxed += parseFloat(-row.total_taxed);
-                            this.totals.acum_total_igv += parseFloat(-row.total_igv);
-
-                            
-                            this.totals.acum_total_exonerated += parseFloat(-row.total_exonerated);
-                            this.totals.acum_total_unaffected += parseFloat(-row.total_unaffected);
-                            this.totals.acum_total_free += parseFloat(-row.total_free);
-
-
-                        }else if(signal != '07' && state == '11'){
-
-                            this.totals.acum_total += 0;
-                            this.totals.acum_total_taxed += 0;
-                            this.totals.acum_total_igv += 0;
-
-                            this.totals.acum_total_exonerated += 0;
-                            this.totals.acum_total_unaffected += 0;
-                            this.totals.acum_total_free += 0;
-
-                        }else{
-
-                            this.totals.acum_total += parseFloat(row.total);
-                            this.totals.acum_total_taxed += parseFloat(row.total_taxed);
-                            this.totals.acum_total_igv += parseFloat(row.total_igv);
-
-                            this.totals.acum_total_exonerated += parseFloat(row.total_exonerated);
-                            this.totals.acum_total_unaffected += parseFloat(row.total_unaffected);
-                            this.totals.acum_total_free += parseFloat(row.total_free);
-                        }
-
-
-                    }else if(row.currency_type_id == 'USD'){ 
-                        
-                        if((signal == '07' && state != '11')){
-
-                            this.totals.acum_total_usd += parseFloat(-row.total);
-                            this.totals.acum_total_taxed_usd += parseFloat(-row.total_taxed);
-                            this.totals.acum_total_igv_usd += parseFloat(-row.total_igv);
-
-
-
-                        }else if(signal != '07' && state == '11'){
-
-                            this.totals.acum_total_usd += 0;
-                            this.totals.acum_total_taxed_usd += 0;
-                            this.totals.acum_total_igv_usd += 0;
-
-
-                        }else{
-
-                            this.totals.acum_total_usd += parseFloat(row.total);
-                            this.totals.acum_total_taxed_usd += parseFloat(row.total_taxed);
-                            this.totals.acum_total_igv_usd += parseFloat(row.total_igv);
-
-                        }
-
-                        
-                    }
-                    this.totals.acum_total_taxed = _.round(this.totals.acum_total_taxed,2)
-                    this.totals.acum_total_igv = _.round(this.totals.acum_total_igv,2)
-                    this.totals.acum_total = _.round(this.totals.acum_total,2)      
-                    this.totals.acum_total_exonerated = _.round(this.totals.acum_total_exonerated,2)
-                    this.totals.acum_total_unaffected = _.round(this.totals.acum_total_unaffected,2)         
-                    this.totals.acum_total_free = _.round(this.totals.acum_total_free,2)
-
-                    this.totals.acum_total_taxed_usd = _.round(this.totals.acum_total_taxed_usd,2)
-                    this.totals.acum_total_igv_usd = _.round(this.totals.acum_total_igv_usd,2)
-                    this.totals.acum_total_usd = _.round(this.totals.acum_total_usd,2)
-                })
-            },
+            clickSeeMore(){
+                this.see_more = (this.see_more) ? false : true
+            }, 
             clickDownload(type) {                 
                 let query = queryString.stringify({
                     ...this.form
@@ -292,13 +179,9 @@
             initForm(){
  
                 this.form = {
-                    establishment_id: null,
-                    document_type_id:null,
-                    period: 'month',
-                    date_start: moment().format('YYYY-MM-DD'),
-                    date_end: moment().format('YYYY-MM-DD'),
-                    month_start: moment().format('YYYY-MM'),
-                    month_end: moment().format('YYYY-MM'),
+                    category_id: null,
+                    person_type_id:null,
+                    number:null,  
                 }
 
             }, 
