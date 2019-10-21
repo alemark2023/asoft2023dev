@@ -93,6 +93,8 @@
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
+                            <th class="text-right">Editar</th>
+
                         </tr>
                         </thead>
                         <tbody>
@@ -154,6 +156,10 @@
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-primary m-1__2" @click.prevent="clickAccountStatus(row.id)">E. Cuenta</button>
 
                             </td>
+                             <td class="text-right">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary m-1__2" @click.prevent="clickEdit(row.id)">Editar</button>
+
+                            </td>
 
                         </tr>
                         </tbody>
@@ -163,6 +169,9 @@
         </div>
         <system-clients-form :showDialog.sync="showDialog"
                              :recordId="recordId"></system-clients-form>
+
+        <!--<system-clients-form-edit :showDialog.sync="showDialogEdit"
+                             :recordId="recordId"></system-clients-form-edit> -->
                              
             
         <client-payments :showDialog.sync="showDialogPayments"
@@ -176,6 +185,7 @@
 <script>
 
     import CompaniesForm from './form.vue'
+ //   import CompaniesFormEdit from './form_edit.vue'
     import {deletable} from "../../../mixins/deletable"
     import {changeable} from "../../../mixins/changeable"
     import ChartLine from './charts/Line'
@@ -187,6 +197,7 @@
         components: {CompaniesForm, ChartLine, ClientPayments, AccountStatus},
         data() {
             return {
+                showDialogEdit: false,
                 showDialog: false,
                 showDialogPayments: false,
                 showDialogAccountStatus: false,
@@ -280,6 +291,11 @@
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            clickEdit(recordId)
+            {
+                this.recordId = recordId
+                this.showDialog = true
             }
         }
     }

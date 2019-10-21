@@ -8,6 +8,7 @@ use Exception;
 use Hyn\Tenancy\Contracts\Repositories\HostnameRepository;
 use Hyn\Tenancy\Contracts\Repositories\WebsiteRepository;
 use App\Http\Resources\System\ClientCollection;
+use App\Http\Resources\System\ClientResource;
 use App\Http\Requests\System\ClientRequest;
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
@@ -51,6 +52,12 @@ class ClientController extends Controller
         return new ClientCollection($records);
     }
 
+    public function record($id)
+    {
+        $record = new ClientResource(Client::findOrFail($id));
+        return $record;
+    }
+
     public function charts()
     {
         $records = Client::all();
@@ -92,8 +99,40 @@ class ClientController extends Controller
         return compact('line', 'total_documents');
     }
 
+    public function update(Request $request)
+    {
+        try
+        {
+
+            $client = Client::findOrFail($request->id);
+            $client->plan_id = $request->plan_id;
+            $client->save();
+
+            $plan = Plan::find($request->plan_id);
+
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan)]);
+
+            return [
+                'success' => true,
+                'message' => 'Cliente Actualizado satisfactoriamente'
+            ];
+
+        }catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+
+        }
+
+    }
+
     public function store(ClientRequest $request)
     {
+       
         $subDom = strtolower($request->input('subdomain'));
         $uuid = config('tenant.prefix_database').'_'.$subDom;
         $fqdn = $subDom.'.'.config('tenant.app_url_base');
@@ -151,7 +190,8 @@ class ClientController extends Controller
             'send_auto' => true,
             'locked_emission' =>  $request->input('locked_emission'),
             'limit_documents' =>  $plan->limit_documents,
-            'limit_users' =>  $plan->limit_users
+            'limit_users' =>  $plan->limit_users,
+            'plan' => json_encode($plan)
         ]);
 
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([
@@ -206,7 +246,8 @@ class ClientController extends Controller
                 ['module_id' => 7, 'user_id' => $user_id], 
                 ['module_id' => 8, 'user_id' => $user_id], 
                 ['module_id' => 9, 'user_id' => $user_id], 
-                ['module_id' => 10, 'user_id' => $user_id], 
+                ['module_id' => 10, 'user_id' => $user_id],
+                ['module_id' => 11, 'user_id' => $user_id], 
             ]);
             
         }else{

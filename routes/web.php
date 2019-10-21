@@ -504,6 +504,22 @@ if ($hostname) {
            Route::post('item-sets/upload', 'Tenant\ItemSetController@upload');
            Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
 
+           //Cuenta
+           Route::get('account/payment_index', 'Tenant\AccountController@paymentIndex')->name('tenant.payment.index');
+           Route::get('account/configuration', 'Tenant\AccountController@index')->name('tenant.configuration.index');
+           Route::get('account/payment_records', 'Tenant\AccountController@paymentRecords');
+           Route::get('account/tables', 'Tenant\AccountController@tables');
+           Route::post('account/update_plan', 'Tenant\AccountController@updatePlan');
+           Route::post('account/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
+
+
+
+
+
+
+
+           
+
         });
     });
 } else {
@@ -521,10 +537,14 @@ if ($hostname) {
             //Clients
             Route::get('clients', 'System\ClientController@index')->name('system.clients.index');
             Route::get('clients/records', 'System\ClientController@records');
+            Route::get('clients/record/{client}', 'System\ClientController@record');
+
             Route::get('clients/create', 'System\ClientController@create');
             Route::get('clients/tables', 'System\ClientController@tables');
             Route::get('clients/charts', 'System\ClientController@charts');
             Route::post('clients', 'System\ClientController@store');
+            Route::post('clients/update', 'System\ClientController@update');
+
             Route::delete('clients/{client}', 'System\ClientController@destroy');
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');

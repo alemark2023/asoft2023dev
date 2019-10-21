@@ -123,6 +123,7 @@ Vue.component('system-clients-index', require('./views/system/clients/index.vue'
 Vue.component('system-clients-form', require('./views/system/clients/form.vue'));
 Vue.component('system-users-form', require('./views/system/users/form.vue'));
 
+
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
@@ -136,6 +137,10 @@ Vue.component('tenant-promotions-index', require('./views/tenant/promotions/inde
 Vue.component('tenant-item-sets-index', require('./views/tenant/item_sets/index.vue'));
 
 Vue.component('tenant-orders-index', require('./views/tenant/orders/index.vue'));
+
+//Cuenta
+Vue.component('tenant-account-payment-index', require('./views/tenant/account/payment_index.vue'));
+Vue.component('tenant-account-configuration-index', require('./views/tenant/account/configuration.vue'));
 
 
 const app = new Vue({

@@ -6,8 +6,8 @@
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.number}">
                             <label class="control-label">RUC</label>
-                            <el-input v-model="form.number" :maxlength="11" dusk="number">
-                                <el-button type="primary" slot="append" :loading="loading_search" icon="el-icon-search" @click.prevent="searchSunat">
+                            <el-input :disabled="form.is_update" v-model="form.number" :maxlength="11" dusk="number">
+                                <el-button :disabled="form.is_update" type="primary" slot="append" :loading="loading_search" icon="el-icon-search" @click.prevent="searchSunat">
                                     SUNAT
                                 </el-button>
                             </el-input>
@@ -20,16 +20,21 @@
                         <!--</div>-->
                     </div>
                     <div class="col-md-6">
+                        
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Nombre de la Empresa</label>
-                            <el-input v-model="form.name" dusk="name"></el-input>
+                            <el-input :disabled="form.is_update" v-model="form.name" dusk="name"></el-input>
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': (errors.subdomain || errors.uuid)}">
+                        <div v-if="form.is_update" class="form-group" :class="{'has-danger': (errors.subdomain || errors.uuid)}">
+                            <label class="control-label">Nombre de Subdominio</label>
+                            <el-input :disabled="form.is_update" v-model="form.hostname" dusk="name"></el-input>
+                        </div>
+                        <div v-else class="form-group" :class="{'has-danger': (errors.subdomain || errors.uuid)}">
                             <label class="control-label">Nombre de Subdominio</label>
                             <el-input v-model="form.subdomain" dusk="subdomain">
                                 <template slot="append">{{ url_base }}</template>
@@ -41,16 +46,16 @@
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.email}">
                             <label class="control-label">Correo de Acceso</label>
-                            <el-input v-model="form.email" dusk="email"></el-input>
+                            <el-input :disabled="form.is_update" v-model="form.email" dusk="email"></el-input>
                             <small class="form-control-feedback" v-if="errors.email" v-text="errors.email[0]"></small>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6" v-if="!form.is_update">
                         <div class="form-group" :class="{'has-danger': (errors.password)}">
                             <label class="control-label">Contraseña</label>
-                            <el-input type="password" v-model="form.password" dusk="password"></el-input>
+                            <el-input type="password" :disabled="form.is_update" v-model="form.password" dusk="password"></el-input>
                             <small class="form-control-feedback" v-if="errors.password" v-text="errors.password[0]"></small> 
                         </div>
                     </div>
@@ -66,9 +71,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.type}">
+                        <div v-if="!form.is_update" class="form-group" :class="{'has-danger': errors.type}">
                             <label class="control-label">Perfil</label>
-                            <el-select v-model="form.type">
+                            <el-select :disabled="form.is_update" v-model="form.type">
                                 <el-option v-for="option in types" :key="option.type" :value="option.type" :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.type" v-text="errors.type[0]"></small>
@@ -76,7 +81,7 @@
                     </div>
                     <div class="col-md-6 center-el-checkbox mt-4">
                         <div class="form-group" :class="{'has-danger': errors.locked_emission}">
-                            <el-checkbox v-model="form.locked_emission">Limitar emisión de documentos</el-checkbox><br>
+                            <el-checkbox :disabled="form.is_update" v-model="form.locked_emission">Limitar emisión de documentos</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.locked_emission" v-text="errors.locked_emission[0]"></small>
                         </div>
                     </div> 
@@ -139,18 +144,23 @@
                     password:null,
                     plan_id:null,
                     locked_emission:false,
-                    type:null
+                    type:null,
+                    is_update:false
                 }
             },
             create() {
                 this.titleDialog = (this.recordId)? 'Editar Cliente':'Nuevo Cliente'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
+                        .then(response => {
+                                this.form = response.data.data
+                                this.form.is_update = true
+                            }) 
                 }
             },
             submit() {
                 this.loading_submit = true
-                this.$http.post(`${this.resource}`, this.form)
+                this.$http.post(`${this.resource}${(this.form.is_update ? '/update' : '')}`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
