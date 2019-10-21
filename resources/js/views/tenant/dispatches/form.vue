@@ -229,10 +229,10 @@
                             <!--</div>-->
                         <!--</div>-->
                         <div class="col-lg-6">
-                            <div class="form-group" :class="{'has-danger': errors.delivery}">
+                            <div class="form-group" :class="{'has-danger': errors['delivery.address']}">
                                 <label class="control-label">Dirección</label>
                                 <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input>
-                                <small class="form-control-feedback" v-if="errors.delivery" v-text="errors.delivery.address[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['delivery.address']" v-text="errors['delivery.address'][0]"></small>
                             </div>
                         </div>
                     </div>
@@ -240,45 +240,45 @@
                     <h4>Datos transportista</h4>
                     <div class="row">
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.dispatcher}">
+                            <div class="form-group" :class="{'has-danger': errors['dispatcher.identity_document_type_id']}">
                                 <label class="control-label">Tipo Doc. Identidad</label>
                                 <el-select v-model="form.dispatcher.identity_document_type_id" filterable>
                                     <el-option v-for="option in identityDocumentTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
-                                <small class="form-control-feedback" v-if="errors.dispatcher" v-text="errors.dispatcher.identity_document_type_id[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['dispatcher.identity_document_type_id']" v-text="errors['dispatcher.identity_document_type_id'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.dispatcher}">
+                            <div class="form-group" :class="{'has-danger': errors['dispatcher.number']}">
                                 <label class="control-label">Número</label>
                                 <el-input v-model="form.dispatcher.number" :maxlength="11" placeholder="Número..."></el-input>
-                                <small class="form-control-feedback" v-if="errors.dispatcher" v-text="errors.dispatcher.number[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['dispatcher.number']" v-text="errors['dispatcher.number'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.dispatcher}">
+                            <div class="form-group" :class="{'has-danger': errors['dispatcher.name']}">
                                 <label class="control-label">Nombre y/o razón social</label>
                                 <el-input v-model="form.dispatcher.name" :maxlength="100" placeholder="Nombre y/o razón social..."></el-input>
-                                <small class="form-control-feedback" v-if="errors.dispatcher" v-text="errors.dispatcher.name[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['dispatcher.name']" v-text="errors['dispatcher.name'][0]"></small>
                             </div>
                         </div>
                     </div>
                     <h4>Datos conductor</h4>
                     <div class="row">
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.driver}">
+                            <div class="form-group" :class="{'has-danger': errors['driver.identity_document_type_id']}">
                                 <label class="control-label">Tipo Doc. Identidad</label>
                                 <el-select v-model="form.driver.identity_document_type_id" filterable>
                                     <el-option v-for="option in identityDocumentTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
-                                <small class="form-control-feedback" v-if="errors.driver" v-text="errors.driver.identity_document_type_id[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['driver.identity_document_type_id']" v-text="errors['driver.identity_document_type_id'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.driver}">
+                            <div class="form-group" :class="{'has-danger': errors['driver.number']}">
                                 <label class="control-label">Número</label>
                                 <el-input v-model="form.driver.number" :maxlength="11" placeholder="Número..."></el-input>
-                                <small class="form-control-feedback" v-if="errors.driver" v-text="errors.driver.number[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['driver.number']" v-text="errors['driver.number'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -458,7 +458,7 @@
                 }
             },
             changeEstablishment() {
-                this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
+                this.form.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
             },
             changeDateOfIssue() {

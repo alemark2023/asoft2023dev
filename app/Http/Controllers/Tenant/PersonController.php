@@ -89,6 +89,7 @@ class PersonController extends Controller
 
     public function destroy($id)
     {
+        return 1;
         try {            
             
             $person = Person::findOrFail($id);

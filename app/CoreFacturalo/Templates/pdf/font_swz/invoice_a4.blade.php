@@ -141,9 +141,9 @@
 
 <table class="mt-10 mb-10" style="border-collapse: collapse;border-top: 1px solid #333;">
     <tr class="bg-grey">
-        <th class="text-left py-2" width="8%">COD.</th>
-        <th class="text-center py-2" width="8%">CANT.</th>
-        <th class="text-center py-2" width="8%">UM</th>
+        <th class="text-left py-2" width="22">COD.</th>
+        <th class="text-center py-2" width="5%">CANT.</th>
+        <th class="text-center py-2" width="5%">UM</th>
         <th class="text-left py-2">DESCRIPCIÓN</th>
         <th class="text-right py-2" width="10%">P.UNIT</th>
         <th class="text-right py-2" width="8%">DTO.</th>
@@ -153,36 +153,36 @@
     @foreach($document->items as $row)
         <tr>
             <td >
-                <p>{{ $row->item->internal_id }}</p>
+                {{ $row->item->internal_id }}
             </td>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
-                    <p>{{ $row->quantity }}</p>
+                    {{ $row->quantity }}
                 @else
-                    <p>{{ number_format($row->quantity, 0) }}</p>
+                    {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
             <td class="text-center align-top">
-                <p>{{ $row->item->unit_type_id }}</p>
+                {{ $row->item->unit_type_id }}
             </td>
             <td class="text-left align-top">
-                <p>{!!$row->item->description!!}</p>
+                {!!$row->item->description!!}
                 @if (!empty($row->item->presentation)) 
-                    <p>{!!$row->item->presentation->description!!}</p>
+                    {!!$row->item->presentation->description!!}
                 @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
-                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                        <br/><span style="font-size: 7px">{!! $attr->description !!} : {{ $attr->value }}</span>
                     @endforeach
                 @endif
                 @if($row->discounts)
                     @foreach($row->discounts as $dtos)
-                        <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
+                        <br/><span style="font-size: 7px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
             </td>
             <td class="text-right align-top">
-                <p>{{ number_format($row->unit_price, 2) }}</p>
+                {{ number_format($row->unit_price, 2) }}
             </td>
             <td class="text-right align-top">
                 @if($row->discounts)
@@ -192,13 +192,13 @@
                             $total_discount_line = $total_discount_line + $disto->amount;
                         }
                     @endphp
-                    <p>{{ number_format($total_discount_line, 2) }}</p>
+                    {{ number_format($total_discount_line, 2) }}
                 @else
-                    <p>0</p>
+                    0
                 @endif
             </td>
             <td class="text-right align-top">
-                <p>{{ number_format($row->total, 2) }}</p>
+                {{ number_format($row->total, 2) }}
             </td>
         </tr>
         <tr>

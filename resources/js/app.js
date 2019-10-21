@@ -116,6 +116,9 @@ Vue.component('tenant-index-configuration', require('../../modules/BusinessTurn/
 Vue.component('tenant-report-document_hotels-index', require('../../modules/Report/Resources/assets/js/views/document_hotels/index.vue'));
 Vue.component('tenant-report-commercial_analysis-index', require('../../modules/Report/Resources/assets/js/views/commercial_analysis/index.vue'));
 
+Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
+Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));
+
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
 Vue.component('system-clients-form', require('./views/system/clients/form.vue'));
@@ -133,6 +136,9 @@ Vue.component('tenant-promotions-index', require('./views/tenant/promotions/inde
 
 Vue.component('tenant-item-sets-index', require('./views/tenant/item_sets/index.vue'));
 Vue.component('tenant-person-types-index', require('./views/tenant/person_types/index.vue'));
+
+Vue.component('tenant-orders-index', require('./views/tenant/orders/index.vue'));
+
 
 const app = new Vue({
     el: '#main-wrapper'

@@ -384,7 +384,7 @@ class SaleNoteController extends Controller
 
                 $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
                 return collect($items)->transform(function($row) {
-                    $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+                    $full_description = $this->getFullDescription($row);
                     return [
                         'id' => $row->id,
                         'full_description' => $full_description,
@@ -418,6 +418,20 @@ class SaleNoteController extends Controller
                 break;
         } 
     }
+
+    
+
+    public function getFullDescription($row){
+
+        $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
+        $category = ($row->category) ? " - {$row->category->name}" : "";
+        $brand = ($row->brand) ? " - {$row->brand->name}" : "";
+
+        $desc = "{$desc} {$category} {$brand}";
+
+        return $desc;        
+    }
+    
 
     public function searchCustomerById($id)
     {        

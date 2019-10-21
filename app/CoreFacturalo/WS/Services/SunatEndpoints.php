@@ -13,6 +13,7 @@ final class SunatEndpoints
     const FE_BETA = 'https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService';
     const FE_HOMOLOGACION = 'https://www.sunat.gob.pe/ol-ti-itcpgem-sqa/billService';
     const FE_PRODUCCION = 'https://e-factura.sunat.gob.pe/ol-ti-itcpfegem/billService';
+    const FE_PRODUCCION_ALTERNATE = 'https://www.sunat.gob.pe/ol-ti-itcpfegem/billService';
     const FE_CONSULTA_CDR = 'https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService';
 
     /**

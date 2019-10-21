@@ -13,95 +13,67 @@
             Contáctanos
         </div><!-- End .footer-ribbon -->
         <div class="row">
-            <div class="col-lg-3">
+            <div class="col-lg-4">
                 <div class="widget">
-                    <!--<h4 class="widget-title">Contacto</h4> -->
+                    <h4 class="widget-title">Ubicación</h4> 
                     <ul class="contact-info">
                         <li>
-                            <span class="contact-info-label">Direccion:</span> Jr. Trujillo 123 Lima, Peru
+                            <span class="contact-info-label">Dirección:</span> Jr. Trujillo 123 Lima, Peru
                         </li>
                         <li>
-                            <span class="contact-info-label">Telefono:</span> <a href="tel:">(01) 456-7890</a>
+                            <span class="contact-info-label">Teléfono:</span> <a href="tel:">(01) 456-7890</a>
                         </li>
-
                     </ul>
+                </div><!-- End .widget -->
+            </div><!-- End .col-lg-3 -->
+
+            
+            <div class="col-md-4">
+                <div class="widget">
+                    <h4 class="widget-title">Enlaces de interés</h4>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-5">
+                            <ul class="links">
+                                <li><a href="{{ route("tenant.ecommerce.index") }}">Inicio</a></li>
+                                <li><a href="#">Más vendidos</a></li>
+                                <li><a href="#">Populares</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-6 col-md-5">
+                            <ul class="links">
+                                <li><a href="{{ route('tenant_detail_cart') }}">Ver Carrito</a></li>
+                                <li><a href="#">Ver Perfil</a></li>
+                                @guest
+                                <li><a href="{{route('tenant_ecommerce_login')}}" class="login-link">Login</a></li>
+                                @else
+                                <li><a role="menuitem" href="{{ route('logout') }}" class="login-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Salir
+                                </a></li>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                                @endguest
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="widget">
+                    <h4 class="widget-title">Redes Sociales</h4>
+
                     <div class="social-icons">
                         <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
                         <a href="#" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
                         <a href="#" class="social-icon" target="_blank"><i class="icon-linkedin"></i></a>
-                    </div><!-- End .social-icons -->
-                </div><!-- End .widget -->
-            </div><!-- End .col-lg-3 -->
+                    </div>
+                </div>
+            </div>
 
-            <div class="col-lg-9">
-                {{-- <div class="widget widget-newsletter">
-                    <h4 class="widget-title">Subscribe newsletter</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>Get all the latest information on Events,Sales and Offers. Sign up for newsletter today
-                            </p>
-                        </div><!-- End .col-md-6 -->
-
-                        <div class="col-md-6">
-                            <form action="#">
-                                <input type="email" class="form-control" placeholder="Email address" required>
-
-                                <input type="submit" class="btn" value="Subscribe">
-                            </form>
-                        </div><!-- End .col-md-6 -->
-                    </div><!-- End .row -->
-                </div><!-- End .widget --> --}}
-
-                <div class="row">
-                    {{-- <div class="col-md-5">
-                        <div class="widget">
-                            <h4 class="widget-title">My Account</h4>
-
-                            <div class="row">
-                                <div class="col-sm-6 col-md-5">
-                                    <ul class="links">
-                                        <li><a href="about.html">About Us</a></li>
-                                        <li><a href="contact.html">Contact Us</a></li>
-                                        <li><a href="my-account.html">My Account</a></li>
-                                    </ul>
-                                </div><!-- End .col-sm-6 -->
-                                <div class="col-sm-6 col-md-5">
-                                    <ul class="links">
-                                        <li><a href="#">Orders History</a></li>
-                                        <li><a href="#">Advanced Search</a></li>
-                                        <li><a href="#" class="login-link">Login</a></li>
-                                    </ul>
-                                </div><!-- End .col-sm-6 -->
-                            </div><!-- End .row -->
-                        </div><!-- End .widget -->
-                    </div><!-- End .col-md-5 --> --}}
-
-                    <div class="col-md-7">
-                        {{-- <div class="widget">
-                            <h4 class="widget-title">Main Features</h4>
-
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <ul class="links">
-                                        <li><a href="#">Super Fast Magento Theme</a></li>
-                                        <li><a href="#">1st Fully working Ajax Theme</a></li>
-                                        <li><a href="#">20 Unique Homepage Layouts</a></li>
-                                    </ul>
-                                </div><!-- End .col-sm-6 -->
-                                <div class="col-sm-6">
-                                    <ul class="links">
-                                        <li><a href="#">Powerful Admin Panel</a></li>
-                                        <li><a href="#">Mobile & Retina Optimized</a></li>
-                                    </ul>
-                                </div><!-- End .col-sm-6 -->
-                            </div><!-- End .row -->
-                        </div><!-- End .widget --> --}}
-                    </div><!-- End .col-md-7 -->
-                </div><!-- End .row -->
-            </div><!-- End .col-lg-9 -->
-        </div><!-- End .row -->
-    </div><!-- End .container -->
-</div><!-- End .footer-middle -->
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="footer-bottom">
@@ -141,7 +113,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-warning">Ir a Carrito</a>
+                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-primary text-white">Ir a Carrito</a>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
             </div>
         </div>
@@ -164,7 +136,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-warning">Ir a Carrito</a>
+                <a href="{{ route('tenant_detail_cart') }}" class="btn btn-primary text-white">Ir al Carrito</a>
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Seguir Comprando</button>
             </div>
         </div>

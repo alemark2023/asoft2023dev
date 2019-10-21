@@ -3,44 +3,61 @@
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-6 col-lg-6 col-xl-6 col-sm-6">
-                        <div class="form-group" :class="{'has-danger': errors.item_id}">
+                    <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
+                        <div class="form-group" id="custom-select" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
 
-                            <template v-if="!search_item_by_barcode">
-                                <el-select :disabled="recordItem != null" v-model="form.item_id" @change="changeItem"  filterable
-                                        popper-class="el-select-items"
-                                        dusk="item_id"
-                                        @visible-change="focusTotalItem">
-                                    <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                                </el-select>
+                            <template v-if="!search_item_by_barcode" id="select-append">
+                                <el-input id="custom-input">
+                                    <el-select :disabled="recordItem != null" 
+                                            v-model="form.item_id" @change="changeItem"  
+                                            filterable
+                                            popper-class="el-select-items"
+                                            dusk="item_id"
+                                            @visible-change="focusTotalItem"
+                                            slot="prepend"
+                                            id="select-width">
+                                        <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                    </el-select>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock" placement="bottom" :disabled="recordItem != null">
+                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-truck-loading"></i></el-button>
+                                    </el-tooltip>
+                                </el-input>
                             </template>
                             <template v-else>
-                                <el-select :disabled="recordItem != null" v-model="form.item_id"  
-                                        @change="changeItem"
-                                        filterable
-                                        :filter-method="filterMethod"   
-                                        popper-class="el-select-items"
-                                        dusk="item_id"
-                                        @visible-change="focusTotalItem">
-                                    <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                                </el-select>
+                                <el-input id="custom-input">
+                                    <el-select :disabled="recordItem != null" v-model="form.item_id"  
+                                            @change="changeItem"
+                                            filterable
+                                            :filter-method="filterMethod"   
+                                            popper-class="el-select-items"
+                                            dusk="item_id"
+                                            @visible-change="focusTotalItem"
+                                            slot="prepend"
+                                            id="select-width">
+                                        <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                    </el-select>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock" placement="bottom" :disabled="recordItem != null">
+                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-truck-loading"></i></el-button>
+                                    </el-tooltip>
+                                </el-input>
                             </template>
+
                             
-                            <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null" >Buscar por código de barras</el-checkbox>
+                            <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null" >Buscar por código de barras</el-checkbox><br>
                             <el-checkbox v-model="form.has_plastic_bag_taxes" >Impuesto a la Bolsa Plástica</el-checkbox> 
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1" >
+                    <!-- <div class="col-md-1 col-lg-1 col-xl-1 col-sm-1" >
                         <div class="form-group">
                             <label class="control-label">Stock</label><br>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></button>
                         </div>
-                    </div> 
+                    </div> --> 
                     <div class="col-md-5">
                         <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
                             <label class="control-label">Afectación Igv</label>

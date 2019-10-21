@@ -8,8 +8,12 @@ use App\Models\Tenant\Item;
 use App\Http\Resources\Tenant\ItemCollection;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenant\User;
-
-
+use App\Models\Tenant\Person;
+use Illuminate\Support\Str;
+use App\Models\Tenant\Order;
+use stdClass;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Tenant\CulqiEmail;
 
 
 
@@ -104,7 +108,7 @@ class EcommerceController extends Controller
             $user->api_token = str_random(50);
             $user->password = bcrypt($request->input('password'));
             $user->save();
-            $user->modules()->sync([1]);
+            $user->modules()->sync([10]);
 
             $credentials = [ 'email' => $user->email, 'password' => $request->input('password') ];
             Auth::attempt($credentials);
@@ -112,6 +116,69 @@ class EcommerceController extends Controller
             return [
                 'success' => true,
                 'message' => 'Usuario registrado'
+            ];
+
+        }catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' =>  $e->getMessage()
+            ];
+        }
+       
+    }
+
+    public function transactionFinally(Request $request)
+    {
+        try{
+            $user = auth()->user();
+
+            //1. confirmar dato de compriante en order
+            $order_generated = Order::find($request->orderId);
+            $order_generated->document_external_id = $request->document_external_id;
+            $order_generated->save();
+            
+            $user->update(['identity_document_type_id' => $request->identity_document_type_id, 'number'=>$request->number]);
+            
+            return [
+                'success' => true,
+                'message' => 'Order Actualizada'
+            ];
+        }
+        catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' =>  $e->getMessage()
+            ];
+        }
+      
+    }
+
+    public function paymentCash(Request $request)
+    {
+        try{
+
+            $user = auth()->user();
+            $order = Order::create([
+                'external_id' => Str::uuid()->toString(),
+                'customer' => json_decode( $request->customer ),
+                'shipping_address' => 'direccion 1',
+                'items' =>json_decode( $request->items ),
+                'total' => $request->precio_culqi,
+                'reference_payment' => 'efectivo',
+              ]);
+      
+            $customer_email = $user->email;
+            $document = new stdClass;
+            $document->client = $user->name;
+            $document->product = $request->producto;
+            $document->total = $request->precio_culqi;
+            Mail::to($customer_email)->send(new CulqiEmail($document));
+      
+            return [
+                'success' => true,
+                'order' => $order
             ];
 
         }catch(Exception $e)

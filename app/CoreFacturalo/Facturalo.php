@@ -676,7 +676,8 @@ class Facturalo
                     $this->endpoint = ($this->isDemo)?SunatEndpoints::GUIA_BETA:SunatEndpoints::GUIA_PRODUCCION;
                     break;
                 default:
-                    $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA:SunatEndpoints::FE_PRODUCCION;
+                    // $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA:SunatEndpoints::FE_PRODUCCION;
+                    $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA : (config('configuration.sunat_alternate_server') ? SunatEndpoints::FE_PRODUCCION_ALTERNATE : SunatEndpoints::FE_PRODUCCION);
                     break;
             }
         }

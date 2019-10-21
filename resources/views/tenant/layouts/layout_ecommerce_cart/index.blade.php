@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Porto - Bootstrap eCommerce Template</title>
+    <title>eCommerce</title>
 
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
@@ -22,6 +22,10 @@
 
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
+    
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
 </head>
 <body>
     <div class="page-wrapper">
@@ -158,7 +162,7 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
-    <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/vue.js') }}"></script>
     
     @stack('scripts')
 </body>
