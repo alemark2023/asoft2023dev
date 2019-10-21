@@ -126,6 +126,7 @@ class DocumentController extends Controller
     public function tables()
     {
         $customers = $this->table('customers');
+        $prepayment_documents = $this->table('prepayment_documents');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
         $series = collect(Series::all())->transform(function($row) {
             return [
@@ -165,7 +166,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global','business_turns');
+                        'document_types_guide', 'user','payment_method_types','enabled_discount_global','business_turns','prepayment_documents');
 
     }
 
@@ -200,6 +201,21 @@ class DocumentController extends Controller
             });
             return $customers;
         }
+        
+        if ($table === 'prepayment_documents') {
+            $prepayment_documents = Document::whereHasPrepayment()->get()->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => $row->series.'-'.$row->number,
+                    'series' => $row->series,
+                    'number' => $row->number,
+                    'document_type_id' => ($row->document_type_id == '01') ? '02':'03',
+                    'amount' => $row->total
+                ];
+            });
+            return $prepayment_documents;
+        }
+
         if ($table === 'items') {
             $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
             return collect($items)->transform(function($row) {

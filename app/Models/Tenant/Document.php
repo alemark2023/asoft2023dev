@@ -316,5 +316,9 @@ class Document extends ModelTenant
         return $this->hasMany(Note::class, 'affected_document_id');
     }
 
+    public function scopeWhereHasPrepayment($query)
+    {
+        return $query->where('has_prepayment', true); 
+    }
     
 }

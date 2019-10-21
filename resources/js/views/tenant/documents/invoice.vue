@@ -21,7 +21,8 @@
                         </div>
                         <div class="col-sm-4">
                             <el-checkbox v-model="is_contingency" @change="changeEstablishment">¿Es comprobante de contigencia?</el-checkbox>
-                            <el-checkbox v-model="form.has_prepayment">¿Es un pago anticipado?</el-checkbox>
+                            <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
+                            <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
                         </div>
                     </div>
                 </header>
@@ -187,24 +188,16 @@
 
                         <div class="row mt-2">
                             <div class="col-md-12">
-                                <el-collapse v-model="activePanel">
-                                    <el-collapse-item title="Información Adicional">
-                                        <div class="row">
-                                            <div class="col-md-5">
-                                                <div class="form-group">
-                                                    <label class="control-label">Observaciones</label>
-                                                    <el-input
-                                                            type="textarea"
-                                                            autosize
-                                                            v-model="form.additional_information">
-                                                    </el-input>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-5">
+                                <el-collapse v-model="activePanel" accordion>
+                                    <el-collapse-item name="1" title="Información Adicional">
+                                        <div class="row mt-2">
+
+                                            
+                                            <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label class="control-label">
                                                         Guias
-                                                        <a href="#" @click.prevent="clickAddGuide">[+ Agregar]</a>
+                                                        <a href="#" @click.prevent="clickAddGuide" class="text-center font-weight-bold text-info">[+ Agregar]</a>
                                                     </label>
                                                     <table style="width: 100%">
                                                         <tr v-for="guide in form.guides">
@@ -217,7 +210,10 @@
                                                                 <el-input v-model="guide.number"></el-input>
                                                             </td>
                                                             <td align="right">
-                                                                <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a>
+                                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                                <!-- <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a> -->
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -226,6 +222,44 @@
                                                             <!--autosize-->
                                                             <!--v-model="form.additional_information">-->
                                                     <!--</el-input>-->
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label">
+                                                        Comprobantes anticipados
+                                                        <a href="#" @click.prevent="clickAddPrepayment" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                                    </label>
+                                                    <table style="width: 100%">
+                                                        <tr v-for="(row,index) in form.prepayments" :key="index">
+                                                            <td>
+                                                                <el-select v-model="row.document_id" filterable @change="changeDocumentPrepayment(index)">
+                                                                    <el-option v-for="option in prepayment_documents" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                </el-select>
+                                                            </td>
+                                                            <td>
+                                                                <el-input v-model="row.amount" readonly></el-input>
+                                                            </td>
+                                                            <td align="right">
+                                                                
+                                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemovePrepayment(index)">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                                <!-- <a href="#" @click.prevent="clickRemovePrepayment" style="color:red">Remover</a> -->
+                                                            </td>
+                                                        </tr>
+                                                    </table> 
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="control-label">Observaciones</label>
+                                                    <el-input
+                                                            type="textarea"
+                                                            autosize
+                                                            v-model="form.additional_information">
+                                                    </el-input>
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
@@ -446,8 +480,10 @@
                 establishment: null,
                 all_series: [],
                 series: [],
+                prepayment_documents: [],
                 currency_type: {},
                 documentNewId: null,
+                prepayment_deduction:false,
                 activePanel: 0,
                 total_global_discount:0,
                 loading_search:false,
@@ -482,6 +518,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
+                    this.prepayment_documents = response.data.prepayment_documents;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -494,6 +531,82 @@
             })
         },
         methods: {
+            
+            discountGlobalPrepayment(){
+                this.calculateTotal()
+                
+                let global_discount = 0
+                this.form.prepayments.forEach((item)=>{
+                    global_discount += parseFloat(item.amount)
+                })
+
+                let base = parseFloat(this.form.total_taxed)
+
+                let amount = parseFloat(global_discount)
+                let factor = _.round(amount/base,2)
+
+                if(global_discount>0 && this.form.discounts.length == 0){
+
+                    this.form.discounts.push({
+                            discount_type_id: "04",
+                            description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
+                            factor: 0,
+                            amount: 0,
+                            base: 0
+                        })
+
+                }
+
+
+                if(this.form.discounts.length){
+                    
+                    this.form.total_discount =  _.round(amount,2)
+                    this.form.total_value =  _.round(base - amount,2)
+                    this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
+                    this.form.total_taxes =  _.round(this.form.total_igv,2)
+                    this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+
+                    this.form.discounts[0].base = base
+                    this.form.discounts[0].amount = amount
+                    this.form.discounts[0].factor = factor
+                }
+
+                // console.log(this.form.discounts)
+            }, 
+            changeDocumentPrepayment(index){
+
+                let prepayment = _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
+
+                this.form.prepayments[index].number = prepayment.description 
+                this.form.prepayments[index].document_type_id = prepayment.document_type_id 
+                this.form.prepayments[index].amount = prepayment.amount
+                 
+                this.discountGlobalPrepayment()
+                // this.calculateRowTotal(index)
+
+            },
+            clickAddPrepayment(){
+                this.form.prepayments.push({
+                    document_id:null,
+                    number: null,
+                    document_type_id:  null,
+                    amount: 0, 
+                });
+            },
+            clickRemovePrepayment(index) {
+                this.form.prepayments.splice(index, 1)
+            },
+            changePrepaymentDeduction(){
+                // console.log(this.prepayment_deduction)
+                this.activePanel = (this.prepayment_deduction) ? '1':0
+                if(this.prepayment_deduction){
+                    this.discountGlobalPrepayment()
+                }
+                // else{
+                //     this.form.discounts
+                // }
+                
+            },
             isActiveBussinessTurn(value){
                 return (_.find(this.business_turns,{'value':value})) ? true:false
             },
@@ -506,7 +619,7 @@
                 // console.log(this.form.hotel)
             },
             changeIsReceivable(){
-
+                
             },
             clickAddPayment() {
                 this.form.payments.push({
@@ -587,6 +700,7 @@
                     attributes: [],
                     guides: [],
                     payments: [],
+                    prepayments: [],
                     additional_information:null,
                     has_prepayment:false,
                     actions: {
