@@ -318,7 +318,7 @@ class Document extends ModelTenant
 
     public function scopeWhereHasPrepayment($query)
     {
-        return $query->where('has_prepayment', true); 
+        return $query->where([['has_prepayment', true],['was_deducted_prepayment', false]]); 
     }
     
 }

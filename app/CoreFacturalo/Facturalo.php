@@ -110,6 +110,7 @@ class Facturalo
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
+                $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
                 $document->invoice()->create($inputs['invoice']);
                 $this->document = Document::find($document->id);
@@ -682,5 +683,25 @@ class Facturalo
             }
         }
 
+    }
+
+    private function updatePrepaymentDocuments($inputs){
+        // dd($inputs);
+
+        if(isset($inputs['prepayments'])) {
+
+            foreach ($inputs['prepayments'] as $row) {
+
+                $fullnumber = explode('-', $row['number']);
+                $series = $fullnumber[0];
+                $number = $fullnumber[1];
+
+                $doc = Document::where([['series',$series],['number',$number]])->first();
+                if($doc){
+                    $doc->was_deducted_prepayment = true;
+                    $doc->save();
+                }
+            }
+        }
     }
 }

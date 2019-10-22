@@ -224,7 +224,7 @@
                                                     <!--</el-input>-->
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-6" v-if="prepayment_deduction">
                                                 <div class="form-group">
                                                     <label class="control-label">
                                                         Comprobantes anticipados
@@ -379,6 +379,16 @@
                                         <td>:</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ form.total_taxed }}</td>
                                     </tr>
+                                    <tr v-if="form.total_prepayment > 0">
+                                        <td>ANTICIPOS</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_prepayment }}</td>
+                                    </tr>
+                                    <!-- <tr v-if="form.total_discount > 0">
+                                        <td>DESCUENTOS</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_discount }}</td>
+                                    </tr> -->
                                     <tr v-if="form.total_igv > 0">
                                         <td>IGV</td>
                                         <td>:</td>
@@ -533,7 +543,6 @@
         methods: {
             
             discountGlobalPrepayment(){
-                this.calculateTotal()
                 
                 let global_discount = 0
                 this.form.prepayments.forEach((item)=>{
@@ -541,50 +550,62 @@
                 })
 
                 let base = parseFloat(this.form.total_taxed)
-
                 let amount = parseFloat(global_discount)
                 let factor = _.round(amount/base,2)
 
-                if(global_discount>0 && this.form.discounts.length == 0){
+                this.form.total_prepayment = global_discount
+                
+                let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
 
-                    this.form.discounts.push({
-                            discount_type_id: "04",
-                            description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
-                            factor: 0,
-                            amount: 0,
-                            base: 0
-                        })
+                if(global_discount>0 && !discount){
+                    // console.log("gl 0")
 
-                }
-
-
-                if(this.form.discounts.length){
-                    
                     this.form.total_discount =  _.round(amount,2)
                     this.form.total_value =  _.round(base - amount,2)
                     this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
                     this.form.total_taxes =  _.round(this.form.total_igv,2)
-                    this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+                    this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)  
 
-                    this.form.discounts[0].base = base
-                    this.form.discounts[0].amount = amount
-                    this.form.discounts[0].factor = factor
+                    this.form.discounts.push({
+                            discount_type_id: "04",
+                            description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
+                            factor: factor,
+                            amount: amount,
+                            base: base
+                        })
+
+                }else{ 
+
+                    let pos = this.form.discounts.indexOf(discount);
+
+                    if(pos > -1){
+                        
+                        this.form.total_discount =  _.round(amount,2)
+                        this.form.total_value =  _.round(base - amount,2)
+                        this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
+                        this.form.total_taxes =  _.round(this.form.total_igv,2)
+                        this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+                        this.form.discounts[pos].base = base
+                        this.form.discounts[pos].amount = amount
+                        this.form.discounts[pos].factor = factor
+
+                    }
+                    
                 }
 
-                // console.log(this.form.discounts)
             }, 
-            changeDocumentPrepayment(index){
+            async changeDocumentPrepayment(index){
 
-                let prepayment = _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
-
+                let prepayment = await _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
+ 
                 this.form.prepayments[index].number = prepayment.description 
                 this.form.prepayments[index].document_type_id = prepayment.document_type_id 
                 this.form.prepayments[index].amount = prepayment.amount
                  
-                this.discountGlobalPrepayment()
-                // this.calculateRowTotal(index)
+                await this.changeTotalPrepayment()
+ 
 
-            },
+            }, 
             clickAddPrepayment(){
                 this.form.prepayments.push({
                     document_id:null,
@@ -592,20 +613,50 @@
                     document_type_id:  null,
                     amount: 0, 
                 });
+
+                this.changeTotalPrepayment()
             },
             clickRemovePrepayment(index) {
+
                 this.form.prepayments.splice(index, 1)
+                this.changeTotalPrepayment()
+                if(this.form.prepayments.length == 0) 
+                    this.deletePrepaymentDiscount()
+
             },
-            changePrepaymentDeduction(){
+            async changePrepaymentDeduction(){
                 // console.log(this.prepayment_deduction)
+                
                 this.activePanel = (this.prepayment_deduction) ? '1':0
                 if(this.prepayment_deduction){
-                    this.discountGlobalPrepayment()
+                    await this.changeTotalPrepayment()
+                    await this.getDocumentsPrepayment()
                 }
-                // else{
-                //     this.form.discounts
-                // }
+                else{
+                    this.form.prepayments = []
+                    this.form.total_prepayment = 0
+                    await this.deletePrepaymentDiscount()
+                }
                 
+            },
+            deletePrepaymentDiscount(){
+
+                let discount = _.find(this.form.discounts, {'discount_type_id':'04'})
+                let pos = this.form.discounts.indexOf(discount)
+                if (pos > -1) {
+                    // console.log(' ya existe en la colección de verduras.');
+                    this.form.discounts.splice(pos, 1)
+                    this.changeTotalPrepayment()
+                }
+
+            },
+            getDocumentsPrepayment(){
+                this.$http.get(`/${this.resource}/table/prepayment_documents`).then((response) => {
+                    this.prepayment_documents = response.data
+                }) 
+            },
+            changeTotalPrepayment(){
+                this.calculateTotal()
             },
             isActiveBussinessTurn(value){
                 return (_.find(this.business_turns,{'value':value})) ? true:false
@@ -713,7 +764,7 @@
                 this.is_receivable = false
                 this.total_global_discount = 0
                 this.is_amount = true
-
+                this.prepayment_deduction = false
             },
             resetForm() {
                 this.activePanel = 0
@@ -864,7 +915,11 @@
                 // this.form.total = _.round(total, 2)
                 this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
                 
-                if(this.enabled_discount_global) this.discountGlobal()
+                if(this.enabled_discount_global) 
+                    this.discountGlobal()
+
+                if(this.prepayment_deduction)
+                    this.discountGlobalPrepayment()
 
             },
             changeTypeDiscount(){

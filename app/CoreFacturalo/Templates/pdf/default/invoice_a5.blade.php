@@ -144,7 +144,7 @@
     @if ($document->prepayments) 
         @foreach($document->prepayments as $p)
         <tr>
-            <td width="120px">ANTICIPO</td>
+            <td width="120px">ANTICIPO N° {{$loop->iteration}}</td>
             <td width="8px">:</td>
             <td>{{$p->number}} - {{ $document->currency_type->symbol }} {{$p->amount}}</td> 
         </tr>
