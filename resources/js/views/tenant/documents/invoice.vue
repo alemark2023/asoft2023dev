@@ -748,7 +748,7 @@
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
                 // this.form.total = _.round(total, 2)
-                this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
+                this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
                 
                 if(this.enabled_discount_global) this.discountGlobal()
 
