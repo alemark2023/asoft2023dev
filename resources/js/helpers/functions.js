@@ -1,4 +1,4 @@
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pos = false) {
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     // console.log(currency_type_id_new, exchange_rate_sale)
 
@@ -188,18 +188,10 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pos
         total_igv = total_base_igv * percentage_igv / 100
     }
     if (row.affectation_igv_type_id === '20') { //Exonerated
-        if(pos)
-        {
-            total_igv = total_base_igv * percentage_igv / 100
-        }
-        else{
-            total_igv = 0
-        }
-
+        total_igv = 0
     }
     if (row.affectation_igv_type_id === '30') { //Unaffected
         total_igv = 0
-
     }
 
     let total_taxes = total_igv + total_isc + total_other_taxes
