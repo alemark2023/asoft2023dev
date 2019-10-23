@@ -127,9 +127,10 @@
                 </a>
             </div>
         </div>
+    </div>    
+</div>
+<div class="container">
+    <div id="switcher-top" class="d-flex justify-content-center">
+        <span class="text-white py-1 px-3 text-center"><i class="fas fa-plus fa-fw"></i>Acceso Rápido</span>
     </div>
-    <div class="d-flex justify-content-center">
-        <span id="switcher-top" class="bg-dark py-2 px-4 rounded-bottom cursor-pointer text-center"><i class="fas fa-plus fa-fw"></i>Acceso Rápido</span>
-    </div>
-    
 </div>
