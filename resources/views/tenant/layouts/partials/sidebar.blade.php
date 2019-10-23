@@ -4,10 +4,10 @@
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
     
-
 @endphp
 
 <aside id="sidebar-left" class="sidebar-left">
+{{ json_encode( $path[1] )}}
     <div class="sidebar-header">
         <div class="sidebar-title">
             Menu
@@ -494,19 +494,20 @@
                     @endif
 
                     @if(in_array('cuenta', $vc_modules))
-                    <li class="nav-parent {{ in_array($path[0], ['configuration', 'payment_index'])?'nav-active nav-expanded':'' }}">
+                    <li class=" nav-parent
+                        {{ ($path[0] === 'cuenta')?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
                             <i class="fas fa-cogs" aria-hidden="true"></i>
-                            <span>Mi Cuenta</span>
+                            <span>Mis Pagos</span>
                         </a>
                         <ul class="nav nav-children">
-                            <li class="{{ ($path[0] === 'configuration')?'nav-active':'' }}">
+                            <li class="{{ (($path[0] === 'cuenta') && ($path[1] === 'configuration')) ?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.configuration.index')}}">
                                     Configuracion
                                 </a>
                             </li>
-                            <li class="{{ ($path[0] === 'payment_index')?'nav-active':'' }}">
+                            <li class="{{ (($path[0] === 'cuenta') && ($path[1] === 'payment_index')) ?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.payment.index')}}">
                                     Lista de Pagos
                                 </a>

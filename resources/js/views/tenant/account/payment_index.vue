@@ -19,7 +19,7 @@
               <th>Fecha de pago</th>
               <th>Fecha real de pago</th>
               <th>Comentario</th>
-              <th>Referencia Metodo Pago</th>
+              <!-- <th>Referencia Metodo Pago</th> -->
               <th class="text-center">Monto</th>
               <th class="text-center">Estado</th>
               <th class="text-center">Acciones</th>
@@ -31,7 +31,7 @@
               <td>{{ row.date_of_payment }}</td>
               <td>{{ row.date_of_payment_real }}</td>
               <td>{{ row.comentario }}</td>
-              <td>{{ row.reference_payment }}</td>
+             <!-- <td>{{ row.reference_payment }}</td> -->
               <td class="text-center">{{ row.payment }}</td>
               <td class="text-center">{{ row.state_description }}</td>
               <td class="text-center">
@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       showDialog: false,
-      resource: "account",
+      resource: "cuenta",
       recordId: null,
       records: [],
       culqi_: {}

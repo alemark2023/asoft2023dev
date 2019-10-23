@@ -505,12 +505,12 @@ if ($hostname) {
            Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
 
            //Cuenta
-           Route::get('account/payment_index', 'Tenant\AccountController@paymentIndex')->name('tenant.payment.index');
-           Route::get('account/configuration', 'Tenant\AccountController@index')->name('tenant.configuration.index');
-           Route::get('account/payment_records', 'Tenant\AccountController@paymentRecords');
-           Route::get('account/tables', 'Tenant\AccountController@tables');
-           Route::post('account/update_plan', 'Tenant\AccountController@updatePlan');
-           Route::post('account/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
+           Route::get('cuenta/payment_index', 'Tenant\AccountController@paymentIndex')->name('tenant.payment.index');
+           Route::get('cuenta/configuration', 'Tenant\AccountController@index')->name('tenant.configuration.index');
+           Route::get('cuenta/payment_records', 'Tenant\AccountController@paymentRecords');
+           Route::get('cuenta/tables', 'Tenant\AccountController@tables');
+           Route::post('cuenta/update_plan', 'Tenant\AccountController@updatePlan');
+           Route::post('cuenta/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
 
 
 

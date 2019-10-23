@@ -20,7 +20,7 @@ class FeaturedProductsViewComposer
                 'image' =>  $row->image,
                 'image_medium' => $row->image_medium,
                 'image_small' => $row->image_small,
-                //'tags' => 'ss'
+                'tags' => $row->tags->pluck('tag_id')->toArray()
             ];
         });
     }

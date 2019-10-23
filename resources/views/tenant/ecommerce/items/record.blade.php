@@ -68,23 +68,7 @@
                 </div><!-- End .product-desc -->
 
                 <div class="product-filters-container">
-                    <div class="product-single-filter">
-                        <label>Colors:</label>
-                        <ul class="config-swatch-list">
-                            <li class="active">
-                                <a href="#" style="background-color: #6085a5;"></a>
-                            </li>
-                            <li>
-                                <a href="#" style="background-color: #ab6e6e;"></a>
-                            </li>
-                            <li>
-                                <a href="#" style="background-color: #b19970;"></a>
-                            </li>
-                            <li>
-                                <a href="#" style="background-color: #11426b;"></a>
-                            </li>
-                        </ul>
-                    </div><!-- End .product-single-filter -->
+                    
                 </div><!-- End .product-filters-container -->
 
                 <div class="product-action product-all-icons">
@@ -93,14 +77,14 @@
                     </div>--><!-- End .product-single-qty -->
 
                     <a href="#" class="paction add-cart" data-product="{{ json_encode( $record ) }}" title="Add to Cart">
-                        <span>Add to Cart</span>
+                        <span>Agregar a Carrito</span>
                     </a>
-                    <a href="#" class="paction add-wishlist" title="Add to Wishlist">
+                   <!-- <a href="#" class="paction add-wishlist" title="Add to Wishlist">
                         <span>Add to Wishlist</span>
                     </a>
                     <a href="#" class="paction add-compare" title="Add to Compare">
                         <span>Add to Compare</span>
-                    </a>
+                    </a> -->
                 </div><!-- End .product-action -->
 
                 <div class="product-single-share">
@@ -117,7 +101,7 @@
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="product-tab-desc" data-toggle="tab" href="#product-desc-content" role="tab"
-                aria-controls="product-desc-content" aria-selected="true">Description</a>
+                aria-controls="product-desc-content" aria-selected="true">Descripcion</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="product-tab-tags" data-toggle="tab" href="#product-tags-content" role="tab"
