@@ -4,7 +4,7 @@
 @endphp
   <nav class="side-nav">
       <ul class="menu menu-vertical sf-arrows">
-          <li class="active"><a href="index-2.html"><i class="icon-home"></i>Home</a></li>
+          <li class="{{ (!$tagid) ? 'active':'' }}"><a href="{{ route("tenant.ecommerce.index") }}"><i class="icon-home"></i>Home</a></li>
           {{--<li>
               <a href="#" class="sf-with-ul"><i class="icon-briefcase"></i>
                   Categories</a>
