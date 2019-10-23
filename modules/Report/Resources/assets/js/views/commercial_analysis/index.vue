@@ -17,34 +17,40 @@
                             <th class="">Tiempo promedio</th> 
                             <th class="">Cant. Visita</th> 
                             <th class="">Total</th> 
-                            <th class="">Cinta</th> 
+
+                            <th v-for="c in columns">{{c.toUpperCase()}}</th>
+
+                           <!-- <th class="">Cinta</th> 
                             <th class="">Disco</th> 
                             <th class="">Cuchilla</th> 
                             <th class="">Estelitado</th> 
                             <th class="">Servicio</th> 
-                            <th class="">Accesorios</th> 
+                            <th class="">Accesorios</th> -->
+
                             <th class="">Contactar el</th> 
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td> 
                             <td>{{row.customer_name}}</td>
-                            <td>{{ row.customer_doc }} - {{ row.customer_number }}<br/></td> 
+                            <td>{{row.customer_doc }} - {{ row.customer_number }}<br/></td> 
                             <td>{{row.zone}}</td> 
                             <td>{{row.telephone}}</td> 
                             <td>{{row.first_document_date}}</td> 
                             <td>{{row.last_document_date}}</td> 
                             <td>{{row.prom_difference_days}}</td> 
                             <td>{{row.quantity_visit}}</td> 
-                            <td>{{row.total}}</td> 
+                            <td>{{row.total}}</td>
 
-                            <td>{{row.cinta}}</td> 
+                            <td v-for="c in columns">{{row[c.toUpperCase()]}}</td>
+
+                            <!--<td>{{row.cinta}}</td> 
                             <td>{{row.disco}}</td> 
                             <td>{{row.cuchilla}}</td> 
                             <td>{{row.estelitado}}</td> 
                             <td>{{row.servicio}}</td> 
-                            <td>{{row.accesorios}}</td> 
-                            <td>{{row.contact_date}}</td> 
+                            <td>{{row.accesorios}}</td> -->
 
+                            <td>{{row.contact_date}}</td> 
                           
                         </tr>
                         
@@ -67,13 +73,17 @@
             return {
                 resource: 'reports/commercial-analysis',                 
                 form: {}, 
+                columns: []
 
             }
         },
-        async created() { 
+        async created() {
+
+            await this.$http.get(`/${this.resource}/columns`).then((response) => {
+                this.columns = response.data.categories
+            });
         },
         methods: { 
-             
             
         }
     }

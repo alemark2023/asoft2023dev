@@ -54,12 +54,16 @@
                                 <th class="">Tiempo promedio entre dos compras en dia</th> 
                                 <th class="">Cantidad de Visita</th> 
                                 <th class="">Total</th> 
-                                <th class="">Cinta</th> 
+
+                                @foreach($categories as $item)
+                                <th class="">{{$item}}</th> 
+                                @endforeach
+                                <!--<th class="">Cinta</th> 
                                 <th class="">Disco</th> 
                                 <th class="">Cuchilla</th> 
                                 <th class="">Estelitado</th> 
                                 <th class="">Servicio</th> 
-                                <th class="">Accesorios</th> 
+                                <th class="">Accesorios</th> -->
                                 <th class="">Contactar el</th> 
                             </tr>
                         </thead>
@@ -104,12 +108,12 @@
 
                                 $contact_date = (Carbon\Carbon::parse($last_document_date))->addDays($prom_difference_days);
 
-                                $cinta = 0;
-                                $disco = 0;
-                                $cuchilla = 0;
-                                $estelitado = 0;
-                                $servicio = 0;
-                                $accesorios = 0;
+                                $calculate_categories_count = array();
+                                foreach ($categories as $item) {
+                                    $calculate_categories_count[strtoupper($item)] = 0;
+                                }
+
+                            
 
                                 if($quantity_visit > 0){
                                     foreach ($documents as $doc) {
@@ -118,31 +122,10 @@
 
                                             if($item->category){
 
-                                                switch ($item->category->name) {
-                                                    case 'CINTA':
-                                                        $cinta += $it->quantity;
-                                                        break;
-                                                    case 'DISCO':
-                                                        $disco += $it->quantity;
-                                                        break;
-                                                    case 'CUCHILLA':
-                                                        $cuchilla += $it->quantity;
-                                                        break;
-                                                    case 'ESTELITADO':
-                                                        $estelitado += $it->quantity;
-                                                        break;
-                                                    case 'SERVICIO':
-                                                        $servicio += $it->quantity;
-                                                        break;
-                                                    case 'ACCESORIOS':
-                                                        $accesorios += $it->quantity;
-                                                        break;
-                                                    
-                                                }
+                                                $name_category = strtoupper($item->category->name);
+                                                $calculate_categories_count[$name_category] = $calculate_categories_count[$name_category] + 1;
 
                                             }
-                                            
-                                            // dd($item->category->name);
                                             
                                         }
                                     }
@@ -163,12 +146,11 @@
                                 <td>{{$prom_difference_days}}</td>
                                 <td>{{$quantity_visit}}</td>
                                 <td>{{$total}}</td>
-                                <td>{{$cinta}}</td>
-                                <td>{{$disco}}</td>
-                                <td>{{$cuchilla}}</td>
-                                <td>{{$estelitado}}</td>
-                                <td>{{$servicio}}</td>
-                                <td>{{$accesorios}}</td>
+
+                                @foreach($calculate_categories_count as $item)
+                                 <th class="">{{$item}}</th> 
+                                @endforeach
+                               
                                 <td>{{$contact_date->format('d-m-Y')}}</td>
                         
                             </tr>

@@ -58,20 +58,18 @@
             </div>
             <div class="row mt-2">  
 
-                                
-                
             </div>
                 <div class="row mt-1 mb-4">
                     
                 </div> 
             </div>
 
-
             <div class="col-md-12">
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
-                        <slot name="heading"></slot>
+                            <slot name="heading">sds sdsd</slot>
+                      
                         </thead>
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>

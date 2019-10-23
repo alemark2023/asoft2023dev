@@ -56,6 +56,7 @@ if($current_hostname) {
                 Route::get('commercial-analysis/filter', 'ReportCommercialAnalysisController@filter')->name('tenant.reports.commercial_analysis.filter');
                 Route::get('commercial-analysis/records', 'ReportCommercialAnalysisController@records')->name('tenant.reports.commercial_analysis.records');
                 Route::get('commercial-analysis/data_table', 'ReportCommercialAnalysisController@data_table');
+                Route::get('commercial-analysis/columns', 'ReportCommercialAnalysisController@columns');
 
             });
 

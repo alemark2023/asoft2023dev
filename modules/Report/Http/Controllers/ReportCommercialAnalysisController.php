@@ -20,7 +20,12 @@ use Modules\Report\Http\Resources\CommercialAnalysisCollection;
 class ReportCommercialAnalysisController extends Controller
 {
    
-     
+    public function columns()
+    {
+        $categories = Category::all()->pluck('name')->toArray();
+        return compact('categories');
+            
+    }
     public function filter() {
 
         $document_types = [];
@@ -31,8 +36,10 @@ class ReportCommercialAnalysisController extends Controller
                 'name' => $row->description
             ];
         });
+
+        $categories = Category::all();
         
-        return compact('document_types','establishments');
+        return compact('document_types','establishments', 'categories');
     }
       
 
@@ -100,6 +107,7 @@ class ReportCommercialAnalysisController extends Controller
         return (new CommercialAnalysisExport)
                 ->records($records)
                 ->company($company)
+                ->categories(Category::all()->pluck('name')->toArray())
                 ->download('Reporte_Analisis_comercial_'.Carbon::now().'.xlsx');
     }
 

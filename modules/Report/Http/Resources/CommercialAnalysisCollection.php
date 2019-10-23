@@ -5,6 +5,9 @@ namespace Modules\Report\Http\Resources;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
+use Modules\Item\Models\Category;
+use Modules\Report\Traits\ReportAnalysisTrait;
+
 
 class CommercialAnalysisCollection extends ResourceCollection
 {
@@ -52,54 +55,29 @@ class CommercialAnalysisCollection extends ResourceCollection
 
             $contact_date = (Carbon::parse($last_document_date))->addDays($prom_difference_days);
             
-            // dd($difference_days);    
+            // dd($difference_days);
 
-            $cinta = 0;
-            $disco = 0;
-            $cuchilla = 0;
-            $estelitado = 0;
-            $servicio = 0;
-            $accesorios = 0;
+
+            $calculate_categories_count = array();
+            $categories = Category::all()->pluck('name');
+            foreach ($categories as $item) {
+                $calculate_categories_count[strtoupper($item)] = 0;
+            }
 
             if($quantity_visit > 0){
                 foreach ($documents as $doc) {
                     foreach ($doc->items as $it) {
+
                         $item = Item::findOrFail($it->item_id);
-
                         if($item->category){
-
-                            switch ($item->category->name) {
-                                case 'CINTA':
-                                    $cinta += $it->quantity;
-                                    break;
-                                case 'DISCO':
-                                    $disco += $it->quantity;
-                                    break;
-                                case 'CUCHILLA':
-                                    $cuchilla += $it->quantity;
-                                    break;
-                                case 'ESTELITADO':
-                                    $estelitado += $it->quantity;
-                                    break;
-                                case 'SERVICIO':
-                                    $servicio += $it->quantity;
-                                    break;
-                                case 'ACCESORIOS':
-                                    $accesorios += $it->quantity;
-                                    break;
-                                 
-                            }
-
+                            $name_category = strtoupper($item->category->name);
+                            $calculate_categories_count[$name_category] = $calculate_categories_count[$name_category] + 1;
                         }
-                        
-                        // dd($item->category->name);
-                        
                     }
                 }
             }
 
-
-            return [
+            $result = [
                 'id' => $row->id, 
                 'number' => $row->number_full,
                 'customer_name' => $row->name,
@@ -114,16 +92,10 @@ class CommercialAnalysisCollection extends ResourceCollection
                 'prom_difference_days' => $prom_difference_days,
                 'quantity_visit' => $quantity_visit,
                 'total' => $total,
-                'cinta' => $cinta,
-                'disco' => $disco,
-                'cuchilla' => $cuchilla,
-                'estelitado' => $estelitado,
-                'servicio' => $servicio,
-                'accesorios' => $accesorios,
                 'contact_date' => $contact_date->format('d-m-Y'),
-
-
             ];
+
+            return array_merge($result, $calculate_categories_count);
         });
     }
     

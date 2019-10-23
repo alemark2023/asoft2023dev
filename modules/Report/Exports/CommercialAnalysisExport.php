@@ -23,12 +23,19 @@ class CommercialAnalysisExport implements  FromView, ShouldAutoSize
         
         return $this;
     }
+
+    public function categories($categories) {
+        $this->categories = $categories;
+        
+        return $this;
+    }
      
     
     public function view(): View {
         return view('report::commercial_analysis.report_excel', [
             'records'=> $this->records,
             'company' => $this->company,
+            'categories' => $this->categories
         ]);
     }
 }
