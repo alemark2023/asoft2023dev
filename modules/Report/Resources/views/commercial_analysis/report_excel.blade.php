@@ -123,7 +123,7 @@
                                             if($item->category){
 
                                                 $name_category = strtoupper($item->category->name);
-                                                $calculate_categories_count[$name_category] = $calculate_categories_count[$name_category] + 1;
+                                                $calculate_categories_count[$name_category] = $calculate_categories_count[$name_category] + $it->quantity;
 
                                             }
                                             
