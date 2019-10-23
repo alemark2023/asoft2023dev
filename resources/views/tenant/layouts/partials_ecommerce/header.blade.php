@@ -1,7 +1,7 @@
  <style>
 #header_bar .header-menu {
     max-height: 300px !important;
-   
+    overflow:auto;
     overflow-y: auto;
 }
 #header_bar .header-menu::-webkit-scrollbar-track
@@ -92,7 +92,7 @@
 
                     <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
                      <div class="header-menu">
-                         <ul>
+                         <ul v-if="results.length > 0">
                             <li v-for="result in results">
                                 <a :href="'/ecommerce/item/' + result.id" class="d-flex">
                                     <div class="flex-grow-1"><img style="max-width: 80px" :src="result.image_url_small" alt="England flag"> 
@@ -160,7 +160,7 @@
                     })
 
                  } else {
-                     this.results = this.suggestions
+                     this.results = [] //this.suggestions
                  }
              },
              getItems() {
@@ -172,7 +172,7 @@
                      .then(function (myJson) {
                          // console.log(myJson.data);
                          contex.suggestions = myJson.data
-                         contex.results = contex.suggestions
+                        // contex.results = contex.suggestions
                      });
              },
              suggestionClick(item) {
