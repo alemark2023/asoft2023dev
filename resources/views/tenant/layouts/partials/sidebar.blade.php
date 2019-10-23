@@ -498,7 +498,7 @@
                         {{ ($path[0] === 'cuenta')?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
-                            <i class="fas fa-cogs" aria-hidden="true"></i>
+                            <i class="fas fa-dollar-sign" aria-hidden="true"></i>
                             <span>Mis Pagos</span>
                         </a>
                         <ul class="nav nav-children">
