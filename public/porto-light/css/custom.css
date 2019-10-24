@@ -163,13 +163,15 @@ ul.nav-main li i {
 }
 
 /**  Boton de accesos rapido  **/
-#button-access {
+#switcher-top {
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
+  border-top: 20px solid #28a745;
   position: fixed;
   z-index: 1030;
-  margin: 0 auto;
-  top: -59px;
   left: 50%;
-  min-width: 680px;
+  top: 0px;
+  margin: 0 auto;
   transform: translate(-50%);
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
@@ -177,7 +179,33 @@ ul.nav-main li i {
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
 }
+#switcher-top.active {
+  top: 59px;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+#switcher-top span {
+  margin-top: -22px;
+}
 
+#button-access {
+  position: fixed;
+  z-index: 1030;
+  margin: 0 auto;
+  top: -59px;
+  left: 50%;
+  min-width: 680px;
+  background-color: rgba(52, 58, 64, .9);
+  transform: translate(-50%);
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
 #button-access.active {
   top: 0px;
   -webkit-transition: all 0.5s ease-in-out;
@@ -190,12 +218,16 @@ ul.nav-main li i {
 #button-access span {
   cursor: pointer;
 }
+#button-access .bt-custom:hover, #button-access .bt-custom:hover a {
+  color: #fff;
+  background-color: rgba(52, 58, 64, 1);  
+}
 
 #button-access a {
   text-decoration: none;
 }
 
-#button-access span:hover {
+#button-access a:hover {
   color: #fff;
 }
 
@@ -206,4 +238,13 @@ ul.nav-main li i {
 
 #button-access .access-item i {
 
+}
+
+.triangulo-equilatero-bottom-left {
+     width: 0;
+     height: 0;
+     border-right: 50px solid transparent;
+     border-top: 50px solid transparent;
+     border-left: 50px solid #f0ad4e;
+     border-bottom: 50px solid #f0ad4e;
 }

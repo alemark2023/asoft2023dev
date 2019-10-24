@@ -630,7 +630,7 @@
                 }
             });
 
-            let precio = Math.round((Number($("#total_amount").data('total')) * 100).toFixed(2));
+            let precio = Math.round((Number($("#total_amount").data('total')).toFixed(2) * 100);
             let precio_culqi = Number($("#total_amount").data('total')).toFixed(2);
 
             var url = "/culqi";

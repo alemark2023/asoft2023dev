@@ -58,7 +58,7 @@ class DispatchInput
             'total_weight' => $inputs['total_weight'],
             'packages_number' => $inputs['packages_number'],
             'container_number' => $inputs['container_number'],
-            'license_plate' => $inputs['license_plate'],
+            'license_plate' => ( isset($inputs['license_plate']) ) ? $inputs['license_plate'] : null ,
             'origin' => self::origin($inputs),
             'delivery' => self::delivery($inputs),
             'dispatcher' => self::dispatcher($inputs),
@@ -105,8 +105,8 @@ class DispatchInput
         if(array_key_exists('dispatcher', $inputs)) {
             $dispatcher = $inputs['dispatcher'];
             $identity_document_type_id = $dispatcher['identity_document_type_id'];
-            $number = $dispatcher['number'];
-            $name = $dispatcher['name'];
+            $number = ( isset($dispatcher['number']) ) ? $dispatcher['number'] : null ; // $dispatcher['number'];
+            $name = ( isset($dispatcher['name']) ) ? $dispatcher['name'] : null ; //$dispatcher['name'];
 
             return  [
                 'identity_document_type_id' => $identity_document_type_id,
@@ -122,7 +122,7 @@ class DispatchInput
         if(array_key_exists('driver', $inputs)) {
             $driver = $inputs['driver'];
             $identity_document_type_id = $driver['identity_document_type_id'];
-            $number = $driver['number'];
+            $number =  ( isset($driver['number']) ) ? $driver['number'] : null ; //$driver['number'];
 
             return [
                 'identity_document_type_id' => $identity_document_type_id,

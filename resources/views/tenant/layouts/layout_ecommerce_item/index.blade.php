@@ -26,7 +26,8 @@
 <body>
     <div class="page-wrapper">
         
-        @include('tenant.layouts.partials_ecommerce.header_options')
+        @include('tenant.layouts.partials_ecommerce.header')
+        @include('tenant.layouts.partials_ecommerce.header_bottom_sticky')
 
         <main class="main">
             <div class="banner banner-cat" style="background-image: url('{{ asset( '/porto-ecommerce/assets/images/banners/banner-top.jpg' ) }}">

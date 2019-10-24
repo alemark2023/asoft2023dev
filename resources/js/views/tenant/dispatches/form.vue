@@ -283,7 +283,7 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.license_plate}">
-                                <label class="control-label">Numero de placa del vehiculo</label>
+                                <label class="control-label">Número de placa del vehiculo</label>
                                 <el-input v-model="form.license_plate" :maxlength="8" placeholder="Numero de placa del vehiculo..."></el-input>
                                 <small class="form-control-feedback" v-if="errors.license_plate" v-text="errors.license_plate[0]"></small>
                             </div>
@@ -424,7 +424,7 @@
                     time_of_issue: moment().format('HH:mm:ss'),
                     date_of_shipping: moment().format('YYYY-MM-DD'),
                     customer_id: null,
-                    observations: null,
+                    observations: '',
                     transport_mode_type_id: null,
                     transfer_reason_type_id: null,
                     transfer_reason_description: null,

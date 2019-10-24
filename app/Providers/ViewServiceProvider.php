@@ -49,10 +49,10 @@ class ViewServiceProvider extends ServiceProvider
             'App\Http\ViewComposers\Tenant\CompanyViewComposer'
         );
 
-        view()->composer(
+       /* view()->composer(
             'tenant.layouts.partials_ecommerce.header_options',
             'App\Http\ViewComposers\Tenant\CompanyViewComposer'
-        );
+        );*/
 
         view()->composer(
             'tenant.layouts.partials_ecommerce.featured_products',
@@ -75,7 +75,7 @@ class ViewServiceProvider extends ServiceProvider
             'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.header_options',
+            'tenant.layouts.partials_ecommerce.header_bottom_sticky',
             'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
         );
         view()->composer(

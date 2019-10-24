@@ -58,7 +58,7 @@
                     <p>{{$record->description}}</p>
                 </div><!-- End .product-desc -->
 
-                <div class="product-filters-container">
+                <!--<div class="product-filters-container">
                     <div class="product-single-filter">
                         <label>Colors:</label>
                         <ul class="config-swatch-list">
@@ -75,8 +75,8 @@
                                 <a href="#" style="background-color: #11426b;"></a>
                             </li>
                         </ul>
-                    </div><!-- End .product-single-filter -->
-                </div><!-- End .product-filters-container -->
+                    </div>
+                </div> End .product-filters-container -->
 
                 <div class="product-action">
                     <div class="product-single-qty">
@@ -84,21 +84,21 @@
                     </div><!-- End .product-single-qty -->
 
                     <a href="#" data-product="{{ json_encode( $record ) }}" class="paction add-cart" title="Add to Cart">
-                        <span>Add to Cart</span>
+                        <span>Agregar a Carrito</span>
                     </a>
-                    <a href="#" class="paction add-wishlist" title="Add to Wishlist">
+                   <!--  <a href="#" class="paction add-wishlist" title="Add to Wishlist">
                         <span>Add to Wishlist</span>
                     </a>
                     <a href="#" class="paction add-compare" title="Add to Compare">
                         <span>Add to Compare</span>
-                    </a>
+                    </a> -->
                 </div><!-- End .product-action -->
 
-                <div class="product-single-share">
+                <!--<div class="product-single-share">
                     <label>Share:</label>
-                    <!-- www.addthis.com share plugin-->
+                
                     <div class="addthis_inline_share_toolbox"></div>
-                </div><!-- End .product single-share -->
+                </div> End .product single-share -->
             </div><!-- End .product-single-details -->
         </div><!-- End .col-lg-5 -->
     </div><!-- End .row -->
