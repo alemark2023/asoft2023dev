@@ -166,7 +166,7 @@ ul.nav-main li i {
 #switcher-top {
   border-right: 20px solid transparent;
   border-left: 20px solid transparent;
-  border-top: 30px solid #28a745;
+  border-top: 20px solid #28a745;
   position: fixed;
   z-index: 1030;
   left: 50%;
@@ -188,7 +188,7 @@ ul.nav-main li i {
   transition: all 0.5s ease-in-out;
 }
 #switcher-top span {
-  margin-top: -30px;
+  margin-top: -22px;
 }
 
 #button-access {
@@ -198,6 +198,7 @@ ul.nav-main li i {
   top: -59px;
   left: 50%;
   min-width: 680px;
+  background-color: rgba(52, 58, 64, .9);
   transform: translate(-50%);
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
@@ -216,6 +217,10 @@ ul.nav-main li i {
 
 #button-access span {
   cursor: pointer;
+}
+#button-access .bt-custom:hover, #button-access .bt-custom:hover a {
+  color: #fff;
+  background-color: rgba(52, 58, 64, 1);  
 }
 
 #button-access a {
