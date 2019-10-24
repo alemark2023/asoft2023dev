@@ -543,7 +543,7 @@
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                            //location.href = '/dispatches'
+                            location.href = '/dispatches'
                         } else {
                             this.$message.error(response.data.message)
                         }
