@@ -10,6 +10,7 @@ class Configuration extends ModelTenant
         'stock',
         'locked_emission',
         'limit_documents',
+        'sunat_alternate_server',
         'plan'
     ];
 
