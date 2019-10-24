@@ -7,7 +7,6 @@
 @endphp
 
 <aside id="sidebar-left" class="sidebar-left">
-{{ json_encode( $path[1] )}}
     <div class="sidebar-header">
         <div class="sidebar-title">
             Menu
