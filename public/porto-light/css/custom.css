@@ -168,7 +168,7 @@ ul.nav-main li i {
   border-left: 20px solid transparent;
   border-top: 20px solid #28a745;
   position: fixed;
-  z-index: 1030;
+  z-index: 1031;
   left: 50%;
   top: 0px;
   margin: 0 auto;
@@ -180,7 +180,15 @@ ul.nav-main li i {
   transition: all 0.5s ease-in-out;
 }
 #switcher-top.active {
-  top: 59px;
+  border-top: 30px solid #28a745;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+#switcher-top.active span {
+  margin-top: -27px;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -189,7 +197,44 @@ ul.nav-main li i {
 }
 #switcher-top span {
   margin-top: -22px;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
+
+#switcher-list {
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
+  border-top: 30px solid rgba(52, 58, 64, .9);
+  z-index: 1030;
+  position: fixed;
+  top: -30px;
+  margin: 0 auto;  
+  left: 50%;
+  min-width: 780px;
+  transform: translate(-50%);
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+#switcher-list.active {
+  top: 0px;
+  transform: translate(-50%);
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+#switcher-list .row {
+  color: #fff;
+  margin-top: -27px;
+}
+
 
 #button-access {
   position: fixed;

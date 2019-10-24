@@ -99,38 +99,47 @@
         </div>
     </div>
 </header>
-<div id="button-access" class="d-none d-sm-block">
-    <div class="container">
-        <div class="row d-flex justify-content-center">
-            <div class="px-3 py-1 text-center bt-custom">
-                <a class="" href="{{ route('tenant.documents.create') }}">
-                    <i class="fas fa-fw fa-2x fa-file-invoice" aria-hidden="true"></i><br>
-                    <span>Nuevo Comprobante</span>
-                </a>
-            </div>
-            <div class="px-3 py-1 text-center bt-custom">
-                <a class="" href="{{ route('tenant.pos.index') }}">
-                    <i class="fas fa-fw fa-2x fa-cash-register" aria-hidden="true"></i><br>
-                    <span>Venta Rápida - POS</span>
-                </a>
-            </div>
-            <div class="px-3 py-1 text-center bt-custom">
-                <a class="" href="{{ route('tenant.companies.create') }}">
-                    <i class="fas fa-fw fa-2x fa-industry" aria-hidden="true"></i><br>
-                    <span>Configurar - Empresa</span>
-                </a>
-            </div>
-            <div class="px-3 py-1 text-center bt-custom">
-                <a class="" href="{{ route('tenant.establishments.index') }}">
-                    <i class="fas fa-fw fa-2x fa-warehouse" aria-hidden="true"></i><br>
-                    <span>Configurar - Establecimiento</span>
-                </a>
-            </div>
+<div {{-- id="button-access" --}} class="container d-flex justify-content-center d-none d-sm-block">
+    <div class="">
+        <div class="px-3 text-center bt-custom">
+            <a class="" href="{{ route('tenant.documents.create') }}">
+                {{-- <i class="fas fa-fw fa-2x fa-file-invoice" aria-hidden="true"></i><br> --}}
+                <span>Nuevo Comprobante</span>
+            </a>
         </div>
-    </div>    
+        <div class="px-3 text-center bt-custom">
+            <a class="" href="{{ route('tenant.pos.index') }}">
+                {{-- <i class="fas fa-fw fa-2x fa-cash-register" aria-hidden="true"></i><br> --}}
+                <span>Venta Rápida - POS</span>
+            </a>
+        </div>
+        <div class="px-3 text-center bt-custom">
+            <a class="" href="{{ route('tenant.companies.create') }}">
+                {{-- <i class="fas fa-fw fa-2x fa-industry" aria-hidden="true"></i><br> --}}
+                <span>Configurar - Empresa</span>
+            </a>
+        </div>
+        <div class="px-3 text-center bt-custom">
+            <a class="" href="{{ route('tenant.establishments.index') }}">
+                {{-- <i class="fas fa-fw fa-2x fa-warehouse" aria-hidden="true"></i><br> --}}
+                <span>Configurar - Establecimiento</span>
+            </a>
+        </div>
+    </div>  
 </div>
-<div class="container">
+<div class="container d-none d-sm-block">
     <div id="switcher-top" class="d-flex justify-content-center">
         <span class="text-white py-0 px-5 text-center"><i class="fas fa-plus fa-fw"></i>Acceso Rápido</span>
+    </div>
+</div>
+<div class="container d-none d-sm-block">
+    <div id="switcher-list" class="d-flex justify-content-center">
+        <div class="row">
+            <div class="px-3"><a href=""><i class="fas fa-fw fa-file-invoice" aria-hidden="true"></i> Nuevo Comprobante</a></div>
+            <div class="px-3"><a href=""><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
+            <div style="min-width: 220px;"></div>
+            <div class="px-3"><a href=""><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
+            <div class="px-3"><a href=""><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
+        </div>
     </div>
 </div>
