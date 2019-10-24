@@ -14,7 +14,7 @@ class DispatchRequest extends FormRequest
 
     public function rules()
     {
-        $id = $this->input('id');
+        //$id = $this->input('id');
 
         return [
             'unit_type_id' => [
@@ -55,10 +55,16 @@ class DispatchRequest extends FormRequest
     }
 
     public function messages()
-    {
-        return [
-            'unit_type_id' => 'El campo Dirección de llegada es obligatorio.',
-            
-        ];
-    }
+{
+    return [
+       'transfer_reason_description.required' => 'El campo Descripción de motivo de traslado es obligatorio.',
+       'observations.required' => 'El campo Observaciones es obligatorio.',
+       'dispatcher.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
+       'dispatcher.number.required' => 'El campo Número es obligatorio.',
+       'dispatcher.name.required' => 'El campo Nombre y/o razón social es obligatorio.',
+       'driver.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
+       'driver.number.required' => 'El campo Número es obligatorio.',
+       'license_plate.required' => 'El campo Número de placa del vehiculo es obligatorio.',
+    ];
+}
 }
