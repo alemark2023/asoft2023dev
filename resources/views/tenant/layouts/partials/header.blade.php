@@ -18,7 +18,7 @@
         <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
             <div class="ios-switch off">
                 <div class="on-background background-fill"></div>
-                <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #ccc;">DEMO</span></div>
+                <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #fff;">DEMO</span></div>
                 <div class="handle"></div>
             </div>
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
@@ -28,7 +28,7 @@
         <a href="{{route('tenant.companies.create')}}">
         <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
             <div class="ios-switch on">
-                <div class="on-background background-fill"><span class="text-white" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
+                <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
                 <div class="state-background background-fill"></div>
                 <div class="handle"></div>
             </div>

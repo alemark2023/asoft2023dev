@@ -234,3 +234,17 @@ ul.nav-main li i {
   color: #fff;
   margin-top: -27px;
 }
+
+/* switch*/
+.switch.switch-sm .ios-switch {
+    width: 68px;
+}
+
+.ios-switch .state-background {
+    background-color: #c2c2c2;
+    background-image: none;
+}
+
+.switch.switch-sm .ios-switch.on .handle {
+    margin-left: 12px;
+}
