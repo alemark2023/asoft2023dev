@@ -4,11 +4,7 @@
     </a>
     <div class="dropdown-menu">
         <div class="dropdownmenu-wrapper">
-
-            <div class="dropdown-cart-products">
-
-            </div><!-- End .cart-product -->
-
+           
             <div class="dropdown-cart-total">
                 @guest
                 	<span>Invitado</span>
@@ -17,8 +13,8 @@
                 @endguest
             </div><!-- End .dropdown-cart-total -->
 
-            <div class="dropdown-cart-action">
-                <a  href="{{ route('tenant_detail_cart') }}" class="btn">Ver Carrito</a>
+            <div class="dropdown-cart-action text-right">
+             
                 @guest
                 	<a href="{{route('tenant_ecommerce_login')}}" class="btn">Ingresar</a>
                 @else

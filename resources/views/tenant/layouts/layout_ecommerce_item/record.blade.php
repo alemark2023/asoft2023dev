@@ -32,7 +32,8 @@
 <body>
     <div class="page-wrapper">
 
-        @include('tenant.layouts.partials_ecommerce.header_options')
+        @include('tenant.layouts.partials_ecommerce.header')
+        @include('tenant.layouts.partials_ecommerce.header_bottom_sticky')
         
 
         <main class="main">

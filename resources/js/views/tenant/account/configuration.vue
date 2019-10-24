@@ -1,17 +1,16 @@
 <template>
-
   <div class="card col-md-5">
     <div class="card-header bg-info">
       <h3 class="my-0">Tipo de Plan de la Empresa</h3>
     </div>
     <div class="card-body">
-      <form autocomplete="off" @submit.prevent="submit">
+      <form autocomplete="off" > <!-- @submit.prevent="submit" -->
         <div class="form-body">
           <div class="row">
             <div class="col-md-6">
               <div class="form-group">
                 <label class="control-label">Plan</label>
-                <el-select v-model="form.plan_id">
+                <el-select  @change="alertPlan" v-model="form.plan_id">
                   <el-option
                     v-for="(option, index) in plans"
                     :key="index"
@@ -19,13 +18,12 @@
                     :label="option.name"
                   ></el-option>
                 </el-select>
-              
               </div>
             </div>
           </div>
         </div>
         <div class="form-actions text-right pt-2">
-          <el-button type="primary" native-type="submit" :loading="loading_submit">Actualizar</el-button>
+          <!-- <el-button type="primary" native-type="submit" :loading="loading_submit">Actualizar</el-button> -->
         </div>
       </form>
     </div>
@@ -37,7 +35,7 @@ export default {
   data() {
     return {
       loading_submit: false,
-      resource: "account",
+      resource: "cuenta",
       form: {},
       configuration: {},
       plans:[]
@@ -58,13 +56,28 @@ export default {
    
   },
   methods: {
+    alertPlan()
+    {
+
+       this.$confirm('Para cambiar su Plan, Comuniquese con el Administrador', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+          showCancelButton: false
+        }).then(() => {
+         
+        }).catch(() => {
+                   
+        });
+
+    },
     initForm() {
       this.errors = {};
       this.form = {
         plan_id: null,
       };
     },
-    submit() {
+    /*submit() {
       this.loading_submit = true;
       this.$http
         .post(`/${this.resource}/update_plan`, this.form)
@@ -85,7 +98,7 @@ export default {
         .then(() => {
           this.loading_submit = false;
         });
-    }
+    }*/
    
   }
 };
