@@ -424,7 +424,7 @@
                     time_of_issue: moment().format('HH:mm:ss'),
                     date_of_shipping: moment().format('YYYY-MM-DD'),
                     customer_id: null,
-                    observations: null,
+                    observations: '',
                     transport_mode_type_id: null,
                     transfer_reason_type_id: null,
                     transfer_reason_description: null,
@@ -543,7 +543,7 @@
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                            location.href = '/dispatches'
+                            //location.href = '/dispatches'
                         } else {
                             this.$message.error(response.data.message)
                         }
