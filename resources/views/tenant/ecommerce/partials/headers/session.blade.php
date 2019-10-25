@@ -1,6 +1,7 @@
 <style>
     .btn-logout{
         color: brown;
+        background: darkgrey !important;
     }
 </style>
 <div class="dropdown cart-dropdown" style="margin-left: 10px;">
@@ -22,7 +23,7 @@
             <div class="dropdown-cart-action text-right">
                 <a role="menuitem" href="{{ route('logout') }}" class="btn btn-logout"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Salir
+                    Cerrar Sesión
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
