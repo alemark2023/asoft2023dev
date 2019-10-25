@@ -166,9 +166,9 @@ ul.nav-main li i {
 #switcher-top {
   border-right: 20px solid transparent;
   border-left: 20px solid transparent;
-  border-top: 20px solid #28a745;
+  border-top: 20px solid #03c9a9;
   position: fixed;
-  z-index: 1030;
+  z-index: 1031;
   left: 50%;
   top: 0px;
   margin: 0 auto;
@@ -180,7 +180,15 @@ ul.nav-main li i {
   transition: all 0.5s ease-in-out;
 }
 #switcher-top.active {
-  top: 59px;
+  border-top: 30px solid #03c9a9;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+#switcher-top.active span {
+  margin-top: -27px;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -189,16 +197,23 @@ ul.nav-main li i {
 }
 #switcher-top span {
   margin-top: -22px;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -ms-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
 
-#button-access {
-  position: fixed;
+#switcher-list {
+  border-right: 20px solid transparent;
+  border-left: 20px solid transparent;
+  border-top: 30px solid rgba(52, 58, 64, .9);
   z-index: 1030;
-  margin: 0 auto;
-  top: -59px;
+  position: fixed;
+  top: -30px;
+  margin: 0 auto;  
   left: 50%;
-  min-width: 680px;
-  background-color: rgba(52, 58, 64, .9);
+  min-width: 780px;
   transform: translate(-50%);
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
@@ -206,45 +221,16 @@ ul.nav-main li i {
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
 }
-#button-access.active {
+#switcher-list.active {
   top: 0px;
+  transform: translate(-50%);
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
   -o-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
 }
-
-#button-access span {
-  cursor: pointer;
-}
-#button-access .bt-custom:hover, #button-access .bt-custom:hover a {
+#switcher-list .row {
   color: #fff;
-  background-color: rgba(52, 58, 64, 1);  
-}
-
-#button-access a {
-  text-decoration: none;
-}
-
-#button-access a:hover {
-  color: #fff;
-}
-
-#button-access span.rounded-bottom {
-    border-bottom-right-radius: 1.25rem !important;
-    border-bottom-left-radius: 1.25rem !important;
-}
-
-#button-access .access-item i {
-
-}
-
-.triangulo-equilatero-bottom-left {
-     width: 0;
-     height: 0;
-     border-right: 50px solid transparent;
-     border-top: 50px solid transparent;
-     border-left: 50px solid #f0ad4e;
-     border-bottom: 50px solid #f0ad4e;
+  margin-top: -27px;
 }
