@@ -21,9 +21,8 @@ class OrderController extends Controller
     public function columns()
     {
         return [
-            'reference_payment' => 'Medio Pago',
-            'document_external_id' => 'Comprobante ID'
-            // 'description' => 'Descripción'
+            'id' => 'Codigo de Pedido',
+            'number_document' => 'Comprobante Electronico',
         ];
     }
 

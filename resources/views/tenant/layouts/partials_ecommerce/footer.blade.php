@@ -147,29 +147,29 @@
 
 <div class="modal fade" id="login_register_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content"  style="height:600px">
 
             <div class="modal-body">
 
-                <div class="container-fluid">
+                <div class="container-fluid ">
+                    <br> <br> <br> <br>
                     <div class="row">
-
                         <div class="col-md-5 ">
                             <h4 class="title mb-2">Login</h4>
 
                             <div id="msg_login" class="alert alert-danger" role="alert">
-                                Usuario o Password Incorrectos.
+                                Usuario o Contraseña Incorrectos.
                             </div>
 
                             <form action="#" id="form_login">
                                 <div class="form-group">
-                                    <label for="email">Email:</label>
+                                    <label for="email">Correo Electronico:</label>
                                     <input type="email" required class="form-control" id="email"
                                         placeholder="Enter email" name="email">
                                 </div>
                                 <div class="form-group">
-                                    <label for="pwd">Password:</label>
+                                    <label for="pwd">Contraseña:</label>
                                     <input type="password" required class="form-control" id="pwd"
                                         placeholder="Enter password" name="password">
                                 </div>
@@ -181,31 +181,31 @@
                             <div class="vl"></div>
                         </div>
                         <div class="col-md-5">
-                            <h4 class="title mb-2">Register</h4>
+                            <h4 class="title mb-2">Nuevo Registro</h4>
                             <div id="msg_register" class="alert alert-danger" role="alert">
                                 <p id="msg_register_p"></p>
                             </div>
 
-                            <form action="#" id="form_register">
+                            <form autocomplete="off" action="#" id="form_register">
                                 <div class="form-group">
-                                    <label for="email">Name:</label>
+                                    <label for="email">Nombres:</label>
                                     <input type="text" required autocomplete="off" class="form-control" id="name_reg"
                                         placeholder="Enter name" name="name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="email">Email:</label>
+                                    <label for="email">Correo Electronico:</label>
                                     <input type="email" required autocomplete="off" class="form-control" id="email_reg"
                                         placeholder="Enter email" name="email">
                                 </div>
                                 <div class="form-group">
-                                    <label for="pwd">Password:</label>
+                                    <label for="pwd">Contraseña:</label>
                                     <input type="password" required autocomplete="off" class="form-control" id="pwd_reg"
-                                        placeholder="Enter password" name="pswd">
+                                        placeholder="Ingrese contraseña" name="pswd">
                                 </div>
                                 <div class="form-group">
-                                    <label for="pwd">Repeat Password:</label>
+                                    <label for="pwd">Repita la Contraseña:</label>
                                     <input type="password" required autocomplete="off" class="form-control"
-                                        id="pwd_repeat_reg" placeholder="Repeat password" name="pswd">
+                                        id="pwd_repeat_reg" placeholder="Repita contraseña" name="pswd">
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Registrarse</button>
@@ -226,6 +226,7 @@
 </div>
 
 @push('scripts')
+<script type="text/javascript" src="{{ asset('porto-ecommerce/assets/js/cart.js') }}"></script>
 <script type="text/javascript">
     matchPassword();
     submitLogin();

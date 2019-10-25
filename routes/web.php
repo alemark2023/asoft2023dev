@@ -23,6 +23,9 @@ if ($hostname) {
         Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
         Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
         Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
+        Route::post('ecommerce/rating_item', 'Tenant\EcommerceController@ratingItem')->name('tenant_ecommerce_rating_item');
+        Route::get('ecommerce/rating_item/{id}', 'Tenant\EcommerceController@getRating');
+
 
 
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');

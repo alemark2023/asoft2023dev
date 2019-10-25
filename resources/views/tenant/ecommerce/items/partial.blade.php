@@ -4,26 +4,24 @@
             <div class="product-slider-container product-item">
                 <div class="product-single-carousel owl-carousel owl-theme">
                     <div class="product-item">
-                        <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image) }}" data-zoom-image="{{ asset('storage/uploads/items/'.$record->image) }}"/>
+                        <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image) }}"
+                            data-zoom-image="{{ asset('storage/uploads/items/'.$record->image) }}" />
                     </div>
                     <div class="product-item">
-                        <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image_medium) }}" data-zoom-image="{{ asset('storage/uploads/items/'.$record->image_medium) }}"/>
+                        <img class="product-single-image"
+                            src="{{ asset('storage/uploads/items/'.$record->image_medium) }}"
+                            data-zoom-image="{{ asset('storage/uploads/items/'.$record->image_medium) }}" />
                     </div>
-                    <!--<div class="product-item">
-                        <img class="product-single-image" src="{{ asset('porto_ecommerce/ajax/assets/images/products/zoom/product-3.html') }}" data-zoom-image="//porto_ecommerce/demo-6/ajax/assets/images/products/zoom/product-3-big.html"/>
-                    </div>
-                    <div class="product-item">
-                        <img class="product-single-image" src="{{ asset('porto_ecommerce/ajax/assets/images/products/zoom/product-4.html') }}" data-zoom-image="/porto_ecommerce/demo-6/ajax/assets/images/products/zoom/product-4-big.html"/>
-                    </div>-->
+
                 </div>
-                <!-- End .product-single-carousel -->
+
             </div>
             <div class="prod-thumbnail row owl-dots" id='carousel-custom-dots'>
                 <div class="col-3 owl-dot">
-                    <img src="{{ asset('storage/uploads/items/'.$record->image) }}"/>
+                    <img src="{{ asset('storage/uploads/items/'.$record->image) }}" />
                 </div>
                 <div class="col-3 owl-dot">
-                    <img src="{{ asset('storage/uploads/items/'.$record->image_medium) }}"/>
+                    <img src="{{ asset('storage/uploads/items/'.$record->image_medium) }}" />
                 </div>
                 <!--<div class="col-3 owl-dot">
                     <img src="{{ asset('porto_ecommerce/ajax/assets/images/products/zoom/product-2.html') }}" />
@@ -58,48 +56,22 @@
                     <p>{{$record->description}}</p>
                 </div><!-- End .product-desc -->
 
-                <!--<div class="product-filters-container">
-                    <div class="product-single-filter">
-                        <label>Colors:</label>
-                        <ul class="config-swatch-list">
-                            <li class="active">
-                                <a href="#" style="background-color: #6085a5;"></a>
-                            </li>
-                            <li>
-                                <a href="#" style="background-color: #ab6e6e;"></a>
-                            </li>
-                            <li>
-                                <a href="#" style="background-color: #b19970;"></a>
-                            </li>
-                            <li>
-                                <a href="#" style="background-color: #11426b;"></a>
-                            </li>
-                        </ul>
-                    </div>
-                </div> End .product-filters-container -->
+
 
                 <div class="product-action">
                     <div class="product-single-qty">
                         <input class="horizontal-quantity form-control" type="text">
                     </div><!-- End .product-single-qty -->
 
-                    <a href="#" data-product="{{ json_encode( $record ) }}" class="paction add-cart" title="Add to Cart">
+                    <a href="#" onclick="cart_add('{{ json_encode( $record ) }}')" class="paction add-cart"
+                        title="Add to Cart">
                         <span>Agregar a Carrito</span>
                     </a>
-                   <!--  <a href="#" class="paction add-wishlist" title="Add to Wishlist">
-                        <span>Add to Wishlist</span>
-                    </a>
-                    <a href="#" class="paction add-compare" title="Add to Compare">
-                        <span>Add to Compare</span>
-                    </a> -->
+
                 </div><!-- End .product-action -->
 
-                <!--<div class="product-single-share">
-                    <label>Share:</label>
-                
-                    <div class="addthis_inline_share_toolbox"></div>
-                </div> End .product single-share -->
             </div><!-- End .product-single-details -->
         </div><!-- End .col-lg-5 -->
     </div><!-- End .row -->
 </div><!-- End .product-single-container -->
+

@@ -17,7 +17,8 @@ class Order extends ModelTenant
         'items',        
         'total',
         'reference_payment',
-        'document_external_id'
+        'document_external_id',
+        'number_document'
     ];
 
     protected $casts = [
