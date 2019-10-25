@@ -52,11 +52,7 @@
                 <div class="row">
                     <div class="col-lg-9">
 
-
                         @yield('content')
-                      
-
-
 
                     </div><!-- End .col-lg-9 -->
 

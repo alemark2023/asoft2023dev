@@ -123,15 +123,10 @@
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <!--<div class="modal-header ">
-                  <h5 class="modal-title" id="exampleModalLabel"></h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-              </div>-->
+           
             <div class="modal-body">
 
-                <div class="alert alert-warning" role="alert">
+                <div style="font-size: 2em;" class="alert alert-warning" role="alert">
                     <i class="icon-ok"></i> Tu Producto ya ha sido esta agregado al carrito.
                 </div>
             </div>
