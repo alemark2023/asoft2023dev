@@ -220,6 +220,11 @@
                                     Ir a Tienda
                                 </a>
                             </li>
+                            <li class="{{ ($path[0] === 'orders')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant_orders_index')}}">
+                                    Pedidos
+                                </a>
+                            </li>
                             <li class="{{ ($path[0] === 'items_ecommerce')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.items_ecommerce.index')}}">
                                     Productos Tienda Virtual
@@ -235,11 +240,7 @@
                                     Promociones
                                 </a>
                             </li>
-                            <li class="{{ ($path[0] === 'orders')?'nav-active':'' }}">
-                                <a class="nav-link" href="{{route('tenant_orders_index')}}">
-                                    Pedidos
-                                </a>
-                            </li>
+                            
                         </ul>
                     </li>
                     @endif

@@ -23,6 +23,8 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
+    
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/rating.css') }}">
 
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
@@ -200,8 +202,8 @@
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
 
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
+    
 
-   
 
     @stack('scripts')
 </body>

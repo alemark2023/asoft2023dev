@@ -48,7 +48,9 @@
 
 .search_input {
     margin-bottom: 0.1rem;
+    border-radius: 20px !important;
 }
+
 .search_title{
 
 }
@@ -63,6 +65,7 @@
     background-color: #fff;
     border-color: #fff;
     box-shadow: none;
+  
 }
 
 .header-contact span {
@@ -114,8 +117,8 @@
                      <i class="icon-menu"></i>
                  </button>
                  <div class="header-contact">
-                     <span> Atención</span>
-                     <i class="fab fa-whatsapp"></i> <a href="tel:#"><strong>+999 111 888</strong></a>
+                     <span> Atención al</span>
+                     <i class="fab fa-whatsapp"></i> <a href="tel:#"><strong>999 111 888</strong></a>
                  </div><!-- End .header-contact -->
 
                 @include('tenant.layouts.partials_ecommerce.cart_dropdown')

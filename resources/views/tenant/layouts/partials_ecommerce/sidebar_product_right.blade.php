@@ -1,9 +1,9 @@
 <aside class="sidebar-product col-lg-3 padding-left-lg mobile-sidebar">
     <div class="sidebar-wrapper">
         <div class="widget widget-brand">
-            <a href="#">
+            <!--<a href="#">
                 <img src="{{ asset('porto-ecommerce/assets/images/product-brand.png') }}" alt="brand name">
-            </a>
+            </a>-->
         </div><!-- End .widget -->
 
         <div class="widget widget-info">

@@ -81,13 +81,34 @@
                 </tfoot>
             </table>
 
-            <div class="checkout-methods">
+            <div class="checkout-methods text-center">
 
                 @guest
                 <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Pagar
                     con VISA</a>
+                <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Pagar
+                    con EFECTIVO</a>
+                <a style="margin-left:15%" href="{{route('tenant_ecommerce_login')}}"
+                    class="btn btn-block btn-sm login-link">
+                    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" alt="">
+                </a>
+
                 @else
                 <button class="btn btn-block btn-sm btn-primary" onclick="execCulqi()"> Pagar con VISA </button>
+
+                <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary">
+                    Pagar con EFECTIVO </button>
+                <div v-show="payment_cash.clicked" style="margin: 3%" class="form-group">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input readonly placeholder="0.0" v-model="payment_cash.amount" type="text"
+                            onkeypress="return isNumberKey(event)" maxlength="14" class="form-control"
+                            aria-label="Amount">
+                        <button @click="paymentCash" class="btn btn-success">OK!</button>
+                    </div>
+                </div>
 
                 <form class="btn btn-block btn-sm " action="https://www.paypal.com/cgi-bin/webscr" method="post"
                     target="_blank">
@@ -105,24 +126,6 @@
                     <img alt="" border="0" src="https://www.paypalobjects.com/es_XC/i/scr/pixel.gif" width="1"
                         height="1">
                 </form>
-
-                <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary">
-                    Pagar con EFECTIVO </button>
-
-                <div v-show="payment_cash.clicked" style="margin: 3%" class="form-group">
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
-                        </div>
-                        <input placeholder="0.0" v-model="payment_cash.amount" type="text"
-                            onkeypress="return isNumberKey(event)" maxlength="14" class="form-control"
-                            aria-label="Amount">
-                        <button @click="paymentCash" class="btn btn-success">OK!</button>
-                    </div>
-
-
-                </div>
-
 
 
 
@@ -294,8 +297,7 @@
             this.initForm();
         },
         methods: {
-            getFormPaymentCash()
-            {   
+            getFormPaymentCash() {
                 let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
                 let precio_culqi = Number(this.summary.total)
                 return {
@@ -318,7 +320,8 @@
                 });
 
                 let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
-                let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig())
+                let response = await axios.post(url_finally, this.getFormPaymentCash(), this
+                    .getHeaderConfig())
                 if (response.data.success) {
 
                     this.clearShoppingCart()
@@ -418,7 +421,7 @@
                         console.log('transaccion finalizada correctamente')
                         swal({
                             title: "Gracias por su pago!",
-                            text: "La Transacción de su compra se finalizó correctamente. El Comprobante se envió a su correo.",
+                            text: "La Transacción de su compra se finalizó correctamente. El Comprobante y detalle de su compra se envió a su correo.",
                             type: "success"
                         }).then((x) => {
                             this.redirectHome()
@@ -466,6 +469,7 @@
             getDataFinally(document) {
                 return {
                     document_external_id: document.data.external_id,
+                    number_document: document.number,
                     orderId: this.order_generated.id,
                     product: 'Compras Ecommerce Facturador Pro',
                     precio_culqi: this.summary.total,
@@ -524,6 +528,10 @@
             },
             initForm() {
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
+                if(!this.user){
+                    return false
+                }
+
                 this.form_document = {
                     "acciones": {
                         "enviar_email": true,
@@ -586,6 +594,8 @@
                 this.summary.tax = tax.toFixed(2)
                 this.summary.total = (subtotal + tax).toFixed(2)
                 $("#total_amount").data('total', this.summary.total);
+
+                this.payment_cash.amount = this.summary.total
             }
         }
     })
@@ -630,7 +640,7 @@
                 }
             });
 
-            let precio = Math.round((Number($("#total_amount").data('total')).toFixed(2) * 100);
+            let precio = Math.round((Number($("#total_amount").data('total')).toFixed(2) * 100));
             let precio_culqi = Number($("#total_amount").data('total')).toFixed(2);
 
             var url = "/culqi";

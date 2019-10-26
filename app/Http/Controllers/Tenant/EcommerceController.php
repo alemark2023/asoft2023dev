@@ -11,6 +11,8 @@ use App\Models\Tenant\User;
 use App\Models\Tenant\Person;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Order;
+use App\Models\Tenant\ItemsRating;
+
 use stdClass;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
@@ -77,8 +79,6 @@ class EcommerceController extends Controller
 
     public function login(Request $request)
     {   
-       
-       
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
            return[
@@ -136,6 +136,7 @@ class EcommerceController extends Controller
             //1. confirmar dato de compriante en order
             $order_generated = Order::find($request->orderId);
             $order_generated->document_external_id = $request->document_external_id;
+            $order_generated->number_document = $request->number_document;
             $order_generated->save();
             
             $user->update(['identity_document_type_id' => $request->identity_document_type_id, 'number'=>$request->number]);
@@ -189,6 +190,46 @@ class EcommerceController extends Controller
             ];
         }
        
+    }
+
+    public function ratingItem(Request $request)
+    {
+        if(auth()->user())
+        {
+            $user_id = auth()->id();
+            $row = ItemsRating::firstOrNew( ['user_id' => $user_id, 'item_id' => $request->item_id ] );
+            $row->value = $request->value;
+            $row->save();
+            return[
+                'success' => false,
+                'message' => 'Rating Guardado'
+            ];
+        }
+        return[
+            'success' => false,
+            'message' => 'No se guardo Rating'
+        ];
+
+    }
+
+    public function getRating($id)
+    {
+        if(auth()->user())
+        {
+            $user_id = auth()->id();
+            $row = ItemsRating::where('user_id', $user_id)->where('item_id', $id)->first();
+            return[
+                'success' => true,
+                'value' => ($row) ? $row->value : 0,
+                'message' => 'Valor Obtenido'
+            ];
+        }
+        return[
+            'success' => false,
+            'value' => 0,
+            'message' => 'No se obtuvo valor'
+        ];
+
     }
 
 
