@@ -44,26 +44,16 @@
                                   
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-bell text-secondary"></i>                        
-                    <span class="badge badge-red">&nbsp;!&nbsp;</span>
+                    <span class="badge badge-red">{{ $vc_document }}</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-                    <div class="notification-title"><span class="float-right badge badge-default">{{ $vc_document }}</span>Pendientes de envío</div>
-                    <div class="content">
-                        {{-- <ul>
-                            <li>
-                                <a href="{{route('tenant.documents.not_sent')}}" class="clearfix">
-                                    <div class="image">
-                                        <i class="fas fa-file-alt bg-primary text-ligth"></i>
-                                    </div>
-                                    <span class="title">Tiene {{ $vc_document }} comprobante(s) pendientes de envío<span class="badge badge-warning"></span></span>
-                                    <!-- <span class="message">Pendientes de envio a SUNAT/OSE</span> -->
-                                </a>
-                            </li>
-                        </ul> --}}
-                        <div class="text-right">
-                            <a href="{{route('tenant.documents.not_sent')}}" class="view-more">Ir al listado de pendientes</a>
+                    <a href="{{route('tenant.documents.not_sent')}}">
+                        <div class="notification-title">
+                            <span class="float-right badge badge-default"><i class="fas fa-arrow-right"></i></span>Comprobantes pendientes de envío
                         </div>
-                    </div>
+                    </a>
+                    {{-- <div class="content">
+                    </div> --}}
                 </div>
             </li>
         </ul>

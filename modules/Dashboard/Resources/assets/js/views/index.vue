@@ -70,18 +70,18 @@
         <div class="row">
             <div class="col-xl-12">
                 <div class="row">
-                    <div class="col-xl-4">
+                    <div class="col-xl-3">
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body" v-if="sale_note">
                                 <div class="widget-summary">
                                     <div class="widget-summary-col">
-                                        <div class="row">
+                                        <div class="row no-gutters">
                                             <div class="col-md-12 m-b-10">
                                                 <h2 class="card-title">Notas de venta</h2>
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="summary">
-                                                    <h4 class="title text-info">Total Pagado</h4>
+                                                    <h4 class="title text-info">Total <br>Pagado</h4>
                                                     <div class="info">
                                                         <strong class="amount text-info">S/ {{ sale_note.totals.total_payment }}</strong>
                                                     </div>
@@ -89,7 +89,7 @@
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="summary">
-                                                    <h4 class="title text-danger">Total por Pagar</h4>
+                                                    <h4 class="title text-danger">Total <br>por Pagar</h4>
                                                     <div class="info">
                                                         <strong class="amount text-danger">S/ {{ sale_note.totals.total_to_pay }}</strong>
                                                     </div>
@@ -97,7 +97,7 @@
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="summary">
-                                                    <h4 class="title">Total</h4>
+                                                    <h4 class="title">Total <br>&nbsp;</h4>
                                                     <div class="info">
                                                         <strong class="amount">S/ {{ sale_note.totals.total }}</strong>
                                                     </div>
@@ -114,18 +114,18 @@
                             </div>
                         </section>
                     </div>
-                    <div class="col-xl-4">
+                    <div class="col-xl-3">
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body" v-if="document">
                                 <div class="widget-summary">
                                     <div class="widget-summary-col">
-                                        <div class="row">
+                                        <div class="row no-gutters">
                                             <div class="col-md-12 m-b-10">
                                                 <h2 class="card-title">Comprobantes</h2>
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="summary">
-                                                    <h4 class="title text-info">Total Pagado</h4>
+                                                    <h4 class="title text-info">Total <br>Pagado</h4>
                                                     <div class="info">
                                                         <strong class="amount text-info">S/ {{ document.totals.total_payment }}</strong>
                                                     </div>
@@ -133,7 +133,7 @@
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="summary">
-                                                    <h4 class="title text-danger">Total por Pagar</h4>
+                                                    <h4 class="title text-danger">Total <br>por Pagar</h4>
                                                     <div class="info">
                                                         <strong class="amount text-danger">S/ {{ document.totals.total_to_pay }}</strong>
                                                     </div>
@@ -141,7 +141,7 @@
                                             </div>
                                             <div class="col-lg-4">
                                                 <div class="summary">
-                                                    <h4 class="title">Total</h4>
+                                                    <h4 class="title">Total <br>&nbsp;</h4>
                                                     <div class="info">
                                                         <strong class="amount">S/ {{ document.totals.total }}</strong>
                                                     </div>
@@ -158,19 +158,19 @@
                             </div>
                         </section>
                     </div>
-                    <div class="col-xl-4">
+                    <div class="col-xl-6">
                         <section class="card card-featured-left card-featured-secondary">
                             <div class="card-body" v-if="general">
                                 <div class="widget-summary">
                                     <div class="widget-summary-col">
                                         <div class="summary">
-                                            <div class="row">
+                                            <div class="row no-gutters">
                                                 <div class="col-md-12 m-b-10">
                                                     <h2 class="card-title">Totales</h2>
                                                 </div>
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title text-danger">Total notas de venta</h4>
+                                                        <h4 class="title text-danger">Total <br>notas de venta</h4>
                                                         <div class="info">
                                                             <strong class="amount text-danger">S/ {{ general.totals.total_sale_notes }}</strong>
                                                         </div>
@@ -178,7 +178,7 @@
                                                 </div>
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title text-info">Total comprobantes</h4>
+                                                        <h4 class="title text-info">Total <br>comprobantes</h4>
                                                         <div class="info">
                                                             <strong class="amount text-info">S/ {{ general.totals.total_documents }}</strong>
                                                         </div>
@@ -186,7 +186,7 @@
                                                 </div>
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title">Total</h4>
+                                                        <h4 class="title">Total <br>&nbsp;</h4>
                                                         <div class="info">
                                                             <strong class="amount">S/ {{ general.totals.total }}</strong>
                                                         </div>
@@ -213,7 +213,7 @@
                                 <div class="widget-summary">
                                     <div class="widget-summary-col">
                                         <div class="summary">
-                                            <div class="row">
+                                            <div class="row no-gutters">
                                                 <div class="col-md-12 m-b-10">
                                                     <h2 class="card-title">Compras
                                                         <el-tooltip class="item" effect="dark" content="Aplica filtro por establecimiento" placement="top-start">
@@ -223,7 +223,7 @@
                                                 </div> 
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title text-danger">Total percepciones</h4>
+                                                        <h4 class="title text-danger">Total <br>percepciones</h4>
                                                         <div class="info">
                                                             <strong class="amount text-danger">S/ {{ purchase.totals.purchases_total_perception }}</strong>
                                                         </div>
@@ -231,7 +231,7 @@
                                                 </div>
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title text-info">Total compras</h4>
+                                                        <h4 class="title text-info">Total <br>compras</h4>
                                                         <div class="info">
                                                             <strong class="amount text-info">S/ {{ purchase.totals.purchases_total }}</strong>
                                                         </div>
@@ -239,7 +239,7 @@
                                                 </div> 
                                                 <div class="col-lg-4">
                                                     <div class="summary">
-                                                        <h4 class="title">Total</h4>
+                                                        <h4 class="title">Total <br>&nbsp;</h4>
                                                         <div class="info">
                                                             <strong class="amount ">S/ {{ purchase.totals.total }}</strong>
                                                         </div>

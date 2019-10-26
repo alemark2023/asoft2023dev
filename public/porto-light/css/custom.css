@@ -252,3 +252,15 @@ ul.nav-main li i {
 .switch.switch-sm .ios-switch.on .handle {
     margin-left: 12px;
 }
+
+/* box chart */
+.widget-summary .summary .amount {
+    font-size: 1.1rem;
+}
+
+.notifications .notification-menu {
+    width: 280px;
+}
+.notifications .notification-menu .notification-title {
+    border-radius: 3px;
+}

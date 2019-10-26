@@ -9,7 +9,7 @@
         position: relative;
         margin: auto;
         height: 180px;
-        width: 300px;
+        width: 180px;
     }
     .chart-container .chartjs-render-monitor{
         height: inherit!important;
