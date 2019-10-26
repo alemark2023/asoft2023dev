@@ -180,7 +180,7 @@ ul.nav-main li i {
   transition: all 0.5s ease-in-out;
 }
 #switcher-top.active {
-  border-top: 30px solid #03c9a9;
+  border-top: 45px solid #03c9a9;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -188,7 +188,7 @@ ul.nav-main li i {
   transition: all 0.5s ease-in-out;
 }
 #switcher-top.active span {
-  margin-top: -27px;
+  margin-top: -35px;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -207,10 +207,10 @@ ul.nav-main li i {
 #switcher-list {
   border-right: 20px solid transparent;
   border-left: 20px solid transparent;
-  border-top: 30px solid rgba(52, 58, 64, .9);
+  border-top: 45px solid rgba(52, 58, 64, .9);
   z-index: 1030;
   position: fixed;
-  top: -30px;
+  top: -45px;
   margin: 0 auto;  
   left: 50%;
   min-width: 780px;
@@ -232,7 +232,11 @@ ul.nav-main li i {
 }
 #switcher-list .row {
   color: #fff;
-  margin-top: -27px;
+  margin-top: -35px;
+}
+#switcher-list .row a:hover {
+  color: #03c9a9;
+  text-decoration: none;
 }
 
 /* switch*/

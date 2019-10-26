@@ -101,18 +101,18 @@
 </header>
 
 <div class="container d-none d-sm-block">
-    <div id="switcher-top" class="d-flex justify-content-center">
+    <div id="switcher-top" class="d-flex justify-content-center switcher-hover">
         <span class="text-white py-0 px-5 text-center"><i class="fas fa-plus fa-fw"></i>Acceso Rápido</span>
     </div>
 </div>
 <div class="container d-none d-sm-block">
-    <div id="switcher-list" class="d-flex justify-content-center">
+    <div id="switcher-list" class="d-flex justify-content-center switcher-hover">
         <div class="row">
-            <div class="px-3"><a href="{{ route('tenant.documents.create') }}"><i class="fas fa-fw fa-file-invoice" aria-hidden="true"></i> Nuevo Comprobante</a></div>
-            <div class="px-3"><a href="{{ route('tenant.pos.index') }}"><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.documents.create') }}"><i class="fas fa-fw fa-file-invoice" aria-hidden="true"></i> Nuevo Comprobante</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.pos.index') }}"><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
             <div style="min-width: 220px;"></div>
-            <div class="px-3"><a href="{{ route('tenant.companies.create') }}"><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
-            <div class="px-3"><a href="{{ route('tenant.establishments.index') }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.companies.create') }}"><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.establishments.index') }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
         </div>
     </div>
 </div>
