@@ -5,7 +5,7 @@ $item_id = (isset($path[2])) ? $path[2] : 0;
 
 @endphp
 <div class="container">
-    <h2 class="carousel-title">Productos Destacados</h2>
+    <h2 class="carousel-title">Productos Relacionados</h2>
 
     <div class="featured-products owl-carousel owl-theme owl-dots-top">
 

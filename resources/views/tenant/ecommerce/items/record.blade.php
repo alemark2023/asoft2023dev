@@ -58,7 +58,7 @@
                 </div><!-- End .product-container -->
 
                 <div class="price-box">
-                    <span class="old-price">S/ {{ number_format($record->sale_unit_price, 2 )}}</span>
+                    <span class="old-price">S/ {{ number_format( ($record->sale_unit_price * 1.2 ) , 2 )}}</span>
                     <span class="product-price">S/ {{ number_format($record->sale_unit_price, 2 )}}</span>
                 </div><!-- End .price-box -->
 

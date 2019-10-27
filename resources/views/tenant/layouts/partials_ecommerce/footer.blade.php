@@ -127,7 +127,7 @@
             <div class="modal-body">
 
                 <div style="font-size: 2em;" class="alert alert-warning" role="alert">
-                    <i class="icon-ok"></i> Tu Producto ya ha sido esta agregado al carrito.
+                <i class="fas fa-exclamation"></i> Tu Producto ya está agregado al carrito.
                 </div>
             </div>
             <div class="modal-footer">
