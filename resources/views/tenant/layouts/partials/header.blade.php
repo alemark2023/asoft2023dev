@@ -18,7 +18,7 @@
         <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
             <div class="ios-switch off">
                 <div class="on-background background-fill"></div>
-                <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #ccc;">DEMO</span></div>
+                <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #fff;">DEMO</span></div>
                 <div class="handle"></div>
             </div>
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
@@ -28,7 +28,7 @@
         <a href="{{route('tenant.companies.create')}}">
         <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
             <div class="ios-switch on">
-                <div class="on-background background-fill"><span class="text-white" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
+                <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
                 <div class="state-background background-fill"></div>
                 <div class="handle"></div>
             </div>
@@ -44,26 +44,16 @@
                                   
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-bell text-secondary"></i>                        
-                    <span class="badge badge-red">&nbsp;!&nbsp;</span>
+                    <span class="badge badge-red">{{ $vc_document }}</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
-                    <div class="notification-title"><span class="float-right badge badge-default">{{ $vc_document }}</span>Pendientes de envío</div>
-                    <div class="content">
-                        {{-- <ul>
-                            <li>
-                                <a href="{{route('tenant.documents.not_sent')}}" class="clearfix">
-                                    <div class="image">
-                                        <i class="fas fa-file-alt bg-primary text-ligth"></i>
-                                    </div>
-                                    <span class="title">Tiene {{ $vc_document }} comprobante(s) pendientes de envío<span class="badge badge-warning"></span></span>
-                                    <!-- <span class="message">Pendientes de envio a SUNAT/OSE</span> -->
-                                </a>
-                            </li>
-                        </ul> --}}
-                        <div class="text-right">
-                            <a href="{{route('tenant.documents.not_sent')}}" class="view-more">Ir al listado de pendientes</a>
+                    <a href="{{route('tenant.documents.not_sent')}}">
+                        <div class="notification-title">
+                            <span class="float-right badge badge-default"><i class="fas fa-arrow-right"></i></span>Comprobantes pendientes de envío
                         </div>
-                    </div>
+                    </a>
+                    {{-- <div class="content">
+                    </div> --}}
                 </div>
             </li>
         </ul>
@@ -101,18 +91,18 @@
 </header>
 
 <div class="container d-none d-sm-block">
-    <div id="switcher-top" class="d-flex justify-content-center">
+    <div id="switcher-top" class="d-flex justify-content-center switcher-hover">
         <span class="text-white py-0 px-5 text-center"><i class="fas fa-plus fa-fw"></i>Acceso Rápido</span>
     </div>
 </div>
 <div class="container d-none d-sm-block">
-    <div id="switcher-list" class="d-flex justify-content-center">
+    <div id="switcher-list" class="d-flex justify-content-center switcher-hover">
         <div class="row">
-            <div class="px-3"><a href="{{ route('tenant.documents.create') }}"><i class="fas fa-fw fa-file-invoice" aria-hidden="true"></i> Nuevo Comprobante</a></div>
-            <div class="px-3"><a href="{{ route('tenant.pos.index') }}"><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.documents.create') }}"><i class="fas fa-fw fa-file-invoice" aria-hidden="true"></i> Nuevo Comprobante</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.pos.index') }}"><i class="fas fa-fw fa-cash-register" aria-hidden="true"></i> POS</a></div>
             <div style="min-width: 220px;"></div>
-            <div class="px-3"><a href="{{ route('tenant.companies.create') }}"><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
-            <div class="px-3"><a href="{{ route('tenant.establishments.index') }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.companies.create') }}"><i class="fas fa-fw fa-industry" aria-hidden="true"></i> Empresa</a></div>
+            <div class="px-3"><a class="py-3" href="{{ route('tenant.establishments.index') }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
         </div>
     </div>
 </div>
