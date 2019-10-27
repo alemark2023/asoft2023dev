@@ -95,3 +95,20 @@ function calculateTotalCart()
     
    
 }
+
+function logout()
+{
+	$.ajax({
+		url: "/ecommerce/logout",
+		method: 'get',
+		headers: {
+			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		},
+		success: function (data) {
+			location.reload()
+		},
+		error: function (error_data) {
+			
+		}
+	});
+}

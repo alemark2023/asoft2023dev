@@ -20,6 +20,7 @@ if ($hostname) {
         Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
         Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
         Route::get('ecommerce/login', 'Tenant\EcommerceController@showLogin')->name('tenant_ecommerce_login');
+        Route::get('ecommerce/logout', 'Tenant\EcommerceController@logout')->name('tenant_ecommerce_logout');
         Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
         Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
         Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');

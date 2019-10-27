@@ -23,25 +23,16 @@
                 <div class="dropdown-cart-total">
                     <span>{{ Auth::user()->email }} </span>
                     <a href="#" role="menuitem" class="btn-logout" data-toggle="tooltip" data-placement="bottom" title="Cerrar Session"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        onclick="event.preventDefault(); logout();">
                         <i class="fas fa-power-off"></i>
                     </a>
 
                 </div>
 
-                <!--<a type="button" class="btn" data-toggle="tooltip" data-placement="top"
-                    title="Tooltip on top">
-                    <i class="fas fa-power-off"></i>
-                </a>-->
+              
 
                 <div class="dropdown-cart-action text-right">
-                    <!--<a href="#" role="menuitem" class="btn-logout"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="fas fa-power-off"></i>
-                    </a>-->
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
+                    
 
                 </div>
             </div>

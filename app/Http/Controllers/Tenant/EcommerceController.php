@@ -95,6 +95,16 @@ class EcommerceController extends Controller
 
     }
 
+    public function logout()
+    {
+        Auth::logout();
+        return[
+            'success' => true,
+            'message' => 'Logout Success'
+        ];
+
+    }
+
     public function storeUser(Request $request)
     {
         try{
