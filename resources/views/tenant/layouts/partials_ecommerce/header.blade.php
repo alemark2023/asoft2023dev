@@ -81,8 +81,8 @@
          <div class="container">
              <div class="header-left">
                  <a href="{{ route("tenant.ecommerce.index") }}" class="logo" style="max-width: 180px">
-                    @if($vc_company->logo)
-                        <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}" alt="Logo" />
+                    @if($vc_company->logo_store)
+                        <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo_store) }}" alt="Logo" />
                     @else
                         <img src="{{asset('logo/700x300.jpg')}}" alt="Logo" />
                     @endif
