@@ -1,7 +1,7 @@
 <style>
     .btn-logout {
         font-size: 25px;
-        margin-left: 4%;
+        margin-left: 6%;
     }
 
 </style>
@@ -20,7 +20,7 @@
     <div class="dropdown-menu">
         <div class="dropdownmenu-wrapper">
 
-            <div class="dropdown-cart-total">
+            <div class="dropdown-cart-total d-flex justify-content-center" >
                 <span>{{ Auth::user()->email }} </span>
                 <a href="#" role="menuitem" class="btn-logout" data-toggle="tooltip" data-placement="bottom"
                     title="Cerrar Session" onclick="event.preventDefault(); logout();">
