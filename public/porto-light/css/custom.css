@@ -253,9 +253,16 @@ ul.nav-main li i {
     margin-left: 12px;
 }
 
+
+/* dashboard */
 /* box chart */
 .widget-summary .summary .amount {
     font-size: 1.1rem;
+}
+@media (max-width: 1440px) {
+  .widget-summary .summary .amount {
+      font-size: 0.8rem;
+  }
 }
 
 .notifications .notification-menu {
@@ -263,4 +270,8 @@ ul.nav-main li i {
 }
 .notifications .notification-menu .notification-title {
     border-radius: 3px;
+}
+
+.widget-summary .summary {
+    word-break: break-word;
 }
