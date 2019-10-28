@@ -55,7 +55,7 @@
                         </div>
                     </form>
                 </div>
-            <p class="text-center text-muted mt-3 mb-3">&copy; Copyright {{ date('Y') }}. Todos los derechos reservados</p>
+            {{-- <p class="text-center text-muted mt-3 mb-3">&copy; Copyright {{ date('Y') }}. Todos los derechos reservados</p> --}}
         </div>
     </section>
 @endsection
