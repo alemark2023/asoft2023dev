@@ -1,17 +1,15 @@
 <style>
     .btn-logout {
-
         font-size: 25px;
-      
     }
 
 </style>
-<div class="dropdown cart-dropdown" style="margin-left: 10px;">
+
+<div class="dropdown cart-dropdown" style="margin-left: 9px;">
 
     @guest
     <div class="header-contact">
-        <a class="login-link" href="{{route('tenant_ecommerce_login')}}"><strong style="font-size: 16px;">LOG
-                IN</strong></a>
+        <a class="login-link" href="{{route('tenant_ecommerce_login')}}"><strong style="font-size: 16px;">LOG IN</strong></a>
     </div>
     @else
     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -28,13 +26,7 @@
                     </a>
 
                 </div>
-
-              
-
-                <div class="dropdown-cart-action text-right">
-                    
-
-                </div>
+               
             </div>
         </div>
 

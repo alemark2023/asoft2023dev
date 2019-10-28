@@ -8,8 +8,8 @@
     .chart-container {
         position: relative;
         margin: auto;
-        height: 180px;
-        width: 180px;
+        height: 260px;
+        width: 190px;
     }
     .chart-container .chartjs-render-monitor{
         height: inherit!important;
