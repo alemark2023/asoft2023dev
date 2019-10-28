@@ -1,7 +1,7 @@
  <style>
 #header_bar .header-menu {
     max-height: 300px !important;
-   
+    overflow:auto;
     overflow-y: auto;
 }
 #header_bar .header-menu::-webkit-scrollbar-track
@@ -48,7 +48,9 @@
 
 .search_input {
     margin-bottom: 0.1rem;
+    border-radius: 20px !important;
 }
+
 .search_title{
 
 }
@@ -63,6 +65,7 @@
     background-color: #fff;
     border-color: #fff;
     box-shadow: none;
+  
 }
 
 .header-contact span {
@@ -78,8 +81,8 @@
          <div class="container">
              <div class="header-left">
                  <a href="{{ route("tenant.ecommerce.index") }}" class="logo" style="max-width: 180px">
-                    @if($vc_company->logo)
-                        <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}" alt="Logo" />
+                    @if($vc_company->logo_store)
+                        <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo_store) }}" alt="Logo" />
                     @else
                         <img src="{{asset('logo/700x300.jpg')}}" alt="Logo" />
                     @endif
@@ -92,7 +95,7 @@
 
                     <input placeholder="Buscar..." type="text" class="search_input form-control form-control-lg" v-model="value" v-on:keyup="autoComplete" />
                      <div class="header-menu">
-                         <ul>
+                         <ul v-if="results.length > 0">
                             <li v-for="result in results">
                                 <a :href="'/ecommerce/item/' + result.id" class="d-flex">
                                     <div class="flex-grow-1"><img style="max-width: 80px" :src="result.image_url_small" alt="England flag"> 
@@ -114,8 +117,8 @@
                      <i class="icon-menu"></i>
                  </button>
                  <div class="header-contact">
-                     <span><i class="fab fa-whatsapp"></i> Atención</span>
-                     <a href="tel:#"><strong>+999 111 888</strong></a>
+                     <span> Atención al</span>
+                     <i class="fab fa-whatsapp"></i> <a href="tel:#"><strong>999 111 888</strong></a>
                  </div><!-- End .header-contact -->
 
                 @include('tenant.layouts.partials_ecommerce.cart_dropdown')
@@ -160,7 +163,7 @@
                     })
 
                  } else {
-                     this.results = this.suggestions
+                     this.results = [] //this.suggestions
                  }
              },
              getItems() {
@@ -172,7 +175,7 @@
                      .then(function (myJson) {
                          // console.log(myJson.data);
                          contex.suggestions = myJson.data
-                         contex.results = contex.suggestions
+                        // contex.results = contex.suggestions
                      });
              },
              suggestionClick(item) {

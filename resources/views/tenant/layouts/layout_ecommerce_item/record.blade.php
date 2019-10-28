@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>Porto - Bootstrap eCommerce Template</title>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
     <meta name="author" content="SW-THEMES">
@@ -24,6 +24,8 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/rating.css') }}">
     
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
@@ -32,7 +34,8 @@
 <body>
     <div class="page-wrapper">
 
-        @include('tenant.layouts.partials_ecommerce.header_options')
+        @include('tenant.layouts.partials_ecommerce.header')
+        @include('tenant.layouts.partials_ecommerce.header_bottom_sticky')
         
 
         <main class="main">
@@ -49,11 +52,7 @@
                 <div class="row">
                     <div class="col-lg-9">
 
-
                         @yield('content')
-                      
-
-
 
                     </div><!-- End .col-lg-9 -->
 
@@ -64,7 +63,7 @@
             </div><!-- End .container -->
 
             <div class="featured-section">
-                @include('tenant.layouts.partials_ecommerce.featured_products_bottom')
+                @include('tenant.layouts.partials_ecommerce.featured_products_bottom' )
             </div><!-- End .featured-section -->
         </main><!-- End .main -->
 
@@ -91,6 +90,7 @@
     <!-- Main JS File -->
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/rating.js') }}"></script>
 
     @stack('scripts')
 

@@ -35,7 +35,7 @@ chmod +x /usr/local/bin/docker-compose
 
 echo "Cloning the repository"
 rm -rf "$PATH_INSTALL/$DIR"
-git clone "$PROYECT" "$PATH_INSTALL/$DIR" -b fusion
+git clone "$PROYECT" "$PATH_INSTALL/$DIR"
 
 echo "Configuring proxy"
 docker network create proxynet

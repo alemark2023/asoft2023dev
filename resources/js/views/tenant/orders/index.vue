@@ -21,18 +21,18 @@
         <data-table :resource="resource">
           <tr slot="heading" width="100%">
             <th>#</th>
-            <th>External ID</th>
+            <th>Codigo de Pedido</th>
             <th>Cliente</th>
             <th class="text-center" >Detalle Productos</th>
             <th>Total</th>
             <th>Fecha Emision</th>
-            <th>Medio Pago</th>
-            <th>Referencia Comprobante</th>
+           <!-- <th>Medio Pago</th> -->
+            <th>Comprobante Electronico</th>
           </tr>
           <tr></tr>
           <tr slot-scope="{ index, row }">
             <td>{{ index }}</td>
-            <td>{{ row.external_id }}</td>
+            <td>{{ row.order_id }}</td>
             <td>{{ row.customer }}</td>
             <td class="text-center">
               <template>
@@ -52,8 +52,8 @@
             </td>
             <td>{{row.total}}</td>
             <td>{{row.created_at}}</td>
-            <td>{{row.reference_payment}}</td>
-            <td>{{row.document_external_id}}</td>
+           <!-- <td>{{row.reference_payment}}</td> -->
+            <td>{{row.number_document}}</td>
           </tr>
         </data-table>
       </div>

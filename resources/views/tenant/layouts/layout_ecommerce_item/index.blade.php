@@ -22,11 +22,14 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/rating.css') }}">
+
 </head>
 <body>
     <div class="page-wrapper">
         
-        @include('tenant.layouts.partials_ecommerce.header_options')
+        @include('tenant.layouts.partials_ecommerce.header')
+        @include('tenant.layouts.partials_ecommerce.header_bottom_sticky')
 
         <main class="main">
             <div class="banner banner-cat" style="background-image: url('{{ asset( '/porto-ecommerce/assets/images/banners/banner-top.jpg' ) }}">
@@ -254,6 +257,8 @@
      <!-- Main JS File -->
      <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
      <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
+     <script src="{{ asset('porto-ecommerce/assets/js/rating.js') }}"></script>
+
 </body>
 
 <!-- Mirrored from portotheme.com/html/porto_ecommerce/demo-6/category.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 07 Sep 2019 03:40:07 GMT -->

@@ -20,7 +20,15 @@
                                 <el-switch v-model="form.cron" active-text="Si" inactive-text="No" @change="submit"></el-switch>
                                 <small class="form-control-feedback" v-if="errors.cron" v-text="errors.cron[0]"></small>
                             </div>
+                        </div>                        
+                        <div class="col-md-12 mt-4" v-if="typeUser != 'integrator'">
+                            <label class="control-label">Envío de comprobantes a servidor alterno de SUNAT</label>
+                            <div class="form-group" :class="{'has-danger': errors.sunat_alternate_server}">
+                                <el-switch v-model="form.sunat_alternate_server" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.sunat_alternate_server" v-text="errors.sunat_alternate_server[0]"></small>
+                            </div>
                         </div>
+
                         <!-- <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Cuenta contable venta subtotal</label>
                             <div class="form-group" :class="{'has-danger': errors.subtotal_account}">
@@ -63,6 +71,7 @@
                     stock: true,
                     cron: true,
                     id: null,
+                    sunat_alternate_server: false,
                     subtotal_account:null
                 };
             },

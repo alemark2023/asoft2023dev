@@ -86,7 +86,7 @@
                             <label class="control-label">
                                 Categoría 
                             </label>
-                            <el-select v-model="form.category_id" filterable >
+                            <el-select v-model="form.category_id" filterable clearable>
                                 <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.category_id" v-text="errors.category_id[0]"></small>
@@ -98,7 +98,7 @@
                             <label class="control-label">
                                 Marca 
                             </label>
-                            <el-select v-model="form.brand_id" filterable >
+                            <el-select v-model="form.brand_id" filterable clearable >
                                 <el-option v-for="option in brands" :key="option.id" :value="option.id" :label="option.name"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.brand_id" v-text="errors.brand_id[0]"></small>

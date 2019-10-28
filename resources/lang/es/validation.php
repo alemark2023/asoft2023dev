@@ -201,6 +201,6 @@ return [
         'time_entry' => 'hora ingreso',
         'date_exit' => 'fecha salida',
         'time_exit' => 'hora salida',
-      
+        'sale_unit_price' => 'precio unitario de venta',
     ],
 ];

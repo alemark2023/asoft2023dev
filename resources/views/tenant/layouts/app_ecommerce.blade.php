@@ -23,6 +23,8 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
+    
+    <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/rating.css') }}">
 
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
@@ -39,9 +41,16 @@
                 <div class="row">
                     <div class="col-lg-9">
 
-                        @include('tenant.layouts.partials_ecommerce.home_slider')
+                    @php
+                        $tagid = request()->query('tagid');
+                    @endphp
+
+                        @if(!$tagid)
+                            @include('tenant.layouts.partials_ecommerce.home_slider')
+                        @endif
 
                         <div class="row">
+
                             {{--<div class="col-md-4">
                                 <div class="banner banner-image">
                                     <a href="#">
@@ -95,7 +104,7 @@
 
                     <aside class="sidebar-home col-lg-3 order-lg-first">
                         <div class="side-menu-container">
-                            <h2>CATEGORIES</h2>
+                            <h2>CATEGORIAS</h2>
                             @include('tenant.layouts.partials_ecommerce.sidemenu')
 
                         </div><!-- End .side-menu-container -->
@@ -193,8 +202,8 @@
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
 
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
+    
 
-   
 
     @stack('scripts')
 </body>

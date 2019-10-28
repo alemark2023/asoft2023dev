@@ -1,35 +1,37 @@
-<div class="dropdown cart-dropdown">
-    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-    	<i class="icon-user fa-2x text-white"></i>
-    </a>
+<style>
+    .btn-logout {
+        font-size: 25px;
+        margin-left: 6%;
+    }
+
+</style>
+
+<div class="dropdown cart-dropdown" style="margin-left: 9px;">
+
+    @guest
+    <div class="header-contact">
+        <a class="login-link" href="{{route('tenant_ecommerce_login')}}"><strong style="font-size: 16px;">LOG
+                IN</strong></a>
+    </div>
+    @else
+    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+        data-display="static">
+        <i class="icon-user fa-2x text-white"></i> </a>
     <div class="dropdown-menu">
         <div class="dropdownmenu-wrapper">
 
-            <div class="dropdown-cart-products">
+            <div class="dropdown-cart-total d-flex justify-content-center" >
+                <span>{{ Auth::user()->email }} </span>
+                <a href="#" role="menuitem" class="btn-logout" data-toggle="tooltip" data-placement="bottom"
+                    title="Cerrar Session" onclick="event.preventDefault(); logout();">
+                    <i class="fas fa-power-off"></i>
+                </a>
 
-            </div><!-- End .cart-product -->
+            </div>
 
-            <div class="dropdown-cart-total">
-                @guest
-                	<span>Invitado</span>
-                @else
-                	<span>{{ Auth::user()->email }}</span>
-                @endguest
-            </div><!-- End .dropdown-cart-total -->
+        </div>
+    </div>
 
-            <div class="dropdown-cart-action">
-                <a  href="{{ route('tenant_detail_cart') }}" class="btn">Ver Carrito</a>
-                @guest
-                	<a href="{{route('tenant_ecommerce_login')}}" class="btn">Ingresar</a>
-                @else
-                	<a role="menuitem" href="{{ route('logout') }}" class="btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        Salir
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
-                @endguest
-            </div><!-- End .dropdown-cart-total -->
-        </div><!-- End .dropdownmenu-wrapper -->
-    </div><!-- End .dropdown-menu -->
-</div><!-- End .dropdown -->
+    @endguest
+
+</div>

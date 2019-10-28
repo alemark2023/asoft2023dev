@@ -22,8 +22,8 @@
                                             id="select-width">
                                         <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                                     </el-select>
-                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock" placement="bottom" :disabled="recordItem != null">
-                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-truck-loading"></i></el-button>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
+                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
@@ -173,7 +173,10 @@
                     <div class="col-md-12 mt-2">
                         <el-collapse  v-model="activePanel">
                             <!-- <el-collapse-item :disabled="recordItem != null" title="Información adicional atributos UBL 2.1" name="1"> -->
-                            <el-collapse-item :disabled="recordItem != null" title="+ Agregar Descuentos/Cargos/Atributos especiales" name="1">
+                            <el-collapse-item :disabled="recordItem != null"  name="1">
+                                <template slot="title">
+                                    <i style="color:green;" class="fa fa-plus"></i> &nbsp; Agregar Descuentos/Cargos/Atributos especiales<i class="header-icon el-icon-information"></i>
+                                </template>
                                 <!--<div>-->
                                     <!--<div class="row">-->
                                         <div v-if="discount_types.length > 0">

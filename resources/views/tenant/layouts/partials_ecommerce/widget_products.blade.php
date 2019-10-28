@@ -1,5 +1,5 @@
 <div class="widget widget-featured">
-            <h3 class="widget-title">Featured Products</h3>
+            <h3 class="widget-title">Productos Destacados</h3>
 
             <div class="widget-body">
                 <div class="owl-carousel widget-featured-products">

@@ -18,6 +18,8 @@ class OrderCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'external_id' => $row->external_id,
+                'number_document' => $row->number_document,
+                'order_id' => str_pad($row->id, 6, "0", STR_PAD_LEFT),
                 'customer' => $row->customer->apellidos_y_nombres_o_razon_social,
                 'customer_email' => $row->customer->correo_electronico,
                 'items' => $row->items,

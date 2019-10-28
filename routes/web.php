@@ -20,9 +20,13 @@ if ($hostname) {
         Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
         Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
         Route::get('ecommerce/login', 'Tenant\EcommerceController@showLogin')->name('tenant_ecommerce_login');
+        Route::get('ecommerce/logout', 'Tenant\EcommerceController@logout')->name('tenant_ecommerce_logout');
         Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
         Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
         Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
+        Route::post('ecommerce/rating_item', 'Tenant\EcommerceController@ratingItem')->name('tenant_ecommerce_rating_item');
+        Route::get('ecommerce/rating_item/{id}', 'Tenant\EcommerceController@getRating');
+
 
 
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
@@ -505,12 +509,12 @@ if ($hostname) {
            Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
 
            //Cuenta
-           Route::get('account/payment_index', 'Tenant\AccountController@paymentIndex')->name('tenant.payment.index');
-           Route::get('account/configuration', 'Tenant\AccountController@index')->name('tenant.configuration.index');
-           Route::get('account/payment_records', 'Tenant\AccountController@paymentRecords');
-           Route::get('account/tables', 'Tenant\AccountController@tables');
-           Route::post('account/update_plan', 'Tenant\AccountController@updatePlan');
-           Route::post('account/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
+           Route::get('cuenta/payment_index', 'Tenant\AccountController@paymentIndex')->name('tenant.payment.index');
+           Route::get('cuenta/configuration', 'Tenant\AccountController@index')->name('tenant.configuration.index');
+           Route::get('cuenta/payment_records', 'Tenant\AccountController@paymentRecords');
+           Route::get('cuenta/tables', 'Tenant\AccountController@tables');
+           Route::post('cuenta/update_plan', 'Tenant\AccountController@updatePlan');
+           Route::post('cuenta/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
 
 
 
