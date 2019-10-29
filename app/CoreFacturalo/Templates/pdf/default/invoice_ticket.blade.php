@@ -118,8 +118,8 @@
     @if ($document->prepayments) 
         @foreach($document->prepayments as $p)
         <tr>
-            <td><p class="desc">Anticipo N° {{$loop->iteration}}:</p></td>
-            <td><p class="desc">{{$p->number}} - {{ $document->currency_type->symbol }} {{$p->amount}}</p></td> 
+            <td><p class="desc">Anticipo :</p></td>
+            <td><p class="desc">{{$p->number}}</p></td> 
         </tr>
         @endforeach
     @endif
@@ -212,6 +212,26 @@
             <td colspan="5" class="border-bottom"></td>
         </tr>
     @endforeach
+
+    @if ($document->prepayments) 
+        @foreach($document->prepayments as $p)
+        <tr>
+            <td class="text-center desc-9 align-top">
+                1
+            </td>
+            <td class="text-center desc-9 align-top">NIU</td>
+            <td class="text-left desc-9 align-top">
+                ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
+            </td>
+            <td class="text-right  desc-9 align-top">-{{ number_format($p->total, 2) }}</td> 
+            <td class="text-right  desc-9 align-top">-{{ number_format($p->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="border-bottom"></td>
+        </tr> 
+        @endforeach
+    @endif
+    
         @if($document->total_exportation > 0)
             <tr>
                 <td colspan="4" class="text-right font-bold desc">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>

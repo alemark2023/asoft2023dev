@@ -284,6 +284,10 @@ class Facturalo
             $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0; 
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
+            $total_prepayment = $this->document->total_prepayment != '' ? '10' : '0';
+            $total_discount = $this->document->total_discount != '' ? '10' : '0';
+            $was_deducted_prepayment = $this->document->was_deducted_prepayment ? '10' : '0';
+
             $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
             $total_free        = $this->document->total_free != '' ? '10' : '0';
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
@@ -292,7 +296,7 @@ class Facturalo
             $perception       = $this->document->perception != '' ? '10' : '0';
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
-            $quantity_rows     = count($this->document->items);
+            $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
 
             $extra_by_item_description = 0;
             $discount_global = 0;
@@ -326,6 +330,9 @@ class Facturalo
                     $total_exonerated +
                     $perception +
                     $total_taxed+
+                    $total_prepayment +
+                    $total_discount +
+                    $was_deducted_prepayment +
                     $customer_department_id+
                     $total_plastic_bag_taxes],
                 'margin_top' => 0,

@@ -247,11 +247,13 @@ class DocumentInput
                     $number = $row['number'];
                     $document_type_id = $row['document_type_id'];
                     $amount = $row['amount'];
+                    $total = $row['total'];
 
                     $prepayments[] = [
                         'number' => $number,
                         'document_type_id' => $document_type_id,
-                        'amount' => $amount
+                        'amount' => $amount,
+                        'total' => $total
                     ];
                 }
                 return $prepayments;

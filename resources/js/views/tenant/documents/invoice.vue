@@ -601,7 +601,8 @@
                 this.form.prepayments[index].number = prepayment.description 
                 this.form.prepayments[index].document_type_id = prepayment.document_type_id 
                 this.form.prepayments[index].amount = prepayment.amount
-                 
+                this.form.prepayments[index].total = prepayment.total
+
                 await this.changeTotalPrepayment()
  
 
@@ -612,6 +613,7 @@
                     number: null,
                     document_type_id:  null,
                     amount: 0, 
+                    total: 0,
                 });
 
                 this.changeTotalPrepayment()
