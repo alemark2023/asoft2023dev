@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <cash-index  ></cash-index>
+    <cash-index :type-user="{{json_encode(Auth::user()->type)}}" ></cash-index>
 
 @endsection

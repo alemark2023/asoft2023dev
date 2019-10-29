@@ -18,6 +18,13 @@
                             <small class="form-control-feedback" v-if="errors.beginning_balance" v-text="errors.beginning_balance[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.reference_number}">
+                            <label class="control-label">Número de Referencia</label>
+                            <el-input :maxlength="20" v-model="form.reference_number"></el-input>
+                            <small class="form-control-feedback" v-if="errors.reference_number" v-text="errors.reference_number[0]"></small>
+                        </div>
+                    </div>
                 </div> 
             </div>
             <div class="form-actions text-right mt-4">
@@ -72,7 +79,8 @@
                     beginning_balance: 0,
                     final_balance: 0,
                     income: 0, 
-                    state: true
+                    state: true,
+                    reference_number: null
                 }
             },
             create() {
