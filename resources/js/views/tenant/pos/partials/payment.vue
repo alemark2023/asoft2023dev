@@ -103,7 +103,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Ingrese monto</label> 
-                                    <el-input v-model="amount" @input="inputAmount" :readonly="true">
+                                    <el-input v-model="enter_amount" @input="enterAmount()" >
                                         <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                                     </el-input> 
 
@@ -284,6 +284,7 @@
                 resource_documents: 'documents', 
                 resource_payments: 'document_payments', 
                 amount: 0,
+                enter_amount: 0,
                 difference: 0,
                 button_payment: false,
                 input_item: '',
@@ -348,6 +349,7 @@
             setAmount(amount){
                 // this.amount = parseFloat(this.amount) + parseFloat(amount)
                 this.amount =  parseFloat(amount) //+ parseFloat(amount)
+                this.enter_amount =  parseFloat(amount) //+ parseFloat(amount)
                 this.inputAmount()
             },
             setAmountCash(amount)
@@ -364,6 +366,34 @@
 
                 this.setAmount(acum_payment)
               
+            },
+            enterAmount(){
+
+                let item = _.last(this.payments, { 'payment_method_type_id' : '01' }) 
+                item.payment = parseFloat(this.enter_amount)
+                // this.setAmount(item.payment)
+
+                let acum_payment = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_payment += parseFloat(item.payment)
+                })
+                
+                // this.amount = item.payment
+                this.amount = acum_payment
+                this.difference = this.amount - this.form.total
+
+                if(isNaN(this.difference)) {
+                    this.button_payment = true
+                    this.difference = "-"
+                }else if(this.difference >=0){
+                    this.button_payment = false
+                    this.difference = this.amount - this.form.total
+                }else{
+                    this.button_payment = true
+                } 
+                this.difference = _.round(this.difference,2)  
+
             },
             inputAmount(){
 
