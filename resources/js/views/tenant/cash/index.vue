@@ -59,7 +59,7 @@
             </div>
  
         </div>
-        <cash-form :showDialog.sync="showDialog"
+        <cash-form :showDialog.sync="showDialog" :typeUser="typeUser"
                             :recordId="recordId"></cash-form>
     </div>
 </template>
@@ -77,7 +77,7 @@
         data() {
             return {
                 showDialog: false,
-                open_cash: false,
+                open_cash: true,
                 resource: 'cash',
                 recordId: null,
                 cash:null,
@@ -85,15 +85,15 @@
         },
         async created() {
 
-            await this.$http.get(`/${this.resource}/opening_cash`)
+            /*await this.$http.get(`/${this.resource}/opening_cash`)
                 .then(response => {
                     this.cash = response.data.cash 
                     this.open_cash = (this.cash) ? false : true                   
-                })
+                })*/
  
-            this.$eventHub.$on('openCash', () => {
+            /*this.$eventHub.$on('openCash', () => {
                 this.open_cash = false
-            })
+            })*/
 
         },
         methods: {
