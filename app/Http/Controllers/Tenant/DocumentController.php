@@ -591,12 +591,20 @@ class DocumentController extends Controller
 
     }
 
-    
+    private function calulateBalance()
+    {
+
+    }
 
     private function transformReportPayment($resource)
     {
 
         $records = $resource->transform(function($row) {
+
+            $total_paid = collect($row->payments)->sum('payment');
+            $total = $row->total;
+            $total_difference = round($total - $total_paid, 2);
+
             return (object)[
 
                 'id' => $row->id,
@@ -613,7 +621,8 @@ class DocumentController extends Controller
                 'payment3' =>   ( isset($row->payments[2]) ) ?  number_format($row->payments[2]->payment, 2) : '',   
                 'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '',   
 
-                /*'balance' => $row->id,*/
+                'balance' => $total_difference,
+
                 'reference1' => ( isset($row->payments[0]) ) ?  $row->payments[0]->reference : '',   
                 'reference2' =>  ( isset($row->payments[1]) ) ?  $row->payments[1]->reference : '', 
                 'reference3' =>  ( isset($row->payments[2]) ) ?  $row->payments[2]->reference : '',   

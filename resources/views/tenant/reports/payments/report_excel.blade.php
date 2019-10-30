@@ -32,6 +32,7 @@
 
                                 <th>Pago 3</th>
                                 <th>Pago 4</th>
+                                <th>Saldo</th>
                                 <th class="" >Referencia 1</th>
                                 <th class="" >Referencia 2</th>
                                 <th>Referencia 3</th>
@@ -56,8 +57,13 @@
                                 <td class="celda">{{$value->payment1 }}</td>
                                 <td class="celda">{{$value->payment2 }}</td>
 
+                               
+
                                 <td class="celda">{{$value->payment3 }}</td>
                                 <td class="celda">{{$value->payment4 }}</td>
+
+                                <td  class="celda">{{$value->balance }} </td>
+
                                 <td class="celda">{{$value->reference1 }}</td>
                                 <td class="celda">{{$value->reference2 }}</td>
                                 <td class="celda">{{$value->reference3 }}</td>
