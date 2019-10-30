@@ -206,6 +206,8 @@ if ($hostname) {
 
             Route::post('documents/import', 'Tenant\DocumentController@import');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
+
+            Route::get('documents/payments/excel', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
             
 
             //Contingencies

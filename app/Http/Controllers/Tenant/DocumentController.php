@@ -42,6 +42,8 @@ use Illuminate\Support\Facades\Cache;
 use App\Imports\DocumentsImport;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
+use App\Exports\PaymentExport;
+use Carbon\Carbon;
 
 
 class DocumentController extends Controller
@@ -587,6 +589,50 @@ class DocumentController extends Controller
                        
         return compact( 'customers', 'document_types','series','establishments', 'state_types');
 
+    }
+
+    
+
+    private function transformReportPayment($resource)
+    {
+
+        $records = $resource->transform(function($row) {
+            return (object)[
+
+                'id' => $row->id,
+                'ruc' => $row->customer->number,
+                'date' =>  $row->date_of_issue->format('Y-m-d'),
+                'invoice' => $row->number_full,
+                'comercial_name' => $row->customer->trade_name,
+                'business_name' => $row->customer->name,
+                'zone' => $row->customer->department->description,
+                'total' => number_format($row->total, 2),
+
+                'payment1' =>  ( isset($row->payments[0]) ) ?  number_format($row->payments[0]->payment, 2) : '',   
+                'payment2' =>  ( isset($row->payments[1]) ) ?  number_format($row->payments[1]->payment, 2) : '',   
+                'payment3' =>   ( isset($row->payments[2]) ) ?  number_format($row->payments[2]->payment, 2) : '',   
+                'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '',   
+
+                /*'balance' => $row->id,*/
+                'reference1' => ( isset($row->payments[0]) ) ?  $row->payments[0]->reference : '',   
+                'reference2' =>  ( isset($row->payments[1]) ) ?  $row->payments[1]->reference : '', 
+                'reference3' =>  ( isset($row->payments[2]) ) ?  $row->payments[2]->reference : '',   
+                'reference4' =>  ( isset($row->payments[3]) ) ?  $row->payments[3]->reference : '', 
+            ];
+        });
+
+        return $records;
+    }
+
+    public function report_payments()
+    {
+        $records = Document::where('document_type_id', '01')->get();
+
+        $source =  $this->transformReportPayment( $records );
+
+        return (new PaymentExport)
+                ->records($source)
+                ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
     }
 
 }
