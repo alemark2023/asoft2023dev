@@ -53,10 +53,20 @@ class CashController extends Controller
     public function tables()
     {
         $user = auth()->user();
-       // $users = User::whereIn('type', ['seller', 'admin'])->get();
-        $users = User::where('type', 'seller')->get();
-        $users->push($user);
-        
+        $type = $user->type;
+        $users = array();
+
+        switch($type)
+        {
+            case 'admin':
+                $users = User::where('type', 'seller')->get();
+                $users->push($user);
+                break;
+            case 'seller':
+                $users = User::where('id', $user->id)->get();
+                break;
+        }
+
         return compact('users', 'user');
     }
 
