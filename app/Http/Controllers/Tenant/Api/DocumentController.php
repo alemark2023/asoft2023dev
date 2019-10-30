@@ -152,7 +152,7 @@ class DocumentController extends Controller
         $record = Document::all();
         $records = new DocumentCollection($record);
 
-        return $record;
+        return $records;
     }
 
 }
