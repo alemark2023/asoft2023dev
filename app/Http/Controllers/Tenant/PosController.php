@@ -60,6 +60,7 @@ class PosController extends Controller
                                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
+                                    'is_set' => (bool) $row->is_set,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,            
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
