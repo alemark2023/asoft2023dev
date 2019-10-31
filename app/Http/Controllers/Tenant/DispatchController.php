@@ -57,6 +57,10 @@ class DispatchController extends Controller
     {
         $document = Document::find($document_id);
 
+        if(!$document){
+            return view('tenant.dispatches.create');
+        }
+
         return view('tenant.dispatches.form', compact('document'));
     }
 

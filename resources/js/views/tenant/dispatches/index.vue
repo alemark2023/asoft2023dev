@@ -5,9 +5,9 @@
             <ol class="breadcrumbs">
                 <li class="active"><span>Guias de remisión</span></li>
             </ol>
-            <!-- <div class="right-wrapper pull-right" v-if="typeUser != 'integrator'">
+            <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
-            </div> -->
+            </div>
         </div>
         <div class="card mb-0">
             <div class="card-body">

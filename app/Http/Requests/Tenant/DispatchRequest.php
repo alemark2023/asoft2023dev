@@ -48,6 +48,22 @@ class DispatchRequest extends FormRequest
             'license_plate'=> [
                 'required',
             ],
+            'license_plate'=> [
+                'required',
+            ],
+
+            'customer_id'=> [
+                'required',
+            ],
+            'transport_mode_type_id'=> [
+                'required',
+            ],
+            // 'license_plate'=> [
+            //     'required',
+            // ],
+            // 'license_plate'=> [
+            //     'required',
+            // ],
 
             
            
