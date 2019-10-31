@@ -22,6 +22,7 @@ return [
     'customer_multi_address' => env('CUSTOMER_MULTI_ADDRESS', false),
     'name_certificate_cron' => env('NAME_CERTIFICATE_CRON', 'none'),
     'import_documents' => env('IMPORT_DOCUMENTS', false),
+    'import_documents_second_format' => env('IMPORT_DOCUMENTS_SECOND_FORMAT', false),
     'enabled_template_ticket_80' => env('ENABLED_TEMPLATE_TICKET_80', false),
     'enabled_discount_global' => env('ENABLED_DISCOUNT_GLOBAL', false),
 
