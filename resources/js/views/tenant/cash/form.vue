@@ -121,6 +121,7 @@
                 return response
             },
             async submit() {
+                this.loading_submit = true
                 if(!this.recordId)
                 {
                     if(await this.openingCashCkeck())
@@ -130,11 +131,12 @@
                             type: 'warning',
                             duration: 5000
                         });
+                        this.loading_submit = false
                         return false
                     }
                 }
 
-                this.loading_submit = true
+              
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
