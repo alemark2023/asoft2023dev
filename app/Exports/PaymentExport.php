@@ -17,12 +17,19 @@ class PaymentExport implements  FromView, ShouldAutoSize
         
         return $this;
     }
+
+    public function payment_count($value) {
+        $this->payment_count = $value;
+        return $this;
+    }
     
     
     
     public function view(): View {
         return view('tenant.reports.payments.report_excel', [
             'records'=> $this->records,
+            'payment_count'=> $this->payment_count,
+
         ]);
     }
 }

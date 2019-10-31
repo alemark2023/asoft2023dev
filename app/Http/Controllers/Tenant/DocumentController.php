@@ -49,9 +49,11 @@ use Carbon\Carbon;
 class DocumentController extends Controller
 {
     use StorageDocument;
+    private $max_count_payment = 0;
 
     public function __construct()
-    {
+    {   
+       
         $this->middleware('input.request:document,web', ['only' => ['store']]);
     }
 
@@ -591,9 +593,13 @@ class DocumentController extends Controller
 
     }
 
-    private function calulateBalance()
-    {
-
+    private function updateMaxCountPayments($value)
+    {   
+        if($value > $this->max_count_payment)
+        {
+            $this->max_count_payment = $value;
+        }
+       // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
     }
 
     private function transformReportPayment($resource)
@@ -604,6 +610,8 @@ class DocumentController extends Controller
             $total_paid = collect($row->payments)->sum('payment');
             $total = $row->total;
             $total_difference = round($total - $total_paid, 2);
+
+            $this->updateMaxCountPayments($row->payments->count());
 
             return (object)[
 
@@ -616,17 +624,19 @@ class DocumentController extends Controller
                 'zone' => $row->customer->department->description,
                 'total' => number_format($row->total, 2),
 
-                'payment1' =>  ( isset($row->payments[0]) ) ?  number_format($row->payments[0]->payment, 2) : '',   
+                'payments' => $row->payments,
+
+                /*'payment1' =>  ( isset($row->payments[0]) ) ?  number_format($row->payments[0]->payment, 2) : '',   
                 'payment2' =>  ( isset($row->payments[1]) ) ?  number_format($row->payments[1]->payment, 2) : '',   
                 'payment3' =>   ( isset($row->payments[2]) ) ?  number_format($row->payments[2]->payment, 2) : '',   
-                'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '',   
+                'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '', */  
 
                 'balance' => $total_difference,
 
-                'reference1' => ( isset($row->payments[0]) ) ?  $row->payments[0]->reference : '',   
+                /*'reference1' => ( isset($row->payments[0]) ) ?  $row->payments[0]->reference : '',   
                 'reference2' =>  ( isset($row->payments[1]) ) ?  $row->payments[1]->reference : '', 
                 'reference3' =>  ( isset($row->payments[2]) ) ?  $row->payments[2]->reference : '',   
-                'reference4' =>  ( isset($row->payments[3]) ) ?  $row->payments[3]->reference : '', 
+                'reference4' =>  ( isset($row->payments[3]) ) ?  $row->payments[3]->reference : '', */
             ];
         });
 
@@ -635,12 +645,15 @@ class DocumentController extends Controller
 
     public function report_payments()
     {
+       
         $records = Document::where('document_type_id', '01')->get();
 
         $source =  $this->transformReportPayment( $records );
 
+
         return (new PaymentExport)
                 ->records($source)
+                ->payment_count($this->max_count_payment)
                 ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
     }
 

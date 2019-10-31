@@ -10,6 +10,7 @@
     <body>
         <div>
             <h3 align="center" class="title"><strong>Reporte Pagos</strong></h3>
+
         </div>
         <br>
         @if(!empty($records))
@@ -27,17 +28,16 @@
                                 <th>Razon Social</th>
                                 <th>Zona</th>
                                 <th class="">Total Factura</th>
-                                <th>Pago 1</th>
-                                <th>Pago 2</th>
 
-                                <th>Pago 3</th>
-                                <th>Pago 4</th>
+                                @for ($i = 1; $i <= $payment_count; $i++)
+                                     <th>Pago {{$i}}</th>
+                                @endfor
+                             
                                 <th>Saldo</th>
-                                <th class="" >Referencia 1</th>
-                                <th class="" >Referencia 2</th>
-                                <th>Referencia 3</th>
 
-                                <th>Referencia 4</th>
+                                @for ($i = 1; $i <= $payment_count; $i++)
+                                     <th>Referencia {{$i}}</th>
+                                @endfor
 
                             </tr>
                         </thead>
@@ -54,21 +54,17 @@
                                 <td class="celda">{{$value->business_name }}</td>
                                 <td class="celda">{{$value->zone }}</td>
                                 <td class="celda">{{$value->total }}</td>
-                                <td class="celda">{{$value->payment1 }}</td>
-                                <td class="celda">{{$value->payment2 }}</td>
 
-                               
-
-                                <td class="celda">{{$value->payment3 }}</td>
-                                <td class="celda">{{$value->payment4 }}</td>
+                                @for ($i = 0; $i < $payment_count; $i++)
+                                    <td class="celda">{{  ( isset($value->payments[$i]) ) ?  number_format($value->payments[$i]->payment, 2) : '' }}</td>
+                                @endfor
 
                                 <td  class="celda">{{$value->balance }} </td>
 
-                                <td class="celda">{{$value->reference1 }}</td>
-                                <td class="celda">{{$value->reference2 }}</td>
-                                <td class="celda">{{$value->reference3 }}</td>
+                                @for ($i = 0; $i < $payment_count; $i++)
+                                    <td class="celda">{{ ( isset($value->payments[$i]) ) ?  $value->payments[$i]->reference : '' }}</td>
+                                @endfor
 
-                                <td class="celda">{{$value->reference4 }}</td>
 
                             </tr>
                             @endforeach
