@@ -194,13 +194,14 @@
 
     export default {
         mixins: [serviceNumber],
-        props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id', 'api_service_token'],
+        props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id'],
         data() {
             return {
                 loading_submit: false,
                 titleDialog: null,
                 resource: 'persons',
                 errors: {},
+                api_service_token:false,
                 form: {},
                 countries: [],
                 all_departments: [],
@@ -216,6 +217,8 @@
             this.initForm()
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
+                    this.api_service_token = response.data.api_service_token
+                    // console.log(this.api_service_token)
                     this.countries = response.data.countries
                     this.all_departments = response.data.departments;
                     this.all_provinces = response.data.provinces;
@@ -223,6 +226,7 @@
                     this.identity_document_types = response.data.identity_document_types;
                     this.locations = response.data.locations;
                 })
+
         },
         computed: {
             maxLength: function () {
