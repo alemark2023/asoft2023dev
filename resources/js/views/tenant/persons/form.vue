@@ -219,6 +219,7 @@
                 .then(response => {
                     this.api_service_token = response.data.api_service_token
                     // console.log(this.api_service_token)
+                    
                     this.countries = response.data.countries
                     this.all_departments = response.data.departments;
                     this.all_provinces = response.data.provinces;
