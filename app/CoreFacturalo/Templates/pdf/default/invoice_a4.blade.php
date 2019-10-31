@@ -156,15 +156,15 @@
     @endif
     @if ($document->purchase_order)
         <tr>
-            <td>ORDEN DE COMPRA</td>
-            <td>:</td>
+            <td width="120px">ORDEN DE COMPRA</td>
+            <td width="8px">:</td>
             <td>{{ $document->purchase_order }}</td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td>COTIZACIÓN</td>
-            <td>:</td>
+            <td width="120px">COTIZACIÓN</td>
+            <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
         </tr>
     @endif
