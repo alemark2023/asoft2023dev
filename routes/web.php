@@ -209,6 +209,7 @@ if ($hostname) {
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');
 
             Route::post('documents/import', 'Tenant\DocumentController@import');
+            Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
             
 
