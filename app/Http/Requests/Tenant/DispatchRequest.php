@@ -58,12 +58,12 @@ class DispatchRequest extends FormRequest
             'transport_mode_type_id'=> [
                 'required',
             ],
-            // 'license_plate'=> [
-            //     'required',
-            // ],
-            // 'license_plate'=> [
-            //     'required',
-            // ],
+            'transfer_reason_type_id'=> [
+                'required',
+            ],
+            'origin.address'=> [
+                'required',
+            ],
 
             
            
@@ -71,16 +71,16 @@ class DispatchRequest extends FormRequest
     }
 
     public function messages()
-{
-    return [
-       'transfer_reason_description.required' => 'El campo Descripción de motivo de traslado es obligatorio.',
-       'observations.required' => 'El campo Observaciones es obligatorio.',
-       'dispatcher.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
-       'dispatcher.number.required' => 'El campo Número es obligatorio.',
-       'dispatcher.name.required' => 'El campo Nombre y/o razón social es obligatorio.',
-       'driver.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
-       'driver.number.required' => 'El campo Número es obligatorio.',
-       'license_plate.required' => 'El campo Número de placa del vehiculo es obligatorio.',
-    ];
-}
+    {
+        return [
+        'transfer_reason_description.required' => 'El campo Descripción de motivo de traslado es obligatorio.',
+        'observations.required' => 'El campo Observaciones es obligatorio.',
+        'dispatcher.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
+        'dispatcher.number.required' => 'El campo Número es obligatorio.',
+        'dispatcher.name.required' => 'El campo Nombre y/o razón social es obligatorio.',
+        'driver.identity_document_type_id.required' => 'El campo Tipo Doc. Identidad es obligatorio.',
+        'driver.number.required' => 'El campo Número es obligatorio.',
+        'license_plate.required' => 'El campo Número de placa del vehiculo es obligatorio.',
+        ];
+    }
 }
