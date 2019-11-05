@@ -402,7 +402,7 @@ class DocumentController extends Controller
                 'Authorization' => 'Bearer '.$bearer,
                 'Accept' => 'application/json',
             ],
-            'form_params' => json_encode($data_json)
+            'form_params' => $data_json
         ]);
         
         $response = json_decode($res->getBody()->getContents(), true);
