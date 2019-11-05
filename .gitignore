@@ -2,6 +2,8 @@
 /public/hot
 /public/downloads
 /public/storage
+/public/padron_extract/*
+/public/padron_rar/*
 /storage/*.key
 /vendor
 /.idea
