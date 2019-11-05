@@ -18,7 +18,7 @@ class DashboardStockCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'product' => $row->item->description,
-                'stock' => $row->stock,
+                'stock' => number_format($row->stock,2),
                 'warehouse' => $row->warehouse->description,
                 'state' => ($row->stock <= 0) ? '01': (($row->stock > 0 && $row->stock <= 20) ? '02':'03'),
             ];
