@@ -52,14 +52,19 @@ class SendAllServerCommand extends Command
             
             $documents = Document::query()
                 ->where('send_server', 0)
-                ->orWhere('shipping_status', '!=', '')
+                ->orWhere('shipping_status', '!=', '') //agregar otra columna boolean, porque puede ser que haya enviado al server y x motivo llego pero no guardo
                 ->get();
             
             foreach ($documents as $document) {
                 try {
                     DocumentController::sendServer($document->id);
                     
-                    $document->shipping_status = ''; //esta dando error
+                    // $document->shipping_status = '';
+                    $document->shipping_status = json_encode([
+                                                    'success' => true,
+                                                    'message' => 'El envío al servidor online fué exitoso',
+                                                ]);
+
                     $document->save();
                 }
                 catch (\Exception $e) {
