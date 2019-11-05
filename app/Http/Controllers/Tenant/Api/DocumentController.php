@@ -98,8 +98,6 @@ class DocumentController extends Controller
     public function storeServer(Request $request) {
         $fact = DB::connection('tenant')->transaction(function() use($request) {
             $facturalo = new Facturalo();
-            // throw new Exception(json_encode($request->all()), 1);
-            // dd($request->all());
             $facturalo->save($request->all());
             
             return $facturalo;
@@ -107,7 +105,6 @@ class DocumentController extends Controller
         
         $document = $fact->getDocument();
         $data_json = $document->data_json;
-        // throw new Exception(json_encode($data_json), 1);
         
        // $zipFly = new ZipFly();
        

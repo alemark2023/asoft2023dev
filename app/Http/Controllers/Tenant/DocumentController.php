@@ -395,7 +395,7 @@ class DocumentController extends Controller
         $data_json['query'] = $query;
         $data_json['file_xml_signed'] = base64_encode($this->getStorage($document->filename, 'signed'));
         $data_json['file_pdf'] = base64_encode($this->getStorage($document->filename, 'pdf'));
-        // dd($data_json);
+        
         $res = $client->post('/api/documents_server', [
             'http_errors' => false,
             'headers' => [
