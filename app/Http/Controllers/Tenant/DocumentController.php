@@ -404,9 +404,6 @@ class DocumentController extends Controller
             ],
             'form_params' => $data_json
         ]);
-
-        // throw new Exception(json_encode($data_json), 1);
-        
         
         $response = json_decode($res->getBody()->getContents(), true);
         

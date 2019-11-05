@@ -98,8 +98,8 @@ class DocumentController extends Controller
     public function storeServer(Request $request) {
         $fact = DB::connection('tenant')->transaction(function() use($request) {
             $facturalo = new Facturalo();
-            throw new Exception(json_encode($request->all()), 1);
-
+            // throw new Exception(json_encode($request->all()), 1);
+            dd($request->all());
             $facturalo->save($request->all());
             
             return $facturalo;
