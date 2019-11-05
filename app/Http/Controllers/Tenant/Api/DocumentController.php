@@ -107,7 +107,7 @@ class DocumentController extends Controller
         
         $document = $fact->getDocument();
         $data_json = $document->data_json;
-        throw new Exception(json_encode($data_json), 1);
+        // throw new Exception(json_encode($data_json), 1);
         
        // $zipFly = new ZipFly();
        
@@ -120,7 +120,7 @@ class DocumentController extends Controller
         $document->save();
         
         // Send SUNAT
-        if ($data_json->query) DocumentControllerSend::send($document->id);
+        // if ($data_json->query) DocumentControllerSend::send($document->id);
         
         return [
             'success' => true,
