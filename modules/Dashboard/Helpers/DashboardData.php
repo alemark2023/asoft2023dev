@@ -79,16 +79,16 @@ class DashboardData
 
         return [
             'totals' => [
-                'total_payment' => $sale_note_total_payment,
-                'total_to_pay' => $sale_note_total_to_pay,
-                'total' => $sale_note_total,
+                'total_payment' => number_format($sale_note_total_payment,2),
+                'total_to_pay' => number_format($sale_note_total_to_pay,2),
+                'total' => number_format($sale_note_total,2),
             ],
             'graph' => [
                 'labels' => ['Total pagado', 'Total por pagar'],
                 'datasets' => [
                     [
                         'label' => 'Notas de venta',
-                        'data' => [$sale_note_total_payment, $sale_note_total_to_pay],
+                        'data' => [number_format($sale_note_total_payment,2), number_format($sale_note_total_to_pay,2)],
                         'backgroundColor' => [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
@@ -129,20 +129,20 @@ class DashboardData
 
         $document_total = round(($document_total - $document_total_note_credit),2);
 
-        $document_total_to_pay = round( $document_total - $document_total_payment,2);
+        $document_total_to_pay = $document_total - $document_total_payment;
 
         return [
             'totals' => [
-                'total_payment' => round($document_total_payment,2),
-                'total_to_pay' => round($document_total_to_pay,2),
-                'total' => $document_total,
+                'total_payment' => number_format($document_total_payment,2),
+                'total_to_pay' => number_format($document_total_to_pay,2),
+                'total' => number_format($document_total,2),
             ],
             'graph' => [
                 'labels' => ['Total pagado', 'Total por pagar'],
                 'datasets' => [
                     [
                         'label' => 'Comprobantes',
-                        'data' => [round($document_total_payment,2), $document_total_to_pay],
+                        'data' => [number_format($document_total_payment,2), number_format($document_total_to_pay,2)],
                         'backgroundColor' => [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
@@ -193,11 +193,11 @@ class DashboardData
             $document_total_note_credit += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
         }
 
-        $documents_total = round(($documents_total - $document_total_note_credit),2);
+        $documents_total = $documents_total - $document_total_note_credit;
 
 
 
-        $total = round($sale_notes_total + $documents_total,2);
+        $total = $sale_notes_total + $documents_total;
 
         if(in_array($period, ['month', 'between_months'])) {
             if($month_start === $month_end) {
@@ -215,9 +215,9 @@ class DashboardData
 
         return [
             'totals' => [
-                'total_documents' => $documents_total,
-                'total_sale_notes' => $sale_notes_total,
-                'total' => $total,
+                'total_documents' => number_format($documents_total,2),
+                'total_sale_notes' => number_format($sale_notes_total,2),
+                'total' => number_format($total,2),
             ],
             'graph' => [
                 'labels' => array_keys($data_array['total_array']),
