@@ -420,7 +420,7 @@ class DocumentController extends Controller
         $bearer = config('tenant.token_server');
         $api_url = config('tenant.url_server');
         
-        $client = new Client(['base_uri' => $api_url]);
+        $client = new Client(['base_uri' => $api_url, 'verify' => false]);
         
         $res = $client->get('/api/document_check_server/'.$document->external_id, [
             'headers' => [

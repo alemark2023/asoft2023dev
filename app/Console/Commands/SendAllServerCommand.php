@@ -59,7 +59,7 @@ class SendAllServerCommand extends Command
                 try {
                     DocumentController::sendServer($document->id);
                     
-                    $document->shipping_status = '';
+                    $document->shipping_status = ''; //esta dando error
                     $document->save();
                 }
                 catch (\Exception $e) {
