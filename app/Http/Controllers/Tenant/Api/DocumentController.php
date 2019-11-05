@@ -106,7 +106,7 @@ class DocumentController extends Controller
         });
         
         $document = $fact->getDocument();
-        throw new Exception($document->id, 1);
+        throw new Exception(json_encode($document), 1);
         $data_json = $document->data_json;
         
        // $zipFly = new ZipFly();
