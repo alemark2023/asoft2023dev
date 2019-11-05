@@ -384,7 +384,7 @@ class DocumentController extends Controller
         $document = Document::find($document_id);
         $bearer = config('tenant.token_server');
         $api_url = config('tenant.url_server');
-        $client = new Client(['base_uri' => $api_url]);
+        $client = new Client(['base_uri' => $api_url, 'verify' => false]);
         
        // $zipFly = new ZipFly();
        
