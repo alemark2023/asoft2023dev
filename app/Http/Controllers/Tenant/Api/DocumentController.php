@@ -99,7 +99,7 @@ class DocumentController extends Controller
         $fact = DB::connection('tenant')->transaction(function() use($request) {
             $facturalo = new Facturalo();
             // throw new Exception(json_encode($request->all()), 1);
-            dd($request->all());
+            // dd($request->all());
             $facturalo->save($request->all());
             
             return $facturalo;
