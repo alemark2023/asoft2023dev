@@ -13,6 +13,10 @@ use Illuminate\Support\Str;
 use App\Models\Tenant\Order;
 use App\Models\Tenant\ItemsRating;
 
+use stdClass;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Tenant\CulqiEmail;
+
 class EcommerceController extends Controller
 {
     /**
