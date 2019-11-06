@@ -22,6 +22,7 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <th>#</th>
+                        <th># Referencia</th>
                         <th>Vendedor</th>
                         <th class="text-center">Apertura</th>
                         <th class="text-center">Cierre</th>
@@ -34,6 +35,7 @@
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
+                        <td>{{ row.reference_number }}</td>
                         <td>{{ row.user }}</td>
                         <td class="text-center">{{ row.opening }}</td>
                         <td class="text-center">{{ row.closed }}</td>
@@ -47,7 +49,7 @@
 
                             <template v-if="row.state">                
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                             </template>
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
@@ -57,7 +59,7 @@
             </div>
  
         </div>
-        <cash-form :showDialog.sync="showDialog"
+        <cash-form :showDialog.sync="showDialog" :typeUser="typeUser"
                             :recordId="recordId"></cash-form>
     </div>
 </template>
@@ -71,10 +73,11 @@
     export default {
         mixins: [deletable],
         components: { DataTable, CashForm},
+        props: ['typeUser'],
         data() {
             return {
                 showDialog: false,
-                open_cash: false,
+                open_cash: true,
                 resource: 'cash',
                 recordId: null,
                 cash:null,
@@ -82,15 +85,15 @@
         },
         async created() {
 
-            await this.$http.get(`/${this.resource}/opening_cash`)
+            /*await this.$http.get(`/${this.resource}/opening_cash`)
                 .then(response => {
                     this.cash = response.data.cash 
                     this.open_cash = (this.cash) ? false : true                   
-                })
+                })*/
  
-            this.$eventHub.$on('openCash', () => {
+            /*this.$eventHub.$on('openCash', () => {
                 this.open_cash = false
-            })
+            })*/
 
         },
         methods: {

@@ -30,6 +30,9 @@ class SearchRequest extends FormRequest
             'customer_number' => [
                 'required',
             ],
+            'total' => [
+                'required',
+            ],
         ];
     }
 }

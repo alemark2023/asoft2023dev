@@ -202,5 +202,11 @@ return [
         'date_exit' => 'fecha salida',
         'time_exit' => 'hora salida',
         'sale_unit_price' => 'precio unitario de venta',
+
+        'transport_mode_type_id' => 'modo de translado',
+        'delivery.address' => 'dirección',
+        'origin.address' => 'dirección',
+        'transfer_reason_type_id' => 'motivo de translado',
+
     ],
 ];

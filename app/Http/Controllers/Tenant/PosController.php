@@ -60,6 +60,7 @@ class PosController extends Controller
                                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
+                                    'is_set' => (bool) $row->is_set,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,            
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
@@ -172,24 +173,63 @@ class PosController extends Controller
         $inventory_configuration = InventoryConfiguration::firstOrFail();
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
         $item_warehouse = ItemWarehouse::where([['item_id',$item_id], ['warehouse_id',$warehouse->id]])->first();
+        $item = Item::findOrFail($item_id);
+        
+        if($item->is_set){
 
-        if(!$item_warehouse)
-            return [
-                'success' => false,
-                'message' => "El producto seleccionado no está disponible en su almacén!"
-            ];
+            $sets = $item->sets;
 
-        $stock = $item_warehouse->stock - $quantity;
-         
+            foreach ($sets as $set) {
+                
+                $individual_item = $set->individual_item;
+                $item_warehouse = ItemWarehouse::where([['item_id',$individual_item->id], ['warehouse_id',$warehouse->id]])->first();
 
-        if($item_warehouse->item->unit_type_id !== 'ZZ'){
-            if (($inventory_configuration->stock_control) && ($stock < 0)){             
+                if(!$item_warehouse)
+                    return [
+                        'success' => false,
+                        'message' => "El producto seleccionado no está disponible en su almacén!"
+                    ];
+
+                $stock = $item_warehouse->stock - $quantity;
+                
+
+                if($item_warehouse->item->unit_type_id !== 'ZZ'){
+                    if (($inventory_configuration->stock_control) && ($stock < 0)){             
+                        return [
+                            'success' => false,
+                            'message' => "El producto {$item_warehouse->item->description} registrado en el conjunto {$item->description} no tiene suficiente stock!"
+                        ];
+                    }
+                }
+                // dd($individual_item);
+            }
+
+
+
+        }else{
+
+
+            if(!$item_warehouse)
                 return [
                     'success' => false,
-                    'message' => "El producto {$item_warehouse->item->description} no tiene suficiente stock!"
+                    'message' => "El producto seleccionado no está disponible en su almacén!"
                 ];
+
+            $stock = $item_warehouse->stock - $quantity;
+            
+
+            if($item_warehouse->item->unit_type_id !== 'ZZ'){
+                if (($inventory_configuration->stock_control) && ($stock < 0)){             
+                    return [
+                        'success' => false,
+                        'message' => "El producto {$item_warehouse->item->description} no tiene suficiente stock!"
+                    ];
+                }
             }
+
         }
+
+
         
         return [
             'success' => true,

@@ -156,15 +156,15 @@
     @endif
     @if ($document->purchase_order)
         <tr>
-            <td>ORDEN DE COMPRA</td>
-            <td>:</td>
+            <td width="120px">ORDEN DE COMPRA</td>
+            <td width="8px">:</td>
             <td>{{ $document->purchase_order }}</td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td>COTIZACIÓN</td>
-            <td>:</td>
+            <td width="120px">COTIZACIÓN</td>
+            <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
         </tr>
     @endif
@@ -221,7 +221,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)

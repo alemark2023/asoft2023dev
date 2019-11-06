@@ -13,7 +13,7 @@ if ($hostname) {
         Route::post('search', 'Tenant\SearchController@store');
 
         //Ecommerce
-        Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
+        /*Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
         Route::get('ecommerce/item/{id}', 'Tenant\EcommerceController@item')->name('tenant.ecommerce.item');
         Route::get('ecommerce/items', 'Tenant\EcommerceController@items')->name('tenant.ecommerce.item.index');
         Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');
@@ -25,7 +25,7 @@ if ($hostname) {
         Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
         Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
         Route::post('ecommerce/rating_item', 'Tenant\EcommerceController@ratingItem')->name('tenant_ecommerce_rating_item');
-        Route::get('ecommerce/rating_item/{id}', 'Tenant\EcommerceController@getRating');
+        Route::get('ecommerce/rating_item/{id}', 'Tenant\EcommerceController@getRating');*/
 
 
 
@@ -49,9 +49,9 @@ if ($hostname) {
             Route::delete('tasks/{task}', 'Tenant\TaskController@destroy');
 
             //Ecommerce
-            Route::post('ecommerce/culqi', 'Tenant\CulqiController@payment')->name('tenant_ecommerce_culqui');
+            /*Route::post('ecommerce/culqi', 'Tenant\CulqiController@payment')->name('tenant_ecommerce_culqui');
             Route::post('ecommerce/transaction_finally', 'Tenant\EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
-            Route::post('ecommerce/payment_cash', 'Tenant\EcommerceController@paymentCash')->name('tenant_ecommerce_payment_cash');
+            Route::post('ecommerce/payment_cash', 'Tenant\EcommerceController@paymentCash')->name('tenant_ecommerce_payment_cash');*/
 
 
             //Orders
@@ -209,6 +209,7 @@ if ($hostname) {
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');
 
             Route::post('documents/import', 'Tenant\DocumentController@import');
+            Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
             
 
@@ -467,6 +468,8 @@ if ($hostname) {
            Route::get('cash/create', 'Tenant\CashController@create')->name('tenant.sale_notes.create');
            Route::get('cash/tables', 'Tenant\CashController@tables');
            Route::get('cash/opening_cash', 'Tenant\CashController@opening_cash');
+           Route::get('cash/opening_cash_check/{user_id}', 'Tenant\CashController@opening_cash_check');
+
            Route::post('cash', 'Tenant\CashController@store');
            Route::post('cash/cash_document', 'Tenant\CashController@cash_document');
            Route::get('cash/close/{cash}', 'Tenant\CashController@close'); 

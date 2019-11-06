@@ -101,7 +101,7 @@ class DashboardSalePurchase
 
             if($difference > 0)
                 $top_customers->push([
-                    'total' => round($difference,2),
+                    'total' => number_format($difference,2),
                     'name' => $customer->name,
                     'number' => $customer->number,
                 ]);    
@@ -132,9 +132,9 @@ class DashboardSalePurchase
                             
         return [
             'totals' => [ 
-                'purchases_total_perception' => $purchases_total_perception,
-                'purchases_total' => $purchases_total,
-                'total' => $purchases_total + $purchases_total_perception,
+                'purchases_total_perception' => number_format($purchases_total_perception,2),
+                'purchases_total' => number_format($purchases_total,2),
+                'total' => number_format($purchases_total + $purchases_total_perception,2),
             ],
             'graph' => [
                 'labels' => $data_array,
@@ -254,7 +254,7 @@ class DashboardSalePurchase
 
             if($item && $difference > 0){
                 $items_by_sales->push([
-                    'total' => round($difference,2),
+                    'total' => number_format($difference,2),
                     'description' => $item->description,
                     'internal_id' => $item->internal_id,
                 ]);    

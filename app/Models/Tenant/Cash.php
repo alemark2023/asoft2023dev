@@ -18,7 +18,8 @@ class Cash extends ModelTenant
         'beginning_balance',
         'final_balance',
         'income', 
-        'state', 
+        'state',
+        'reference_number' 
  
     ];
  

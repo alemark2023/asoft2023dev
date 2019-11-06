@@ -5,6 +5,7 @@ use Facades\App\Http\Controllers\Tenant\DocumentController as DocumentController
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Controllers\Controller;
 use App\CoreFacturalo\WS\Zip\ZipFly;
+use App\Http\Resources\Tenant\DocumentCollection;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Facturalo;
 use App\Models\Tenant\Document;
@@ -142,6 +143,16 @@ class DocumentController extends Controller
 
     private function getStateTypeDescription($id){
         return StateType::find($id)->description;
+    }
+
+
+
+    public function lists()
+    {
+        $record = Document::all();
+        $records = new DocumentCollection($record);
+
+        return $records;
     }
 
 }

@@ -30,7 +30,8 @@ class CashResource extends JsonResource
                 'expense' => $this->expense,
                 'filename' => $this->filename,
                 'state_description' => ($this->state) ? 'Aperturada':'Cerrada', 
-                'state' => (bool) $this->state, 
+                'state' => (bool) $this->state,
+                'reference_number' => $this->reference_number
             ];
 
         

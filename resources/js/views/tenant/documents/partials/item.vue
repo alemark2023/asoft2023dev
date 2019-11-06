@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close" top="7vh">
+    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close" top="7vh" :close-on-click-modal="false">
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -12,8 +12,8 @@
 
                             <template v-if="!search_item_by_barcode" id="select-append">
                                 <el-input id="custom-input">
-                                    <el-select :disabled="recordItem != null" 
-                                            v-model="form.item_id" @change="changeItem"  
+                                    <el-select :disabled="recordItem != null"
+                                            v-model="form.item_id" @change="changeItem"
                                             filterable
                                             popper-class="el-select-items"
                                             dusk="item_id"
@@ -29,10 +29,10 @@
                             </template>
                             <template v-else>
                                 <el-input id="custom-input">
-                                    <el-select :disabled="recordItem != null" v-model="form.item_id"  
+                                    <el-select :disabled="recordItem != null" v-model="form.item_id"
                                             @change="changeItem"
                                             filterable
-                                            :filter-method="filterMethod"   
+                                            :filter-method="filterMethod"
                                             popper-class="el-select-items"
                                             dusk="item_id"
                                             @visible-change="focusTotalItem"
@@ -46,9 +46,9 @@
                                 </el-input>
                             </template>
 
-                            
+
                             <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null" >Buscar por código de barras</el-checkbox><br>
-                            <el-checkbox v-model="form.has_plastic_bag_taxes" >Impuesto a la Bolsa Plástica</el-checkbox> 
+                            <el-checkbox v-model="form.has_plastic_bag_taxes" >Impuesto a la Bolsa Plástica</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
@@ -57,7 +57,7 @@
                             <label class="control-label">Stock</label><br>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></button>
                         </div>
-                    </div> --> 
+                    </div> -->
                     <div class="col-md-5">
                         <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
                             <label class="control-label">Afectación Igv</label>
@@ -111,7 +111,7 @@
                             </thead>
                             <tbody>
                             <tr v-for="(row, index) in form.item_unit_types">
-                               
+
                                     <td class="text-center">{{row.unit_type_id}}</td>
                                     <td class="text-center">{{row.description}}</td>
                                     <td class="text-center">{{row.quantity_unit}}</td>
@@ -403,15 +403,15 @@
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
 
-                   
-        <warehouses-detail 
+
+        <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
                 :warehouses="warehousesDetail">
             </warehouses-detail>
     </el-dialog>
 </template>
 <style>
-.el-select-dropdown { 
+.el-select-dropdown {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
@@ -455,11 +455,11 @@
                 //item_unit_type: {}
             }
         },
-        created() { 
+        created() {
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                // console.log('tablas new edit')
-                this.items = response.data.items 
+                this.items = response.data.items
                 this.operation_types = response.data.operation_types
                 this.all_affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
@@ -476,10 +476,10 @@
         },
         methods: {
             filterMethod(query){
-                 
+
                 let item = _.find(this.items, {'internal_id': query});
 
-                if(item){ 
+                if(item){
                     this.form.item_id = item.id
                     this.changeItem()
                 }
@@ -497,7 +497,7 @@
             },
             initForm() {
                 this.errors = {};
-                
+
                 this.form = {
                    // category_id: [1],
                    // edit: false,
@@ -519,7 +519,7 @@
                     item_unit_types: [],
                     has_plastic_bag_taxes:false
                 };
-                
+
                 this.activePanel = 0;
                 this.total_item = 0;
                 this.item_unit_type = {};
@@ -541,8 +541,8 @@
                     this.form.unit_price_value = this.recordItem.unit_price
                     this.calculateQuantity()
                 }
-               
-               
+
+
             },
             clickAddDiscount() {
                 this.form.discounts.push({
@@ -604,7 +604,7 @@
                 this.$emit('update:showDialog', false)
             },
             changeItem() {
-               
+
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price_value = this.form.item.sale_unit_price;
@@ -621,28 +621,30 @@
             focusTotalItem(change) {
                 if(!change && this.form.item.calculate_quantity) {
                     this.$refs.total_item.$el.getElementsByTagName('input')[0].focus()
+                    this.total_item = this.form.unit_price_value
                 }
             },
             calculateQuantity() {
+                debugger
                 if(this.form.item.calculate_quantity) {
                     //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
                 }
             },
             cleanTotalItem(){
-                this.total_item = null  
-            }, 
+                this.total_item = null
+            },
             clickAddItem() {
-                
+
                 if (this.validateTotalItem().total_item) return;
-                
+
                 let unit_price = (this.form.has_igv)?this.form.unit_price_value:this.form.unit_price_value*1.18;
-                
+
                 this.form.unit_price = unit_price;
                 this.form.item.unit_price = unit_price;
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-                
+
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
                // this.row.edit = false;
                 this.initForm();
@@ -657,15 +659,15 @@
             },
             validateTotalItem(){
 
-                this.errors = {} 
+                this.errors = {}
 
                 if(this.form.item.calculate_quantity){
                     if(this.total_item < 0.01)
                         this.$set(this.errors, 'total_item', ['total venta item debe ser mayor a 0.01']);
-                } 
+                }
 
-                return this.errors 
-            }, 
+                return this.errors
+            },
             reloadDataItems(item_id) {
                 this.$http.get(`/${this.resource}/table/items`).then((response) => {
                     this.items = response.data
@@ -676,9 +678,9 @@
             },
             changePresentation() {
                 let price = 0;
-                
+
                 this.item_unit_type = _.find(this.form.item.item_unit_types, {'id': this.form.item_unit_type_id});
-                
+
                 switch (this.item_unit_type.price_default) {
                     case 1: price = this.item_unit_type.price1
                         break;
@@ -687,14 +689,14 @@
                     case 3: price = this.item_unit_type.price3
                         break;
                 }
-                
+
                 this.form.unit_price_value = price;
                 this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
             },
             selectedPrice(row)
             {
-                
-                
+
+
                 let valor = 0
                 switch(row.price_default)
                 {

@@ -8,7 +8,10 @@
             </ol>
             <div class="right-wrapper pull-right" v-if="typeUser != 'integrator'">
                 <span v-if="import_documents == true">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar Formato 1</button>
+                </span>
+                <span v-if="import_documents_second == true">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportSecond()"><i class="fa fa-upload"></i> Importar Formato 2</button>
                 </span>
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
             </div>
@@ -154,6 +157,8 @@
                             
             <items-import :showDialog.sync="showImportDialog"></items-import>
 
+            <document-import-second :showDialog.sync="showImportSecondDialog"></document-import-second>
+            
             <document-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
                               :showClose="true"></document-options>
@@ -169,16 +174,18 @@
     import DocumentsVoided from './partials/voided.vue'
     import DocumentOptions from './partials/options.vue'
     import DocumentPayments from './partials/payments.vue'
+    import DocumentImportSecond from './partials/import_second.vue'
     import DataTable from '../../../components/DataTableDocuments.vue'
     import ItemsImport from './import.vue'
 
     export default {
-        props: ['isClient','typeUser','import_documents'],
-        components: {DocumentsVoided, ItemsImport, DocumentOptions, DocumentPayments, DataTable},
+        props: ['isClient','typeUser','import_documents','import_documents_second'],
+        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable},
         data() {
             return {
                 showDialogVoided: false,
                 showImportDialog: false,
+                showImportSecondDialog: false,
                 resource: 'documents',
                 recordId: null,
                 showDialogOptions: false,
@@ -315,6 +322,9 @@
             },
             clickImport() {
                 this.showImportDialog = true
+            },
+            clickImportSecond() {
+                this.showImportSecondDialog = true
             }
         }
     }

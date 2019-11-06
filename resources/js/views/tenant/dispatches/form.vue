@@ -9,7 +9,7 @@
                     <div class="row">
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.establishment}">
-                                <label class="control-label">Establecimiento</label>
+                                <label class="control-label">Establecimiento<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.establishment_id" @change="changeEstablishment">
                                     <el-option v-for="option in establishments" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -18,7 +18,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.series_id}">
-                                <label class="control-label">Serie</label>
+                                <label class="control-label">Serie<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.series_id">
                                     <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
                                 </el-select>
@@ -27,14 +27,14 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                                <label class="control-label">Fecha de emisión</label>
+                                <label class="control-label">Fecha de emisión<span class="text-danger"> *</span></label>
                                 <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.date_of_shipping}">
-                                <label class="control-label">Fecha de traslado</label>
+                                <label class="control-label">Fecha de traslado<span class="text-danger"> *</span></label>
                                 <el-date-picker v-model="form.date_of_shipping" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_shipping" v-text="errors.date_of_shipping[0]"></small>
                             </div>
@@ -44,7 +44,7 @@
                                 <label class="control-label">
                                     Cliente
                                     <!--<a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>-->
-                                </label>
+                                <span class="text-danger"> *</span></label>
                                 <el-select v-model="form.customer_id" :disabled="true">
                                     <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.transport_mode_type_id}">
-                                <label class="control-label">Modo de translado</label>
+                                <label class="control-label">Modo de translado<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.transport_mode_type_id">
                                     <el-option v-for="option in transportModeTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_type_id}">
-                                <label class="control-label">Motivo de translado</label>
+                                <label class="control-label">Motivo de translado<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.transfer_reason_type_id">
                                     <el-option v-for="option in transferReasonTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -71,7 +71,7 @@
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_description}">
-                                <label class="control-label">Descripción de motivo de traslado</label>
+                                <label class="control-label">Descripción de motivo de traslado<span class="text-danger"> *</span></label>
                                 <el-input type="textarea" :rows="3" v-model="form.transfer_reason_description"></el-input>
                                 <small class="form-control-feedback" v-if="errors.transfer_reason_description" v-text="errors.transfer_reason_description[0]"></small>
                             </div>
@@ -95,7 +95,7 @@
                         <!--</div>-->
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
-                                <label class="control-label">Unidad de medida</label>
+                                <label class="control-label">Unidad de medida<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.unit_type_id">
                                     <el-option v-for="option in unitTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -104,28 +104,28 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.total_weight}">
-                                <label class="control-label">Peso total</label>
+                                <label class="control-label">Peso total<span class="text-danger"> *</span></label>
                                 <el-input-number v-model="form.total_weight" :precision="2" :step="1" :min="0" :max="9999999999"></el-input-number>
                                 <small class="form-control-feedback" v-if="errors.total_weight" v-text="errors.total_weight[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.packages_number}">
-                                <label class="control-label">Número de paquetes</label>
+                                <label class="control-label">Número de paquetes<span class="text-danger"> *</span></label>
                                 <el-input-number v-model="form.packages_number" :precision="0" :step="1" :min="0" :max="9999999999"></el-input-number>
                                 <small class="form-control-feedback" v-if="errors.packages_number" v-text="errors.packages_number[0]"></small>
                             </div>
                         </div>
                         <!--<div class="col-lg-2">-->
                             <!--<div class="form-group" :class="{'has-danger': errors.container_number}">-->
-                                <!--<label class="control-label">Número de contenedor</label>-->
+                                <!--<label class="control-label">Número de contenedor<span class="text-danger"> *</span></label>-->
                                 <!--<el-input-number v-model="form.container_number" :precision="0" :step="1" :min="0" :max="9999999999"></el-input-number>-->
                                 <!--<small class="form-control-feedback" v-if="errors.container_number" v-text="errors.container_number[0]"></small>-->
                             <!--</div>-->
                         <!--</div>-->
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.observations}">
-                                <label class="control-label">Observaciones</label>
+                                <label class="control-label">Observaciones<span class="text-danger"> *</span></label>
                                 <el-input type="textarea" :rows="3" v-model="form.observations"></el-input>
                                 <small class="form-control-feedback" v-if="errors.observations" v-text="errors.observations[0]"></small>
                             </div>
@@ -137,7 +137,7 @@
                     <div class="row">
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.origin}">
-                                <label class="control-label">País</label>
+                                <label class="control-label">País<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.origin.country_id" filterable>
                                     <el-option v-for="option in countries" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -146,7 +146,7 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.origin}">
-                                <label class="control-label">Ubigeo</label>
+                                <label class="control-label">Ubigeo<span class="text-danger"> *</span></label>
                                 <el-cascader :options="locations" v-model="form.origin.location_id" filterable></el-cascader>
                                 <!--<el-select v-model="form.delivery.department_id" filterable @change="filterProvince(false)">-->
                                 <!--<el-option v-for="option in departments" :key="option.id" :value="option.id" :label="option.description"></el-option>-->
@@ -182,10 +182,10 @@
                             <!--</div>-->
                         <!--</div>-->
                         <div class="col-lg-6">
-                            <div class="form-group" :class="{'has-danger': errors.origin}">
-                                <label class="control-label">Dirección</label>
+                            <div class="form-group" :class="{'has-danger': errors['origin.address']}">
+                                <label class="control-label">Dirección<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.origin.address" :maxlength="100" placeholder="Dirección..."></el-input>
-                                <small class="form-control-feedback" v-if="errors.origin" v-text="errors.origin.address[0]"></small>
+                                <small class="form-control-feedback" v-if="errors['origin.address']" v-text="errors['origin.address'][0]"></small>
                             </div>
                         </div>
                     </div>
@@ -193,7 +193,7 @@
                     <div class="row">
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.delivery}">
-                                <label class="control-label">País</label>
+                                <label class="control-label">País<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.delivery.country_id" filterable>
                                     <el-option v-for="option in countries" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -202,7 +202,7 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.delivery}">
-                                <label class="control-label">Ubigeo</label>
+                                <label class="control-label">Ubigeo<span class="text-danger"> *</span></label>
                                 <el-cascader :options="locations" v-model="form.delivery.location_id" filterable></el-cascader>
                                 <!--<el-select v-model="form.delivery.department_id" filterable @change="filterProvince(false)">-->
                                     <!--<el-option v-for="option in departments" :key="option.id" :value="option.id" :label="option.description"></el-option>-->
@@ -212,7 +212,7 @@
                         </div>
                         <!--<div class="col-lg-2">-->
                             <!--<div class="form-group" :class="{'has-danger': errors.delivery}">-->
-                                <!--<label class="control-label">Provincia</label>-->
+                                <!--<label class="control-label">Provincia<span class="text-danger"> *</span></label>-->
                                 <!--<el-select v-model="form.delivery.province_id" filterable @change="filterDistrict(false)">-->
                                     <!--<el-option v-for="option in provincesDelivery" :key="option.id" :value="option.id" :label="option.description"></el-option>-->
                                 <!--</el-select>-->
@@ -221,7 +221,7 @@
                         <!--</div>-->
                         <!--<div class="col-lg-2">-->
                             <!--<div class="form-group" :class="{'has-danger': errors.delivery}">-->
-                                <!--<label class="control-label">Distrito</label>-->
+                                <!--<label class="control-label">Distrito<span class="text-danger"> *</span></label>-->
                                 <!--<el-select v-model="form.delivery.location_id" filterable>-->
                                     <!--<el-option v-for="option in districtsDelivery" :key="option.id" :value="option.id" :label="option.description"></el-option>-->
                                 <!--</el-select>-->
@@ -230,7 +230,7 @@
                         <!--</div>-->
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors['delivery.address']}">
-                                <label class="control-label">Dirección</label>
+                                <label class="control-label">Dirección<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.delivery.address" :maxlength="100" placeholder="Dirección..."></el-input>
                                 <small class="form-control-feedback" v-if="errors['delivery.address']" v-text="errors['delivery.address'][0]"></small>
                             </div>
@@ -241,7 +241,7 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['dispatcher.identity_document_type_id']}">
-                                <label class="control-label">Tipo Doc. Identidad</label>
+                                <label class="control-label">Tipo Doc. Identidad<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.dispatcher.identity_document_type_id" filterable>
                                     <el-option v-for="option in identityDocumentTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -250,14 +250,14 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['dispatcher.number']}">
-                                <label class="control-label">Número</label>
+                                <label class="control-label">Número<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.dispatcher.number" :maxlength="11" placeholder="Número..."></el-input>
                                 <small class="form-control-feedback" v-if="errors['dispatcher.number']" v-text="errors['dispatcher.number'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['dispatcher.name']}">
-                                <label class="control-label">Nombre y/o razón social</label>
+                                <label class="control-label">Nombre y/o razón social<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.dispatcher.name" :maxlength="100" placeholder="Nombre y/o razón social..."></el-input>
                                 <small class="form-control-feedback" v-if="errors['dispatcher.name']" v-text="errors['dispatcher.name'][0]"></small>
                             </div>
@@ -267,7 +267,7 @@
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['driver.identity_document_type_id']}">
-                                <label class="control-label">Tipo Doc. Identidad</label>
+                                <label class="control-label">Tipo Doc. Identidad<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.driver.identity_document_type_id" filterable>
                                     <el-option v-for="option in identityDocumentTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
@@ -276,14 +276,14 @@
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['driver.number']}">
-                                <label class="control-label">Número</label>
+                                <label class="control-label">Número<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.driver.number" :maxlength="11" placeholder="Número..."></el-input>
                                 <small class="form-control-feedback" v-if="errors['driver.number']" v-text="errors['driver.number'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.license_plate}">
-                                <label class="control-label">Número de placa del vehiculo</label>
+                                <label class="control-label">Número de placa del vehiculo<span class="text-danger"> *</span></label>
                                 <el-input v-model="form.license_plate" :maxlength="8" placeholder="Numero de placa del vehiculo..."></el-input>
                                 <small class="form-control-feedback" v-if="errors.license_plate" v-text="errors.license_plate[0]"></small>
                             </div>
