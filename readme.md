@@ -78,5 +78,4 @@ Iniciar servicios docker: [Guía](https://docs.google.com/document/d/1MMuyeYE53R
 Configuración servidor alterno SUNAT: [Guía](https://docs.google.com/document/d/1pr-9ewFYY7JFtYg-0V5MY4R16OGv-02VH5MqXjeUCh0/edit#heading=h.nezjsyganf1w "Clic")<br>
 Conexión servidor Winscp: [Guía](https://docs.google.com/document/d/1Xpri2102N4b5C-dG-FVPXW5ZWjEz5S4iDjpvl7Zwq2E/edit# "Clic")<br>
 Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/document/d/1V9xyhH4JRJqFf-8zFBG9lOlmy07ts9dZCcJlQFEcFf8/edit# "Clic")<br>
-
-
+Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
