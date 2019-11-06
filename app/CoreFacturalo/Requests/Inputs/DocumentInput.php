@@ -45,6 +45,10 @@ class DocumentInput
         $inputs['type'] = $array_partial['type'];
         $inputs['group_id'] = $array_partial['group_id'];
 
+        //set o convert json
+        $exist_data_json = Functions::valueKeyInArray($inputs, 'data_json');
+        $data_json = ($exist_data_json) ? $exist_data_json : DocumentWebTransform::transform($inputs);
+        
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -101,7 +105,7 @@ class DocumentInput
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
-            'data_json' => Functions::valueKeyInArray($inputs, 'data_json'),
+            'data_json' => $data_json,
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
         ];

@@ -625,7 +625,7 @@
                 }
             },
             calculateQuantity() {
-                debugger
+                // debugger
                 if(this.form.item.calculate_quantity) {
                     //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
