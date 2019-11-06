@@ -59,15 +59,22 @@ class SendAllServerCommand extends Command
             
             foreach ($documents as $document) {
                 try {
-                    DocumentController::sendServer($document->id);
+                    $response = DocumentController::sendServer($document->id);
                     
-                    // $document->shipping_status = '';
-                    $document->shipping_status = json_encode([
-                                                    'success' => true,
-                                                    'message' => 'El envío al servidor online fué exitoso',
-                                                ]);
+                    // // $document->shipping_status = '';
+
+                    if(isset($response['success'])){
+
+                        $document->success_shipping_status = $response['success'];
+                        $document->shipping_status = ($response['success'])? json_encode(array_merge($response,['message' => 'El envío al servidor online fué exitoso'])): json_encode(array_merge($response,['message' => 'El envío al servidor online falló']));
                     
-                    $document->success_shipping_status = true;
+                    }else{
+
+                        $document->success_shipping_status = false;
+                        $document->shipping_status = json_encode($response);
+
+                    }
+
                     $document->save();
                 }
                 catch (\Exception $e) {
