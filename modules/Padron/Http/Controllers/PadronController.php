@@ -137,12 +137,18 @@ class PadronController extends Controller
         {
             return [ 'success' => false, 'message' => $e->getMessage()];
         }
+        catch(\PDOException $Exception ) {
+            return [
+                'success' => false,
+                'message' => $Exception->getMessage(),
+            ];
+        }
        
     }
 
     public function list_history()
     {
-        $data = ChargePadron::all();
+        $data = ChargePadron::orderBy('created_at')->get();
         return [
             'success' => true,
             'data' => $data
