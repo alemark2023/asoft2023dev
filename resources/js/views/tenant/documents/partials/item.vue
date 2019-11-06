@@ -621,9 +621,11 @@
             focusTotalItem(change) {
                 if(!change && this.form.item.calculate_quantity) {
                     this.$refs.total_item.$el.getElementsByTagName('input')[0].focus()
+                    this.total_item = this.form.unit_price_value
                 }
             },
             calculateQuantity() {
+                debugger
                 if(this.form.item.calculate_quantity) {
                     //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
