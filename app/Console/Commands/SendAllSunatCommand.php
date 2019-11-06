@@ -54,7 +54,8 @@ class SendAllSunatCommand extends Command
                 ->where('group_id', '01')
                 ->where('send_server', 0)
                 ->where('state_type_id', '!=', '05')
-                ->orWhere('sunat_shipping_status', '!=', '')
+                // ->orWhere('sunat_shipping_status', '!=', '')
+                ->orWhere('success_sunat_shipping_status', false)
                 ->get();
             
             foreach ($documents as $document) {

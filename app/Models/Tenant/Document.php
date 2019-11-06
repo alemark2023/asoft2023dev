@@ -70,7 +70,8 @@ class Document extends ModelTenant
         'total_plastic_bag_taxes',
         'sale_note_id',
         'success_shipping_status',
-        'success_sunat_shipping_status'
+        'success_sunat_shipping_status',
+        'success_query_status',
 
     ];
 
