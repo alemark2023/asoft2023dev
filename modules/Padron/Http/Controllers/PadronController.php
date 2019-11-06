@@ -106,7 +106,7 @@ class PadronController extends Controller
            // $file = public_path();
             $file =  str_replace(DIRECTORY_SEPARATOR, '/', public_path("padron_extract".DIRECTORY_SEPARATOR."padron_reducido_ruc.txt"));
             $query = "LOAD DATA LOCAL INFILE '" . $file . "'
-            INTO TABLE padrones CHARACTER SET utf8mb4 FIELDS TERMINATED BY '|' IGNORE 1 LINES
+            INTO TABLE padrones FIELDS TERMINATED BY '|' LINES TERMINATED BY '\n' IGNORE 1 LINES
                     (ruc,
                     nombre_razon_social,
                     estado_contribuyente,
@@ -131,7 +131,7 @@ class PadronController extends Controller
             $history->state = 1;
             $history->save();
 
-            return [ 'success' => true, 'message' => 'Datos descargados de sunat correctamente'];
+            return [ 'success' => true, 'message' => 'Proceso Terminado correctamente'];
 
         }catch(Exception $e)
         {
@@ -160,7 +160,7 @@ class PadronController extends Controller
 
         try {
             DB::connection('tenant')->table('padrones')->truncate();
-            $file = public_path();
+            //$file = public_path();
            
             $file =  str_replace(DIRECTORY_SEPARATOR, '/', public_path("padron_extract".DIRECTORY_SEPARATOR."demo.txt"));
             $query = "LOAD DATA LOCAL INFILE '" . $file . "'
