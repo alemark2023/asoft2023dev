@@ -8,9 +8,11 @@ use App\Models\Tenant\Series;
 use Illuminate\Http\Request; 
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
+use App\Traits\OfflineTrait;
 
 class ContingencyController extends Controller
 {
+    use OfflineTrait;
 
     public function __construct()
     {
@@ -19,7 +21,7 @@ class ContingencyController extends Controller
 
     public function index()
     {
-        $is_client = config('tenant.is_client');
+        $is_client = $this->getIsClient();
 
         return view('tenant.contingencies.index', compact('is_client'));
     }

@@ -43,11 +43,11 @@ use App\Imports\DocumentsImport;
 use App\Imports\DocumentsImportTwoFormat;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
-
+use App\Traits\OfflineTrait;
 
 class DocumentController extends Controller
 {
-    use StorageDocument;
+    use StorageDocument, OfflineTrait;
 
     public function __construct()
     {
@@ -56,7 +56,7 @@ class DocumentController extends Controller
 
     public function index()
     {
-        $is_client = config('tenant.is_client');
+        $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
 
@@ -382,8 +382,10 @@ class DocumentController extends Controller
     
     public function sendServer($document_id, $query = false) {
         $document = Document::find($document_id);
-        $bearer = config('tenant.token_server');
-        $api_url = config('tenant.url_server');
+        // $bearer = config('tenant.token_server');
+        // $api_url = config('tenant.url_server');
+        $bearer = $this->getTokenServer();
+        $api_url = $this->getUrlServer();
         $client = new Client(['base_uri' => $api_url, 'verify' => false]);
         
        // $zipFly = new ZipFly();
@@ -417,8 +419,8 @@ class DocumentController extends Controller
     
     public function checkServer($document_id) {
         $document = Document::find($document_id);
-        $bearer = config('tenant.token_server');
-        $api_url = config('tenant.url_server');
+        $bearer = $this->getTokenServer();
+        $api_url = $this->getUrlServer();
         
         $client = new Client(['base_uri' => $api_url, 'verify' => false]);
         

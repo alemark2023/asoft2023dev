@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Facades\App\Http\Controllers\Tenant\DocumentController;
 use Illuminate\Console\Command;
 use App\Traits\CommandTrait;
+use App\Traits\OfflineTrait;
 use App\Models\Tenant\{
     Configuration,
     Document
@@ -12,7 +13,7 @@ use App\Models\Tenant\{
 
 class SendAllServerCommand extends Command
 {
-    use CommandTrait;
+    use CommandTrait, OfflineTrait;
     
     /**
      * The name and signature of the console command.

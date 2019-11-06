@@ -208,5 +208,9 @@ return [
         'origin.address' => 'dirección',
         'transfer_reason_type_id' => 'motivo de translado',
 
+        'token_server' => 'token servidor',
+        'url_server' => 'url servidor',
+        'is_client' => 'modo offline',
+
     ],
 ];
