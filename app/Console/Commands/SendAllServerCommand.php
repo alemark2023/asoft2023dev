@@ -52,7 +52,7 @@ class SendAllServerCommand extends Command
             
             $documents = Document::query()
                 ->where('send_server', 0)
-                ->orWhere('success_shipping_status', false) 
+                ->where('success_shipping_status', false) 
                 // ->orWhere('shipping_status', '!=', '') 
                 ->get();
             
