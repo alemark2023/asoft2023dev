@@ -15,21 +15,21 @@ class CreatePadronesTable extends Migration
     {
         Schema::create('padrones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('ruc')->index();;
+            $table->string('ruc')->index();
             $table->string('nombre_razon_social', 155);
-            $table->string('estado_contribuyente');
-            $table->string('condicion_domicilio', 155);
-            $table->string('ubigeo');
-            $table->string('tipo_via');
-            $table->string('nombre_via');
+            $table->string('estado_contribuyente', 100);
+            $table->string('condicion_domicilio', 100);
+            $table->string('ubigeo', 50);
+            $table->string('tipo_via', 20);
+            $table->string('nombre_via', 50);
             $table->string('codigo_zona', 155);
-            $table->string('tipo_zona');
+            $table->string('tipo_zona', 20);
             $table->string('numero', 155);
-            $table->string('interior');
-            $table->string('lote');
-            $table->string('departamento');
-            $table->string('manzana');
-            $table->string('kilometro');
+            $table->string('interior', 50);
+            $table->string('lote', 20);
+            $table->string('departamento', 100);
+            $table->string('manzana', 20);
+            $table->string('kilometro', 20);
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

@@ -103,11 +103,8 @@ class PadronController extends Controller
 
             //LOAD DATA TXT TO MYSQL
             DB::connection('tenant')->table('padrones')->truncate();
-            $file = public_path();
-            $prefix = 'padron_extract';
-            $prefix2 = 'txt';
-            $key = 'padron_reducido_ruc';
-            $file =  str_replace(DIRECTORY_SEPARATOR, '/', public_path("{$prefix}".DIRECTORY_SEPARATOR."{$key}.{$prefix2}"));
+           // $file = public_path();
+            $file =  str_replace(DIRECTORY_SEPARATOR, '/', public_path("padron_extract".DIRECTORY_SEPARATOR."padron_reducido_ruc.txt"));
             $query = "LOAD DATA LOCAL INFILE '" . $file . "'
             INTO TABLE padrones CHARACTER SET utf8mb4 FIELDS TERMINATED BY '|' IGNORE 1 LINES
                     (ruc,
@@ -154,34 +151,45 @@ class PadronController extends Controller
 
     public function demo()
     {
-        DB::connection('tenant')->table('padrones')->truncate();
-        $file = public_path();
-        $prefix = 'padron_extract';
-        $prefix2 = 'txt';
-        $key = 'midemo';
-        $file =  str_replace(DIRECTORY_SEPARATOR, '/', public_path("{$prefix}".DIRECTORY_SEPARATOR."{$key}.{$prefix2}"));
-        $query = "LOAD DATA LOCAL INFILE '" . $file . "'
-        INTO TABLE padrones FIELDS TERMINATED BY '|' IGNORE 1 LINES
-                (ruc,
-                nombre_razon_social,
-                estado_contribuyente,
-                condicion_domicilio,
-                ubigeo,
-                tipo_via,
-                codigo_zona,
-                tipo_zona,
-                numero,
-                interior,
-                lote,
-                departamento,
-                manzana,
-                kilometro,
-                @status,
-                @created_at,
-                @updated_at)
-        SET status=1,created_at=NOW(),updated_at=null";
-        DB::connection('tenant')->getPdo()->exec($query);
 
-        return 'ok';
+        try {
+            DB::connection('tenant')->table('padrones')->truncate();
+            $file = public_path();
+           
+            $file =  str_replace(DIRECTORY_SEPARATOR, '/', public_path("padron_extract".DIRECTORY_SEPARATOR."demo.txt"));
+            $query = "LOAD DATA LOCAL INFILE '" . $file . "'
+            INTO TABLE padrones FIELDS TERMINATED BY '|' LINES TERMINATED BY '\n' IGNORE 1 LINES
+                    (ruc,
+                    nombre_razon_social,
+                    estado_contribuyente,
+                    condicion_domicilio,
+                    ubigeo,
+                    tipo_via,
+                    codigo_zona,
+                    tipo_zona,
+                    numero,
+                    interior,
+                    lote,
+                    departamento,
+                    manzana,
+                    kilometro,
+                    @status,
+                    @created_at,
+                    @updated_at)
+            SET status=1,created_at=NOW(),updated_at=null";
+            DB::connection('tenant')->getPdo()->exec($query);
+    
+            return 'ok';
+        }
+        catch(\PDOException $Exception ) {
+            // Note The Typecast To An Integer!
+
+            return [
+                'message' => $Exception->getMessage(),
+                'line' => $Exception->getLine(),
+            ];
+            //throw new MyDatabaseException( $Exception->getMessage( ) , (int)$Exception->getCode( ) );
+        }
+       
     }
 }
