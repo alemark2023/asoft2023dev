@@ -61,14 +61,14 @@ class SendAllSunatCommand extends Command
                 try {
                     $response = DocumentController::send($document->id);
                     
-                    $document->sunat_shipping_status = $response;
+                    $document->sunat_shipping_status = json_encode($response);
                     $document->success_sunat_shipping_status = true;
                     $document->save();
                 }
                 catch (\Exception $e) {
 
                     $document->success_sunat_shipping_status = false;
-                    
+
                     $document->sunat_shipping_status = json_encode([
                         'sucess' => false,
                         'message' => $e->getMessage(),
