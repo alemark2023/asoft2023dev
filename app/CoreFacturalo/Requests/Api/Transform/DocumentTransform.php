@@ -216,7 +216,8 @@ class DocumentTransform
                 $prepayments[] = [
                     'number' => $row['numero'],
                     'document_type_id' => $row['codigo_tipo_documento'],
-                    'amount' => $row['monto']
+                    'amount' => $row['monto'],
+                    'total' => $row['total']
                 ];
             }
 

@@ -60,16 +60,21 @@ class PromotionController extends Controller
 
     public function store(PromotionRequest $request) {
 
-        $count = Promotion::count();
-        if($count > 2)
-        {
-            return [
-                'success' => false,
-                'message' => 'Solo esta permitido 3 Promociones',
-            ];
-        }
 
         $id = $request->input('id');
+
+        if(!$id)
+        {
+            $count = Promotion::count();
+            if($count > 2)
+            {
+                return [
+                    'success' => false,
+                    'message' => 'Solo esta permitido 3 Promociones',
+                ];
+            }
+        }
+
         $item = Promotion::firstOrNew(['id' => $id]);
         $item->fill($request->all());
 

@@ -86,6 +86,7 @@ class DocumentInput
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
+            'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -246,11 +247,13 @@ class DocumentInput
                     $number = $row['number'];
                     $document_type_id = $row['document_type_id'];
                     $amount = $row['amount'];
+                    $total = $row['total'];
 
                     $prepayments[] = [
                         'number' => $number,
                         'document_type_id' => $document_type_id,
-                        'amount' => $amount
+                        'amount' => $amount,
+                        'total' => $total
                     ];
                 }
                 return $prepayments;

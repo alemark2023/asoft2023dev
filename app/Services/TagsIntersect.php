@@ -6,7 +6,6 @@ use App\Models\Tenant\Item;
 
 class TagsIntersect
 {
-    
 
     public function intersect($array, $item_id)
     {
@@ -16,7 +15,6 @@ class TagsIntersect
         $count = count($result);
         return $count > 0;
     }
-
     
 
 }

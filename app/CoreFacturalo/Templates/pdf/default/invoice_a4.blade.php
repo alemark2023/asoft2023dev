@@ -150,7 +150,7 @@
         <tr>
             <td width="120px">ANTICIPO</td>
             <td width="8px">:</td>
-            <td>{{$p->number}} - {{ $document->currency_type->symbol }} {{$p->amount}}</td> 
+            <td>{{$p->number}}</td> 
         </tr>
         @endforeach
     @endif
@@ -221,7 +221,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
@@ -255,6 +256,31 @@
             <td colspan="6" class="border-bottom"></td>
         </tr>
     @endforeach
+
+    
+    
+    @if ($document->prepayments) 
+        @foreach($document->prepayments as $p)
+        <tr>
+            <td class="text-center align-top">
+                1
+            </td>
+            <td class="text-center align-top">NIU</td>
+            <td class="text-left align-top">
+                ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
+            </td>
+            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
+            <td class="text-right align-top"> 
+                0 
+            </td>
+            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="6" class="border-bottom"></td>
+        </tr> 
+        @endforeach
+    @endif
+    
         @if($document->total_exportation > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>

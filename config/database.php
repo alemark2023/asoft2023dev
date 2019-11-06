@@ -91,6 +91,9 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => null,
+            'options' => array_filter([
+                PDO::MYSQL_ATTR_LOCAL_INFILE => true
+            ]),
         ]
     ],
 

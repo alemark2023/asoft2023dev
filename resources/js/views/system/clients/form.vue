@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" :close-on-click-modal="false">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -20,7 +20,7 @@
                         <!--</div>-->
                     </div>
                     <div class="col-md-6">
-                        
+
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Nombre de la Empresa</label>
                             <el-input :disabled="form.is_update" v-model="form.name" dusk="name"></el-input>
@@ -56,7 +56,7 @@
                         <div class="form-group" :class="{'has-danger': (errors.password)}">
                             <label class="control-label">Contraseña</label>
                             <el-input type="password" :disabled="form.is_update" v-model="form.password" dusk="password"></el-input>
-                            <small class="form-control-feedback" v-if="errors.password" v-text="errors.password[0]"></small> 
+                            <small class="form-control-feedback" v-if="errors.password" v-text="errors.password[0]"></small>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -67,7 +67,7 @@
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.plan_id" v-text="errors.plan_id[0]"></small>
                         </div>
-                    </div>                   
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -84,7 +84,7 @@
                             <el-checkbox :disabled="form.is_update" v-model="form.locked_emission">Limitar emisión de documentos</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.locked_emission" v-text="errors.locked_emission[0]"></small>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right pt-2">
@@ -155,7 +155,7 @@
                         .then(response => {
                                 this.form = response.data.data
                                 this.form.is_update = true
-                            }) 
+                            })
                 }
             },
             submit() {
