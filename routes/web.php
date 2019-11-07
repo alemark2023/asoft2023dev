@@ -531,6 +531,7 @@ if ($hostname) {
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function() {
+        Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
