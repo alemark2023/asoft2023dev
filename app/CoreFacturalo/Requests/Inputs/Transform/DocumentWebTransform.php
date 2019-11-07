@@ -111,12 +111,12 @@ class DocumentWebTransform
                 $item = Item::find($row['item_id']);
 
                 $items[] = [
-                    'codigo_interno' => ($item->internal_id) ? $item->internal_id : '',
+                    'codigo_interno' => ($row['item']['internal_id']) ? $row['item']['internal_id']:'',
                     'descripcion' => $row['item']['description'],
                     // 'nombre' => Functions::valueKeyInArray($row['item'], 'name'),
                     // 'nombre_secundario' => Functions::valueKeyInArray($row['item'], 'second_name'),
                     'codigo_tipo_item' => $item->item_type_id,
-                    'codigo_producto_sunat' => trim($item->item_code),
+                    'codigo_producto_sunat' => trim(($item->item_code) ? $item->item_code:''),
                     // 'codigo_producto_gsl' => $item->item_code_gs1,
                     'unidad_de_medida' => strtoupper($row['item']['unit_type_id']),
                     'codigo_tipo_moneda' => $inputs['currency_type_id'],
