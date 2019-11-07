@@ -1,6 +1,6 @@
 <?php
 
-namespace App\CoreFacturalo\Requests\Inputs;
+namespace App\CoreFacturalo\Requests\Inputs\Transform;
 
 use App\CoreFacturalo\Requests\Api\Transform\Common\EstablishmentTransform;
 use App\CoreFacturalo\Requests\Api\Transform\Common\PersonTransform;
@@ -9,6 +9,7 @@ use App\CoreFacturalo\Requests\Api\Transform\Common\LegendTransform;
 use App\CoreFacturalo\Requests\Api\Transform\Functions;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Document;
 
 class DocumentWebTransform
 {
@@ -16,9 +17,7 @@ class DocumentWebTransform
     {
 
         // dd($inputs);
-        //falta armar el json totales ya que en api es un json
         $customer = PersonInput::set($inputs['customer_id']);
-
 
         $inputs_transform = [
             'serie_documento' => Functions::valueKeyInArray($inputs, 'series'),
@@ -28,7 +27,7 @@ class DocumentWebTransform
             'codigo_tipo_documento' => Functions::valueKeyInArray($inputs, 'document_type_id'),
             'codigo_tipo_moneda' => Functions::valueKeyInArray($inputs, 'currency_type_id'),
             'factor_tipo_de_cambio' => Functions::valueKeyInArray($inputs, 'exchange_rate_sale', 1),
-            'purchase_order' => Functions::valueKeyInArray($inputs, 'numero_orden_de_compra'),
+            'numero_orden_de_compra' => Functions::valueKeyInArray($inputs, 'purchase_order'),
 //            'establishment' => EstablishmentTransform::transform($inputs['datos_del_emisor']),
             'datos_del_cliente_o_receptor' => self::person_transform($customer),
 
@@ -53,20 +52,20 @@ class DocumentWebTransform
                 'total_venta' => Functions::valueKeyInArray($inputs, 'total'),
             ],
 
-            'pago_anticipado' => Functions::valueKeyInArray($inputs, 'has_prepayment',0),
+            // 'pago_anticipado' => Functions::valueKeyInArray($inputs, 'has_prepayment',0),
             'items' => self::items($inputs),
-            'charges' => self::charges($inputs),
-            'discounts' => self::discounts($inputs),
-            'detraction' => self::detraction($inputs),
-            'perception' => self::perception($inputs),
-            'prepayments' => self::prepayments($inputs),
-            'guides' => self::guides($inputs),
-            'related' => self::related($inputs),
+            // 'charges' => self::charges($inputs),
+            // 'discounts' => self::discounts($inputs),
+            // 'detraction' => self::detraction($inputs),
+            // 'perception' => self::perception($inputs),
+            // 'prepayments' => self::prepayments($inputs),
+            // 'guides' => self::guides($inputs),
+            // 'related' => self::related($inputs),
             // 'legends' => LegendTransform::transform($inputs),
             'informacion_adicional' => Functions::valueKeyInArray($inputs, 'additional_information'),
-            // 'actions' => ActionTransform::transform($inputs),
-            'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
-            'payments' => self::payments($inputs),
+            'acciones' => self::actions_transform($inputs),
+            // 'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
+            // 'payments' => self::payments($inputs),
             // 'data_json' => $inputs
         ];
 
@@ -76,6 +75,18 @@ class DocumentWebTransform
         
         return $inputs_transform;
     }
+
+    public static function actions_transform($inputs){
+
+        if(key_exists('actions', $inputs)) {
+            $actions = $inputs['actions'];
+            return [ 
+                'formato_pdf' => Functions::valueKeyInArray($actions, 'format_pdf')
+            ];
+        }
+        return null;
+    }
+
 
     public static function person_transform($person)
     {
@@ -136,9 +147,9 @@ class DocumentWebTransform
                     'total_descuentos' => Functions::valueKeyInArray($row, 'total_discount'),
                     'total_item' => Functions::valueKeyInArray($row, 'total'),
 
-                    'attributes' => self::attributes($row),
-                    'discounts' => self::discounts($row),
-                    'charges' => self::charges($row),
+                    // 'attributes' => self::attributes($row),
+                    // 'discounts' => self::discounts($row),
+                    // 'charges' => self::charges($row),
                 ];
             }
 
@@ -164,7 +175,9 @@ class DocumentWebTransform
         if(in_array($inputs['document_type_id'], ['07', '08'])) {
             $inputs_transform['codigo_tipo_nota'] = Functions::valueKeyInArray($inputs, 'note_credit_or_debit_type_id');
             $inputs_transform['motivo_o_sustento_de_nota'] = Functions::valueKeyInArray($inputs, 'note_description');
-            $inputs_transform['documento_afectado'] = Functions::valueKeyInArray($inputs['affected_document_external_id'], 'external_id'); 
+            $inputs_transform['documento_afectado'] = [
+                'external_id' => Document::select('external_id')->find($inputs['affected_document_id'])->external_id
+            ]; 
         }
         return $inputs_transform;
     }
