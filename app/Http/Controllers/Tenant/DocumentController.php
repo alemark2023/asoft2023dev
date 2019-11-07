@@ -413,6 +413,7 @@ class DocumentController extends Controller
         if(!$document->data_json) throw new Exception("Campo data_json nulo o inválido - Comprobante: {$document->fullnumber}");
 
         $data_json = (array) $document->data_json;
+        $data_json['numero_documento'] = $document->number;
         $data_json['external_id'] = $document->external_id;
         $data_json['hash'] = $document->hash;
         $data_json['qr'] = $document->qr;
