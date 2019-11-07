@@ -127,7 +127,7 @@ class DocumentController extends Controller
     public function documentCheckServer($external_id) {
         $document = Document::where('external_id', $external_id)->first();
         
-        if ($document->state_type_id === '05') {
+        if ($document->state_type_id === '05' && $document->group_id === '01') {
             $file_cdr = base64_encode($this->getStorage($document->filename, 'cdr'));
         }
         else {
