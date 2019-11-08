@@ -135,46 +135,71 @@
                             <div class="col-lg-8" v-if="!is_receivable">
 
                                 <table>
-                                <thead>
-                                    <tr width="100%">
-                                        <th v-if="form.payments.length>0">Método de pago</th>
-                                        <th v-if="form.payments.length>0">Referencia</th>
-                                        <th v-if="form.payments.length>0">Monto</th>
-                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(row, index) in form.payments" :key="index"> 
-                                        <td>
-                                            <div class="form-group mb-2 mr-2">
-                                                <el-select v-model="row.payment_method_type_id">
-                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                </el-select>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="form-group mb-2 mr-2"  >
-                                                <el-input v-model="row.reference"></el-input>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="form-group mb-2 mr-2" >
-                                                <el-input v-model="row.payment"></el-input>
-                                            </div>
-                                        </td>
-                                        <td class="series-table-actions text-center"> 
-                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </td> 
-                                        <br>
-                                    </tr>
-                                </tbody> 
-                            </table> 
-                            
-
+                                    <thead>
+                                        <tr width="100%">
+                                            <th v-if="form.payments.length>0" class="mb-2">Método de pago</th>
+                                            <th v-if="form.payments.length>0" class="mb-2">Referencia</th>
+                                            <th v-if="form.payments.length>0" class="mb-2">Monto</th>
+                                            <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(row, index) in form.payments" :key="index"> 
+                                            <td>
+                                                <div class="form-group mt-2 mr-2">
+                                                    <el-select v-model="row.payment_method_type_id">
+                                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mt-2 mr-2"  >
+                                                    <el-input v-model="row.reference"></el-input>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mt-2 mr-2" >
+                                                    <el-input v-model="row.payment"></el-input>
+                                                </div>
+                                            </td>
+                                            <td class="series-table-actions text-center"> 
+                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td> 
+                                            <br>
+                                        </tr>
+                                    </tbody> 
+                                </table> 
                             </div>
                             
+                            <div class="col-lg-4" v-if="prepayment_deduction">
+                                <div class="form-group">
+                                    <label class="font-weight-bold control-label">
+                                        Comprobantes anticipados
+                                        <a href="#" @click.prevent="clickAddPrepayment" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                    </label>
+                                    <table style="width: 100%">
+                                        <tr v-for="(row,index) in form.prepayments" :key="index">
+                                            <td>
+                                                <el-select v-model="row.document_id" filterable @change="changeDocumentPrepayment(index)">
+                                                    <el-option v-for="option in prepayment_documents" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </td>
+                                            <td>
+                                                <el-input v-model="row.amount" readonly></el-input>
+                                            </td>
+                                            <td align="right">
+                                                
+                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemovePrepayment(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                                <!-- <a href="#" @click.prevent="clickRemovePrepayment" style="color:red">Remover</a> -->
+                                            </td>
+                                        </tr>
+                                    </table> 
+                                </div>
+                            </div>
                             <!-- <div class="col-lg-4 mt-3" >
                                 <el-checkbox v-model="form.has_prepayment"><strong>¿Es un pago anticipado?</strong></el-checkbox>
                             </div> -->
@@ -222,33 +247,6 @@
                                                             <!--autosize-->
                                                             <!--v-model="form.additional_information">-->
                                                     <!--</el-input>-->
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6" v-if="prepayment_deduction">
-                                                <div class="form-group">
-                                                    <label class="control-label">
-                                                        Comprobantes anticipados
-                                                        <a href="#" @click.prevent="clickAddPrepayment" class="text-center font-weight-bold text-info">[+ Agregar]</a>
-                                                    </label>
-                                                    <table style="width: 100%">
-                                                        <tr v-for="(row,index) in form.prepayments" :key="index">
-                                                            <td>
-                                                                <el-select v-model="row.document_id" filterable @change="changeDocumentPrepayment(index)">
-                                                                    <el-option v-for="option in prepayment_documents" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                                </el-select>
-                                                            </td>
-                                                            <td>
-                                                                <el-input v-model="row.amount" readonly></el-input>
-                                                            </td>
-                                                            <td align="right">
-                                                                
-                                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemovePrepayment(index)">
-                                                                    <i class="fa fa-trash"></i>
-                                                                </button>
-                                                                <!-- <a href="#" @click.prevent="clickRemovePrepayment" style="color:red">Remover</a> -->
-                                                            </td>
-                                                        </tr>
-                                                    </table> 
                                                 </div>
                                             </div>
 
@@ -629,7 +627,7 @@
             async changePrepaymentDeduction(){
                 // console.log(this.prepayment_deduction)
                 
-                this.activePanel = (this.prepayment_deduction) ? '1':0
+                // this.activePanel = (this.prepayment_deduction) ? '1':0
                 if(this.prepayment_deduction){
                     await this.changeTotalPrepayment()
                     await this.getDocumentsPrepayment()
