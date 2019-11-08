@@ -446,7 +446,7 @@
                     @endif
 
                     @if(in_array('configuration', $vc_modules))
-                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts','bussiness_turns']) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts','bussiness_turns','offline-configurations']) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-cogs" aria-hidden="true"></i>
                             <span>Configuración</span>
@@ -478,6 +478,11 @@
                             <li class="{{($path[0] === 'advanced') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.advanced.index')}}">
                                     Avanzado
+                                </a>
+                            </li>
+                            <li class="{{($path[0] === 'offline-configurations') ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.offline_configurations.index')}}">
+                                    Modo offline 
                                 </a>
                             </li>
                             @if(auth()->user()->type != 'integrator')

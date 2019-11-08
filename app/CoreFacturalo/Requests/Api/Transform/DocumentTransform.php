@@ -11,7 +11,13 @@ class DocumentTransform
 {
     public static function transform($inputs)
     {
+
         $totals = $inputs['totales'];
+
+        // foreach ($inputs['items'] as $key => $value) {
+        //     $inputs['items'][$key]['codigo_interno'] = ($inputs['items'][$key]['codigo_interno']) ? $inputs['items'][$key]['codigo_interno']:'';
+        //     $inputs['items'][$key]['codigo_producto_sunat'] = ($inputs['items'][$key]['codigo_producto_sunat']) ? $inputs['items'][$key]['codigo_producto_sunat']:'';
+        // }
 
         $inputs_transform = [
             'series' => Functions::valueKeyInArray($inputs, 'serie_documento'),
@@ -64,13 +70,14 @@ class DocumentTransform
         return $inputs_transform;
     }
 
+    
     private static function items($inputs)
     {
         if(key_exists('items', $inputs)) {
             $items = [];
             foreach ($inputs['items'] as $row) {
                 $items[] = [
-                    'internal_id' => $row['codigo_interno'],
+                    'internal_id' => isset($row['codigo_interno']) ? $row['codigo_interno']:'',
                     'description' => $row['descripcion'],
                     'name' => Functions::valueKeyInArray($row, 'nombre'),
                     'second_name' => Functions::valueKeyInArray($row, 'nombre_secundario'),

@@ -43,11 +43,11 @@ use App\Imports\DocumentsImport;
 use App\Imports\DocumentsImportTwoFormat;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
-
+use App\Traits\OfflineTrait;
 
 class DocumentController extends Controller
 {
-    use StorageDocument;
+    use StorageDocument, OfflineTrait;
 
     public function __construct()
     {
@@ -56,7 +56,7 @@ class DocumentController extends Controller
 
     public function index()
     {
-        $is_client = config('tenant.is_client');
+        $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
 
@@ -154,6 +154,7 @@ class DocumentController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
+        $is_client = $this->getIsClient();
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
 //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
@@ -168,7 +169,8 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global','business_turns','prepayment_documents');
+                        'document_types_guide', 'user','payment_method_types','enabled_discount_global',
+                        'business_turns','prepayment_documents','is_client');
 
     }
 
@@ -183,9 +185,10 @@ class DocumentController extends Controller
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $is_client = $this->getIsClient();
 
         return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                       'operation_types', 'discount_types', 'charge_types', 'attribute_types');
+                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
     }
 
     public function table($table)
@@ -400,20 +403,24 @@ class DocumentController extends Controller
     
     public function sendServer($document_id, $query = false) {
         $document = Document::find($document_id);
-        $bearer = config('tenant.token_server');
-        $api_url = config('tenant.url_server');
-        $client = new Client(['base_uri' => $api_url]);
+        // $bearer = config('tenant.token_server');
+        // $api_url = config('tenant.url_server');
+        $bearer = $this->getTokenServer();
+        $api_url = $this->getUrlServer();
+        $client = new Client(['base_uri' => $api_url, 'verify' => false]);
         
        // $zipFly = new ZipFly();
-       
+        if(!$document->data_json) throw new Exception("Campo data_json nulo o inválido - Comprobante: {$document->fullnumber}");
+
         $data_json = (array) $document->data_json;
+        $data_json['numero_documento'] = $document->number;
         $data_json['external_id'] = $document->external_id;
         $data_json['hash'] = $document->hash;
         $data_json['qr'] = $document->qr;
         $data_json['query'] = $query;
         $data_json['file_xml_signed'] = base64_encode($this->getStorage($document->filename, 'signed'));
         $data_json['file_pdf'] = base64_encode($this->getStorage($document->filename, 'pdf'));
-        
+        // dd($data_json);
         $res = $client->post('/api/documents_server', [
             'http_errors' => false,
             'headers' => [
@@ -435,10 +442,10 @@ class DocumentController extends Controller
     
     public function checkServer($document_id) {
         $document = Document::find($document_id);
-        $bearer = config('tenant.token_server');
-        $api_url = config('tenant.url_server');
+        $bearer = $this->getTokenServer();
+        $api_url = $this->getUrlServer();
         
-        $client = new Client(['base_uri' => $api_url]);
+        $client = new Client(['base_uri' => $api_url, 'verify' => false]);
         
         $res = $client->get('/api/document_check_server/'.$document->external_id, [
             'headers' => [

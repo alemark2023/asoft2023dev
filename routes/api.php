@@ -28,11 +28,13 @@ if ($hostname) {
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
-
+        
         Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
         Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
         
+        Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
+
     });
 }else{
     Route::domain(env('APP_URL_BASE'))->group(function() {

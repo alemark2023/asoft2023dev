@@ -11,14 +11,16 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
+use App\Traits\OfflineTrait;
 
 class DocumentController extends Controller
 {
+    use OfflineTrait;
     
     public function index()
     {
 
-        $is_client = config('tenant.is_client');
+        $is_client = $this->getIsClient();
 
         return view('document::documents.not_sent', compact('is_client'));
     }

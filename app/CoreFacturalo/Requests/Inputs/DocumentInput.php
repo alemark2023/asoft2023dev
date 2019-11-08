@@ -11,9 +11,12 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
 use Illuminate\Support\Str;
+use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
+use Modules\Offline\Models\OfflineConfiguration;
 
 class DocumentInput
 {
+
     public static function set($inputs)
     {
         $document_type_id = $inputs['document_type_id'];
@@ -22,6 +25,8 @@ class DocumentInput
 
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
+        
+        $offline_configuration = OfflineConfiguration::firstOrFail();
         // $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
 
         if($number !== '#') {
@@ -45,6 +50,15 @@ class DocumentInput
         $inputs['type'] = $array_partial['type'];
         $inputs['group_id'] = $array_partial['group_id'];
 
+        //set o convert json
+
+        if($offline_configuration->is_client){
+            $exist_data_json = Functions::valueKeyInArray($inputs, 'data_json');
+            $data_json = ($exist_data_json) ? $exist_data_json : DocumentWebTransform::transform($inputs);
+        }else{
+            $data_json = Functions::valueKeyInArray($inputs, 'data_json');
+        }
+        
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -101,7 +115,7 @@ class DocumentInput
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
-            'data_json' => Functions::valueKeyInArray($inputs, 'data_json'),
+            'data_json' => $data_json,
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
         ];
