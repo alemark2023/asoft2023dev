@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Item;
+
+
 
 
 class MobileController extends Controller
