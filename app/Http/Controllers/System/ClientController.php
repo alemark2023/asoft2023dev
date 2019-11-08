@@ -12,6 +12,7 @@ use App\Http\Resources\System\ClientResource;
 use App\Http\Requests\System\ClientRequest;
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
+use App\Models\System\Module;
 use App\Models\System\Plan;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
@@ -36,8 +37,9 @@ class ClientController extends Controller
         $url_base = '.'.config('tenant.app_url_base');
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
+        $modules = Module::orderBy('description')->get();
 
-        return compact('url_base','plans','types');
+        return compact('url_base','plans','types', 'modules');
     }
 
     public function records()
@@ -236,19 +238,28 @@ class ClientController extends Controller
 
         if($request->input('type') == 'admin'){
 
-            DB::connection('tenant')->table('module_user')->insert([
-                ['module_id' => 1, 'user_id' => $user_id],
-                ['module_id' => 2, 'user_id' => $user_id],
-                ['module_id' => 3, 'user_id' => $user_id],
-                ['module_id' => 4, 'user_id' => $user_id],
-                ['module_id' => 5, 'user_id' => $user_id], 
-                ['module_id' => 6, 'user_id' => $user_id], 
-                ['module_id' => 7, 'user_id' => $user_id], 
-                ['module_id' => 8, 'user_id' => $user_id], 
-                ['module_id' => 9, 'user_id' => $user_id], 
-                ['module_id' => 10, 'user_id' => $user_id],
-                ['module_id' => 11, 'user_id' => $user_id], 
-            ]);
+            $array_modules = [];
+
+            foreach ($request->modules as $module) {
+                if($module['checked']){
+                    $array_modules[] = ['module_id' => $module['id'], 'user_id' => $user_id];
+                }
+            }
+            DB::connection('tenant')->table('module_user')->insert($array_modules);
+
+            // DB::connection('tenant')->table('module_user')->insert([
+            //     ['module_id' => 1, 'user_id' => $user_id],
+            //     ['module_id' => 2, 'user_id' => $user_id],
+            //     ['module_id' => 3, 'user_id' => $user_id],
+            //     ['module_id' => 4, 'user_id' => $user_id],
+            //     ['module_id' => 5, 'user_id' => $user_id], 
+            //     ['module_id' => 6, 'user_id' => $user_id], 
+            //     ['module_id' => 7, 'user_id' => $user_id], 
+            //     ['module_id' => 8, 'user_id' => $user_id], 
+            //     ['module_id' => 9, 'user_id' => $user_id], 
+            //     ['module_id' => 10, 'user_id' => $user_id],
+            //     ['module_id' => 11, 'user_id' => $user_id], 
+            // ]);
             
         }else{
 
