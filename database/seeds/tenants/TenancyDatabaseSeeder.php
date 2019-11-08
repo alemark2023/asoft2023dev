@@ -47,9 +47,9 @@ class TenancyDatabaseSeeder extends Seeder
             ['name' => 'Promocion 3', 'description' => 'Promocion 3', 'image' => 'promo3.jpg', 'item_id'=> $id3, 'status'=> 1 ]
         ]);
 
-        DB::table('module_user')->insert([
-            ['module_id' => 10, 'user_id' => 1, ]
-        ]);
+        // DB::table('module_user')->insert([
+        //     ['module_id' => 10, 'user_id' => 1, ]
+        // ]);
 
 
     }
