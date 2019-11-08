@@ -4,9 +4,12 @@ $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function() {
         
-        Route::post('login', 'System\Api\ResellerController@login');
+        Route::post('login', 'Tenant\Api\MobileController@login');
 
         Route::middleware('auth:api')->group(function() {
+            //MOBILE
+            Route::get('document/tables', 'Tenant\Api\MobileController@tables');
+            
             Route::post('documents', 'Tenant\Api\DocumentController@store');
             Route::get('documents/lists', 'Tenant\Api\DocumentController@lists');
             Route::post('summaries', 'Tenant\Api\SummaryController@store');
