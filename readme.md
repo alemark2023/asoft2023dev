@@ -81,3 +81,6 @@ Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/
 Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
 Manual - limpiar inodes: [Guía](https://drive.google.com/open?id=1a-ELWC0Mav4ILSGxM3Yv_yKF709FTawEYxviggXTAIM "Clic")<br>
 Manual - habilitar debug: [Guía](https://drive.google.com/open?id=1OdU-rDjr_cxM7t3fujBxPnEQn7qMoxIO6KZNjiKzyvU "Clic")<br>
+Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
+
+
