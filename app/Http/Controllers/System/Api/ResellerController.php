@@ -15,6 +15,12 @@ use App\Models\System\Plan;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+
+
 
 class ResellerController extends Controller
 {
@@ -32,6 +38,26 @@ class ResellerController extends Controller
         }
 
         return new ClientCollection($records);
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = request(['email', 'password']);
+        if (!Auth::attempt($credentials)) {
+            return [
+                'success' => false,
+                'message' => 'No Autorizado'
+            ];
+        }
+
+        $user = $request->user();
+        return [
+            'success' => true,
+            'name' => $user->name,
+            'email' => $user->email,
+            'token' => $user->api_token,
+        ];
+
     }
  
 }
