@@ -3,23 +3,50 @@
 namespace App\CoreFacturalo\Requests\Inputs;
 
 use App\Models\Tenant\Document;
+use App\Models\Tenant\Series;
 use Carbon\Carbon;
 use Exception;
+use Modules\Document\Models\SeriesConfiguration;
 
 class Functions
 {
     public static function newNumber($soap_type_id, $document_type_id, $series, $number, $model)
     {
+
         if ($number === '#') {
+
             $document = $model::select('number')
-                                ->where('soap_type_id', $soap_type_id)
-                                ->where('document_type_id', $document_type_id)
-                                ->where('series', $series)
-                                ->orderBy('number', 'desc')
-                                ->first();
-            return ($document)?(int)$document->number+1:1;
+                                    ->where('soap_type_id', $soap_type_id)
+                                    ->where('document_type_id', $document_type_id)
+                                    ->where('series', $series)
+                                    ->orderBy('number', 'desc')
+                                    ->first();
+
+            if($document){
+
+                return (int)$document->number+1;
+
+            }else{
+
+                $series_configuration = SeriesConfiguration::where('series', $series)->first();
+                return ($series_configuration) ? (int) $series_configuration->number:1;
+
+            }
+
         }
+        
         return $number;
+
+        // if ($number === '#') {
+        //     $document = $model::select('number')
+        //                         ->where('soap_type_id', $soap_type_id)
+        //                         ->where('document_type_id', $document_type_id)
+        //                         ->where('series', $series)
+        //                         ->orderBy('number', 'desc')
+        //                         ->first();
+        //     return ($document)?(int)$document->number+1:1;
+        // }
+        // return $number;
     }
 
     public static function filename($company, $document_type_id, $series, $number)
