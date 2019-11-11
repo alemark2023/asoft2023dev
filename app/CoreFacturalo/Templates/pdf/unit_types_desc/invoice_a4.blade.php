@@ -13,7 +13,7 @@
         $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
 
     } else {
-        
+
         $affected_document_number = null;
     }
 
@@ -52,12 +52,12 @@
 
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-                @endisset  
+                @endisset
 
                 <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
 
                 <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
-                
+
                 @isset($establishment->web_address)
                     <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
                 @endisset
@@ -145,12 +145,12 @@
 @endif
 
 <table class="full-width mt-3">
-    @if ($document->prepayments) 
+    @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
             <td width="120px">ANTICIPO</td>
             <td width="8px">:</td>
-            <td>{{$p->number}} - {{ $document->currency_type->symbol }} {{$p->amount}}</td> 
+            <td>{{$p->number}} - {{ $document->currency_type->symbol }} {{$p->amount}}</td>
         </tr>
         @endforeach
     @endif
@@ -221,7 +221,8 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            @inject('unitType', 'App\Services\UnitTypeService')
+            <td class="text-center align-top">{{ $unitType->getDescription($row->item->unit_type_id ) }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
@@ -312,24 +313,24 @@
         <td width="65%" style="text-align: top; vertical-align: top;">
             @foreach(array_reverse( (array) $document->legends) as $row)
                 @if ($row->code == "1000")
-                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>                      
+                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
                     @if (count((array) $document->legends)>1)
                         <p><span class="font-bold">Leyendas</span></p>
-                    @endif                  
+                    @endif
                 @else
-                    <p> {{$row->code}}: {{ $row->value }} </p>                                    
+                    <p> {{$row->code}}: {{ $row->value }} </p>
                 @endif
-            
+
             @endforeach
             <br/>
             @if ($customer->department_id == 16)
-                <br/><br/><br/>                       
+                <br/><br/><br/>
                 <div>
                     <center>
-                        Representación impresa del Comprobante de Pago Electrónico. 
+                        Representación impresa del Comprobante de Pago Electrónico.
                         <br/>Esta puede ser consultada en:
                         <br/><b>{!! url('/buscar') !!}</b>
-                        <br/> "Bienes transferidos en la Amazonía 
+                        <br/> "Bienes transferidos en la Amazonía
                         <br/>para ser consumidos en la misma".
                     </center>
                 </div>
@@ -360,7 +361,7 @@
     <table class="full-width">
         <tr>
             <td>
-                <strong>PAGOS:</strong> 
+                <strong>PAGOS:</strong>
             </td>
         </tr>
             @php
@@ -369,7 +370,7 @@
             @foreach($payments as $row)
                 <tr>
                     <td>- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
-                </tr> 
+                </tr>
             @endforeach
         </tr>
 
