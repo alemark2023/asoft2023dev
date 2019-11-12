@@ -3,7 +3,7 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
-    
+
 @endphp
 
 <aside id="sidebar-left" class="sidebar-left">
@@ -27,7 +27,7 @@
                         </a>
                     </li> -->
 
-                    
+
 
                     @if(in_array('dashboard', $vc_modules))
                     <li class="{{ ($path[0] === 'dashboard')?'nav-active':'' }}">
@@ -52,7 +52,7 @@
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
-                      
+
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -200,13 +200,13 @@
                                         Conjuntos/Packs/Promociones
                                     </a>
                                 </li>
-                                
+
                             </ul>
                         </li>
                         @endif
                     @endif
 
-                    
+
                     @if(in_array('ecommerce', $vc_modules))
                     <li class="nav-parent {{ in_array($path[0], ['items_ecommerce', 'tags', 'promotions', 'orders'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
@@ -240,7 +240,7 @@
                                     Promociones
                                 </a>
                             </li>
-                            
+
                         </ul>
                     </li>
                     @endif
@@ -269,7 +269,7 @@
                                         Nuevo
                                     </a>
                                 </li>
-                                
+
                                 <li class="{{ ($path[0] === 'purchases' && $path[1] != 'create')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.purchases.index')}}">
                                         Listado
@@ -314,7 +314,7 @@
                         @endif
 
                     @endif
-                    
+
                     @if(in_array('configuration', $vc_modules))
                     <li class="nav-parent {{ in_array($path[0], ['users', 'establishments'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
@@ -361,7 +361,7 @@
                                 <a class="nav-link" href="{{route('tenant.perceptions.index')}}">
                                 Percepciones
                                 </a>
-                            </li> 
+                            </li>
 
                         </ul>
                     </li>
@@ -414,8 +414,8 @@
 
 
 
-                           
-                            
+
+
                         </ul>
                     </li>
                     @endif
@@ -482,7 +482,7 @@
                             </li>
                             <li class="{{($path[0] === 'offline-configurations') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.offline_configurations.index')}}">
-                                    Modo offline 
+                                    Modo offline
                                 </a>
                             </li>
                             @if(auth()->user()->type != 'integrator')
@@ -517,7 +517,7 @@
                                     Lista de Pagos
                                 </a>
                             </li>
-                           
+
                         </ul>
                     </li>
                     @endif
