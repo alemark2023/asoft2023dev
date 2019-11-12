@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Purchase extends ModelTenant
 {
     use SoftDeletes;
-    
+
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
 
     protected $fillable = [
@@ -18,7 +18,7 @@ class Purchase extends ModelTenant
         'establishment_id',
         'establishment',
         'soap_type_id',
-        'state_type_id', 
+        'state_type_id',
         'group_id',
         'document_type_id',
         'series',
@@ -27,7 +27,7 @@ class Purchase extends ModelTenant
         'time_of_issue',
         'supplier_id',
         'supplier',
-        'currency_type_id', 
+        'currency_type_id',
         'exchange_rate_sale',
         'total_prepayment',
         'total_discount',
@@ -58,7 +58,7 @@ class Purchase extends ModelTenant
         'detraction',
         'legends',
         'date_of_due',
-        
+
     ];
 
     protected $casts = [
@@ -75,7 +75,7 @@ class Purchase extends ModelTenant
     {
         $this->attributes['establishment'] = (is_null($value))?null:json_encode($value);
     }
- 
+
 
     public function getSupplierAttribute($value)
     {
@@ -201,16 +201,16 @@ class Purchase extends ModelTenant
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
-    
+
     public function supplier() {
         return $this->belongsTo(CurrencyType::class, 'supplier_id');
     }
-  
+
     public function items()
     {
         return $this->hasMany(PurchaseItem::class);
     }
- 
+
     public function getNumberFullAttribute()
     {
         return $this->series.'-'.$this->number;
@@ -237,6 +237,13 @@ class Purchase extends ModelTenant
         $legend = collect($legends)->where('code', '1000')->first();
         return $legend->value;
     }
- 
- 
+
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
+    }
+
+
+
 }
