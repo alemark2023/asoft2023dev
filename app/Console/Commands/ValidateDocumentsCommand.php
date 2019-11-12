@@ -44,7 +44,7 @@ class ValidateDocumentsCommand extends Command
         $state_type_id = $this->argument('state_type_id');
 
         if(!$state_type_id) {
-            $state_type_id = '01';
+            $state_type_id = '05';
         }
 
         if ($establishment_id) {
