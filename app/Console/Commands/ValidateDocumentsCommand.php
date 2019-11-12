@@ -40,6 +40,9 @@ class ValidateDocumentsCommand extends Command
      */
     public function handle()
     {
+        
+        $this->info('The command was started');
+
         $establishment_id = $this->argument('establishment_id');
         $state_type_id = $this->argument('state_type_id');
 
