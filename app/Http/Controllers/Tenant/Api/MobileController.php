@@ -57,6 +57,7 @@ class MobileController extends Controller
             return [
                 'id' => $row->id,
                 'item_id' => $row->id,
+                'name' => $row->name,
                 'full_description' => $full_description,
                 'description' => $row->description,
                 'currency_type_id' => $row->currency_type_id,
