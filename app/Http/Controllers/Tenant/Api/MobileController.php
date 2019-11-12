@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+
 
 
 
@@ -40,6 +42,7 @@ class MobileController extends Controller
 
     public function tables()
     {
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -77,7 +80,7 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'data' => array('customers' => $customers, 'items' => $items)
+            'data' => array('customers' => $customers, 'items' => $items, 'affectation_types' => $affectation_igv_types)
         ];
 
     }
