@@ -15,7 +15,7 @@
         <div class="row">
             <div class="col-lg-4">
                 <div class="widget">
-                    <h4 class="widget-title">Ubicación</h4> 
+                    <h4 class="widget-title">Ubicación</h4>
                     <ul class="contact-info">
                         <li>
                             <span class="contact-info-label">Dirección:</span> Jr. Trujillo 123 Lima, Peru
@@ -27,7 +27,7 @@
                 </div><!-- End .widget -->
             </div><!-- End .col-lg-3 -->
 
-            
+
             <div class="col-md-4">
                 <div class="widget">
                     <h4 class="widget-title">Enlaces de interés</h4>
@@ -101,12 +101,12 @@
                 </div>
                 <div class="row">
                     <div id="product_added_image" class="col-md-4">
-                       
+
 
                     </div>
                     <div class="col-md-8">
                         <div id="product_added" class="product-single-details">
-                            
+
                         </div>
                     </div>
 
@@ -123,7 +123,7 @@
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-           
+
             <div class="modal-body">
 
                 <div style="font-size: 2em;" class="alert alert-warning" role="alert">
@@ -200,7 +200,7 @@
                                 <div class="form-group">
                                     <label for="pwd">Repita la Contraseña:</label>
                                     <input type="password" required autocomplete="off" class="form-control"
-                                        id="pwd_repeat_reg" placeholder="Repita contraseña" name="pswd">
+                                        id="pwd_repeat_reg" placeholder="Repita contraseña" name="pswd_rpt">
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Registrarse</button>

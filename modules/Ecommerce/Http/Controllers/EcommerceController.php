@@ -2,7 +2,7 @@
 
 namespace Modules\Ecommerce\Http\Controllers;
 
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Item;
 use App\Http\Resources\Tenant\ItemCollection;
@@ -54,11 +54,11 @@ class EcommerceController extends Controller
     {
         $records = Item::where('apply_store', 1)->get();
         return new ItemCollection($records);
-       
+
     }
 
     public function partialItem($id)
-    {   
+    {
         $record = Item::find($id);
         return view('ecommerce::items.partial', compact('record'));
     }
@@ -79,7 +79,7 @@ class EcommerceController extends Controller
     }
 
     public function login(Request $request)
-    {   
+    {
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
            return[
@@ -114,11 +114,11 @@ class EcommerceController extends Controller
             $user->establishment_id = 1;
             $user->type = 'client';
             $user->api_token = str_random(50);
-            $user->password = bcrypt($request->input('password'));
+            $user->password = bcrypt($request->pswd);
             $user->save();
             $user->modules()->sync([10]);
 
-            $credentials = [ 'email' => $user->email, 'password' => $request->input('password') ];
+            $credentials = [ 'email' => $user->email, 'password' => $request->pswd ];
             Auth::attempt($credentials);
             return [
                 'success' => true,
@@ -131,7 +131,7 @@ class EcommerceController extends Controller
                 'message' =>  $e->getMessage()
             ];
         }
-       
+
     }
 
     public function transactionFinally(Request $request)
@@ -143,7 +143,7 @@ class EcommerceController extends Controller
             $order_generated->document_external_id = $request->document_external_id;
             $order_generated->number_document = $request->number_document;
             $order_generated->save();
-            
+
             $user->update(['identity_document_type_id' => $request->identity_document_type_id, 'number'=>$request->number]);
             return [
                 'success' => true,
@@ -157,7 +157,7 @@ class EcommerceController extends Controller
                 'message' =>  $e->getMessage()
             ];
         }
-      
+
     }
 
     public function paymentCash(Request $request)
@@ -172,7 +172,7 @@ class EcommerceController extends Controller
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
               ]);
-      
+
             $customer_email = $user->email;
             $document = new stdClass;
             $document->client = $user->name;
@@ -191,7 +191,7 @@ class EcommerceController extends Controller
                 'message' =>  $e->getMessage()
             ];
         }
-       
+
     }
 
     public function ratingItem(Request $request)
@@ -234,10 +234,10 @@ class EcommerceController extends Controller
 
     }
 
-    
-   
 
-   
 
-   
+
+
+
+
 }
