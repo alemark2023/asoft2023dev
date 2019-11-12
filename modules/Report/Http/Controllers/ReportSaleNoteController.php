@@ -17,8 +17,8 @@ use App\Http\Resources\Tenant\SaleNoteCollection;
 class ReportSaleNoteController extends Controller
 {
     use ReportTrait;
-   
-     
+
+
     public function filter() {
 
         $document_types = [];
@@ -29,16 +29,16 @@ class ReportSaleNoteController extends Controller
                 'name' => $row->description
             ];
         });
-        
+
         return compact('document_types','establishments');
     }
-      
+
 
     public function index() {
-       
+
         return view('report::sale_notes.index');
     }
-   
+
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), SaleNote::class);
@@ -46,29 +46,29 @@ class ReportSaleNoteController extends Controller
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
     }
 
- 
+
 
     public function pdf(Request $request) {
 
         $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), SaleNote::class)->get();
-        
+
         $pdf = PDF::loadView('report::sale_notes.report_pdf', compact("records", "company", "establishment"));
 
         $filename = 'Reporte_Nota_Ventas_'.date('YmdHis');
-        
+
         return $pdf->download($filename.'.pdf');
     }
-    
-  
-    
+
+
+
 
     public function excel(Request $request) {
-    
+
         $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
-        
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
         $records = $this->getRecords($request->all(), SaleNote::class)->get();
 
         return (new SaleNoteExport)
