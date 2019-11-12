@@ -44,20 +44,21 @@ class ValidateDocumentsCommand extends Command
         $state_type_id = $this->argument('state_type_id');
 
         if(!$state_type_id) {
-            $state_type_id = '01';
+            // $state_type_id = '01';
+            $state_type_id = '05';
         }
 
         if ($establishment_id) {
             $documents = Document::query()
                 ->where('establishment_id', $establishment_id)
-                ->where('state_type_id', $state_type_id)
+                // ->where('state_type_id', $state_type_id)
                 //->whereNotIn('response_code', ['1', '2', '3', '4'])
                 ->orderBy('series')
                 ->orderBy('number')
                 ->get();
         } else {
             $documents = Document::query()
-                ->where('state_type_id', $state_type_id)
+                // ->where('state_type_id', $state_type_id)
 //                ->whereNull('response_code')
 //                ->whereNotIn('response_code', ['1', '2', '3', '4'])
                 ->orderBy('series')
