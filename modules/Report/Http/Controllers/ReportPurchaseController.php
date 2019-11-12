@@ -17,8 +17,8 @@ use App\Http\Resources\Tenant\PurchaseCollection;
 class ReportPurchaseController extends Controller
 {
     use ReportTrait;
-   
-     
+
+
     public function filter() {
 
         $document_types = DocumentType::whereIn('id', ['01', '03'])->get();
@@ -29,16 +29,16 @@ class ReportPurchaseController extends Controller
                 'name' => $row->description
             ];
         });
-        
+
         return compact('document_types','establishments');
     }
-      
+
 
     public function index() {
-       
+
         return view('report::purchases.index');
     }
-   
+
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), Purchase::class);
@@ -46,28 +46,28 @@ class ReportPurchaseController extends Controller
         return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
     }
 
- 
+
 
     public function pdf(Request $request) {
 
         $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Purchase::class)->get();
 
         $pdf = PDF::loadView('report::purchases.report_pdf', compact("records", "company", "establishment"));
 
         $filename = 'Reporte_Compras_'.date('YmdHis');
-        
+
         return $pdf->download($filename.'.pdf');
     }
-    
-  
-    
+
+
+
 
     public function excel(Request $request) {
-    
+
         $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Purchase::class)->get();
 
         return (new PurchaseExport)

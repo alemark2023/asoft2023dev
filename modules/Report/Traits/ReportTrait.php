@@ -3,18 +3,18 @@
 namespace Modules\Report\Traits;
 
 use App\Models\Tenant\Catalogs\DocumentType;
-use App\Models\Tenant\Establishment; 
-use App\Models\Tenant\Document; 
-use App\Models\Tenant\SaleNote; 
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\SaleNote;
 use Carbon\Carbon;
 
 /**
- * 
+ *
  */
 trait ReportTrait
 {
-    
-    
+
+
     public function getRecords($request, $model){
 
         // dd($request['period']);
@@ -49,7 +49,7 @@ trait ReportTrait
                 $d_end = $date_end;
                 break;
         }
- 
+
         $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $model);
 
         return $records;
@@ -63,24 +63,24 @@ trait ReportTrait
         if($document_type_id && $establishment_id){
 
             $data = $model::where([['establishment_id', $establishment_id],['document_type_id', $document_type_id]])
-                                ->whereBetween('date_of_issue', [$date_start, $date_end])->latest();
+                                ->whereBetween('date_of_issue', [$date_start, $date_end])->latest()->whereTypeUser();
 
         }elseif($document_type_id){
-            
+
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-                                ->where('document_type_id', 'like', '%' . $document_type_id . '%');
+                                ->where('document_type_id', 'like', '%' . $document_type_id . '%')->whereTypeUser();
 
         }elseif($establishment_id){
-            
+
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-                                ->where('establishment_id', 'like', '%' . $establishment_id . '%');
+                                ->where('establishment_id', 'like', '%' . $establishment_id . '%')->whereTypeUser();
 
         }else{
-            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest();
+            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()->whereTypeUser();
         }
-       
+
         return $data;
-        
+
     }
 
 
@@ -88,8 +88,8 @@ trait ReportTrait
     public function getRecordsCash($request){
 
         $document_type_id = $request['document_type_id'];
-        $user_id = $request['user_id']; 
-  
+        $user_id = $request['user_id'];
+
         $records = $this->dataCash($document_type_id, $user_id);
 
         return $records;
@@ -99,32 +99,32 @@ trait ReportTrait
 
     private function dataCash($document_type_id, $user_id)
     {
- 
+
         $sale_notes = [];
-        
+
         switch ($document_type_id) {
             case '01':
                 $documents = Document::whereIn('document_type_id',['01','03'])->latest();
                 $sale_notes = SaleNote::latest();
-                break; 
+                break;
 
             case '02':
                 $documents = Document::whereIn('document_type_id',['01','03'])->latest();
-                break; 
+                break;
 
             case '03':
                 $sale_notes = SaleNote::latest();
-                break; 
+                break;
         }
- 
-        foreach ($sale_notes as $sn) { 
+
+        foreach ($sale_notes as $sn) {
             $documents->push($sn);
         }
 
         $data = $documents;
 
         return $data;
-        
+
     }
 
 }
