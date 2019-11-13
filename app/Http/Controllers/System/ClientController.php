@@ -56,7 +56,14 @@ class ClientController extends Controller
 
     public function record($id)
     {
-        $record = new ClientResource(Client::findOrFail($id));
+        
+        $client = Client::findOrFail($id);
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get();
+
+        $record = new ClientResource($client);
+
         return $record;
     }
 
@@ -115,6 +122,19 @@ class ClientController extends Controller
             $tenancy = app(Environment::class);
             $tenancy->tenant($client->hostname->website);
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan)]);
+
+            //modules
+            DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
+
+            $array_modules = [];
+
+            foreach ($request->modules as $module) {
+                if($module['checked']){
+                    $array_modules[] = ['module_id' => $module['id'], 'user_id' => 1];
+                }
+            }
+            DB::connection('tenant')->table('module_user')->insert($array_modules);
+            //modules
 
             return [
                 'success' => true,

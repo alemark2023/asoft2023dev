@@ -11,13 +11,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+
 
 
 
 
 class MobileController extends Controller
 {
-      
+
     public function login(Request $request)
     {
         $credentials = request(['email', 'password']);
@@ -40,6 +42,7 @@ class MobileController extends Controller
 
     public function tables()
     {
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -52,13 +55,17 @@ class MobileController extends Controller
         });
 
         $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get()->transform(function($row){
+            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+
             return [
                 'id' => $row->id,
+                'item_id' => $row->id,
                 'name' => $row->name,
-                'second_name' => $row->second_name,
-                'internal_id' => $row->internal_id,
+                'full_description' => $full_description,
                 'description' => $row->description,
                 'currency_type_id' => $row->currency_type_id,
+                'internal_id' => $row->internal_id,
+                'item_code' => $row->item_code,
                 'currency_type_symbol' => $row->currency_type->symbol,
                 'sale_unit_price' => $row->sale_unit_price,
                 'purchase_unit_price' => $row->purchase_unit_price,
@@ -67,14 +74,16 @@ class MobileController extends Controller
                 'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                 'calculate_quantity' => (bool) $row->calculate_quantity,
                 'has_igv' => (bool) $row->has_igv,
+                'is_set' => (bool) $row->is_set,
+                'aux_quantity' => 1,
             ];
         });
 
         return [
             'success' => true,
-            'data' => array('customers' => $customers, 'items' => $items)
+            'data' => array('customers' => $customers, 'items' => $items, 'affectation_types' => $affectation_igv_types)
         ];
-       
+
     }
- 
+
 }

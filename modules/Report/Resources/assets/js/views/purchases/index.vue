@@ -27,13 +27,13 @@
                             <th class="">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
-                            <td>{{ index }}</td> 
+                            <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.date_of_due}}</td>
-                            <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td> 
+                            <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.number}}
-                                <small v-text="row.document_type_description"></small><br/> 
+                                <small v-text="row.document_type_description"></small><br/>
 
                             </td>
                             <td>{{row.payment_method_type_description}}</td>
@@ -51,32 +51,32 @@
 
                         </tr>
                     </data-table>
-                     
-                    
-                </div> 
+
+
+                </div>
         </div>
- 
+
     </div>
 </template>
 
 <script>
- 
+
     import DataTable from '../../components/DataTableReports.vue'
 
-    export default { 
+    export default {
         components: {DataTable},
         data() {
             return {
-                resource: 'reports/purchases',                 
-                form: {}, 
+                resource: 'reports/purchases',
+                form: {},
 
             }
         },
-        async created() { 
+        async created() {
         },
-        methods: { 
-             
-            
+        methods: {
+
+
         }
     }
 </script>

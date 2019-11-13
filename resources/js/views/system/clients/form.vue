@@ -68,10 +68,9 @@
                             <small class="form-control-feedback" v-if="errors.plan_id" v-text="errors.plan_id[0]"></small>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div v-if="!form.is_update" class="form-group" :class="{'has-danger': errors.type}">
+                    
+                    <div class="col-md-6" v-if="!form.is_update">
+                        <div  class="form-group" :class="{'has-danger': errors.type}">
                             <label class="control-label">Perfil</label>
                             <el-select :disabled="form.is_update" v-model="form.type">
                                 <el-option v-for="option in types" :key="option.type" :value="option.type" :label="option.description"></el-option>
@@ -85,8 +84,12 @@
                             <small class="form-control-feedback" v-if="errors.locked_emission" v-text="errors.locked_emission[0]"></small>
                         </div>
                     </div>
+
+
                 </div>
-                <div class="row mt-2" v-if="!form.is_update"> 
+                <div class="row">
+                </div>
+                <div class="row mt-2"> 
                     <div class="col-md-12" >
                         <div class="form-group">
                             <label class="control-label">Módulos</label>
@@ -103,7 +106,7 @@
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button type="primary" native-type="submit" :loading="loading_submit" dusk="submit">
                     <template v-if="loading_submit">
-                        Creando base de datos...
+                        {{button_text}}
                     </template>
                     <template v-else>
                         Guardar
@@ -127,6 +130,7 @@
                 loading_submit: false,
                 loading_search: false,
                 titleDialog: null,
+                button_text:null,
                 resource: 'clients',
                 error: {},
                 errors: {},
@@ -198,13 +202,11 @@
             },
             async submit() {
                 // console.log(this.form)
-                if(!this.form.is_update){
-                    let has_modules = await this.hasModules()
-                    if(!has_modules)
-                        return this.$message.error('Debe seleccionar al menos un módulo')
-                }
+                let has_modules = await this.hasModules()
+                if(!has_modules)
+                    return this.$message.error('Debe seleccionar al menos un módulo')
                 
-                
+                this.button_text = (this.form.is_update) ? 'Actualizando cliente...':'Creando base de datos...'
                 this.loading_submit = true
                 await this.$http.post(`${this.resource}${(this.form.is_update ? '/update' : '')}`, this.form)
                     .then(response => {
