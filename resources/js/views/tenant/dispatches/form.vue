@@ -326,9 +326,9 @@
                 </div>
             </form>
         </div>
-        
+
         <!--<person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>-->
-        
+
         <!--<items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>-->
     </div>
 </template>
@@ -336,7 +336,7 @@
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
-    
+
     export default {
         props: ['document'],
         components: {PersonForm, Items},
@@ -416,6 +416,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    reference_document_id: this.document.id,
                     establishment_id: null,
                     document_type_id: '09',
                     series_id: null,
@@ -539,7 +540,7 @@
             },
             submit() {
                 this.loading_submit = true;
-                
+
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

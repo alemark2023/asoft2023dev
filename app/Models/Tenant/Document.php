@@ -324,4 +324,9 @@ class Document extends ModelTenant
         return $query->where([['has_prepayment', true],['was_deducted_prepayment', false],['state_type_id','05']]);
     }
 
+    /*public function reference_guides()
+    {
+        return $this->hasMany(Dispatch::class, 'reference_document_id')->where('document_type_id', 9);
+    }*/
+
 }

@@ -135,7 +135,7 @@
     @endforeach
     </tbody>
 </table>
-<table class="full-width border-box">
+<table class="full-width border-box mt-10 mb-10">
     <tr>
         <td class="text-bold border-bottom font-bold">OBSERVACIONES</td>
     </tr>
@@ -143,5 +143,16 @@
         <td>{{ $document->observations }}</td>
     </tr>
 </table>
+@if ($document->reference_document)
+<table class="full-width border-box">
+    <tr>
+        <td class="text-bold border-bottom font-bold">FACTURA</td>
+    </tr>
+    <tr>
+        <td>{{ ($document->reference_document) ? $document->reference_document->number_full : "" }}</td>
+    </tr>
+</table>
+@endif
+
 </body>
 </html>
