@@ -18,6 +18,7 @@
                     <thead>
                     <tr>
                         <th>#</th>
+                        <th>Tipo comprobante</th>
                         <th>Serie</th>
                         <th class="text-center">Número a iniciar</th>
                         <th class="text-center">Emisión inicializada</th>
@@ -27,6 +28,7 @@
                     <tbody>
                     <tr v-for="(row, index) in records">
                         <td>{{ index + 1 }}</td>
+                        <td>{{ row.document_type_description }}</td>
                         <td>{{ row.series }}</td>
                         <td class="text-center">{{ row.number }}</td>
                         <td class="text-center">{{ row.initialized_description }}</td>

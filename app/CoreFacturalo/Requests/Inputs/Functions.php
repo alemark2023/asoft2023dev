@@ -28,7 +28,7 @@ class Functions
 
             }else{
 
-                $series_configuration = SeriesConfiguration::where('series', $series)->first();
+                $series_configuration = SeriesConfiguration::where([['document_type_id',$document_type_id],['series',$series]])->first();
                 return ($series_configuration) ? (int) $series_configuration->number:1;
 
             }

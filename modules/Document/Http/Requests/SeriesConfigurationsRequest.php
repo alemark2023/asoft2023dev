@@ -18,7 +18,11 @@ class SeriesConfigurationsRequest extends FormRequest
         return [
             'series_id' => [
                 'required',
-                'unique:tenant.series_configurations'
+                // 'unique:tenant.series_configurations'
+            ],
+            'document_type_id' => [
+                'required',
+                // 'unique:tenant.series_configurations'
             ],
             'series' => [
                 'required',

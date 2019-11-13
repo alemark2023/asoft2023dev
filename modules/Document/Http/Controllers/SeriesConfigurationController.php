@@ -31,13 +31,19 @@ class SeriesConfigurationController extends Controller
     public function getRecords(){
         
         $records = SeriesConfiguration::get()->transform(function($row, $key) {
+
+            $quantity_documents = $this->getQuantityDocuments($row->document_type_id, $row->series);
+
             return [
                 'id' => $row->id,
                 'series_id' => $row->series_id,
+                'document_type_description' => $row->document_type->description,
                 'series' => $row->series,
                 'number' => $row->number, 
-                'initialized_description' => ($row->relationSeries->documents->count() > 0) ? 'SI':'NO',
-                'btn_delete' => ($row->relationSeries->documents->count() > 0) ? false:true 
+                'initialized_description' => ($quantity_documents > 0) ? 'SI':'NO',
+                'btn_delete' => ($quantity_documents > 0) ? false:true 
+                // 'initialized_description' => ($row->relationSeries->documents->count() > 0) ? 'SI':'NO',
+                // 'btn_delete' => ($row->relationSeries->documents->count() > 0) ? false:true 
             ];
         });
  
@@ -49,20 +55,36 @@ class SeriesConfigurationController extends Controller
     {
         
         $establishmentId = auth()->user()->establishment_id;
+        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '08'])->get();
 
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])
                         ->where('establishment_id', $establishmentId)
-                        ->doesntHave('series_configurations')
-                        ->doesntHave('documents')
+                        ->doesntHave('series_configurations') 
+                        // ->doesntHave('documents')
                         ->get();
-                       
-        return compact('series');
+        
+        return compact('series', 'document_types');
 
     }
 
-    
+    private function getQuantityDocuments($document_type_id, $series){
+
+        return Document::where([['document_type_id',$document_type_id],['series',$series]])->count();
+
+    }
+
     public function store(SeriesConfigurationsRequest $request)
     {
+
+        $quantity_document = $this->getQuantityDocuments($request->document_type_id, $request->series);
+
+        if($quantity_document > 0){
+            return [
+                'success' => false,
+                'message' => 'Ya inicializó el número correlativo de la serie'
+            ];
+        }
+
         $id = $request->input('id');
         $record = SeriesConfiguration::firstOrNew(['id' => $id]);
         $record->fill($request->all());

@@ -2,7 +2,17 @@
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
-                <div class="row">
+                <div class="row">                    
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.document_type_id}">
+                            <label class="control-label">Tipo comprobante</label>
+                            <el-select v-model="form.document_type_id" filterable @change="changeDocumentType">
+                                <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.series_id}">
                             <label class="control-label">Serie</label>
@@ -42,6 +52,9 @@
                 errors: {},
                 form: {},
                 series: [],
+                all_series: [],                
+                document_types: [],
+
             }
         },
         created() {
@@ -53,6 +66,7 @@
                 this.form = {
                     id: null,
                     series_id: null,
+                    document_type_id:null,
                     series: null,
                     number: null,
                 }
@@ -61,13 +75,22 @@
                 let serie = await _.find(this.series,{'id':this.form.series_id})
                 this.form.series = serie.number
                 // console.log(this.form.series)
+            },            
+            async changeDocumentType() {
+                await this.filterSeries(); 
             },
+            async filterSeries() {
+                this.form.series_id = null
+                this.series = await _.filter(this.all_series, {'document_type_id': this.form.document_type_id});
+            },
+
             async create() {
                 this.titleDialog = 'Registrar configuración' 
 
                 await this.$http.get(`/${this.resource}/tables`)
-                    .then(response => {
-                        this.series = response.data.series; 
+                    .then(response => {                       
+                        this.all_series = response.data.series; 
+                        this.document_types = response.data.document_types; 
                     })
             },
             submit() {

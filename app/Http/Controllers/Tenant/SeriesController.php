@@ -30,7 +30,7 @@ class SeriesController extends Controller
 
     public function store(SeriesRequest $request)
     {
-        $record = Series::where('number', $request->number)->first();
+        $record = Series::where([['document_type_id',$request->document_type_id],['number', $request->number]])->first();
         
         if($record){
             return [
