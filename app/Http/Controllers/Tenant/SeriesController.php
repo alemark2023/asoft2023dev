@@ -30,6 +30,15 @@ class SeriesController extends Controller
 
     public function store(SeriesRequest $request)
     {
+        $record = Series::where('number', $request->number)->first();
+        
+        if($record){
+            return [
+                'success' => false,
+                'message' => 'La serie ya ha sido registrada'
+            ];
+        }
+
         $id = $request->input('id');
         $series = Series::firstOrNew(['id' => $id]);
         $series->fill($request->all());

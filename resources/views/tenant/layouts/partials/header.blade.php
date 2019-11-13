@@ -11,10 +11,10 @@
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
-    </div> 
+    </div>
     <div class="header-right">
         @if($vc_company->soap_type_id == "01")
-        <a href="{{route('tenant.companies.create')}}">
+        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
         <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
             <div class="ios-switch off">
                 <div class="on-background background-fill"></div>
@@ -25,7 +25,7 @@
         </div>
         </a>
         @else
-        <a href="{{route('tenant.companies.create')}}">
+        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
         <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
             <div class="ios-switch on">
                 <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
@@ -41,9 +41,9 @@
         @if($vc_document > 0)
         <ul class="notifications">
             <li class="open">
-                                  
+
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-bell text-secondary"></i>                        
+                    <i class="fas fa-bell text-secondary"></i>
                     <span class="badge badge-red">{{ $vc_document }}</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
