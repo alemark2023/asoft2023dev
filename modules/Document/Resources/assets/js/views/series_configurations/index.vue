@@ -1,7 +1,7 @@
 <template>
     <div class="">
         <div class="card-header bg-info">
-            <h3 class="my-0">Configuración de series
+            <h3 class="my-0">Numeración de facturación
                 <el-tooltip class="item" effect="dark" content="La serie iniciará desde un número correlativo personalizado" placement="top-start">
                     <i class="fa fa-info-circle"></i>
                 </el-tooltip>    

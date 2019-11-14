@@ -487,7 +487,7 @@
                             </li>
                             <li class="{{($path[0] === 'series-configurations') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.series_configurations.index')}}">
-                                    Series 
+                                    Numeración de facturación 
                                 </a>
                             </li>
                             @if(auth()->user()->type != 'integrator')
