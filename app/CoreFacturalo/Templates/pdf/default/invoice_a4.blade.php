@@ -19,6 +19,8 @@
 
     $payments = $document->payments;
 
+    $document->load('reference_guides');
+
 @endphp
 <html>
 <head>
@@ -143,6 +145,22 @@
     @endforeach
 </table>
 @endif
+
+
+@if ($document->reference_guides)
+<br/>
+<strong>Guias de remisión</strong>
+<table>
+    @foreach($document->reference_guides as $guide)
+        <tr>
+            <td>{{ $guide->series }}</td>
+            <td>-</td>
+            <td>{{ $guide->number }}</td>
+        </tr>
+    @endforeach
+</table>
+@endif
+
 
 <table class="full-width mt-3">
     @if ($document->prepayments)

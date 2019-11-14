@@ -279,14 +279,14 @@
         <td width="65%" style="text-align: top; vertical-align: top;">
             @foreach(array_reverse( (array) $document->legends) as $row)
                 @if ($row->code == "1000")
-                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>                      
+                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
                     @if (count((array) $document->legends)>1)
                         <p><span class="font-bold">Leyendas</span></p>
-                    @endif                  
+                    @endif
                 @else
-                    <p> {{$row->code}}: {{ $row->value }} </p>                                    
+                    <p> {{$row->code}}: {{ $row->value }} </p>
                 @endif
-            
+
             @endforeach
             <br/>
             @foreach($document->additional_information as $information)

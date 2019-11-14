@@ -65,7 +65,6 @@ class DocumentController extends Controller
 
     public function columns()
     {
-        //return 'sd';
         return [
             'number' => 'Número',
             'date_of_issue' => 'Fecha de emisión'
