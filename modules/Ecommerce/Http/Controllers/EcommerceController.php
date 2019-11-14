@@ -108,6 +108,16 @@ class EcommerceController extends Controller
     public function storeUser(Request $request)
     {
         try{
+
+            $verify = User::where('email', $request->email)->first();
+            if($verify)
+            {
+                return [
+                    'success' => false,
+                    'message' => 'Email no disponible'
+                ];
+            }
+
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
