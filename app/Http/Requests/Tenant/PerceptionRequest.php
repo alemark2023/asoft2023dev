@@ -22,16 +22,16 @@ class PerceptionRequest extends FormRequest
             'document_type_id' => [
                 'required',
             ],
-            'series_id' => [
-                'required',
-            ],
+            // 'series_id' => [
+            //     'required',
+            // ],
             'customer_id' => [
                 'required',
             ],
             'date_of_issue' => [
                 'required',
             ],
-            'observation' => [
+            'observations' => [
                 'required',
             ],
         ];

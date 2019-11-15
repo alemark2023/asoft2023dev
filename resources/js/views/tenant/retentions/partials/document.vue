@@ -15,7 +15,7 @@
                     <div class="col-lg-3">
                         <div class="form-group" :class="{'has-danger': errors.series}">
                             <label class="control-label">Serie</label>
-                            <el-input v-model="form.series"></el-input>
+                            <el-input v-model="form.series" :maxlength="4"></el-input>
                             <small class="form-control-feedback" v-if="errors.series" v-text="errors.series[0]"></small>
                         </div>
                     </div>
@@ -89,14 +89,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
                         <div class="form-group">
                             <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="clickAddPayment">+ Agregar Pago</button>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mt-2">
                     <div class="col-md-12">
                         <div class="table-responsive">
                             <table class="table">

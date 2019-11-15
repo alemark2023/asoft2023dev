@@ -79,14 +79,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
                             <div class="form-group">
                                 <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddDocument = true">+ Agregar Documento</button>
                             </div>
                         </div>
                     </div>
-                    <div class="row" v-if="form.documents.length > 0">
+                    <div class="row mt-2" v-if="form.documents.length > 0">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table">

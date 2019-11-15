@@ -349,7 +349,8 @@ if ($hostname) {
             Route::get('perceptions/record/{perception}', 'Tenant\PerceptionController@record');
             Route::post('perceptions', 'Tenant\PerceptionController@store');
             Route::delete('perceptions/{perception}', 'Tenant\PerceptionController@destroy');
-            Route::get('perceptions/item/tables', 'Tenant\PerceptionController@item_tables');
+            Route::get('perceptions/document/tables', 'Tenant\PerceptionController@document_tables');
+            Route::get('perceptions/table/{table}', 'Tenant\PerceptionController@table');
 
 
             //Tribute Concept Type
