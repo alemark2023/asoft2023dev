@@ -31,6 +31,9 @@ class ClientCollection extends ResourceCollection
                 'max_users' => (int) $row->plan->limit_users,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+                'start_billing_cycle' => ( $row->start_billing_cycle ) ? $row->start_billing_cycle->format('Y-m-d') : '',
+                'count_doc_month' => $row->count_doc_month,
+                'select_date_billing' => '',
             ];
         });
     }
