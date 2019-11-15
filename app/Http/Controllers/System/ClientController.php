@@ -383,4 +383,22 @@ class ClientController extends Controller
             'message' => ($client->start_billing_cycle) ? 'Ciclo de Facturacion definido.' : 'No se pudieron guardar los cambios.'
         ];
     }
+
+    public function lockedTenant(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_tenant = $request->locked_tenant;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_tenant' => $client->locked_tenant]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_tenant) ? 'Cuenta bloqueada' : 'Cuenta desbloqueada'
+        ];
+
+    }
+
 }
