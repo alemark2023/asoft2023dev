@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'input.request' => \App\CoreFacturalo\InputRequest::class,
 //        'module' => \App\Http\Middleware\CheckModule::class,
        'redirect.module' => \App\Http\Middleware\RedirectModule::class,
+       'locked.tenant' => \App\Http\Middleware\LockedTenant::class,
     ];
 }
