@@ -65,17 +65,17 @@
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.retention_type_id}">
                                 <label class="control-label">Tipo de retención</label>
-                                <el-select v-model="form.retention_type_id">
+                                <el-select v-model="form.retention_type_id" @change="changeRetentionType">
                                     <el-option v-for="option in retention_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.retention_type_id" v-text="errors.retention_type_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
-                            <div class="form-group" :class="{'has-danger': errors.observation}">
+                            <div class="form-group" :class="{'has-danger': errors.observations}">
                                 <label class="control-label">Observaciones</label>
-                                <el-input v-model="form.observation" type="textarea" autosize></el-input>
-                                <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
+                                <el-input v-model="form.observations" type="textarea" autosize></el-input>
+                                <small class="form-control-feedback" v-if="errors.observations" v-text="errors.observations[0]"></small>
                             </div>
                         </div>
                     </div>
@@ -94,25 +94,40 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Tipo de comprobante</th>
-                                        <th>Fecha de emisión</th>
-                                        <th>Fecha de retención</th>
+                                        <th>Comprobante</th>
+                                        <th>Fec. Emisión</th>
+                                        <th>Fec. Retención</th>
                                         <th>Moneda</th>
-                                        <th class="text-right">Total</th>
+                                        <th class="text-right">T. Retención</th>
+                                        <th class="text-right">T. Comprobante</th>
+                                        <th class="text-right">T. A pagar</th>
+                                        <th class="text-right">T. Pagado</th>
                                         <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in form.documents">
+                                    <tr v-for="(row, index) in form.documents" :key="index">
                                         <td>{{ index+1 }}</td>
-                                        <td><span v-text="row.document_type_id"></span></td>
+                                        <td><span v-text="row.document_type_description"></span></td>
+                                        <td><span>{{row.series}}-{{row.number}}</span></td>
+                                        <!-- <td><span v-text="row.document_type_id"></span></td> -->
                                         <td><span v-text="row.date_of_issue"></span></td>
                                         <td><span v-text="row.date_of_retention"></span></td>
                                         <td><span v-text="row.currency_type_id"></span></td>
                                         <td class="text-right">
-                                            <span v-text="row.total"></span>
+                                            <span v-text="row.total_retention"></span>
                                         </td>
                                         <td class="text-right">
-                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                            <span v-text="row.total_document"></span>
+                                        </td>
+                                        <td class="text-right">
+                                            <span v-text="row.total_to_pay"></span>
+                                        </td>
+                                        <td class="text-right">
+                                            <span v-text="row.total_payment"></span>
+                                        </td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveDocument(index)">x</button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -120,10 +135,9 @@
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <p class="text-right" v-if="form.total_retention > 0">Total Retención : {{ currency_symbol }} {{ form.total_retention }}</p>
+                            <p class="text-right" v-if="form.total_retention > 0">Total Retención :   {{ form.total_retention }}</p>
                             <template v-if="form.total > 0">
-                                <hr>
-                                <h3 class="text-right"><b>Total : </b>{{ currency_symbol }} {{ form.total }}</h3>
+                                <h3 class="text-right"><b>Total : </b>  {{ form.total }}</h3>
                             </template>
                         </div>
                     </div>
@@ -136,10 +150,11 @@
         </div>
 
         <retention-form-document :showDialog.sync="showDialogAddDocument"
-                           :retention-type-id="form.retention_type_code"
+                           :active-retention-type="activeRetentionType"
                            @add="addDocument"></retention-form-document>
 
         <supplier-form :showDialog.sync="showDialogNewSupplier"
+                       type="suppliers"
                        :external="true"></supplier-form>
     </div>
 </template>
@@ -147,7 +162,7 @@
 <script>
 
     import RetentionFormDocument from './partials/document.vue'
-    import SupplierForm from '../suppliers/form.vue'
+    import SupplierForm from '../persons/form.vue'
 
     export default {
         components: {RetentionFormDocument, SupplierForm},
@@ -158,42 +173,32 @@
                 showDialogNewSupplier: false,
                 loading_submit: false,
                 errors: {},
-                form: {}, 
-                // document_types: [],
-//                currency_types: [],
-//                discounts: [],
-//                charges: [],
-//                items: [],
-                suppliers: [],
-//                company: null,
+                form: {},  
+                activeRetentionType:{},
+                suppliers: [], 
                 establishments: [],
                 all_series: [],
                 series: [],
-                retention_types: [],
-//                currency_symbol: 'S/',
+                retention_types: [], 
             }
         },
         created() {
             this.initForm()
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
-
-//                    this.currency_types = response.data.currency_types
-//                    this.items = response.data.items
-                    this.suppliers = response.data.suppliers
-//                    this.company = response.data.company
+ 
+                    this.suppliers = response.data.suppliers 
                     this.establishments = response.data.establishments
                     this.all_series = response.data.series
-                    this.retention_types = response.data.retention_types
-//                    this.form.user_id = response.data.user_id
-//                    this.form.soap_type_id = this.company.soap_type_id
-//                    this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
+                    this.retention_types = response.data.retention_types 
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.form.retention_type_id = (this.retention_types.length > 0)?this.retention_types[0].id:null
                     this.form.document_type_id = '20'
                     this.changeDocumentType()
+                    this.changeRetentionType()
+
                 })
-            this.$eventHub.$on('reloadDataSuppliers', (supplier_id) => {
+            this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
                 this.reloadDataSuppliers(supplier_id)
             })
         },
@@ -204,17 +209,18 @@
                     id: null,
                     user_id: null,
                     establishment_id: null,
-                    external_id: '-',
+                    external_id: null,
                     soap_type_id: null,
                     state_type_id: '01',
-                    ubl_version: 'v21',
+                    ubl_version: '2.0',
                     document_type_id: null,
                     series_id: null,
                     number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
+                    time_of_issue: moment().format('HH:mm:ss'),
                     supplier_id: null,
                     currency_type_id: null,
-                    observation: null,
+                    observations: null,
                     retention_type_id: null,
                     percent: 0,
                     total_retention: 0,
@@ -227,15 +233,19 @@
             }, 
             resetForm() {
                 this.initForm()
-                this.form.soap_type_id = this.company.soap_type_id
-                this.form.establishment_id = this.establishment.id
+                // this.form.soap_type_id = this.company.soap_type_id
+                this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.changeDocumentType()
+            },
+            async changeRetentionType(){
+                let retention_type = await _.find(this.retention_types,{'id' : this.form.retention_type_id})
+                this.activeRetentionType = retention_type
             },
             changeEstablishment() {
                 this.filterSeries()
             },
             changeDocumentType() {
-                this.form.group_id = (this.form.document_type_id === '01000001')?'01':'02'
+                // this.form.group_id = (this.form.document_type_id === '01000001')?'01':'02'
                 this.filterSeries()
             },
             filterSeries() {
@@ -255,17 +265,24 @@
                 this.currency_symbol = (this.form.currency_type_code === 'PEN')?'S/':'$'
             },
             calculateTotal() {
+
                 let total = 0
-                this.form.items.forEach((row) => {
-                    total += parseFloat(row.total)
+                let total_retention = 0
+
+                this.form.documents.forEach((row) => {
+                    total += parseFloat(row.total_document)
+                    total_retention += parseFloat(row.total_retention)
                 });
+
                 this.form.total = _.round(total, 2)
+                this.form.total_retention = _.round(total_retention, 2)
             },
             submit() {
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
+                            this.$message.success(response.data.message)
                             location.href = '/retentions'
                         } else {
                             this.$message.error(response.data.message)
@@ -273,7 +290,8 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data.errors
+                            // console.log(error.response.data)
+                            this.errors = error.response.data
                         } else {
                             this.$message.error(error.response.data.message)
                         }

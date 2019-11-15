@@ -1,12 +1,12 @@
 <template>
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
-        <form autocomplete="off" @submit.prevent="clickAddItem">
+        <form autocomplete="off" @submit.prevent="clickAddItem" >
             <div class="form-body">
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-6">
                         <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                             <label class="control-label">Tipo de comprobante</label>
-                            <el-select v-model="form.document_type_id">
+                            <el-select v-model="form.document_type_id" @change="changeDocumentType">
                                 <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
@@ -56,7 +56,7 @@
                     <div class="col-lg-3">
                         <div class="form-group" :class="{'has-danger': errors.total_document}">
                             <label class="control-label">Total comprobante</label>
-                            <el-input v-model="form.total_document"></el-input>
+                            <el-input v-model="form.total_document" @input="inputTotalDocument"></el-input>
                             <small class="form-control-feedback" v-if="errors.total_document" v-text="errors.total_document[0]"></small>
                         </div>
                     </div>
@@ -148,11 +148,11 @@
     import {exchangeRate} from '../../../../mixins/functions'
 
     export default {
-        props: ['showDialog'],
+        props: ['showDialog', 'activeRetentionType'],
         mixins: [exchangeRate],
         data() {
             return {
-                titleDialog: '',
+                titleDialog: 'Agregar documento',
                 resource: 'retentions',
                 errors: {},
                 form: {},
@@ -174,6 +174,7 @@
                 this.errors = {}
                 this.form = {
                     document_type_id: null,
+                    document_type_description:null,
                     series: null,
                     number: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),
@@ -193,11 +194,25 @@
                     payments: [],
                 }
             },
+            inputTotalDocument(){
+                // console.log(this.activeRetentionType)
+                if(this.activeRetentionType && this.form.total_document && this.form.total_document > 0){
+                    this.form.total_retention = _.round(parseFloat(this.form.total_document) * (parseFloat(this.activeRetentionType.percentage)/100),2)
+                }else{
+                    this.form.total_retention = 0
+                }
+                
+            },
+            async changeDocumentType(){
+                let doc_type = await _.find(this.document_types,{'id':this.form.document_type_id}) 
+                this.form.document_type_description = doc_type.description
+            },
             create() {
                 this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
+                this.changeDocumentType()
             },
             clickAddPayment() {
                 this.form.payments.push({
@@ -206,7 +221,7 @@
                     total_payment: this.form.total_payment
                 })
             },
-            clickRemovePayment() {
+            clickRemovePayment(index) {
                 this.form.payments.splice(index, 1)
             },
             changeDateOfIssue() {
@@ -226,7 +241,28 @@
                     this.form.exchange_rate.factor = (this.form.exchange_rate_sale === '')?0:this.form.exchange_rate_sale
                 }
             },
-            clickAddItem() {
+            getErrors(){
+
+                if(this.form.payments.length == 0)
+                    return { success:false, message:'Debe agregar al menos un pago' }
+
+                if(!this.form.series || !this.form.number)
+                    return { success:false, message:'La serie o número son incorrectos' }
+
+                if(this.form.total_document<=0 || this.form.total_retention<=0 || this.form.total_to_pay<=0 || this.form.total_payment<=0 )
+                    return { success:false, message:'Los totales deben ser mayores a cero' }
+                     
+                return {
+                    success:true
+                }
+            },
+            async clickAddItem() {
+
+                let error = await this.getErrors()
+
+                if(!error.success)
+                    return this.$message.error(error.message)
+
                 this.$emit('add', this.form)
                 this.initForm()
                 this.$emit('update:showDialog', false)
