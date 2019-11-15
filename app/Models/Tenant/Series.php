@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\DocumentType;
+use Modules\Document\Models\SeriesConfiguration;
 
 class Series extends ModelTenant
 {
@@ -30,4 +31,12 @@ class Series extends ModelTenant
     public function documents() {
         return $this->hasMany(Document::class, 'series', 'number');
     }
+
+    public function series_configurations()
+    {
+        return $this->hasOne(SeriesConfiguration::class);
+    }
+
+ 
+
 }
