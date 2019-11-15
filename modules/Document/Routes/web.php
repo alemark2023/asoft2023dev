@@ -4,9 +4,9 @@ $current_hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if($current_hostname) {
     Route::domain($current_hostname->fqdn)->group(function () {
-        Route::middleware(['auth'])->group(function () {
+        Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
-            
+
             Route::prefix('documents/not-sent')->group(function() {
                 Route::get('', 'DocumentController@index')->name('tenant.documents.not_sent');
                 Route::get('records', 'DocumentController@records');
@@ -22,7 +22,7 @@ if($current_hostname) {
                 Route::post('', 'SeriesConfigurationController@store');
                 Route::delete('{record}', 'SeriesConfigurationController@destroy');
 
-            }); 
+            });
 
         });
     });
