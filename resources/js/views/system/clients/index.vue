@@ -95,6 +95,9 @@
                 <th class="text-center">Comprobantes</th>
                 <th class="text-center">Usuarios</th>
                 <th class="text-center">F.Creación</th>
+
+                <th class="text-center">Bloquear cuenta</th>
+
                 <th class="text-right">Limitar Doc.</th>
                 <th class="text-right">Acciones</th>
                 <th class="text-right">Pagos</th>
@@ -165,6 +168,17 @@
                   </template>
                 </td>
                 <td class="text-center">{{ row.created_at }}</td>
+
+                <td class="text-center">
+                  <template v-if="!row.locked">
+                    <el-switch
+                      style="display: block"
+                      v-model="row.locked_tenant"
+                      @change="changeLockedTenant(row)"
+                    ></el-switch>
+                  </template>
+                </td>
+
                 <td class="text-center">
                   <el-switch
                     style="display: block"
@@ -224,7 +238,7 @@
                   </template>
                 </td>
                 <td class="text-center">
-                    <strong>{{ row.count_doc_month }}</strong>
+                  <strong>{{ row.count_doc_month }}</strong>
                 </td>
               </tr>
             </tbody>
@@ -305,14 +319,35 @@ export default {
     this.text_limit_users = "El límite de usuarios fue superado";
   },
   methods: {
-    setStartBillingCycle(event, id) {
-
+    changeLockedTenant(row) {
       this.$http
-        .post(`${this.resource}/set_billing_cycle`, { id : id, start_billing_cycle: event })
+        .post(`${this.resource}/locked_tenant`, row)
         .then(response => {
           if (response.data.success) {
             this.$message.success(response.data.message);
-
+            this.$eventHub.$emit("reloadData");
+          } else {
+            this.$message.error(response.data.message);
+          }
+        })
+        .catch(error => {
+          if (error.response.status === 500) {
+            this.$message.error(error.response.data.message);
+          } else {
+            console.log(error.response);
+          }
+        })
+        .then(() => {});
+    },
+    setStartBillingCycle(event, id) {
+      this.$http
+        .post(`${this.resource}/set_billing_cycle`, {
+          id: id,
+          start_billing_cycle: event
+        })
+        .then(response => {
+          if (response.data.success) {
+            this.$message.success(response.data.message);
           } else {
             this.$message.error(response.data.message);
           }
@@ -325,7 +360,7 @@ export default {
           }
         })
         .then(() => {
-            this.$eventHub.$emit("reloadData");
+          this.$eventHub.$emit("reloadData");
         });
     },
     changeLockedEmission(row) {
