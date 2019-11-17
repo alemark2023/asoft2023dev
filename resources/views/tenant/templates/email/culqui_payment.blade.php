@@ -46,9 +46,10 @@
                                     <br><br>
 
                                     <span style="color:#846add;">Información de contacto:</span><br>
-                                    <span>Personal: Martha <br>
-                                        Email: m@buhol.a <br>
-                                        Fono: <b>967 746 377‬</b>
+                                    @inject('userAdmin', 'App\Services\UserAdminService')
+                                    <span>Personal: {{$userAdmin->getUserAdmin()->name}} <br>
+                                        Email: {{$userAdmin->getUserAdmin()->email}} <br>
+                                        Telefono: <b>‬-</b>
                                     </span>
 
                                 </td>
