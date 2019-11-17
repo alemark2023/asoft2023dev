@@ -308,7 +308,7 @@
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.quantity"></el-input-number> </td> -->
 
-                                                <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td>
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_price)}}</td>
                                                 <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.unit_price"></el-input-number> </td> -->
 
 
@@ -328,7 +328,7 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="clickAddItemInvoice">+ Agregar Producto</button>
                                 </div>
                             </div>
   
@@ -551,7 +551,13 @@
             })
         },
         methods: {
-            
+            clickAddItemInvoice(){
+                this.recordItem = null
+                this.showDialogAddItem = true
+            },
+            getFormatUnitPriceRow(unit_price){
+                return _.round(unit_price, 6)
+            },
             discountGlobalPrepayment(){
                 
                 let global_discount = 0

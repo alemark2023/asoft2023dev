@@ -77,6 +77,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         total_taxes: 0,
         price_type_id: '01',
         unit_price: unit_price,
+        input_unit_price_value: row_old.input_unit_price_value,
         total_value: 0,
         total_discount: 0,
         total_charge: 0,

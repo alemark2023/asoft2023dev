@@ -517,6 +517,7 @@
                     suggested_price: 0,
                     quantity: 1,
                     unit_price_value: 0,
+                    input_unit_price_value: 0,
                     unit_price: 0,
                     charges: [],
                     discounts: [],
@@ -534,20 +535,24 @@
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
             // },
-            create() {
+            async create() {
 
                 this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
                 this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
-                let operation_type = _.find(this.operation_types, {id: this.operationTypeId})
-                this.affectation_igv_types = _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+                let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
+                this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+
+
                 if (this.recordItem) {
-                    this.form.item_id = this.recordItem.item_id
-                    this.changeItem()
-                    this.form.quantity = this.recordItem.quantity
-                    this.form.unit_price_value = this.recordItem.unit_price
+                    // console.log(this.recordItem)
+                    this.form.item_id = await this.recordItem.item_id
+                    await this.changeItem()
+                    this.form.quantity = this.recordItem.quantity 
+                    this.form.unit_price_value = this.recordItem.input_unit_price_value 
+                    this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
+
                     this.calculateQuantity()
                 }
-
 
             },
             clickAddDiscount() {
@@ -646,6 +651,8 @@
 
                 let unit_price = (this.form.has_igv)?this.form.unit_price_value:this.form.unit_price_value*1.18;
 
+                this.form.input_unit_price_value = this.form.unit_price_value;
+
                 this.form.unit_price = unit_price;
                 this.form.item.unit_price = unit_price;
                 this.form.item.presentation = this.item_unit_type;
@@ -662,6 +669,12 @@
                 }
 
                 this.$emit('add', this.row);
+
+                
+                if (this.recordItem)
+                {
+                    this.close()
+                }
             },
             validateTotalItem(){
 
