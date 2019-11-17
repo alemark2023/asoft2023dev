@@ -41,7 +41,7 @@ if ($hostname) {
 
             Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
-            
+
             Route::get('tasks', 'Tenant\TaskController@index')->name('tenant.tasks.index');
             Route::post('tasks/commands', 'Tenant\TaskController@listsCommand');
             Route::post('tasks/tables', 'Tenant\TaskController@tables');
@@ -60,7 +60,7 @@ if ($hostname) {
             Route::get('orders/records', 'Tenant\OrderController@records');
 
 
-            
+
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');
             Route::get('companies/tables', 'Tenant\CompanyController@tables');
@@ -68,7 +68,7 @@ if ($hostname) {
             Route::post('companies', 'Tenant\CompanyController@store');
             Route::post('companies/uploads', 'Tenant\CompanyController@uploadFile');
 
-            
+
             //Card Brands
             Route::get('card_brands/records', 'Tenant\CardBrandController@records');
             Route::get('card_brands/record/{card_brand}', 'Tenant\CardBrandController@record');
@@ -211,7 +211,7 @@ if ($hostname) {
             Route::post('documents/import', 'Tenant\DocumentController@import');
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
-            
+
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index');
@@ -295,12 +295,12 @@ if ($hostname) {
 //            Route::post('reports/kardex/search', 'Tenant\ReportKardexController@search')->name('tenant.reports.kardex.search');
 //            Route::post('reports/kardex/pdf', 'Tenant\ReportKardexController@pdf')->name('tenant.report.kardex.pdf');
 //            Route::post('reports/kardex/excel', 'Tenant\ReportKardexController@excel')->name('tenant.report.kardex.report_excel');
-            
+
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
-            
+
             Route::post('options/delete_documents', 'Tenant\OptionController@deleteDocuments');
-            
+
             Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
             Route::get('services/dni/{number}', 'Tenant\Api\ServiceController@dni');
             Route::post('services/exchange_rate', 'Tenant\Api\ServiceController@exchange_rate');
@@ -369,8 +369,8 @@ if ($hostname) {
             Route::post('purchases/update', 'Tenant\PurchaseController@update');
             Route::get('purchases/record/{document}', 'Tenant\PurchaseController@record');
             Route::get('purchases/edit/{id}', 'Tenant\PurchaseController@edit');
-            Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular'); 
-            Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete'); 
+            Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
+            Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
 
 
             // Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
@@ -391,8 +391,8 @@ if ($hostname) {
             Route::get('quotations/table/{table}', 'Tenant\QuotationController@table');
             Route::post('quotations', 'Tenant\QuotationController@store');
             Route::post('quotations/update', 'Tenant\QuotationController@update');
-            Route::get('quotations/record/{quotation}', 'Tenant\QuotationController@record'); 
-            Route::get('quotations/anular/{id}', 'Tenant\QuotationController@anular'); 
+            Route::get('quotations/record/{quotation}', 'Tenant\QuotationController@record');
+            Route::get('quotations/anular/{id}', 'Tenant\QuotationController@anular');
             Route::get('quotations/item/tables', 'Tenant\QuotationController@item_tables');
             Route::get('quotations/option/tables', 'Tenant\QuotationController@option_tables');
             Route::get('quotations/search/customers', 'Tenant\QuotationController@searchCustomers');
@@ -412,7 +412,7 @@ if ($hostname) {
 
 
 
-            
+
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index');
             Route::get('sale-notes/columns', 'Tenant\SaleNoteController@columns');
@@ -423,7 +423,7 @@ if ($hostname) {
             Route::get('sale-notes/tables', 'Tenant\SaleNoteController@tables');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');
-            Route::get('sale-notes/record/{salenote}', 'Tenant\SaleNoteController@record'); 
+            Route::get('sale-notes/record/{salenote}', 'Tenant\SaleNoteController@record');
             Route::get('sale-notes/item/tables', 'Tenant\SaleNoteController@item_tables');
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
@@ -448,8 +448,8 @@ if ($hostname) {
            Route::get('sale_note_payments/tables', 'Tenant\SaleNotePaymentController@tables');
            Route::post('sale_note_payments', 'Tenant\SaleNotePaymentController@store');
            Route::delete('sale_note_payments/{sale_note_payment}', 'Tenant\SaleNotePaymentController@destroy');
-           
-         
+
+
 
            //POS
            Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
@@ -461,7 +461,7 @@ if ($hostname) {
            Route::get('pos/status_configuration', 'Tenant\PosController@status_configuration');
            Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
 
-         
+
            Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
            Route::get('cash/columns', 'Tenant\CashController@columns');
            Route::get('cash/records', 'Tenant\CashController@records');
@@ -472,9 +472,9 @@ if ($hostname) {
 
            Route::post('cash', 'Tenant\CashController@store');
            Route::post('cash/cash_document', 'Tenant\CashController@cash_document');
-           Route::get('cash/close/{cash}', 'Tenant\CashController@close'); 
-           Route::get('cash/report/{cash}', 'Tenant\CashController@report'); 
-           Route::get('cash/record/{cash}', 'Tenant\CashController@record'); 
+           Route::get('cash/close/{cash}', 'Tenant\CashController@close');
+           Route::get('cash/report/{cash}', 'Tenant\CashController@report');
+           Route::get('cash/record/{cash}', 'Tenant\CashController@record');
            Route::delete('cash/{cash}', 'Tenant\CashController@destroy');
            Route::get('cash/item/tables', 'Tenant\CashController@item_tables');
            Route::get('cash/search/customers', 'Tenant\CashController@searchCustomers');
@@ -525,18 +525,19 @@ if ($hostname) {
 
 
 
-           
+
 
         });
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function() {
-        Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+
         Route::get('login', 'System\LoginController@showLoginForm')->name('login');
         Route::post('login', 'System\LoginController@login');
         Route::post('logout', 'System\LoginController@logout')->name('logout');
 
         Route::middleware('auth:admin')->group(function() {
+            Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
             Route::get('/', function () {
                 return redirect()->route('system.dashboard');
             });
@@ -557,7 +558,7 @@ if ($hostname) {
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');
 
-            
+
             Route::get('client_payments/records/{client_id}', 'System\ClientPaymentController@records');
             Route::get('client_payments/client/{client_id}', 'System\ClientPaymentController@client');
             Route::get('client_payments/tables', 'System\ClientPaymentController@tables');
@@ -565,7 +566,7 @@ if ($hostname) {
             Route::delete('client_payments/{client_payment}', 'System\ClientPaymentController@destroy');
             Route::get('client_payments/cancel_payment/{client_payment_id}', 'System\ClientPaymentController@cancel_payment');
 
-            
+
             Route::get('client_account_status/records/{client_id}', 'System\AccountStatusController@records');
             Route::get('client_account_status/client/{client_id}', 'System\AccountStatusController@client');
             Route::get('client_account_status/tables', 'System\AccountStatusController@tables');
