@@ -23,13 +23,13 @@ use Illuminate\Support\Facades\DB;
 
 class ExpenseController extends Controller
 {
-     
+
     public function index()
     {
         return view('expense::expenses.index');
     }
 
-     
+
     public function create()
     {
         return view('expense::expenses.form');
@@ -47,6 +47,7 @@ class ExpenseController extends Controller
     public function records(Request $request)
     {
         $records = Expense::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()
                             ->latest();
 
         return new ExpenseCollection($records->paginate(config('tenant.items_per_page')));
@@ -55,16 +56,16 @@ class ExpenseController extends Controller
     public function tables()
     {
         $suppliers = $this->table('suppliers');
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();    
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
         $currency_types = CurrencyType::whereActive()->get();
-        $expense_types = ExpenseType::get();        
+        $expense_types = ExpenseType::get();
         $expense_method_types = ExpenseMethodType::all();
         $expense_reasons = ExpenseReason::all();
 
         return compact('suppliers', 'establishment','currency_types', 'expense_types', 'expense_method_types', 'expense_reasons');
     }
 
-     
+
 
     public function record($id)
     {
@@ -83,16 +84,16 @@ class ExpenseController extends Controller
             foreach ($data['items'] as $row)
             {
                 $doc->items()->create($row);
-            } 
+            }
 
             foreach ($data['payments'] as $row)
             {
                 $doc->payments()->create($row);
-            }             
+            }
 
             return $doc;
-        });       
- 
+        });
+
         return [
             'success' => true,
             'data' => [
@@ -106,8 +107,8 @@ class ExpenseController extends Controller
         $values = [
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
-            'supplier' => PersonInput::set($inputs['supplier_id']), 
-        ]; 
+            'supplier' => PersonInput::set($inputs['supplier_id']),
+        ];
 
         $inputs->merge($values);
 
@@ -131,15 +132,15 @@ class ExpenseController extends Controller
                 });
                 return $suppliers;
 
-                break; 
+                break;
             default:
 
                 return [];
 
                 break;
-        } 
+        }
     }
- 
 
-    
+
+
 }
