@@ -20,6 +20,15 @@
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
+
+    <style>
+         .app{
+           background: url('{{ asset('storage/background/bkg_store.jpeg') }}') center center / cover;
+        }
+
+    </style>
+
+
 </head>
 
 <body>

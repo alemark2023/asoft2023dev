@@ -3,6 +3,7 @@
 namespace App\Http\Resources\System;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\System\Module;
 
 class ClientResource extends JsonResource
 {
@@ -14,6 +15,20 @@ class ClientResource extends JsonResource
      */
     public function toArray($request)
     {
+
+        $all_modules = Module::orderBy('description')->get();
+        $modules_in_user = $this->modules->pluck('module_id')->toArray();
+        // dd($all_modules,$modules_in_user);
+        $modules = [];
+        foreach ($all_modules as $module)
+        {
+            $modules[] = [
+                'id' => $module->id,
+                'description' => $module->description,
+                'checked' => (bool) in_array($module->id, $modules_in_user)
+            ];
+        }
+
         return [
             'id' => $this->id,
                 'hostname' => $this->hostname->fqdn,
@@ -24,6 +39,7 @@ class ClientResource extends JsonResource
                 'plan_id' => $this->plan_id,
                 'locked' => (bool) $this->locked,
                 'locked_emission' => (bool) $this->locked_emission,
+                'modules' => $modules,
                 //'count_doc' => $this->count_doc,
                // 'max_documents' => (int) $this->plan->limit_documents,
                 //'count_user' => $this->count_user,
@@ -31,5 +47,6 @@ class ClientResource extends JsonResource
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
+        
     }
 }

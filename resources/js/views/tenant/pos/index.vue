@@ -434,7 +434,6 @@
             },
             
             calculateTotal() {
-                debugger
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0

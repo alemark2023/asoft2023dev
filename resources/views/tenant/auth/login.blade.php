@@ -5,7 +5,7 @@
         <div class="center-sign">
             <div class="card">
                 <div class="card card-header card-primary" style="background:#0088CC">
-                    <p class="card-title text-center">Acceso alsss Sistema</p>
+                    <p class="card-title text-center">Acceso al Sistema</p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
@@ -55,7 +55,7 @@
                         </div>
                     </form>
                 </div>
-            <p class="text-center text-muted mt-3 mb-3">&copy; Copyright {{ date('Y') }}. Todos los derechos reservados</p>
+            {{-- <p class="text-center text-muted mt-3 mb-3">&copy; Copyright {{ date('Y') }}. Todos los derechos reservados</p> --}}
         </div>
     </section>
 @endsection

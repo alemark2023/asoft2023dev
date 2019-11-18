@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Facades\App\Http\Controllers\Tenant\DocumentController;
 use Illuminate\Console\Command;
 use App\Traits\CommandTrait;
+use App\Traits\OfflineTrait;
 use App\Models\Tenant\{
     Configuration,
     Document
@@ -12,7 +13,7 @@ use App\Models\Tenant\{
 
 class SendAllServerCommand extends Command
 {
-    use CommandTrait;
+    use CommandTrait, OfflineTrait;
     
     /**
      * The name and signature of the console command.
@@ -52,21 +53,38 @@ class SendAllServerCommand extends Command
             
             $documents = Document::query()
                 ->where('send_server', 0)
-                ->orWhere('shipping_status', '!=', '')
+                ->where('success_shipping_status', false) 
+                // ->orWhere('shipping_status', '!=', '') 
                 ->get();
             
             foreach ($documents as $document) {
                 try {
-                    DocumentController::sendServer($document->id);
+                    $response = DocumentController::sendServer($document->id);
                     
-                    $document->shipping_status = '';
+                    // // $document->shipping_status = '';
+
+                    if(isset($response['success'])){
+
+                        $document->success_shipping_status = $response['success'];
+                        $document->shipping_status = ($response['success'])? json_encode(array_merge($response,['message' => 'El envío al servidor online fué exitoso'])): json_encode(array_merge($response,['message' => 'El envío al servidor online falló']));
+                    
+                    }else{
+
+                        $document->success_shipping_status = false;
+                        $document->shipping_status = json_encode($response);
+
+                    }
+
                     $document->save();
                 }
                 catch (\Exception $e) {
+
+                    $document->success_shipping_status = false;
                     $document->shipping_status = json_encode([
-                        'message' => $e->getMessage(),
-                        'payload' => $e
-                    ]);
+                                                    'success' => false,
+                                                    'message' => $e->getMessage(),
+                                                    'payload' => $e
+                                                ]);
                     
                     $document->save();
                 }

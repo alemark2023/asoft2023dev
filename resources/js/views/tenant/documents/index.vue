@@ -8,7 +8,10 @@
             </ol>
             <div class="right-wrapper pull-right" v-if="typeUser != 'integrator'">
                 <span v-if="import_documents == true">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar Formato 1</button>
+                </span>
+                <span v-if="import_documents_second == true">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportSecond()"><i class="fa fa-upload"></i> Importar Formato 2</button>
                 </span>
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
             </div>
@@ -59,7 +62,7 @@
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>
-                            
+
                         </td>
                         <td v-if="columns.notes.visible">
                             <template v-for="(row,index) in row.notes">
@@ -70,7 +73,7 @@
                         <!-- <td>
                             {{ row.document_type_id == '07' ?  row.number : ''}}
                         </td> -->
-                        
+
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
                                 <div slot="content">{{tooltip(row)}}</div>
@@ -86,7 +89,7 @@
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
 
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
-                        
+
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
@@ -152,8 +155,10 @@
 
             <documents-voided :showDialog.sync="showDialogVoided"
                             :recordId="recordId"></documents-voided>
-                            
+
             <items-import :showDialog.sync="showImportDialog"></items-import>
+
+            <document-import-second :showDialog.sync="showImportSecondDialog"></document-import-second>
 
             <document-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
@@ -170,16 +175,18 @@
     import DocumentsVoided from './partials/voided.vue'
     import DocumentOptions from './partials/options.vue'
     import DocumentPayments from './partials/payments.vue'
+    import DocumentImportSecond from './partials/import_second.vue'
     import DataTable from '../../../components/DataTableDocuments.vue'
     import ItemsImport from './import.vue'
 
     export default {
-        props: ['isClient','typeUser','import_documents'],
-        components: {DocumentsVoided, ItemsImport, DocumentOptions, DocumentPayments, DataTable},
+        props: ['isClient','typeUser','import_documents','import_documents_second'],
+        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable},
         data() {
             return {
                 showDialogVoided: false,
                 showImportDialog: false,
+                showImportSecondDialog: false,
                 resource: 'documents',
                 recordId: null,
                 showDialogOptions: false,
@@ -241,7 +248,7 @@
                     if (response.data.success) {
                         this.$message.success('Se envio satisfactoriamente el comprobante.');
                         this.$eventHub.$emit('reloadData');
-                        
+
                         this.clickCheckOnline(document_id);
                     }
                     else {
@@ -286,14 +293,14 @@
             tooltip(row, message = true) {
                 if (message) {
                     if (row.shipping_status) return row.shipping_status.message;
-                    
+
                     if (row.sunat_shipping_status) return row.sunat_shipping_status.message;
-                    
+
                     if (row.query_status) return row.query_status.message;
                 }
-                
+
                 if ((row.shipping_status) || (row.sunat_shipping_status) || (row.query_status)) return true;
-                
+
                 return false;
             },
             clickPayment(recordId) {
@@ -317,9 +324,12 @@
             clickImport() {
                 this.showImportDialog = true
             },
-            clickDownloadReportPagos(type) {                 
+            clickDownloadReportPagos(type) {
                 window.open(`/${this.resource}/payments/${type}`, '_blank');
             },
+            clickImportSecond() {
+                this.showImportSecondDialog = true
+            }
         }
     }
 </script>

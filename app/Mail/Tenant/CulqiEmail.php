@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class CulqiEmail extends Mailable
 {
     use Queueable, SerializesModels;
-   
+
     public $document;
 
     public function __construct($document)

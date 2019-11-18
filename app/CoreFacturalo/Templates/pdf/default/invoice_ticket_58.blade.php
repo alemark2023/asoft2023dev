@@ -14,6 +14,8 @@
     } else {
         $affected_document_number = null;
     }
+
+    $document->load('reference_guides');
 @endphp
 <html>
 <head>
@@ -52,15 +54,15 @@
     <tr>
         <td class="text-center ">{{  ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : ''  }}</td>
     </tr>
-    @endisset  
+    @endisset
     <tr>
         <td class="text-center ">{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</td>
     </tr>
     <tr>
         <td class="text-center">{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</td>
     </tr>
-    @isset($establishment->web_address)    
-        <tr>    
+    @isset($establishment->web_address)
+        <tr>
             <td class="text-center">{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</td>
         </tr>
     @endisset
@@ -137,6 +139,20 @@
                 <td>{{ $guide->document_type_id }}</td>
             @endif
             <td>:</td>
+            <td>{{ $guide->number }}</td>
+        </tr>
+    @endforeach
+</table>
+@endif
+
+@if ($document->reference_guides)
+<br/>
+<strong>Guias de remisión</strong>
+<table>
+    @foreach($document->reference_guides as $guide)
+        <tr>
+            <td>{{ $guide->series }}</td>
+            <td>-</td>
             <td>{{ $guide->number }}</td>
         </tr>
     @endforeach
@@ -262,9 +278,9 @@
                     <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
                     @if (count((array) $document->legends)>1)
                     <tr><td class="desc pt-3"><span class="font-bold">Leyendas</span></td></tr>
-                    @endif 
+                    @endif
                 @else
-                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>                                                  
+                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>
                 @endif
             </tr>
         @endforeach
@@ -272,7 +288,7 @@
 
 
     <tr>
-        <td class="desc pt-3"> 
+        <td class="desc pt-3">
             @foreach($document->additional_information as $information)
                 @if ($information)
                     @if ($loop->first)
@@ -300,13 +316,13 @@
     @if($payments->count())
         <tr>
             <td class="desc pt-5">
-                <strong>PAGOS:</strong> 
+                <strong>PAGOS:</strong>
             </td>
-        </tr> 
+        </tr>
         @foreach($payments as $row)
             <tr>
                 <td class="desc">- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
-            </tr> 
+            </tr>
         @endforeach
     @endif
 
@@ -314,6 +330,6 @@
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>
 </table>
- 
+
 </body>
 </html>

@@ -52,9 +52,22 @@ class CashController extends Controller
 
     public function tables()
     {
-        $user = User::findOrFail(auth()->user()->id); 
+        $user = auth()->user();
+        $type = $user->type;
+        $users = array();
 
-        return compact('user');
+        switch($type)
+        {
+            case 'admin':
+                $users = User::where('type', 'seller')->get();
+                $users->push($user);
+                break;
+            case 'seller':
+                $users = User::where('id', $user->id)->get();
+                break;
+        }
+
+        return compact('users', 'user');
     }
 
     public function opening_cash()
@@ -62,6 +75,12 @@ class CashController extends Controller
 
         $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
 
+        return compact('cash');
+    }
+
+    public function opening_cash_check($user_id)
+    {
+        $cash = Cash::where([['user_id', $user_id],['state', true]])->first();
         return compact('cash');
     }
 

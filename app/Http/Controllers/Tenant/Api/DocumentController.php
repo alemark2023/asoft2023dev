@@ -5,6 +5,7 @@ use Facades\App\Http\Controllers\Tenant\DocumentController as DocumentController
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Controllers\Controller;
 use App\CoreFacturalo\WS\Zip\ZipFly;
+use App\Http\Resources\Tenant\DocumentCollection;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Facturalo;
 use App\Models\Tenant\Document;
@@ -126,7 +127,7 @@ class DocumentController extends Controller
     public function documentCheckServer($external_id) {
         $document = Document::where('external_id', $external_id)->first();
         
-        if ($document->state_type_id === '05') {
+        if ($document->state_type_id === '05' && $document->group_id === '01') {
             $file_cdr = base64_encode($this->getStorage($document->filename, 'cdr'));
         }
         else {
@@ -142,6 +143,16 @@ class DocumentController extends Controller
 
     private function getStateTypeDescription($id){
         return StateType::find($id)->description;
+    }
+
+
+
+    public function lists()
+    {
+        $record = Document::all();
+        $records = new DocumentCollection($record);
+
+        return $records;
     }
 
 }

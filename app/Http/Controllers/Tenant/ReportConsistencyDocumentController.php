@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant\Series;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Traits\OfflineTrait;
 
 class ReportConsistencyDocumentController extends Controller
 {
+
+    use OfflineTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +30,7 @@ class ReportConsistencyDocumentController extends Controller
         return Series::query()
             ->select('number')
             ->with(['documents' => function($queryDocuments) {
-                if (!config('tenant.is_client')) $queryDocuments->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()]);
+                if (!$this->getIsClient()) $queryDocuments->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()]);
                 
                 $queryDocuments->select('series', 'number', 'state_type_id');
             }])

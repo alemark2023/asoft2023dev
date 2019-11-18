@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" :close-on-click-modal="false">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -15,7 +15,7 @@
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.number}">
                             <label class="control-label">Número <span class="text-danger">*</span></label>
-                            
+
                             <div v-if="api_service_token != false">
                                 <x-input-service :identity_document_type_id="form.identity_document_type_id" v-model="form.number" @search="searchNumber"></x-input-service>
                             </div>
@@ -213,13 +213,14 @@
 
     export default {
         mixins: [serviceNumber],
-        props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id', 'api_service_token'],
+        props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id'],
         data() {
             return {
                 loading_submit: false,
                 titleDialog: null,
                 resource: 'persons',
                 errors: {},
+                api_service_token:false,
                 form: {},
                 countries: [],
                 all_departments: [],
@@ -236,6 +237,9 @@
             this.initForm()
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
+                    this.api_service_token = response.data.api_service_token
+                    // console.log(this.api_service_token)
+
                     this.countries = response.data.countries
                     this.all_departments = response.data.departments;
                     this.all_provinces = response.data.provinces;
@@ -244,6 +248,7 @@
                     this.locations = response.data.locations;
                     this.person_types = response.data.person_types;
                 })
+
         },
         computed: {
             maxLength: function () {
@@ -339,7 +344,7 @@
                     })
             },
             changeIdentityDocType(){
-                (this.recordId == null) ? this.setDataDefaultCustomer() : null 
+                (this.recordId == null) ? this.setDataDefaultCustomer() : null
             },
             setDataDefaultCustomer(){
 

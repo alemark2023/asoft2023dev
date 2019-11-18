@@ -26,7 +26,12 @@ class ViewServiceProvider extends ServiceProvider
             'tenant.layouts.partials.header',
             'Modules\Document\Http\ViewComposers\DocumentViewComposer'
         );
-        
+
+        view()->composer(
+            'tenant.layouts.partials.header',
+            'App\Http\ViewComposers\Tenant\ModuleViewComposer'
+        );
+
         view()->composer(
             'tenant.layouts.partials.sidebar',
             'App\Http\ViewComposers\Tenant\CompanyViewComposer'
@@ -45,7 +50,7 @@ class ViewServiceProvider extends ServiceProvider
         //Ecommerce
 
         view()->composer(
-            'tenant.layouts.partials_ecommerce.header',
+            'ecommerce::layouts.partials_ecommerce.header',
             'App\Http\ViewComposers\Tenant\CompanyViewComposer'
         );
 
@@ -55,32 +60,32 @@ class ViewServiceProvider extends ServiceProvider
         );*/
 
         view()->composer(
-            'tenant.layouts.partials_ecommerce.featured_products',
-            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+            'ecommerce::layouts.partials_ecommerce.featured_products',
+            'Modules\Ecommerce\Http\ViewComposers\FeaturedProductsViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.featured_products_bottom',
-            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+            'ecommerce::layouts.partials_ecommerce.featured_products_bottom',
+            'Modules\Ecommerce\Http\ViewComposers\FeaturedProductsViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.widget_products',
-            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+            'ecommerce::layouts.partials_ecommerce.widget_products',
+            'Modules\Ecommerce\Http\ViewComposers\FeaturedProductsViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.list_products',
-            'App\Http\ViewComposers\Tenant\Ecommerce\FeaturedProductsViewComposer'
+            'ecommerce::layouts.partials_ecommerce.list_products',
+            'Modules\Ecommerce\Http\ViewComposers\FeaturedProductsViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.sidemenu',
-            'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
+            'ecommerce::layouts.partials_ecommerce.sidemenu',
+            'Modules\Ecommerce\Http\ViewComposers\MenuViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.header_bottom_sticky',
-            'App\Http\ViewComposers\Tenant\Ecommerce\MenuViewComposer'
+            'ecommerce::layouts.partials_ecommerce.header_bottom_sticky',
+            'Modules\Ecommerce\Http\ViewComposers\MenuViewComposer'
         );
         view()->composer(
-            'tenant.layouts.partials_ecommerce.home_slider',
-            'App\Http\ViewComposers\Tenant\Ecommerce\PromotionsViewComposer'
+            'ecommerce::layouts.partials_ecommerce.home_slider',
+            'Modules\Ecommerce\Http\ViewComposers\PromotionsViewComposer'
         );
 
 

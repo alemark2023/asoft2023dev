@@ -12,6 +12,7 @@ use App\Http\Resources\System\ClientResource;
 use App\Http\Requests\System\ClientRequest;
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
+use App\Models\System\Module;
 use App\Models\System\Plan;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
@@ -36,25 +37,44 @@ class ClientController extends Controller
         $url_base = '.'.config('tenant.app_url_base');
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
+        $modules = Module::orderBy('description')->get();
 
-        return compact('url_base','plans','types');
+        return compact('url_base','plans','types', 'modules');
     }
 
     public function records()
     {
+
         $records = Client::latest()->get();
         foreach ($records as &$row) {
             $tenancy = app(Environment::class);
             $tenancy->tenant($row->hostname->website);
-            $row->count_doc = DB::connection('tenant')->table('documents')->count();
+            // $row->count_doc = DB::connection('tenant')->table('documents')->count();
+            $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->count_user = DB::connection('tenant')->table('users')->count();
+
+            if($row->start_billing_cycle)
+            {
+                $day_start_billing = date_format($row->start_billing_cycle, 'j');
+                $init = Carbon::parse( date('Y').'-'.((int)date('n') -1).'-'.$day_start_billing );
+                $end = Carbon::parse(date('Y-m-d'));
+                $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+
+            }
         }
         return new ClientCollection($records);
     }
 
     public function record($id)
     {
-        $record = new ClientResource(Client::findOrFail($id));
+
+        $client = Client::findOrFail($id);
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get();
+
+        $record = new ClientResource($client);
+
         return $record;
     }
 
@@ -114,6 +134,19 @@ class ClientController extends Controller
             $tenancy->tenant($client->hostname->website);
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan)]);
 
+            //modules
+            DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
+
+            $array_modules = [];
+
+            foreach ($request->modules as $module) {
+                if($module['checked']){
+                    $array_modules[] = ['module_id' => $module['id'], 'user_id' => 1];
+                }
+            }
+            DB::connection('tenant')->table('module_user')->insert($array_modules);
+            //modules
+
             return [
                 'success' => true,
                 'message' => 'Cliente Actualizado satisfactoriamente'
@@ -132,7 +165,7 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
-       
+
         $subDom = strtolower($request->input('subdomain'));
         $uuid = config('tenant.prefix_database').'_'.$subDom;
         $fqdn = $subDom.'.'.config('tenant.app_url_base');
@@ -189,10 +222,15 @@ class ClientController extends Controller
         DB::connection('tenant')->table('configurations')->insert([
             'send_auto' => true,
             'locked_emission' =>  $request->input('locked_emission'),
+            'locked_tenant' =>  false,
+            'locked_users' =>  false,
             'limit_documents' =>  $plan->limit_documents,
             'limit_users' =>  $plan->limit_users,
-            'plan' => json_encode($plan)
+            'plan' => json_encode($plan),
+            'date_time_start' =>  date('Y-m-d H:i:s'),
+            'quantity_documents' =>  0,
         ]);
+
 
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([
             'description' => 'Oficina Principal',
@@ -220,6 +258,7 @@ class ClientController extends Controller
             ['establishment_id' => 1, 'document_type_id' => '08', 'number' => 'BD01'],
             ['establishment_id' => 1, 'document_type_id' => '20', 'number' => 'R001'],
             ['establishment_id' => 1, 'document_type_id' => '09', 'number' => 'T001'],
+            ['establishment_id' => 1, 'document_type_id' => '40', 'number' => 'P001'],
         ]);
 
 
@@ -236,33 +275,42 @@ class ClientController extends Controller
 
         if($request->input('type') == 'admin'){
 
-            DB::connection('tenant')->table('module_user')->insert([
-                ['module_id' => 1, 'user_id' => $user_id],
-                ['module_id' => 2, 'user_id' => $user_id],
-                ['module_id' => 3, 'user_id' => $user_id],
-                ['module_id' => 4, 'user_id' => $user_id],
-                ['module_id' => 5, 'user_id' => $user_id], 
-                ['module_id' => 6, 'user_id' => $user_id], 
-                ['module_id' => 7, 'user_id' => $user_id], 
-                ['module_id' => 8, 'user_id' => $user_id], 
-                ['module_id' => 9, 'user_id' => $user_id], 
-                ['module_id' => 10, 'user_id' => $user_id],
-                ['module_id' => 11, 'user_id' => $user_id], 
-            ]);
-            
+            $array_modules = [];
+
+            foreach ($request->modules as $module) {
+                if($module['checked']){
+                    $array_modules[] = ['module_id' => $module['id'], 'user_id' => $user_id];
+                }
+            }
+            DB::connection('tenant')->table('module_user')->insert($array_modules);
+
+            // DB::connection('tenant')->table('module_user')->insert([
+            //     ['module_id' => 1, 'user_id' => $user_id],
+            //     ['module_id' => 2, 'user_id' => $user_id],
+            //     ['module_id' => 3, 'user_id' => $user_id],
+            //     ['module_id' => 4, 'user_id' => $user_id],
+            //     ['module_id' => 5, 'user_id' => $user_id],
+            //     ['module_id' => 6, 'user_id' => $user_id],
+            //     ['module_id' => 7, 'user_id' => $user_id],
+            //     ['module_id' => 8, 'user_id' => $user_id],
+            //     ['module_id' => 9, 'user_id' => $user_id],
+            //     ['module_id' => 10, 'user_id' => $user_id],
+            //     ['module_id' => 11, 'user_id' => $user_id],
+            // ]);
+
         }else{
 
             DB::connection('tenant')->table('module_user')->insert([
                 ['module_id' => 1, 'user_id' => $user_id],
                 ['module_id' => 3, 'user_id' => $user_id],
-                ['module_id' => 5, 'user_id' => $user_id], 
+                ['module_id' => 5, 'user_id' => $user_id],
             ]);
 
         }
 
-        
 
-        
+
+
 
         return [
             'success' => true,
@@ -275,8 +323,51 @@ class ClientController extends Controller
         $exists = $website::where('uuid', $uuid)->first();
 
         if($exists){
-            throw new Exception("El subdominio ya se encuentra registrado");            
+            throw new Exception("El subdominio ya se encuentra registrado");
         }
+
+    }
+
+    public function renewPlan(Request $request){
+        
+        // dd($request->all());
+        $client = Client::findOrFail($request->id); 
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+
+        DB::connection('tenant')->table('billing_cycles')->insert([            
+            'date_time_start' => date('Y-m-d H:i:s'),
+            'renew' => true,
+            'quantity_documents' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_documents,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_documents' =>0]);
+
+
+        return [
+            'success' => true,
+            'message' => 'Plan renovado con exito'
+        ];
+
+    }
+
+
+    public function lockedUser(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_users = $request->locked_users;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_users' => $client->locked_users]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_users) ? 'Limitar creación de usuarios activado' : 'Limitar creación de usuarios desactivado'
+        ];
 
     }
 
@@ -297,6 +388,25 @@ class ClientController extends Controller
         ];
 
     }
+
+
+    public function lockedTenant(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_tenant = $request->locked_tenant;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_tenant' => $client->locked_tenant]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_tenant) ? 'Cuenta bloqueada' : 'Cuenta desbloqueada'
+        ];
+
+    }
+
 
 
     public function destroy($id)
@@ -330,4 +440,19 @@ class ClientController extends Controller
             'message' => 'Clave cambiada con éxito'
         ];
     }
+
+    public function startBillingCycle(Request $request)
+    {
+        $client = Client::findOrFail($request->id);
+        $client->start_billing_cycle = $request->start_billing_cycle;
+        $client->save();
+
+        return [
+            'success' => true,
+            'message' => ($client->start_billing_cycle) ? 'Ciclo de Facturacion definido.' : 'No se pudieron guardar los cambios.'
+        ];
+    }
+
+     
+
 }

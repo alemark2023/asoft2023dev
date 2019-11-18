@@ -53,7 +53,7 @@
     @if (file_exists(public_path('theme/custom_styles.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
-    
+
 
     @stack('styles')
 
@@ -91,6 +91,7 @@
         .center-el-checkbox .el-checkbox {
             margin-bottom: 0
         }
+
     </style>
 
 </head>
@@ -159,7 +160,7 @@
     <!-- Theme Custom -->
     <script src="{{asset('porto-light/js/custom.js')}}"></script>
     <script>
-     
+
     </script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
 </body>

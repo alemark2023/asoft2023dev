@@ -29,6 +29,7 @@ use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Perception;
+use App\Models\Tenant\Configuration;
 
 class Facturalo
 {
@@ -41,6 +42,7 @@ class Facturalo
     const CANCELING = '13';
     const VOIDED = '11';
 
+    protected $configuration;
     protected $company;
     protected $isDemo;
     protected $isOse;
@@ -59,6 +61,7 @@ class Facturalo
 
     public function __construct()
     {
+        $this->configuration = Configuration::first();
         $this->company = Company::active();
         $this->isDemo = ($this->company->soap_type_id === '01')?true:false;
         $this->isOse = ($this->company->soap_send_id === '02')?true:false;
@@ -110,6 +113,7 @@ class Facturalo
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
+                $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
                 $document->invoice()->create($inputs['invoice']);
                 $this->document = Document::find($document->id);
@@ -280,6 +284,10 @@ class Facturalo
             $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0; 
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
+            $total_prepayment = $this->document->total_prepayment != '' ? '10' : '0';
+            $total_discount = $this->document->total_discount != '' ? '10' : '0';
+            $was_deducted_prepayment = $this->document->was_deducted_prepayment ? '10' : '0';
+
             $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
             $total_free        = $this->document->total_free != '' ? '10' : '0';
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
@@ -288,7 +296,7 @@ class Facturalo
             $perception       = $this->document->perception != '' ? '10' : '0';
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
-            $quantity_rows     = count($this->document->items);
+            $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
 
             $extra_by_item_description = 0;
             $discount_global = 0;
@@ -322,6 +330,9 @@ class Facturalo
                     $total_exonerated +
                     $perception +
                     $total_taxed+
+                    $total_prepayment +
+                    $total_discount +
+                    $was_deducted_prepayment +
                     $customer_department_id+
                     $total_plastic_bag_taxes],
                 'margin_top' => 0,
@@ -677,10 +688,30 @@ class Facturalo
                     break;
                 default:
                     // $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA:SunatEndpoints::FE_PRODUCCION;
-                    $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA : (config('configuration.sunat_alternate_server') ? SunatEndpoints::FE_PRODUCCION_ALTERNATE : SunatEndpoints::FE_PRODUCCION);
+                    $this->endpoint = ($this->isDemo)?SunatEndpoints::FE_BETA : ($this->configuration->sunat_alternate_server ? SunatEndpoints::FE_PRODUCCION_ALTERNATE : SunatEndpoints::FE_PRODUCCION);
                     break;
             }
         }
 
+    }
+
+    private function updatePrepaymentDocuments($inputs){
+        // dd($inputs);
+
+        if(isset($inputs['prepayments'])) {
+
+            foreach ($inputs['prepayments'] as $row) {
+
+                $fullnumber = explode('-', $row['number']);
+                $series = $fullnumber[0];
+                $number = $fullnumber[1];
+
+                $doc = Document::where([['series',$series],['number',$number]])->first();
+                if($doc){
+                    $doc->was_deducted_prepayment = true;
+                    $doc->save();
+                }
+            }
+        }
     }
 }

@@ -53,19 +53,25 @@ class SendAllSunatCommand extends Command
             $documents = Document::query()
                 ->where('group_id', '01')
                 ->where('send_server', 0)
-                ->where('state_type_id', '!=', '05')
-                ->orWhere('sunat_shipping_status', '!=', '')
+                ->whereIn('state_type_id', ['01','03'])
+                // ->orWhere('sunat_shipping_status', '!=', '')
+                ->where('success_sunat_shipping_status', false)
                 ->get();
             
             foreach ($documents as $document) {
                 try {
-                    DocumentController::send($document->id);
+                    $response = DocumentController::send($document->id);
                     
-                    $document->sunat_shipping_status = '';
+                    $document->sunat_shipping_status = json_encode($response);
+                    $document->success_sunat_shipping_status = true;
                     $document->save();
                 }
                 catch (\Exception $e) {
+
+                    $document->success_sunat_shipping_status = false;
+
                     $document->sunat_shipping_status = json_encode([
+                        'sucess' => false,
                         'message' => $e->getMessage(),
                         'payload' => $e
                     ]);

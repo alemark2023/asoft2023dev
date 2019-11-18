@@ -9,7 +9,7 @@ use Modules\BusinessTurn\Models\DocumentHotel;
 class Document extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments'];
-    
+
     protected $fillable = [
         'user_id',
         'external_id',
@@ -68,7 +68,10 @@ class Document extends ModelTenant
         'sunat_shipping_status',
         'query_status',
         'total_plastic_bag_taxes',
-        'sale_note_id'
+        'sale_note_id',
+        'success_shipping_status',
+        'success_sunat_shipping_status',
+        'success_query_status',
 
     ];
 
@@ -206,11 +209,11 @@ class Document extends ModelTenant
     {
         return $this->belongsTo(StateType::class);
     }
-    
+
     public function person() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
-    
+
     public function group()
     {
         return $this->belongsTo(Group::class);
@@ -261,7 +264,7 @@ class Document extends ModelTenant
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
- 
+
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);
@@ -302,13 +305,13 @@ class Document extends ModelTenant
 
     public function scopeWhereTypeUser($query)
     {
-        $user = auth()->user();         
-        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
     public function scopeWhereNotSent($query)
     {
-        return  $query->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d')); 
+        return  $query->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'));
     }
 
     public function affected_documents()
@@ -316,5 +319,14 @@ class Document extends ModelTenant
         return $this->hasMany(Note::class, 'affected_document_id');
     }
 
-    
+    public function scopeWhereHasPrepayment($query)
+    {
+        return $query->where([['has_prepayment', true],['was_deducted_prepayment', false],['state_type_id','05']]);
+    }
+
+    public function reference_guides()
+    {
+        return $this->hasMany(Dispatch::class, 'reference_document_id', 'id');
+    }
+
 }

@@ -21,14 +21,14 @@ class DocumentCollection extends ResourceCollection
             $btn_resend = false;
             $btn_voided = false;
             $btn_consult_cdr = false;
-            
+
             $affected_document = null;
-            
+
             if ($row->group_id === '01') {
                 if ($row->state_type_id === '01') {
                     $btn_resend = true;
                 }
-                
+
                 if ($row->state_type_id === '05') {
                     $has_cdr = true;
                     $btn_note = true;
@@ -36,7 +36,7 @@ class DocumentCollection extends ResourceCollection
                     $btn_voided = true;
                     $btn_consult_cdr = true;
                 }
-                
+
                 if(in_array($row->document_type_id, ['07', '08'])) {
                     $btn_note = false;
                 }
@@ -46,7 +46,7 @@ class DocumentCollection extends ResourceCollection
                     $btn_note = true;
                     $btn_voided = true;
                 }
-                
+
                 if (in_array($row->document_type_id, ['07', '08'])) {
                     $btn_note = false;
                 }

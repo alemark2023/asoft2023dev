@@ -5,19 +5,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\PerceptionRequest;
 use App\Http\Resources\Tenant\PerceptionCollection;
 use App\Http\Resources\Tenant\PerceptionResource;
-use App\Models\Tenant\Customer;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Perception;
-use App\Models\Tenant\PerceptionDetail;
+use App\Models\Tenant\PerceptionDocument;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\Person;
+use App\CoreFacturalo\Facturalo;
+use App\Models\Tenant\Catalogs\PerceptionType;
 
 class PerceptionController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('input.request:perception,web', ['only' => ['store']]);
+    }
+
     public function index()
     {
         return view('tenant.perceptions.index');
@@ -47,31 +55,32 @@ class PerceptionController extends Controller
 
     public function tables()
     {
-        $user_id = Auth::id();
+
+        $perception_types = PerceptionType::get();
         $currency_types = CurrencyType::all();
         $customers = $this->table('customers');
         $items = $this->table('items');
         $company = Company::with(['identity_document_type'])->first();
-        $establishments = Establishment::all();
         $document_types = DocumentType::all();
         $series = Series::all();
+        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
 
-        return compact('user_id', 'currency_types', 'customers', 'items', 'company', 'establishments','document_types', 'series');
+        return compact('user_id', 'currency_types', 'customers', 'items', 'company', 'establishments','document_types', 'series', 'perception_types');
     }
-
-    public function item_tables()
+ 
+    public function document_tables()
     {
-        $items = $this->table('items');
-        $currency_types = CurrencyType::all();
-        $document_types = DocumentType::all();
+        $perception_types = PerceptionType::get();
+        $currency_types = CurrencyType::whereActive()->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03'])->get();
 
-        return compact('items', 'currency_types', 'document_types');
+        return compact('document_types', 'currency_types', 'perception_types');
     }
 
     public function table($table)
     {
         if ($table === 'customers') {
-            $customers = Customer::with(['identity_document_type'])->orderBy('name')->get()->transform(function($row) {
+            $customers = Person::whereType('customers')->with(['identity_document_type'])->orderBy('name')->get()->transform(function($row) {
                 return [
                     'id' => $row->id,
                     'description' => $row->number.' - '.$row->name,
@@ -84,7 +93,7 @@ class PerceptionController extends Controller
             return $customers;
         }
         if ($table === 'items') {
-            return PerceptionDetail::all();
+            return PerceptionDocument::all();
         }
 
         return [];
@@ -96,40 +105,30 @@ class PerceptionController extends Controller
 
         return $record;
     }
-
-    public function setNumber($data)
-    {
-        $number = $data['number'];
-        $series_id = $data['series_id'];
-        $document_type_id = $data['document_type_id'];
-        $soap_type_id = $data['soap_type_id'];
-        if ($data['number'] === '#') {
-            $document = Perception::select('number')
-                                    ->where('series_id', $series_id)
-                                    ->where('document_type_id', $document_type_id)
-                                    ->where('soap_type_id', $soap_type_id)
-                                    ->orderBy('number', 'desc')
-                                    ->first();
-             $number = ($document)?(int)$document->number+1:1;
-        }
-        return $number;
-    }
+ 
 
     public function store(PerceptionRequest $request)
     {
-        $id = $request->input('id');
-        $record = Perception::firstOrNew(['id' => $id]);
-        $attributes = $request->all();
-        $attributes['number'] = $this->setNumber($attributes);
-        $record->fill($attributes);
-        $record->save();
-        foreach ($attributes['items'] as $detail) {
-            $record->details()->create($detail);
-        }
+
+        $fact = DB::connection('tenant')->transaction(function () use($request) {
+            $facturalo = new Facturalo();
+            $facturalo->save($request->all());
+            $facturalo->createXmlUnsigned();
+            $facturalo->signXmlUnsigned();
+            $facturalo->createPdf();
+            $facturalo->senderXmlSignedBill();
+
+            return $facturalo;
+        });
+
+        $document = $fact->getDocument();
+        $response = $fact->getResponse();
+
         return [
             'success' => true,
-            'message' => ($id)?'Percepción editada con éxito':'Percepción registrada con éxito'
+            'message' => "Se generó la percepción {$document->series}-{$document->number}"
         ];
+
     }
 
     public function destroy($id)

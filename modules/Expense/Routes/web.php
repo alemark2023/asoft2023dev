@@ -4,11 +4,11 @@ $current_hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if($current_hostname) {
     Route::domain($current_hostname->fqdn)->group(function () {
-        Route::middleware(['auth', 'redirect.module'])->group(function () {
+        Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
             // Route::redirect('/', '/dashboard');
 
-            Route::prefix('expenses')->group(function () { 
+            Route::prefix('expenses')->group(function () {
 
                 Route::get('', 'ExpenseController@index')->name('tenant.expenses.index');
                 Route::get('columns', 'ExpenseController@columns');
@@ -18,7 +18,7 @@ if($current_hostname) {
                 Route::get('tables', 'ExpenseController@tables');
                 Route::get('table/{table}', 'ExpenseController@table');
                 Route::post('', 'ExpenseController@store');
-                Route::get('record/{expense}', 'ExpenseController@record'); 
+                Route::get('record/{expense}', 'ExpenseController@record');
 
             });
 

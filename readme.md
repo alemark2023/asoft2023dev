@@ -14,6 +14,8 @@ Para conocer el proceso de instalación, visite la documentación
 [Manual - Docker - Linux](https://docs.google.com/document/d/1eKZwozEZkDKjYMSkQG_oFdMbnMVYlMfkQK-BfCNTm5w/edit?usp=sharing "Clic")
 <br>
 [Manual - Docker - Linux - SSL](https://docs.google.com/document/d/1V54AoYPSNqgi2M9ddck6gh3AgQspZ-eH37_1BU7Gpuo/edit?usp=sharingg "Clic")
+<br>
+[Manual - Valet - Linux](https://docs.google.com/document/d/1x1SZnhzDITta6k-pOQC75xQKWowCgSUSRoa434gglQA/edit?usp=sharing "Clic")
 
 ## Manejo del facturador
 
@@ -73,5 +75,15 @@ Documentación del archivo .ENV: [Guía](https://docs.google.com/document/d/1XpN
 Conexión remota al servidor: [Guía](https://docs.google.com/document/d/1m7xmQ_yLBO2MQVew6ZrlCdvIMLNg2_EzEJmntDM_Jms/edit?usp=sharing "Clic")<br>
 Guía acceso SSH - Putty: [Guía](https://docs.google.com/document/d/1PmQejvNd_dkXVm8DPUYlQTag0wvES46tMpxX3MPhkNY/edit# "Clic")<br>
 Iniciar servicios docker: [Guía](https://docs.google.com/document/d/1MMuyeYE53RjDaOR2OLPsCtpxicDzqowlvoMTWpkBaSM/edit# "Clic")<br>
+Configuración servidor alterno SUNAT: [Guía](https://docs.google.com/document/d/1pr-9ewFYY7JFtYg-0V5MY4R16OGv-02VH5MqXjeUCh0/edit#heading=h.nezjsyganf1w "Clic")<br>
+Conexión servidor Winscp: [Guía](https://docs.google.com/document/d/1Xpri2102N4b5C-dG-FVPXW5ZWjEz5S4iDjpvl7Zwq2E/edit# "Clic")<br>
+Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/document/d/1V9xyhH4JRJqFf-8zFBG9lOlmy07ts9dZCcJlQFEcFf8/edit# "Clic")<br>
+Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
+Manual - limpiar inodes: [Guía](https://drive.google.com/open?id=1foPKDI3V3Z9uKTjRc2SPSoztVSOBevPAluT2BqFbfxA "Clic")<br>
+Manual - habilitar debug: [Guía](https://drive.google.com/open?id=1OdU-rDjr_cxM7t3fujBxPnEQn7qMoxIO6KZNjiKzyvU "Clic")<br>
+Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
+Manual - validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
+Manual - Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5lrDxprwfteKrP6n100LeSox_g34Eg/edit "Clic")<br>
+Manual - Cambio de dominio: [Guía](https://docs.google.com/document/d/14rbElqQ6Ru6hh3UCZm4wTKIUCm_hPbMNYz9EH8fcPRo/edit?usp=sharing "Clic")<br>
 
 

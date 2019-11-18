@@ -13,8 +13,8 @@ use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\Models\Tenant\Item;
 use App\Http\Resources\Tenant\PurchaseCollection;
 use App\Http\Resources\Tenant\PurchaseResource;
-use App\Models\Tenant\Catalogs\AffectationIgvType;  
-use App\Models\Tenant\Catalogs\DocumentType;  
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
@@ -26,13 +26,13 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\PaymentMethodType;
 use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
-use App\Models\Tenant\InventoryKardex; 
-use App\Models\Tenant\ItemWarehouse; 
+use App\Models\Tenant\InventoryKardex;
+use App\Models\Tenant\ItemWarehouse;
 
 
 class PurchaseController extends Controller
 {
-    
+
     public function index()
     {
         return view('tenant.purchases.index');
@@ -54,7 +54,8 @@ class PurchaseController extends Controller
     public function records(Request $request)
     {
         $records = Purchase::where($request->column, 'like', "%{$request->value}%")
-                            ->latest();
+                    ->whereTypeUser()
+                    ->latest();
 
         return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -62,15 +63,15 @@ class PurchaseController extends Controller
     public function tables()
     {
         $suppliers = $this->table('suppliers');
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();    
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
         $currency_types = CurrencyType::whereActive()->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', 'GU75', 'NE76'])->get();        
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', 'GU75', 'NE76'])->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
 
-        return compact('suppliers', 'establishment','currency_types', 'discount_types', 
+        return compact('suppliers', 'establishment','currency_types', 'discount_types',
                     'charge_types', 'document_types_invoice','company','payment_method_types');
     }
 
@@ -78,10 +79,10 @@ class PurchaseController extends Controller
     {
 
         $items = $this->table('items');
-        $categories = []; 
+        $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
-        $price_types = PriceType::whereActive()->get(); 
+        $price_types = PriceType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
@@ -92,15 +93,15 @@ class PurchaseController extends Controller
     }
 
     public function record($id)
-    {  
-      
+    {
+
         $record = new PurchaseResource(Purchase::findOrFail($id));
 
         return $record;
     }
 
     public function edit($id)
-    {   
+    {
         $resourceId = $id;
         return view('tenant.purchases.form_edit', compact('resourceId'));
     }
@@ -115,7 +116,7 @@ class PurchaseController extends Controller
             foreach ($data['items'] as $row)
             {
                 $doc->items()->create($row);
-            }     
+            }
 
             $doc->purchase_payments()->create([
                 'date_of_payment' => $data['date_of_issue'],
@@ -124,8 +125,8 @@ class PurchaseController extends Controller
             ]);
 
             return $doc;
-        });       
- 
+        });
+
         return [
             'success' => true,
             'data' => [
@@ -136,11 +137,11 @@ class PurchaseController extends Controller
 
     public function update(PurchaseRequest $request)
     {
-      
 
-     
+
+
         $purchase = DB::connection('tenant')->transaction(function () use ($request) {
-         
+
             $doc = Purchase::firstOrNew(['id' => $request['id']]);
            // return json_encode($doc);
             $doc->fill($request->all());
@@ -149,7 +150,7 @@ class PurchaseController extends Controller
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
             //proceso para eliminar los actualizar el stock de proiductos
             foreach ($doc->items as $item) {
-                $item->purchase->inventory_kardex()->create([ 
+                $item->purchase->inventory_kardex()->create([
                     'date_of_issue' => date('Y-m-d'),
                     'item_id' => $item->item_id,
                     'warehouse_id' => $establishment->id,
@@ -174,8 +175,8 @@ class PurchaseController extends Controller
             ]);
 
             return $doc;
-        });       
- 
+        });
+
         return [
             'success' => true,
             'data' => [
@@ -197,7 +198,7 @@ class PurchaseController extends Controller
 
         //proceso para eliminar los actualizar el stock de proiductos
         foreach ($obj->items as $item) {
-            $item->purchase->inventory_kardex()->create([ 
+            $item->purchase->inventory_kardex()->create([
                 'date_of_issue' => date('Y-m-d'),
                 'item_id' => $item->item_id,
                 'warehouse_id' => $establishment->id,
@@ -224,7 +225,7 @@ class PurchaseController extends Controller
             'soap_type_id' => $company->soap_type_id,
             'group_id' => ($inputs->document_type_id === '01') ? '01':'02',
             'state_type_id' => '01'
-        ]; 
+        ];
 
         $inputs->merge($values);
 
@@ -250,7 +251,7 @@ class PurchaseController extends Controller
                 return $suppliers;
 
                 break;
-            
+
             case 'items':
 
                 $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
@@ -299,15 +300,15 @@ class PurchaseController extends Controller
                 return [];
 
                 break;
-        } 
+        }
     }
 
     public function delete($id)
     {
         try {
-            
+
             $row = Purchase::findOrFail($id);
-            $row->delete(); 
+            $row->delete();
 
             return [
                 'success' => true,
@@ -320,6 +321,6 @@ class PurchaseController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ];
-        } 
+        }
     }
 }

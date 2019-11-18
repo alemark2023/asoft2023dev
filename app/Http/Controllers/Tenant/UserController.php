@@ -35,6 +35,20 @@ class UserController extends Controller
     public function store(UserRequest $request)
     {
         $id = $request->input('id');
+
+        if(!$id)  //VALIDAR EMAIL DISPONIBLE
+        {
+            $verify = User::where('email', $request->input('email'))->first();
+            if($verify)
+            {
+                return [
+                    'success' => false,
+                    'message' => 'Email no disponible. Ingrese otro Email'
+                ];
+            }
+
+        }
+
         $user = User::firstOrNew(['id' => $id]);
         $user->name = $request->input('name');
         $user->email = $request->input('email');

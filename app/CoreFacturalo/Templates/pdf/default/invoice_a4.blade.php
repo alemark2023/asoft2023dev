@@ -13,11 +13,13 @@
         $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
 
     } else {
-        
+
         $affected_document_number = null;
     }
 
     $payments = $document->payments;
+
+    $document->load('reference_guides');
 
 @endphp
 <html>
@@ -52,12 +54,12 @@
 
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-                @endisset  
+                @endisset
 
                 <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
 
                 <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
-                
+
                 @isset($establishment->web_address)
                     <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
                 @endisset
@@ -144,27 +146,43 @@
 </table>
 @endif
 
+
+@if ($document->reference_guides)
+<br/>
+<strong>Guias de remisión</strong>
+<table>
+    @foreach($document->reference_guides as $guide)
+        <tr>
+            <td>{{ $guide->series }}</td>
+            <td>-</td>
+            <td>{{ $guide->number }}</td>
+        </tr>
+    @endforeach
+</table>
+@endif
+
+
 <table class="full-width mt-3">
-    @if ($document->prepayments) 
+    @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
             <td width="120px">ANTICIPO</td>
             <td width="8px">:</td>
-            <td>{{$p->number}} - {{ $document->currency_type->symbol }} {{$p->amount}}</td> 
+            <td>{{$p->number}}</td>
         </tr>
         @endforeach
     @endif
     @if ($document->purchase_order)
         <tr>
-            <td>ORDEN DE COMPRA</td>
-            <td>:</td>
+            <td width="120px">ORDEN DE COMPRA</td>
+            <td width="8px">:</td>
             <td>{{ $document->purchase_order }}</td>
         </tr>
     @endif
     @if ($document->quotation_id)
         <tr>
-            <td>COTIZACIÓN</td>
-            <td>:</td>
+            <td width="120px">COTIZACIÓN</td>
+            <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
         </tr>
     @endif
@@ -255,6 +273,31 @@
             <td colspan="6" class="border-bottom"></td>
         </tr>
     @endforeach
+
+
+
+    @if ($document->prepayments)
+        @foreach($document->prepayments as $p)
+        <tr>
+            <td class="text-center align-top">
+                1
+            </td>
+            <td class="text-center align-top">NIU</td>
+            <td class="text-left align-top">
+                ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
+            </td>
+            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
+            <td class="text-right align-top">
+                0
+            </td>
+            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="6" class="border-bottom"></td>
+        </tr>
+        @endforeach
+    @endif
+
         @if($document->total_exportation > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
@@ -312,24 +355,24 @@
         <td width="65%" style="text-align: top; vertical-align: top;">
             @foreach(array_reverse( (array) $document->legends) as $row)
                 @if ($row->code == "1000")
-                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>                      
+                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
                     @if (count((array) $document->legends)>1)
                         <p><span class="font-bold">Leyendas</span></p>
-                    @endif                  
+                    @endif
                 @else
-                    <p> {{$row->code}}: {{ $row->value }} </p>                                    
+                    <p> {{$row->code}}: {{ $row->value }} </p>
                 @endif
-            
+
             @endforeach
             <br/>
             @if ($customer->department_id == 16)
-                <br/><br/><br/>                       
+                <br/><br/><br/>
                 <div>
                     <center>
-                        Representación impresa del Comprobante de Pago Electrónico. 
+                        Representación impresa del Comprobante de Pago Electrónico.
                         <br/>Esta puede ser consultada en:
                         <br/><b>{!! url('/buscar') !!}</b>
-                        <br/> "Bienes transferidos en la Amazonía 
+                        <br/> "Bienes transferidos en la Amazonía
                         <br/>para ser consumidos en la misma".
                     </center>
                 </div>
@@ -360,7 +403,7 @@
     <table class="full-width">
         <tr>
             <td>
-                <strong>PAGOS:</strong> 
+                <strong>PAGOS:</strong>
             </td>
         </tr>
             @php
@@ -369,7 +412,7 @@
             @foreach($payments as $row)
                 <tr>
                     <td>- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
-                </tr> 
+                </tr>
             @endforeach
         </tr>
 

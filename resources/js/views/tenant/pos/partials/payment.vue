@@ -103,7 +103,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label class="control-label">Ingrese monto</label> 
-                                    <el-input v-model="amount" @input="inputAmount" :readonly="true">
+                                    <el-input v-model="enter_amount" @input="enterAmount()" >
                                         <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                                     </el-input> 
 
@@ -197,16 +197,16 @@
                                 <div class="col-lg-12" v-if="form_payment.payment_method_type_id=='01'">
                                     <div class="row">
                                         <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary" @click="setAmount(10)">{{currencyTypeActive.symbol}}10</button>
+                                            <button class="btn btn-block btn-secondary" @click="setAmountCash(10)">{{currencyTypeActive.symbol}}10</button>
                                         </div>
                                         <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary" @click="setAmount(20)" >{{currencyTypeActive.symbol}}20</button>
+                                            <button class="btn btn-block btn-secondary" @click="setAmountCash(20)" >{{currencyTypeActive.symbol}}20</button>
                                         </div>
                                         <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary" @click="setAmount(50)"  >{{currencyTypeActive.symbol}}50</button>
+                                            <button class="btn btn-block btn-secondary" @click="setAmountCash(50)"  >{{currencyTypeActive.symbol}}50</button>
                                         </div>
                                         <div class="col-lg-3">
-                                            <button class="btn btn-block btn-secondary"  @click="setAmount(100)" >{{currencyTypeActive.symbol}}100</button>
+                                            <button class="btn btn-block btn-secondary"  @click="setAmountCash(100)" >{{currencyTypeActive.symbol}}100</button>
                                         </div>
                                     </div>
                                 </div> 
@@ -284,6 +284,7 @@
                 resource_documents: 'documents', 
                 resource_payments: 'document_payments', 
                 amount: 0,
+                enter_amount: 0,
                 difference: 0,
                 button_payment: false,
                 input_item: '',
@@ -312,19 +313,8 @@
                 this.showDialogMultiplePayment = true
             },
             
-            addRow(payments) {
-                this.form.payments = payments
-                let acum_payment = 0
-
-                this.form.payments.forEach((item)=>{
-                    acum_payment += parseFloat(item.payment)
-                })
-                
-                this.amount = acum_payment
-                //this.setAmount(acum_payment)
-                
-                // console.log(this.form.payments)
-            },
+          
+          
             reloadDataCardBrands(card_brand_id) {
                 this.$http.get(`/${this.resource}/table/card_brands`).then((response) => {
                     this.cards_brand = response.data
@@ -342,10 +332,68 @@
                 this.has_card = payment_method_type.has_card             
                 this.form_payment.card_brand_id = (payment_method_type.has_card) ? this.form_payment.card_brand_id:null
             },
+            addRow(payments) {
+                
+                this.form.payments = payments
+                let acum_payment = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_payment += parseFloat(item.payment)
+                })
+                
+               // this.amount = acum_payment
+                this.setAmount(acum_payment)
+                
+                // console.log(this.form.payments)
+            },
             setAmount(amount){
                 // this.amount = parseFloat(this.amount) + parseFloat(amount)
-                this.amount =  parseFloat(this.amount) + parseFloat(amount)
+                this.amount =  parseFloat(amount) //+ parseFloat(amount)
+                this.enter_amount =  parseFloat(amount) //+ parseFloat(amount)
                 this.inputAmount()
+            },
+            setAmountCash(amount)
+            {
+               let row = _.last(this.payments, { 'payment_method_type_id' : '01' }) 
+               row.payment = parseFloat(row.payment) + parseFloat(amount)
+
+                this.form.payments = this.payments
+                let acum_payment = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_payment += parseFloat(item.payment)
+                })
+
+                this.setAmount(acum_payment)
+              
+            },
+            enterAmount(){
+
+                let item = _.last(this.payments, { 'payment_method_type_id' : '01' }) 
+                item.payment = parseFloat(this.enter_amount)
+                // this.setAmount(item.payment)
+
+                let acum_payment = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_payment += parseFloat(item.payment)
+                })
+                
+                // this.amount = item.payment
+                this.amount = acum_payment
+                this.difference = this.amount - this.form.total
+
+                if(isNaN(this.difference)) {
+                    this.button_payment = true
+                    this.difference = "-"
+                }else if(this.difference >=0){
+                    this.button_payment = false
+                    this.difference = this.amount - this.form.total
+                }else{
+                    this.button_payment = true
+                } 
+                this.difference = _.round(this.difference,2)  
+
             },
             inputAmount(){
 

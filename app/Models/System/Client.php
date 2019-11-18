@@ -2,12 +2,12 @@
 
 namespace App\Models\System;
 
-use Hyn\Tenancy\Models\Hostname; 
+use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Traits\UsesSystemConnection;
 use Illuminate\Database\Eloquent\Model;
 
 class Client extends Model
-{ 
+{
     use UsesSystemConnection;
 
     protected $with = ['hostname','plan'];
@@ -19,7 +19,14 @@ class Client extends Model
         'token',
         'locked',
         'locked_emission',
-        'plan_id'
+        'locked_tenant',
+        'locked_users',
+        'plan_id',
+        'start_billing_cycle'
+    ];
+
+    protected $casts = [
+        'start_billing_cycle' => 'date',
     ];
 
     public function hostname()
@@ -36,4 +43,5 @@ class Client extends Model
     {
         return $this->hasMany(ClientPayment::class);
     }
+
 }

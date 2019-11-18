@@ -11,9 +11,12 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
 use Illuminate\Support\Str;
+use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
+use Modules\Offline\Models\OfflineConfiguration;
 
 class DocumentInput
 {
+
     public static function set($inputs)
     {
         $document_type_id = $inputs['document_type_id'];
@@ -22,6 +25,8 @@ class DocumentInput
 
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
+        
+        $offline_configuration = OfflineConfiguration::firstOrFail();
         // $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Document::class);
 
         if($number !== '#') {
@@ -45,6 +50,15 @@ class DocumentInput
         $inputs['type'] = $array_partial['type'];
         $inputs['group_id'] = $array_partial['group_id'];
 
+        //set o convert json
+
+        if($offline_configuration->is_client){
+            $exist_data_json = Functions::valueKeyInArray($inputs, 'data_json');
+            $data_json = ($exist_data_json) ? $exist_data_json : DocumentWebTransform::transform($inputs);
+        }else{
+            $data_json = Functions::valueKeyInArray($inputs, 'data_json');
+        }
+        
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -86,6 +100,7 @@ class DocumentInput
             'total_value' => $inputs['total_value'],
             'total' => $inputs['total'],
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
+            'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),
             'items' => self::items($inputs),
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
@@ -100,7 +115,7 @@ class DocumentInput
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
-            'data_json' => Functions::valueKeyInArray($inputs, 'data_json'),
+            'data_json' => $data_json,
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
         ];
@@ -246,11 +261,13 @@ class DocumentInput
                     $number = $row['number'];
                     $document_type_id = $row['document_type_id'];
                     $amount = $row['amount'];
+                    $total = $row['total'];
 
                     $prepayments[] = [
                         'number' => $number,
                         'document_type_id' => $document_type_id,
-                        'amount' => $amount
+                        'amount' => $amount,
+                        'total' => $total
                     ];
                 }
                 return $prepayments;

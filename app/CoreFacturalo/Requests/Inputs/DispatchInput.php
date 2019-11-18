@@ -67,6 +67,7 @@ class DispatchInput
             'legends' => LegendInput::set($inputs),
             'optional' => Functions::valueKeyInArray($inputs, 'optional'),
             'actions' => ActionInput::set($inputs),
+            'reference_document_id' => $inputs['reference_document_id']
         ];
     }
 

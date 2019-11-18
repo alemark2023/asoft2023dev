@@ -7,10 +7,11 @@ use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
 
+
 class Dispatch extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
-                       'transfer_reason_type', 'items'];
+                       'transfer_reason_type', 'items', 'reference_document'];
 
     protected $fillable = [
         'user_id',
@@ -51,7 +52,9 @@ class Dispatch extends ModelTenant
 
         'has_xml',
         'has_pdf',
-        'has_cdr'
+        'has_cdr',
+
+        'reference_document_id'
     ];
 
     protected $casts = [
@@ -152,6 +155,11 @@ class Dispatch extends ModelTenant
     public function document_type()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id');
+    }
+
+    public function reference_document()
+    {
+        return $this->belongsTo(Document::class, 'reference_document_id');
     }
 
     public function unit_type()

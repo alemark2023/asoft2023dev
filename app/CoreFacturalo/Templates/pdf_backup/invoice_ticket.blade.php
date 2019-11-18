@@ -230,9 +230,9 @@
                     <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
                     @if (count((array) $document->legends)>1)
                     <tr><td class="desc pt-3"><span class="font-bold">Leyendas</span></td></tr>
-                    @endif 
+                    @endif
                 @else
-                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>                                                  
+                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>
                 @endif
             </tr>
         @endforeach
@@ -240,7 +240,7 @@
 
 
     <tr>
-        <td class="desc pt-3"> 
+        <td class="desc pt-3">
             @foreach($document->additional_information as $information)
                 @if ($information)
                     @if ($loop->first)
