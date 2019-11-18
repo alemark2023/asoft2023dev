@@ -68,16 +68,21 @@ class SummarySendCommand extends Command
             
             foreach ($documents as $document) {
 
-                if(file_exists(base_path(config('tenant.name_certificate_cron')))){
-                    $constructor_params = [
-                        'base_uri' => config('tenant.force_https') ? "https://{$hostname->fqdn}" : "http://{$hostname->fqdn}",
-                        'verify' => base_path(config('tenant.name_certificate_cron'))
-                    ];
-                }else{
-                    $constructor_params = [
-                        'base_uri' => config('tenant.force_https') ? "https://{$hostname->fqdn}" : "http://{$hostname->fqdn}"
-                    ];
-                }
+                // if(file_exists(base_path(config('tenant.name_certificate_cron')))){
+                //     $constructor_params = [
+                //         'base_uri' => config('tenant.force_https') ? "https://{$hostname->fqdn}" : "http://{$hostname->fqdn}",
+                //         'verify' => base_path(config('tenant.name_certificate_cron'))
+                //     ];
+                // }else{
+                //     $constructor_params = [
+                //         'base_uri' => config('tenant.force_https') ? "https://{$hostname->fqdn}" : "http://{$hostname->fqdn}"
+                //     ];
+                // }
+
+                $constructor_params = [
+                    'base_uri' => config('tenant.force_https') ? "https://{$hostname->fqdn}" : "http://{$hostname->fqdn}",
+                    'verify' => false
+                ];
 
                 $clientGuzzleHttp = new ClientGuzzleHttp($constructor_params);
                 
