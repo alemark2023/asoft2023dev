@@ -12,14 +12,13 @@ use App\Http\Requests\System\ClientRequest;
 use Hyn\Tenancy\Environment;
 use App\Models\System\Client;
 use App\Models\System\Plan;
+use App\Models\System\Configuration;
 use Hyn\Tenancy\Models\Hostname;
 use Hyn\Tenancy\Models\Website;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
-
 
 
 class ResellerController extends Controller
@@ -56,6 +55,34 @@ class ResellerController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'token' => $user->api_token,
+        ]
+    }
+
+    public function lockedAdmin(Request $request)
+    {
+        // dd($request->locked_admin);
+        
+        $configuration = Configuration::first();
+        $configuration->locked_admin = $request->locked_admin;
+        $configuration->save();
+
+        
+        $clients = Client::get();
+
+        foreach ($clients as $client) {
+
+            $client->locked_tenant = $configuration->locked_admin;
+            $client->save();
+
+            $tenancy = app(Environment::class);
+            $tenancy->tenant($client->hostname->website);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_tenant' => $client->locked_tenant]);
+ 
+        } 
+
+        return [
+            'success' => true,
+            'message' => ($configuration->locked_admin) ? 'Cuenta bloqueada' : 'Cuenta desbloqueada'
         ];
 
     }

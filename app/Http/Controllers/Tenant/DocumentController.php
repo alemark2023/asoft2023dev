@@ -573,7 +573,8 @@ class DocumentController extends Controller
     public function messageLockedEmission(){
 
         $configuration = Configuration::first();
-        $quantity_documents = Document::count();
+        // $quantity_documents = Document::count();
+        $quantity_documents = $configuration->quantity_documents;
 
         if($configuration->limit_documents !== 0 && ($quantity_documents > $configuration->limit_documents))
             return [

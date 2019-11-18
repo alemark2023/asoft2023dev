@@ -1,7 +1,9 @@
 <template>
     <div class="card">
         <div class="card-header bg-info">
-            <h3 class="my-0">Buscar comprobante electrónico</h3>
+            <h3 class="my-0">
+                Buscar comprobante electrónico
+            </h3>
         </div>
         <div class="card-body">
             <form autocomplete="off" @submit.prevent="submit">

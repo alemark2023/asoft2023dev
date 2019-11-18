@@ -48,7 +48,8 @@ class ClientController extends Controller
         foreach ($records as &$row) {
             $tenancy = app(Environment::class);
             $tenancy->tenant($row->hostname->website);
-            $row->count_doc = DB::connection('tenant')->table('documents')->count();
+            // $row->count_doc = DB::connection('tenant')->table('documents')->count();
+            $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->count_user = DB::connection('tenant')->table('users')->count();
         }
         return new ClientCollection($records);
@@ -211,10 +212,15 @@ class ClientController extends Controller
         DB::connection('tenant')->table('configurations')->insert([
             'send_auto' => true,
             'locked_emission' =>  $request->input('locked_emission'),
+            'locked_tenant' =>  false,
+            'locked_users' =>  false,
             'limit_documents' =>  $plan->limit_documents,
             'limit_users' =>  $plan->limit_users,
-            'plan' => json_encode($plan)
+            'plan' => json_encode($plan),
+            'date_time_start' =>  date('Y-m-d H:i:s'),
+            'quantity_documents' =>  0,
         ]);
+
 
         $establishment_id = DB::connection('tenant')->table('establishments')->insertGetId([
             'description' => 'Oficina Principal',
@@ -311,6 +317,49 @@ class ClientController extends Controller
 
     }
 
+    public function renewPlan(Request $request){
+        
+        // dd($request->all());
+        $client = Client::findOrFail($request->id); 
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+
+        DB::connection('tenant')->table('billing_cycles')->insert([            
+            'date_time_start' => date('Y-m-d H:i:s'),
+            'renew' => true,
+            'quantity_documents' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_documents,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['quantity_documents' =>0]);
+
+
+        return [
+            'success' => true,
+            'message' => 'Plan renovado con exito'
+        ];
+
+    }
+
+
+    public function lockedUser(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_users = $request->locked_users;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_users' => $client->locked_users]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_users) ? 'Limitar creación de usuarios activado' : 'Limitar creación de usuarios desactivado'
+        ];
+
+    }
+
 
     public function lockedEmission(Request $request){
 
@@ -328,6 +377,25 @@ class ClientController extends Controller
         ];
 
     }
+
+
+    public function lockedTenant(Request $request){
+
+        $client = Client::findOrFail($request->id);
+        $client->locked_tenant = $request->locked_tenant;
+        $client->save();
+
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+        DB::connection('tenant')->table('configurations')->where('id', 1)->update(['locked_tenant' => $client->locked_tenant]);
+
+        return [
+            'success' => true,
+            'message' => ($client->locked_tenant) ? 'Cuenta bloqueada' : 'Cuenta desbloqueada'
+        ];
+
+    }
+
 
 
     public function destroy($id)

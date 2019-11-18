@@ -9,9 +9,14 @@ class Configuration extends ModelTenant
         'cron', 
         'stock',
         'locked_emission',
+        'locked_users',
         'limit_documents',
         'sunat_alternate_server',
-        'plan'
+        'plan',
+        'limit_users',
+        'locked_tenant',
+        'quantity_documents',
+        'date_time_start',
     ];
 
     public function setPlanAttribute($value)

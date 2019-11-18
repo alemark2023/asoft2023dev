@@ -4,7 +4,7 @@ $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
-        Route::middleware(['auth', 'redirect.module'])->group(function() {
+        Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
             Route::prefix('account')->group(function () {
                 Route::get('/', 'AccountController@index')->name('tenant.account.index');

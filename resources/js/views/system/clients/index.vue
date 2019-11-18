@@ -89,7 +89,9 @@
                             <th class="text-center">Comprobantes</th>
                             <th class="text-center">Usuarios</th>
                             <th class="text-center">F.Creación</th>
+                            <th class="text-center">Bloquear cuenta</th>
                             <th class="text-right">Limitar Doc.</th>
+                            <th class="text-center">Limitar Usuarios</th>
                             <th class="text-right">Acciones</th>
                             <th class="text-right">Pagos</th>
                             <th class="text-right">E. Cuenta</th>
@@ -136,13 +138,30 @@
                             </td>
                             <td class="text-center">{{ row.created_at }}</td>
                             <td class="text-center">
+                                <template v-if="!row.locked">
+                                    <el-switch
+                                        style="display: block"
+                                        v-model="row.locked_tenant" 
+                                        @change="changeLockedTenant(row)">
+                                    </el-switch>
+                                </template>
+                            </td>
+                            <td class="text-center">
                                 <el-switch
                                     style="display: block"
                                     v-model="row.locked_emission" 
                                     @change="changeLockedEmission(row)">
                                 </el-switch>
                             </td>
+                            <td class="text-center">
+                                <el-switch
+                                    style="display: block"
+                                    v-model="row.locked_users" 
+                                    @change="changeLockedUser(row)">
+                                </el-switch>
+                            </td>
                             <td class="text-right">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary m-1__2" @click.prevent="clickRenewPlan(row.id)">Renovar plan</button>
                                 <template v-if="!row.locked">
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2" @click.prevent="clickPassword(row.id)">Resetear clave</button>
                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click.prevent="clickDelete(row.id)">Eliminar</button>
@@ -244,8 +263,79 @@
             this.text_limit_users = 'El límite de usuarios fue superado'
         },
         methods: {
+            clickRenewPlan(id){
+                this.$confirm('¿Está seguro de renovar el plan?', 'Renovar plan', {
+                    confirmButtonText: 'Renovar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {                    
+                    this.$http.post(`${this.resource}/renew_plan`, {id})
+                        .then(response => {
+                            if (response.data.success) {
+                                this.$message.success(response.data.message)
+                                this.$eventHub.$emit('reloadData')
+                            } else {
+                                this.$message.error(response.data.message)
+                            }
+                        })
+                        .catch(error => {
+                            if(error.response.status === 500){
+                                this.$message.error(error.response.data.message);
+                            }
+                            else {
+                                console.log(error.response)
+                            }
+                        })
+                        .then(() => {
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            },
+            changeLockedUser(row){
+                this.$http.post(`${this.resource}/locked_user`, row)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if(error.response.status === 500){
+                            this.$message.error(error.response.data.message);
+                        }
+                         else {
+                            console.log(error.response)
+                        }
+                    })
+                    .then(() => {
+                    })
+            },
             changeLockedEmission(row){
                 this.$http.post(`${this.resource}/locked_emission`, row)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if(error.response.status === 500){
+                            this.$message.error(error.response.data.message);
+                        }
+                         else {
+                            console.log(error.response)
+                        }
+                    })
+                    .then(() => {
+                    })
+            },
+            changeLockedTenant(row){
+                this.$http.post(`${this.resource}/locked_tenant`, row)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

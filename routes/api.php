@@ -6,7 +6,7 @@ if ($hostname) {
         
         Route::post('login', 'Tenant\Api\MobileController@login');
 
-        Route::middleware('auth:api')->group(function() {
+        Route::middleware(['auth:api', 'locked.tenant'])->group(function() {
             //MOBILE
             Route::get('document/tables', 'Tenant\Api\MobileController@tables');
             
@@ -41,6 +41,7 @@ if ($hostname) {
 
         //reseller
         Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
+        Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
         
         
     });

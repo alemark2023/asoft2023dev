@@ -32,7 +32,7 @@ if ($hostname) {
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
 
-       Route::middleware(['auth', 'redirect.module'])->group(function() {
+       Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
         // Route::middleware(['auth'])->group(function() {
             // Route::get('/', function () {
             //     return redirect()->route('tenant.documents.create');
@@ -557,6 +557,9 @@ if ($hostname) {
             Route::delete('clients/{client}', 'System\ClientController@destroy');
             Route::post('clients/password/{client}', 'System\ClientController@password');
             Route::post('clients/locked_emission', 'System\ClientController@lockedEmission');
+            Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
+            Route::post('clients/locked_user', 'System\ClientController@lockedUser');
+            Route::post('clients/renew_plan', 'System\ClientController@renewPlan');
 
 
             Route::get('client_payments/records/{client_id}', 'System\ClientPaymentController@records');
