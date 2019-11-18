@@ -13,4 +13,5 @@ class Configuration extends Model
         'locked_admin',
     ];
  
+
 }

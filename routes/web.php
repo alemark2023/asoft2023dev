@@ -562,6 +562,12 @@ if ($hostname) {
             Route::post('clients/renew_plan', 'System\ClientController@renewPlan');
 
 
+            Route::post('clients/set_billing_cycle', 'System\ClientController@startBillingCycle');
+
+            Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
+
+
+
             Route::get('client_payments/records/{client_id}', 'System\ClientPaymentController@records');
             Route::get('client_payments/client/{client_id}', 'System\ClientPaymentController@client');
             Route::get('client_payments/tables', 'System\ClientPaymentController@tables');

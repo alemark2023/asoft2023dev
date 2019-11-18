@@ -44,6 +44,7 @@ class ClientController extends Controller
 
     public function records()
     {
+
         $records = Client::latest()->get();
         foreach ($records as &$row) {
             $tenancy = app(Environment::class);
@@ -51,13 +52,22 @@ class ClientController extends Controller
             // $row->count_doc = DB::connection('tenant')->table('documents')->count();
             $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->count_user = DB::connection('tenant')->table('users')->count();
+
+            if($row->start_billing_cycle)
+            {
+                $day_start_billing = date_format($row->start_billing_cycle, 'j');
+                $init = Carbon::parse( date('Y').'-'.((int)date('n') -1).'-'.$day_start_billing );
+                $end = Carbon::parse(date('Y-m-d'));
+                $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+
+            }
         }
         return new ClientCollection($records);
     }
 
     public function record($id)
     {
-        
+
         $client = Client::findOrFail($id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
@@ -155,7 +165,7 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
-       
+
         $subDom = strtolower($request->input('subdomain'));
         $uuid = config('tenant.prefix_database').'_'.$subDom;
         $fqdn = $subDom.'.'.config('tenant.app_url_base');
@@ -278,28 +288,28 @@ class ClientController extends Controller
             //     ['module_id' => 2, 'user_id' => $user_id],
             //     ['module_id' => 3, 'user_id' => $user_id],
             //     ['module_id' => 4, 'user_id' => $user_id],
-            //     ['module_id' => 5, 'user_id' => $user_id], 
-            //     ['module_id' => 6, 'user_id' => $user_id], 
-            //     ['module_id' => 7, 'user_id' => $user_id], 
-            //     ['module_id' => 8, 'user_id' => $user_id], 
-            //     ['module_id' => 9, 'user_id' => $user_id], 
+            //     ['module_id' => 5, 'user_id' => $user_id],
+            //     ['module_id' => 6, 'user_id' => $user_id],
+            //     ['module_id' => 7, 'user_id' => $user_id],
+            //     ['module_id' => 8, 'user_id' => $user_id],
+            //     ['module_id' => 9, 'user_id' => $user_id],
             //     ['module_id' => 10, 'user_id' => $user_id],
-            //     ['module_id' => 11, 'user_id' => $user_id], 
+            //     ['module_id' => 11, 'user_id' => $user_id],
             // ]);
-            
+
         }else{
 
             DB::connection('tenant')->table('module_user')->insert([
                 ['module_id' => 1, 'user_id' => $user_id],
                 ['module_id' => 3, 'user_id' => $user_id],
-                ['module_id' => 5, 'user_id' => $user_id], 
+                ['module_id' => 5, 'user_id' => $user_id],
             ]);
 
         }
 
-        
 
-        
+
+
 
         return [
             'success' => true,
@@ -312,7 +322,7 @@ class ClientController extends Controller
         $exists = $website::where('uuid', $uuid)->first();
 
         if($exists){
-            throw new Exception("El subdominio ya se encuentra registrado");            
+            throw new Exception("El subdominio ya se encuentra registrado");
         }
 
     }
@@ -429,4 +439,19 @@ class ClientController extends Controller
             'message' => 'Clave cambiada con éxito'
         ];
     }
+
+    public function startBillingCycle(Request $request)
+    {
+        $client = Client::findOrFail($request->id);
+        $client->start_billing_cycle = $request->start_billing_cycle;
+        $client->save();
+
+        return [
+            'success' => true,
+            'message' => ($client->start_billing_cycle) ? 'Ciclo de Facturacion definido.' : 'No se pudieron guardar los cambios.'
+        ];
+    }
+
+     
+
 }

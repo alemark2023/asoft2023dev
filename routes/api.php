@@ -3,13 +3,13 @@
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function() {
-        
+
         Route::post('login', 'Tenant\Api\MobileController@login');
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function() {
             //MOBILE
             Route::get('document/tables', 'Tenant\Api\MobileController@tables');
-            
+
             Route::post('documents', 'Tenant\Api\DocumentController@store');
             Route::get('documents/lists', 'Tenant\Api\DocumentController@lists');
             Route::post('summaries', 'Tenant\Api\SummaryController@store');
@@ -28,11 +28,11 @@ if ($hostname) {
             Route::get('document_check_server/{external_id}', 'Tenant\Api\DocumentController@documentCheckServer');
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
-        
+
         Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
         Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
-        
+
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
 
     });
@@ -44,6 +44,8 @@ if ($hostname) {
         Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
         
         
+
+
     });
-    
+
 }

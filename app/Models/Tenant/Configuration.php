@@ -6,7 +6,7 @@ class Configuration extends ModelTenant
 {
     protected $fillable = [
         'send_auto',
-        'cron', 
+        'cron',
         'stock',
         'locked_emission',
         'locked_users',
@@ -14,9 +14,9 @@ class Configuration extends ModelTenant
         'sunat_alternate_server',
         'plan',
         'limit_users',
-        'locked_tenant',
         'quantity_documents',
         'date_time_start',
+        'locked_tenant',
     ];
 
     public function setPlanAttribute($value)

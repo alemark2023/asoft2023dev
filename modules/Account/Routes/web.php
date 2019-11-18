@@ -18,7 +18,7 @@ if($hostname) {
                 Route::get('record', 'CompanyAccountController@record');
                 Route::post('', 'CompanyAccountController@store');
             });
- 
+
 
         });
     });
