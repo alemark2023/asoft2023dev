@@ -83,6 +83,7 @@ Manual - limpiar inodes: [Guía](https://drive.google.com/open?id=1foPKDI3V3Z9uK
 Manual - habilitar debug: [Guía](https://drive.google.com/open?id=1OdU-rDjr_cxM7t3fujBxPnEQn7qMoxIO6KZNjiKzyvU "Clic")<br>
 Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
 Manual - validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
+Manual - Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5lrDxprwfteKrP6n100LeSox_g34Eg/edit "Clic")<br>
 Manual - Cambio de dominio: [Guía](https://docs.google.com/document/d/14rbElqQ6Ru6hh3UCZm4wTKIUCm_hPbMNYz9EH8fcPRo/edit?usp=sharing "Clic")<br>
 
 
