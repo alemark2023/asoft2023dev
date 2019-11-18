@@ -7,20 +7,26 @@ use App\Http\Requests\Tenant\RetentionRequest;
 use App\Http\Resources\Tenant\RetentionCollection;
 use App\Http\Resources\Tenant\RetentionResource;
 use App\Models\Tenant\Catalogs\Code;
-use App\Models\Tenant\Catalogs\RetentionType;
 use App\Models\Tenant\Establishment;
-use App\Models\Tenant\Series;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Series; 
 use App\Models\Tenant\Retention;
 use App\Models\Tenant\Supplier;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Tenant\Catalogs\RetentionType;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\DocumentType;
+use Illuminate\Support\Facades\DB;
+use App\CoreFacturalo\Facturalo;
 
 class RetentionController extends Controller
 {
     use StorageDocument;
+    
+    public function __construct() {
+        $this->middleware('input.request:retention,web', ['only' => ['store']]);
+    }
 
     public function index()
     {
@@ -50,28 +56,28 @@ class RetentionController extends Controller
 
     public function tables()
     {
-        $user_id = Auth::id();
-        $establishments = Establishment::all();
-        $retention_types = Code::whereCatalog('23')->whereActive()->orderByDescription()->get();
+        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
+        $retention_types = RetentionType::get();
         $suppliers = $this->table('suppliers');
         $series = Series::all();
 
-        return compact('user_id', 'establishments', 'retention_types', 'suppliers', 'series');
+        return compact('establishments', 'retention_types', 'suppliers', 'series');
     }
 
     public function document_tables()
     {
-        $document_types = Code::whereCatalog('01')->whereCodes(['01', '03'])->get();
-        $currency_types = Code::whereCatalog('02')->whereActive()->get();
-        $retention_types = Code::whereCatalog('23')->whereActive()->orderByDescription()->get();
+        $retention_types = RetentionType::get();
+        $currency_types = CurrencyType::whereActive()->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03'])->get();
 
         return compact('document_types', 'currency_types', 'retention_types');
     }
 
     public function table($table)
     {
-        if ($table === 'suppliers') {
-            $suppliers = Supplier::orderBy('name')->get()->transform(function($row) {
+        if ($table === 'suppliers') { 
+
+            $suppliers = Person::whereType('suppliers')->orderBy('name')->get()->transform(function($row) {
                 return [
                     'id' => $row->id,
                     'description' => $row->number.' - '.$row->name,
@@ -93,39 +99,28 @@ class RetentionController extends Controller
 
         return $record;
     }
-
-//    public function setNumber($data)
-//    {
-//        $number = $data['number'];
-//        $series_id = $data['series_id'];
-//        $document_type_id = $data['document_type_id'];
-//        $soap_type_id = $data['soap_type_id'];
-//        if ($data['number'] === '#') {
-//            $document = Retention::select('number')
-//                                    ->where('series_id', $series_id)
-//                                    ->where('document_type_id', $document_type_id)
-//                                    ->where('soap_type_id', $soap_type_id)
-//                                    ->orderBy('number', 'desc')
-//                                    ->first();
-//             $number = ($document)?(int)$document->number+1:1;
-//        }
-//        return $number;
-//    }
+ 
 
     public function store(RetentionRequest $request)
     {
-        $id = $request->input('id');
-        $record = Retention::firstOrNew(['id' => $id]);
-        $attributes = $request->all();
-        $attributes['number'] = $this->setNumber($attributes);
-        $record->fill($attributes);
-        $record->save();
-        foreach ($attributes['items'] as $detail) {
-            $record->details()->create($detail);
-        }
+
+        $fact = DB::connection('tenant')->transaction(function () use($request) {
+            $facturalo = new Facturalo();
+            $facturalo->save($request->all());
+            $facturalo->createXmlUnsigned();
+            $facturalo->signXmlUnsigned();
+            $facturalo->createPdf();
+            $facturalo->senderXmlSignedBill();
+
+            return $facturalo;
+        });
+
+        $document = $fact->getDocument();
+        $response = $fact->getResponse();
+
         return [
             'success' => true,
-            'message' => ($id)?'Retención editada con éxito':'Retención registrada con éxito'
+            'message' => "Se generó la retención {$document->series}-{$document->number}"
         ];
     }
 

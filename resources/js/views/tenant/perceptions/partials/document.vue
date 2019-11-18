@@ -61,17 +61,17 @@
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group" :class="{'has-danger': errors.date_of_retention}">
-                            <label class="control-label">Fecha de retención</label>
-                            <el-date-picker v-model="form.date_of_retention" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
-                            <small class="form-control-feedback" v-if="errors.date_of_retention" v-text="errors.date_of_retention[0]"></small>
+                        <div class="form-group" :class="{'has-danger': errors.date_of_perception}">
+                            <label class="control-label">Fecha de percepción</label>
+                            <el-date-picker v-model="form.date_of_perception" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
+                            <small class="form-control-feedback" v-if="errors.date_of_perception" v-text="errors.date_of_perception[0]"></small>
                         </div>
                     </div>
                     <div class="col-lg-3">
-                        <div class="form-group" :class="{'has-danger': errors.total_retention}">
-                            <label class="control-label">Total retención</label>
-                            <el-input v-model="form.total_retention"></el-input>
-                            <small class="form-control-feedback" v-if="errors.total_retention" v-text="errors.total_retention[0]"></small>
+                        <div class="form-group" :class="{'has-danger': errors.total_perception}">
+                            <label class="control-label">Total percepción</label>
+                            <el-input v-model="form.total_perception"></el-input>
+                            <small class="form-control-feedback" v-if="errors.total_perception" v-text="errors.total_perception[0]"></small>
                         </div>
                     </div>
                     <div class="col-lg-3">
@@ -110,7 +110,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(row, index) in form.payments">
+                                <tr v-for="(row, index) in form.payments" :key="index">
                                     <td>{{ index + 1 }}</td>
                                     <td><el-date-picker v-model="row.date_of_payment"
                                                         type="date"
@@ -148,17 +148,17 @@
     import {exchangeRate} from '../../../../mixins/functions'
 
     export default {
-        props: ['showDialog', 'activeRetentionType'],
+        props: ['showDialog', 'activePerceptionType'],
         mixins: [exchangeRate],
         data() {
             return {
                 titleDialog: 'Agregar documento',
-                resource: 'retentions',
+                resource: 'perceptions',
                 errors: {},
                 form: {},
                 document_types: [],
                 currency_types: [],
-                retention_types: []
+                perception_types: []
             }
         },
         created() {
@@ -166,7 +166,7 @@
             this.$http.get(`/${this.resource}/document/tables`).then(response => {
                 this.document_types = response.data.document_types
                 this.currency_types = response.data.currency_types
-                this.retention_types = response.data.retention_types
+                this.perception_types = response.data.perception_types
             })
         },
         methods: {
@@ -180,8 +180,8 @@
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     currency_type_id: null,
                     total_document: 0,
-                    date_of_retention: moment().format('YYYY-MM-DD'),
-                    total_retention: 0,
+                    date_of_perception: moment().format('YYYY-MM-DD'),
+                    total_perception: 0,
                     total_to_pay: 0,
                     total_payment: 0,
                     exchange_rate_sale: 0,
@@ -195,11 +195,11 @@
                 }
             },
             inputTotalDocument(){
-                // console.log(this.activeRetentionType)
-                if(this.activeRetentionType && this.form.total_document && this.form.total_document > 0){
-                    this.form.total_retention = _.round(parseFloat(this.form.total_document) * (parseFloat(this.activeRetentionType.percentage)/100),2)
+                // console.log(this.activePerceptionType)
+                if(this.activePerceptionType && this.form.total_document && this.form.total_document > 0){
+                    this.form.total_perception = _.round(parseFloat(this.form.total_document) * (parseFloat(this.activePerceptionType.percentage)/100),2)
                 }else{
-                    this.form.total_retention = 0
+                    this.form.total_perception = 0
                 }
                 
             },
@@ -249,7 +249,7 @@
                 if(!this.form.series || !this.form.number)
                     return { success:false, message:'La serie o número son incorrectos' }
 
-                if(this.form.total_document<=0 || this.form.total_retention<=0 || this.form.total_to_pay<=0 || this.form.total_payment<=0 )
+                if(this.form.total_document<=0 || this.form.total_perception<=0 || this.form.total_to_pay<=0 || this.form.total_payment<=0 )
                     return { success:false, message:'Los totales deben ser mayores a cero' }
                      
                 return {

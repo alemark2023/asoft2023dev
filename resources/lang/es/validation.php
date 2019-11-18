@@ -212,6 +212,7 @@ return [
         'url_server' => 'url servidor',
         'is_client' => 'modo offline',
         'series_id' => 'series',
+        'observations' => 'observaciones',
 
     ],
 ];
