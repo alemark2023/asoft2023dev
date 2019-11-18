@@ -51,7 +51,7 @@ class Expense extends ModelTenant
     {
         return $this->hasMany(ExpenseItem::class);
     }
-    
+
 
     public function user()
     {
@@ -77,10 +77,16 @@ class Expense extends ModelTenant
     {
         return $this->belongsTo(ExpenseType::class);
     }
-    
+
     public function payments()
     {
         return $this->hasMany(ExpensePayment::class);
+    }
+
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
 }
