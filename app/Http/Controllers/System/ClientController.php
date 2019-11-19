@@ -307,10 +307,6 @@ class ClientController extends Controller
 
         }
 
-
-
-
-
         return [
             'success' => true,
             'message' => 'Cliente Registrado satisfactoriamente'
@@ -328,13 +324,13 @@ class ClientController extends Controller
     }
 
     public function renewPlan(Request $request){
-        
+
         // dd($request->all());
-        $client = Client::findOrFail($request->id); 
+        $client = Client::findOrFail($request->id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
 
-        DB::connection('tenant')->table('billing_cycles')->insert([            
+        DB::connection('tenant')->table('billing_cycles')->insert([
             'date_time_start' => date('Y-m-d H:i:s'),
             'renew' => true,
             'quantity_documents' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_documents,
@@ -452,6 +448,6 @@ class ClientController extends Controller
         ];
     }
 
-     
+
 
 }

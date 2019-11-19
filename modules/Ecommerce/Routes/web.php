@@ -28,8 +28,21 @@ Route::prefix('ecommerce')->group(function() {
     Route::post('rating_item', 'EcommerceController@ratingItem')->name('tenant_ecommerce_rating_item');
     Route::get('rating_item/{id}', 'EcommerceController@getRating');
 
+
+
+
     Route::post('culqi', 'CulqiController@payment')->name('tenant_ecommerce_culqui');
     Route::post('transaction_finally', 'EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
     Route::post('payment_cash', 'EcommerceController@paymentCash')->name('tenant_ecommerce_payment_cash');
+
+    Route::get('configuration', 'ConfigurationController@index')->name('tenant_ecommerce_configuration');
+    Route::post('configuration', 'ConfigurationController@store_configuration');
+    Route::post('configuration_culqui', 'ConfigurationController@store_configuration_culqui');
+    Route::post('configuration_paypal', 'ConfigurationController@store_configuration_paypal');
+
+
+    Route::get('record', 'ConfigurationController@record');
+
+
 
 });
