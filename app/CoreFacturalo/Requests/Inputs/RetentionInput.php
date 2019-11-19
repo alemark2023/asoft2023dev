@@ -16,7 +16,7 @@ class RetentionInput
 {
     public static function set($inputs)
     {
-
+        
         $document_type_id = $inputs['document_type_id'];
         $series = $inputs['series'];
         $number = $inputs['number'];
@@ -51,7 +51,7 @@ class RetentionInput
             'supplier_id' => $inputs['supplier_id'],
             'supplier' => $supplier,
             'retention_type_id' => $inputs['retention_type_id'],
-            'observations' => $inputs['observations'],
+            'observations' => Functions::valueKeyInArray($inputs, 'observations'),
             'currency_type_id' => $currency_type_id,
             'total_retention' => $inputs['total_retention'],
             'total' => $inputs['total'],
