@@ -344,14 +344,14 @@ class DocumentInput
         if(array_key_exists('detraction', $inputs)) {
             if($inputs['detraction']) {
                 $detraction = $inputs['detraction'];
-                $code = $detraction['code'];
+                $detraction_type_id = $detraction['detraction_type_id'];
                 $percentage = $detraction['percentage'];
                 $amount = $detraction['amount'];
                 $payment_method_id = $detraction['payment_method_id'];
                 $bank_account = $detraction['bank_account'];
 
                 return [
-                    'code' => $code,
+                    'detraction_type_id' => $detraction_type_id,
                     'percentage' => $percentage,
                     'amount' => $amount,
                     'payment_method_id' => $payment_method_id,

@@ -87,11 +87,26 @@
         <td>CLIENTE:</td>
         <td>:</td>
         <td>{{ $customer->name }}</td>
+        
+        @if ($document->detraction)  
+            <td width="140px">B/S SUJETO A DETRACCIÓN</td>
+            <td width="8px">:</td>
+            @inject('detractionType', 'App\Services\DetractionTypeService')
+            <td width="220px">{{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</td>
+            
+        @endif
     </tr>
     <tr>
         <td>{{ $customer->identity_document_type->description }}</td>
         <td>:</td>
         <td>{{$customer->number}}</td>
+        
+        @if ($document->detraction) 
+            <td width="120px">MÉTODO DE PAGO</td>
+            <td width="8px">:</td>
+            <td width="220px">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
+
+        @endif
     </tr>
     @if ($customer->address !== '')
     <tr>
@@ -103,6 +118,13 @@
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
+
+        
+        @if ($document->detraction) 
+            <td width="120px">TOTAL DETRACCIÓN</td>
+            <td width="8px">:</td>
+            <td>{{ $document->detraction->amount}}</td> 
+        @endif
     </tr>
     @endif
 </table>
@@ -359,6 +381,16 @@
 
             @endforeach
             <br/>
+            
+            @if ($document->detraction)
+            <p>
+                <span class="">
+                Operación sujeta al Sistema de Pago de Obligaciones Tributarias 
+                </span>
+            </p> 
+            <br/>
+
+            @endif
             @if ($customer->department_id == 16)
                 <br/><br/><br/>
                 <div>

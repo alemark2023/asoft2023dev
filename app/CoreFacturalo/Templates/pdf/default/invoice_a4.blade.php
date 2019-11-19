@@ -75,7 +75,7 @@
         </td>
     </tr>
 </table>
-<table class="full-width mt-5">
+<table class="full-width mt-2">
     <tr>
         <td width="120px">FECHA DE EMISIÓN</td>
         <td width="8px">:</td>
@@ -146,6 +146,34 @@
 </table>
 @endif
 
+
+@if ($document->detraction)
+<br/>
+{{--<strong>Operación sujeta a detracción</strong>--}}
+<table>
+    <tr>
+        <td width="120px">B/S SUJETO A DETRACCIÓN</td>
+        <td width="8px">:</td>
+        @inject('detractionType', 'App\Services\DetractionTypeService')
+        <td>{{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</td>
+    </tr>
+    <tr>
+        <td width="120px">MÉTODO DE PAGO</td>
+        <td width="8px">:</td>
+        <td>{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
+    </tr> 
+    <tr>
+        <td width="120px">CUENTA BANCARIA</td>
+        <td width="8px">:</td>
+        <td>{{ $document->detraction->bank_account}}</td>
+    </tr>
+    <tr>
+        <td width="120px">TOTAL DETRACCIÓN</td>
+        <td width="8px">:</td>
+        <td>S/ {{ $document->detraction->amount}}</td>
+    </tr>
+</table>
+@endif
 
 @if ($document->reference_guides)
 <br/>
@@ -365,6 +393,14 @@
 
             @endforeach
             <br/>
+            @if ($document->detraction)
+            <p>
+                <span class="">
+                Operación sujeta al Sistema de Pago de Obligaciones Tributarias 
+                </span>
+            </p> 
+            <br/>
+            @endif
             @if ($customer->department_id == 16)
                 <br/><br/><br/>
                 <div>

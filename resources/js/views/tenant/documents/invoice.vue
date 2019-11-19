@@ -136,6 +136,37 @@
                         </div>
 
                         <template v-if="!is_client">
+                            <div class="row mb-3" v-if="form.operation_type_id == '1001'">
+                                <div class="col-lg-4">
+                                    <div class="form-group" >
+                                        <label class="control-label">Bienes y servicios sujetos a detracciones<span class="text-danger"> *</span></label>
+                                        <el-select v-model="form.detraction.detraction_type_id" @change="changeDetractionType" filterable >
+                                            <el-option v-for="option in detraction_types" :key="option.id" :value="option.id" :label="`${option.description} - ${option.percentage}%`"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group" >
+                                        <label class="control-label">Método pago - Detracción<span class="text-danger"> *</span></label>
+                                        <el-select v-model="form.detraction.payment_method_id"  filterable>
+                                            <el-option v-for="option in cat_payment_method_types" :key="option.id" :value="option.id" :label="`${option.description}`"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Cuenta bancaria<span class="text-danger"> *</span></label>
+                                        <el-input v-model="form.detraction.bank_account"></el-input>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="control-label">T. Detracción<span class="text-danger"> *</span></label>
+                                        <el-input v-model="form.detraction.amount" readonly></el-input>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row" >
                                 <div class="col-lg-8" v-if="!is_receivable">
 
@@ -511,6 +542,10 @@
                 user: null,
                 is_receivable:false,
                 is_contingency: false,
+                cat_payment_method_types: [],
+                detraction_types: [],
+                all_detraction_types: [],
+
             }
         },
         async created() {
@@ -539,6 +574,8 @@
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
                     this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
+                    this.cat_payment_method_types = response.data.cat_payment_method_types;
+                    this.all_detraction_types = response.data.detraction_types;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -770,6 +807,8 @@
                     guides: [],
                     payments: [],
                     prepayments: [],
+                    legends: [],
+                    detraction: {},
                     additional_information:null,
                     has_prepayment:false,
                     actions: {
@@ -796,8 +835,59 @@
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
             },
-            changeOperationType() {
-                this.filterCustomers();
+            async changeOperationType() {
+                await this.filterCustomers();
+                await this.setDataDetraction();
+            },
+            async filterDetractionTypes(){
+                this.detraction_types =  await _.filter(this.all_detraction_types, {'operation_type_id':this.form.operation_type_id})
+            },
+            async setDataDetraction(){
+
+                if(this.form.operation_type_id === '1001'){
+
+                    await this.filterDetractionTypes();
+                    let legend = await _.find(this.form.legends,{'code':'2006'})
+                    if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
+
+                }else{ 
+
+                    _.remove(this.form.legends,{'code':'2006'})
+                    this.form.detraction = {}
+
+                }
+            },
+            async changeDetractionType(){
+                let detraction_type = await _.find(this.detraction_types, {'id':this.form.detraction.detraction_type_id})
+
+                if(detraction_type){
+
+                    this.form.detraction.percentage = detraction_type.percentage
+                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (detraction_type.percentage/100),2)
+                    // console.log(detraction_type, this.form.detraction)
+                
+                }
+            },
+            validateDetraction(){
+                
+                if(this.form.operation_type_id === '1001'){
+
+                    let detraction = this.form.detraction
+                    if(!detraction.detraction_type_id)
+                        return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
+                        
+                    if(!detraction.payment_method_id)
+                        return {success:false, message:'El campo método de pago - detracción es obligatorio'}
+                        
+                    if(!detraction.bank_account)
+                        return {success:false, message:'El campo cuenta bancaria es obligatorio'}
+
+                    if(detraction.amount < 1)
+                        return {success:false, message:'El campo total detracción debe ser mayor a cero'}
+                }
+
+                return {success:true}
+
             },
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
@@ -833,7 +923,7 @@
             },
             filterCustomers() {
                 // this.form.customer_id = null
-                if(this.form.operation_type_id === '0101') {
+                if(this.form.operation_type_id === '0101' || this.form.operation_type_id === '1001') {
                     if(this.form.document_type_id === '01') {
                         this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
                     } else {
@@ -939,6 +1029,9 @@
                 if(this.prepayment_deduction)
                     this.discountGlobalPrepayment()
 
+                if(this.form.operation_type_id === '1001')
+                    this.changeDetractionType()
+
             },
             changeTypeDiscount(){
                 this.calculateTotal()
@@ -989,6 +1082,10 @@
                         return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                     }
                 }
+
+                let val_detraction = await this.validateDetraction()
+                if(!val_detraction.success)
+                    return this.$message.error(val_detraction.message);
 
 
                 this.loading_submit = true
