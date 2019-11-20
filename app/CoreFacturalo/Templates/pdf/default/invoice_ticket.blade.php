@@ -120,20 +120,24 @@
     @if ($document->detraction)
     {{--<strong>Operación sujeta a detracción</strong>--}}
         <tr>
+            <td  class="align-top"><p class="desc">Cuenta bancaria:</p></td>
+            <td><p class="desc">{{ $document->detraction->bank_account}}</p></td>
+        </tr>
+        <tr>
             <td  class="align-top"><p class="desc">B/S Sujeto a detracción:</p></td>
             @inject('detractionType', 'App\Services\DetractionTypeService')
-            <td><p class="desc">{{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</p></td>
+            <td><p class="desc">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</p></td>
         </tr>
         <tr>
             <td  class="align-top"><p class="desc">Método de pago:</p></td>
             <td><p class="desc">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</p></td>
         </tr> 
         <tr>
-            <td  class="align-top"><p class="desc">Cuenta bancaria:</p></td>
-            <td><p class="desc">{{ $document->detraction->bank_account}}</p></td>
+            <td  class="align-top"><p class="desc">Porcentaje detracción:</p></td>
+            <td><p class="desc">{{ $document->detraction->percentage}}%</p></td>
         </tr>
         <tr>
-            <td  class="align-top"><p class="desc">Total detracción:</p></td>
+            <td  class="align-top"><p class="desc">Monto detracción:</p></td>
             <td><p class="desc">S/ {{ $document->detraction->amount}}</p></td>
         </tr>
     @endif
@@ -341,7 +345,7 @@
 
     @if ($document->detraction) 
         <tr>
-            <td class="desc pt-3"> 
+            <td class="desc pt-3 font-bold"> 
                 Operación sujeta al Sistema de Pago de Obligaciones Tributarias 
             </td>
         </tr>
