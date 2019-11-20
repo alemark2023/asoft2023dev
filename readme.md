@@ -25,7 +25,7 @@ Visite el [Manual de usuario](https://docs.google.com/document/d/1i7yKGy3rIvv9Tr
 
 Para conocer acerca de la API, visite la [documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 
-Además puede realizar sus pruebas usando [Postman Collection](https://drive.google.com/open?id=1Dk7UbdAw3Xs2i7PGFln6YXveQ10weGkT "Clic")
+Además puede realizar sus pruebas usando [Postman Collection](https://drive.google.com/open?id=1zV8ex7vE9rp3claKY8j6E1L15njhYjdv "Clic")
 
 ## Pruebas
 
@@ -85,5 +85,6 @@ Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE
 Manual - validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
 Manual - Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5lrDxprwfteKrP6n100LeSox_g34Eg/edit "Clic")<br>
 Manual - Cambio de dominio: [Guía](https://docs.google.com/document/d/14rbElqQ6Ru6hh3UCZm4wTKIUCm_hPbMNYz9EH8fcPRo/edit?usp=sharing "Clic")<br>
+Manual - Restauración de Mysql|Docker: [Guía](https://docs.google.com/document/d/1Aze-O_a0aseyjaDXsD1iHflPr6ptZ8Cq6BWRrs6GhsM/edit?usp=sharing "Clic")<br>
 
 

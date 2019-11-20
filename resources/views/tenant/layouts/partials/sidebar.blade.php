@@ -240,6 +240,11 @@
                                     Promociones
                                 </a>
                             </li>
+                            <li class="{{ ($path[0] === 'configuration')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant_ecommerce_configuration')}}">
+                                    Configuracion
+                                </a>
+                            </li>
 
                         </ul>
                     </li>
@@ -487,7 +492,7 @@
                             </li>
                             <li class="{{($path[0] === 'series-configurations') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.series_configurations.index')}}">
-                                    Numeración de facturación 
+                                    Numeración de facturación
                                 </a>
                             </li>
                             @if(auth()->user()->type != 'integrator')
