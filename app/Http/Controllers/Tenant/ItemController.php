@@ -23,8 +23,8 @@ use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
-use Modules\Item\Models\Category; 
-use Modules\Item\Models\Brand; 
+use Modules\Item\Models\Category;
+use Modules\Item\Models\Brand;
 
 
 class ItemController extends Controller
@@ -54,7 +54,7 @@ class ItemController extends Controller
                         ->whereNotIsSet()
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->orderBy('description');
-        
+
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -77,8 +77,8 @@ class ItemController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 
-                        'affectation_igv_types','warehouse', 'accounts', 'tags', 'categories', 'brands');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
+                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands');
     }
 
     public function record($id)
@@ -127,7 +127,7 @@ class ItemController extends Controller
             });
             Storage::put($directory.$file_name,  (string) $image->encode('jpg', 20));
             $item->image_small = $file_name;
-            
+
 
 
         }else if(!$request->input('image') && !$request->input('temp_path') && !$request->input('image_url')){
@@ -135,7 +135,7 @@ class ItemController extends Controller
         }
 
         $item->save();
-        
+
         foreach ($request->item_unit_types as $value) {
 
             $item_unit_type = ItemUnitType::firstOrNew(['id' => $value['id']]);
@@ -148,7 +148,7 @@ class ItemController extends Controller
             $item_unit_type->price3 = $value['price3'];
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
-        
+
         }
 
         if($request->tags_id)
@@ -160,25 +160,25 @@ class ItemController extends Controller
             }
         }
 
-      
-        
+
+
         $item->update();
 
-        
-        
+
+
         return [
             'success' => true,
             'message' => ($id)?'Producto editado con éxito':'Producto registrado con éxito',
             'id' => $item->id
         ];
     }
-    
+
     public function destroy($id)
     {
         try {
-            
+
             $item = Item::findOrFail($id);
-            $this->deleteRecordInitialKardex($item); 
+            $this->deleteRecordInitialKardex($item);
             $item->delete();
 
             return [
@@ -192,7 +192,7 @@ class ItemController extends Controller
 
         }
 
-        
+
     }
 
     public function destroyItemUnitType($id)
