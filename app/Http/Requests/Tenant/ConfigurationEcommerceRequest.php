@@ -25,6 +25,20 @@ class ConfigurationEcommerceRequest extends FormRequest
             'information_contact_phone' => [
                 'required',
             ],
+            'information_contact_address' => [
+                'required',
+            ],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+        'information_contact_email.required' => 'El campo Email de motivo de traslado es obligatorio.',
+        'information_contact_name.required' => 'El campo Nombre es obligatorio.',
+        'information_contact_phone.required' => 'El campo Telefono es obligatorio.',
+        'information_contact_address.required' => 'El campo Dirección es obligatorio.',
+
         ];
     }
 }

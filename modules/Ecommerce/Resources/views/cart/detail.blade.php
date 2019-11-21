@@ -113,7 +113,7 @@
                 <form class="btn btn-block btn-sm " action="https://www.paypal.com/cgi-bin/webscr" method="post"
                     target="_blank">
                     <input type="hidden" name="cmd" value="_xclick">
-                    <input type="hidden" name="business" value="cristian.ballon@gmail.com">
+                    <input type="hidden" name="business" value="{{  Auth::user()->email }}">
                     <input type="hidden" name="lc" value="AL">
                     <input type="hidden" name="item_name" value="compras ecommerce">
                     <input type="hidden" name="item_number" value="0001">
@@ -603,7 +603,7 @@
 </script>
 
 <script>
-    Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
+    Culqi.publicKey = {!! json_encode($configuration->token_public_culqui ) !!};
     Culqi.options({
         installments: true
     });

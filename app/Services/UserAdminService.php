@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Services;
-use App\Models\Tenant\User;
+use App\Models\Tenant\ConfigurationEcommerce;
 
 class UserAdminService
 {
 
     public function getUserAdmin()
     {
-        return User::first();
+        return ConfigurationEcommerce::first();
     }
 
 

@@ -47,9 +47,12 @@
 
                                     <span style="color:#846add;">Información de contacto:</span><br>
                                     @inject('userAdmin', 'App\Services\UserAdminService')
-                                    <span>Personal: {{$userAdmin->getUserAdmin()->name}} <br>
-                                        Email: {{$userAdmin->getUserAdmin()->email}} <br>
-                                        Telefono: <b>‬-</b>
+                                    @php
+                                        $config = $userAdmin->getUserAdmin();
+                                    @endphp
+                                    <span>Personal: {{$config->information_contact_name}} <br>
+                                        Email: {{$config->information_contact_email}} <br>
+                                        Telefono: <b>‬{{$config->information_contact_phone}}</b>
                                     </span>
 
                                 </td>
