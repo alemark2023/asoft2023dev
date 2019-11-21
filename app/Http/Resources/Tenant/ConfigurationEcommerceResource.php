@@ -18,6 +18,7 @@ class ConfigurationEcommerceResource extends JsonResource
             'information_contact_name' => $this->information_contact_name,
             'information_contact_email' =>  $this->information_contact_email,
             'information_contact_phone' =>  $this->information_contact_phone,
+            'information_contact_address' =>  $this->information_contact_address,
             'script_paypal' => $this->script_paypal,
             'token_private_culqui' => $this->token_private_culqui,
             'token_public_culqui' => $this->token_public_culqui,

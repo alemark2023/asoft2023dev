@@ -10,6 +10,7 @@ class ConfigurationEcommerce extends ModelTenant
         'information_contact_name',
         'information_contact_email',
         'information_contact_phone',
+        'information_contact_address',
         'script_paypal',
         'token_private_culqui',
         'token_public_culqui'

@@ -47,6 +47,20 @@
                   ></small>
                 </div>
               </div>
+               <div class="col-md-6">
+                <div class="form-group" :class="{'has-danger': errors.information_contact_address}">
+                  <label class="control-label">
+                    Dirección
+                    <span class="text-danger">*</span>
+                  </label>
+                  <el-input v-model="form.information_contact_address"></el-input>
+                  <small
+                    class="form-control-feedback"
+                    v-if="errors.information_contact_address"
+                    v-text="errors.information_contact_address[0]"
+                  ></small>
+                </div>
+              </div>
             </div>
           </div>
           <div class="form-actions text-right pt-2">
