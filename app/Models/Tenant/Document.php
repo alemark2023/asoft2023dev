@@ -270,6 +270,11 @@ class Document extends ModelTenant
         return $this->belongsTo(Quotation::class);
     }
 
+    public function sale_note()
+    {
+        return $this->belongsTo(SaleNote::class, 'sale_note_id');
+    }
+
     public function hotel()
     {
         return $this->hasOne(DocumentHotel::class);

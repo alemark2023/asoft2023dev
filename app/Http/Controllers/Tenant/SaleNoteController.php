@@ -9,6 +9,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\SaleNoteItem;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
@@ -146,6 +147,7 @@ class SaleNoteController extends Controller
 
     public function store(SaleNoteRequest $request)
     {
+        // dd($request->all());
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
@@ -155,12 +157,25 @@ class SaleNoteController extends Controller
                 $data);
 
 //            $this->sale_note =  SaleNote::create($data);
-            $this->sale_note->items()->delete();
+            // $this->sale_note->items()->delete();
             $this->sale_note->payments()->delete();
-            foreach ($data['items'] as $row)
-            {
-                $this->sale_note->items()->create($row);
-            }     
+
+            // foreach ($data['items'] as $row)
+            // {
+            //     $this->sale_note->items()->create($row);
+            // }     
+            foreach($data['items'] as $row) { 
+                    
+                $item_id = isset($row['id']) ? $row['id'] : null;
+                $sale_note_item = SaleNoteItem::firstOrNew(['id' => $item_id]);
+                $sale_note_item->fill($row);
+                $sale_note_item->sale_note_id = $this->sale_note->id;
+                $sale_note_item->save();  
+
+            }
+
+
+
             //pagos
             foreach ($data['payments'] as $row) {
                 $this->sale_note->payments()->create($row);
@@ -178,6 +193,20 @@ class SaleNoteController extends Controller
             ],
         ];
 
+    }
+
+
+    
+    public function destroy_sale_note_item($id)
+    {
+        // dd("epale");
+        $item = SaleNoteItem::findOrFail($id);
+        $item->delete();
+        
+        return [
+            'success' => true,
+            'message' => 'eliminado'
+        ];
     }
 
     public function mergeData($inputs)
