@@ -14,6 +14,8 @@
             <tenant-banks-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-banks-index>
 
             <tenant-unit_types-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-unit_types-index>
+            
+            <tenant-detraction_types-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-detraction_types-index>
         </div>
         <div class="col-lg-6 col-md-12 ui-sortable">
             <tenant-card-brands-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-card-brands-index>

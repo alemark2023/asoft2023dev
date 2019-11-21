@@ -21,6 +21,8 @@ use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\DetractionType;
+use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Document;
@@ -154,6 +156,8 @@ class DocumentController extends Controller
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
+        $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
+        $detraction_types = DetractionType::whereActive()->get();
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
 //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
@@ -169,7 +173,7 @@ class DocumentController extends Controller
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
                         'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','prepayment_documents','is_client');
+                        'business_turns','prepayment_documents','is_client','cat_payment_method_types','detraction_types');
 
     }
 
@@ -489,7 +493,7 @@ class DocumentController extends Controller
 
     public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
 
-        if($operation_type_id === '0101') {
+        if($operation_type_id === '0101' || $operation_type_id === '1001') {
             if($document_type_id == '01'){
                 $identity_document_type_id = [6];
             }else{

@@ -324,6 +324,13 @@ if ($hostname) {
             Route::post('unit_types', 'Tenant\UnitTypeController@store');
             Route::delete('unit_types/{code}', 'Tenant\UnitTypeController@destroy');
 
+            //Detractions
+            Route::get('detraction_types/records', 'Tenant\DetractionTypeController@records');
+            Route::get('detraction_types/tables', 'Tenant\DetractionTypeController@tables');
+            Route::get('detraction_types/record/{code}', 'Tenant\DetractionTypeController@record');
+            Route::post('detraction_types', 'Tenant\DetractionTypeController@store');
+            Route::delete('detraction_types/{code}', 'Tenant\DetractionTypeController@destroy');
+
             //Banks
             Route::get('banks/records', 'Tenant\BankController@records');
             Route::get('banks/record/{bank}', 'Tenant\BankController@record');
