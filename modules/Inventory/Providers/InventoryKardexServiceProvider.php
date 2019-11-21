@@ -21,6 +21,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
         $this->purchase();
         $this->sale();
         $this->sale_note();
+        $this->sale_note_item_delete();
     }
     
     private function purchase() {
@@ -80,8 +81,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
                 
                 $warehouse = $this->findWarehouse();
-                //$this->createInventory($sale_note_item->item_id, -1 * $sale_note_item->quantity, $warehouse->id);
-                $this->createInventoryKardex($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                // $this->createInventoryKardex($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
                 $this->updateStock($sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
 
             }else{
@@ -93,7 +94,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     $ind_item  = $it->individual_item;
                     $presentationQuantity = 1;                                
                     $warehouse = $this->findWarehouse();
-                    $this->createInventoryKardex($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                    // $this->createInventoryKardex($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                    $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
                     $this->updateStock($ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
 
                 }
@@ -102,11 +104,47 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         });
     }
+
+    
     
     private function createInventory($item_id, $quantity, $warehouse_id) {
         if(!$this->checkInventory($item_id, $warehouse_id)) {
             $item = $this->findItem($item_id);
             $this->createInitialInventory($item_id, $item->stock + (-1 * $quantity), $warehouse_id);
         }
+    }
+
+
+    
+    private function sale_note_item_delete() {
+        SaleNoteItem::deleted(function ($sale_note_item) {
+
+            // dd($sale_note_item);
+
+            if(!$sale_note_item->item->is_set){
+
+                $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
+                
+                $warehouse = $this->findWarehouse();
+                $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
+                $this->updateStock($sale_note_item->item_id, (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+            }else{
+
+                $item = Item::findOrFail($sale_note_item->item_id);
+                
+                foreach ($item->sets as $it) {
+
+                    $ind_item  = $it->individual_item;
+                    $presentationQuantity = 1;                                
+                    $warehouse = $this->findWarehouse();
+                    $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
+                    $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+                }
+
+            }
+
+        });
     }
 }

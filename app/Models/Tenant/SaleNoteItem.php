@@ -43,7 +43,9 @@ class SaleNoteItem extends ModelTenant
 
         'attributes',
         'charges',
-        'discounts'
+        'discounts',
+        'inventory_kardex_id',
+
     ];
 
     public function getItemAttribute($value)

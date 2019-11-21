@@ -138,7 +138,7 @@
                                         <tbody v-if="form.items.length > 0">
                                             <tr v-for="(row, index) in form.items">
                                                 <td>{{ index + 1 }}</td>
-                                                <td>{{ row.item.description }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                                <td>{{ row.item.description }} <template v-if="row.item.presentation">{{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}</template><br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
                                                 <td class="text-right">{{ row.quantity }}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
@@ -146,7 +146,14 @@
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-right">
-                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                     
+                                                    <template v-if="row.id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id)">x</button>
+                                                    </template>
+                                                    <template v-else>
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    </template>
+
                                                 </td>
                                             </tr>
                                             <tr><td colspan="8"></td></tr>
@@ -269,6 +276,27 @@
             
         },
         methods: {
+            clickDeleteSNItem(id){
+                
+                this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
+                    .then(res => {
+                        // console.log(res)
+                        // if(res.data.success) {
+                        //     this.$message.success(res.data.message)
+                        // }else{
+                        //     this.$message.error(res.data.message)
+                        // }
+                        this.isUpdate()
+                    })
+                    .catch(error => {
+                        if (error.response.status === 500) {
+                            this.$message.error('Error al intentar eliminar');
+                        } else {
+                            console.log(error.response.data.message)
+                        }
+                    })
+
+            },
             async isUpdate(){
 
                 if (this.id) {

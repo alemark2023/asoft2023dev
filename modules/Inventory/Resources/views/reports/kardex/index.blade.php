@@ -63,6 +63,7 @@
                                         <th>Fecha y hora transacción</th>
                                         <th>Tipo transacción</th>
                                         <th>Número</th>
+                                        <th>NV. Asociada</th>
                                         <th>Feha emisión</th>
                                         <th>Entrada</th>
                                         <th>Salida</th>
@@ -107,6 +108,18 @@
                                                     {{ optional($value->inventory_kardexable)->prefix.'-'.optional($value->inventory_kardexable)->id }}
                                                     @break
                                                 @case($models[3])
+                                                    {{"-"}}                                                 
+                                                    @break  
+                                            @endswitch
+ 
+                                        </td>
+                                        <td>
+                                            @switch($value->inventory_kardexable_type)
+                                                @case($models[0])
+                                                
+                                                    {{ ($value->inventory_kardexable->sale_note_id)  ? optional($value->inventory_kardexable)->sale_note->prefix.'-'.optional($value->inventory_kardexable)->sale_note->id:"-" }}
+                                                    @break 
+                                                @default
                                                     {{"-"}}                                                 
                                                     @break  
                                             @endswitch
@@ -174,7 +187,12 @@
                                         <td>
                                             @switch($value->inventory_kardexable_type) 
                                                 @case($models[0])
-                                                    {{ ($value->quantity < 0) ?  $value->quantity:"-" }}                                                    
+                                                    {{ ($value->quantity < 0) ?  (($value->inventory_kardexable->sale_note_id) ? "-":$value->quantity):"-" }}
+
+                                                    @php
+                                                    ($value->quantity < 0) ?  (($value->inventory_kardexable->sale_note_id) ? $value->quantity = 0:$value->quantity):"-";       
+                                                    @endphp
+
                                                     @break 
                                                 @case($models[1])
                                                     {{ ($value->quantity < 0) ?  $value->quantity:"-"}}                                                    
