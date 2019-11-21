@@ -87,6 +87,7 @@ class ViewServiceProvider extends ServiceProvider
             'ecommerce::layouts.partials_ecommerce.home_slider',
             'Modules\Ecommerce\Http\ViewComposers\PromotionsViewComposer'
         );
+        
 
 
 

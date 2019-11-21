@@ -603,7 +603,7 @@
 </script>
 
 <script>
-    Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
+    Culqi.publicKey = {!! json_encode($configuration->token_public_culqui ) !!};
     Culqi.options({
         installments: true
     });
