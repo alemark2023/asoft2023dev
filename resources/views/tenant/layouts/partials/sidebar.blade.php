@@ -405,7 +405,7 @@
                             </li>
                              <li class="{{(($path[0] === 'reports') && ($path[1] == 'validate-documents')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.validate_documents.index')}}">
-                                    Validador documentos
+                                    Validador de documentos
                                 </a>
                             </li>
                             @if(in_array('hotel', $vc_business_turns))
