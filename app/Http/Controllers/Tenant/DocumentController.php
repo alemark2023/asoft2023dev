@@ -645,4 +645,26 @@ class DocumentController extends Controller
 
     }
 
+    
+    public function destroyDocument($document_id)
+    {
+        try {
+            
+            $record = Document::findOrFail($document_id);
+            $record->delete();
+
+            return [
+                'success' => true,
+                'message' => 'Documento eliminado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'El Documento esta siendo usada por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar el Documento'];
+
+        }
+
+        
+    }
+
 }

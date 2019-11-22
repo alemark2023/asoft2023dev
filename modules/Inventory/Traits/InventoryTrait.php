@@ -191,4 +191,8 @@ trait InventoryTrait
     }
     ////kardex sale note
 
+    private function deleteAllInventoryKardexByModel($model) {
+        $model->inventory_kardex()->delete();
+    }
+
 }

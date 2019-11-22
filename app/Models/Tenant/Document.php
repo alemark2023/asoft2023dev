@@ -334,4 +334,9 @@ class Document extends ModelTenant
         return $this->hasMany(Dispatch::class, 'reference_document_id', 'id');
     }
 
+    public function summary_document()
+    {
+        return $this->hasOne(SummaryDocument::class);
+    }
+
 }

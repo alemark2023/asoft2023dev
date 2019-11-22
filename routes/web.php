@@ -212,6 +212,8 @@ if ($hostname) {
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
 
+            Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
+
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index');
