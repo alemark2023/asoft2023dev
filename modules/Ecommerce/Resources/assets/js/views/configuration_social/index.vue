@@ -10,24 +10,35 @@
           <div class="form-body">
             <div class="row">
               <div class="col-md-12">
-                <div class="form-group" :class="{'has-danger': errors.token_public_culqui}">
-                  <label class="control-label">Token Publico</label>
-                  <el-input v-model="form.token_public_culqui"></el-input>
+                <div class="form-group" :class="{'has-danger': errors.link_facebook}">
+                  <label class="control-label">Link Facebook</label>
+                  <el-input v-model="form.link_facebook"></el-input>
                   <small
                     class="form-control-feedback"
-                    v-if="errors.token_public_culqui"
-                    v-text="errors.token_public_culqui[0]"
+                    v-if="errors.link_facebook"
+                    v-text="errors.link_facebook[0]"
                   ></small>
                 </div>
               </div>
               <div class="col-md-12">
-                <div class="form-group" :class="{'has-danger': errors.token_private_culqui}">
-                  <label class="control-label">Token Privado</label>
-                  <el-input v-model="form.token_private_culqui"></el-input>
+                <div class="form-group" :class="{'has-danger': errors.link_youtube}">
+                  <label class="control-label">Link YouTube</label>
+                  <el-input v-model="form.link_youtube"></el-input>
                   <small
                     class="form-control-feedback"
-                    v-if="errors.token_private_culqui"
-                    v-text="errors.token_private_culqui[0]"
+                    v-if="errors.link_youtube"
+                    v-text="errors.link_youtube[0]"
+                  ></small>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group" :class="{'has-danger': errors.link_twitter}">
+                  <label class="control-label">Link Twitter</label>
+                  <el-input v-model="form.link_twitter"></el-input>
+                  <small
+                    class="form-control-feedback"
+                    v-if="errors.link_twitter"
+                    v-text="errors.link_twitter[0]"
                   ></small>
                 </div>
               </div>
@@ -64,9 +75,10 @@ export default {
     await this.$http.get(`/${this.resource}/record`).then(response => {
       if (response.data !== "") {
         let data = response.data.data;
-        this.form.id = data.id
-        this.form.token_public_culqui = data.token_public_culqui
-        this.form.token_private_culqui = data.token_private_culqui
+        this.form.id = data.id;
+        this.form.link_youtube = data.link_youtube;
+        this.form.link_facebook = data.link_facebook;
+        this.form.link_twitter = data.link_twitter;
       }
     });
   },
@@ -75,14 +87,15 @@ export default {
       this.errors = {};
       this.form = {
         id: null,
-        token_public_culqui: "",
-        token_private_culqui: "",
+        link_twitter: "",
+        link_youtube: "",
+        link_facebook: ""
       };
     },
     submit() {
       this.loading_submit = true;
       this.$http
-        .post(`/${this.resource}/configuration_culqui`, this.form)
+        .post(`/${this.resource}/configuration_social`, this.form)
         .then(response => {
           if (response.data.success) {
             this.$message.success(response.data.message);
@@ -100,8 +113,7 @@ export default {
         .then(() => {
           this.loading_submit = false;
         });
-    },
-    submit_paypal() {}
+    }
   }
 };
 </script>

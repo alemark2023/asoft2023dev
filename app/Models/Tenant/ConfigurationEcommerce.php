@@ -13,8 +13,10 @@ class ConfigurationEcommerce extends ModelTenant
         'information_contact_address',
         'script_paypal',
         'token_private_culqui',
-        'token_public_culqui'
-
+        'token_public_culqui',
+        'link_youtube',
+        'link_twitter',
+        'link_facebook'
     ];
 
 }

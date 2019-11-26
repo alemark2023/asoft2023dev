@@ -39,6 +39,10 @@ Route::prefix('ecommerce')->group(function() {
     Route::post('configuration', 'ConfigurationController@store_configuration');
     Route::post('configuration_culqui', 'ConfigurationController@store_configuration_culqui');
     Route::post('configuration_paypal', 'ConfigurationController@store_configuration_paypal');
+    Route::post('configuration_social', 'ConfigurationController@store_configuration_social');
+
+
+
 
 
     Route::get('record', 'ConfigurationController@record');
