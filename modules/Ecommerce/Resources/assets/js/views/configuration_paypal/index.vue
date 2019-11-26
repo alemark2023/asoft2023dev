@@ -10,7 +10,17 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group" :class="{'has-danger': errors.script_paypal}">
-                  <label class="control-label">Script Paypal</label>
+                  <label class="control-label">
+                    Script Paypal
+                    <el-tooltip placement="right-start">
+                      <div slot="content">
+                        Codigo Html Formulario Paypal.
+                        <a href="#" @click="openPaypal">Paypal</a>
+                      </div>
+                      <i class="fa fa-info-circle"></i>
+                    </el-tooltip>
+                  </label>
+                  <br />
                   <el-input type="textarea" :rows="4" v-model="form.script_paypal"></el-input>
                   <small
                     class="form-control-feedback"
@@ -48,13 +58,18 @@ export default {
 
     await this.$http.get(`/${this.resource}/record`).then(response => {
       if (response.data !== "") {
-        let data= response.data.data;
-        this.form.id = data.id
-        this.form.script_paypal = data.script_paypal
+        let data = response.data.data;
+        this.form.id = data.id;
+        this.form.script_paypal = data.script_paypal;
       }
     });
   },
   methods: {
+    openPaypal() {
+      window.open(
+        "https://developer.paypal.com/docs/classic/paypal-payments-standard/integration-guide/buy-now-step-1/#open-the-paypal-button-creation-page"
+      );
+    },
     initForm() {
       this.errors = {};
       this.form = {
@@ -84,7 +99,6 @@ export default {
           this.loading_submit = false;
         });
     }
-
   }
 };
 </script>

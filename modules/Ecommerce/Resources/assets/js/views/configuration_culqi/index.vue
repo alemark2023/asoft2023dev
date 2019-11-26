@@ -11,7 +11,16 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group" :class="{'has-danger': errors.token_public_culqui}">
-                  <label class="control-label">Token Publico</label>
+                  <label class="control-label">
+                    Token Público
+                    <el-tooltip placement="right-start">
+                      <div slot="content">
+                        Token Público.
+                        <a href="#" @click="openCulqi">Culqi</a>
+                      </div>
+                      <i class="fa fa-info-circle"></i>
+                    </el-tooltip>
+                  </label>
                   <el-input v-model="form.token_public_culqui"></el-input>
                   <small
                     class="form-control-feedback"
@@ -22,7 +31,13 @@
               </div>
               <div class="col-md-12">
                 <div class="form-group" :class="{'has-danger': errors.token_private_culqui}">
-                  <label class="control-label">Token Privado</label>
+                  <label class="control-label">Token Privado  <el-tooltip placement="right-start">
+                      <div slot="content">
+                        Token Privado.
+                        <a href="#" @click="openCulqi">Culqi</a>
+                      </div>
+                      <i class="fa fa-info-circle"></i>
+                    </el-tooltip></label>
                   <el-input v-model="form.token_private_culqui"></el-input>
                   <small
                     class="form-control-feedback"
@@ -64,19 +79,22 @@ export default {
     await this.$http.get(`/${this.resource}/record`).then(response => {
       if (response.data !== "") {
         let data = response.data.data;
-        this.form.id = data.id
-        this.form.token_public_culqui = data.token_public_culqui
-        this.form.token_private_culqui = data.token_private_culqui
+        this.form.id = data.id;
+        this.form.token_public_culqui = data.token_public_culqui;
+        this.form.token_private_culqui = data.token_private_culqui;
       }
     });
   },
   methods: {
+    openCulqi() {
+      window.open("https://www.culqi.com");
+    },
     initForm() {
       this.errors = {};
       this.form = {
         id: null,
         token_public_culqui: "",
-        token_private_culqui: "",
+        token_private_culqui: ""
       };
     },
     submit() {
