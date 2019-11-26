@@ -148,7 +148,7 @@
                                                 <td class="text-right">
                                                      
                                                     <template v-if="row.id">
-                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id)">x</button>
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
                                                     </template>
                                                     <template v-else>
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
@@ -276,17 +276,11 @@
             
         },
         methods: {
-            clickDeleteSNItem(id){
+            async clickDeleteSNItem(id, index){
                 
-                this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
-                    .then(res => {
-                        // console.log(res)
-                        // if(res.data.success) {
-                        //     this.$message.success(res.data.message)
-                        // }else{
-                        //     this.$message.error(res.data.message)
-                        // }
-                        this.isUpdate()
+                await this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
+                    .then(res => { 
+                        this.clickRemoveItem(index)
                     })
                     .catch(error => {
                         if (error.response.status === 500) {
@@ -295,6 +289,22 @@
                             console.log(error.response.data.message)
                         }
                     })
+
+                await this.$http.post(`/${this.resource}`, this.form).then(response => {
+                    if (response.data.success) {
+
+                    }
+                    else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data;
+                    }
+                    else {
+                        this.$message.error(error.response.data.message);
+                    }
+                })
 
             },
             async isUpdate(){
