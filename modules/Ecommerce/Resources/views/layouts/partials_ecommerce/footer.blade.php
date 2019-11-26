@@ -65,15 +65,15 @@
 
                     <div class="social-icons">
                         @if($information->link_facebook)
-                            <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
+                            <a href="{{$information->link_facebook}}" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
                         @endif
 
                         @if($information->link_twitter)
-                            <a href="#" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
+                            <a href="{{$information->link_twitter}}" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
                         @endif
 
                         @if($information->link_youtube)
-                            <a href="#" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+                            <a href="{{$information->link_youtube}}" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
                         @endif
 
                     </div>
