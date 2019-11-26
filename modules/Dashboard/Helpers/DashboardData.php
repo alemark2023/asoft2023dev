@@ -88,7 +88,7 @@ class DashboardData
                 'datasets' => [
                     [
                         'label' => 'Notas de venta',
-                        'data' => [$sale_note_total_payment, $sale_note_total_to_pay],
+                        'data' => [round($sale_note_total_payment,2), round($sale_note_total_to_pay,2)],
                         'backgroundColor' => [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
@@ -142,7 +142,7 @@ class DashboardData
                 'datasets' => [
                     [
                         'label' => 'Comprobantes',
-                        'data' => [$document_total_payment, $document_total_to_pay],
+                        'data' => [round($document_total_payment,2), round($document_total_to_pay,2)],
                         'backgroundColor' => [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
