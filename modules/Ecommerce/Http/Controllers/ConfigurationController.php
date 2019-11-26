@@ -66,6 +66,39 @@ class ConfigurationController extends Controller
         ];
     }
 
+    public function uploadFile(Request $request)
+    {
+        if ($request->hasFile('file')) {
+
+            $company = ConfigurationEcommerce::first();
+
+            $type = $request->input('type'); //logo_store
+
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension();
+            $name = $type.'_'.$company->id.'.'.$ext;
+
+            request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+
+            $file->storeAs('public/uploads/logos', $name);
+
+            $company->logo = $name;
+
+            $company->save();
+
+            return [
+                'success' => true,
+                'message' => __('app.actions.upload.success'),
+                'name' => $name,
+                'type' => $type
+            ];
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
 
 
 }

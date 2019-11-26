@@ -43,6 +43,9 @@ Route::prefix('ecommerce')->group(function() {
 
     Route::get('record', 'ConfigurationController@record');
 
+    Route::post('uploads', 'ConfigurationController@uploadFile');
+
+
 
 
 });

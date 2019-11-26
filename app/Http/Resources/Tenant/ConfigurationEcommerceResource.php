@@ -23,6 +23,11 @@ class ConfigurationEcommerceResource extends JsonResource
             'token_private_culqui' => $this->token_private_culqui,
             'token_public_culqui' => $this->token_public_culqui,
 
+            'logo' => $this->logo,
+            'link_youtube' => $this->link_youtube,
+            'link_twitter' => $this->link_twitter,
+            'link_facebook' => $this->link_facebook,
+
         ];
     }
 }
