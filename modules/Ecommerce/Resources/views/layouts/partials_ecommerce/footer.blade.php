@@ -64,9 +64,17 @@
                     <h4 class="widget-title">Redes Sociales</h4>
 
                     <div class="social-icons">
-                        <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
-                        <a href="#" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
-                        <a href="#" class="social-icon" target="_blank"><i class="icon-linkedin"></i></a>
+                        @if($information->link_facebook)
+                            <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
+                        @endif
+
+                        @if($information->link_twitter)
+                            <a href="#" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
+                        @endif
+
+                        @if($information->link_youtube)
+                            <a href="#" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+                        @endif
 
                     </div>
                 </div>
