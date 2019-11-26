@@ -88,7 +88,7 @@ class DashboardData
                 'datasets' => [
                     [
                         'label' => 'Notas de venta',
-                        'data' => [number_format($sale_note_total_payment,2), number_format($sale_note_total_to_pay,2)],
+                        'data' => [$sale_note_total_payment, $sale_note_total_to_pay],
                         'backgroundColor' => [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
@@ -123,7 +123,7 @@ class DashboardData
         {
             if(in_array($document->state_type_id,['01','03','05','07','13']))
                 $document_total_payment += collect($document->payments)->sum('payment');
-                
+
             $document_total_note_credit += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
         }
 
@@ -142,7 +142,7 @@ class DashboardData
                 'datasets' => [
                     [
                         'label' => 'Comprobantes',
-                        'data' => [number_format($document_total_payment,2), number_format($document_total_to_pay,2)],
+                        'data' => [$document_total_payment, $document_total_to_pay],
                         'backgroundColor' => [
                             'rgb(54, 162, 235)',
                             'rgb(255, 99, 132)',
@@ -169,15 +169,15 @@ class DashboardData
             $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
                                            ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
-    
+
             $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
 
         }else{
             $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
                                            ->where('changed', false)->get();
-    
+
             $documents = Document::query()->where('establishment_id', $establishment_id)->get();
-        }        
+        }
 
         $sale_notes_total = round($sale_notes->sum('total'),2);
 
@@ -186,7 +186,7 @@ class DashboardData
 
 // dd($documents->count());
 
-        $document_total_note_credit = 0; 
+        $document_total_note_credit = 0;
 
         foreach ($documents as $document)
         {
