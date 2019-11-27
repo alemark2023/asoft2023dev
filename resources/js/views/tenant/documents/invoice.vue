@@ -173,9 +173,9 @@
                                     <table>
                                         <thead>
                                             <tr width="100%">
-                                                <th v-if="form.payments.length>0">Método de pago</th>
-                                                <th v-if="form.payments.length>0">Referencia</th>
-                                                <th v-if="form.payments.length>0">Monto</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                                 <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
                                             </tr>
                                         </thead>
@@ -209,6 +209,14 @@
                                     </table> 
                                 
 
+                                </div>
+                                <div class="col-lg-4"> 
+                                    <div class="form-group">
+                                        <label class="control-label">N° Constancia de pago - detracción</label>
+                                        <el-input v-model="form.detraction.bank_account">
+                                            <el-button slot="append" icon="el-icon-upload"  @click.prevent="clickPayConstancy()">Imágen</el-button>
+                                        </el-input>
+                                    </div>
                                 </div>
                                 
                                 <div class="col-lg-4" v-if="prepayment_deduction">
@@ -477,6 +485,11 @@
             :hotel="form.hotel"
             @addDocumentHotel="addDocumentHotel" 
             ></document-hotel-form>
+
+        <pay-constancy 
+            url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''"
+            :showDialog.sync="showDialogPayConstancy" ></pay-constancy>
+
     </div>
     </div>
 </template>
@@ -494,13 +507,15 @@
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
+    import PayConstancy from './partials/pay_constancy.vue'
 
     export default {
         props: ['typeUser'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm},
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, PayConstancy},
         mixins: [functions, exchangeRate],
         data() {
             return {
+                showDialogPayConstancy:false,
                 showDialogFormHotel:false,
                 is_client:false,
                 recordItem: null,
@@ -588,6 +603,9 @@
             })
         },
         methods: {
+            clickPayConstancy(){
+                this.showDialogPayConstancy = true
+            },
             clickAddItemInvoice(){
                 this.recordItem = null
                 this.showDialogAddItem = true
