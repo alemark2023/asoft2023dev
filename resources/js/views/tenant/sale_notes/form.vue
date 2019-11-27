@@ -292,7 +292,7 @@
 
                 await this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
-
+                        this.isUpdate()
                     }
                     else {
                         this.$message.error(response.data.message);
