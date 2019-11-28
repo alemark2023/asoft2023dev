@@ -140,6 +140,12 @@
             <td  class="align-top"><p class="desc">Monto detracción:</p></td>
             <td><p class="desc">S/ {{ $document->detraction->amount}}</p></td>
         </tr>
+        @if($document->detraction->pay_constancy)
+        <tr>
+            <td  class="align-top"><p class="desc">Constancia de pago:</p></td>
+            <td><p class="desc">{{ $document->detraction->pay_constancy}}</p></td>
+        </tr>
+        @endif
     @endif
 
     @if ($document->prepayments)

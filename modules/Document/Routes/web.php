@@ -14,6 +14,10 @@ if($current_hostname) {
 
             });
 
+            Route::prefix('documents')->group(function() {
+                Route::post('pay-constancy/upload', 'DocumentController@upload');
+            });
+
             Route::prefix('series-configurations')->group(function() {
 
                 Route::get('', 'SeriesConfigurationController@index')->name('tenant.series_configurations.index');

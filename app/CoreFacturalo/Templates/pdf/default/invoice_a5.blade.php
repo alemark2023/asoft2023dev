@@ -72,7 +72,7 @@
         </td>
     </tr>
 </table>
-<table class="full-width mt-5">
+<table class="full-width mt-2">
     <tr>
         <td width="120px">FECHA DE EMISIÓN</td>
         <td width="8px">:</td>
@@ -139,6 +139,17 @@
             <td width="120px">MONTO DETRACCIÓN</td>
             <td width="8px">:</td>
             <td>S/ {{ $document->detraction->amount}}</td>
+        @endif
+        @if ($document->detraction)
+            @if($document->detraction->pay_constancy)
+            <tr> 
+                <td colspan="3"> 
+                </td>
+                <td width="120px">C. PAGO</td>
+                <td width="8px">:</td>
+                <td>{{ $document->detraction->pay_constancy}}</td>
+            </tr>
+            @endif
         @endif
     </tr>
     @endif

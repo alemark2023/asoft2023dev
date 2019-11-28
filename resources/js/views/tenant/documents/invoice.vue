@@ -210,10 +210,10 @@
                                 
 
                                 </div>
-                                <div class="col-lg-4"> 
+                                <div class="col-lg-4" v-if="form.operation_type_id == '1001'"> 
                                     <div class="form-group">
                                         <label class="control-label">N° Constancia de pago - detracción</label>
-                                        <el-input v-model="form.detraction.bank_account">
+                                        <el-input v-model="form.detraction.pay_constancy">
                                             <el-button slot="append" icon="el-icon-upload"  @click.prevent="clickPayConstancy()">Imágen</el-button>
                                         </el-input>
                                     </div>
@@ -487,8 +487,9 @@
             ></document-hotel-form>
 
         <pay-constancy 
-            url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''"
-            :showDialog.sync="showDialogPayConstancy" ></pay-constancy>
+            :path_img_detraction="(imageDetraction.imageUrl != null) ? imageDetraction.imageUrl : ''" 
+            :showDialog.sync="showDialogPayConstancy"
+            @addImageDetraction="addImageDetraction" ></pay-constancy>
 
     </div>
     </div>
@@ -515,6 +516,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                imageDetraction:{},
                 showDialogPayConstancy:false,
                 showDialogFormHotel:false,
                 is_client:false,
@@ -603,6 +605,11 @@
             })
         },
         methods: {
+            addImageDetraction(imageDetraction) {
+                this.imageDetraction = imageDetraction
+                this.form.detraction.image_pay_constancy = imageDetraction
+                // console.log(this.imageDetraction)
+            },
             clickPayConstancy(){
                 this.showDialogPayConstancy = true
             },
@@ -840,6 +847,8 @@
                 this.total_global_discount = 0
                 this.is_amount = true
                 this.prepayment_deduction = false
+                this.imageDetraction = {}
+                this.$eventHub.$emit('eventInitForm')
             },
             resetForm() {
                 this.activePanel = 0
@@ -864,6 +873,7 @@
 
                 if(this.form.operation_type_id === '1001'){
 
+                    this.$message.warning('El importe de la operación debe ser mayor a S/ 700.00');
                     await this.filterDetractionTypes();
                     let legend = await _.find(this.form.legends,{'code':'2006'})
                     if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
@@ -891,6 +901,10 @@
                 if(this.form.operation_type_id === '1001'){
 
                     let detraction = this.form.detraction
+                    
+                    if(this.form.total <= 700)
+                        return {success:false, message:'El importe de la operación debe ser mayor a S/ 700.00'}
+
                     if(!detraction.detraction_type_id)
                         return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
                         
@@ -900,8 +914,9 @@
                     if(!detraction.bank_account)
                         return {success:false, message:'El campo cuenta bancaria es obligatorio'}
 
-                    if(detraction.amount < 1)
+                    if(detraction.amount <= 0)
                         return {success:false, message:'El campo total detracción debe ser mayor a cero'}
+
                 }
 
                 return {success:true}

@@ -145,6 +145,17 @@
         @endif
     </tr>
     @endif
+    @if ($document->detraction)
+        @if($document->detraction->pay_constancy)
+        <tr> 
+            <td colspan="3"> 
+            </td>
+            <td width="120px">CONSTANCIA DE PAGO</td>
+            <td width="8px">:</td>
+            <td>{{ $document->detraction->pay_constancy}}</td>
+        </tr>
+        @endif
+    @endif
 </table>
 
 {{--<table class="full-width mt-3">--}}

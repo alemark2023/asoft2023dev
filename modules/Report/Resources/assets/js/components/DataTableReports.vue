@@ -67,7 +67,7 @@
                         <div class="col-lg-9 col-md-9 col-md-9 col-sm-12" style="margin-top:29px"> 
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
                             
-                            <template v-if="records.length>0"> 
+                            <template v-if="records.length>0 && resource  !== 'reports/document-detractions'"> 
 
                                 <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
 

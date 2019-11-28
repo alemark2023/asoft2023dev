@@ -294,7 +294,7 @@ class Facturalo
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $perception       = $this->document->perception != '' ? '10' : '0';
-            $detraction       = $this->document->detraction != '' ? '30' : '0';
+            $detraction       = $this->document->detraction != '' ? '40' : '0';
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
