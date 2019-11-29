@@ -36,6 +36,21 @@
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
             {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
+            
+            @isset($establishment->trade_address)
+                <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
+            @endisset
+            <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
+
+            <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
+
+            @isset($establishment->web_address)
+                <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
+            @endisset
+
+            @isset($establishment->aditional_information)
+                <h6>{{ ($establishment->aditional_information !== '-')? $establishment->aditional_information : '' }}</h6>
+            @endisset
         </td>
     </tr>
     <tr>
@@ -79,6 +94,16 @@
             </td>
         </tr>
     @endif
+    
+    <tr> 
+        <td class="align-top"><p class="desc">Vendedor:</p></td>
+        <td>
+            <p class="desc">            
+                {{ $document->user->name }} 
+
+            </p>
+        </td>
+    </tr>
     @if ($document->description)
         <tr>
             <td class="align-top"><p class="desc">Descripción:</p></td>
