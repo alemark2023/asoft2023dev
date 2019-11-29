@@ -56,9 +56,23 @@ class ClientController extends Controller
             if($row->start_billing_cycle)
             {
                 $day_start_billing = date_format($row->start_billing_cycle, 'j');
-                $init = Carbon::parse( date('Y').'-'.((int)date('n') -1).'-'.$day_start_billing );
-                $end = Carbon::parse(date('Y-m-d'));
-                $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+                $day_now = (int)date('j');
+
+
+                if( $day_now <= $day_start_billing  )
+                {
+                    $init = Carbon::parse( date('Y').'-'.((int)date('n') -1).'-'.$day_start_billing );
+                    $end = Carbon::parse(date('Y-m-d'));
+
+                    $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+                }
+                else{
+
+                    $init = Carbon::parse( date('Y').'-'.((int)date('n') ).'-'.$day_start_billing );
+                    $end = Carbon::parse(date('Y-m-d'));
+                    $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+
+                }
 
             }
         }
