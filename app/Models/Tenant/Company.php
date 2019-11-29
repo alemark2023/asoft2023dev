@@ -20,6 +20,7 @@ class Company extends ModelTenant
         'soap_url',
         'certificate',
         'logo',
+        'detraction_account',
     ];
 
     public function identity_document_type()

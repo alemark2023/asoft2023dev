@@ -62,6 +62,13 @@
                                 <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group" :class="{'has-danger': errors.detraction_account}">
+                                <label class="control-label">N° Cuenta de detracción</label>
+                                <el-input v-model="form.detraction_account"></el-input>
+                                <small class="form-control-feedback" v-if="errors.detraction_account" v-text="errors.detraction_account[0]"></small>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -176,6 +183,7 @@
                     certificate: null,
                     logo: null,
                     logo_store: null,
+                    detraction_account: null,
 
                 }
             },

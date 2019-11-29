@@ -156,7 +156,7 @@
                                 <div class="col-lg-2">
                                     <div class="form-group">
                                         <label class="control-label">Cuenta bancaria<span class="text-danger"> *</span></label>
-                                        <el-input v-model="form.detraction.bank_account"></el-input>
+                                        <el-input v-model="form.detraction.bank_account" readonly></el-input>
                                     </div>
                                 </div>
                                 <div class="col-lg-2">
@@ -877,6 +877,7 @@
                     await this.filterDetractionTypes();
                     let legend = await _.find(this.form.legends,{'code':'2006'})
                     if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
+                    this.form.detraction.bank_account = this.company.detraction_account
 
                 }else{ 
 
