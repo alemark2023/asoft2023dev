@@ -1105,7 +1105,7 @@
                 let base = this.form.total_taxed
 
                 let amount = (this.is_amount) ? parseFloat(this.total_global_discount) : parseFloat(this.total_global_discount)/100 * base
-                let factor = (this.is_amount) ? _.round(amount/base,2) : _.round(parseFloat(this.total_global_discount)/100,2)
+                let factor = (this.is_amount) ? _.round(amount/base,5) : _.round(parseFloat(this.total_global_discount)/100,5)
 
                 if(this.total_global_discount>0 && this.form.discounts.length == 0){
 
@@ -1128,10 +1128,10 @@
                     this.form.total_taxes =  _.round(this.form.total_igv,2)
                     this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
 
-                    // this.form.total_taxed =  this.form.total_value
+                    this.form.total_taxed =  this.form.total_value
 
                     this.form.discounts[0].base = base
-                    this.form.discounts[0].amount = amount
+                    this.form.discounts[0].amount = _.round(amount,2)
                     this.form.discounts[0].factor = factor
                 }
 
