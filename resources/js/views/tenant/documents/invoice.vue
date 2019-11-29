@@ -873,7 +873,7 @@
 
                 if(this.form.operation_type_id === '1001'){
 
-                    this.$message.warning('El importe de la operación debe ser mayor a S/ 700.00');
+                    this.$message.warning('Sujeta a detracción');
                     await this.filterDetractionTypes();
                     let legend = await _.find(this.form.legends,{'code':'2006'})
                     if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
@@ -1097,6 +1097,8 @@
                     this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
                     this.form.total_taxes =  _.round(this.form.total_igv,2)
                     this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+
+                    // this.form.total_taxed =  this.form.total_value
 
                     this.form.discounts[0].base = base
                     this.form.discounts[0].amount = amount
