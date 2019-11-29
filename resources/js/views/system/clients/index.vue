@@ -34,39 +34,39 @@
         </div>
       </div>
       <div class="col-lg-4">
-          <div class="row mb-3">
-              <div class="col-md-12">
-                  <section class="card card-horizontal">
-                      <header class="card-header bg-success">
-                          <div class="card-header-icon">
-                              <i class="fas fa-users"></i>
-                          </div>
-                      </header>
-                      <div class="card-body p-4 text-center">
-                          <p class="font-weight-semibold mb-0 mx-4">Total Clientes</p>
-                          <h2 class="font-weight-semibold mt-0">{{ records.length }}</h2>
-                          <div class="summary-footer">
-                              <a class="text-muted text-uppercase" href="#client-list">Ver todos</a>
-                          </div>
-                      </div>
-                  </section>
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <section class="card card-horizontal">
+              <header class="card-header bg-success">
+                <div class="card-header-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+              </header>
+              <div class="card-body p-4 text-center">
+                <p class="font-weight-semibold mb-0 mx-4">Total Clientes</p>
+                <h2 class="font-weight-semibold mt-0">{{ records.length }}</h2>
+                <div class="summary-footer">
+                  <a class="text-muted text-uppercase" href="#client-list">Ver todos</a>
+                </div>
               </div>
-              <div class="col-md-12">
-                  <section class="card card-horizontal">
-                      <header class="card-header bg-info">
-                          <div class="card-header-icon">
-                              <i class="fas fa-file-alt"></i>
-                          </div>
-                      </header>
-                      <div class="card-body p-4 text-center">
-                          <p class="font-weight-semibold mb-0 mt-3">Total Comprobantes</p>
-                          <h2 class="font-weight-semibold mt-0 mb-3">{{ total_documents }}</h2>
-                      </div>
-                  </section>
-              </div> 
-          </div> 
+            </section>
+          </div>
+          <div class="col-md-12">
+            <section class="card card-horizontal">
+              <header class="card-header bg-info">
+                <div class="card-header-icon">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+              </header>
+              <div class="card-body p-4 text-center">
+                <p class="font-weight-semibold mb-0 mt-3">Total Comprobantes</p>
+                <h2 class="font-weight-semibold mt-0 mb-3">{{ total_documents }}</h2>
+              </div>
+            </section>
+          </div>
+        </div>
       </div>
-    </div> 
+    </div>
 
     <div class="card" id="client-list">
       <div class="card-header bg-info">Listado de Clientes</div>
@@ -189,11 +189,11 @@
                 </td>
 
                 <td class="text-center">
-                    <el-switch
-                        style="display: block"
-                        v-model="row.locked_users" 
-                        @change="changeLockedUser(row)">
-                    </el-switch>
+                  <el-switch
+                    style="display: block"
+                    v-model="row.locked_users"
+                    @change="changeLockedUser(row)"
+                  ></el-switch>
                 </td>
 
                 <td class="text-right">
@@ -235,7 +235,7 @@
                 <td>
                   <template v-if="row.start_billing_cycle">
                     <span></span>
-                    <span>{{row.start_billing_cycle}} / {{row.max_documents}}</span>
+                    <span>{{row.start_billing_cycle}}</span>
                   </template>
                   <template v-else>
                     <el-date-picker
@@ -248,7 +248,15 @@
                   </template>
                 </td>
                 <td class="text-center">
-                  <strong>{{ row.count_doc_month }}</strong>
+                  <strong>
+                    {{ row.count_doc_month ? row.count_doc_month : 0 }} /
+                    <template v-if="row.max_documents == 0">
+                      <i class="fas fa-infinity"></i>
+                    </template>
+                    <template v-else>
+                      <strong>{{ row.max_documents }}</strong>
+                    </template>
+                  </strong>
                 </td>
               </tr>
             </tbody>
@@ -350,26 +358,25 @@ export default {
         .then(() => {});
     },
 
-    changeLockedUser(row){
-        this.$http.post(`${this.resource}/locked_user`, row)
-            .then(response => {
-                if (response.data.success) {
-                    this.$message.success(response.data.message)
-                    this.$eventHub.$emit('reloadData')
-                } else {
-                    this.$message.error(response.data.message)
-                }
-            })
-            .catch(error => {
-                if(error.response.status === 500){
-                    this.$message.error(error.response.data.message);
-                }
-                  else {
-                    console.log(error.response)
-                }
-            })
-            .then(() => {
-            })
+    changeLockedUser(row) {
+      this.$http
+        .post(`${this.resource}/locked_user`, row)
+        .then(response => {
+          if (response.data.success) {
+            this.$message.success(response.data.message);
+            this.$eventHub.$emit("reloadData");
+          } else {
+            this.$message.error(response.data.message);
+          }
+        })
+        .catch(error => {
+          if (error.response.status === 500) {
+            this.$message.error(error.response.data.message);
+          } else {
+            console.log(error.response);
+          }
+        })
+        .then(() => {});
     },
 
     setStartBillingCycle(event, id) {
