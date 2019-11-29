@@ -150,12 +150,20 @@ class DocumentController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
-        $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get();
         $user = auth()->user()->type;
         $payment_method_types = PaymentMethodType::all();
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
+        
+        $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'active' => (bool) $row->active,
+                'short' => $row->short,
+                'description' => ucfirst(mb_strtolower($row->description)),
+            ];
+        });
         // $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         // $detraction_types = DetractionType::whereActive()->get();
 

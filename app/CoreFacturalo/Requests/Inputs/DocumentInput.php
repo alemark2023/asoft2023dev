@@ -288,7 +288,7 @@ class DocumentInput
                     $guides[] = [
                         'number' => $number,
                         'document_type_id' => $document_type_id,
-                        'document_type_description' => DocumentType::find($document_type_id)->description,
+                        'document_type_description' => ucfirst(mb_strtolower(DocumentType::find($document_type_id)->description)),
                     ];
                 }
                 return $guides;

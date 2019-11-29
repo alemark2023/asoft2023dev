@@ -15,6 +15,7 @@
                                     <el-select :disabled="recordItem != null"
                                             v-model="form.item_id" @change="changeItem"
                                             filterable
+                                            placeholder="Buscar"
                                             popper-class="el-select-items"
                                             dusk="item_id"
                                             @visible-change="focusTotalItem"
@@ -32,6 +33,7 @@
                                     <el-select :disabled="recordItem != null" v-model="form.item_id"
                                             @change="changeItem"
                                             filterable
+                                            placeholder="Buscar"
                                             :filter-method="filterMethod"
                                             popper-class="el-select-items"
                                             dusk="item_id"
@@ -40,8 +42,8 @@
                                             id="select-width">
                                         <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                                     </el-select>
-                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock" placement="bottom" :disabled="recordItem != null">
-                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-truck-loading"></i></el-button>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
+                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>

@@ -266,7 +266,10 @@
                         <div class="row mt-2">
                             <div class="col-md-12">
                                 <el-collapse v-model="activePanel" accordion>
-                                    <el-collapse-item name="1" title="Información Adicional">
+                                    <el-collapse-item name="1" >
+                                        <template slot="title">
+                                            <i class="fa fa-plus text-info"></i> &nbsp; Información Adicional<i class="header-icon el-icon-information"></i>
+                                        </template>
                                         <div class="row mt-2">
 
                                             <template v-if="!is_client">
@@ -278,7 +281,7 @@
                                                             <a href="#" @click.prevent="clickAddGuide" class="text-center font-weight-bold text-info">[+ Agregar]</a>
                                                         </label>
                                                         <table style="width: 100%">
-                                                            <tr v-for="guide in form.guides">
+                                                            <tr v-for="(guide,index) in form.guides">
                                                                 <td>
                                                                     <el-select v-model="guide.document_type_id">
                                                                         <el-option v-for="option in document_types_guide" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -288,7 +291,7 @@
                                                                     <el-input v-model="guide.number"></el-input>
                                                                 </td>
                                                                 <td align="right">
-                                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide">
+                                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide(index)">
                                                                         <i class="fa fa-trash"></i>
                                                                     </button>
                                                                     <!-- <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a> -->
@@ -304,7 +307,7 @@
                                                 </div>
                                             </template>
 
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label class="control-label">Observaciones</label>
                                                     <el-input
@@ -314,10 +317,14 @@
                                                     </el-input>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <div class="form-group" :class="{'has-danger': errors.purchase_order}">
                                                     <label class="control-label">Orden Compra</label>
-                                                    <el-input v-model="form.purchase_order"></el-input>
+                                                    <!-- <el-input v-model="form.purchase_order"></el-input> -->
+                                                    <el-input
+                                                            type="textarea"
+                                                            v-model="form.purchase_order">
+                                                    </el-input>
                                                     <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
                                                 </div>
                                             </div>
@@ -505,6 +512,11 @@
 <style>
 .input-custom{
     width: 50% !important;
+}
+
+.el-textarea__inner {
+    height: 65px !important;
+    min-height: 65px !important;
 }
 </style>
 <script>
@@ -851,6 +863,7 @@
                 }
  
                 this.clickAddPayment()
+                this.clickAddInitGuides()
                 this.is_receivable = false
                 this.total_global_discount = 0
                 this.is_amount = true
@@ -978,6 +991,15 @@
                 } else {
                     this.customers = this.all_customers
                 }
+            },
+            clickAddInitGuides() {
+                this.form.guides.push({
+                    document_type_id: '09',
+                    number: null
+                },{
+                    document_type_id: '31',
+                    number: null
+                })
             },
             clickAddGuide() {
                 this.form.guides.push({
@@ -1116,6 +1138,11 @@
 
                 // console.log(this.form.discounts)
             }, 
+            async deleteInitGuides(){
+                //eliminando guias null 
+                await _.remove(this.form.guides,{'number':null})
+
+            },
             async submit() {
                
                 if(this.is_receivable){
@@ -1126,6 +1153,8 @@
                         return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                     }
                 }
+
+                await this.deleteInitGuides()
 
                 let val_detraction = await this.validateDetraction()
                 if(!val_detraction.success)
