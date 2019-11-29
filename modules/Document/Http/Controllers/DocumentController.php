@@ -11,6 +11,8 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
+use App\Models\Tenant\Catalogs\DetractionType;
+use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Traits\OfflineTrait;
 
 class DocumentController extends Controller
@@ -126,4 +128,15 @@ class DocumentController extends Controller
     }
 
     
+    public function detractionTables()
+    {
+        
+        $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
+        $detraction_types = DetractionType::whereActive()->get();
+                       
+        return compact( 'detraction_types', 'cat_payment_method_types');
+
+    }
+
+
 }

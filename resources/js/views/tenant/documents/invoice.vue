@@ -53,7 +53,12 @@
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.operation_type_id}">
-                                    <label class="control-label">Tipo Operación</label>
+                                    <label class="control-label">Tipo Operación
+                                    <template v-if="form.operation_type_id == '1001' && has_data_detraction" >
+                                        <a href="#" @click.prevent="showDialogDocumentDetraction = true" class="text-center font-weight-bold text-info"> [+ Ver datos]</a>
+                                    </template>
+
+                                    </label>
                                     <el-select v-model="form.operation_type_id" @change="changeOperationType">
                                         <el-option v-for="option in operation_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
@@ -136,7 +141,7 @@
                         </div>
 
                         <template v-if="!is_client">
-                            <div class="row mb-3" v-if="form.operation_type_id == '1001'">
+                            <!-- <div class="row mb-3" v-if="form.operation_type_id == '1001'">
                                 <div class="col-lg-4">
                                     <div class="form-group" >
                                         <label class="control-label">Bienes y servicios sujetos a detracciones<span class="text-danger"> *</span></label>
@@ -165,7 +170,7 @@
                                         <el-input v-model="form.detraction.amount" readonly></el-input>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
 
                             <div class="row" >
                                 <div class="col-lg-8" v-if="!is_receivable">
@@ -210,14 +215,14 @@
                                 
 
                                 </div>
-                                <div class="col-lg-4" v-if="form.operation_type_id == '1001'"> 
+                                <!-- <div class="col-lg-4" v-if="form.operation_type_id == '1001'"> 
                                     <div class="form-group">
                                         <label class="control-label">N° Constancia de pago - detracción</label>
                                         <el-input v-model="form.detraction.pay_constancy">
                                             <el-button slot="append" icon="el-icon-upload"  @click.prevent="clickPayConstancy()">Imágen</el-button>
                                         </el-input>
                                     </div>
-                                </div>
+                                </div> -->
                                 
                                 <div class="col-lg-4" v-if="prepayment_deduction">
                                     <div class="form-group">
@@ -486,10 +491,12 @@
             @addDocumentHotel="addDocumentHotel" 
             ></document-hotel-form>
 
-        <pay-constancy 
-            :path_img_detraction="(imageDetraction.imageUrl != null) ? imageDetraction.imageUrl : ''" 
-            :showDialog.sync="showDialogPayConstancy"
-            @addImageDetraction="addImageDetraction" ></pay-constancy>
+        <document-detraction 
+            :detraction="form.detraction" 
+            :total="form.total" 
+            :showDialog.sync="showDialogDocumentDetraction"
+            @addDocumentDetraction="addDocumentDetraction" ></document-detraction>
+ 
 
     </div>
     </div>
@@ -508,16 +515,16 @@
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
-    import PayConstancy from './partials/pay_constancy.vue'
+    import DocumentDetraction from './partials/detraction.vue'
 
     export default {
         props: ['typeUser'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, PayConstancy},
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction},
         mixins: [functions, exchangeRate],
         data() {
             return {
-                imageDetraction:{},
-                showDialogPayConstancy:false,
+                showDialogDocumentDetraction:false,
+                has_data_detraction:false,
                 showDialogFormHotel:false,
                 is_client:false,
                 recordItem: null,
@@ -591,8 +598,8 @@
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
                     this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
-                    this.cat_payment_method_types = response.data.cat_payment_method_types;
-                    this.all_detraction_types = response.data.detraction_types;
+                    // this.cat_payment_method_types = response.data.cat_payment_method_types;
+                    // this.all_detraction_types = response.data.detraction_types;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -605,14 +612,15 @@
             })
         },
         methods: {
-            addImageDetraction(imageDetraction) {
-                this.imageDetraction = imageDetraction
-                this.form.detraction.image_pay_constancy = imageDetraction
-                // console.log(this.imageDetraction)
-            },
-            clickPayConstancy(){
-                this.showDialogPayConstancy = true
-            },
+            addDocumentDetraction(detraction) {
+
+                this.form.detraction = detraction
+
+                // this.has_data_detraction = (detraction.pay_constancy || detraction.detraction_type_id || detraction.payment_method_id || (detraction.amount && detraction.amount >0)) ? true:false
+                this.has_data_detraction = (detraction) ? detraction.has_data_detraction:false 
+                
+                // console.log(this.form.detraction)
+            }, 
             clickAddItemInvoice(){
                 this.recordItem = null
                 this.showDialogAddItem = true
@@ -866,15 +874,17 @@
                 await this.filterCustomers();
                 await this.setDataDetraction();
             },
-            async filterDetractionTypes(){
-                this.detraction_types =  await _.filter(this.all_detraction_types, {'operation_type_id':this.form.operation_type_id})
-            },
+            // async filterDetractionTypes(){
+            //     this.detraction_types =  await _.filter(this.all_detraction_types, {'operation_type_id':this.form.operation_type_id})
+            // },
             async setDataDetraction(){
 
                 if(this.form.operation_type_id === '1001'){
+                    
+                    this.showDialogDocumentDetraction = true
 
-                    this.$message.warning('Sujeta a detracción');
-                    await this.filterDetractionTypes();
+                    // this.$message.warning('Sujeta a detracción');
+                    // await this.filterDetractionTypes();
                     let legend = await _.find(this.form.legends,{'code':'2006'})
                     if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
                     this.form.detraction.bank_account = this.company.detraction_account
@@ -887,14 +897,12 @@
                 }
             },
             async changeDetractionType(){
-                let detraction_type = await _.find(this.detraction_types, {'id':this.form.detraction.detraction_type_id})
+                // let detraction_type = await _.find(this.detraction_types, {'id':this.form.detraction.detraction_type_id})
 
-                if(detraction_type){
+                if(this.form.detraction){
 
-                    this.form.detraction.percentage = detraction_type.percentage
-                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (detraction_type.percentage/100),2)
-                    // console.log(detraction_type, this.form.detraction)
-                
+                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
+                    // console.log(this.form.detraction.amount)
                 }
             },
             validateDetraction(){

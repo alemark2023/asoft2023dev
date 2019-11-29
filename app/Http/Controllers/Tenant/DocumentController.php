@@ -156,8 +156,8 @@ class DocumentController extends Controller
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
-        $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
-        $detraction_types = DetractionType::whereActive()->get();
+        // $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
+        // $detraction_types = DetractionType::whereActive()->get();
 
 //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
 //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
@@ -173,7 +173,7 @@ class DocumentController extends Controller
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
                         'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','prepayment_documents','is_client','cat_payment_method_types','detraction_types');
+                        'business_turns','prepayment_documents','is_client');
 
     }
 

@@ -1,89 +1,160 @@
 <template> 
-    <el-dialog :title="title" class="text-left" :visible="showDialog" @close="close"   @open="create">
+    <el-dialog :title="title" class="text-left" :visible="showDialog"   @opened="create" @close="close" :close-on-click-modal="false">
         <!-- <p class="text-center">* Se recomienda resoluciones 700x300.</p> -->
-        
-        <div class="row mb-3" >
-            <div class="col-lg-4">
-                <div class="form-group" >
-                    <label class="control-label">Bienes y servicios sujetos a detracciones<span class="text-danger"> *</span></label>
-                    <el-select v-model="form.detraction.detraction_type_id" @change="changeDetractionType" filterable >
-                        <el-option v-for="option in detraction_types" :key="option.id" :value="option.id" :label="`${option.description} - ${option.percentage}%`"></el-option>
-                    </el-select>
+        <form autocomplete="off" @submit.prevent="submit">
+            <div class="form-body"> 
+                <div class="row mb-3" >
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group" >
+                            <label class="control-label">Bienes y servicios sujetos a detracciones<span class="text-danger"> *</span></label>
+                            <el-select v-model="detraction.detraction_type_id" @change="changeDetractionType" filterable >
+                                <el-option v-for="option in detraction_types" :key="option.id" :value="option.id" :label="`${option.description} - ${option.percentage}%`"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group" >
+                            <label class="control-label">Método pago - Detracción<span class="text-danger"> *</span></label>
+                            <el-select v-model="detraction.payment_method_id"  filterable>
+                                <el-option v-for="option in cat_payment_method_types" :key="option.id" :value="option.id" :label="`${option.description}`"></el-option>
+                            </el-select>
+                        </div>
+                    </div> 
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="form-group" >
-                    <label class="control-label">Método pago - Detracción<span class="text-danger"> *</span></label>
-                    <el-select v-model="form.detraction.payment_method_id"  filterable>
-                        <el-option v-for="option in cat_payment_method_types" :key="option.id" :value="option.id" :label="`${option.description}`"></el-option>
-                    </el-select>
-                </div>
-            </div>
-            <div class="col-lg-2">
-                <div class="form-group">
-                    <label class="control-label">Cuenta bancaria<span class="text-danger"> *</span></label>
-                    <el-input v-model="form.detraction.bank_account" readonly></el-input>
-                </div>
-            </div>
-            <div class="col-lg-2">
-                <div class="form-group">
-                    <label class="control-label">T. Detracción<span class="text-danger"> *</span></label>
-                    <el-input v-model="form.detraction.amount" readonly></el-input>
-                </div>
-            </div>
-            <div class="col-lg-4" v-if="form.operation_type_id == '1001'"> 
-                <div class="form-group">
-                    <label class="control-label">N° Constancia de pago - detracción</label>
-                    <el-input v-model="form.detraction.pay_constancy">
-                    </el-input>
-                </div>
-            </div>
-        </div>
+                
+                    <div class="row"> 
 
-        <div class="text-center">
-            <el-upload class="uploader" ref="upload" slot="append" :auto-upload="false" :headers="headers"  action="/documents/pay-constancy/upload" :show-file-list="false" :before-upload="beforeUpload" :on-success="successUpload" :on-change="preview">
-                <img v-if="form.imageUrl" width="100%" :src="form.imageUrl" alt="">
-                <i v-else class="el-icon-plus uploader-icon"></i>
-            </el-upload>
-        </div>
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="clickCancel">Cancelar</el-button>
-            <el-button @click="upload" class="submit" type="primary" :disabled="imageUrl == ''">Guardar</el-button>
-        </span>
+                        <div class="col-md-6"> 
+                            <div class="row">
+
+                                <div class="short-div col-md-12"> 
+                                    <div class="form-group">
+                                        <label class="control-label">Cuenta bancaria<span class="text-danger"> *</span></label>
+                                        <el-input v-model="detraction.bank_account" readonly></el-input>
+                                    </div>
+                                </div>
+                                
+                                <div class="short-div col-md-12">
+                                    <div class="form-group">
+                                        <label class="control-label">N° Constancia de pago - detracción</label>
+                                        <el-input v-model="detraction.pay_constancy">
+                                        </el-input>
+                                    </div>
+                                </div> 
+                                <div class="short-div col-md-12">
+                                    
+                                    <div class="form-group">
+                                        <label class="control-label">Total detracción
+                                            <span class="text-danger"> *</span>
+                                            <el-tooltip class="item" effect="dark" content="Se calcula automaticamente en base al total del comprobante" placement="top">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <el-input v-model="detraction.amount" readonly></el-input>
+                                    </div>
+                                </div> 
+
+                            </div>
+                        </div> 
+                        
+                        <div class="col-md-6">
+                            <div class="form-group" >
+                                <label class="control-label">Imágen constancia</label>
+                                <el-upload class="uploader"
+                                        :headers="headers"
+                                        :action="`/documents/pay-constancy/upload`"
+                                        :show-file-list="false" 
+                                        :on-success="onSuccess">
+                                    <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+                                    <i v-else class="el-icon-plus uploader-icon"></i>
+                                </el-upload>
+                            </div> 
+                        </div>
+                    </div> 
+ 
+                <div class="form-actions text-right mt-4">
+                    <el-button @click.prevent="clickCancel()">Cancelar</el-button>
+                    <el-button type="primary" native-type="submit" >Guardar</el-button>
+                </div>
+            </div>
+        </form>  
     </el-dialog> 
 </template>
 
 <script>
     export default {
-        props: ['showDialog', 'path_img_detraction'],
+        props: ['showDialog', 'detraction','total'],
         data() {
             return {
                 headers: headers_token,
+                resource:'documents',
                 dialogVisible: false,
                 load: false,
                 imageUrl: '',
                 form:{},
-                title:'Imágen - constancia de pago de detracción'
+                title:'Registrar datos de detracción',
+                cat_payment_method_types: [],
+                detraction_types: [],
             }
         },
-        created(){
-            this.initForm()
+        async created(){
             
+            await this.$http.get(`/${this.resource}/detraction/tables`)
+                .then(response => {
+                    this.detraction_types = response.data.detraction_types
+                    this.cat_payment_method_types = response.data.cat_payment_method_types
+                })
+            this.initForm()
+             
             this.$eventHub.$on('eventInitForm', () => {
                 this.initForm()
             })
-        },
-        computed: {
-            src() {
-                if (this.path_img_detraction != '') return this.path_img_detraction;
-                
-                return '/logo/700x300.jpg';
-            }
-        },
+        }, 
         methods: {
-            create(){
-                // console.log(this.path_img_detraction)
+            async changeDetractionType(){
+                let detraction_type = await _.find(this.detraction_types, {'id':this.detraction.detraction_type_id})
+
+                if(detraction_type){
+
+                    this.detraction.percentage = detraction_type.percentage
+                    this.detraction.amount = _.round(parseFloat(this.total) * (detraction_type.percentage/100),2)
+                    // console.log(detraction_type, this.form.detraction)
+                
+                }
             },
+            validateDetraction(){
+
+                let detraction = this.detraction
+
+                if(!detraction.detraction_type_id)
+                    return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
+                    
+                if(!detraction.payment_method_id)
+                    return {success:false, message:'El campo método de pago - detracción es obligatorio'}
+                    
+                if(!detraction.bank_account)
+                    return {success:false, message:'El campo cuenta bancaria es obligatorio'}
+
+
+
+                return {success:true}
+
+            },
+            onSuccess(response, file, fileList) {
+                // console.log(response)
+                if (response.success) {
+                    this.form.image = response.data.filename
+                    this.form.imageUrl = response.data.temp_image
+                    this.form.temp_path = response.data.temp_path
+                    this.detraction.image_pay_constancy = this.form
+                    // console.log(this.detraction)
+                } else {
+                    this.$message.error(response.message)
+                }
+            },   
+            create(){
+                this.$message.warning('Sujeta a detracción');
+            }, 
             initForm(){
                 this.form = { 
                     image: null,
@@ -92,48 +163,25 @@
                 }
 
                 this.imageUrl = null
-            },
-            beforeUpload(file) {
-                const isIMG = ((file.type === 'image/jpeg') || (file.type === 'image/png') || (file.type === 'image/jpg'));
-                const isLt2M = file.size / 1024 / 1024 < 2;
-                
-                if (!isIMG) this.$message.error('La imagen no es valida!');
-                if (!isLt2M) this.$message.error('La imagen excede los 2MB!');
-                
-                return isIMG && isLt2M;
-            },
-            preview(file) {
-                this.form.imageUrl = URL.createObjectURL(file.raw);
-            },
-            upload() {
-                this.$refs.upload.submit();
-            },
-            async successUpload(response, file, fileList) {
-                this.form.imageUrl = URL.createObjectURL(file.raw);
-                // console.log(response)
-
-                if (response.success) {
-                    await this.$message.success('Imágen registrada temporalmente')
-                    this.form.image = response.data.filename
-                    this.form.imageUrl = response.data.temp_image
-                    this.form.temp_path = response.data.temp_path
-                    await this.$emit('addImageDetraction', this.form);
-                    await this.$emit('update:showDialog', false)
-
-                } else {
-                    this.$message.error(response.message)
-                }
-                
-                // this.$message({message:'Error al subir el archivo', type: 'error'});
-                // this.imageUrl = '';
-            },
+            },  
             async clickCancel() {
                 await this.initForm()
-                await this.$emit('addImageDetraction', this.form);
+                this.$emit('addDocumentDetraction', {});
                 await this.$emit('update:showDialog', false)
             },
             close() {
                 this.$emit('update:showDialog', false)
+            },
+            async submit(){
+                
+                let val_detraction = await this.validateDetraction()
+                if(!val_detraction.success)
+                    return this.$message.error(val_detraction.message);
+
+                this.detraction.has_data_detraction = true
+                await this.$emit('addDocumentDetraction', this.detraction);
+                await this.$emit('update:showDialog', false)
+                
             }
         }
     }
@@ -153,15 +201,15 @@
     .uploader-icon {
         font-size: 28px;
         color: #8c939d;
-        width: 178px;
-        height: 178px;
-        line-height: 178px;
+        width: 200px;
+        height: 155px;
+        line-height: 155px;
         text-align: center;
     }
     
     .avatar {
-        width: 178px;
-        height: 178px;
+        width: 100%;
+        height: 155px;
         display: block;
     }
 </style>
