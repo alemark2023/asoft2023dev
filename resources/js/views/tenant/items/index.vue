@@ -48,7 +48,7 @@
                             </template> -->
 
                             <!-- <br/>Mín:{{ row.stock_min }} -->
-                            
+
                         </td>
                         <td class="text-right">{{ row.sale_unit_price }}</td>
                         <td class="text-center">{{ row.has_igv_description }}</td>
@@ -56,6 +56,8 @@
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="duplicate(row.id)">Clonar</button>
+
                             </template>
                         </td>
                     </tr>
@@ -67,7 +69,7 @@
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
 
-            <warehouses-detail 
+            <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
                 :warehouses="warehousesDetail">
             </warehouses-detail>
@@ -100,6 +102,22 @@
         created() {
         },
         methods: {
+            duplicate(id)
+            {
+                this.$http.post(`${this.resource}/duplicate`, {id})
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success('Se guardaron los cambios correctamente.')
+                        this.$eventHub.$emit('reloadData')
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
+                this.$eventHub.$emit('reloadData')
+            },
             clickWarehouseDetail(warehouses){
                 this.warehousesDetail = warehouses
                 this.showWarehousesDetail = true

@@ -144,6 +144,8 @@ if ($hostname) {
             Route::post('items/import', 'Tenant\ItemController@import');
             Route::post('items/upload', 'Tenant\ItemController@upload');
             Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
+            Route::post('items/duplicate', 'Tenant\ItemController@duplicate');
+
 
 
 
@@ -529,8 +531,6 @@ if ($hostname) {
            Route::get('cuenta/tables', 'Tenant\AccountController@tables');
            Route::post('cuenta/update_plan', 'Tenant\AccountController@updatePlan');
            Route::post('cuenta/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
-
-
 
 
 

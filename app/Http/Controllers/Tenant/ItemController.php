@@ -293,6 +293,22 @@ class ItemController extends Controller
 
     }
 
+    public function duplicate(Request $request)
+    {
+       // return $request->id;
+       $obj = Item::find($request->id);
+       $new = $obj->replicate();
+       $new->save();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $new->id,
+            ],
+        ];
+
+    }
+
 
 
 

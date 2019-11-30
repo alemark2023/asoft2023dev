@@ -5,19 +5,19 @@ namespace Modules\Item\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Item\Models\Brand; 
+use Modules\Item\Models\Brand;
 use Modules\Item\Http\Resources\BrandCollection;
 use Modules\Item\Http\Resources\BrandResource;
-use Modules\Item\Http\Requests\BrandRequest; 
+use Modules\Item\Http\Requests\BrandRequest;
 
 class BrandController extends Controller
 {
-     
+
     public function index()
     {
         return view('item::brands.index');
     }
- 
+
 
     public function columns()
     {
@@ -33,7 +33,7 @@ class BrandController extends Controller
 
         return new BrandCollection($records->paginate(config('tenant.items_per_page')));
     }
- 
+
 
     public function record($id)
     {
@@ -48,21 +48,22 @@ class BrandController extends Controller
         $brand = Brand::firstOrNew(['id' => $id]);
         $brand->fill($request->all());
         $brand->save();
-  
+
 
         return [
             'success' => true,
             'message' => ($id)?'Marca editada con éxito':'Marca registrada con éxito',
+            'data' => $brand
         ];
- 
+
     }
- 
+
     public function destroy($id)
     {
-        try {            
-            
+        try {
+
             $brand = Brand::findOrFail($id);
-            $brand->delete(); 
+            $brand->delete();
 
             return [
                 'success' => true,
@@ -74,10 +75,10 @@ class BrandController extends Controller
             return ($e->getCode() == '23000') ? ['success' => false,'message' => "La Marca esta siendo usada por otros registros, no puede eliminar"] : ['success' => false,'message' => "Error inesperado, no se pudo eliminar la Marca"];
 
         }
-        
+
     }
 
- 
 
-    
+
+
 }

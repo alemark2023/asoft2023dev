@@ -27,7 +27,7 @@
                         </div>
                     </div>
 
-                    
+
                      <!-- <div class="col-md-9">
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Nombre  <span class="text-danger">*</span></label>
@@ -44,7 +44,7 @@
                     </div>
 
 
-                    
+
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                             <label class="control-label">Unidad</label>
@@ -80,13 +80,19 @@
                         </div>
                     </div>
 
-                    
+
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.category_id}">
                             <label class="control-label">
-                                Categoría 
+                                Categoría
                             </label>
-                            <el-select v-model="form.category_id" filterable clearable>
+
+                            <a href="#" v-if="form_category.add == false" class="control-label font-weight-bold text-info" @click="form_category.add = true"> [ + Nuevo]</a>
+                            <a href="#" v-if="form_category.add == true" class="control-label font-weight-bold text-info" @click="saveCategory()"> [ + Guardar]</a>
+                            <a href="#" v-if="form_category.add == true" class="control-label font-weight-bold text-danger" @click="form_category.add = false"> [ Cancelar]</a>
+                            <el-input   v-if="form_category.add == true" v-model="form_category.name" dusk="item_code" style="margin-bottom:1.5%;"></el-input>
+
+                            <el-select v-if="form_category.add == false" v-model="form.category_id" filterable clearable>
                                 <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.category_id" v-text="errors.category_id[0]"></small>
@@ -96,14 +102,20 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.brand_id}">
                             <label class="control-label">
-                                Marca 
+                                Marca
                             </label>
-                            <el-select v-model="form.brand_id" filterable clearable >
+
+                            <a href="#" v-if="form_brand.add == false" class="control-label font-weight-bold text-info" @click="form_brand.add = true"> [ + Nuevo]</a>
+                            <a href="#" v-if="form_brand.add == true" class="control-label font-weight-bold text-info" @click="saveBrand()"> [ + Guardar]</a>
+                            <a href="#" v-if="form_brand.add == true" class="control-label font-weight-bold text-danger" @click="form_brand.add = false"> [ Cancelar]</a>
+                            <el-input   v-if="form_brand.add == true" v-model="form_brand.name" dusk="item_code" style="margin-bottom:1.5%;"></el-input>
+
+                            <el-select v-if="form_brand.add == false" v-model="form.brand_id" filterable clearable >
                                 <el-option v-for="option in brands" :key="option.id" :value="option.id" :label="option.name"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.brand_id" v-text="errors.brand_id[0]"></small>
                         </div>
-                    </div>                    
+                    </div>
 
 
 
@@ -118,7 +130,7 @@
                             <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.internal_id}">
                             <label class="control-label">Código Interno
@@ -155,7 +167,7 @@
                             <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
                         </div>
                     </div>
-                    
+
 
                     <div class="col-md-3 center-el-checkbox" >
                         <div class="form-group"  >
@@ -183,7 +195,7 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-3 " >
                         <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                             <label class="control-label">Fec. Vencimiento</label>
@@ -212,7 +224,7 @@
                                 <i class="fa fa-info-circle"></i>
                             </el-tooltip>
                              <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
-                        </h5> 
+                        </h5>
                     </div>
                     <div class="col-md-12" v-if="form.item_unit_types.length > 0">
                     <div class="table-responsive">
@@ -271,7 +283,7 @@
                                             <!-- <small class="form-control-feedback" v-if="errors.quantity_unit" v-text="errors.quantity_unit[0]"></small> -->
                                         </div>
                                     </td>
-                                    <td> 
+                                    <td>
                                         <div class="form-group" >
                                             <el-input v-model="row.price1"></el-input>
                                             <!-- <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small> -->
@@ -310,15 +322,15 @@
                             </tr>
                             </tbody>
                         </table>
-                        
+
                     </div>
-                </div>   
+                </div>
 
 
                     <div class="col-md-12">
                         <h5 class="separator-title">Campos adicionales</h5>
                     </div>
-                    <div class="row col-md-12"> 
+                    <div class="row col-md-12">
                         <div class="col-md-3">
                             <div class="form-group" >
                                 <label class="control-label">Imágen <span class="text-danger"></span></label>
@@ -331,13 +343,13 @@
                                     <img v-if="form.image_url" :src="form.image_url" class="avatar">
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
-                            </div> 
+                            </div>
                         </div>
 
-                        <div class="col-md-9"> 
+                        <div class="col-md-9">
                             <div class="row">
 
-                                <div class="short-div col-md-8"> 
+                                <div class="short-div col-md-8">
                                     <div class="form-group" :class="{'has-danger': errors.purchase_affectation_igv_type_id}">
                                         <label class="control-label">Tipo de afectación (Compra)</label>
                                         <el-select v-model="form.purchase_affectation_igv_type_id">
@@ -346,14 +358,14 @@
                                         <small class="form-control-feedback" v-if="errors.purchase_affectation_igv_type_id" v-text="errors.purchase_affectation_igv_type_id[0]"></small>
                                     </div>
                                 </div>
-                                
+
                                 <div class="short-div col-md-4">
                                     <div class="form-group" :class="{'has-danger': errors.purchase_unit_price}">
                                         <label class="control-label">Precio Unitario (Compra)</label>
                                         <el-input v-model="form.purchase_unit_price" dusk="purchase_unit_price" @input="calculatePercentageOfProfitByPurchase"></el-input>
                                         <small class="form-control-feedback" v-if="errors.purchase_unit_price" v-text="errors.purchase_unit_price[0]"></small>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="short-div col-md-4">
                                     <div class="form-group" :class="{'has-danger': errors.percentage_of_profit}">
                                         <label class="control-label">
@@ -363,11 +375,11 @@
                                         <el-input v-model="form.percentage_of_profit" :disabled="!enabled_percentage_of_profit" @input="calculatePercentageOfProfitByPercentage"></el-input>
                                         <small class="form-control-feedback" v-if="errors.percentage_of_profit" v-text="errors.percentage_of_profit[0]"></small>
                                     </div>
-                                </div> 
+                                </div>
 
                             </div>
-                        </div> 
-                    </div> 
+                        </div>
+                    </div>
 
 
 
@@ -394,7 +406,7 @@
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
             </div>
         </form>
-        <!-- <percentage-perception 
+        <!-- <percentage-perception
                 :showDialog.sync="showPercentagePerception"
                 :percentage_perception="percentage_perception">
         </percentage-perception> -->
@@ -410,6 +422,8 @@
 
         data() {
             return {
+                form_category:{ add: false, name: null, id: null },
+                form_brand:{ add: false, name: null, id: null },
                 warehouses: [],
                 loading_submit: false,
                 showPercentagePerception: false,
@@ -418,7 +432,7 @@
                 enabled_percentage_of_profit:false,
                 titleDialog: null,
                 resource: 'items',
-                errors: {},                
+                errors: {},
                 headers: headers_token,
                 form: {},
                 unit_types: [],
@@ -476,9 +490,9 @@
 
                 this.$http.delete(`/${this.resource}/item-unit-type/${id}`)
                         .then(res => {
-                            if(res.data.success) { 
+                            if(res.data.success) {
                                 this.loadRecord()
-                                this.$message.success('Se eliminó correctamente el registro')                                 
+                                this.$message.success('Se eliminó correctamente el registro')
                             }
                         })
                         .catch(error => {
@@ -488,12 +502,12 @@
                                 console.log(error.response.data.message)
                             }
                         })
-                
+
             },
             changeHasPerception(){
                 if(!this.form.has_perception){
-                    this.form.percentage_perception = null 
-                } 
+                    this.form.percentage_perception = null
+                }
 
             },
             clickAddRow() {
@@ -563,7 +577,7 @@
                 } else {
                     this.$message.error(response.message)
                 }
-            },  
+            },
             changeAffectationIgvType(){
 
                 let affectation_igv_type_exonerated = [20,21,30,31,32,33,34,35,36,37]
@@ -628,7 +642,7 @@
             submit() {
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 // if(!this.has_percentage_perception) this.form.percentage_perception = null
-                
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -668,6 +682,46 @@
                 if (this.form.system_isc_type_id !== '03') {
                     this.form.suggested_price = 0
                 }
+            },
+            saveCategory()
+            {
+                this.form_category.add = false
+
+                this.$http.post(`categories`,  this.form_category)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.categories.push(response.data.data)
+                        this.form_category.name = null
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
+            },
+            saveBrand()
+            {
+                this.form_brand.add = false
+
+                this.$http.post(`brands`,  this.form_brand)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.brands.push(response.data.data)
+                        this.form_brand.name = null
+
+                    } else {
+                        this.$message.error('No se guardaron los cambios')
+                    }
+                })
+                .catch(error => {
+
+                })
+
+
+
             }
         }
     }
