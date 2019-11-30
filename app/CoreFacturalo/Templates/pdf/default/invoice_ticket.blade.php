@@ -116,7 +116,7 @@
             </td>
         </tr>
     @endif
-    
+
     @if ($document->detraction)
     {{--<strong>Operación sujeta a detracción</strong>--}}
         <tr>
@@ -131,7 +131,7 @@
         <tr>
             <td  class="align-top"><p class="desc">Método de pago:</p></td>
             <td><p class="desc">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</p></td>
-        </tr> 
+        </tr>
         <tr>
             <td  class="align-top"><p class="desc">Porcentaje detracción:</p></td>
             <td><p class="desc">{{ $document->detraction->percentage}}%</p></td>
@@ -349,10 +349,10 @@
     </tr>
 
 
-    @if ($document->detraction) 
+    @if ($document->detraction)
         <tr>
-            <td class="desc pt-3 font-bold"> 
-                Operación sujeta al Sistema de Pago de Obligaciones Tributarias 
+            <td class="desc pt-3 font-bold">
+                Operación sujeta al Sistema de Pago de Obligaciones Tributarias
             </td>
         </tr>
     @endif
@@ -398,7 +398,7 @@
     @if($payments->count())
         <tr>
             <td class="desc pt-5">
-                <strong>PAGOS:</strong>
+                <strong> {{$document->user->name}} PAGOS:</strong>
             </td>
         </tr>
         @foreach($payments as $row)
@@ -407,6 +407,15 @@
             </tr>
         @endforeach
     @endif
+
+    <tr>
+        <td>
+        <strong>Vendedor:</strong> </td></tr>
+                <tr>
+                    <td>{{ $document->user->name }}</td>
+                </tr>
+
+        </tr>
 
     <tr>
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
