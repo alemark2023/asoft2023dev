@@ -178,6 +178,8 @@ return [
 
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
+        App\Providers\CashServiceProvider::class,
+
     ],
 
     /*

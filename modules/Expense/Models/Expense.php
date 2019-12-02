@@ -3,6 +3,7 @@
 namespace Modules\Expense\Models;
 
 use App\Models\Tenant\User;
+use App\Models\Tenant\SoapType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\CurrencyType;
@@ -15,6 +16,7 @@ class Expense extends ModelTenant
 
     protected $fillable = [
         'user_id',
+        'soap_type_id',
         'expense_type_id',
         'expense_reason_id',
         'establishment_id',
@@ -52,6 +54,10 @@ class Expense extends ModelTenant
         return $this->hasMany(ExpenseItem::class);
     }
 
+    public function soap_type()
+    {
+        return $this->belongsTo(SoapType::class);
+    }
 
     public function user()
     {
