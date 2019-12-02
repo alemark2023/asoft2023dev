@@ -61,6 +61,33 @@
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div> 
+                            
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.date_of_due}"> 
+                                    <label class="control-label">Fec. Vencimiento</label>
+                                    <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                    <label class="control-label">Descripcion
+                                    </label>
+                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
+                                    <label class="control-label">
+                                        Término de pago
+                                    </label>
+                                    <el-select v-model="form.payment_method_type_id" filterable @change="changePaymentMethodType">
+                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                                </div>
+                            </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
@@ -70,14 +97,6 @@
                                     </label>
                                     <el-input v-model="form.exchange_rate_sale"></el-input>
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
-                                    <label class="control-label">Descripcion
-                                    </label>
-                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
                             </div>
                         </div>
@@ -207,6 +226,7 @@
                 establishment: null, 
                 currency_type: {},
                 quotationNewId: null,
+                payment_method_types: [],
                 activePanel: 0,
                 loading_search:false
             }
@@ -223,6 +243,7 @@
                     this.company = response.data.company 
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
+                    this.payment_method_types = response.data.payment_method_types
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
@@ -242,6 +263,22 @@
         },
         methods: {
 
+            async changePaymentMethodType(flag_submit = true){
+                let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+                if(payment_method_type){
+
+                    if(payment_method_type.number_days){
+                        this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
+                        this.changeDateOfIssue()
+                    }
+                    // else{
+                    //     if(flag_submit){
+                    //         this.form.date_of_issue = moment().format('YYYY-MM-DD')
+                    //         this.changeDateOfIssue()
+                    //     }
+                    // }
+                }
+            },
             initRecord()
             {
                 this.$http.get(`/${this.resource}/record/${this.resourceId}` )
@@ -252,7 +289,8 @@
                     this.form.id = dato.id
                     this.form.customer_id = dato.customer_id
                     this.form.currency_type_id = dato.currency_type_id
-                    this.form.date_of_due = dato.date_of_issue
+                    this.form.payment_method_type_id = dato.payment_method_type_id
+                    this.form.date_of_due = dato.date_of_due
                     this.form.date_of_issue = dato.date_of_issue
                     this.form.exchange_rate_sale = dato.exchange_rate_sale
                     this.form.description = dato.description
@@ -309,6 +347,7 @@
                     total_taxes: 0,
                     total_value: 0,
                     total: 0,
+                    payment_method_type_id:null,
                     operation_type_id: null,
                     date_of_due: moment().format('YYYY-MM-DD'),
                     items: [],
@@ -413,9 +452,14 @@
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
              },
-            submit() {
+            async submit() {
+                // await this.changePaymentMethodType(false)
+
+                if(this.form.date_of_issue > this.form.date_of_due)
+                    return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
+
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}/update`, this.form).then(response => {
+                await this.$http.post(`/${this.resource}/update`, this.form).then(response => {
                     if (response.data.success) {
                         this.resetForm();
                         this.quotationNewId = response.data.data.id;

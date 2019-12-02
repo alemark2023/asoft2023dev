@@ -72,6 +72,12 @@
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
  
+    @if($document->date_of_due) 
+    <tr>
+        <td width="" class=""><p class="desc">F. Vencimiento:</p></td>
+        <td width="" class=""><p class="desc">{{ $document->date_of_due->format('Y-m-d') }}</p></td>
+    </tr>
+    @endif
 
     <tr>
         <td class="align-top"><p class="desc">Cliente:</p></td>
@@ -95,6 +101,26 @@
         </tr>
     @endif
     
+    @if ($customer->telephone)
+    <tr>
+        <td class="align-top"><p class="desc">Teléfono:</p></td>
+        <td >
+            <p class="desc">            
+                {{ $customer->telephone }} 
+            </p>
+        </td>
+    </tr>
+    @endif
+    @if ($document->payment_method_type)
+    <tr>
+        <td class="align-top"><p class="desc">T. Pago:</p></td>
+        <td >
+            <p class="desc">            
+                {{ $document->payment_method_type->description }} 
+            </p>
+        </td>
+    </tr>
+    @endif
     <tr> 
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>
