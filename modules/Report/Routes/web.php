@@ -56,7 +56,12 @@ if($current_hostname) {
                 Route::get('document-detractions/filter', 'ReportDocumentDetractionController@filter')->name('tenant.reports.document_detractions.filter');
                 Route::get('document-detractions/records', 'ReportDocumentDetractionController@records')->name('tenant.reports.document_hotels.records');
 
+                
+                
             });
+
+            Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')->name('tenant.reports.income_summary.pdf');
+
 
         });
     });
