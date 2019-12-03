@@ -59,7 +59,7 @@
                                     Proveedor
                                     <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                 </label>
-                                <el-select v-model="form.supplier_id" filterable @change="changeSupplier">
+                                <el-select v-model="form.supplier_id" filterable @change="changeSupplier" ref="select_person" @keyup.native="keyupSupplier" @keyup.enter.native="keyupEnterSupplier">
                                     <el-option v-for="option in suppliers" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
@@ -209,6 +209,7 @@
 
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="suppliers"
+                       :input_person="input_person"
                        :external="true"></person-form>
 
         <purchase-options :type="type" :showDialog.sync="showDialogOptions"
@@ -236,6 +237,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                input_person:{},
                 type: 'edit',
                 resource: 'purchases',
                 showDialogAddItem: false,
@@ -291,9 +293,56 @@
             this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
                 this.reloadDataSuppliers(supplier_id)
            })
+
+           this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            })
         },
         methods: {
+            initInputPerson(){
+                this.input_person = {
+                    number:'',
+                    identity_document_type_id:''
+                }
+            },
+            keyupEnterSupplier(){
             
+                if(this.input_person.number){
+
+                    if(!isNaN(parseInt(this.input_person.number))){ 
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+                        
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            }, 
+            keyupSupplier(e){ 
+
+                if(e.key !== "Enter"){
+                    
+                    this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
+                    let exist_persons = this.suppliers.filter((supplier)=>{
+                        let pos = supplier.description.search(this.input_person.number);
+                        return (pos >- 1)
+                    })
+
+                    this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
+                }
+            
+            },
             inputSeries(){
 
                 const pattern = new RegExp('^[A-Z0-9]+$', 'i');
@@ -316,12 +365,14 @@
                     this.form.date_of_due = dato.date_of_due
                     this.form.date_of_issue = dato.date_of_issue
                     this.form.supplier_id = dato.supplier_id
+                    this.aux_supplier_id = dato.supplier_id
                     this.form.payment_method_type_id = dato.purchase_payments.payment_method_type_id
                     this.form.currency_type_id = dato.currency_type_id
                     this.form.exchange_rate_sale = dato.exchange_rate_sale
                     this.form.items = dato.items
                     this.form.purchase_payments_id = dato.purchase_payments.id
 
+                    this.changeDocumentType()
                     this.changePaymentMethodType()
                     this.calculateTotal()
                     
@@ -412,6 +463,8 @@
                     attributes: [],
                     guides: [],
                 }
+
+                this.initInputPerson()
             },
             resetForm() {
                 this.initForm()

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" :close-on-click-modal="false">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" @opened="opened" :close-on-click-modal="false">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -194,7 +194,7 @@
 
     export default {
         mixins: [serviceNumber],
-        props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id'],
+        props: ['showDialog', 'type', 'recordId', 'external', 'document_type_id','input_person'],
         data() {
             return {
                 loading_submit: false,
@@ -263,13 +263,32 @@
                     more_address: []
                 }
             },
+            async opened() {
+
+                if(this.external && this.input_person) { 
+                    if(this.form.number.length === 8 || this.form.number.length === 11){
+                        if(this.api_service_token != false){ 
+                            await this.$eventHub.$emit('enableClickSearch')
+                        }else{
+                            this.searchCustomer()
+                        } 
+                    }
+                } 
+
+            }, 
             create() {
+                // console.log(this.input_person)
                 if(this.external) {
                     if(this.document_type_id === '01') {
                         this.form.identity_document_type_id = '6'
                     }
                     if(this.document_type_id === '03') {
                         this.form.identity_document_type_id = '1'
+                    } 
+                    
+                    if(this.input_person) {
+                        this.form.identity_document_type_id = (this.input_person.identity_document_type_id) ? this.input_person.identity_document_type_id: this.form.identity_document_type_id
+                        this.form.number = (this.input_person.number) ? this.input_person.number:''
                     }
                 }
                 if(this.type === 'customers') {
@@ -286,7 +305,7 @@
                             this.filterDistricts()
                         })
                 }
-            },
+            },  
             clickAddAddress() {
                 this.form.more_address.push({
                     location_id: [],
@@ -335,6 +354,7 @@
 
             },
             close() {
+                this.$eventHub.$emit('initInputPerson')
                 this.$emit('update:showDialog', false)
                 this.initForm()
             },
