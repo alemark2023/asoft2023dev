@@ -126,7 +126,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                     </td>
                     @if(!$cash->state)
                     <td class="td-custom">
-                        <p><strong>Fecha y hora cierre: </strong>{{$cash->date_opening}} {{$cash->time_opening}}</p>
+                        <p><strong>Fecha y hora cierre: </strong>{{$cash->date_closed}} {{$cash->time_closed}}</p>
                     </td>
                     @endif
                 </tr>

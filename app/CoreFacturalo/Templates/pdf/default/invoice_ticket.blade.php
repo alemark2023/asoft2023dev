@@ -398,7 +398,7 @@
     @if($payments->count())
         <tr>
             <td class="desc pt-5">
-                <strong> {{$document->user->name}} PAGOS:</strong>
+                <strong>PAGOS:</strong>
             </td>
         </tr>
         @foreach($payments as $row)
@@ -409,10 +409,10 @@
     @endif
 
     <tr>
-        <td>
+        <td class="desc pt-2">
         <strong>Vendedor:</strong> </td></tr>
                 <tr>
-                    <td>{{ $document->user->name }}</td>
+                    <td class="desc">{{ $document->user->name }}</td>
                 </tr>
 
         </tr>

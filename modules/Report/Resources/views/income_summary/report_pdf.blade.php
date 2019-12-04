@@ -12,7 +12,7 @@ $cash_documents = $cash->cash_documents;
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Reporte POS - {{$cash->user->name}} - {{$cash->date_opening}} {{$cash->time_opening}}</title>
+        <title>Reporte Resúmen de ingresos - {{$cash->user->name}} - {{$cash->date_opening}} {{$cash->time_opening}}</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -61,7 +61,7 @@ $cash_documents = $cash->cash_documents;
     </head>
     <body>
         <div>
-            <p align="center" class="title"><strong>Reporte Punto de Venta</strong></p>
+            <p align="center" class="title"><strong>Resúmen de ingresos por métodos de pago</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
             <table> 
@@ -96,7 +96,7 @@ $cash_documents = $cash->cash_documents;
                     </td>
                     @if(!$cash->state)
                     <td class="td-custom">
-                        <p><strong>Fecha y hora cierre: </strong>{{$cash->date_opening}} {{$cash->time_opening}}</p>
+                        <p><strong>Fecha y hora cierre: </strong>{{$cash->date_closed}} {{$cash->time_closed}}</p>
                     </td>
                     @endif
                 </tr> 
@@ -109,53 +109,47 @@ $cash_documents = $cash->cash_documents;
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Tipo transacción</th>
+                                <th>Fecha y hora emisión</th>
                                 <th>Tipo documento</th>
                                 <th>Documento</th>
-                                <th>Fecha emisión</th>
-                                <th>Cliente/Proveedor</th>
-                                <th>N° Documento</th> 
-                                <th>Total</th>
+                                <th>Método de pago</th> 
+                                <th>Monto</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($cash_documents as $key => $value)
+                            @foreach($cash_documents as $value)
                             
                                 @php
                                     
                                     $type_transaction =  null;
                                     $document_type_description = null;
                                     $number = null;
-                                    $date_of_issue = null;
-                                    $customer_name = null;
-                                    $customer_number = null;
-                                    $total = null; 
-                                    
+                                    $date_time_of_issue = null;
+                                    $payment_method_description = null;
+                                    $total = null;  
+
                                 @endphp
 
                                 @if($value->sale_note)
-
+ 
                                     @foreach($value->sale_note->payments as $payment)
                                     <tr>
                                         @php
                                             $type_transaction =  'Venta';
                                             $document_type_description =  'NOTA DE VENTA';
                                             $number = $value->sale_note->identifier;
-                                            $date_of_issue = $value->sale_note->date_of_issue->format('Y-m-d');
-                                            $customer_name = $value->sale_note->customer->name;
-                                            $customer_number = $value->sale_note->customer->number;
-                                            $total = $payment->total;
+                                            $date_time_of_issue = "{$value->sale_note->date_of_issue->format('Y-m-d')} {$value->sale_note->time_of_issue}";
+                                            $payment_method_description = $payment->payment_method_type->description;
+                                            $total = $payment->payment;
 
                                         @endphp
 
 
                                         <td class="celda">{{ $loop->iteration }}</td>
-                                        <td class="celda">{{ $type_transaction }}</td>
+                                        <td class="celda">{{ $date_time_of_issue}}</td>
                                         <td class="celda">{{ $document_type_description }}</td>
                                         <td class="celda">{{ $number }}</td>
-                                        <td class="celda">{{ $date_of_issue}}</td>
-                                        <td class="celda">{{ $customer_name }}</td>
-                                        <td class="celda">{{$customer_number }}</td>  
+                                        <td class="celda">{{$payment_method_description }}</td>  
                                         <td class="celda">{{ number_format($total,2) }}</td>
 
                                     </tr>
@@ -163,6 +157,28 @@ $cash_documents = $cash->cash_documents;
 
                                 @elseif($value->document)
                                  
+                                    @foreach($value->document->payments as $payment)
+                                    <tr>
+                                        @php
+                                            $type_transaction =  'Venta';
+                                            $document_type_description =  $value->document->document_type->description;
+                                            $number = $value->document->number_full;
+                                            $date_time_of_issue = "{$value->document->date_of_issue->format('Y-m-d')} {$value->document->time_of_issue}";
+                                            $payment_method_description = $payment->payment_method_type->description;
+                                            $total = $payment->payment;
+
+                                        @endphp
+
+
+                                        <td class="celda">{{ $loop->iteration }}</td>
+                                        <td class="celda">{{ $date_time_of_issue}}</td>
+                                        <td class="celda">{{ $document_type_description }}</td>
+                                        <td class="celda">{{ $number }}</td>
+                                        <td class="celda">{{$payment_method_description }}</td>  
+                                        <td class="celda">{{ number_format($total,2) }}</td>
+
+                                    </tr>
+                                    @endforeach
                                 @endif
                             @endforeach
                         </tbody>
