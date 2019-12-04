@@ -21,9 +21,9 @@
 
         <div class="row">
           <template v-for="(item,index) in items">
-            <div class="col-lg-3 col-md-4 col-sm-6" :key="index" @click="clickAddItem(item,index)">
-              <section class="card pointer">
-                <div class="card-body px-2 pt-2">
+            <div class="col-lg-3 col-md-4 col-sm-6" :key="index" >
+              <section class="card ">
+                <div class="card-body pointer px-2 pt-2" @click="clickAddItem(item,index)">
                   <p class="font-weight-semibold mb-0">{{item.description}}</p>
                   <img :src="item.image_url" class="img-thumbail img-custom" />
                   <p class="text-muted font-weight-lighter mb-0">
@@ -38,9 +38,9 @@
                   </p>
                 </div>
                 <div class="card-footer text-center bg-primary">
-                  <h5
-                    class="font-weight-semibold text-right text-white"
-                  >{{item.currency_type_symbol}} {{item.sale_unit_price}}</h5>
+                  <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                  <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                  <h5   class="font-weight-semibold text-right text-white">{{item.currency_type_symbol}} {{item.sale_unit_price}}</h5>
                 </div>
               </section>
             </div>
@@ -178,6 +178,19 @@
         :customer="customer"
       ></payment-form>
     </template>
+
+    
+      <history-sales-form
+        :showDialog.sync="showDialogHistorySales"
+        :item_id="history_item_id"
+        :customer_id="form.customer_id"
+      ></history-sales-form>
+
+      <history-purchases-form
+        :showDialog.sync="showDialogHistoryPurchases"
+        :item_id="history_item_id"
+      ></history-purchases-form>
+
   </div>
 </template>
 <style>
@@ -198,14 +211,19 @@ import PaymentForm from "./partials/payment.vue";
 import PersonForm from "../persons/form.vue";
 import ItemForm from "./partials/form.vue";
 import { functions, exchangeRate } from "../../../mixins/functions";
+import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
 
 export default {
-  components: { PaymentForm, PersonForm, ItemForm },
+  components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm},
   mixins: [functions, exchangeRate],
 
   data() {
     return {
+      history_item_id:null,
       input_person:{},
+      showDialogHistoryPurchases: false,
+      showDialogHistorySales: false,
       showDialogNewPerson: false,
       showDialogNewItem: false,
       loading: false,
@@ -234,7 +252,20 @@ export default {
     this.events();
   },
   methods: {
-    
+    clickHistoryPurchases(item_id){ 
+
+      this.history_item_id = item_id
+      this.showDialogHistoryPurchases = true
+      // console.log(item)
+    },
+    clickHistorySales(item_id){
+      if(!this.form.customer_id)
+        return this.$message.error("Debe seleccionar el cliente")
+
+      this.history_item_id = item_id
+      this.showDialogHistorySales = true
+      // console.log(item)
+    },
     keyupEnterCustomer(){
     
       if(this.input_person.number){
