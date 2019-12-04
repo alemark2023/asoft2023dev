@@ -66,6 +66,10 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
+        @if($document->date_of_due)
+            <td width="25%">Fecha de vencimiento:</td>
+            <td width="15%">{{ $document->date_of_due->format('Y-m-d') }}</td>
+        @endif
     </tr>
     @if ($customer->address !== '')
     <tr>
@@ -75,6 +79,22 @@
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+        </td>
+    </tr>
+    @endif
+    @if ($customer->telephone)
+    <tr>
+        <td class="align-top">Teléfono:</td>
+        <td colspan="3">
+            {{ $customer->telephone }} 
+        </td>
+    </tr>
+    @endif
+    @if ($document->payment_method_type)
+    <tr>
+        <td class="align-top">T. Pago:</td>
+        <td colspan="3">
+            {{ $document->payment_method_type->description }} 
         </td>
     </tr>
     @endif

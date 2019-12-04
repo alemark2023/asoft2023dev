@@ -52,10 +52,13 @@
           <div class="row py-3 border-bottom m-0 p-0">
             <div class="col-8">
               <el-select
+                ref="select_person"
                 v-model="form.customer_id"
                 filterable
                 placeholder="Cliente"
                 @change="changeCustomer"
+                @keyup.native="keyupCustomer"
+                @keyup.enter.native="keyupEnterCustomer"
               >
                 <el-option
                   v-for="option in all_customers"
@@ -159,6 +162,7 @@
       <person-form
         :showDialog.sync="showDialogNewPerson"
         type="customers"
+        :input_person="input_person"
         :external="true"
         :document_type_id="form.document_type_id"
       ></person-form>
@@ -201,6 +205,7 @@ export default {
 
   data() {
     return {
+      input_person:{},
       showDialogNewPerson: false,
       showDialogNewItem: false,
       loading: false,
@@ -229,6 +234,46 @@ export default {
     this.events();
   },
   methods: {
+    
+    keyupEnterCustomer(){
+    
+      if(this.input_person.number){
+
+          if(!isNaN(parseInt(this.input_person.number))){
+            
+              switch (this.input_person.number.length) {
+                  case 8:
+                      this.input_person.identity_document_type_id = '1'
+                      this.showDialogNewPerson = true
+                      break;
+              
+                  case 11:
+                      this.input_person.identity_document_type_id = '6'
+                      this.showDialogNewPerson = true
+                      break;
+                  default:
+                      this.input_person.identity_document_type_id = '6'
+                      this.showDialogNewPerson = true
+                      break;
+              }
+          }
+      }
+    }, 
+    keyupCustomer(e){ 
+      
+      if(e.key !== "Enter"){
+        
+          this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
+          let exist_persons = this.all_customers.filter((customer)=>{
+              let pos = customer.description.search(this.input_person.number);
+              return (pos >- 1)
+          })
+
+          this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
+          
+      }
+      
+    },
     calculateQuantity(index) {
       // console.log(this.form.items[index])
       if (this.form.items[index].item.calculate_quantity) {
@@ -266,10 +311,16 @@ export default {
         customer.identity_document_type_id == "1" ? "03" : "01";
     },
     async events() {
+      
+      await this.$eventHub.$on('initInputPerson', () => {
+          this.initInputPerson()
+      })
+
       await this.$eventHub.$on("cancelSale", () => {
         this.is_payment = false;
         this.initForm();
       });
+
       await this.$eventHub.$on("reloadDataPersons", customer_id => {
         this.reloadDataCustomers(customer_id);
       });
@@ -330,6 +381,14 @@ export default {
 
       this.initFormItem();
       this.changeDateOfIssue();
+      this.initInputPerson()
+
+    },
+    initInputPerson(){
+        this.input_person = {
+            number:'',
+            identity_document_type_id:''
+        }
     },
     initFormItem() {
       this.form_item = {

@@ -4,15 +4,35 @@ $establishment = $cash->user->establishment;
 
 $final_balance = 0;
 $cash_income = 0;
+$cash_egress = 0;
 $cash_final_balance = 0;
 $cash_documents = $cash->cash_documents;
 
 foreach ($cash_documents as $cash_document) {
-    $final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
+
+    //$final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
+    
+    if($cash_document->sale_note){
+        $cash_income += $cash_document->sale_note->total;
+        $final_balance += $cash_document->sale_note->total;
+    }
+    else if($cash_document->document){
+        $cash_income += $cash_document->document->total;
+        $final_balance += $cash_document->document->total;
+    }
+    else if($cash_document->purchase){
+        $cash_egress += $cash_document->purchase->total;
+        $final_balance -= $cash_document->purchase->total;
+    }
+    else if($cash_document->expense){
+        $cash_egress += $cash_document->expense->total;
+        $final_balance -= $cash_document->expense->total;
+    }
+
 }
 
 $cash_final_balance = $final_balance + $cash->beginning_balance; 
-$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0; 
+//$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0; 
 
 @endphp
 <!DOCTYPE html>
@@ -118,15 +138,18 @@ $cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_ba
                 </tr>
                 <tr>
                     <td class="td-custom">
-                        <p><strong>Saldo inicial: </strong>S/. {{round($cash->beginning_balance,2)}}</p>
+                        <p><strong>Saldo inicial: </strong>S/. {{number_format($cash->beginning_balance,2)}}</p>
                     </td>
                     <td  class="td-custom">
-                        <p><strong>Ingreso: </strong>S/. {{round($cash_income,2)}} </p>
+                        <p><strong>Ingreso: </strong>S/. {{number_format($cash_income,2)}} </p>
                     </td>
                 </tr>
                 <tr> 
                     <td  class="td-custom">
-                        <p><strong>Saldo final: </strong>S/. {{round($cash_final_balance,2)}} </p>
+                        <p><strong>Saldo final: </strong>S/. {{number_format($cash_final_balance,2)}} </p>
+                    </td>
+                    <td  class="td-custom">
+                        <p><strong>Egreso: </strong>S/. {{number_format($cash_egress,2)}} </p>
                     </td>
                 </tr>
             </table> 
@@ -138,25 +161,85 @@ $cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_ba
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Tipo Doc</th>
+                                <th>Tipo transacción</th>
+                                <th>Tipo documento</th>
                                 <th>Documento</th>
-                                <th>F. Emisión</th>
-                                <th>Cliente</th>
-                                <th>RUC</th> 
+                                <th>Fecha emisión</th>
+                                <th>Cliente/Proveedor</th>
+                                <th>N° Documento</th> 
                                 <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($cash_documents as $key => $value)
                                 <tr>
-                                
+                                    @php
+                                    
+
+                                        $type_transaction =  null;
+                                        $document_type_description = null;
+                                        $number = null;
+                                        $date_of_issue = null;
+                                        $customer_name = null;
+                                        $customer_number = null;
+                                        $total = null;
+
+                                        if($value->sale_note){
+
+                                            $type_transaction =  'Venta';
+                                            $document_type_description =  'NOTA DE VENTA';
+                                            $number = $value->sale_note->identifier;
+                                            $date_of_issue = $value->sale_note->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->sale_note->customer->name;
+                                            $customer_number = $value->sale_note->customer->number;
+                                            $total = $value->sale_note->total;
+
+                                        }
+                                        else if($value->document){
+
+                                            $type_transaction =  'Venta';
+                                            $document_type_description =  $value->document->document_type->description;
+                                            $number = $value->document->number_full;
+                                            $date_of_issue = $value->document->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->document->customer->name;
+                                            $customer_number = $value->document->customer->number;
+                                            $total = $value->document->total;
+
+                                        }
+                                        else if($value->purchase){
+
+                                            $type_transaction =  'Compra';
+                                            $document_type_description =  $value->purchase->document_type->description;
+                                            $number = $value->purchase->number_full;
+                                            $date_of_issue = $value->purchase->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->purchase->supplier->name;
+                                            $customer_number = $value->purchase->supplier->number;
+                                            $total = -$value->purchase->total;
+
+                                        }
+                                        else if($value->expense){
+                                            
+                                            $type_transaction =  'Gasto';
+                                            $document_type_description =  $value->expense->expense_type->description;
+                                            $number = $value->expense->number;
+                                            $date_of_issue = $value->expense->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->expense->supplier->name;
+                                            $customer_number = $value->expense->supplier->number;
+                                            $total = -$value->expense->total;
+
+                                        }
+
+                                    @endphp
+
+
                                     <td class="celda">{{ $loop->iteration }}</td>
-                                    <td class="celda">{{ ($value->document_id) ? $value->document->document_type->description : 'NOTA DE VENTA'}}</td>
-                                    <td class="celda">{{ ($value->document_id) ? "{$value->document->series}-{$value->document->number}" : "{$value->sale_note->prefix}-{$value->sale_note->id}"}}</td>
-                                    <td class="celda">{{ ($value->document_id) ? $value->document->date_of_issue->format('Y-m-d') : $value->sale_note->date_of_issue->format('Y-m-d')}}</td>
-                                    <td class="celda">{{ ($value->document_id) ? $value->document->customer->name : $value->sale_note->customer->name}}</td>
-                                    <td class="celda">{{ ($value->document_id) ? $value->document->customer->number : $value->sale_note->customer->number}}</td>  
-                                    <td class="celda">{{ ($value->document_id) ? $value->document->total : $value->sale_note->total}}</td>
+                                    <td class="celda">{{ $type_transaction }}</td>
+                                    <td class="celda">{{ $document_type_description }}</td>
+                                    <td class="celda">{{ $number }}</td>
+                                    <td class="celda">{{ $date_of_issue}}</td>
+                                    <td class="celda">{{ $customer_name }}</td>
+                                    <td class="celda">{{$customer_number }}</td>  
+                                    <td class="celda">{{ number_format($total,2) }}</td>
 
                                 </tr>
                             @endforeach

@@ -35,6 +35,11 @@
         created() {
             this.changeIdentityDocumentTypeId()
         },
+        mounted() {
+            this.$eventHub.$on('enableClickSearch',()=>{
+                this.clickSearch()
+            })
+        },
         watch: {
             identity_document_type_id() {
                 this.changeIdentityDocumentTypeId()

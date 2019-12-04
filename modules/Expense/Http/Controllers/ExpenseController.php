@@ -20,6 +20,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\Company;
 
 class ExpenseController extends Controller
 {
@@ -104,8 +105,12 @@ class ExpenseController extends Controller
 
     public static function merge_inputs($inputs)
     {
+
+        $company = Company::active();
+
         $values = [
             'user_id' => auth()->id(),
+            'soap_type_id' => $company->soap_type_id,
             'external_id' => Str::uuid()->toString(),
             'supplier' => PersonInput::set($inputs['supplier_id']),
         ];

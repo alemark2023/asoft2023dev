@@ -95,6 +95,7 @@
                                         dusk="customer_id"                                    
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
+                                        @keyup.enter.native="keyupCustomer"
                                         :loading="loading_search">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -484,6 +485,7 @@
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <document-options :showDialog.sync="showDialogOptions"
@@ -535,6 +537,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                input_person:{},
                 showDialogDocumentDetraction:false,
                 has_data_detraction:false,
                 showDialogFormHotel:false,
@@ -622,8 +625,35 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            })
         },
         methods: {
+            keyupCustomer(){ 
+
+                if(this.input_person.number){
+
+                    if(!isNaN(parseInt(this.input_person.number))){
+                        
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+                        
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
             addDocumentDetraction(detraction) {
 
                 this.form.detraction = detraction
@@ -794,10 +824,10 @@
             },
 
             searchRemoteCustomers(input) {  
-                  
+                
                 if (input.length > 0) {
                 // if (input!="") {
-
+                    // console.log("a")
                     this.loading_search = true
                     let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&operation_type_id=${this.form.operation_type_id}`
 
@@ -805,11 +835,18 @@
                             .then(response => { 
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.filterCustomers()}
+                                this.input_person.number = null
+                                
+                                if(this.customers.length == 0){
+                                    // console.log("b")
+                                    this.filterCustomers()
+                                    this.input_person.number = input
+                                }
                             })  
                 } else {
                     // this.customers = []
                     this.filterCustomers()
+                    this.input_person.number = null
                 }
 
             },
@@ -870,6 +907,14 @@
                 this.prepayment_deduction = false
                 this.imageDetraction = {}
                 this.$eventHub.$emit('eventInitForm')
+
+                this.initInputPerson()
+            },
+            initInputPerson(){
+                this.input_person = {
+                    number:null,
+                    identity_document_type_id:null
+                }
             },
             resetForm() {
                 this.activePanel = 0

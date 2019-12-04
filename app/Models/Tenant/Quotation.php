@@ -16,11 +16,13 @@ class Quotation extends ModelTenant
         'establishment',
         'soap_type_id',
         'state_type_id', 
+        'payment_method_type_id', 
 
         'prefix', 
 
         'date_of_issue',
         'time_of_issue',
+        'date_of_due',
         'customer_id',
         'customer',
         'currency_type_id', 
@@ -56,6 +58,7 @@ class Quotation extends ModelTenant
 
     protected $casts = [
         'date_of_issue' => 'date',
+        'date_of_due' => 'date',
     ];
 
     public function getEstablishmentAttribute($value)
@@ -204,7 +207,11 @@ class Quotation extends ModelTenant
         return $this->hasMany(SaleNote::class);
     }
 
-  
+    public function payment_method_type()
+    {
+        return $this->belongsTo(PaymentMethodType::class);
+    }
+
     public function getNumberToLetterAttribute()
     {
         $legends = $this->legends;
