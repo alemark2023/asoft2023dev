@@ -27,8 +27,8 @@ class CashServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->expense();
-        $this->purchase();
+        // $this->expense();
+        // $this->purchase();
     }
 
     private function purchase(){

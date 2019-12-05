@@ -28,20 +28,32 @@
                   <img :src="item.image_url" class="img-thumbail img-custom" />
                   <p class="text-muted font-weight-lighter mb-0">
                     <small>{{item.internal_id}}</small>
-                    <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
+                    <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
                       <el-table  :data="item.warehouses">
                         <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
                         <el-table-column width="100" property="stock" label="Stock"></el-table-column>
                       </el-table>
                       <el-button slot="reference"><i class="fa fa-search"></i></el-button>
-                    </el-popover>
+                    </el-popover> -->
                   </p>
                 </div>
-                <div class="card-footer text-center bg-primary">
-                  <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
-                  <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                <div class="card-footer pointer text-center bg-primary"  @click="clickAddItem(item,index)">
+                  <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                  <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <h5   class="font-weight-semibold text-right text-white">{{item.currency_type_symbol}} {{item.sale_unit_price}}</h5>
                 </div>
+                <div class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
+                  <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
+                    <el-table  :data="item.warehouses">
+                      <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
+                      <el-table-column width="100" property="stock" label="Stock"></el-table-column>
+                    </el-table>
+                    <button type="button" style="width:100% !important;" slot="reference" class="btn btn-xs btn-default " @click="clickHistorySales(item.item_id)"><i class="fa fa-search"></i></button>
+                  </el-popover> -->
+                  <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)"><i class="fa fa-search"></i></button>
+                  <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                  <button type="button" style="width:33.5% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                </div> 
               </section>
             </div>
           </template>
@@ -191,6 +203,10 @@
         :item_id="history_item_id"
       ></history-purchases-form>
 
+        <warehouses-detail
+                :showDialog.sync="showWarehousesDetail"
+                :warehouses="warehousesDetail">
+            </warehouses-detail>
   </div>
 </template>
 <style>
@@ -213,14 +229,16 @@ import ItemForm from "./partials/form.vue";
 import { functions, exchangeRate } from "../../../mixins/functions";
 import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
+import WarehousesDetail from '../items/partials/warehouses.vue'
 
 export default {
-  components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm},
+  components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
   mixins: [functions, exchangeRate],
 
   data() {
     return {
       history_item_id:null,
+      warehousesDetail:[],
       input_person:{},
       showDialogHistoryPurchases: false,
       showDialogHistorySales: false,
@@ -229,6 +247,7 @@ export default {
       loading: false,
       is_payment: false, //aq
       // is_payment: true,//aq
+      showWarehousesDetail: false,
       resource: "pos",
       recordId: null,
       input_item: "",
@@ -252,6 +271,12 @@ export default {
     this.events();
   },
   methods: {
+    
+    clickWarehouseDetail(item){
+
+        this.warehousesDetail = item.warehouses
+        this.showWarehousesDetail = true
+    },
     clickHistoryPurchases(item_id){ 
 
       this.history_item_id = item_id

@@ -73,3 +73,17 @@ html.sidebar-light:not(.dark) .page-header h2 {
       /* height: 100%; */
       height: 100px;
   }
+
+  
+
+.btn-primary-pos {
+	background-color: #007bff ;
+	border-color: #007bff  #007bff  #007bff ;
+	color: #FFF;
+}
+
+.btn-primary-pos:hover, .btn-primary-pos.hover {
+	background-color: #0069d9;
+	border-color: #0069d9;
+	color: #FFF;
+}

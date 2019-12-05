@@ -38,7 +38,7 @@
                 showImportDialog: false,
                 resource: 'items',
                 recordId: null,
-                titleDialog: 'Productos',
+                titleDialog: 'Stock de producto',
 
             }
         },
