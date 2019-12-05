@@ -83,7 +83,7 @@
 
         @if ($document->detraction)
 
-            <td width="120px">CUENTA BANCARIA</td>
+            <td width="120px">N. CTA DETRACCIONES</td>
             <td width="8px">:</td>
             <td>{{ $document->detraction->bank_account}}</td>
         @endif

@@ -15,7 +15,7 @@
                     <div class="col-lg-6 col-md-6">
                         <div class="form-group" >
                             <label class="control-label">Método pago - Detracción<span class="text-danger"> *</span></label>
-                            <el-select v-model="detraction.payment_method_id"  filterable>
+                            <el-select v-model="payment_method_type"  filterable @change="changePaymentMethod" ref="select_payment">
                                 <el-option v-for="option in cat_payment_method_types" :key="option.id" :value="option.id" :label="`${option.description}`"></el-option>
                             </el-select>
                         </div>
@@ -29,7 +29,7 @@
 
                                 <div class="short-div col-md-12"> 
                                     <div class="form-group">
-                                        <label class="control-label">Cuenta bancaria<span class="text-danger"> *</span></label>
+                                        <label class="control-label">N° Cta Detracciones<span class="text-danger"> *</span></label>
                                         <el-input v-model="detraction.bank_account" readonly></el-input>
                                     </div>
                                 </div>
@@ -44,7 +44,7 @@
                                 <div class="short-div col-md-12">
                                     
                                     <div class="form-group">
-                                        <label class="control-label">Total detracción
+                                        <label class="control-label">Monto de la detracción
                                             <span class="text-danger"> *</span>
                                             <el-tooltip class="item" effect="dark" content="Se calcula automaticamente en base al total del comprobante" placement="top">
                                                 <i class="fa fa-info-circle"></i>
@@ -94,6 +94,7 @@
                 form:{},
                 title:'Registrar datos de detracción',
                 cat_payment_method_types: [],
+                payment_method_type: null,
                 detraction_types: [],
             }
         },
@@ -110,6 +111,9 @@
                 this.initForm()
             })
         }, 
+        mounted(){
+
+        },
         methods: {
             async changeDetractionType(){
                 let detraction_type = await _.find(this.detraction_types, {'id':this.detraction.detraction_type_id})
@@ -129,9 +133,12 @@
                 if(!detraction.detraction_type_id)
                     return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
                     
-                if(!detraction.payment_method_id)
+                if(!this.payment_method_type)
                     return {success:false, message:'El campo método de pago - detracción es obligatorio'}
                     
+                // if(!detraction.payment_method_id)
+                //     return {success:false, message:'El campo método de pago - detracción es obligatorio'}
+
                 if(!detraction.bank_account)
                     return {success:false, message:'El campo cuenta bancaria es obligatorio'}
 
@@ -154,6 +161,8 @@
             },   
             create(){
                 this.$message.warning('Sujeta a detracción');
+                // console.log(this.$refs.select_payment.$el.getElementsByTagName('input')[0])
+                // this.$refs.select_payment.$el.getElementsByTagName('input')[0].value = "001"
             }, 
             initForm(){
                 this.form = { 
@@ -163,7 +172,14 @@
                 }
 
                 this.imageUrl = null
+                this.payment_method_type = "001"
+                // this.detraction.payment_method_id = (this.detraction.payment_method_id) ? this.detraction.payment_method_id:"001"
+
             },  
+            changePaymentMethod(){
+                this.detraction.payment_method_id = this.payment_method_type
+
+            },
             async clickCancel() {
                 await this.initForm()
                 this.$emit('addDocumentDetraction', {});
@@ -178,6 +194,7 @@
                 if(!val_detraction.success)
                     return this.$message.error(val_detraction.message);
 
+                this.detraction.payment_method_id = this.payment_method_type
                 this.detraction.has_data_detraction = true
                 await this.$emit('addDocumentDetraction', this.detraction);
                 await this.$emit('update:showDialog', false)
