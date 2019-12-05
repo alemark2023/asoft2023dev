@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Tenant\Purchase;  
 use Modules\Expense\Models\Expense;
+use Modules\Expense\Models\ExpensePayment;
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\CashDocument;
 
@@ -27,27 +28,30 @@ class CashServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $this->expense();
+        $this->expense_payment();
         // $this->purchase();
     }
 
-    private function purchase(){
+    // private function purchase(){
 
-        Purchase::created(function ($purchase) { 
+    //     Purchase::created(function ($purchase) { 
 
-            $cash = self::getCash();
-            $cash->cash_documents()->create(['purchase_id' => $purchase->id]);
+    //         $cash = self::getCash();
+    //         $cash->cash_documents()->create(['purchase_id' => $purchase->id]);
  
-        });
+    //     });
         
-    }
+    // }
 
-    private function expense(){
+    private function expense_payment(){
 
-        Expense::created(function ($expense) { 
+        ExpensePayment::created(function ($expense_payment) { 
 
-            $cash = self::getCash();
-            $cash->cash_documents()->create(['expense_id' => $expense->id]);
+            if($expense_payment->expense_method_type_id === 1){
+                
+                $cash = self::getCash();
+                $cash->cash_documents()->create(['expense_payment_id' => $expense_payment->id]);
+            }
 
         });
         

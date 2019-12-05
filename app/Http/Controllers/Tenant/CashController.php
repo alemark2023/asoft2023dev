@@ -134,12 +134,15 @@ class CashController extends Controller
             else if($cash_document->document){
                 $final_balance += $cash_document->document->total;
             }
-            else if($cash_document->purchase){
-                $final_balance -= $cash_document->purchase->total;
+            else if($cash_document->expense_payment){
+                $final_balance -= $cash_document->expense_payment->payment;
             }
-            else if($cash_document->expense){
-                $final_balance -= $cash_document->expense->total;
-            }
+            // else if($cash_document->purchase){
+            //     $final_balance -= $cash_document->purchase->total;
+            // }
+            // else if($cash_document->expense){
+            //     $final_balance -= $cash_document->expense->total;
+            // }
 
         }
 

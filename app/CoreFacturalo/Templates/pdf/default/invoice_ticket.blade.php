@@ -120,7 +120,7 @@
     @if ($document->detraction)
     {{--<strong>Operación sujeta a detracción</strong>--}}
         <tr>
-            <td  class="align-top"><p class="desc">Cuenta bancaria:</p></td>
+            <td  class="align-top"><p class="desc">N. Cta Detracciones:</p></td>
             <td><p class="desc">{{ $document->detraction->bank_account}}</p></td>
         </tr>
         <tr>

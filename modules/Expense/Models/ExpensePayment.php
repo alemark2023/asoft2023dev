@@ -23,6 +23,11 @@ class ExpensePayment extends ModelTenant
         'date_of_payment' => 'date',
     ];
 
+    public function expense()
+    {
+        return $this->belongsTo(Expense::class);
+    }
+
     public function expense_method_type()
     {
         return $this->belongsTo(ExpenseMethodType::class);
