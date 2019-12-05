@@ -308,13 +308,13 @@
                 this.reloadDataCardBrands(card_brand_id)
             })
         }, 
+        mounted(){
+            console.log(this.currencyTypeActive)
+        },
         methods: {
             clickAddPayment(){
                 this.showDialogMultiplePayment = true
             },
-            
-          
-          
             reloadDataCardBrands(card_brand_id) {
                 this.$http.get(`/${this.resource}/table/card_brands`).then((response) => {
                     this.cards_brand = response.data

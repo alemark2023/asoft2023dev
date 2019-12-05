@@ -1,21 +1,33 @@
 <template >
   <div>
     <header class="page-header pr-0">
-      <h2 class="text-sm">POS</h2>
+      <!-- <h2 class="text-sm">POS</h2>
       <div class="right-wrapper pull-right">
+        <h2 class="text-sm pr-5">T/C 3.321</h2>
         <h2 class="text-sm">{{user.name}}</h2>
+      </div> -->
+      <div class="row">
+        <div class="col-md-8">
+          <h2 class="text-sm">POS</h2>
+        </div>
+        <div class="col-md-4">
+          <div class="right-wrapper">
+            <h2 class="text-sm pr-5">T/C  {{form.exchange_rate_sale}}</h2>
+            <h2 class="text-sm  pull-right">{{user.name}}</h2>
+          </div>
+        </div>
       </div>
     </header>
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
       <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
         <el-input
-          placeholder="Buscar productos"
-          size="medium"
-          v-model="input_item"
-          @input="searchItems"
-          autofocus
-          class="m-bottom"
-        >
+            placeholder="Buscar productos"
+            size="medium"
+            v-model="input_item"
+            @input="searchItems"
+            autofocus
+            class="m-bottom"
+          >
           <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
         </el-input>
 
@@ -87,6 +99,15 @@
                 </a>
                 <a class="btn btn-sm btn-default w-100" @click="clickDeleteCustomer">
                   <i class="fas fa-trash fa-wf"></i>
+                </a>
+                <a class="btn btn-sm btn-default w-100" @click="selectCurrencyType">
+                  <template v-if="form.currency_type_id == 'PEN'">
+                    <strong>S/</strong>
+                  </template>
+                  <template v-else>
+                    <strong>$</strong>
+                  </template>
+                  <!-- <i class="fa fa-usd" aria-hidden="true"></i> -->
                 </a>
               </div>
             </div>
@@ -203,10 +224,10 @@
         :item_id="history_item_id"
       ></history-purchases-form>
 
-        <warehouses-detail
-                :showDialog.sync="showWarehousesDetail"
-                :warehouses="warehousesDetail">
-            </warehouses-detail>
+      <warehouses-detail
+              :showDialog.sync="showWarehousesDetail"
+              :warehouses="warehousesDetail">
+          </warehouses-detail>
   </div>
 </template>
 <style>
@@ -222,509 +243,523 @@
 </style>
 
 <script>
-import { calculateRowItem } from "../../../helpers/functions";
-import PaymentForm from "./partials/payment.vue";
-import PersonForm from "../persons/form.vue";
-import ItemForm from "./partials/form.vue";
-import { functions, exchangeRate } from "../../../mixins/functions";
-import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
-import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
-import WarehousesDetail from '../items/partials/warehouses.vue'
+      import { calculateRowItem } from "../../../helpers/functions";
+      import PaymentForm from "./partials/payment.vue";
+      import PersonForm from "../persons/form.vue";
+      import ItemForm from "./partials/form.vue";
+      import { functions, exchangeRate } from "../../../mixins/functions";
+      import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+      import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
+      import WarehousesDetail from '../items/partials/warehouses.vue'
 
-export default {
-  components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
-  mixins: [functions, exchangeRate],
+      export default {
+        components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
+        mixins: [functions, exchangeRate],
 
-  data() {
-    return {
-      history_item_id:null,
-      warehousesDetail:[],
-      input_person:{},
-      showDialogHistoryPurchases: false,
-      showDialogHistorySales: false,
-      showDialogNewPerson: false,
-      showDialogNewItem: false,
-      loading: false,
-      is_payment: false, //aq
-      // is_payment: true,//aq
-      showWarehousesDetail: false,
-      resource: "pos",
-      recordId: null,
-      input_item: "",
-      items: [],
-      all_items: [],
-      customers: [],
-      affectation_igv_types: [],
-      all_customers: [],
-      establishment: null,
-      currency_type: {},
-      form_item: {},
-      customer: {},
-      row: {},
-      user: {},
-      form: {}
-    };
-  },
-  async created() {
-    await this.getTables();
-    this.initForm();
-    this.events();
-  },
-  methods: {
-    
-    clickWarehouseDetail(item){
-
-        this.warehousesDetail = item.warehouses
-        this.showWarehousesDetail = true
-    },
-    clickHistoryPurchases(item_id){ 
-
-      this.history_item_id = item_id
-      this.showDialogHistoryPurchases = true
-      // console.log(item)
-    },
-    clickHistorySales(item_id){
-      if(!this.form.customer_id)
-        return this.$message.error("Debe seleccionar el cliente")
-
-      this.history_item_id = item_id
-      this.showDialogHistorySales = true
-      // console.log(item)
-    },
-    keyupEnterCustomer(){
-    
-      if(this.input_person.number){
-
-          if(!isNaN(parseInt(this.input_person.number))){
-            
-              switch (this.input_person.number.length) {
-                  case 8:
-                      this.input_person.identity_document_type_id = '1'
-                      this.showDialogNewPerson = true
-                      break;
-              
-                  case 11:
-                      this.input_person.identity_document_type_id = '6'
-                      this.showDialogNewPerson = true
-                      break;
-                  default:
-                      this.input_person.identity_document_type_id = '6'
-                      this.showDialogNewPerson = true
-                      break;
-              }
-          }
-      }
-    }, 
-    keyupCustomer(e){ 
-      
-      if(e.key !== "Enter"){
-        
-          this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
-          let exist_persons = this.all_customers.filter((customer)=>{
-              let pos = customer.description.search(this.input_person.number);
-              return (pos >- 1)
-          })
-
-          this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
+        data() {
+          return {
+            history_item_id:null,
+            warehousesDetail:[],
+            input_person:{},
+            showDialogHistoryPurchases: false,
+            showDialogHistorySales: false,
+            showDialogNewPerson: false,
+            showDialogNewItem: false,
+            loading: false,
+            is_payment: false, //aq
+            // is_payment: true,//aq
+            showWarehousesDetail: false,
+            resource: "pos",
+            recordId: null,
+            input_item: "",
+            items: [],
+            all_items: [],
+            customers: [],
+            affectation_igv_types: [],
+            all_customers: [],
+            establishment: null,
+            currency_type: {},
+            form_item: {},
+            customer: {},
+            row: {},
+            user: {},
+            form: {}
+          };
+        },
+        async created() {
+          await this.initForm();
+          await this.getTables();
+          this.events();
+        },
+        methods: {
           
-      }
-      
-    },
-    calculateQuantity(index) {
-      // console.log(this.form.items[index])
-      if (this.form.items[index].item.calculate_quantity) {
-        let quantity = _.round(
-          parseFloat(this.form.items[index].total) /
-            parseFloat(this.form.items[index].unit_price),
-          4
-        );
+          clickWarehouseDetail(item){
 
-        if (quantity) {
-          this.form.items[index].quantity = quantity;
-          this.form.items[index].item.aux_quantity = quantity;
-        } else {
-          this.form.items[index].quantity = 0;
-          this.form.items[index].item.aux_quantity = 0;
-        }
-        // this.calculateTotal()
-      }
+              this.warehousesDetail = item.warehouses
+              this.showWarehousesDetail = true
+          },
+          clickHistoryPurchases(item_id){ 
 
-      //  this.clickAddItem(this.form.items[index],index, true)
-    },
-    blurCalculateQuantity(index) {
-      this.row = calculateRowItem(
-        this.form.items[index],
-        this.form.currency_type_id,
-        1
-      );
-      this.form.items[index] = this.row;
-      this.calculateTotal();
-    },
-    changeCustomer() {
-      let customer = _.find(this.all_customers, { id: this.form.customer_id });
-      this.customer = customer;
-      this.form.document_type_id =
-        customer.identity_document_type_id == "1" ? "03" : "01";
-    },
-    async events() {
-      
-      await this.$eventHub.$on('initInputPerson', () => {
-          this.initInputPerson()
-      })
+            this.history_item_id = item_id
+            this.showDialogHistoryPurchases = true
+            // console.log(item)
+          },
+          clickHistorySales(item_id){
+            if(!this.form.customer_id)
+              return this.$message.error("Debe seleccionar el cliente")
 
-      await this.$eventHub.$on("cancelSale", () => {
-        this.is_payment = false;
-        this.initForm();
-      });
+            this.history_item_id = item_id
+            this.showDialogHistorySales = true
+            // console.log(item)
+          },
+          keyupEnterCustomer(){
+          
+            if(this.input_person.number){
 
-      await this.$eventHub.$on("reloadDataPersons", customer_id => {
-        this.reloadDataCustomers(customer_id);
-      });
+                if(!isNaN(parseInt(this.input_person.number))){
+                  
+                    switch (this.input_person.number.length) {
+                        case 8:
+                            this.input_person.identity_document_type_id = '1'
+                            this.showDialogNewPerson = true
+                            break;
+                    
+                        case 11:
+                            this.input_person.identity_document_type_id = '6'
+                            this.showDialogNewPerson = true
+                            break;
+                        default:
+                            this.input_person.identity_document_type_id = '6'
+                            this.showDialogNewPerson = true
+                            break;
+                    }
+                }
+            }
+          }, 
+          keyupCustomer(e){ 
+            
+            if(e.key !== "Enter"){
+              
+                this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
+                let exist_persons = this.all_customers.filter((customer)=>{
+                    let pos = customer.description.search(this.input_person.number);
+                    return (pos >- 1)
+                })
 
-      await this.$eventHub.$on("reloadDataItems", item_id => {
-        this.reloadDataItems(item_id);
-      });
+                this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
+                
+            }
+            
+          },
+          calculateQuantity(index) {
+            // console.log(this.form.items[index])
+            if (this.form.items[index].item.calculate_quantity) {
+              let quantity = _.round(
+                parseFloat(this.form.items[index].total) /
+                  parseFloat(this.form.items[index].unit_price),
+                4
+              );
 
-      await this.$eventHub.$on("saleSuccess", () => {
-        // this.is_payment = false
-        this.initForm();
-        this.getTables();
-      });
-    },
-    initForm() {
-      this.form = {
-        establishment_id: null,
-        document_type_id: "01",
-        series_id: null,
-        prefix: null,
-        number: "#",
-        date_of_issue: moment().format("YYYY-MM-DD"),
-        time_of_issue: moment().format("HH:mm:ss"),
-        customer_id: null,
-        currency_type_id: "PEN",
-        purchase_order: null,
-        exchange_rate_sale: 1,
-        total_prepayment: 0,
-        total_charge: 0,
-        total_discount: 0,
-        total_exportation: 0,
-        total_free: 0,
-        total_taxed: 0,
-        total_unaffected: 0,
-        total_exonerated: 0,
-        total_igv: 0,
-        total_base_isc: 0,
-        total_isc: 0,
-        total_base_other_taxes: 0,
-        total_other_taxes: 0,
-        total_taxes: 0,
-        total_value: 0,
-        total: 0,
-        operation_type_id: "0101",
-        date_of_due: moment().format("YYYY-MM-DD"),
-        items: [],
-        charges: [],
-        discounts: [],
-        attributes: [],
-        guides: [],
-        payments: [],
-        hotel: {},
-        additional_information: null,
-        actions: {
-          format_pdf: "a4"
-        }
-      };
+              if (quantity) {
+                this.form.items[index].quantity = quantity;
+                this.form.items[index].item.aux_quantity = quantity;
+              } else {
+                this.form.items[index].quantity = 0;
+                this.form.items[index].item.aux_quantity = 0;
+              }
+              // this.calculateTotal()
+            }
 
-      this.initFormItem();
-      this.changeDateOfIssue();
-      this.initInputPerson()
+            //  this.clickAddItem(this.form.items[index],index, true)
+          },
+          blurCalculateQuantity(index) {
+            this.row = calculateRowItem(
+              this.form.items[index],
+              this.form.currency_type_id,
+              1
+            );
+            this.form.items[index] = this.row;
+            this.calculateTotal();
+          },
+          changeCustomer() {
+            let customer = _.find(this.all_customers, { id: this.form.customer_id });
+            this.customer = customer;
+            this.form.document_type_id =
+              customer.identity_document_type_id == "1" ? "03" : "01";
+          },
+          async events() {
+            
+            await this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            })
 
-    },
-    initInputPerson(){
-        this.input_person = {
-            number:'',
-            identity_document_type_id:''
-        }
-    },
-    initFormItem() {
-      this.form_item = {
-        item_id: null,
-        item: {},
-        affectation_igv_type_id: null,
-        affectation_igv_type: {},
-        has_isc: false,
-        system_isc_type_id: null,
-        calculate_quantity: false,
-        percentage_isc: 0,
-        suggested_price: 0,
-        quantity: 1,
-        aux_quantity: 1,
-        unit_price_value: 0,
-        unit_price: 0,
-        charges: [],
-        discounts: [],
-        attributes: [],
-        has_igv: null
-      };
-    },
-    async clickPayment() {
-      let flag = 0;
-      this.form.items.forEach(row => {
-        if (row.aux_quantity < 0 || row.total < 0 || isNaN(row.total)) {
-          flag++;
-        }
-      });
+            await this.$eventHub.$on("cancelSale", () => {
+              this.is_payment = false;
+              this.initForm();
+              this.changeExchangeRate()
+            });
 
-      if (flag > 0)
-        return this.$message.error("Cantidad negativa o incorrecta");
-      if (!this.form.customer_id)
-        return this.$message.error("Seleccione un cliente");
-      if (!this.form.items[0])
-        return this.$message.error("Seleccione un producto");
-      this.form.establishment_id = this.establishment.id;
-      this.loading = true;
-      await this.sleep(800);
-      this.is_payment = true;
-      this.loading = false;
-    },
-    sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    },
-    clickDeleteCustomer() {
-      this.form.customer_id = null;
-    },
-    async clickAddItem(item, index, input = false) {
-      this.loading = true;
-      let exchangeRateSale = this.form.exchange_rate_sale;
-      let exist_item = _.find(this.form.items, { item_id: item.item_id });
-      let pos = this.form.items.indexOf(exist_item);
-      let response = null;
+            await this.$eventHub.$on("reloadDataPersons", customer_id => {
+              this.reloadDataCustomers(customer_id);
+            });
 
-      // console.log(item.calculate_quantity)
+            await this.$eventHub.$on("reloadDataItems", item_id => {
+              this.reloadDataItems(item_id);
+            });
 
-      if (exist_item) {
-        if (input) {
-          response = await this.getStatusStock(
-            item.item_id,
-            exist_item.item.aux_quantity
-          );
-          if (!response.success) {
-            item.item.aux_quantity = item.quantity;
+            await this.$eventHub.$on("saleSuccess", () => {
+              // this.is_payment = false
+              this.initForm();
+              this.getTables();
+            });
+          },
+          initForm() {
+            this.form = {
+              establishment_id: null,
+              document_type_id: "01",
+              series_id: null,
+              prefix: null,
+              number: "#",
+              date_of_issue: moment().format("YYYY-MM-DD"),
+              time_of_issue: moment().format("HH:mm:ss"),
+              customer_id: null,
+              currency_type_id: "PEN",
+              purchase_order: null,
+              exchange_rate_sale: 1,
+              total_prepayment: 0,
+              total_charge: 0,
+              total_discount: 0,
+              total_exportation: 0,
+              total_free: 0,
+              total_taxed: 0,
+              total_unaffected: 0,
+              total_exonerated: 0,
+              total_igv: 0,
+              total_base_isc: 0,
+              total_isc: 0,
+              total_base_other_taxes: 0,
+              total_other_taxes: 0,
+              total_taxes: 0,
+              total_value: 0,
+              total: 0,
+              operation_type_id: "0101",
+              date_of_due: moment().format("YYYY-MM-DD"),
+              items: [],
+              charges: [],
+              discounts: [],
+              attributes: [],
+              guides: [],
+              payments: [],
+              hotel: {},
+              additional_information: null,
+              actions: {
+                format_pdf: "a4"
+              }
+            };
+
+            this.initFormItem();
+            this.changeDateOfIssue();
+            this.initInputPerson()
+
+          },
+          initInputPerson(){
+              this.input_person = {
+                  number:'',
+                  identity_document_type_id:''
+              }
+          },
+          initFormItem() {
+            this.form_item = {
+              item_id: null,
+              item: {},
+              affectation_igv_type_id: null,
+              affectation_igv_type: {},
+              has_isc: false,
+              system_isc_type_id: null,
+              calculate_quantity: false,
+              percentage_isc: 0,
+              suggested_price: 0,
+              quantity: 1,
+              aux_quantity: 1,
+              unit_price_value: 0,
+              unit_price: 0,
+              charges: [],
+              discounts: [],
+              attributes: [],
+              has_igv: null
+            };
+          },
+          async clickPayment() {
+            let flag = 0;
+            this.form.items.forEach(row => {
+              if (row.aux_quantity < 0 || row.total < 0 || isNaN(row.total)) {
+                flag++;
+              }
+            });
+
+            if (flag > 0)
+              return this.$message.error("Cantidad negativa o incorrecta");
+            if (!this.form.customer_id)
+              return this.$message.error("Seleccione un cliente");
+            if (!this.form.items[0])
+              return this.$message.error("Seleccione un producto");
+            this.form.establishment_id = this.establishment.id;
+            this.loading = true;
+            await this.sleep(800);
+            this.is_payment = true;
             this.loading = false;
-            return this.$message.error(response.message);
-          }
+          },
+          sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+          },
+          clickDeleteCustomer() {
+            this.form.customer_id = null;
+          },
+          async clickAddItem(item, index, input = false) {
+            this.loading = true;
+            let exchangeRateSale = this.form.exchange_rate_sale;
+            let exist_item = _.find(this.form.items, { item_id: item.item_id });
+            let pos = this.form.items.indexOf(exist_item);
+            let response = null;
 
-          exist_item.quantity = exist_item.item.aux_quantity;
-        } else {
-          response = await this.getStatusStock(
-            item.item_id,
-            parseFloat(exist_item.item.aux_quantity) + 1
-          );
-          if (!response.success) {
+            // console.log(item.calculate_quantity)
+
+            if (exist_item) {
+              if (input) {
+                response = await this.getStatusStock(
+                  item.item_id,
+                  exist_item.item.aux_quantity
+                );
+                if (!response.success) {
+                  item.item.aux_quantity = item.quantity;
+                  this.loading = false;
+                  return this.$message.error(response.message);
+                }
+
+                exist_item.quantity = exist_item.item.aux_quantity;
+              } else {
+                response = await this.getStatusStock(
+                  item.item_id,
+                  parseFloat(exist_item.item.aux_quantity) + 1
+                );
+                if (!response.success) {
+                  this.loading = false;
+                  return this.$message.error(response.message);
+                }
+
+                exist_item.quantity++;
+                exist_item.item.aux_quantity++;
+              }
+
+              this.row = calculateRowItem(
+                exist_item,
+                this.form.currency_type_id,
+                exchangeRateSale
+              );
+
+              this.form.items[pos] = this.row;
+            } else {
+              response = await this.getStatusStock(item.item_id, 1);
+              if (!response.success) {
+                this.loading = false;
+                return this.$message.error(response.message);
+              }
+
+              this.form_item.item = item;
+              this.form_item.unit_price_value = this.form_item.item.sale_unit_price;
+              this.form_item.has_igv = this.form_item.item.has_igv;
+              this.form_item.affectation_igv_type_id = this.form_item.item.sale_affectation_igv_type_id;
+              this.form_item.quantity = 1;
+              this.form_item.aux_quantity = 1;
+
+              let unit_price = this.form_item.has_igv
+                ? this.form_item.unit_price_value
+                : this.form_item.unit_price_value * 1.18;
+
+              this.form_item.unit_price = unit_price;
+              this.form_item.item.unit_price = unit_price;
+              this.form_item.item.presentation = null;
+
+              this.form_item.charges = [];
+              this.form_item.discounts = [];
+              this.form_item.attributes = [];
+              this.form_item.affectation_igv_type = _.find(
+                this.affectation_igv_types,
+                { id: this.form_item.affectation_igv_type_id }
+              );
+
+              // console.log(this.form_item)
+              this.row = calculateRowItem(
+                this.form_item,
+                this.form.currency_type_id,
+                exchangeRateSale
+              );
+              // console.log(this.row)
+
+              this.form.items.push(this.row);
+              item.aux_quantity = 1;
+            }
+
+            console.log("pos", this.row);
+
+            this.$notify({
+              title: "",
+              message: "Producto añadido!",
+              type: "success",
+              duration: 700
+            });
+
+            // console.log(this.row)
+            // console.log(this.form.items)
+            this.calculateTotal();
             this.loading = false;
-            return this.$message.error(response.message);
-          }
+          },
+          async getStatusStock(item_id, quantity) {
+            let data = {};
+            if (!quantity) quantity = 0;
+            await this.$http
+              .get(`/${this.resource}/validate_stock/${item_id}/${quantity}`)
+              .then(response => {
+                data = response.data;
+              });
+            return data;
+          },
+          clickDeleteItem(index) {
+            this.form.items.splice(index, 1);
+            this.calculateTotal();
+          },
 
-          exist_item.quantity++;
-          exist_item.item.aux_quantity++;
-        }
+          calculateTotal() {
+            let total_discount = 0;
+            let total_charge = 0;
+            let total_exportation = 0;
+            let total_taxed = 0;
+            let total_exonerated = 0;
+            let total_unaffected = 0;
+            let total_free = 0;
+            let total_igv = 0;
+            let total_value = 0;
+            let total = 0;
+            this.form.items.forEach(row => {
+              total_discount += parseFloat(row.total_discount);
+              total_charge += parseFloat(row.total_charge);
 
-        this.row = calculateRowItem(
-          exist_item,
-          this.form.currency_type_id,
-          exchangeRateSale
-        );
+              if (row.affectation_igv_type_id === "10") {
+                total_taxed += parseFloat(row.total_value);
+              }
+              if (row.affectation_igv_type_id === "20") {
+                total_exonerated += parseFloat(row.total_value);
+              }
+              if (row.affectation_igv_type_id === "30") {
+                total_unaffected += parseFloat(row.total_value);
+              }
+              if (row.affectation_igv_type_id === "40") {
+                total_exportation += parseFloat(row.total_value);
+              }
+              if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
+                total_free += parseFloat(row.total_value);
+              }
+              if (
+                ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
+              ) {
+                total_igv += parseFloat(row.total_igv);
+                total += parseFloat(row.total);
+              }
+              total_value += parseFloat(row.total_value);
+            });
 
-        this.form.items[pos] = this.row;
-      } else {
-        response = await this.getStatusStock(item.item_id, 1);
-        if (!response.success) {
-          this.loading = false;
-          return this.$message.error(response.message);
-        }
+            this.form.total_exportation = _.round(total_exportation, 2);
+            this.form.total_exonerated = _.round(total_exonerated, 2);
+            this.form.total_taxed =
+              _.round(total_taxed, 2) + this.form.total_exonerated;
+            // this.form.total_exonerated = _.round(total_exonerated, 2)
+            this.form.total_unaffected = _.round(total_unaffected, 2);
+            this.form.total_free = _.round(total_free, 2);
+            this.form.total_igv = _.round(total_igv, 2);
+            this.form.total_value = _.round(total_value, 2);
+            this.form.total_taxes = _.round(total_igv, 2);
+            this.form.total = _.round(total, 2);
+          },
+          changeDateOfIssue() {
+            // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+            //     this.form.exchange_rate_sale = response
+            // })
+            
+                      
+          },
+          changeExchangeRate(){
+            this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                this.form.exchange_rate_sale = response
+            })
+          },
+          async getTables() {
+            await this.$http.get(`/${this.resource}/tables`).then(response => {
+              this.all_items = response.data.items;
+              this.affectation_igv_types = response.data.affectation_igv_types;
+              this.all_customers = response.data.customers;
+              this.establishment = response.data.establishment;
+              this.currency_types = response.data.currency_types;
+              this.user = response.data.user;
+              this.form.currency_type_id =
+              this.currency_types.length > 0 ? this.currency_types[0].id : null;
+              // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+              this.changeCurrencyType();
+              this.filterItems();
+              this.changeDateOfIssue();
+              this.changeExchangeRate()
+            });
+          },
+          searchItems() {
+            if (this.input_item.length > 0) {
+              this.loading = true;
+              let parameters = `input_item=${this.input_item}`;
 
-        this.form_item.item = item;
-        this.form_item.unit_price_value = this.form_item.item.sale_unit_price;
-        this.form_item.has_igv = this.form_item.item.has_igv;
-        this.form_item.affectation_igv_type_id = this.form_item.item.sale_affectation_igv_type_id;
-        this.form_item.quantity = 1;
-        this.form_item.aux_quantity = 1;
-
-        let unit_price = this.form_item.has_igv
-          ? this.form_item.unit_price_value
-          : this.form_item.unit_price_value * 1.18;
-
-        this.form_item.unit_price = unit_price;
-        this.form_item.item.unit_price = unit_price;
-        this.form_item.item.presentation = null;
-
-        this.form_item.charges = [];
-        this.form_item.discounts = [];
-        this.form_item.attributes = [];
-        this.form_item.affectation_igv_type = _.find(
-          this.affectation_igv_types,
-          { id: this.form_item.affectation_igv_type_id }
-        );
-
-        // console.log(this.form_item)
-        this.row = calculateRowItem(
-          this.form_item,
-          this.form.currency_type_id,
-          exchangeRateSale
-        );
-        // console.log(this.row)
-
-        this.form.items.push(this.row);
-        item.aux_quantity = 1;
-      }
-
-      console.log("pos", this.row);
-
-      this.$notify({
-        title: "",
-        message: "Producto añadido!",
-        type: "success",
-        duration: 700
-      });
-
-      // console.log(this.row)
-      // console.log(this.form.items)
-      this.calculateTotal();
-      this.loading = false;
-    },
-    async getStatusStock(item_id, quantity) {
-      let data = {};
-      if (!quantity) quantity = 0;
-      await this.$http
-        .get(`/${this.resource}/validate_stock/${item_id}/${quantity}`)
-        .then(response => {
-          data = response.data;
-        });
-      return data;
-    },
-    clickDeleteItem(index) {
-      this.form.items.splice(index, 1);
-      this.calculateTotal();
-    },
-
-    calculateTotal() {
-      let total_discount = 0;
-      let total_charge = 0;
-      let total_exportation = 0;
-      let total_taxed = 0;
-      let total_exonerated = 0;
-      let total_unaffected = 0;
-      let total_free = 0;
-      let total_igv = 0;
-      let total_value = 0;
-      let total = 0;
-      this.form.items.forEach(row => {
-        total_discount += parseFloat(row.total_discount);
-        total_charge += parseFloat(row.total_charge);
-
-        if (row.affectation_igv_type_id === "10") {
-          total_taxed += parseFloat(row.total_value);
-        }
-        if (row.affectation_igv_type_id === "20") {
-          total_exonerated += parseFloat(row.total_value);
-        }
-        if (row.affectation_igv_type_id === "30") {
-          total_unaffected += parseFloat(row.total_value);
-        }
-        if (row.affectation_igv_type_id === "40") {
-          total_exportation += parseFloat(row.total_value);
-        }
-        if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
-          total_free += parseFloat(row.total_value);
-        }
-        if (
-          ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
-        ) {
-          total_igv += parseFloat(row.total_igv);
-          total += parseFloat(row.total);
-        }
-        total_value += parseFloat(row.total_value);
-      });
-
-      this.form.total_exportation = _.round(total_exportation, 2);
-      this.form.total_exonerated = _.round(total_exonerated, 2);
-      this.form.total_taxed =
-        _.round(total_taxed, 2) + this.form.total_exonerated;
-      // this.form.total_exonerated = _.round(total_exonerated, 2)
-      this.form.total_unaffected = _.round(total_unaffected, 2);
-      this.form.total_free = _.round(total_free, 2);
-      this.form.total_igv = _.round(total_igv, 2);
-      this.form.total_value = _.round(total_value, 2);
-      this.form.total_taxes = _.round(total_igv, 2);
-      this.form.total = _.round(total, 2);
-    },
-    changeDateOfIssue() {
-      // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-      //     this.form.exchange_rate_sale = response
-      // })
-    },
-    async getTables() {
-      await this.$http.get(`/${this.resource}/tables`).then(response => {
-        this.all_items = response.data.items;
-        this.affectation_igv_types = response.data.affectation_igv_types;
-        this.all_customers = response.data.customers;
-        this.establishment = response.data.establishment;
-        this.currency_types = response.data.currency_types;
-        this.user = response.data.user;
-        this.form.currency_type_id =
-          this.currency_types.length > 0 ? this.currency_types[0].id : null;
-        this.changeCurrencyType();
-        this.filterItems();
-        this.changeDateOfIssue();
-      });
-    },
-    searchItems() {
-      if (this.input_item.length > 0) {
-        this.loading = true;
-        let parameters = `input_item=${this.input_item}`;
-
-        this.$http
-          .get(`/${this.resource}/search_items?${parameters}`)
-          .then(response => {
-            // console.log(response)
-            this.items = response.data.items;
-            this.loading = false;
-            if (this.items.length == 0) {
+              this.$http
+                .get(`/${this.resource}/search_items?${parameters}`)
+                .then(response => {
+                  // console.log(response)
+                  this.items = response.data.items;
+                  this.loading = false;
+                  if (this.items.length == 0) {
+                    this.filterItems();
+                  }
+                });
+            } else {
+              // this.customers = []
               this.filterItems();
             }
-          });
-      } else {
-        // this.customers = []
-        this.filterItems();
-      }
-    },
-    filterItems() {
-      this.items = this.all_items;
-    },
-    reloadDataCustomers(customer_id) {
-      this.$http.get(`/${this.resource}/table/customers`).then(response => {
-        this.all_customers = response.data;
-        this.form.customer_id = customer_id;
-        this.changeCustomer();
-      });
-    },
-    reloadDataItems(item_id) {
-      this.$http.get(`/${this.resource}/table/items`).then(response => {
-        this.all_items = response.data;
-        this.filterItems();
-      });
-    },
-    changeCurrencyType() {
-      this.currency_type = _.find(this.currency_types, {
-        id: this.form.currency_type_id
-      });
-      // let items = []
-      // this.form.items.forEach((row) => {
-      //     items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
-      // });
-      // this.form.items = items
-      // this.calculateTotal()
-    }
-  }
-};
+          },
+          filterItems() {
+            this.items = this.all_items;
+          },
+          reloadDataCustomers(customer_id) {
+            this.$http.get(`/${this.resource}/table/customers`).then(response => {
+              this.all_customers = response.data;
+              this.form.customer_id = customer_id;
+              this.changeCustomer();
+            });
+          },
+          reloadDataItems(item_id) {
+              this.$http.get(`/${this.resource}/table/items`).then(response => {
+                this.all_items = response.data;
+                this.filterItems();
+              });
+          },
+          selectCurrencyType(){
+              this.form.currency_type_id = (this.form.currency_type_id === 'PEN') ? 'USD':'PEN'
+              this.changeCurrencyType()
+          },
+          async changeCurrencyType() {
+            
+              // console.log(this.form.currency_type_id) 
+              this.currency_type = await _.find(this.currency_types, {'id': this.form.currency_type_id})
+              let items = []
+              this.form.items.forEach((row) => {
+                  items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
+              });
+              this.form.items = items
+              this.calculateTotal()
+          }
+        }
+      };
 </script>
