@@ -19,14 +19,10 @@ foreach ($cash_documents as $cash_document) {
     else if($cash_document->document){
         $cash_income += $cash_document->document->total;
         $final_balance += $cash_document->document->total;
-    }
-    else if($cash_document->purchase){
-        $cash_egress += $cash_document->purchase->total;
-        $final_balance -= $cash_document->purchase->total;
-    }
-    else if($cash_document->expense){
-        $cash_egress += $cash_document->expense->total;
-        $final_balance -= $cash_document->expense->total;
+    } 
+    else if($cash_document->expense_payment){
+        $cash_egress += $cash_document->expense_payment->payment;
+        $final_balance -= $cash_document->expense_payment->payment;
     }
 
 }
@@ -206,28 +202,17 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $total = $value->document->total;
 
                                         }
-                                        else if($value->purchase){
-
-                                            $type_transaction =  'Compra';
-                                            $document_type_description =  $value->purchase->document_type->description;
-                                            $number = $value->purchase->number_full;
-                                            $date_of_issue = $value->purchase->date_of_issue->format('Y-m-d');
-                                            $customer_name = $value->purchase->supplier->name;
-                                            $customer_number = $value->purchase->supplier->number;
-                                            $total = -$value->purchase->total;
-
-                                        }
-                                        else if($value->expense){
+                                        else if($value->expense_payment){
                                             
                                             $type_transaction =  'Gasto';
-                                            $document_type_description =  $value->expense->expense_type->description;
-                                            $number = $value->expense->number;
-                                            $date_of_issue = $value->expense->date_of_issue->format('Y-m-d');
-                                            $customer_name = $value->expense->supplier->name;
-                                            $customer_number = $value->expense->supplier->number;
-                                            $total = -$value->expense->total;
+                                            $document_type_description =  $value->expense_payment->expense->expense_type->description;
+                                            $number = $value->expense_payment->expense->number;
+                                            $date_of_issue = $value->expense_payment->expense->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->expense_payment->expense->supplier->name;
+                                            $customer_number = $value->expense_payment->expense->supplier->number;
+                                            $total = -$value->expense_payment->payment;
 
-                                        }
+                                        } 
 
                                     @endphp
 
