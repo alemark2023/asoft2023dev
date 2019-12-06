@@ -83,6 +83,14 @@
     </tr>
     @endif
     
+    @if ($document->shipping_address)
+    <tr>
+        <td class="align-top">Dir. Envío:</td>
+        <td colspan="3">
+            {{ $document->shipping_address }} 
+        </td>
+    </tr>
+    @endif
     @if ($customer->telephone)
     <tr>
         <td class="align-top">Teléfono:</td>

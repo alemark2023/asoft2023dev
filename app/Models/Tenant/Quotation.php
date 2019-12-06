@@ -52,6 +52,7 @@ class Quotation extends ModelTenant
         'detraction',
         'legends', 
         'filename',
+        'shipping_address',
         'description'
          
     ];

@@ -100,6 +100,16 @@
             </td>
         </tr>
     @endif
+    @if ($document->shipping_address)
+    <tr>
+        <td class="align-top"><p class="desc">Dir. Envío:</p></td>
+        <td colspan="3">
+            <p class="desc">
+                {{ $document->shipping_address }} 
+            </p>
+        </td>
+    </tr>
+    @endif
     
     @if ($customer->telephone)
     <tr>
