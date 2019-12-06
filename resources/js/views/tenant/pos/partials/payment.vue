@@ -309,7 +309,7 @@
             })
         }, 
         mounted(){
-            console.log(this.currencyTypeActive)
+            // console.log(this.currencyTypeActive)
         },
         methods: {
             clickAddPayment(){

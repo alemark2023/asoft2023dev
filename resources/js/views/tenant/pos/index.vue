@@ -600,7 +600,7 @@
               item.aux_quantity = 1;
             }
 
-            console.log("pos", this.row);
+            // console.log("pos", this.row);
 
             this.$notify({
               title: "",
