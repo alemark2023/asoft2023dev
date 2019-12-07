@@ -68,7 +68,7 @@ class ExchangeRate
         $year = $date->year;
         $month = $date->month;
         $exchange_rate = new  ExchangeRate();
-        $exchange_rates = $exchange_rate->search($month, $year);
+        $exchange_rates = false; //$exchange_rate->search($month, $year);
         if($exchange_rates) {
             foreach ($exchange_rates as $row)
             {
