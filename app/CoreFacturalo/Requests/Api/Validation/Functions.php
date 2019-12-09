@@ -25,7 +25,11 @@ class Functions
 
     public static function person($inputs, $type) {
         $district_id = $inputs['district_id'];
-        $ubigeo = Functions::validateUbigeo($district_id);
+
+        if(in_array($inputs['identity_document_type_id'],['6'])){
+            $ubigeo = Functions::validateUbigeo($district_id);
+        }
+
         $province_id = ($district_id)?substr($district_id, 0 ,4):null;
         $department_id = ($district_id)?substr($district_id, 0 ,2):null;
 
