@@ -149,6 +149,11 @@ class ServiceController extends Controller
                         'sale_original' => $res['data']['sale']
                     ]);
                     $sale = $ex_rate->sale;
+                }else{
+
+                    $last_ex_rate = \App\Models\Tenant\ExchangeRate::orderBy('date', 'desc')->first();
+                    $sale = $last_ex_rate->sale;
+                    
                 }
             }
         }
