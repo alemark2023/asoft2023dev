@@ -52,7 +52,8 @@
                         {{ ($path[0] === 'contingencies')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
-
+                        {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
+                        
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -159,6 +160,11 @@
                             <li class="{{ ($path[0] === 'sale-notes')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.sale_notes.index')}}">
                                     Notas de Venta
+                                </a>
+                            </li>
+                            <li class="{{ ($path[0] === 'incentives')?'nav-active':'' }}">
+                                <a class="nav-link" href="{{route('tenant.incentives.index')}}">
+                                    Incentivos
                                 </a>
                             </li>
                             {{-- <li class="#">
