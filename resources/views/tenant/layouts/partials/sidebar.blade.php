@@ -162,11 +162,11 @@
                                     Notas de Venta
                                 </a>
                             </li>
-                            <li class="{{ ($path[0] === 'incentives')?'nav-active':'' }}">
+                            {{--<li class="{{ ($path[0] === 'incentives')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.incentives.index')}}">
                                     Incentivos
                                 </a>
-                            </li>
+                            </li> --}}
                             {{-- <li class="#">
                                 <a class="nav-link" href="#">
                                     Ventas sin facturar (Pronto)
@@ -264,6 +264,7 @@
                             {{ ($path[0] === 'purchases')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
+                            {{ ($path[0] === 'purchase-quotations')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-cart-plus" aria-hidden="true"></i>
@@ -287,6 +288,11 @@
                                     </a>
                                 </li>
 
+                                <li class="{{ ($path[0] === 'purchase-quotations')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.purchase-quotations.index')}}">
+                                        Cotizaciones
+                                    </a>
+                                </li>
                                 <li class="{{ ($path[0] === 'expenses' )?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.expenses.index')}}">
                                         Gastos diversos
