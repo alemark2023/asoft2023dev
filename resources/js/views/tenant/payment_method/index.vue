@@ -25,8 +25,8 @@
             <tr>
               <th>#</th>
               <th>Código</th>
-              <th>Descripción</th>
-              <th class="text-center">Activo</th>
+              <th width="50%" >Descripción</th>
+              <th width="20%" class="text-center">Activo</th>
               <th class="text-right">Acciones</th>
             </tr>
           </thead>
@@ -61,13 +61,13 @@
 </template>
 
 <script>
-import UnitTypesForm from "./form.vue";
+import PaymentMethodForm from "./form.vue";
 import { deletable } from "../../../mixins/deletable";
 
 export default {
   mixins: [deletable],
   props: ["typeUser"],
-  components: { UnitTypesForm },
+  components: { PaymentMethodForm },
   data() {
     return {
       showDialog: false,

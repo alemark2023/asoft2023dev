@@ -18,7 +18,7 @@ class PaymentMethodTypeRequest extends FormRequest
         return [
             'id' => [
                 'required',
-                Rule::unique('tenant.1')->ignore($id),
+                Rule::unique('tenant.cat_payment_method_types')->ignore($id),
             ],
             'description' => [
                 'required',
