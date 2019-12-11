@@ -61,7 +61,7 @@
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>
-                            
+
                         </td>
                         <td v-if="columns.notes.visible">
                             <template v-for="(row,index) in row.notes">
@@ -72,7 +72,7 @@
                         <!-- <td>
                             {{ row.document_type_id == '07' ?  row.number : ''}}
                         </td> -->
-                        
+
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
                                 <div slot="content">{{tooltip(row)}}</div>
@@ -88,7 +88,7 @@
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
 
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
-                        
+
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
@@ -158,11 +158,11 @@
 
             <documents-voided :showDialog.sync="showDialogVoided"
                             :recordId="recordId"></documents-voided>
-                            
+
             <items-import :showDialog.sync="showImportDialog"></items-import>
 
             <document-import-second :showDialog.sync="showImportSecondDialog"></document-import-second>
-            
+
             <document-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
                               :showClose="true"></document-options>
@@ -253,7 +253,7 @@
                     if (response.data.success) {
                         this.$message.success('Se envio satisfactoriamente el comprobante.');
                         this.$eventHub.$emit('reloadData');
-                        
+
                         this.clickCheckOnline(document_id);
                     }
                     else {
@@ -298,14 +298,14 @@
             tooltip(row, message = true) {
                 if (message) {
                     if (row.shipping_status) return row.shipping_status.message;
-                    
+
                     if (row.sunat_shipping_status) return row.sunat_shipping_status.message;
-                    
+
                     if (row.query_status) return row.query_status.message;
                 }
-                
+
                 if ((row.shipping_status) || (row.sunat_shipping_status) || (row.query_status)) return true;
-                
+
                 return false;
             },
             clickPayment(recordId) {

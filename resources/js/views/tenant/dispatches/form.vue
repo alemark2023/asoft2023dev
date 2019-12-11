@@ -338,7 +338,7 @@
     import Items from './items.vue';
 
     export default {
-        props: ['document'],
+        props: ['document', 'typeDocument'],
         components: {PersonForm, Items},
         data() {
             return {
@@ -416,7 +416,8 @@
             initForm() {
                 this.errors = {}
                 this.form = {
-                    reference_document_id: this.document.id,
+                    reference_document_id: this.typeDocument == 'i' ?  this.document.id : null,
+                    reference_quotation_id: this.typeDocument == 'q' ?  this.document.id : null,
                     establishment_id: null,
                     document_type_id: '09',
                     series_id: null,

@@ -419,6 +419,34 @@
                     </el-button>
                   </div>
                 </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <el-select
+                      @change="changeCustomerUnpaid"
+                      filterable
+                      clearable
+                      v-model="selected_customer"
+                      placeholder="Todos"
+                    >
+                      <el-option
+                        v-for="item in customers"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getTotalRowsUnpaid" class="item">
+                      <span size="small">Total facturas</span>
+                    </el-badge>
+                  </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getTotalAmountUnpaid" class="item">
+                      <span size="small">Monto total</span>
+                    </el-badge>
+                  </div>
+                </div>
 
                 <div class="table-responsive">
                   <table class="table">
@@ -428,6 +456,11 @@
                         <th>F.Emisión</th>
                         <th>Número</th>
                         <th>Cliente</th>
+
+                        <th>Guías</th>
+
+                        <th>Ver Cartera</th>
+
                         <th class="text-right">Por cobrar</th>
                         <th class="text-right">Total</th>
                         <th></th>
@@ -440,6 +473,66 @@
                           <td>{{ row.date_of_issue }}</td>
                           <td>{{ row.number_full }}</td>
                           <td>{{ row.customer_name }}</td>
+
+                          <td>
+                            <template>
+                              <el-popover placement="right" width="400" trigger="click">
+                                <el-table :data="row.guides">
+                                  <el-table-column
+                                    width="120"
+                                    property="date_of_issue"
+                                    label="Fecha Emisión"
+                                  ></el-table-column>
+                                  <el-table-column width="100" property="number" label="Número"></el-table-column>
+                                  <el-table-column
+                                    width="100"
+                                    property="date_of_shipping"
+                                    label="Fecha Envío"
+                                  ></el-table-column>
+                                  <el-table-column fixed="right" label="Descargas" width="120">
+                                    <template slot-scope="scope">
+                                      <button
+                                        type="button"
+                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                        @click.prevent="clickDownloadDispatch(scope.row.download_external_xml)"
+                                      >XML</button>
+                                      <button
+                                        type="button"
+                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                        @click.prevent="clickDownloadDispatch(scope.row.download_external_pdf)"
+                                      >PDF</button>
+                                      <button
+                                        type="button"
+                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                        @click.prevent="clickDownloadDispatch(scope.row.download_external_cdr)"
+                                      >CDR</button>
+                                    </template>
+                                  </el-table-column>
+                                </el-table>
+                                <el-button slot="reference" icon="el-icon-view"></el-button>
+                              </el-popover>
+                            </template>
+                          </td>
+
+                          <td>
+                            <el-popover placement="right" width="300" trigger="click">
+                              <p>
+                                Saldo actual:
+                                <span class="custom-badge"> {{ row.total_to_pay }}</span>
+                              </p>
+                              <p>
+                                Fecha ultimo pago:
+                                <span class="custom-badge">{{ row.date_payment_last }}</span>
+                              </p>
+
+                              <p>
+                                Dia de retraso en el pago:
+                                <span class="custom-badge">{{ 11 }}</span>
+                              </p>
+                              <el-button icon="el-icon-view" slot="reference"></el-button>
+                            </el-popover>
+                          </td>
+
                           <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                           <td class="text-right">{{ row.total }}</td>
                           <td class="text-right">
@@ -459,6 +552,13 @@
                                 @click.prevent="clickSaleNotePayment(row.id)"
                               >Pagos</button>
                             </template>
+
+                            <button
+                              type="button"
+                              style="min-width: 41px"
+                              class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                              @click.prevent="clickDocumentPayment(row.id)"
+                            >Detalle</button>
                           </td>
                         </tr>
                       </template>
@@ -490,6 +590,11 @@
 .widget-summary .summary {
   min-height: inherit;
 }
+
+.custom-badge {
+  font-size: 15px;
+  font-weight: bold;
+}
 </style>
 <script>
 import DocumentPayments from "../../../../../../resources/js/views/tenant/documents/partials/payments.vue";
@@ -502,6 +607,9 @@ export default {
   components: { DocumentPayments, SaleNotePayments, DashboardStock },
   data() {
     return {
+      records_base: [],
+      selected_customer: null,
+      customers: [],
       resource: "dashboard",
       establishments: [],
       document: {
@@ -554,7 +662,55 @@ export default {
       this.loadAll();
     });
   },
+  computed: {
+    getTotalRowsUnpaid() {
+      const self = this;
+
+      if (self.selected_customer) {
+        return _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+          );
+        }).length;
+      } else {
+        return _.filter(this.records, function(item) {
+          return item.total_to_pay > 0;
+        }).length;
+      }
+    },
+    getTotalAmountUnpaid() {
+      const self = this;
+      let source = [];
+      if (self.selected_customer) {
+        source = _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+          );
+        });
+      } else {
+        source = _.filter(this.records, function(item) {
+          return item.total_to_pay > 0;
+        });
+      }
+
+      return _.sumBy(source, function(item) {
+        return parseFloat(item.total);
+      }).toFixed(2);
+    }
+  },
   methods: {
+    clickDownloadDispatch(download) {
+      window.open(download, "_blank");
+    },
+    changeCustomerUnpaid() {
+      if (this.selected_customer) {
+        this.records = _.filter(this.records_base, {
+          customer_id: this.selected_customer
+        });
+      } else {
+        this.records = this.records_base;
+      }
+    },
     clickDownload(type) {
       let query = queryString.stringify({
         ...this.form
@@ -614,12 +770,14 @@ export default {
       this.loadData();
       this.loadUnpaid();
       this.loadDataAditional();
+      //this.loadCustomer();
     },
     loadData() {
       this.$http.post(`/${this.resource}/data`, this.form).then(response => {
         this.document = response.data.data.document;
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;
+        this.customers = response.data.data.customers;
       });
     },
     loadDataAditional() {
@@ -634,6 +792,7 @@ export default {
     loadUnpaid() {
       this.$http.post(`/${this.resource}/unpaid`, this.form).then(response => {
         this.records = response.data.records;
+        this.records_base = response.data.records;
       });
     },
     clickDocumentPayment(recordId) {

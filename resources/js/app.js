@@ -98,6 +98,9 @@ Vue.component('tenant-pos-index', require('./views/tenant/pos/index.vue'));
 Vue.component('cash-index', require('./views/tenant/cash/index.vue'));
 Vue.component('tenant-card-brands-index', require('./views/tenant/card_brands/index.vue'));
 
+Vue.component('tenant-payment-method-index', require('./views/tenant/payment_method/index.vue'));
+
+
 // Modules
 Vue.component('inventory-index', require('../../modules/Inventory/Resources/assets/js/inventory/index.vue'));
 Vue.component('warehouses-index', require('../../modules/Inventory/Resources/assets/js/warehouses/index.vue'));

@@ -86,7 +86,7 @@
                                 <small class="form-control-feedback" v-if="errors.transshipment_indicator" v-text="errors.transshipment_indicator[0]"></small>
                             </div>
                         </div> -->
-                        
+
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_description}">
                                 <label class="control-label">Descripción de motivo de traslado<span class="text-danger"> *</span></label>
@@ -324,9 +324,9 @@
                 </div>
             </form>
         </div>
-        
+
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
-        
+
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
     </div>
 </template>
@@ -334,7 +334,7 @@
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
-    
+
     export default {
         components: {PersonForm, Items},
         data() {
@@ -371,7 +371,7 @@
         created() {
             // this.clean();
             this.initForm()
-            
+
             this.$http.post(`/${this.resource}/tables`).then(response => {
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
@@ -437,7 +437,7 @@
                     'establishment_id': this.form.establishment_id,
                     'document_type_id': this.form.document_type_id
                 });
-                
+
                 this.code = this.form.establishment_id;
                 this.establishment_id = this.form.establishment_id;
             },
@@ -446,17 +446,17 @@
                     this.provincesOrigin = _.filter(this.provincesAll, {
                         'department_id': this.form.origin.department_id
                     });
-                    
+
                     this.$set(this.form.origin, 'province_id', null);
                     this.$set(this.form.origin, 'location_id', null);
-                    
+
                     return;
                 }
-                
+
                 this.provincesDelivery = _.filter(this.provincesAll, {
                     'department_id': this.form.delivery.department_id
                 });
-                
+
                 this.$set(this.form.delivery, 'province_id', null);
                 this.$set(this.form.delivery, 'location_id', null);
             },
@@ -465,27 +465,27 @@
                     this.districtsOrigin = _.filter(this.districtsAll, {
                         'province_id': this.form.origin.province_id
                     });
-                    
+
                     this.$set(this.form.origin, 'location_id', null);
-                    
+
                     return;
                 }
-                
+
                 this.districtsDelivery = _.filter(this.districtsAll, {
                     'province_id': this.form.delivery.province_id
                 });
-                
+
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-                
+
                 let exist = this.form.items.find((item) => item.id == form.item.id);
-                
+
                 if (exist) {
-                    exist.quantity += form.quantity;                    
+                    exist.quantity += form.quantity;
                     return;
                 }
-                
+
                 this.form.items.push({
                     'description': form.item.description,
                     'internal_id': form.item.internal_id,
@@ -504,11 +504,11 @@
                     return this.$message.error('El campo ubigeo es obligatorio')
 
                 this.loading_submit = true;
-                
+
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
                             this.initForm();
-                            
+
                             this.$message.success(response.data.message)
                         }
                         else {
@@ -516,7 +516,7 @@
                         }
                     }).catch(error => {
                         this.loading_submit = false;
-                        
+
                         if (error.response.status === 422) {
                             this.errors = error.response.data;
                         }

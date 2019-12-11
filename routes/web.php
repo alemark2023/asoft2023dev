@@ -269,7 +269,7 @@ if ($hostname) {
             Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
             Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
             Route::get('dispatches/records', 'Tenant\DispatchController@records');
-            Route::get('dispatches/create/{document?}', 'Tenant\DispatchController@create');
+            Route::get('dispatches/create/{document?}/{type?}', 'Tenant\DispatchController@create');
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
 
@@ -532,11 +532,11 @@ if ($hostname) {
            Route::post('cuenta/update_plan', 'Tenant\AccountController@updatePlan');
            Route::post('cuenta/payment_culqui', 'Tenant\AccountController@paymentCulqui')->name('tenant.account.payment_culqui');
 
-
-
-
-
-
+           //Payment Methods
+           Route::get('payment_method/records', 'Tenant\PaymentMethodTypeController@records');
+           Route::get('payment_method/record/{code}', 'Tenant\PaymentMethodTypeController@record');
+           Route::post('payment_method', 'Tenant\PaymentMethodTypeController@store');
+           Route::delete('payment_method/{code}', 'Tenant\PaymentMethodTypeController@destroy');
 
         });
     });
