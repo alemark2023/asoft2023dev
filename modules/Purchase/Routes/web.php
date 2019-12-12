@@ -23,6 +23,21 @@ if($current_hostname) {
                 Route::get('print/{external_id}/{format?}', 'PurchaseQuotationController@toPrint');
             });
 
+            Route::prefix('purchase-orders')->group(function () {
+
+                Route::get('', 'PurchaseOrderController@index')->name('tenant.purchase-orders.index');
+                Route::get('columns', 'PurchaseOrderController@columns');
+                Route::get('records', 'PurchaseOrderController@records');
+                Route::get('create/{id?}', 'PurchaseOrderController@create')->name('tenant.purchase-orders.create');
+                Route::get('tables', 'PurchaseOrderController@tables');
+                Route::get('table/{table}', 'PurchaseOrderController@table');
+                Route::post('', 'PurchaseOrderController@store');
+                Route::get('record/{expense}', 'PurchaseOrderController@record');
+                Route::get('item/tables', 'PurchaseOrderController@item_tables');
+                Route::get('download/{external_id}/{format?}', 'PurchaseOrderController@download');
+                Route::get('print/{external_id}/{format?}', 'PurchaseOrderController@toPrint');
+            });
+
         });
     });
 }

@@ -46,6 +46,7 @@ class TenantPurchaseOrdersTable extends Migration
             $table->string('filename')->nullable(); 
             $table->string('upload_filename')->nullable(); 
             $table->unsignedInteger('purchase_quotation_id')->nullable(); 
+            $table->char('payment_method_type_id',2);
  
             $table->timestamps();
 
@@ -56,6 +57,7 @@ class TenantPurchaseOrdersTable extends Migration
             $table->foreign('soap_type_id')->references('id')->on('soap_types');
             $table->foreign('state_type_id')->references('id')->on('state_types');
             $table->foreign('currency_type_id')->references('id')->on('cat_currency_types');
+            $table->foreign('payment_method_type_id')->references('id')->on('payment_method_types');
         });
     }
 
