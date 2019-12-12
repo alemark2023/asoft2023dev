@@ -414,6 +414,12 @@
                                         </td>
                                     </tr>
 
+                                    <tr v-if="form.detraction.amount > 0">
+                                        <td>M. DETRACCIÓN</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                    </tr>
+                                    
                                     <tr v-if="form.total_exportation > 0">
                                         <td>OP.EXPORTACIÓN</td>
                                         <td>:</td>

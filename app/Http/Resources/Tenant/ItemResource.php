@@ -50,7 +50,8 @@ class ItemResource extends JsonResource
             'apply_store' => (bool)$this->apply_store,
             'tags' => $this->tags,
             'tags_id' => $this->tags->pluck('tag_id'),
-            'individual_items' => collect($this->sets)->pluck('individual_item_id')
+            'individual_items' => collect($this->sets)->pluck('individual_item_id'),
+            'commission_amount' => $this->commission_amount,
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

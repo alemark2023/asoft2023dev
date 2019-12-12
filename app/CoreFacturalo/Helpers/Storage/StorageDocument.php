@@ -48,6 +48,9 @@ trait StorageDocument
                 $filename = 'R-'.$filename;
                 $extension = 'zip';
                 break;
+            case 'purchase_quotation':
+                $extension = 'pdf';
+                break;
         }
         $this->_filename = $filename.'.'.$extension;
         $this->_folder = ($root)?$root.DIRECTORY_SEPARATOR.$file_type:$file_type;
