@@ -446,6 +446,11 @@
                       <span size="small">Monto total</span>
                     </el-badge>
                   </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getCurrentBalance" class="item">
+                      <span size="small">Saldo corriente</span>
+                    </el-badge>
+                  </div>
                 </div>
 
                 <div class="table-responsive">
@@ -518,21 +523,27 @@
                             <el-popover placement="right" width="300" trigger="click">
                               <p>
                                 Saldo actual:
-                                <span class="custom-badge"> {{ row.total_to_pay }}</span>
+                                <span class="custom-badge">{{ row.total_to_pay }}</span>
                               </p>
                               <p>
                                 Fecha ultimo pago:
-                                <span class="custom-badge">{{ row.date_payment_last ?  row.date_payment_last : 'No registra pagos.' }}</span>
+                                <span
+                                  class="custom-badge"
+                                >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
                               </p>
 
                               <p>
                                 Dia de retraso en el pago:
-                                <span class="custom-badge">{{  row.delay_payment ?  row.delay_payment : 'No tiene días atrasados.'}}</span>
+                                <span
+                                  class="custom-badge"
+                                >{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.'}}</span>
                               </p>
 
                               <p>
                                 Fecha de vencimiento:
-                                <span class="custom-badge">{{  row.date_of_due ?  row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
+                                <span
+                                  class="custom-badge"
+                                >{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
                               </p>
                               <el-button icon="el-icon-view" slot="reference"></el-button>
                             </el-popover>
@@ -668,6 +679,26 @@ export default {
     });
   },
   computed: {
+    getCurrentBalance() {
+
+      const self = this;
+      let source = [];
+      if (self.selected_customer) {
+        source = _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+          );
+        });
+      } else {
+        source = _.filter(this.records, function(item) {
+          return item.total_to_pay > 0;
+        });
+      }
+
+      return _.sumBy(source, function(item) {
+        return parseFloat(item.total_to_pay);
+      }).toFixed(2);
+    },
     getTotalRowsUnpaid() {
       const self = this;
 
