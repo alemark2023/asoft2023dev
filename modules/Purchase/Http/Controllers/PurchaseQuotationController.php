@@ -45,6 +45,7 @@ class PurchaseQuotationController extends Controller
         return view('purchase::purchase-quotations.form', compact('id'));
     }
  
+
     public function columns()
     {
         return [

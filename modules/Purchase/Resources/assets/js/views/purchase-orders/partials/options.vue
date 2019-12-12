@@ -24,7 +24,7 @@
             return {
                 titleDialog: null,
                 loading: false,
-                resource: 'purchases',
+                resource: 'purchase-orders',
                 errors: {},
                 form: {},
             }

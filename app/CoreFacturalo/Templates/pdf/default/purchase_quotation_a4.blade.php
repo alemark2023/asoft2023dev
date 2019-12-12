@@ -50,7 +50,7 @@
             </div>
         </td>
         <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">COTIZACIÓN COMPRA</h5>
+            <h5 class="text-center">PROFORMA</h5>
             <h3 class="text-center">{{ $tittle }}</h3>
         </td>
     </tr>

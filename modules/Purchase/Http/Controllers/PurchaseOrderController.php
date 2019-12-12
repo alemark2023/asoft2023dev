@@ -21,10 +21,18 @@ use Mpdf\Config\FontVariables;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Modules\Purchase\Models\PurchaseOrder; 
+use Modules\Purchase\Models\PurchaseQuotation; 
 use Modules\Purchase\Http\Resources\PurchaseOrderCollection;
 use Modules\Purchase\Http\Resources\PurchaseOrderResource;
 use Modules\Purchase\Mail\PurchaseOrderEmail; 
-
+use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\PriceType;
+use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\PaymentMethodType;
+use Carbon\Carbon;
 
 class PurchaseOrderController extends Controller
 {
@@ -45,6 +53,13 @@ class PurchaseOrderController extends Controller
         return view('purchase::purchase-orders.form', compact('id'));
     }
  
+    public function generate($id)
+    {
+        $purchase_quotation = PurchaseQuotation::with(['items'])->findOrFail($id);
+
+        return view('purchase::purchase-orders.generate', compact('purchase_quotation'));
+    }
+
     public function columns()
     {
         return [
@@ -65,10 +80,13 @@ class PurchaseOrderController extends Controller
     public function tables() {
 
         $suppliers = $this->table('suppliers');
-        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
+        // $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $currency_types = CurrencyType::whereActive()->get();
         $company = Company::active();
-        
-        return compact('suppliers', 'establishments','company');
+        $payment_method_types = PaymentMethodType::all();
+
+        return compact('suppliers', 'establishment','company','currency_types','payment_method_types');
     } 
 
 
@@ -76,8 +94,16 @@ class PurchaseOrderController extends Controller
     {
 
         $items = $this->table('items'); 
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $system_isc_types = SystemIscType::whereActive()->get();
+        $price_types = PriceType::whereActive()->get();
+        $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
+        $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
+        $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $warehouses = Warehouse::all();
 
-        return compact('items');
+        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
+                        'discount_types', 'charge_types', 'attribute_types','warehouses');
     }
 
 
@@ -189,9 +215,29 @@ class PurchaseOrderController extends Controller
                     return [
                         'id' => $row->id,
                         'full_description' => $full_description,
-                        'description' => $row->description, 
-                        'unit_type_id' => $row->unit_type_id, 
-                        'is_set' => (bool) $row->is_set, 
+                        'description' => $row->description,
+                        'currency_type_id' => $row->currency_type_id,
+                        'currency_type_symbol' => $row->currency_type->symbol,
+                        'sale_unit_price' => $row->sale_unit_price,
+                        'purchase_unit_price' => $row->purchase_unit_price,
+                        'unit_type_id' => $row->unit_type_id,
+                        'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                        'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_perception' => (bool) $row->has_perception,
+                        'percentage_perception' => $row->percentage_perception,
+                        'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'description' => "{$row->description}",
+                                'item_id' => $row->item_id,
+                                'unit_type_id' => $row->unit_type_id,
+                                'quantity_unit' => $row->quantity_unit,
+                                'price1' => $row->price1,
+                                'price2' => $row->price2,
+                                'price3' => $row->price3,
+                                'price_default' => $row->price_default,
+                            ];
+                        })
                     ];
                 });
                 return $items;

@@ -29,6 +29,7 @@ if($current_hostname) {
                 Route::get('columns', 'PurchaseOrderController@columns');
                 Route::get('records', 'PurchaseOrderController@records');
                 Route::get('create/{id?}', 'PurchaseOrderController@create')->name('tenant.purchase-orders.create');
+                Route::get('generate/{id}', 'PurchaseOrderController@generate')->name('tenant.purchase-orders.generate');
                 Route::get('tables', 'PurchaseOrderController@tables');
                 Route::get('table/{table}', 'PurchaseOrderController@table');
                 Route::post('', 'PurchaseOrderController@store');

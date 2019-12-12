@@ -291,14 +291,14 @@
 
                                 <li class="{{ ($path[0] === 'purchase-quotations')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.purchase-quotations.index')}}">
-                                        Cotizaciones
+                                        Proformas
                                     </a>
                                 </li>
-                                <!-- <li class="{{ ($path[0] === 'purchase-orders')?'nav-active':'' }}">
+                                <li class="{{ ($path[0] === 'purchase-orders')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.purchase-orders.index')}}">
                                         Ordenes de compra
                                     </a>
-                                </li> -->
+                                </li>
                                 <li class="{{ ($path[0] === 'expenses' )?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.expenses.index')}}">
                                         Gastos diversos
