@@ -522,12 +522,17 @@
                               </p>
                               <p>
                                 Fecha ultimo pago:
-                                <span class="custom-badge">{{ row.date_payment_last }}</span>
+                                <span class="custom-badge">{{ row.date_payment_last ?  row.date_payment_last : 'No registra pagos.' }}</span>
                               </p>
 
                               <p>
                                 Dia de retraso en el pago:
-                                <span class="custom-badge">{{ 11 }}</span>
+                                <span class="custom-badge">{{  row.delay_payment ?  row.delay_payment : 'No tiene días atrasados.'}}</span>
+                              </p>
+
+                              <p>
+                                Fecha de vencimiento:
+                                <span class="custom-badge">{{  row.date_of_due ?  row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
                               </p>
                               <el-button icon="el-icon-view" slot="reference"></el-button>
                             </el-popover>

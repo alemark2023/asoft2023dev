@@ -6,6 +6,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\SaleNotePayment;
+use App\Models\Tenant\Invoice;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +72,7 @@ class DashboardView
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
                 // ->whereIn('document_type_id', ['01','03','08'])
                 ->select(DB::raw("documents.id as id, ".
-                                    "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                    "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                                     "persons.name as customer_name, persons.id as customer_id, documents.document_type_id,".
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
@@ -91,7 +92,7 @@ class DashboardView
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
                 // ->whereIn('document_type_id', ['01','03','08'])
                 ->select(DB::raw("documents.id as id, ".
-                                    "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                    "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                                     "persons.name as customer_name, persons.id as customer_id, documents.document_type_id, ".
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
@@ -118,7 +119,7 @@ class DashboardView
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
                 ->select(DB::raw("sale_notes.id as id, ".
-                                "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                "DATE_FORMAT(sale_notes.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                                 "persons.name as customer_name, persons.id as customer_id, null as document_type_id,".
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
@@ -139,7 +140,7 @@ class DashboardView
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
                 ->select(DB::raw("sale_notes.id as id, ".
-                                "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
+                                "DATE_FORMAT(sale_notes.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                                 "persons.name as customer_name, persons.id as customer_id, null as document_type_id,".
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
@@ -155,11 +156,27 @@ class DashboardView
 
         return collect($records)->transform(function($row) {
                 $total_to_pay = (float)$row->total - (float)$row->total_payment;
+                $delay_payment = null;
+                $date_of_due = null;
 
                 if($total_to_pay > 0) {
+                    if($row->document_type_id){
 
-                    
+                        $invoice = Invoice::where('document_id', $row->id)->first();
+                        if($invoice)
+                        {
+                            $due =   Carbon::parse($invoice->date_of_due); // $invoice->date_of_due;
+                            $date_of_due = $invoice->date_of_due->format('Y-m-d');
+                            $now = Carbon::now();
 
+                            if($now > $due){
+
+                                $delay_payment = $now->diffInDays($due);
+                            }
+
+
+                        }
+                    }
                 }
 
                 $guides = null;
@@ -194,7 +211,9 @@ class DashboardView
                     'total_to_pay' => number_format($total_to_pay,2),
                     'type' => $row->type,
                     'guides' => $guides,
-                    'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null
+                    'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
+                    'delay_payment' => $delay_payment,
+                    'date_of_due' =>  $date_of_due,
                 ];
 //            }
         });
