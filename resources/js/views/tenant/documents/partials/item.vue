@@ -51,7 +51,7 @@
                             <template v-if="!is_client">
                                 <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null" >Buscar por código de barras</el-checkbox><br>
                             </template>
-                            <el-checkbox v-model="form.has_plastic_bag_taxes" >Impuesto a la Bolsa Plástica</el-checkbox>
+                            <el-checkbox v-model="form.has_plastic_bag_taxes" :disabled="isEditItemNote">Impuesto a la Bolsa Plástica</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
@@ -430,7 +430,7 @@
     import WarehousesDetail from '../../items/partials/warehouses.vue'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
         components: {ItemForm, WarehousesDetail},
         data() {
             return {
@@ -544,6 +544,7 @@
                 let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
                 this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
 
+                // console.log(this.recordItem)
 
                 if (this.recordItem) {
                     // console.log(this.recordItem)
