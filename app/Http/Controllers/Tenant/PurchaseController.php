@@ -309,7 +309,6 @@ class PurchaseController extends Controller
 
             $row = Purchase::findOrFail($id);
             $row->delete();
-
             return [
                 'success' => true,
                 'message' => 'Compra eliminada con éxito'
@@ -322,5 +321,96 @@ class PurchaseController extends Controller
                 'message' => $e->getMessage()
             ];
         }
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->hasFile('file')) {
+
+            $file = $request->file('file');
+
+            $xmlNode = file_get_contents($file);
+            //$arrayData = $this->xmlToArray($xmlNode);
+            //return json_encode($xmlNode);
+
+           /*$xml = simplexml_load_string($xmlNode, "SimpleXMLElement", LIBXML_NOCDATA);
+            $json = json_encode($xml);
+            $array = json_decode($json,TRUE);*/
+
+          // $data =  $this->XMLtoArray($xmlNode);
+
+          $xml = simplexml_load_string($xmlNode);
+
+           $resp = $this->xml2array($xml);
+
+
+
+            return [
+                'dem' => $resp,
+                'sad' => true
+            ];
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    public function xml2array ( $xmlObject, $out = array () )
+    {
+        foreach ((array) $xmlObject as $index => $node) {
+            $out[$index] = ( is_object ( $node ) ) ?  $this->xml2array($node) : $node;
+        }
+        return $out;
+    }
+
+    function XMLtoArray($xml) {
+        $previous_value = libxml_use_internal_errors(true);
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->preserveWhiteSpace = false;
+        $dom->loadXml($xml);
+        libxml_use_internal_errors($previous_value);
+        if (libxml_get_errors()) {
+            return [];
+        }
+        return $this->DOMtoArray($dom);
+    }
+
+    public function DOMtoArray($root) {
+        $result = array();
+
+        if ($root->hasAttributes()) {
+            $attrs = $root->attributes;
+            foreach ($attrs as $attr) {
+                $result['@attributes'][$attr->name] = $attr->value;
+            }
+        }
+
+        if ($root->hasChildNodes()) {
+            $children = $root->childNodes;
+            if ($children->length == 1) {
+                $child = $children->item(0);
+                if (in_array($child->nodeType,[XML_TEXT_NODE,XML_CDATA_SECTION_NODE])) {
+                    $result['_value'] = $child->nodeValue;
+                    return count($result) == 1
+                        ? $result['_value']
+                        : $result;
+                }
+
+            }
+            $groups = array();
+            foreach ($children as $child) {
+                if (!isset($result[$child->nodeName])) {
+                    $result[$child->nodeName] = $this->DOMtoArray($child);
+                } else {
+                    if (!isset($groups[$child->nodeName])) {
+                        $result[$child->nodeName] = array($result[$child->nodeName]);
+                        $groups[$child->nodeName] = 1;
+                    }
+                    $result[$child->nodeName][] = $this->DOMtoArray($child);
+                }
+            }
+        }
+        return $result;
     }
 }
