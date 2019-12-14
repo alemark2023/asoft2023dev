@@ -5,7 +5,7 @@ namespace App\Http\Requests\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PurchaseRequest extends FormRequest
+class PurchaseImportRequest  extends FormRequest
 {
 
     public function authorize()
@@ -15,10 +15,8 @@ class PurchaseRequest extends FormRequest
 
     public function rules()
     {
+
         return [
-            'supplier_id' => [
-                'required',
-            ],
             'number' => [
                 'required',
                 'numeric'

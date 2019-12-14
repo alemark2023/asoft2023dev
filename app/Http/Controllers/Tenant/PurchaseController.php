@@ -21,6 +21,8 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
 use App\Http\Requests\Tenant\PurchaseRequest;
+use App\Http\Requests\Tenant\PurchaseImportRequest;
+
 use Illuminate\Support\Str;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\PaymentMethodType;
@@ -259,6 +261,7 @@ class PurchaseController extends Controller
                     $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
+                        'item_code'  => $row->item_code,
                         'full_description' => $full_description,
                         'description' => $row->description,
                         'currency_type_id' => $row->currency_type_id,
@@ -323,38 +326,7 @@ class PurchaseController extends Controller
         }
     }
 
-    public function import(Request $request)
-    {
-        if ($request->hasFile('file')) {
 
-            $file = $request->file('file');
-
-            $xmlNode = file_get_contents($file);
-            //$arrayData = $this->xmlToArray($xmlNode);
-            //return json_encode($xmlNode);
-
-           /*$xml = simplexml_load_string($xmlNode, "SimpleXMLElement", LIBXML_NOCDATA);
-            $json = json_encode($xml);
-            $array = json_decode($json,TRUE);*/
-
-          // $data =  $this->XMLtoArray($xmlNode);
-
-          $xml = simplexml_load_string($xmlNode);
-
-           $resp = $this->xml2array($xml);
-
-
-
-            return [
-                'dem' => $resp,
-                'sad' => true
-            ];
-        }
-        return [
-            'success' => false,
-            'message' =>  __('app.actions.upload.error'),
-        ];
-    }
 
     public function xml2array ( $xmlObject, $out = array () )
     {
@@ -413,4 +385,69 @@ class PurchaseController extends Controller
         }
         return $result;
     }
+
+    public function import(PurchaseImportRequest $request)
+    {
+        try
+        {
+            $model = $request->all();
+            $supplier =  Person::whereType('suppliers')->where('number', $model['supplier_ruc'])->first();
+            if(!$supplier)
+            {
+                return [
+                    'success' => false,
+                    'data' => 'Supplier not exist.'
+                ];
+            }
+            $model['supplier_id'] = $supplier->id;
+            $company = Company::active();
+            $values = [
+                'user_id' => auth()->id(),
+                'external_id' => Str::uuid()->toString(),
+                'supplier' => PersonInput::set($model['supplier_id']),
+                'soap_type_id' => $company['soap_type_id'],
+                'group_id' => ($model['document_type_id'] === '01') ? '01':'02',
+                'state_type_id' => '01'
+            ];
+
+            $data = array_merge($model, $values);
+
+            $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                $doc = Purchase::create($data);
+                foreach ($data['items'] as $row)
+                {
+                    $doc->items()->create($row);
+                }
+
+                $doc->purchase_payments()->create([
+                    'date_of_payment' => $data['date_of_issue'],
+                    'payment_method_type_id' => $data['payment_method_type_id'],
+                    'payment' => $data['total'],
+                ]);
+
+                return $doc;
+            });
+
+            return [
+                'success' => true,
+                'message' => 'Xml cargado correctamente.',
+                'data' => [
+                    'id' => $purchase->id,
+                ],
+            ];
+
+
+
+        }catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+
+    }
+
+
+
 }
