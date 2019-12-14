@@ -15,9 +15,10 @@
                                 <div class="row">
                                     <div class="col-md-11 pr-0">
 
-                                        <el-select :disabled="recordItem != null"
+                                        <el-select ref="custom_search" :disabled="recordItem != null"
                                                     v-model="form.item_id" @change="changeItem"
                                                     filterable
+                                                    @focus="setFocus"
                                                     placeholder="Buscar"
                                                     popper-class="el-select-items"
                                                     dusk="item_id"
@@ -43,8 +44,9 @@
 
                                 <div class="row">
                                     <div class="col-md-11 pr-0">
-                                        <el-select :disabled="recordItem != null" v-model="form.item_id"
+                                        <el-select ref="custom_search" :disabled="recordItem != null" v-model="form.item_id"
                                             @change="changeItem"
+                                            @focus="setFocus"
                                             filterable
                                             placeholder="Buscar"
                                             :filter-method="filterMethod"
@@ -505,6 +507,12 @@
             })
         },
         methods: {
+            setFocus()
+            {
+                console.log(1)
+
+                this.$refs.custom_search.focus()
+            },
             filterMethod(query){
 
                 let item = _.find(this.items, {'internal_id': query});
