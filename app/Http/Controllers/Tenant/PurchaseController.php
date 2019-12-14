@@ -21,6 +21,8 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
 use App\Http\Requests\Tenant\PurchaseRequest;
+use App\Http\Requests\Tenant\PurchaseImportRequest;
+
 use Illuminate\Support\Str;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\PaymentMethodType;
@@ -259,6 +261,7 @@ class PurchaseController extends Controller
                     $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
                         'id' => $row->id,
+                        'item_code'  => $row->item_code,
                         'full_description' => $full_description,
                         'description' => $row->description,
                         'currency_type_id' => $row->currency_type_id,
@@ -309,7 +312,6 @@ class PurchaseController extends Controller
 
             $row = Purchase::findOrFail($id);
             $row->delete();
-
             return [
                 'success' => true,
                 'message' => 'Compra eliminada con éxito'
@@ -323,4 +325,129 @@ class PurchaseController extends Controller
             ];
         }
     }
+
+
+
+    public function xml2array ( $xmlObject, $out = array () )
+    {
+        foreach ((array) $xmlObject as $index => $node) {
+            $out[$index] = ( is_object ( $node ) ) ?  $this->xml2array($node) : $node;
+        }
+        return $out;
+    }
+
+    function XMLtoArray($xml) {
+        $previous_value = libxml_use_internal_errors(true);
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->preserveWhiteSpace = false;
+        $dom->loadXml($xml);
+        libxml_use_internal_errors($previous_value);
+        if (libxml_get_errors()) {
+            return [];
+        }
+        return $this->DOMtoArray($dom);
+    }
+
+    public function DOMtoArray($root) {
+        $result = array();
+
+        if ($root->hasAttributes()) {
+            $attrs = $root->attributes;
+            foreach ($attrs as $attr) {
+                $result['@attributes'][$attr->name] = $attr->value;
+            }
+        }
+
+        if ($root->hasChildNodes()) {
+            $children = $root->childNodes;
+            if ($children->length == 1) {
+                $child = $children->item(0);
+                if (in_array($child->nodeType,[XML_TEXT_NODE,XML_CDATA_SECTION_NODE])) {
+                    $result['_value'] = $child->nodeValue;
+                    return count($result) == 1
+                        ? $result['_value']
+                        : $result;
+                }
+
+            }
+            $groups = array();
+            foreach ($children as $child) {
+                if (!isset($result[$child->nodeName])) {
+                    $result[$child->nodeName] = $this->DOMtoArray($child);
+                } else {
+                    if (!isset($groups[$child->nodeName])) {
+                        $result[$child->nodeName] = array($result[$child->nodeName]);
+                        $groups[$child->nodeName] = 1;
+                    }
+                    $result[$child->nodeName][] = $this->DOMtoArray($child);
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function import(PurchaseImportRequest $request)
+    {
+        try
+        {
+            $model = $request->all();
+            $supplier =  Person::whereType('suppliers')->where('number', $model['supplier_ruc'])->first();
+            if(!$supplier)
+            {
+                return [
+                    'success' => false,
+                    'data' => 'Supplier not exist.'
+                ];
+            }
+            $model['supplier_id'] = $supplier->id;
+            $company = Company::active();
+            $values = [
+                'user_id' => auth()->id(),
+                'external_id' => Str::uuid()->toString(),
+                'supplier' => PersonInput::set($model['supplier_id']),
+                'soap_type_id' => $company['soap_type_id'],
+                'group_id' => ($model['document_type_id'] === '01') ? '01':'02',
+                'state_type_id' => '01'
+            ];
+
+            $data = array_merge($model, $values);
+
+            $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                $doc = Purchase::create($data);
+                foreach ($data['items'] as $row)
+                {
+                    $doc->items()->create($row);
+                }
+
+                $doc->purchase_payments()->create([
+                    'date_of_payment' => $data['date_of_issue'],
+                    'payment_method_type_id' => $data['payment_method_type_id'],
+                    'payment' => $data['total'],
+                ]);
+
+                return $doc;
+            });
+
+            return [
+                'success' => true,
+                'message' => 'Xml cargado correctamente.',
+                'data' => [
+                    'id' => $purchase->id,
+                ],
+            ];
+
+
+
+        }catch(Exception $e)
+        {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+
+    }
+
+
+
 }

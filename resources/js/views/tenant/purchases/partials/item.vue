@@ -59,30 +59,30 @@
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Descripción</th>
                                 <th class="text-center">Factor</th>
-                               
+
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr v-for="(row, index) in form.item_unit_types">
-                               
+
                                     <td class="text-center">{{row.unit_type_id}}</td>
                                     <td class="text-center">{{row.description}}</td>
                                     <td class="text-center">{{row.quantity_unit}}</td>
-                 
+
                                     <td class="series-table-actions text-right">
                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
                                             <i class="el-icon-check"></i>
                                         </button>
                                     </td>
-                                
-                               
+
+
                             </tr>
                             </tbody>
                         </table>
 
                         </div>
-                        
+
                     </div>
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
@@ -207,7 +207,7 @@
     </el-dialog>
 </template>
 <style>
-.el-select-dropdown { 
+.el-select-dropdown {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
@@ -235,13 +235,13 @@
                 charge_types: [],
                 attribute_types: [],
                 use_price: 1,
-                change_affectation_igv_type_id: false, 
+                change_affectation_igv_type_id: false,
             }
         },
         created() {
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.items = response.data.items 
+                this.items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
@@ -359,7 +359,6 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id})
                 this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
-
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             },
             clickAddItem() {
@@ -368,9 +367,9 @@
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
                 this.row = this.changeWarehouse(this.row)
-             
+
                 this.initForm()
-                // this.initializeFields() 
+                // this.initializeFields()
                 this.$emit('add', this.row)
             },
             changeWarehouse(row){

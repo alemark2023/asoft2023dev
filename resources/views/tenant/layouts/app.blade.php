@@ -159,7 +159,14 @@
 
     <!-- Theme Custom -->
     <script src="{{asset('porto-light/js/custom.js')}}"></script>
+    <script src="{{asset('porto-light/js/jquery.xml2json.js')}}"></script>
     <script>
+
+        function parseXMLToJSON(source)
+        {
+            let transform = $.xml2json(source);
+            return transform
+        }
 
     </script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->

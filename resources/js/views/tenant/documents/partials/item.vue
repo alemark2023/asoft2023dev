@@ -11,26 +11,39 @@
                             </label>
 
                             <template v-if="!search_item_by_barcode" id="select-append">
-                                <el-input id="custom-input">
-                                    <el-select :disabled="recordItem != null"
-                                            v-model="form.item_id" @change="changeItem"
-                                            filterable
-                                            placeholder="Buscar"
-                                            popper-class="el-select-items"
-                                            dusk="item_id"
-                                            @visible-change="focusTotalItem"
-                                            slot="prepend"
-                                            id="select-width">
-                                        <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                                    </el-select>
-                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
-                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
-                                    </el-tooltip>
-                                </el-input>
+
+                                <div class="row">
+                                    <div class="col-md-11 pr-0">
+
+                                        <el-select :disabled="recordItem != null"
+                                                    v-model="form.item_id" @change="changeItem"
+                                                    filterable
+                                                    placeholder="Buscar"
+                                                    popper-class="el-select-items"
+                                                    dusk="item_id"
+                                                    @visible-change="focusTotalItem"
+                                                    slot="prepend"
+                                                    id="select-width">
+                                                <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                        </el-select>
+
+                                    </div>
+                                    <div class="col-md-1 p-0 m-0">
+                                        <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
+                                            <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                        </el-tooltip>
+
+                                    </div>
+                                </div>
+
+                                <!--<el-input id="custom-input">
+                                </el-input> -->
                             </template>
                             <template v-else>
-                                <el-input id="custom-input">
-                                    <el-select :disabled="recordItem != null" v-model="form.item_id"
+
+                                <div class="row">
+                                    <div class="col-md-11 pr-0">
+                                        <el-select :disabled="recordItem != null" v-model="form.item_id"
                                             @change="changeItem"
                                             filterable
                                             placeholder="Buscar"
@@ -40,12 +53,21 @@
                                             @visible-change="focusTotalItem"
                                             slot="prepend"
                                             id="select-width">
-                                        <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                                    </el-select>
-                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
-                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
-                                    </el-tooltip>
-                                </el-input>
+                                            <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="col-md-1 p-0 m-0">
+
+                                        <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
+                                            <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                        </el-tooltip>
+
+                                    </div>
+                                </div>
+                                <!--<el-input id="custom-input">
+
+
+                                </el-input>-->
                             </template>
 
                             <template v-if="!is_client">
@@ -549,8 +571,8 @@
                     // console.log(this.recordItem)
                     this.form.item_id = await this.recordItem.item_id
                     await this.changeItem()
-                    this.form.quantity = this.recordItem.quantity 
-                    this.form.unit_price_value = this.recordItem.input_unit_price_value 
+                    this.form.quantity = this.recordItem.quantity
+                    this.form.unit_price_value = this.recordItem.input_unit_price_value
                     this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
 
                     this.calculateQuantity()
@@ -672,7 +694,7 @@
 
                 this.$emit('add', this.row);
 
-                
+
                 if (this.recordItem)
                 {
                     this.close()
