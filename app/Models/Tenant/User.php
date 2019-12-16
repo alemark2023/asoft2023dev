@@ -102,4 +102,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Establishment::class);
     }
+
+    
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function sale_notes()
+    {
+        return $this->hasMany(SaleNote::class);
+    }
+     
 }

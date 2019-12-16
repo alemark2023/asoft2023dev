@@ -57,6 +57,11 @@ if($current_hostname) {
                 Route::get('document-detractions/records', 'ReportDocumentDetractionController@records')->name('tenant.reports.document_hotels.records');
 
                 
+                Route::get('commissions', 'ReportCommissionController@index')->name('tenant.reports.commissions.index');
+                Route::get('commissions/pdf', 'ReportCommissionController@pdf')->name('tenant.reports.commissions.pdf');
+                Route::get('commissions/excel', 'ReportCommissionController@excel')->name('tenant.reports.commissions.excel');
+                Route::get('commissions/filter', 'ReportCommissionController@filter')->name('tenant.reports.commissions.filter');
+                Route::get('commissions/records', 'ReportCommissionController@records')->name('tenant.reports.commissions.records');
                 
             });
 
