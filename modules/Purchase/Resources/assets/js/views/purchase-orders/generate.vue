@@ -26,7 +26,7 @@
                 <form autocomplete="off" @submit.prevent="submit">
                     <div class="form-body">
 
-                        <div class="row"> 
+                        <div class="row">
 
                             <div class="col-lg-6">
                                 <div class="form-group" :class="{'has-danger': errors.supplier_id}">
@@ -48,7 +48,7 @@
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                                     <label class="control-label">Fec. Vencimiento</label>
@@ -56,7 +56,7 @@
                                     <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
@@ -78,7 +78,7 @@
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                                 </div>
-                            </div> 
+                            </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
@@ -88,6 +88,22 @@
                                     </label>
                                     <el-input v-model="form.exchange_rate_sale"></el-input>
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-3" style="text-align:center; padding:1.3%;">
+                                <div class="form-group" :class="{'has-danger': errors.file}">
+                                    <el-upload
+                                            :data="{'type': 'purchase-order-attached'}"
+                                            :headers="headers"
+                                            :multiple="false"
+                                            :action="`/${resource}/upload`"
+                                            :show-file-list="true"
+                                            :on-success="onSuccess"
+                                            :limit="1"
+                                            >
+                                        <el-button slot="trigger" type="primary">Seleccione un archivo (PDF/JPG)</el-button>
+                                    </el-upload>
+                                    <small class="form-control-feedback" v-if="errors.file" v-text="errors.file[0]"></small>
                                 </div>
                             </div>
 
@@ -124,9 +140,13 @@
                                             <td class="text-right" width="20%">
                                                 <!-- {{ currency_type.symbol }} -->
                                                  <!-- {{ row.unit_price }} -->
-                                                <el-input v-model="row.unit_price" @change="inputUnitPrice(index)" :min="0.01" >
-                                                    <template slot="prepend" v-if="currency_type.symbol">{{ currency_type.symbol }}</template>
-                                                </el-input>
+
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <div v-if="currency_type.symbol" class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon1">{{ currency_type.symbol }}</span>
+                                                    </div>
+                                                    <input v-model="row.unit_price" @change="inputUnitPrice(index)" type="number" min="0" class="form-control" aria-label="Precio Unitario" aria-describedby="basic-addon1">
+                                                </div>
                                             </td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
@@ -146,7 +166,7 @@
                                 <p class="text-right" v-if="form.total_taxed > 0">OP.GRAVADA: {{ currency_type.symbol }} {{ form.total_taxed }}</p>
                                 <p class="text-right" v-if="form.total_igv > 0">IGV: {{ currency_type.symbol }} {{ form.total_igv }}</p>
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
- 
+
                             </div>
                         </div>
                     </div>
@@ -189,6 +209,7 @@
         props:['purchase_quotation'],
         data() {
             return {
+                headers: headers_token,
                 input_person:{},
                 resource: 'purchase-orders',
                 showDialogAddItem: false,
@@ -224,7 +245,7 @@
             }
         },
         async created() {
-            console.log(this.purchase_quotation)
+           // console.log(this.purchase_quotation)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -233,7 +254,7 @@
                     this.establishment = response.data.establishment
                     this.suppliers = response.data.suppliers
                     this.payment_method_types = response.data.payment_method_types
-                    this.company = response.data.company 
+                    this.company = response.data.company
 
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishment.id) ? this.establishment.id:null
@@ -242,9 +263,9 @@
                     // this.changeDocumentType()
                     this.changeCurrencyType()
                 })
-            
+
             await this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                    this.items = response.data.items 
+                    this.items = response.data.items
                     this.affectation_igv_types = response.data.affectation_igv_types
                     this.system_isc_types = response.data.system_isc_types
                     this.discount_types = response.data.discount_types
@@ -255,9 +276,10 @@
 
             this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
                 this.reloadDataSuppliers(supplier_id)
-           })
+            })
+
             this.loading_form = true
-           
+
             this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
             })
@@ -265,18 +287,26 @@
             await this.setData()
         },
         methods: {
-            // inputUnitPrice(index){
 
-            // },
+            onSuccess(response, file, fileList) {
+                if (response.success) {
+                    this.form.attached = response.data.filename
+                    this.form.image_url = response.data.temp_image
+                    this.form.attached_temp_path = response.data.temp_path
+                } else {
+                    this.$message.error(response.message)
+                }
+            },
+
             setData(){
 
                 let oc = this.purchase_quotation
-                
-                // this.form.establishment_id =  null 
+
+                // this.form.establishment_id =  null
                 this.form.date_of_issue =  oc.date_of_issue
-                this.form.date_of_due =  oc.date_of_issue 
+                this.form.date_of_due =  oc.date_of_issue
                 this.form.time_of_issue =   oc.time_of_issue
-                
+
                 oc.items.forEach(it => {
                     it.unit_price = 0
                     it.total_igv = 0
@@ -297,23 +327,19 @@
                 this.form.items[index].item = await _.find(this.items, {'id': this.form.items[index].item_id})
                 // this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.items[index].affectation_igv_type_id = this.form.items[index].item.purchase_affectation_igv_type_id
-
                 // this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 await this.clickAddItem(index)
             },
             async clickAddItem(index) {
-
                 this.form.items[index].item.unit_price = this.form.items[index].unit_price
                 this.form.items[index].item.presentation = [];
                 this.form.items[index].affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.items[index].affectation_igv_type_id})
-                console.log(this.form.items[index])
                 this.row = await calculateRowItem(this.form.items[index], this.form.currency_type_id, this.exchangeRateSale)
-                // this.row = this.changeWarehouse(this.row)
                 this.form.items[index] = this.row
                 await this.calculateTotal()
-             
+
                 // this.initForm()
-                // this.initializeFields() 
+                // this.initializeFields()
                 // this.$emit('add', this.row)
             },
             initInputPerson(){
@@ -323,17 +349,17 @@
                 }
             },
             keyupEnterSupplier(){
-            
+
                 if(this.input_person.number){
 
-                    if(!isNaN(parseInt(this.input_person.number))){ 
+                    if(!isNaN(parseInt(this.input_person.number))){
 
                         switch (this.input_person.number.length) {
                             case 8:
                                 this.input_person.identity_document_type_id = '1'
                                 this.showDialogNewPerson = true
                                 break;
-                        
+
                             case 11:
                                 this.input_person.identity_document_type_id = '6'
                                 this.showDialogNewPerson = true
@@ -345,11 +371,11 @@
                         }
                     }
                 }
-            }, 
-            keyupSupplier(e){ 
+            },
+            keyupSupplier(e){
 
                 if(e.key !== "Enter"){
-                    
+
                     this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
                     let exist_persons = this.suppliers.filter((supplier)=>{
                         let pos = supplier.description.search(this.input_person.number);
@@ -358,17 +384,17 @@
 
                     this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
                 }
-            
+
             },
             inputSeries(){
 
                 const pattern = new RegExp('^[A-Z0-9]+$', 'i');
-                if(!pattern.test(this.form.series)){ 
+                if(!pattern.test(this.form.series)){
                     this.form.series = this.form.series.substring(0, this.form.series.length - 1);
                 } else {
                     this.form.series = this.form.series.toUpperCase()
                 }
-                
+
             },
             changePaymentMethodType(flag_submit = true){
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
@@ -391,8 +417,8 @@
 
                 }
             },
-            changeSupplier(){  
-                this.calculatePerception() 
+            changeSupplier(){
+                this.calculatePerception()
             },
             filterSuppliers() {
 
@@ -422,6 +448,7 @@
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     supplier_id: null,
+                    supplier: null,
                     payment_method_type_id:'01',
                     currency_type_id: null,
                     purchase_order: null,
@@ -451,6 +478,8 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    attached_temp_path: null,
+                    attached: null
                 }
 
                 this.initInputPerson()
@@ -539,14 +568,16 @@
                 this.form.total = _.round(total, 2)
 
                 this.calculatePerception()
-                
+
 
              },
             calculatePerception(){
-                
-                let supplier = _.find(this.all_suppliers,{'id':this.form.supplier_id})
+
+                let supplier = _.find(this.suppliers,{'id':this.form.supplier_id})
 
                 if(supplier){
+
+                    this.form.supplier = supplier
 
                     if(supplier.perception_agent) {
 
@@ -557,9 +588,9 @@
 
                         this.form.perception_date = moment().format('YYYY-MM-DD')
 
-                        this.form.items.forEach((row) => { 
-                            quantity_item_perception += (row.item.has_perception) ? 1:0 
-                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0 
+                        this.form.items.forEach((row) => {
+                            quantity_item_perception += (row.item.has_perception) ? 1:0
+                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0
                         });
 
                         this.is_perception_agent = (quantity_item_perception > 0) ? true : false
@@ -577,8 +608,8 @@
                     }
 
                 }
-                
-                
+
+
             },
             async submit() {
 

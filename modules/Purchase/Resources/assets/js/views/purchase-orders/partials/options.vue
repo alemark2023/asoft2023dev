@@ -3,7 +3,7 @@
                :close-on-click-modal="false"
                :close-on-press-escape="false"
                :show-close="false">
-    
+
         <span slot="footer" class="dialog-footer">
             <template v-if="showClose">
                 <el-button @click="clickClose">Cerrar</el-button>
@@ -48,10 +48,10 @@
                     .then(response => {
                         this.form = response.data.data
                         let typei = this.type == 'edit' ? 'editada' : 'registrada'
-                        this.titleDialog = `Compra ${typei}: ` +this.form.number
+                        this.titleDialog = `Orden de Compra ${typei}: ` + this.recordId
                     })
             },
-          
+
             clickFinalize() {
                 location.href = `/${this.resource}`
             },

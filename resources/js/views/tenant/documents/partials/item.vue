@@ -549,8 +549,8 @@
                     // console.log(this.recordItem)
                     this.form.item_id = await this.recordItem.item_id
                     await this.changeItem()
-                    this.form.quantity = this.recordItem.quantity 
-                    this.form.unit_price_value = this.recordItem.input_unit_price_value 
+                    this.form.quantity = this.recordItem.quantity
+                    this.form.unit_price_value = this.recordItem.input_unit_price_value
                     this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
 
                     this.calculateQuantity()
@@ -659,7 +659,7 @@
                 this.form.item.unit_price = unit_price;
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-
+                console.log
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
                // this.row.edit = false;
                 this.initForm();
@@ -672,7 +672,7 @@
 
                 this.$emit('add', this.row);
 
-                
+
                 if (this.recordItem)
                 {
                     this.close()

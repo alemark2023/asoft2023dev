@@ -33,7 +33,7 @@
                                 <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                             </div>
                         </div>
-                        
+
 
 
                         <div class="col-lg-2">
@@ -43,7 +43,7 @@
                                 <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                                 <label class="control-label">Fec. Vencimiento</label>
@@ -189,8 +189,8 @@
                                     </div>
                                 </div>
                                 <h3 class="text-right" v-if="form.total > 0 && !hide_button"><b>MONTO TOTAL : </b>{{ currency_type.symbol }} {{ total_amount }}</h3>
-                                
-                                
+
+
                             </template>
                         </div>
                     </div>
@@ -284,13 +284,13 @@
             this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
                 this.reloadDataSuppliers(supplier_id)
            })
-           
+
             this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
             })
         },
         methods: {
-            
+
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -298,17 +298,17 @@
                 }
             },
             keyupEnterSupplier(){
-            
+
                 if(this.input_person.number){
 
-                    if(!isNaN(parseInt(this.input_person.number))){ 
+                    if(!isNaN(parseInt(this.input_person.number))){
 
                         switch (this.input_person.number.length) {
                             case 8:
                                 this.input_person.identity_document_type_id = '1'
                                 this.showDialogNewPerson = true
                                 break;
-                        
+
                             case 11:
                                 this.input_person.identity_document_type_id = '6'
                                 this.showDialogNewPerson = true
@@ -320,11 +320,11 @@
                         }
                     }
                 }
-            }, 
-            keyupSupplier(e){ 
+            },
+            keyupSupplier(e){
 
                 if(e.key !== "Enter"){
-                    
+
                     this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
                     let exist_persons = this.suppliers.filter((supplier)=>{
                         let pos = supplier.description.search(this.input_person.number);
@@ -333,17 +333,17 @@
 
                     this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
                 }
-            
+
             },
             inputSeries(){
 
                 const pattern = new RegExp('^[A-Z0-9]+$', 'i');
-                if(!pattern.test(this.form.series)){ 
+                if(!pattern.test(this.form.series)){
                     this.form.series = this.form.series.substring(0, this.form.series.length - 1);
                 } else {
                     this.form.series = this.form.series.toUpperCase()
                 }
-                
+
             },
             changePaymentMethodType(flag_submit = true){
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
@@ -366,8 +366,8 @@
 
                 }
             },
-            changeSupplier(){  
-                this.calculatePerception() 
+            changeSupplier(){
+                this.calculatePerception()
             },
             filterSuppliers() {
 
@@ -517,11 +517,11 @@
                 this.form.total = _.round(total, 2)
 
                 this.calculatePerception()
-                
+
 
              },
             calculatePerception(){
-                
+
                 let supplier = _.find(this.all_suppliers,{'id':this.form.supplier_id})
 
                 if(supplier){
@@ -535,9 +535,9 @@
 
                         this.form.perception_date = moment().format('YYYY-MM-DD')
 
-                        this.form.items.forEach((row) => { 
-                            quantity_item_perception += (row.item.has_perception) ? 1:0 
-                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0 
+                        this.form.items.forEach((row) => {
+                            quantity_item_perception += (row.item.has_perception) ? 1:0
+                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0
                         });
 
                         this.is_perception_agent = (quantity_item_perception > 0) ? true : false
@@ -555,8 +555,8 @@
                     }
 
                 }
-                
-                
+
+
             },
             async submit() {
 

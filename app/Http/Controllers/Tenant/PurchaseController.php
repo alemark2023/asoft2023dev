@@ -9,6 +9,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Purchase;
+use Modules\Purchase\Models\PurchaseOrder;
+
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\Models\Tenant\Item;
 use App\Http\Resources\Tenant\PurchaseCollection;
@@ -126,6 +128,13 @@ class PurchaseController extends Controller
 
             return $doc;
         });
+
+        if($request->purchase_order){
+
+            $order = PurchaseOrder::find($request->purchase_order['id']);
+            $order->state_type_id = '03';
+            $order->save();
+        }
 
         return [
             'success' => true,
