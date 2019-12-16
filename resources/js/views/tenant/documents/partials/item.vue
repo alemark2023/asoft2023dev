@@ -18,7 +18,7 @@
                                         <el-select ref="custom_search" :disabled="recordItem != null"
                                                     v-model="form.item_id" @change="changeItem"
                                                     filterable
-                                                    @focus="setFocus"
+                                                    allow-create
                                                     placeholder="Buscar"
                                                     popper-class="el-select-items"
                                                     dusk="item_id"
@@ -46,7 +46,7 @@
                                     <div class="col-md-11 pr-0">
                                         <el-select ref="custom_search" :disabled="recordItem != null" v-model="form.item_id"
                                             @change="changeItem"
-                                            @focus="setFocus"
+
                                             filterable
                                             placeholder="Buscar"
                                             :filter-method="filterMethod"
@@ -427,10 +427,10 @@
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button class="add" type="primary" native-type="submit" v-if="form.item_id">{{titleAction}}</el-button>
+                <el-button class="add" type="primary" native-type="submit" v-if="form.item_id > 0">{{titleAction}}</el-button>
             </div>
         </form>
-        <item-form :showDialog.sync="showDialogNewItem"
+        <item-form :nameItem="nameItemAux" :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
 
 
@@ -458,6 +458,7 @@
         components: {ItemForm, WarehousesDetail},
         data() {
             return {
+                nameItemAux: '',
                 titleAction: '',
                 is_client:false,
                 titleDialog: '',
@@ -507,12 +508,7 @@
             })
         },
         methods: {
-            setFocus()
-            {
-                console.log(1)
 
-                this.$refs.custom_search.focus()
-            },
             filterMethod(query){
 
                 let item = _.find(this.items, {'internal_id': query});
@@ -647,16 +643,28 @@
                 this.$emit('update:showDialog', false)
             },
             changeItem() {
+                if(this.form.item_id > 0)
+                {
+                    this.form.item = _.find(this.items, {'id': this.form.item_id});
+                    this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
+                    this.form.unit_price_value = this.form.item.sale_unit_price;
 
-                this.form.item = _.find(this.items, {'id': this.form.item_id});
-                this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
-                this.form.unit_price_value = this.form.item.sale_unit_price;
+                    this.form.has_igv = this.form.item.has_igv;
+                    this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
+                    this.form.quantity = 1;
+                    this.cleanTotalItem();
+                    this.showListStock = true
+                }
+                else{
 
-                this.form.has_igv = this.form.item.has_igv;
-                this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
-                this.form.quantity = 1;
-                this.cleanTotalItem();
-                this.showListStock = true
+                    this.nameItemAux = this.form.item_id,
+                    this.showDialogNewItem = true
+                    this.form.item_id = null
+
+
+                }
+
+
 
                 //this.item_unit_types = this.form.item.item_unit_types;
                 //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
@@ -689,7 +697,7 @@
                 this.form.item.unit_price = unit_price;
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-                console.log
+               // console.log
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
                // this.row.edit = false;
                 this.initForm();

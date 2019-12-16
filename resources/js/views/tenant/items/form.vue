@@ -417,7 +417,7 @@
     // import PercentagePerception from './partials/percentage_perception.vue'
 
     export default {
-        props: ['showDialog', 'recordId', 'external'],
+        props: ['showDialog', 'recordId', 'external', 'nameItem'],
         // components: {PercentagePerception},
 
         data() {
@@ -479,6 +479,7 @@
             })
 
         },
+
         methods: {
             changeHaveAccount(){
                 if(!this.have_account) this.form.account_id = null
@@ -597,6 +598,9 @@
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
             },
             create() {
+
+
+
                 this.titleDialog = (this.recordId)? 'Editar Producto':'Nuevo Producto'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
@@ -605,6 +609,14 @@
                             this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                             this.changeAffectationIgvType()
                         })
+                }
+                else{
+
+                     if(this.nameItem)
+                    {
+                        this.form.description = this.nameItem
+                    }
+
                 }
             },
             loadRecord(){
