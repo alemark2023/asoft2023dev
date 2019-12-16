@@ -51,6 +51,9 @@ trait StorageDocument
             case 'purchase_quotation':
                 $extension = 'pdf';
                 break;
+            case 'purchase_order_attached':
+                $extension = '';
+                break;
         }
         $this->_filename = $filename.'.'.$extension;
         $this->_folder = ($root)?$root.DIRECTORY_SEPARATOR.$file_type:$file_type;

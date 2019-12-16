@@ -4,6 +4,15 @@
                :close-on-press-escape="false"
                :show-close="false">
 
+        <div class="row">             
+            
+            <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-4">
+                <p>Descargar Archivo</p>
+                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload()">
+                    <i class="fa fa-download"></i>
+                </button>
+            </div> 
+        </div>   
         <span slot="footer" class="dialog-footer">
             <template v-if="showClose">
                 <el-button @click="clickClose">Cerrar</el-button>
@@ -33,6 +42,9 @@
             this.initForm()
         },
         methods: {
+            clickDownload(){
+                window.open(`/${this.resource}/download-attached/${this.form.external_id}`, '_blank');
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -48,7 +60,7 @@
                     .then(response => {
                         this.form = response.data.data
                         let typei = this.type == 'edit' ? 'editada' : 'registrada'
-                        this.titleDialog = `Orden de Compra ${typei}: ` + this.recordId
+                        this.titleDialog = `Orden de Compra ${typei}: ` + this.form.number_full
                     })
             },
 

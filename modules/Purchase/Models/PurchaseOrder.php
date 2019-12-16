@@ -17,6 +17,7 @@ class PurchaseOrder extends ModelTenant
     protected $fillable = [
         'user_id',
         'external_id',
+        'prefix',
         'establishment_id',
         'soap_type_id',
         'state_type_id',
@@ -102,7 +103,7 @@ class PurchaseOrder extends ModelTenant
 
     public function getNumberFullAttribute()
     {
-        return 'OC'.'-'.$this->id;
+        return $this->prefix.'-'.$this->id;
     }
 
     public function scopeWhereTypeUser($query)

@@ -90,7 +90,7 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-3" style="text-align:center; padding:1.3%;">
+                            <div class="col-lg-3" style="margin-top:29px;">
                                 <div class="form-group" :class="{'has-danger': errors.file}">
                                     <el-upload
                                             :data="{'type': 'purchase-order-attached'}"
@@ -443,6 +443,7 @@
                 this.form = {
                     establishment_id: null,
                     document_type_id: null,
+                    prefix:'OC',
                     series: null,
                     number: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),

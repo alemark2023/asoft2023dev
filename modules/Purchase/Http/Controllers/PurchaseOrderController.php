@@ -280,6 +280,16 @@ class PurchaseOrderController extends Controller
 
     }
 
+    public function downloadAttached($external_id) {
+
+        $purchase_order = PurchaseOrder::where('external_id', $external_id)->first();
+
+        if (!$purchase_order) throw new Exception("El código {$external_id} es inválido, no se encontro la orden de compra relacionada");
+
+        return Storage::disk('tenant')->download('purchase_order_attached'.DIRECTORY_SEPARATOR.$purchase_order->filename);
+        
+    }
+
     public function toPrint($external_id, $format) {
 
         $purchase_quotation = PurchaseOrder::where('external_id', $external_id)->first();
