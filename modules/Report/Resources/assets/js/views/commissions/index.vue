@@ -8,19 +8,19 @@
                     <data-table :resource="resource">
                         <tr slot="heading">
                             <th>#</th>
-                            <th class="text-center">Código vendedor</th>
+                            <!-- <th class="text-center">Código vendedor</th> -->
                             <th>Vendedor</th>
-                            <th>Cant transacciones</th>
-                            <th>Ventas acumuladas</th>
-                            <th>Comisiones</th>
+                            <th class="text-center">Cantidad transacciones</th>
+                            <th class="text-center">Ventas acumuladas</th>
+                            <th class="text-center">Total comisiones</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>  
+                            <!-- <td>{{row.user_name}}</td> -->
                             <td>{{row.user_name}}</td>
-                            <td>{{row.user_name}}</td>
-                            <td>{{row.quantity_transactions}}</td>
-                            <td>{{row.acum_sales}}</td> 
-                            <td>{{row.total_commissions}}</td> 
+                            <td class="text-center">{{row.total_transactions}}</td>
+                            <td class="text-center">{{row.acum_sales}}</td> 
+                            <td class="text-center">{{row.total_commision}}</td> 
                         </tr>
                         
                     </data-table>

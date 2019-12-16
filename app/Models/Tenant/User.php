@@ -114,4 +114,9 @@ class User extends Authenticatable
         return $this->hasMany(SaleNote::class);
     }
      
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('id', $user->id) : null;
+    }
 }

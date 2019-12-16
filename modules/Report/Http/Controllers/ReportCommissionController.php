@@ -5,7 +5,7 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
-use Modules\Report\Exports\SaleNoteExport;
+use Modules\Report\Exports\CommissionExport;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNote;
@@ -41,10 +41,8 @@ class ReportCommissionController extends Controller
 
     public function records(Request $request)
     {
-        $records = $this->getRecords($request->all(), SaleNote::class);
+        $records = $this->getRecords($request->all(), User::class);
         
-        // dd($records->paginate(config('tenant.items_per_page')));
-
         return new ReportCommissionCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -95,52 +93,59 @@ class ReportCommissionController extends Controller
 
     private function data($document_type_id, $establishment_id, $date_start, $date_end, $model)
     {
+ 
+        if($establishment_id){
 
-        $data = User::with(['documents','sale_notes'])->latest();
+            $data = $model::with(['documents'=>function($q) use($date_start, $date_end){
 
-        // if($document_type_id && $establishment_id){
+                                $q->whereIn('state_type_id', ['01','03','05','07','13'])
+                                ->whereIn('document_type_id', ['01','03','08'])
+                                ->whereBetween('date_of_issue', [$date_start, $date_end]);
 
-        //     $data = $model::where([['establishment_id', $establishment_id],['document_type_id', $document_type_id]])
-        //                         ->where('detraction', '!=', null)
-        //                         ->whereBetween('date_of_issue', [$date_start, $date_end])->latest()->whereTypeUser();
+                            },'sale_notes'=>function($z) use($date_start, $date_end){
 
-        // }elseif($document_type_id){
+                                $z->whereIn('state_type_id', ['01','03','05','07','13'])
+                                ->whereBetween('date_of_issue', [$date_start, $date_end]);
 
-        //     $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-        //                         ->where('detraction', '!=', null)
-        //                         ->where('document_type_id', 'like', '%' . $document_type_id . '%')->whereTypeUser();
+                            }])
+                            ->where('establishment_id', $establishment_id)
+                            ->latest()
+                            ->whereTypeUser();
 
-        // }elseif($establishment_id){
+        }else{
 
-        //     $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-        //                         ->where('detraction', '!=', null)
-        //                         ->where('establishment_id', 'like', '%' . $establishment_id . '%')->whereTypeUser();
+            $data = $model::with(['documents'=>function($q) use($date_start, $date_end){
+                            
+                                $q->whereIn('state_type_id', ['01','03','05','07','13'])
+                                ->whereIn('document_type_id', ['01','03','08'])
+                                ->whereBetween('date_of_issue', [$date_start, $date_end]);
+                            
+                            },'sale_notes'=>function($z) use($date_start, $date_end){
 
-        // }else{
-        //     $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->where('detraction', '!=', null)->latest()->whereTypeUser();
-        // }
+                                $z->whereIn('state_type_id', ['01','03','05','07','13'])
+                                ->whereBetween('date_of_issue', [$date_start, $date_end]);
+                            
+                            }])
+                            ->latest()
+                            ->whereTypeUser();
+        }
 
         return $data;
 
     }
 
-
-
-
-
-
-
+ 
 
 
     public function pdf(Request $request) {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = $this->getRecords($request->all(), SaleNote::class)->get();
+        $records = $this->getRecords($request->all(), User::class)->get();
 
-        $pdf = PDF::loadView('report::sale_notes.report_pdf', compact("records", "company", "establishment"));
+        $pdf = PDF::loadView('report::commissions.report_pdf', compact("records", "company", "establishment"));
 
-        $filename = 'Reporte_Nota_Ventas_'.date('YmdHis');
+        $filename = 'Reporte_Comision_Vendedor_'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
     }
@@ -153,13 +158,13 @@ class ReportCommissionController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
-        $records = $this->getRecords($request->all(), SaleNote::class)->get();
+        $records = $this->getRecords($request->all(), User::class)->get();
 
-        return (new SaleNoteExport)
+        return (new CommissionExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->download('Reporte_Nota_Ventas_'.Carbon::now().'.xlsx');
+                ->download('Reporte_Comision_Vendedor'.Carbon::now().'.xlsx');
 
     }
 }
