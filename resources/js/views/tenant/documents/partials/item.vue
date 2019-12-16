@@ -430,7 +430,7 @@
                 <el-button class="add" type="primary" native-type="submit" v-if="form.item_id > 0">{{titleAction}}</el-button>
             </div>
         </form>
-        <item-form :nameItem="nameItemAux" :showDialog.sync="showDialogNewItem"
+        <item-form :nameItem.sync="nameItemAux" :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
 
 

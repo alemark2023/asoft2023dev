@@ -662,6 +662,7 @@
                             this.$message.success(response.data.message)
                             if (this.external) {
                                 this.$eventHub.$emit('reloadDataItems', response.data.id)
+                                this.$emit('update:nameItem', null)
                             } else {
                                 this.$eventHub.$emit('reloadData')
                             }
