@@ -119,7 +119,7 @@ class PurchaseQuotationController extends Controller
 
             $this->setFilename();
             $this->createPdf($this->purchase_quotation, "a4", $this->purchase_quotation->filename);
-            $this->email($this->purchase_quotation);
+           // $this->email($this->purchase_quotation);
         });
 
         return [

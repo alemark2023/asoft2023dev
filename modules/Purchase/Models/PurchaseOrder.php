@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Purchase\Models; 
+namespace Modules\Purchase\Models;
 
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
@@ -13,7 +13,7 @@ use App\Models\Tenant\Catalogs\DocumentType;
 
 class PurchaseOrder extends ModelTenant
 {
-    
+
     protected $fillable = [
         'user_id',
         'external_id',
@@ -45,8 +45,8 @@ class PurchaseOrder extends ModelTenant
         'total',
         'filename',
         'upload_filename',
-        'purchase_quotation_id', 
-        'payment_method_type_id', 
+        'purchase_quotation_id',
+        'payment_method_type_id',
 
     ];
 
@@ -54,7 +54,7 @@ class PurchaseOrder extends ModelTenant
         'date_of_issue' => 'date',
         'date_of_due' => 'date',
     ];
- 
+
 
     public function getSupplierAttribute($value)
     {
@@ -65,7 +65,7 @@ class PurchaseOrder extends ModelTenant
     {
         $this->attributes['supplier'] = (is_null($value))?null:json_encode($value);
     }
- 
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -102,7 +102,7 @@ class PurchaseOrder extends ModelTenant
 
     public function getNumberFullAttribute()
     {
-        return $this->prefix.'-'.$this->id;
+        return 'OC'.'-'.$this->id;
     }
 
     public function scopeWhereTypeUser($query)
@@ -111,5 +111,5 @@ class PurchaseOrder extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
- 
+
 }
