@@ -152,9 +152,12 @@ class PurchaseOrderController extends Controller
                 $file_content = file_get_contents($temp_path);
                 Storage::disk('tenant')->put('purchase_order_attached'.DIRECTORY_SEPARATOR.$file_name, $file_content);
 
+                $this->purchase_quotation->filename = $file_name;
+                $this->purchase_quotation->save();
+
             }
 
-            $this->setFilename();
+            //$this->setFilename();
             //$this->createPdf($this->purchase_quotation, "a4", $this->purchase_quotation->filename);
             //$this->email($this->purchase_quotation);
         });
