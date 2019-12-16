@@ -571,6 +571,7 @@
                 this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
 
                 // console.log(this.recordItem)
+                // console.log(this.currencyTypeIdActive)
 
                 if (this.recordItem) {
                     // console.log(this.recordItem)
@@ -579,6 +580,11 @@
                     this.form.quantity = this.recordItem.quantity
                     this.form.unit_price_value = this.recordItem.input_unit_price_value
                     this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
+                    
+                    if(this.isEditItemNote){
+                        this.form.item.currency_type_id = this.currencyTypeIdActive
+                        this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+                    }
 
                     this.calculateQuantity()
                 }
