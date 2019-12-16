@@ -10,13 +10,15 @@ class ConfigurationRequest extends FormRequest
     public function authorize() {
         return true;
     }
-    
+
     public function rules() {
         $id = $this->input('id');
-        
+
         return [
             'send_auto' => ['required', 'boolean'],
             'cron' => ['required', 'boolean'],
+            'decimal_quantity' => ['required', 'integer'],
+
             // 'subtotal_account' => ['required'],
             // 'stock' => ['required', 'boolean']
         ];

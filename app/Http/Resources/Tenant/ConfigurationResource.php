@@ -20,6 +20,7 @@ class ConfigurationResource extends JsonResource
             'cron' => (bool) $this->cron,
             'sunat_alternate_server' => (bool) $this->sunat_alternate_server,
             'subtotal_account' => $this->subtotal_account,
+            'decimal_quantity' => $this->decimal_quantity
         ];
     }
 }
