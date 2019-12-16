@@ -414,4 +414,15 @@ class PurchaseOrderController extends Controller
             ]
         ];
     }
+
+    public function anular($id)
+    {
+        $obj =  PurchaseOrder::find($id);
+        $obj->state_type_id = 11;
+        $obj->save();
+        return [
+            'success' => true,
+            'message' => 'Orden de compra anulada con éxito'
+        ];
+    }
 }

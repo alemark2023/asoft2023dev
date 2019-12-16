@@ -71,8 +71,14 @@
                 @click.prevent="clickOptions(row.id)"
                 size="mini"
                 type="primary"
-                :disabled="row.state_type_id == '03'"
+                :disabled="row.state_type_id == '03' || row.state_type_id == '11'"
               >Generar comprobante</el-button>
+              <el-button
+                :disabled="row.state_type_id == '11'  || row.state_type_id == '03' "
+                type="danger"
+                  size="mini"
+                @click.prevent="clickAnulate(row.id)"
+              >Anular</el-button>
 
               <!--<a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
@@ -99,8 +105,11 @@ import DocumentGenerate from "./partials/document_generate.vue";
 // import DocumentOptions from './partials/document_options.vue'
 import DataTable from "../../../../../../../resources/js/components/DataTable.vue";
 
+    import {deletable} from '@mixins/deletable'
+
+
 export default {
-  // mixins: [deletable],
+  mixins: [deletable],
   // components: {DocumentsVoided, DocumentOptions, DataTable},
   components: { DataTable, DocumentGenerate }, //DocumentOptions
   data() {
@@ -123,6 +132,11 @@ export default {
     clickOptions(recordId) {
       this.recordId = recordId;
       this.showDialogOptions = true;
+    },
+    clickAnulate(id) {
+      this.anular(`/${this.resource}/anular/${id}`).then(() =>
+        this.$eventHub.$emit("reloadData")
+      );
     }
   }
 };
