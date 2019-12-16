@@ -482,6 +482,7 @@
 
         <document-form-item :showDialog.sync="showDialogAddItem"
                            :recordItem="recordItem"
+                           :isEditItemNote="false"
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
