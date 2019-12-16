@@ -689,7 +689,7 @@
                 this.form.item.unit_price = unit_price;
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-
+                console.log
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
                // this.row.edit = false;
                 this.initForm();

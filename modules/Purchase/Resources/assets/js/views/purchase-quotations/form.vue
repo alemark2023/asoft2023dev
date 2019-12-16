@@ -12,7 +12,7 @@
                         </div>
                         <div class="col-sm-10 text-left mt-3 mb-0">
                             <address class="ib mr-2" >
-                                <span class="font-weight-bold d-block">COTIZACIÓN</span>
+                                <span class="font-weight-bold d-block">PROFORMA</span>
                                 <span class="font-weight-bold d-block">COTC-XXX</span>
                                 <span class="font-weight-bold">{{company.name}}</span>
                                 <br>
@@ -217,7 +217,7 @@
                 this.form = {
                     id:null,
                     user_id: null,
-                    prefix:'COTC',
+                    prefix:'PRF',
                     establishment_id: null, 
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),

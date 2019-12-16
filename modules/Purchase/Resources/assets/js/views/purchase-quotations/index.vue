@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Cotizaciones </span></li>
+                <li class="active"><span>Proformas </span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
@@ -18,7 +18,7 @@
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
                         <th>Estado</th>
-                        <th>Cotización</th> 
+                        <th>Proforma</th> 
                         <th class="text-center">Descarga</th>
                         <th class="text-right">Acciones</th>
                     <tr>
@@ -36,6 +36,9 @@
                         
                         <td class="text-right"> 
                                     
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                    @click.prevent="clickGenerateOc(row.id)">Generar OC</button>
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-custom m-1__2"
                                     @click.prevent="clickCreate(row.id)">Editar</button>
 
@@ -82,6 +85,9 @@
         methods: { 
             clickCreate(id = '') {
                 location.href = `/${this.resource}/create/${id}`
+            },
+            clickGenerateOc(id = '') {
+                location.href = `/purchase-orders/generate/${id}`
             },
             clickDownload(external_id) {
                 window.open(`/${this.resource}/download/${external_id}`, '_blank');                

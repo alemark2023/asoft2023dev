@@ -214,8 +214,8 @@
 </style>
 <script>
 
-    import itemForm from '../../items/form.vue'
-    import {calculateRowItem} from '../../../../helpers/functions'
+    import {calculateRowItem} from '../../../../../../../../resources/js/helpers/functions'
+    import itemForm from '../../../../../../../../resources/js/views/tenant/items/form.vue'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
@@ -223,7 +223,7 @@
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
-                resource: 'purchases',
+                resource: 'purchase-orders',
                 showDialogNewItem: false,
                 errors: {},
                 form: {},
