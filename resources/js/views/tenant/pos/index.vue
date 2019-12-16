@@ -65,7 +65,7 @@
                   <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)"><i class="fa fa-search"></i></button>
                   <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" style="width:33.5% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
-                </div> 
+                </div>
               </section>
             </div>
           </template>
@@ -212,7 +212,7 @@
       ></payment-form>
     </template>
 
-    
+
       <history-sales-form
         :showDialog.sync="showDialogHistorySales"
         :item_id="history_item_id"
@@ -292,13 +292,13 @@
           this.events();
         },
         methods: {
-          
+
           clickWarehouseDetail(item){
 
               this.warehousesDetail = item.warehouses
               this.showWarehousesDetail = true
           },
-          clickHistoryPurchases(item_id){ 
+          clickHistoryPurchases(item_id){
 
             this.history_item_id = item_id
             this.showDialogHistoryPurchases = true
@@ -313,17 +313,17 @@
             // console.log(item)
           },
           keyupEnterCustomer(){
-          
+
             if(this.input_person.number){
 
                 if(!isNaN(parseInt(this.input_person.number))){
-                  
+
                     switch (this.input_person.number.length) {
                         case 8:
                             this.input_person.identity_document_type_id = '1'
                             this.showDialogNewPerson = true
                             break;
-                    
+
                         case 11:
                             this.input_person.identity_document_type_id = '6'
                             this.showDialogNewPerson = true
@@ -335,11 +335,11 @@
                     }
                 }
             }
-          }, 
-          keyupCustomer(e){ 
-            
+          },
+          keyupCustomer(e){
+
             if(e.key !== "Enter"){
-              
+
                 this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
                 let exist_persons = this.all_customers.filter((customer)=>{
                     let pos = customer.description.search(this.input_person.number);
@@ -347,9 +347,9 @@
                 })
 
                 this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
-                
+
             }
-            
+
           },
           calculateQuantity(index) {
             // console.log(this.form.items[index])
@@ -388,7 +388,7 @@
               customer.identity_document_type_id == "1" ? "03" : "01";
           },
           async events() {
-            
+
             await this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
             })
@@ -684,8 +684,8 @@
             // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
             //     this.form.exchange_rate_sale = response
             // })
-            
-                      
+
+
           },
           changeExchangeRate(){
             this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
@@ -750,8 +750,8 @@
               this.changeCurrencyType()
           },
           async changeCurrencyType() {
-            
-              // console.log(this.form.currency_type_id) 
+
+              // console.log(this.form.currency_type_id)
               this.currency_type = await _.find(this.currency_types, {'id': this.form.currency_type_id})
               let items = []
               this.form.items.forEach((row) => {

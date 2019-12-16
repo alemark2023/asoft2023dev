@@ -34,6 +34,8 @@ use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\PaymentMethodType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Tenant\PurchaseOrderRequest;
+
 
 class PurchaseOrderController extends Controller
 {
@@ -128,7 +130,7 @@ class PurchaseOrderController extends Controller
     }
 
 
-    public function store(Request $request) {
+    public function store(PurchaseOrderRequest $request) {
 
         DB::connection('tenant')->transaction(function () use ($request) {
             $data = $this->mergeData($request);
