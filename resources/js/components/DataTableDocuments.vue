@@ -74,6 +74,14 @@
                         </div>
                     </div>        
 
+                    <div class="col-lg-4 col-md-4 ">
+                        <div class="form-group"> 
+                            <label class="control-label">Clientes</label>
+                            <el-select v-model="search.customer_id"  popper-class="el-select-document_type" filterable clearable>
+                                <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
                     <div class="col-lg-2 col-md-2 col-sm-12 pb-2"> 
                         <label class="control-label">Fecha de emisión</label>
                         <el-date-picker
@@ -181,6 +189,7 @@
         async mounted () { 
 
             await this.$http.get(`/${this.resource}/data_table`).then((response) => {
+                this.customers = response.data.customers
                 this.state_types = response.data.state_types
                 this.document_types = response.data.document_types
                 this.all_series = response.data.series
@@ -201,6 +210,7 @@
                 this.search = { 
                     date_of_issue: null,
                     document_type_id:null,
+                    customer_id:null,
                     state_type_id:null,
                     series:null, 
                     number:null, 
