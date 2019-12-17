@@ -422,12 +422,12 @@
                 <div class="row">
                   <div class="col-md-4">
                     <el-select
-                      @change="changeCustomerUnpaid"
-                      filterable
-                       allow-create
-                      clearable
-                      v-model="selected_customer"
-                      placeholder="Todos"
+                        @change="changeCustomerUnpaid"
+                        multiple
+                        filterable
+                        allow-create
+                        v-model="selected_customer"
+                        placeholder="Todos"
                     >
                       <el-option
                         v-for="item in customers"
