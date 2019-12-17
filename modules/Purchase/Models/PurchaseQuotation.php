@@ -87,4 +87,8 @@ class PurchaseQuotation extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
     }
  
+    public function purchase_orders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
 }

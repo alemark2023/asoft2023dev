@@ -40,6 +40,8 @@ if($current_hostname) {
                 Route::post('upload', 'PurchaseOrderController@uploadAttached');
                 Route::get('anular/{id}', 'PurchaseOrderController@anular');
 
+                Route::get('download-attached/{external_id}', 'PurchaseOrderController@downloadAttached');
+
             });
 
         });

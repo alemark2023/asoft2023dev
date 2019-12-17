@@ -19,7 +19,10 @@ class PurchaseOrderCollection extends ResourceCollection
             return [
 
                 'id' => $row->id,
+                // 'purchases' => $row->purchases,
+                'has_purchases' => ($row->purchases->count()) ? true : false,
                 'soap_type_id' => $row->soap_type_id,
+                'external_id' => $row->external_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'date_of_due' => ($row->date_of_due) ? $row->date_of_due->format('Y-m-d'):'-',
                 'number' => $row->number_full,

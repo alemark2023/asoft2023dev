@@ -42,7 +42,7 @@ class PurchaseOrderItem extends ModelTenant
 
         'attributes',
         'charges',
-        'warehouse_id',
+        // 'warehouse_id',
         'discounts'
     ];
 
