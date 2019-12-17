@@ -417,7 +417,7 @@
     // import PercentagePerception from './partials/percentage_perception.vue'
 
     export default {
-        props: ['showDialog', 'recordId', 'external', 'nameItem'],
+        props: ['showDialog', 'recordId', 'external'],
         // components: {PercentagePerception},
 
         data() {
@@ -610,14 +610,7 @@
                             this.changeAffectationIgvType()
                         })
                 }
-                else{
-
-                     if(this.nameItem)
-                    {
-                        this.form.description = this.nameItem
-                    }
-
-                }
+                
             },
             loadRecord(){
                 if (this.recordId) {
@@ -662,7 +655,6 @@
                             this.$message.success(response.data.message)
                             if (this.external) {
                                 this.$eventHub.$emit('reloadDataItems', response.data.id)
-                                this.$emit('update:nameItem', null)
                             } else {
                                 this.$eventHub.$emit('reloadData')
                             }
