@@ -4,7 +4,6 @@
       :title="titleDialog"
       :visible="showDialog"
       @open="create"
-      width="30%"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :show-close="false"
@@ -58,7 +57,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                 <label class="control-label">Fec Emisión</label>
                 <el-date-picker
@@ -76,7 +75,7 @@
               </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                 <label class="control-label">Fec. Vencimiento</label>
                 <el-date-picker
@@ -89,6 +88,46 @@
                   class="form-control-feedback"
                   v-if="errors.date_of_due"
                   v-text="errors.date_of_due[0]"
+                ></small>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
+                <label class="control-label">Moneda</label>
+                <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
+                  <el-option
+                    v-for="option in currency_types"
+                    :key="option.id"
+                    :value="option.id"
+                    :label="option.description"
+                  ></el-option>
+                </el-select>
+                <small
+                  class="form-control-feedback"
+                  v-if="errors.currency_type_id"
+                  v-text="errors.currency_type_id[0]"
+                ></small>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                <label class="control-label">
+                  Tipo de cambio
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    content="Tipo de cambio del día, extraído de SUNAT"
+                    placement="top-end"
+                  >
+                    <i class="fa fa-info-circle"></i>
+                  </el-tooltip>
+                </label>
+                <el-input v-model="form.exchange_rate_sale"></el-input>
+                <small
+                  class="form-control-feedback"
+                  v-if="errors.exchange_rate_sale"
+                  v-text="errors.exchange_rate_sale[0]"
                 ></small>
               </div>
             </div>
@@ -119,7 +158,7 @@
                 ></small>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-5">
               <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                 <label class="control-label">Forma de pago</label>
                 <el-select
@@ -144,45 +183,6 @@
           </div>
 
           <div class="row">
-            <div class="col-md-4">
-              <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
-                <label class="control-label">Moneda</label>
-                <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
-                  <el-option
-                    v-for="option in currency_types"
-                    :key="option.id"
-                    :value="option.id"
-                    :label="option.description"
-                  ></el-option>
-                </el-select>
-                <small
-                  class="form-control-feedback"
-                  v-if="errors.currency_type_id"
-                  v-text="errors.currency_type_id[0]"
-                ></small>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
-                <label class="control-label">
-                  Tipo de cambio
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    content="Tipo de cambio del día, extraído de SUNAT"
-                    placement="top-end"
-                  >
-                    <i class="fa fa-info-circle"></i>
-                  </el-tooltip>
-                </label>
-                <el-input v-model="form.exchange_rate_sale"></el-input>
-                <small
-                  class="form-control-feedback"
-                  v-if="errors.exchange_rate_sale"
-                  v-text="errors.exchange_rate_sale[0]"
-                ></small>
-              </div>
-            </div>
           </div>
         </div>
         <div class="form-actions text-right mt-4">
@@ -210,7 +210,7 @@ export default {
   mixins: [functions, exchangeRate],
   data() {
     return {
-      titleDialog: "",
+      titleDialog: "Generar compra",
       input_person: {},
       resource: "purchases",
       showDialogAddItem: false,
@@ -347,7 +347,7 @@ export default {
       this.calculatePerception();
     },
     filterSuppliers() {
-      if (this.form.document_type_id === "01") {
+      if (this.form.document_type_id == "01") {
         this.suppliers = _.filter(this.all_suppliers, {
           identity_document_type_id: "6"
         });
@@ -357,8 +357,10 @@ export default {
         this.selectSupplier();
       }
     },
-    selectSupplier() {
-      let supplier = _.find(this.suppliers, { id: this.aux_supplier_id });
+    async selectSupplier() {
+      // console.log(this.suppliers)
+      let supplier = await _.find(this.suppliers, { id: this.form.supplier_id });
+      // console.log(supplier)
       this.form.supplier_id = supplier ? supplier.id : null;
       this.aux_supplier_id = null;
     },
@@ -366,7 +368,7 @@ export default {
       this.errors = {};
       this.form = {
         establishment_id: null,
-        document_type_id: null,
+        document_type_id: "01",
         series: null,
         number: null,
         date_of_issue: moment().format("YYYY-MM-DD"),
@@ -400,6 +402,7 @@ export default {
         charges: [],
         discounts: [],
         attributes: [],
+        purchase_order_id: null,
         guides: []
       };
 
@@ -594,6 +597,8 @@ export default {
           }
 
           this.form.supplier_id = this.form.purchase_order.supplier_id;
+          this.form.purchase_order_id = this.form.purchase_order.id;
+          this.changeDocumentType()
         });
     }
   }

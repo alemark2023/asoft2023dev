@@ -35,14 +35,14 @@ use App\Models\Tenant\PaymentMethodType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Tenant\PurchaseOrderRequest;
-
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 
 class PurchaseOrderController extends Controller
 {
 
     use StorageDocument;
 
-    protected $purchase_quotation;
+    protected $purchase_order;
     protected $company;
 
     public function index()
@@ -133,41 +133,43 @@ class PurchaseOrderController extends Controller
     public function store(PurchaseOrderRequest $request) {
 
         DB::connection('tenant')->transaction(function () use ($request) {
+
             $data = $this->mergeData($request);
 
-            $this->purchase_quotation =  PurchaseOrder::updateOrCreate( ['id' => $request->input('id')], $data);
+            $id = $request->input('id');
 
-            $this->purchase_quotation->items()->delete();
+            $this->purchase_order =  PurchaseOrder::updateOrCreate( ['id' => $id], $data);
+
+            $this->purchase_order->items()->delete();
 
             foreach ($data['items'] as $row) {
-                $this->purchase_quotation->items()->create($row);
+                $this->purchase_order->items()->create($row);
             }
 
-
             $temp_path = $request->input('attached_temp_path');
+
             if($temp_path) {
 
                 $datenow = date('YmdHis');
                 $file_name_old = $request->input('attached');
                 $file_name_old_array = explode('.', $file_name_old);
-                $file_name = Str::slug($this->purchase_quotation->id).'-'.$datenow.'.'.$file_name_old_array[1];
+                $file_name = Str::slug($this->purchase_order->id).'-'.$datenow.'.'.$file_name_old_array[1];
                 $file_content = file_get_contents($temp_path);
                 Storage::disk('tenant')->put('purchase_order_attached'.DIRECTORY_SEPARATOR.$file_name, $file_content);
-
-                $this->purchase_quotation->filename = $file_name;
-                $this->purchase_quotation->save();
+                $this->purchase_order->upload_filename = $file_name;
+                $this->purchase_order->save();
 
             }
 
-            //$this->setFilename();
-            //$this->createPdf($this->purchase_quotation, "a4", $this->purchase_quotation->filename);
-            //$this->email($this->purchase_quotation);
+            $this->setFilename();
+            $this->createPdf($this->purchase_order, "a4", $this->purchase_order->filename);
+            //$this->email($this->purchase_order);
         });
 
         return [
             'success' => true,
             'data' => [
-                'id' => $this->purchase_quotation->id,
+                'id' => $this->purchase_order->id,
             ],
         ];
     }
@@ -180,6 +182,7 @@ class PurchaseOrderController extends Controller
 
         $values = [
             'user_id' => auth()->id(),
+            'supplier' => PersonInput::set($inputs['supplier_id']),
             'external_id' => Str::uuid()->toString(),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
             'soap_type_id' => $this->company->soap_type_id,
@@ -195,9 +198,9 @@ class PurchaseOrderController extends Controller
 
     private function setFilename(){
 
-        $name = [$this->purchase_quotation->prefix,$this->purchase_quotation->id,date('Ymd')];
-        $this->purchase_quotation->filename = join('-', $name);
-        $this->purchase_quotation->save();
+        $name = [$this->purchase_order->prefix,$this->purchase_order->id,date('Ymd')];
+        $this->purchase_order->filename = join('-', $name);
+        $this->purchase_order->save();
 
     }
 
@@ -270,13 +273,13 @@ class PurchaseOrderController extends Controller
 
     public function download($external_id, $format = "a4") {
 
-        $purchase_quotation = PurchaseOrder::where('external_id', $external_id)->first();
+        $purchase_order = PurchaseOrder::where('external_id', $external_id)->first();
 
-        if (!$purchase_quotation) throw new Exception("El código {$external_id} es inválido, no se encontro la cotización de compra relacionada");
+        if (!$purchase_order) throw new Exception("El código {$external_id} es inválido, no se encontro la cotización de compra relacionada");
 
-        $this->reloadPDF($purchase_quotation, $format, $purchase_quotation->filename);
+        $this->reloadPDF($purchase_order, $format, $purchase_order->filename);
 
-        return $this->downloadStorage($purchase_quotation->filename, 'purchase_quotation');
+        return $this->downloadStorage($purchase_order->filename, 'purchase_order');
 
     }
 
@@ -286,41 +289,43 @@ class PurchaseOrderController extends Controller
 
         if (!$purchase_order) throw new Exception("El código {$external_id} es inválido, no se encontro la orden de compra relacionada");
 
-        return Storage::disk('tenant')->download('purchase_order_attached'.DIRECTORY_SEPARATOR.$purchase_order->filename);
+        return Storage::disk('tenant')->download('purchase_order_attached'.DIRECTORY_SEPARATOR.$purchase_order->upload_filename);
         
     }
 
     public function toPrint($external_id, $format) {
 
-        $purchase_quotation = PurchaseOrder::where('external_id', $external_id)->first();
+        $purchase_order = PurchaseOrder::where('external_id', $external_id)->first();
 
-        if (!$purchase_quotation) throw new Exception("El código {$external_id} es inválido, no se encontro la cotización de compra relacionada");
+        if (!$purchase_order) throw new Exception("El código {$external_id} es inválido, no se encontro la cotización de compra relacionada");
 
-        $this->reloadPDF($purchase_quotation, $format, $purchase_quotation->filename);
-        $temp = tempnam(sys_get_temp_dir(), 'purchase_quotation');
+        $this->reloadPDF($purchase_order, $format, $purchase_order->filename);
+        $temp = tempnam(sys_get_temp_dir(), 'purchase_order');
 
-        file_put_contents($temp, $this->getStorage($purchase_quotation->filename, 'purchase_quotation'));
+        file_put_contents($temp, $this->getStorage($purchase_order->filename, 'purchase_order'));
 
         return response()->file($temp);
 
     }
 
-    private function reloadPDF($purchase_quotation, $format, $filename) {
-        $this->createPdf($purchase_quotation, $format, $filename);
+
+    private function reloadPDF($purchase_order, $format, $filename) {
+        $this->createPdf($purchase_order, $format, $filename);
     }
 
-    public function createPdf($purchase_quotation = null, $format_pdf = null, $filename = null) {
+
+    public function createPdf($purchase_order = null, $format_pdf = null, $filename = null) {
 
         $template = new Template();
         $pdf = new Mpdf();
 
-        $document = ($purchase_quotation != null) ? $purchase_quotation : $this->purchase_quotation;
+        $document = ($purchase_order != null) ? $purchase_order : $this->purchase_order;
         $company = ($this->company != null) ? $this->company : Company::active();
-        $filename = ($filename != null) ? $filename : $this->purchase_quotation->filename;
+        $filename = ($filename != null) ? $filename : $this->purchase_order->filename;
 
         $base_template = config('tenant.pdf_template');
 
-        $html = $template->pdf($base_template, "purchase_quotation", $company, $document, $format_pdf);
+        $html = $template->pdf($base_template, "purchase_order", $company, $document, $format_pdf);
 
         $pdf_font_regular = config('tenant.pdf_name_regular');
         $pdf_font_bold = config('tenant.pdf_name_bold');
@@ -367,31 +372,32 @@ class PurchaseOrderController extends Controller
             }
         }
 
-        $this->uploadFile($filename, $pdf->output('', 'S'), 'purchase_quotation');
+        $this->uploadFile($filename, $pdf->output('', 'S'), 'purchase_order');
     }
+
 
     public function uploadFile($filename, $file_content, $file_type) {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
 
 
-    public function email($purchase_quotation)
-    {
-        $suppliers = $purchase_quotation->suppliers;
-        // dd($suppliers);
+    // public function email($purchase_order)
+    // {
+    //     $suppliers = $purchase_order->suppliers;
+    //     // dd($suppliers);
 
-        foreach ($suppliers as $supplier) {
+    //     foreach ($suppliers as $supplier) {
 
-            $client = Person::find($supplier->supplier_id);
-            $supplier_email = $supplier->email;
+    //         $client = Person::find($supplier->supplier_id);
+    //         $supplier_email = $supplier->email;
 
-            Mail::to($supplier_email)->send(new PurchaseOrderEmail($client, $purchase_quotation));
-        }
+    //         Mail::to($supplier_email)->send(new PurchaseOrderEmail($client, $purchase_order));
+    //     }
 
-        return [
-            'success' => true
-        ];
-    }
+    //     return [
+    //         'success' => true
+    //     ];
+    // }
 
     public function uploadAttached(Request $request)
     {

@@ -36,10 +36,10 @@
                         
                         <td class="text-right"> 
                                     
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                            <button type="button" v-if="!row.has_purchase_orders" class="btn waves-effect waves-light btn-xs btn-success m-1__2"
                                     @click.prevent="clickGenerateOc(row.id)">Generar OC</button>
 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-custom m-1__2"
+                            <button type="button" v-if="!row.has_purchase_orders" class="btn waves-effect waves-light btn-xs btn-custom m-1__2"
                                     @click.prevent="clickCreate(row.id)">Editar</button>
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"

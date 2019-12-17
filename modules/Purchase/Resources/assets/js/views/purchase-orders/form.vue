@@ -116,6 +116,25 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+                            
+                            <div class="col-lg-3" style="margin-top:29px;">
+                                <div class="form-group" :class="{'has-danger': errors.file}">
+                                    <el-upload
+                                            :data="{'type': 'purchase-order-attached'}"
+                                            :headers="headers"
+                                            :multiple="false"
+                                            :on-remove="handleRemove"
+                                            :action="`/${resource}/upload`"
+                                            :show-file-list="true"
+                                            :file-list="fileList"
+                                            :on-success="onSuccess"
+                                            :limit="1"
+                                            >
+                                        <el-button slot="trigger" type="primary">Seleccione un archivo (PDF/JPG)</el-button>
+                                    </el-upload>
+                                    <small class="form-control-feedback" v-if="errors.file" v-text="errors.file[0]"></small>
+                                </div>
+                            </div>
 
                             <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
                                 <div class="form-group">
@@ -123,7 +142,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" v-if="form.items.length > 0">
+                        <div class="row mt-4" v-if="form.items.length > 0">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -131,7 +150,7 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Descripción</th>
-                                            <th>Almacén</th>
+                                            <!-- <th>Almacén</th> -->
                                             <th class="text-center">Unidad</th>
                                             <th class="text-right">Cantidad</th>
                                             <th class="text-right">Precio Unitario</th>
@@ -145,7 +164,7 @@
                                         <tr v-for="(row, index) in form.items">
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
-                                            <td class="text-left">{{ row.warehouse_description }}</td>
+                                            <!-- <td class="text-left">{{ row.warehouse_description }}</td> -->
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-right">{{ row.quantity }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
@@ -235,6 +254,7 @@
 
         <purchase-options :showDialog.sync="showDialogOptions"
                           :recordId="purchaseNewId"
+                          :isUpdate="propIsUpdate"
                           :showClose="false"></purchase-options>
     </div>
 </template>
@@ -249,6 +269,7 @@
     import PersonForm from '../../../../../../../resources/js/views/tenant/persons/form.vue'
 
     export default {
+        props: ['id'],
         components: {PurchaseFormItem, PersonForm, PurchaseOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
@@ -256,6 +277,7 @@
                 input_person:{},
                 resource: 'purchase-orders',
                 showDialogAddItem: false,
+                headers: headers_token,
                 showDialogNewPerson: false,
                 showDialogOptions: false,
                 loading_submit: false,
@@ -278,6 +300,8 @@
                 establishment: {},
                 all_series: [],
                 series: [],
+                propIsUpdate:false,
+                fileList: [],
                 currency_type: {},
                 purchaseNewId: null
             }
@@ -309,9 +333,53 @@
             this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
             })
+
+            await this.isUpdate()
+
         },
         methods: {
             
+            onSuccess(response, file, fileList) {
+                // console.log(response, file, fileList)
+                this.fileList = fileList
+                if (response.success) {
+                    this.form.attached = response.data.filename
+                    this.form.image_url = response.data.temp_image
+                    this.form.attached_temp_path = response.data.temp_path
+                } else {
+                    this.$message.error(response.message)
+                }
+            },
+            handleRemove(file, fileList) {                
+                this.form.upload_filename = null
+                this.form.temp_path = null
+                this.fileList = []
+            }, 
+            async isUpdate(){
+
+                if (this.id) {
+                    // console.log(this.id);
+                    await this.$http.get(`/${this.resource}/record/${this.id}`)
+                        .then(response => {
+                            // console.log(response)
+                            this.form = response.data.data.purchase_order; 
+                            if(this.form.upload_filename){
+                                this.fileList.push({
+                                    name:this.form.upload_filename,
+                                    url:this.form.upload_filename,
+                                })
+                            } 
+
+                            // this.form.suppliers = Object.values(response.data.data.purchase_quotation.suppliers); 
+                        })
+
+                    this.button_text = 'Actualizar'
+                    this.propIsUpdate = true
+                }else{
+                    this.propIsUpdate = false
+                }
+
+            },
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -392,14 +460,14 @@
             },
             filterSuppliers() {
 
-                if(this.form.document_type_id === '01') {
-                    this.suppliers = _.filter(this.all_suppliers, {'identity_document_type_id': '6'})
-                    this.selectSupplier()
+                // if(this.form.document_type_id === '01') {
+                //     this.suppliers = _.filter(this.all_suppliers, {'identity_document_type_id': '6'})
+                //     this.selectSupplier()
 
-                } else {
-                    this.suppliers =  this.all_suppliers  //_.filter(this.all_suppliers, (c) => { return c.identity_document_type_id !== '6' })
-                    this.selectSupplier()
-                }
+                // } else {
+                //     this.suppliers =  this.all_suppliers  //_.filter(this.all_suppliers, (c) => { return c.identity_document_type_id !== '6' })
+                //     this.selectSupplier()
+                // }
             },
             selectSupplier(){
 
@@ -411,6 +479,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    id:null,
                     establishment_id: null,
                     document_type_id: null,
                     series: null,
@@ -447,9 +516,12 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    attached_temp_path: null,
+                    attached: null
                 }
 
                 this.initInputPerson()
+                this.fileList = []
 
             },
             resetForm() {
@@ -590,6 +662,8 @@
                             this.resetForm()
                             this.purchaseNewId = response.data.data.id
                             this.showDialogOptions = true
+                            this.isUpdate()
+
                         } else {
                             this.$message.error(response.data.message)
                         }

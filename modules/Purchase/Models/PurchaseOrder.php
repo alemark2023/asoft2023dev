@@ -7,6 +7,7 @@ use App\Models\Tenant\SoapType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Purchase;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -74,7 +75,7 @@ class PurchaseOrder extends ModelTenant
 
     public function payment_method_type()
     {
-        return $this->belongTo(PaymentMethodType::class);
+        return $this->belongsTo(PaymentMethodType::class);
     }
 
     public function soap_type()
@@ -85,6 +86,11 @@ class PurchaseOrder extends ModelTenant
     public function state_type()
     {
         return $this->belongsTo(StateType::class);
+    }
+
+    public function establishment()
+    {
+        return $this->belongsTo(Establishment::class);
     }
 
     public function currency_type()
@@ -112,5 +118,13 @@ class PurchaseOrder extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 
+    public function purchase_quotation()
+    {
+        return $this->belongsTo(PurchaseQuotation::class);
+    }
 }

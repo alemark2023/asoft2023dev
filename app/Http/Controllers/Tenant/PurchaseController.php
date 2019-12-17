@@ -131,12 +131,12 @@ class PurchaseController extends Controller
             return $doc;
         });
 
-        if($request->purchase_order){
+        // if($request->purchase_order){
 
-            $order = PurchaseOrder::find($request->purchase_order['id']);
-            $order->state_type_id = '03';
-            $order->save();
-        }
+        //     $order = PurchaseOrder::find($request->purchase_order['id']);
+        //     $order->state_type_id = '03';
+        //     $order->save();
+        // }
 
         return [
             'success' => true,
