@@ -424,6 +424,7 @@
                     <el-select
                       @change="changeCustomerUnpaid"
                       filterable
+                       allow-create
                       clearable
                       v-model="selected_customer"
                       placeholder="Todos"
