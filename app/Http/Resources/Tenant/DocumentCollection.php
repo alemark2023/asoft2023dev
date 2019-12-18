@@ -78,6 +78,7 @@ class DocumentCollection extends ResourceCollection
                 'number' => $row->number_full,
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
+                'customer_telephone' => $row->customer->telephone,
                 'currency_type_id' => $row->currency_type_id,
                 'total_exportation' => $row->total_exportation,
                 'total_free' => $row->total_free,
