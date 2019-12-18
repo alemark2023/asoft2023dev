@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-5">
+                        <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">
                                     Proveedor
@@ -65,7 +65,7 @@
                                 <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-3">
+                        <!-- <div class="col-lg-3">
                             <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                                 <label class="control-label">
                                     Forma de pago
@@ -75,7 +75,7 @@
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                 <label class="control-label">Moneda</label>
@@ -95,6 +95,49 @@
                                 <el-input v-model="form.exchange_rate_sale"></el-input>
                                 <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
+                        </div>
+                        
+                        <div class="col-md-8 col-lg-8">
+
+                            <table>
+                                <thead>
+                                    <tr width="100%">
+                                        <th v-if="form.payments.length>0" class="pb-2">Forma de pago</th>
+                                        <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                        <th v-if="form.payments.length>0" class="pb-2">Monto</th>
+                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                        <td>
+                                            <div class="form-group mb-2 mr-2">
+                                                <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(true,index)">
+                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2"  >
+                                                <el-input v-model="row.reference"></el-input>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2" >
+                                                <el-input v-model="row.payment"></el-input>
+                                            </div>
+                                        </td>
+                                        <td class="series-table-actions text-center"> 
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" :disabled="index==0" @click.prevent="clickCancel(index)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td> 
+                                        <br>
+                                    </tr>
+                                </tbody> 
+                            </table> 
+                        
+
                         </div>
 
                         <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
@@ -290,7 +333,36 @@
             })
         },
         methods: {
+ 
+            validate_payments(){
+ 
+                let error_by_item = 0
+                let acum_total = 0
 
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
+                }
+
+            },
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
+            },
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    purchase_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: 0,
+                });
+            },   
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -345,8 +417,8 @@
                 }
 
             },
-            changePaymentMethodType(flag_submit = true){
-                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+            changePaymentMethodType(flag_submit = true, index = null){
+                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
                 if(payment_method_type.number_days){
                     this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
                     this.changeDateOfIssue()
@@ -426,7 +498,10 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payments: [],
+
                 }
+                this.clickAddPayment()
 
                 this.initInputPerson()
 
@@ -518,6 +593,7 @@
 
                 this.calculatePerception()
 
+                this.form.payments[0].payment = this.form.total
 
              },
             calculatePerception(){
@@ -559,9 +635,14 @@
 
             },
             async submit() {
+          
+                let validate = await this.validate_payments()
+                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                }
 
                 this.loading_submit = true
-                await this.changePaymentMethodType(false)
+                // await this.changePaymentMethodType(false)
                 await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
 

@@ -9,6 +9,7 @@ if($current_hostname) {
 
             Route::prefix('reports')->group(function () {
 
+                Route::get('data-table/persons/{type}', 'ReportController@dataTablePerson');
 
                 Route::get('purchases', 'ReportPurchaseController@index')->name('tenant.reports.purchases.index');
                 Route::get('purchases/pdf', 'ReportPurchaseController@pdf')->name('tenant.reports.purchases.pdf');

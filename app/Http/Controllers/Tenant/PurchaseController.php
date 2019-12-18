@@ -161,11 +161,14 @@ class PurchaseController extends Controller
                 $doc->items()->create($row);
             }
 
-            $doc->purchase_payments()->create([
-                'date_of_payment' => $data['date_of_issue'],
-                'payment_method_type_id' => $data['payment_method_type_id'],
-                'payment' => $data['total'],
-            ]);
+            // $doc->purchase_payments()->create([
+            //     'date_of_payment' => $data['date_of_issue'],
+            //     'payment_method_type_id' => $data['payment_method_type_id'],
+            //     'payment' => $data['total'],
+            // ]);
+            foreach ($data['payments'] as $payment) {
+                $doc->purchase_payments()->create($payment);
+            }
 
             return $doc;
         });
@@ -218,11 +221,17 @@ class PurchaseController extends Controller
                 $doc->items()->create($row);
             }
 
-            $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
-                'date_of_payment' => $request['date_of_issue'],
-                'payment_method_type_id' => $request['payment_method_type_id'],
-                'payment' => $request['total'],
-            ]);
+            // $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
+            //     'date_of_payment' => $request['date_of_issue'],
+            //     'payment_method_type_id' => $request['payment_method_type_id'],
+            //     'payment' => $request['total'],
+            // ]);
+            
+            $doc->purchase_payments()->delete();
+
+            foreach ($request['payments'] as $payment) {
+                $doc->purchase_payments()->create($payment);
+            }
 
             return $doc;
         });

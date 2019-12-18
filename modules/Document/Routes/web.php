@@ -17,6 +17,7 @@ if($current_hostname) {
             Route::prefix('documents')->group(function() {
                 Route::post('pay-constancy/upload', 'DocumentController@upload');
                 Route::get('detraction/tables', 'DocumentController@detractionTables');
+                Route::get('data-table/customers', 'DocumentController@dataTableCustomers');
             });
 
             Route::prefix('series-configurations')->group(function() {

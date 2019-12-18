@@ -611,6 +611,7 @@ class DocumentController extends Controller
         $state_type_id = $request->state_type_id;
         $number = $request->number;
         $series = $request->series;
+        $customer_id = $request->customer_id;
 
 
         if($d_start && $d_end){
@@ -632,6 +633,10 @@ class DocumentController extends Controller
                             ->where('number', 'like', '%' . $number . '%')
                             ->whereTypeUser()
                             ->latest();
+        }
+
+        if($customer_id){
+            $records = $records->where('customer_id', $customer_id);
         }
 
         return $records;

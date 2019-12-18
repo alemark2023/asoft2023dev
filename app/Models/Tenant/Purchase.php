@@ -177,7 +177,7 @@ class Purchase extends ModelTenant
 
     public function purchase_payments()
     {
-        return $this->hasOne(PurchasePayment::class);
+        return $this->hasMany(PurchasePayment::class);
     }
 
     public function soap_type()

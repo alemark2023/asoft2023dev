@@ -10,6 +10,7 @@ use Modules\Document\Http\Resources\DocumentNotSentCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
+use App\Models\Tenant\Person;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DetractionType;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
@@ -46,6 +47,7 @@ class DocumentController extends Controller
         $number = $request->number;
         $series = $request->series;
         $state_type_id = $request->state_type_id;
+        $customer_id = $request->customer_id;
  
 
         if($d_start && $d_end){
@@ -71,6 +73,10 @@ class DocumentController extends Controller
                             ->latest();
         }        
 
+        if($customer_id){
+            $records = $records->where('customer_id', $customer_id);
+        }
+
         return $records;
 
     }
@@ -78,7 +84,16 @@ class DocumentController extends Controller
     public function data_table()
     {
         
-        $customers = []; 
+        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get(); 
@@ -139,4 +154,23 @@ class DocumentController extends Controller
     }
 
 
+    public function dataTableCustomers(Request $request)
+    {
+
+
+        $customers = Person::where('number','like', "%{$request->input}%")
+                            ->orWhere('name','like', "%{$request->input}%")
+                            ->whereType('customers')->orderBy('name')
+                            ->get()->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                    'name' => $row->name,
+                                    'number' => $row->number,
+                                    'identity_document_type_id' => $row->identity_document_type_id,
+                                ];
+                            });
+
+        return compact('customers');
+    }
 }
