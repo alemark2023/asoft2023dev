@@ -89,7 +89,7 @@ class MobileController extends Controller
     public function document_email(Request $request)
     {
         $company = Company::active();
-        $document = Document::find($request->id));
+        $document = Document::find($request->id);
         $customer_email = $request->customer_email;
 
         Mail::to($customer_email)->send(new DocumentEmail($company, $document));
@@ -100,5 +100,5 @@ class MobileController extends Controller
         ];
     }
 
-
 }
+
