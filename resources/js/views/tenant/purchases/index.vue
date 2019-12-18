@@ -21,7 +21,7 @@
                         <th>Proveedor</th>
                         <th>Estado</th>
                         <th>Número</th>
-                        <th>F. Pago</th>
+                        <!-- <th>F. Pago</th> -->
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <!-- <th class="text-right">T.Exportación</th> -->
@@ -44,7 +44,12 @@
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                         </td>
-                        <td>{{ row.payment_method_type_description }}</td>
+                        <!-- <td>{{ row.payment_method_type_description }}</td> -->
+                        <!-- <td>
+                            <template v-for="(it,ind) in row.payments">
+                                {{it.payment_method_type_description}} - {{it.payment}}
+                            </template>
+                        </td> -->
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <!-- <td class="text-right">{{ row.total_exportation }}</td> -->

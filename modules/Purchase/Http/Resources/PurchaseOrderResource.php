@@ -4,6 +4,7 @@ namespace Modules\Purchase\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Purchase\Models\PurchaseOrder; 
+use Modules\Inventory\Models\Warehouse;
 
 class PurchaseOrderResource extends JsonResource
 {
@@ -23,7 +24,8 @@ class PurchaseOrderResource extends JsonResource
             'number_full' => $this->number_full,
             'upload_filename' => $this->upload_filename,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'), 
-            'purchase_order' => $purchase_order
+            'purchase_order' => $purchase_order,
+            'warehouse' => Warehouse::find($this->establishment_id)
         ];
     }
 }

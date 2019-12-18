@@ -444,6 +444,7 @@
                     this.form.items = dato.items
                     this.form.payments = dato.purchase_payments
                     this.form.purchase_payments_id = dato.purchase_payments.id
+                    this.form.purchase_order_id = dato.purchase_order_id
 
                     this.changeDocumentType()
                     // this.changePaymentMethodType()
