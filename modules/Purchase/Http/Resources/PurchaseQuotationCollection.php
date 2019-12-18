@@ -18,6 +18,7 @@ class PurchaseQuotationCollection extends ResourceCollection
         
             return [
                 'id' => $row->id, 
+                'has_purchase_orders' => ($row->purchase_orders->count()) ? true : false,
                 'soap_type_id' => $row->soap_type_id,
                 'external_id' => $row->external_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),

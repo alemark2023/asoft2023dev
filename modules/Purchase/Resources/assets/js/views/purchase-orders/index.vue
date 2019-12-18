@@ -25,17 +25,18 @@
             <th class="text-center">F. Emisión</th>
             <th class="text-center">F. Vencimiento</th>
             <th>Proveedor</th>
-            <th>Estado</th>
+            <!-- <th>Estado</th> -->
             <th>Número</th>
-            <th>F. Pago</th>
+            <!-- <th>F. Pago</th> -->
             <th class="text-center">Moneda</th>
-            <th class="text-right">T.Gratuita</th>
+            <!-- <th class="text-right">T.Gratuita</th>
             <th class="text-right">T.Inafecta</th>
-            <th class="text-right">T.Exonerado</th>
+            <th class="text-right">T.Exonerado</th> -->
             <th class="text-right">T.Gravado</th>
             <th class="text-right">T.Igv</th>
-            <th>Percepcion</th>
+            <!-- <th>Percepcion</th> -->
             <th class="text-right">Total</th>
+            <th class="text-center">Descarga</th>
             <th class="text-right">Acciones</th>
           </tr>
           <tr></tr>
@@ -48,26 +49,33 @@
               <br />
               <small v-text="row.supplier_number"></small>
             </td>
-            <td>{{row.state_type_description}}</td>
+            <!-- <td>{{row.state_type_description}}</td> -->
             <td>
               {{ row.number }}
               <br />
               <small v-text="row.document_type_description"></small>
               <br />
             </td>
-            <td>{{ row.payment_method_type_description }}</td>
+            <!-- <td>{{ row.payment_method_type_description }}</td> -->
             <!-- <td>{{ row.state_type_description }}</td> -->
             <td class="text-center">{{ row.currency_type_id }}</td>
             <!-- <td class="text-right">{{ row.total_exportation }}</td> -->
-            <td class="text-right">{{ row.total_free }}</td>
+            <!-- <td class="text-right">{{ row.total_free }}</td>
             <td class="text-right">{{ row.total_unaffected }}</td>
-            <td class="text-right">{{ row.total_exonerated }}</td>
+            <td class="text-right">{{ row.total_exonerated }}</td> -->
             <td class="text-right">{{ row.total_taxed }}</td>
             <td class="text-right">{{ row.total_igv }}</td>
-            <td class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td>
+            <!-- <td class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td> -->
             <td class="text-right">{{ row.total }}</td>
+            
+                        <td class="text-center"> 
+
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickDownload(row.external_id)">PDF</button>
+                        </td>
+                        
             <td>
-              <el-button
+              <!-- <el-button
                 @click.prevent="clickOptions(row.id)"
                 size="mini"
                 type="primary"
@@ -78,11 +86,20 @@
                 type="danger"
                   size="mini"
                 @click.prevent="clickAnulate(row.id)"
-              >Anular</el-button>
+              >Anular</el-button> -->
 
-              <!--<a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
-              <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>-->
+
+              <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-custom m-1__2"
+                      @click.prevent="clickCreate(row.id)">Editar</button>
+
+              <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-success m-1__2"
+                      @click.prevent="clickGenerateDocument(row.id)">Generar compra</button>
+
+              <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                      @click.prevent="clickAnulate(row.id)">Anular</button>
+
+              <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                      @click.prevent="clickOptions(row.id)">Opciones</button>  
             </td>
           </tr>
         </data-table>
@@ -92,52 +109,66 @@
       :recordId="recordId"></documents-voided>-->
 
       <document-generate
-        :showDialog.sync="showDialogOptions"
+        :showDialog.sync="showDialogGenerateDocument"
         :recordId="recordId"
         :showClose="true"
       ></document-generate>
+
+      
+        <purchase-options :showDialog.sync="showDialogOptions"
+                          :recordId="recordId"
+                          :showClose="true"></purchase-options>
     </div>
   </div>
 </template>
 
 <script>
-import DocumentGenerate from "./partials/document_generate.vue";
-// import DocumentOptions from './partials/document_options.vue'
-import DataTable from "../../../../../../../resources/js/components/DataTable.vue";
+    import DocumentGenerate from "./partials/document_generate.vue";
+    // import DocumentOptions from './partials/document_options.vue'
+    import DataTable from "../../../../../../../resources/js/components/DataTable.vue";
+    import PurchaseOptions from './partials/options.vue'
 
     import {deletable} from '@mixins/deletable'
 
 
 export default {
-  mixins: [deletable],
-  // components: {DocumentsVoided, DocumentOptions, DataTable},
-  components: { DataTable, DocumentGenerate }, //DocumentOptions
-  data() {
-    return {
-      showDialogVoided: false,
-      resource: "purchase-orders",
-      recordId: null,
-      showDialogOptions: false
-    };
-  },
-  created() {},
-  methods: {
-    clickVoided(recordId = null) {
-      this.recordId = recordId;
-      this.showDialogVoided = true;
-    },
-    clickDownload(download) {
-      window.open(download, "_blank");
-    },
-    clickOptions(recordId) {
-      this.recordId = recordId;
-      this.showDialogOptions = true;
-    },
-    clickAnulate(id) {
-      this.anular(`/${this.resource}/anular/${id}`).then(() =>
-        this.$eventHub.$emit("reloadData")
-      );
+      mixins: [deletable],
+      // components: {DocumentsVoided, DocumentOptions, DataTable},
+      components: { DataTable, DocumentGenerate , PurchaseOptions}, //DocumentOptions
+      data() {
+        return {
+          showDialogVoided: false,
+          resource: "purchase-orders",
+          recordId: null,
+          showDialogOptions: false,
+          showDialogGenerateDocument: false,
+        };
+      },
+      created() {},
+      methods: {
+          clickCreate(id = '') {
+              location.href = `/${this.resource}/create/${id}`
+          },
+          clickVoided(recordId = null) {
+            this.recordId = recordId;
+            this.showDialogVoided = true;
+          },
+                  clickDownload(external_id) {
+                      window.open(`/${this.resource}/download/${external_id}`, '_blank');                
+                  },
+          clickGenerateDocument(recordId) {
+            this.recordId = recordId;
+            this.showDialogGenerateDocument = true;
+          },
+          clickAnulate(id) {
+            this.anular(`/${this.resource}/anular/${id}`).then(() =>
+              this.$eventHub.$emit("reloadData")
+            );
+          },
+          clickOptions(recordId = null) {
+              this.recordId = recordId
+              this.showDialogOptions = true
+          },  
     }
-  }
 };
 </script>

@@ -20,7 +20,8 @@ class PurchaseOrderResource extends JsonResource
         return [
             'id' => $this->id,
             'external_id' => $this->external_id,  
-            'identifier' => $this->identifier,
+            'number_full' => $this->number_full,
+            'upload_filename' => $this->upload_filename,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'), 
             'purchase_order' => $purchase_order
         ];

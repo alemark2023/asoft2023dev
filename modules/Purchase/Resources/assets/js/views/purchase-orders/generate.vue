@@ -90,7 +90,7 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-3" style="text-align:center; padding:1.3%;">
+                            <div class="col-lg-3" style="margin-top:29px;">
                                 <div class="form-group" :class="{'has-danger': errors.file}">
                                     <el-upload
                                             :data="{'type': 'purchase-order-attached'}"
@@ -98,6 +98,8 @@
                                             :multiple="false"
                                             :action="`/${resource}/upload`"
                                             :show-file-list="true"
+                                            :file-list="fileList"
+                                            :on-remove="handleRemove"
                                             :on-success="onSuccess"
                                             :limit="1"
                                             >
@@ -241,6 +243,7 @@
                 discount_types: [],
                 charge_types: [],
                 attribute_types: [],
+                fileList: [],
                 purchaseNewId: null
             }
         },
@@ -288,7 +291,14 @@
         },
         methods: {
 
+            handleRemove(file, fileList) {                
+                this.form.upload_filename = null
+                this.form.temp_path = null
+                this.fileList = []
+            }, 
             onSuccess(response, file, fileList) {
+                // console.log(response, file, fileList)
+                this.fileList = fileList
                 if (response.success) {
                     this.form.attached = response.data.filename
                     this.form.image_url = response.data.temp_image
@@ -306,6 +316,7 @@
                 this.form.date_of_issue =  oc.date_of_issue
                 this.form.date_of_due =  oc.date_of_issue
                 this.form.time_of_issue =   oc.time_of_issue
+                this.form.purchase_quotation_id =   oc.id
 
                 oc.items.forEach(it => {
                     it.unit_price = 0
@@ -443,6 +454,7 @@
                 this.form = {
                     establishment_id: null,
                     document_type_id: null,
+                    prefix:'OC',
                     series: null,
                     number: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),
@@ -483,6 +495,7 @@
                 }
 
                 this.initInputPerson()
+                this.fileList = []
 
             },
             resetForm() {
@@ -502,7 +515,7 @@
                 })
             },
             changeDocumentType() {
-                this.filterSuppliers()
+                // this.filterSuppliers()
             },
             clickRemoveItem(index) {
                 this.form.items.splice(index, 1)
@@ -518,7 +531,8 @@
                 this.calculateTotal()
             },
             calculateTotal() {
-                console.log("aa")
+                // console.log("aa")
+
                 let total_discount = 0
                 let total_charge = 0
                 let total_exportation = 0

@@ -5,10 +5,11 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Purchase\Models\PurchaseOrder;
 
 class Purchase extends ModelTenant
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
 
@@ -58,6 +59,7 @@ class Purchase extends ModelTenant
         'detraction',
         'legends',
         'date_of_due',
+        'purchase_order_id',
 
     ];
 
@@ -244,6 +246,9 @@ class Purchase extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
-
+    public function purchase_order()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
 
 }

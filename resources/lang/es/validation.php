@@ -216,6 +216,6 @@ return [
         'operation_type_id' => 'tipo operación',
         'percentage ' => 'porcentaje',
         'start_number ' => 's',
-
+        'commission_amount' => 'monto de comisión'
     ],
 ];

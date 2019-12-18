@@ -47,11 +47,9 @@
 
     import ItemsForm from './form.vue'
     import DataTable from '../../../../../../../resources/js/components/DataTable.vue'
-    import {deletable} from '../../../../../../../resources/js/mixins/deletable'
 
     export default {
         props:['typeUser'],
-        mixins: [deletable],
         components: {ItemsForm,  DataTable},
         data() {
             return {
@@ -73,7 +71,36 @@
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
-            }
+            },
+            destroy(url) {
+                return new Promise((resolve) => {
+                    this.$confirm('¿Desea eliminar el incentivo?', 'Eliminar', {
+                        confirmButtonText: 'Eliminar',
+                        cancelButtonText: 'Cancelar',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$http.delete(url)
+                            .then(res => {
+                                if(res.data.success) {
+                                    this.$message.success(res.data.message)
+                                    resolve()
+                                }else{
+                                    this.$message.error(res.data.message)
+                                    resolve()
+                                }
+                            })
+                            .catch(error => {
+                                if (error.response.status === 500) {
+                                    this.$message.error('Error al intentar eliminar');
+                                } else {
+                                    console.log(error.response.data.message)
+                                }
+                            })
+                    }).catch(error => {
+                        console.log(error)
+                    });
+                })
+            },
         }
     }
 </script>

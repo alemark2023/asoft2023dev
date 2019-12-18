@@ -107,4 +107,9 @@ class SaleNoteItem extends ModelTenant
     {
         return $this->belongsTo(SaleNote::class);
     }
+    
+    public function relation_item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
 }

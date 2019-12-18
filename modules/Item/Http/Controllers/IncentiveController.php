@@ -22,7 +22,6 @@ class IncentiveController extends Controller
         return [
             'description' => 'Nombre',
             'internal_id' => 'Código interno',
-            // 'description' => 'Descripción'
         ];
     }
 
@@ -44,43 +43,35 @@ class IncentiveController extends Controller
         return $record;
     }
 
-    public function store(ItemRequest $request) {
-        //return 'no';
+    public function store(Request $request) {
+
+        $request->validate([
+            'commission_amount' => 'required|numeric|min:0.01',
+        ]);
+
         $id = $request->input('id');
-        $item = Item::firstOrNew(['id' => $id]);
-        $item->item_type_id = '01';
-        $item->fill($request->all());
-
-        $item->save();
- 
-
-
+        $item = Item::findOrFail($id);
+        $item->commission_amount = $request->commission_amount;
+        $item->update();
 
         return [
             'success' => true,
-            'message' => ($id)?'Producto editado con éxito':'Producto registrado con éxito',
+            'message' => 'Incentivo registrado con éxito',
             'id' => $item->id
         ];
     }
 
     public function destroy($id)
     {
-        try {
 
-            $item = Item::findOrFail($id);
-            $item->delete();
+        $item = Item::findOrFail($id);
+        $item->commission_amount = null;
+        $item->update();
 
-            return [
-                'success' => true,
-                'message' => 'Producto eliminado con éxito'
-            ];
-
-        } catch (Exception $e) {
-
-            return ($e->getCode() == '23000') ? ['success' => false,'message' => 'El producto esta siendo usado por otros registros, no puede eliminar'] : ['success' => false,'message' => 'Error inesperado, no se pudo eliminar el producto'];
-
-        }
-
+        return [
+            'success' => true,
+            'message' => 'Incentivo eliminado con éxito'
+        ];
 
     }
  
