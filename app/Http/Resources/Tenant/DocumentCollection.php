@@ -119,7 +119,7 @@ class DocumentCollection extends ResourceCollection
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
-                'external_id' => $row->external_id
+                'external_id' => $row->external_id,
 
                 'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
                     return [
