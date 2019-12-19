@@ -14,6 +14,10 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
+use App\Mail\Tenant\DocumentEmail;
+use Illuminate\Support\Facades\Mail;
+
+
 
 
 
