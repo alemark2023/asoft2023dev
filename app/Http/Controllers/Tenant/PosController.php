@@ -63,6 +63,7 @@ class PosController extends Controller
                                     'is_set' => (bool) $row->is_set,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,
+                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
 
                                 ];
@@ -141,6 +142,7 @@ class PosController extends Controller
                                     'has_igv' => (bool) $row->has_igv,
                                     'is_set' => (bool) $row->is_set,
                                     'aux_quantity' => 1,
+                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
                                     'warehouses' => collect($row->warehouses)->transform(function($row) {
                                         return [

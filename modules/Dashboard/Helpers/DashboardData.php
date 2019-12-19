@@ -8,10 +8,16 @@ use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNotePayment;
 use Carbon\Carbon;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\Purchase;
+use Modules\Expense\Models\Expense;
+use Modules\Dashboard\Traits\TotalsTrait;
 
 
 class DashboardData
 {
+
+    use TotalsTrait;
+
     public function data($request)
     {
 // dd($request);
@@ -58,6 +64,7 @@ class DashboardData
             'document' => $this->document_totals($establishment_id, $d_start, $d_end),
             'sale_note' => $this->sale_note_totals($establishment_id, $d_start, $d_end),
             'general' => $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end),
+            'balance' => $this->balance($establishment_id, $d_start, $d_end),
             'customers' => $customers
         ];
     }
@@ -381,4 +388,69 @@ class DashboardData
 
         return compact('sale_notes_array', 'documents_array', 'total_array');
     }
+
+
+
+
+
+    private function balance($establishment_id, $date_start, $date_end){
+
+        $document = $this->get_document_totals($establishment_id, $date_start, $date_end);
+        $sale_note = $this->get_sale_note_totals($establishment_id, $date_start, $date_end);
+        $purchase = $this->get_purchase_totals($establishment_id, $date_start, $date_end);
+        $expense = $this->get_expense_totals($establishment_id, $date_start, $date_end);
+
+        $response_totals_document = $document['totals'];
+        $response_totals_sale_note = $sale_note['totals'];
+        $response_totals_purchase = $purchase['totals'];
+        $response_totals_expense = $expense['totals'];
+
+        // dd($response_totals_document, $response_totals_sale_note, $response_totals_purchase, $response_totals_expense);
+
+        $total_document =  $response_totals_document['total'];
+        $total_payment_document =  $response_totals_document['total_payment'];
+
+        $total_sale_note =  $response_totals_sale_note['total'];
+        $total_payment_sale_note =  $response_totals_sale_note['total_payment'];
+        
+        $total_purchase = $response_totals_purchase['total'];
+        $total_payment_purchase = $response_totals_purchase['total_payment'];
+
+        $total_expense = $response_totals_expense['total'];
+        $total_payment_expense = $response_totals_expense['total_payment'];
+
+        $all_totals = $total_document + $total_sale_note - $total_expense - $total_purchase;
+        $all_totals_payment = $total_payment_document + $total_payment_sale_note - $total_payment_purchase - $total_payment_expense ;
+
+        return [
+            'totals' => [
+                'total_document' => number_format($total_document,2),
+                'total_payment_document' => number_format($total_payment_document,2),
+                'total_sale_note' => number_format($total_sale_note,2),
+                'total_payment_sale_note' => number_format($total_payment_sale_note,2),
+                'total_purchase' => number_format($total_purchase,2),
+                'total_payment_purchase' => number_format($total_payment_purchase,2),
+                'total_expense' => number_format($total_expense,2),
+                'total_payment_expense' => number_format($total_payment_expense,2),
+
+                'all_totals' => number_format($all_totals,2),
+                'all_totals_payment' => number_format($all_totals_payment,2),
+            ],
+            'graph' => [
+                'labels' => ['Totales', 'Total pagos'],
+                'datasets' => [
+                    [
+                        'label' => 'Grafico',
+                        'data' => [round($all_totals,2), round($all_totals_payment,2)],
+                        'backgroundColor' => [
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 99, 132)',
+                        ]
+                    ]
+                ],
+            ] 
+        ];
+    }
+
+
 }

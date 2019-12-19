@@ -117,7 +117,7 @@
               <table class="table table-sm table-borderless mb-0">
                 <template v-for="(item,index) in form.items">
                   <tr :key="index">
-                    <td width="30%">
+                    <td width="20%">
                       <el-input
                         v-model="item.item.aux_quantity"
                         :readonly="item.item.calculate_quantity"
@@ -126,9 +126,23 @@
                       ></el-input>
                       <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                     </td>
-                    <td>
+                    <td width="20%">
                       <p class="m-0">{{item.item.description}}</p>
                       <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
+                    </td>
+                    <td>
+                      <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
+                    </td>
+                    <td width="30%">
+                      <p class="font-weight-semibold m-0 text-center">
+                        <!-- {{currency_type.symbol}} {{item.total}} -->
+                        <el-input
+                          v-model="item.item.unit_price"
+                          @blur="blurCalculateQuantity2(index)" 
+                        >
+                          <!-- <template slot="prepend" v-if="currency_type.symbol">{{ currency_type.symbol }}</template> -->
+                        </el-input>
+                      </p>
                     </td>
                     <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -373,6 +387,15 @@
             //  this.clickAddItem(this.form.items[index],index, true)
           },
           blurCalculateQuantity(index) {
+            this.row = calculateRowItem(
+              this.form.items[index],
+              this.form.currency_type_id,
+              1
+            );
+            this.form.items[index] = this.row;
+            this.calculateTotal();
+          },
+          blurCalculateQuantity2(index) {
             this.row = calculateRowItem(
               this.form.items[index],
               this.form.currency_type_id,
