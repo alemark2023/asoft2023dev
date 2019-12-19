@@ -96,7 +96,7 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'mesage'=> 'Email enviado correctamente.'
+            'message'=> 'Email enviado correctamente.'
         ];
     }
 
