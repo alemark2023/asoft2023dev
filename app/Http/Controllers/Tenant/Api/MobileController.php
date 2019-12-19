@@ -94,7 +94,7 @@ class MobileController extends Controller
     {
         $company = Company::active();
         $document = Document::find($request->id);
-        $customer_email = $request->customer_email;
+        $customer_email = $request->email;
 
         Mail::to($customer_email)->send(new DocumentEmail($company, $document));
 
