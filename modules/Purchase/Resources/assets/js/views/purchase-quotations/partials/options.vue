@@ -3,7 +3,7 @@
         <div class="row">
             
             <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold" >
-                <el-alert    title="Proforma enviada a proveedores"    type="success"    show-icon>  </el-alert>
+                <el-alert    title="Documento enviado a proveedores"    type="success"    show-icon>  </el-alert>
             </div>
             
             <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-4">
@@ -37,7 +37,7 @@
                 form: {},
                 company: {},
                 locked_emission:{},
-                button_text:'Nueva proforma'
+                button_text:'Nuevo documento'
             }
         },
         async created() {
@@ -57,9 +57,9 @@
             async create() {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data;
-                    this.titleDialog = 'Proforma: '+this.form.identifier;
+                    this.titleDialog = 'Documento: '+this.form.identifier;
                 });
-                this.button_text = this.isUpdate ? 'Continuar':'Nueva proforma'
+                this.button_text = this.isUpdate ? 'Continuar':'Nuevo documento'
             },
             clickPrint(format){
                 window.open(`/${this.resource}/print/${this.form.external_id}/${format}`, '_blank');

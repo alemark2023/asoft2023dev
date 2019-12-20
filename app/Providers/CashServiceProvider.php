@@ -8,6 +8,7 @@ use Modules\Expense\Models\Expense;
 use Modules\Expense\Models\ExpensePayment;
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\CashDocument;
+use Exception;
 
 class CashServiceProvider extends ServiceProvider
 {
@@ -50,6 +51,11 @@ class CashServiceProvider extends ServiceProvider
             if($expense_payment->expense_method_type_id === 1){
                 
                 $cash = self::getCash();
+
+                if(!$cash){
+                    throw new Exception("Para el método de gasto usado, primero debe aperturar caja chica");
+                }
+
                 $cash->cash_documents()->create(['expense_payment_id' => $expense_payment->id]);
             }
 

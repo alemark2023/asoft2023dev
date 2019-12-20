@@ -482,6 +482,7 @@
                     id:null,
                     establishment_id: null,
                     document_type_id: null,
+                    prefix:'OC',
                     series: null,
                     number: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),

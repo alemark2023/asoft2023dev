@@ -160,6 +160,20 @@
                             <small class="form-control-feedback" v-if="errors.stock" v-text="errors.stock[0]"></small>
                         </div>
                     </div>
+                    
+                    <div class="short-div col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}">
+                            <label class="control-label">
+                                <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
+                                Código lote
+                            </label>
+                            <el-input v-model="form.lot_code" >
+                                <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.stock_min}">
                             <label class="control-label">Stock Mínimo</label>
@@ -410,18 +424,29 @@
                 :showDialog.sync="showPercentagePerception"
                 :percentage_perception="percentage_perception">
         </percentage-perception> -->
+        
+        <lots-form
+            :showDialog.sync="showDialogLots"
+            :stock="form.stock"
+            :recordId="recordId"
+            :lots="form.lots"
+            @addRowLot="addRowLot">
+        </lots-form>
+
     </el-dialog>
 </template>
 
 <script>
     // import PercentagePerception from './partials/percentage_perception.vue'
+    import LotsForm from './partials/lots.vue'
 
     export default {
         props: ['showDialog', 'recordId', 'external'],
-        // components: {PercentagePerception},
+        components: {LotsForm},
 
         data() {
             return {
+                showDialogLots:false,
                 form_category:{ add: false, name: null, id: null },
                 form_brand:{ add: false, name: null, id: null },
                 warehouses: [],
@@ -481,6 +506,15 @@
         },
 
         methods: {
+            addRowLot(lots){
+                this.form.lots = lots
+            },
+            clickLotcode(){
+                // if(this.form.stock <= 0)
+                //     return this.$message.error('El stock debe ser mayor a 0')
+
+                this.showDialogLots = true
+            },
             changeHaveAccount(){
                 if(!this.have_account) this.form.account_id = null
             },
@@ -565,7 +599,9 @@
                     account_id: null,
                     category_id: null,
                     brand_id: null,
-                    date_of_due:null
+                    date_of_due:null,
+                    lot_code:null,
+                    lots:[]
                 }
                 this.show_has_igv = true
                 this.enabled_percentage_of_profit = false
@@ -647,6 +683,11 @@
             submit() {
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 // if(!this.has_percentage_perception) this.form.percentage_perception = null
+                
+                if(!this.recordId){
+                    if(this.form.lots.length > this.form.stock)
+                        return this.$message.error('La cantidad de series registradas es superior al stock');
+                }
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)

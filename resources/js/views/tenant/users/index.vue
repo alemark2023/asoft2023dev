@@ -1,46 +1,55 @@
 <template>
-    <div class="card">
-        <div class="card-header bg-info">
-            <h3 class="my-0">Listado de usuarios</h3>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Email</th>
-                        <th>Nombre</th>
-                        <th>Perfil</th>
-                        <th>Api Token</th>
-                        <th>Establecimiento</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(row, index) in records">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ row.email }}</td>
-                        <td>{{ row.name }}</td>
-                        <td>{{ row.type }}</td>
-                        <td>{{ row.api_token }}</td>
-                        <td>{{ row.establishment_description }}</td>
-                        <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)" v-if="row.id != 1">Eliminar</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+    <div>
+        <div class="page-header pr-0">
+            <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
+            <ol class="breadcrumbs">
+                <li class="active"><span>Usuarios</span></li>
+            </ol>
+            <div class="right-wrapper pull-right">
+                 
+                <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" v-if="typeUser != 'integrator'" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
+                
+                <!--<button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>-->
             </div>
-            <div class="row" v-if="typeUser != 'integrator'">
-                <div class="col">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
+        </div>
+        <div class="card">
+            <div class="card-header bg-info">
+                <h3 class="my-0">Listado de usuarios</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Email</th>
+                            <th>Nombre</th>
+                            <th>Perfil</th>
+                            <th>Api Token</th>
+                            <th>Establecimiento</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(row, index) in records">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ row.email }}</td>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.type }}</td>
+                            <td>{{ row.api_token }}</td>
+                            <td>{{ row.establishment_description }}</td>
+                            <td class="text-right">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)" v-if="row.id != 1">Eliminar</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <users-form :showDialog.sync="showDialog"
+                        :typeUser="typeUser"
+                        :recordId="recordId"></users-form>
         </div>
-        <users-form :showDialog.sync="showDialog"
-                    :typeUser="typeUser"
-                    :recordId="recordId"></users-form>
     </div>
 </template>
 

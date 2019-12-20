@@ -74,6 +74,22 @@
                         </div>
                     </div>        
 
+                    <div class="col-lg-4 col-md-4 ">
+                        <div class="form-group"> 
+                            <label class="control-label">Clientes</label>
+                            
+                            <el-select v-model="search.customer_id" filterable remote  popper-class="el-select-customers"  clearable
+                                placeholder="Nombre o número de documento"
+                                :remote-method="searchRemoteCustomers"
+                                :loading="loading_search">
+                                <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+
+                            <!-- <el-select v-model="search.customer_id"  popper-class="el-select-document_type" filterable clearable>
+                                <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select> -->
+                        </div>
+                    </div>
                     <div class="col-lg-2 col-md-2 col-sm-12 pb-2"> 
                         <label class="control-label">Fecha de emisión</label>
                         <el-date-picker
@@ -152,6 +168,8 @@
                 columns: [],
                 records: [],
                 customers: [],
+                all_customers: [],
+                loading_search:false,
                 document_types: [],
                 state_types: [],
                 pagination: {}, 
@@ -181,6 +199,7 @@
         async mounted () { 
 
             await this.$http.get(`/${this.resource}/data_table`).then((response) => {
+                this.all_customers = response.data.customers
                 this.state_types = response.data.state_types
                 this.document_types = response.data.document_types
                 this.all_series = response.data.series
@@ -188,11 +207,35 @@
 
             });
 
-
             await this.getRecords()
-
+            await this.filterCustomers()
         },
         methods: {
+            
+            searchRemoteCustomers(input) {  
+                
+                if (input.length > 0) { 
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    this.$http.get(`/documents/data-table/customers?${parameters}`)
+                            .then(response => { 
+                                this.customers = response.data.customers
+                                this.loading_search = false
+                                
+                                if(this.customers.length == 0){
+                                    this.filterCustomers()
+                                }
+                            })  
+                } else {
+                    this.filterCustomers()
+                }
+
+            },
+            filterCustomers() { 
+                this.customers = this.all_customers
+            },
             clickSeeMore(){
                 this.see_more = (this.see_more) ? false : true
             },
@@ -201,6 +244,7 @@
                 this.search = { 
                     date_of_issue: null,
                     document_type_id:null,
+                    customer_id:null,
                     state_type_id:null,
                     series:null, 
                     number:null, 

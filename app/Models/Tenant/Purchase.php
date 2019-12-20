@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Tenant\Person;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -176,7 +177,7 @@ class Purchase extends ModelTenant
 
     public function purchase_payments()
     {
-        return $this->hasOne(PurchasePayment::class);
+        return $this->hasMany(PurchasePayment::class);
     }
 
     public function soap_type()
@@ -205,7 +206,7 @@ class Purchase extends ModelTenant
     }
 
     public function supplier() {
-        return $this->belongsTo(CurrencyType::class, 'supplier_id');
+        return $this->belongsTo(Person::class, 'supplier_id');
     }
 
     public function items()

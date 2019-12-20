@@ -51,17 +51,56 @@ class PurchaseController extends Controller
     public function columns()
     {
         return [
-            'number' => 'Número'
+            'number' => 'Número',
+            'date_of_issue' => 'Fecha de emisión',
+            'date_of_due' => 'Fecha de vencimiento',
+            'date_of_payment' => 'Fecha de pago',
+            'name' => 'Nombre proveedor',
         ];
     }
 
     public function records(Request $request)
     {
-        $records = Purchase::where($request->column, 'like', "%{$request->value}%")
-                    ->whereTypeUser()
-                    ->latest();
+
+        $records = $this->getRecords($request);
 
         return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+    public function getRecords($request){
+
+        switch ($request->column) {
+            case 'name':
+                
+                $records = Purchase::whereHas('supplier', function($query) use($request){
+                                return $query->where($request->column, 'like', "%{$request->value}%");
+                            })
+                            ->whereTypeUser()
+                            ->latest();
+
+                break;
+
+            case 'date_of_payment':
+                
+                $records = Purchase::whereHas('purchase_payments', function($query) use($request){
+                                return $query->where($request->column, 'like', "%{$request->value}%");
+                            })
+                            ->whereTypeUser()
+                            ->latest();
+
+                break;
+            
+            default:
+            
+                $records = Purchase::where($request->column, 'like', "%{$request->value}%")
+                            ->whereTypeUser()
+                            ->latest();
+
+                break;
+        }
+
+        return $records;
+
     }
 
     public function tables()
@@ -122,11 +161,14 @@ class PurchaseController extends Controller
                 $doc->items()->create($row);
             }
 
-            $doc->purchase_payments()->create([
-                'date_of_payment' => $data['date_of_issue'],
-                'payment_method_type_id' => $data['payment_method_type_id'],
-                'payment' => $data['total'],
-            ]);
+            // $doc->purchase_payments()->create([
+            //     'date_of_payment' => $data['date_of_issue'],
+            //     'payment_method_type_id' => $data['payment_method_type_id'],
+            //     'payment' => $data['total'],
+            // ]);
+            foreach ($data['payments'] as $payment) {
+                $doc->purchase_payments()->create($payment);
+            }
 
             return $doc;
         });
@@ -179,11 +221,17 @@ class PurchaseController extends Controller
                 $doc->items()->create($row);
             }
 
-            $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
-                'date_of_payment' => $request['date_of_issue'],
-                'payment_method_type_id' => $request['payment_method_type_id'],
-                'payment' => $request['total'],
-            ]);
+            // $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
+            //     'date_of_payment' => $request['date_of_issue'],
+            //     'payment_method_type_id' => $request['payment_method_type_id'],
+            //     'payment' => $request['total'],
+            // ]);
+            
+            $doc->purchase_payments()->delete();
+
+            foreach ($request['payments'] as $payment) {
+                $doc->purchase_payments()->create($payment);
+            }
 
             return $doc;
         });

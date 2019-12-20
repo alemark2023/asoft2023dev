@@ -44,18 +44,44 @@ class ItemController extends Controller
         return [
             'description' => 'Nombre',
             'internal_id' => 'Código interno',
+            'brand' => 'Marca',
+            'date_of_due' => 'Fecha vencimiento',
+            'lot_code' => 'Código lote',
             // 'description' => 'Descripción'
         ];
     }
 
     public function records(Request $request)
     {
-        $records = Item::whereTypeUser()
-                        ->whereNotIsSet()
-                        ->where($request->column, 'like', "%{$request->value}%")
-                        ->orderBy('description');
+        $records = $this->getRecords($request);
 
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+    
+    public function getRecords($request){
+
+        switch ($request->column) {
+
+            case 'brand':
+                $records = Item::whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                })
+                                ->whereTypeUser()
+                                ->whereNotIsSet()
+                                ->orderBy('description');
+                break;
+ 
+            default:
+                $records = Item::whereTypeUser()
+                                ->whereNotIsSet()
+                                ->where($request->column, 'like', "%{$request->value}%")
+                                ->orderBy('description');
+                break;
+        }
+
+        return $records;
+
     }
 
     public function create()
@@ -160,6 +186,13 @@ class ItemController extends Controller
             }
         }
 
+        $item->lots()->delete();
+
+        foreach ($request->lots as $lot) {
+
+            $item->lots()->create($lot);
+
+        }
 
 
         $item->update();

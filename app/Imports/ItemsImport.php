@@ -29,7 +29,20 @@ class ItemsImport implements ToCollection
                 $currency_type_id = $row[4];
                 $sale_unit_price = $row[5];
                 $sale_affectation_igv_type_id = $row[6];
-                $has_igv = (strtoupper($row[7]) === 'SI')?true:false;
+                // $has_igv = (strtoupper($row[7]) === 'SI')?true:false;
+
+                $affectation_igv_types_exonerated_unaffected = ['20','21','30','31','32','33','34','35','36','37'];
+
+                if(in_array($sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
+
+                    $has_igv = true;
+
+                }else{
+
+                    $has_igv = (strtoupper($row[7]) === 'SI')?true:false;
+                    
+                }
+
                 $purchase_unit_price = ($row[8])?:0;
                 $purchase_affectation_igv_type_id = ($row[9])?:null;
                 $stock = $row[10];

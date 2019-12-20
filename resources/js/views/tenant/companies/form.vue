@@ -69,6 +69,11 @@
                                 <small class="form-control-feedback" v-if="errors.detraction_account" v-text="errors.detraction_account[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-6 mt-4">
+                            <div class="form-group" :class="{'has-danger': errors.operation_amazonia}">
+                                <el-checkbox v-model="form.operation_amazonia">¿Emite en la Amazonía?</el-checkbox>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -184,6 +189,7 @@
                     logo: null,
                     logo_store: null,
                     detraction_account: null,
+                    operation_amazonia: false,
 
                 }
             },

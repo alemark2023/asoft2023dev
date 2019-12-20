@@ -52,6 +52,8 @@ class ItemResource extends JsonResource
             'tags_id' => $this->tags->pluck('tag_id'),
             'individual_items' => collect($this->sets)->pluck('individual_item_id'),
             'commission_amount' => $this->commission_amount,
+            'lot_code' => $this->lot_code,
+            'lots' => $this->lots,
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

@@ -611,6 +611,7 @@ class DocumentController extends Controller
         $state_type_id = $request->state_type_id;
         $number = $request->number;
         $series = $request->series;
+        $customer_id = $request->customer_id;
 
 
         if($d_start && $d_end){
@@ -634,6 +635,10 @@ class DocumentController extends Controller
                             ->latest();
         }
 
+        if($customer_id){
+            $records = $records->where('customer_id', $customer_id);
+        }
+
         return $records;
 
     }
@@ -641,8 +646,8 @@ class DocumentController extends Controller
     public function data_table()
     {
 
-        // $customers = $this->table('customers');
-        $customers = [];
+        $customers = $this->table('customers');
+        // $customers = [];
         $state_types = StateType::get();
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         // $series = Series::where('contingency', false)->whereIn('document_type_id', ['01', '03','07', '08'])->get();
