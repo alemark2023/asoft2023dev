@@ -49,10 +49,22 @@
                     </el-popover> -->
                   </p>
                 </div>
-                <div class="card-footer pointer text-center bg-primary"  @click="clickAddItem(item,index)">
+                <div class="card-footer pointer text-center bg-primary" >
                   <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
-                  <h5   class="font-weight-semibold text-right text-white">{{item.currency_type_symbol}} {{item.sale_unit_price}}</h5>
+                  <template v-if="!item.edit_unit_price">
+                    <h5   class="font-weight-semibold text-right text-white mb-3" >
+                      <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="clickOpenInputEditUP(index)"><span style='font-size:10px;'>&#9998;</span> </button>
+                      {{item.currency_type_symbol}} {{item.sale_unit_price}}
+                    </h5>
+                  </template>
+                  <template v-else>
+                    <el-input     min="0"  v-model="item.edit_sale_unit_price" class="mt-3 mb-3" size="mini">
+                      <el-button slot="append" icon="el-icon-check" type="primary" @click="clickEditUnitPriceItem(index)"></el-button>
+                      <el-button slot="append" icon="el-icon-close" type="danger" @click="clickCancelUnitPriceItem(index)"></el-button>
+                    </el-input>
+                  </template>
+
                 </div>
                 <div class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
                   <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
@@ -62,9 +74,19 @@
                     </el-table>
                     <button type="button" style="width:100% !important;" slot="reference" class="btn btn-xs btn-default " @click="clickHistorySales(item.item_id)"><i class="fa fa-search"></i></button>
                   </el-popover> -->
-                  <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)"><i class="fa fa-search"></i></button>
-                  <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
-                  <button type="button" style="width:33.5% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                  <el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
+                    <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
+                      <i class="fa fa-search"></i>
+                    </button>
+                    </el-tooltip>
+
+                  <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
+                    <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                  </el-tooltip>
+
+                  <el-tooltip class="item" effect="dark" content="Visualizar historial de compras del producto (precio compra)" placement="bottom-end">
+                    <button type="button" style="width:33.5% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                  </el-tooltip>
                 </div>
               </section>
             </div>
@@ -130,20 +152,18 @@
                       <p class="m-0">{{item.item.description}}</p>
                       <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                     </td>
-                    <td>
+                    <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
                     </td>
                     <td width="30%">
                       <p class="font-weight-semibold m-0 text-center">
-                        <!-- {{currency_type.symbol}} {{item.total}} -->
                         <el-input
                           v-model="item.item.unit_price"
                           @blur="blurCalculateQuantity2(index)" 
                         >
-                          <!-- <template slot="prepend" v-if="currency_type.symbol">{{ currency_type.symbol }}</template> -->
                         </el-input>
                       </p>
-                    </td>
+                    </td> -->
                     <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
                     </td>
@@ -254,6 +274,9 @@
   max-width: 80% !important;
   margin-right: 1% !important;
 }
+.el-input-group__append{
+  padding: 0 10px !important;
+}
 </style>
 
 <script>
@@ -306,7 +329,23 @@
           this.events();
         },
         methods: {
+          clickOpenInputEditUP(index){
+            this.items[index].edit_unit_price = true
+          },
+          clickEditUnitPriceItem(index){
+            // console.log(index)
+            let item_search = this.items[index]
+            this.items[index].sale_unit_price = this.items[index].edit_sale_unit_price
+            this.items[index].edit_unit_price = false
 
+            // console.log(item_search)
+
+          },
+          clickCancelUnitPriceItem(index){
+            // console.log(index)
+            this.items[index].edit_unit_price = false
+
+          },
           clickWarehouseDetail(item){
 
               this.warehousesDetail = item.warehouses
@@ -572,6 +611,12 @@
 
                 exist_item.quantity++;
                 exist_item.item.aux_quantity++;
+              }
+
+              // console.log(exist_item)
+              let search_item_bd = await _.find(this.items, { item_id: item.item_id });
+              if(search_item_bd){
+                exist_item.item.unit_price = parseFloat(search_item_bd.sale_unit_price)
               }
 
               this.row = calculateRowItem(

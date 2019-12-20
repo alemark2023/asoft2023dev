@@ -61,9 +61,11 @@ class PosController extends Controller
                                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
                                     'is_set' => (bool) $row->is_set,
+                                    'edit_unit_price' => false,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,
                                     'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
+                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
 
                                 ];
@@ -141,7 +143,9 @@ class PosController extends Controller
                                     'calculate_quantity' => (bool) $row->calculate_quantity,
                                     'has_igv' => (bool) $row->has_igv,
                                     'is_set' => (bool) $row->is_set,
+                                    'edit_unit_price' => false,
                                     'aux_quantity' => 1,
+                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
                                     'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
                                     'warehouses' => collect($row->warehouses)->transform(function($row) {
