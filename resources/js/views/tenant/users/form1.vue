@@ -61,7 +61,17 @@
                             <label class="control-label">Módulos</label>
                             <div class="row">
                                 <div class="col-4" v-for="module in form.modules">
-                                    <el-checkbox v-model="module.checked" :disabled="form.locked">{{ module.description }}</el-checkbox>
+                                    <el-checkbox v-model="module.checked" :disabled="form.locked" @change="changeModule(module.id, module.checked)">{{ module.description }}</el-checkbox>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-3" v-if="typeUser != 'integrator'">
+                        <div class="form-group">
+                            <label class="control-label">Nivel de acceso del módulo ventas</label>
+                            <div class="row">
+                                <div class="col-4" v-for="level in form.levels">
+                                    <el-checkbox v-model="level.checked" :disabled="form.locked" >{{ level.description }}</el-checkbox>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +127,8 @@
                     password_confirmation: null,
                     locked:false,
                     type:null,
-                    modules: []
+                    modules: [],
+                    levels: [],
                 }
 
                 this.modules.forEach(module => {
@@ -137,8 +148,34 @@
                         })
                 }
             },
+            async changeModule(module_id, checked){
+
+                if(checked){
+                    // console.log(mdl)
+                    if(this.form.levels.length == 0){
+
+                        let mdl = await _.find(this.modules, {'id':module_id})
+                        mdl.levels.forEach(level => {
+                            this.form.levels.push({
+                                id: level.id,
+                                level_id: level.id,
+                                module_id: level.module_id,
+                                description: level.description,
+                                checked: false
+                            })
+                        })
+
+                    }
+                     
+
+                }else{
+                    
+                    this.form.levels = []
+                }
+            },
             submit() {
-                this.loading_submit = true
+                console.log(this.form)
+                // this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {

@@ -6,6 +6,7 @@ use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\LevelAccess\Models\ModuleLevel;
 
 class User extends Authenticatable
 {
@@ -33,6 +34,11 @@ class User extends Authenticatable
     public function modules()
     {
         return $this->belongsToMany(Module::class);
+    }
+
+    public function levels()
+    {
+        return $this->belongsToMany(ModuleLevel::class);
     }
 
     public function authorizeModules($modules)
