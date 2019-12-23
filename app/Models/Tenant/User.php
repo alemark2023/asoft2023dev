@@ -125,4 +125,33 @@ class User extends Authenticatable
         $user = auth()->user();
         return ($user->type == 'seller') ? $query->where('id', $user->id) : null;
     }
+
+    
+
+    public function getLevel()
+    {
+        $level = $this->levels()->orderBy('id')->first();
+        if ($level) {
+            return $level->value;
+        }
+        return null;
+    }
+
+    public function getLevels()
+    {
+        $levels = $this->levels()->get();
+        if ($levels) {
+            return $levels;
+        }
+        return null;
+    }
+
+
+    public function searchLevel($Level)
+    {
+        if ($this->levels()->where('value', $Level)->first()) {
+            return true;
+        }
+        return false;
+    }
 }

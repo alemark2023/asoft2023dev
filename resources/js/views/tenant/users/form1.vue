@@ -66,7 +66,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-3" v-if="typeUser != 'integrator'">
+                    <div class="col-md-12 mt-3" v-if="typeUser != 'integrator' && show_levels" >
                         <div class="form-group">
                             <label class="control-label">Nivel de acceso del módulo ventas</label>
                             <div class="row">
@@ -103,6 +103,7 @@
                 modules: [],
                 establishments: [],
                 types: [],
+                show_levels:false
             }
         },
         async created() {
@@ -138,6 +139,10 @@
                         checked: false
                     })
                 })
+
+                this.show_levels = false
+
+                // console.log(this.form.levels)
             },
             create() {
                 this.titleDialog = (this.recordId)? 'Editar Usuario':'Nuevo Usuario'
@@ -145,37 +150,41 @@
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
+                            this.show_levels = (this.form.levels.length > 0) ? true:false
                         })
                 }
             },
             async changeModule(module_id, checked){
 
-                if(checked){
-                    // console.log(mdl)
-                    if(this.form.levels.length == 0){
+                if(module_id == 1){
 
-                        let mdl = await _.find(this.modules, {'id':module_id})
-                        mdl.levels.forEach(level => {
-                            this.form.levels.push({
-                                id: level.id,
-                                level_id: level.id,
-                                module_id: level.module_id,
-                                description: level.description,
-                                checked: false
+                    if(checked){
+                        // console.log(mdl)
+                        if(this.form.levels.length == 0 ){
+
+                            let mdl = await _.find(this.modules, {'id':module_id})
+                            mdl.levels.forEach(level => {
+                                this.form.levels.push({
+                                    id: level.id,
+                                    level_id: level.id,
+                                    module_id: level.module_id,
+                                    description: level.description,
+                                    checked: false
+                                })
                             })
-                        })
+                            this.show_levels = true
 
+                        }
+                    }else{
+                        this.form.levels = []
+                        this.show_levels = false
                     }
-                     
 
-                }else{
-                    
-                    this.form.levels = []
                 }
             },
             submit() {
-                console.log(this.form)
-                // this.loading_submit = true
+                // console.log(this.form)
+                this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {

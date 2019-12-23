@@ -8,12 +8,12 @@ class ModuleLevelViewComposer
 {
     public function compose($view)
     {
-        $modules = auth()->user()->levels()->pluck('value')->toArray();
+        $module_levels = auth()->user()->levels()->pluck('value')->toArray();
 
-        if(count($modules) > 0) {
-            $view->vc_modules = $modules;
+        if(count($module_levels) > 0) {
+            $view->vc_module_levels = $module_levels;
         } else {
-            $view->vc_modules = ModuleLevel::all()->pluck('value')->toArray();
+            $view->vc_module_levels = ModuleLevel::all()->pluck('value')->toArray();
         }
     }
 }
