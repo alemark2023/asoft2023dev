@@ -36,6 +36,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\PaymentMethodType;
 use App\Mail\Tenant\SaleNoteEmail;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 
@@ -152,10 +153,11 @@ class SaleNoteController extends Controller
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
+
             $this->sale_note =  SaleNote::updateOrCreate(
                 ['id' => $request->input('id')],
                 $data);
-
+            
 //            $this->sale_note =  SaleNote::create($data);
             // $this->sale_note->items()->delete();
             $this->sale_note->payments()->delete();
@@ -211,10 +213,23 @@ class SaleNoteController extends Controller
 
     public function mergeData($inputs)
     {
-
         $this->company = Company::active();
 
+            
+        $type_period = $inputs['type_period'];
+        $quantity_period = $inputs['quantity_period'];
+        $d_of_issue = new Carbon($inputs['date_of_issue']);
+        $automatic_date_of_issue = null;
+        
+        if($type_period && $quantity_period > 0){
+
+            $add_period_date = ($type_period == 'month') ? $d_of_issue->addMonths($quantity_period): $d_of_issue->addYears($quantity_period);
+            $automatic_date_of_issue = $add_period_date->format('Y-m-d'); 
+
+        }
+
         $values = [
+            'automatic_date_of_issue' => $automatic_date_of_issue,
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
             'customer' => PersonInput::set($inputs['customer_id']),
