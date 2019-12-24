@@ -323,42 +323,19 @@
                             </a>
                             <ul class="nav nav-children" style="">
 
-                            
-                                <li class="nav-parent
-                                    {{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active nav-expanded':'' }}
-                                    {{ ($path[0] === 'purchases' && $path[1] === 'create')?'nav-active nav-expanded':'' }}
-                                    {{ ($path[0] === 'purchases' && $path[1] != 'create')?'nav-active nav-expanded':'' }}
-                                    {{ ($path[0] === 'purchase-quotations')?'nav-active nav-expanded':'' }}
-                                    ">
-                                    <a class="nav-link" href="#">
-                                        Proveedores
-                                    </a>
-                                    <ul class="nav nav-children">
+
                                         
-                                        <li class="{{ ($path[0] === 'purchases' && $path[1] === 'create')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.purchases.create')}}">
-                                                Nuevo
-                                            </a>
-                                        </li>
-
-                                        <li class="{{ ($path[0] === 'purchases' && $path[1] != 'create')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.purchases.index')}}">
-                                                Listado
-                                            </a>
-                                        </li>
-
-                                        <li class="{{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'suppliers'])}}">
-                                                Proveedores
-                                            </a>
-                                        </li>
-                                        <li class="{{ ($path[0] === 'purchase-quotations')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.purchase-quotations.index')}}">
-                                                Solicitar cotización
-                                            </a>
-                                        </li>
-                                    </ul>
+                                <li class="{{ ($path[0] === 'purchases' && $path[1] === 'create')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.purchases.create')}}">
+                                        Nuevo
+                                    </a>
                                 </li>
+
+                                <li class="{{ ($path[0] === 'purchases' && $path[1] != 'create')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.purchases.index')}}">
+                                        Listado
+                                    </a>
+                                </li> 
 
                                 <li class="{{ ($path[0] === 'purchase-orders')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.purchase-orders.index')}}">
@@ -369,6 +346,28 @@
                                     <a class="nav-link" href="{{route('tenant.expenses.index')}}">
                                         Gastos diversos
                                     </a>
+                                </li>
+                                
+                                <li class="nav-parent
+                                    {{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active nav-expanded':'' }}
+                                    {{ ($path[0] === 'purchase-quotations')?'nav-active nav-expanded':'' }}
+                                    ">
+                                    <a class="nav-link" href="#">
+                                        Proveedores
+                                    </a>
+                                    <ul class="nav nav-children">
+                                         
+                                        <li class="{{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'suppliers'])}}">
+                                                Listado
+                                            </a>
+                                        </li>
+                                        <li class="{{ ($path[0] === 'purchase-quotations')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.purchase-quotations.index')}}">
+                                                Solicitar cotización
+                                            </a>
+                                        </li>
+                                    </ul> 
                                 </li>
                             </ul>
                         </li>

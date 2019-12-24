@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Document;
+use App\Mail\Tenant\DocumentEmail;
+use Illuminate\Support\Facades\Mail;
 
 
 
@@ -86,4 +90,19 @@ class MobileController extends Controller
 
     }
 
+    public function document_email(Request $request)
+    {
+        $company = Company::active();
+        $document = Document::find($request->id);
+        $customer_email = $request->email;
+
+        Mail::to($customer_email)->send(new DocumentEmail($company, $document));
+
+        return [
+            'success' => true,
+            'message'=> 'Email enviado correctamente.'
+        ];
+    }
+
 }
+

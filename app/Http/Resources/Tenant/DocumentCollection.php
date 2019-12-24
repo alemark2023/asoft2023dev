@@ -53,13 +53,13 @@ class DocumentCollection extends ResourceCollection
                 }
 
                 if($row->document_type_id === '03' && config('tenant.delete_document_type_03')){
-                    
+
                     if ($row->state_type_id === '01' && $row->doesntHave('summary_document')) {
                         $btn_delete_doc_type_03 = true;
                     }
 
                 }
-                
+
             }
 
             $btn_recreate_document = config('tenant.recreate_document');
@@ -78,6 +78,7 @@ class DocumentCollection extends ResourceCollection
                 'number' => $row->number_full,
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
+                'customer_telephone' => $row->customer->telephone,
                 'currency_type_id' => $row->currency_type_id,
                 'total_exportation' => $row->total_exportation,
                 'total_free' => $row->total_free,
@@ -118,6 +119,7 @@ class DocumentCollection extends ResourceCollection
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
+                'external_id' => $row->external_id,
 
                 'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
                     return [
