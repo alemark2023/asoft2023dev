@@ -203,13 +203,15 @@ class Item extends ModelTenant
         return $this->belongsTo(Category::class);
     }
 
-    public function lots()
+    public function item_lots()
     {
-        return $this->hasMany(ItemLot::class);
+        return $this->hasMany(ItemLot::class, 'item_id');
     }
 
-    public function item_lots()
+    public function lots()
     {
         return $this->morphMany(ItemLot::class, 'item_loteable');
     }
+
+    
 }

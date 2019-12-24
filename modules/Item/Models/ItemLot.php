@@ -34,4 +34,16 @@ class ItemLot extends ModelTenant
         return $this->belongsTo(Warehouse::class);
     }
 
+    // public function scopeWhereLot($query)
+    // {
+    //     $establishment_id = auth()->user()->establishment_id;
+
+    //     $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+    //     return $query->where('has_sale', false)->whereHas('warehouse', function($q) use($warehouse){
+    //             $q->where('warehouse_id', $warehouse->id);
+    //     });
+
+    // }
+    
 }

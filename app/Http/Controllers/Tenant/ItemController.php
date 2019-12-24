@@ -194,7 +194,7 @@ class ItemController extends Controller
             foreach ($request->lots as $lot) {
                 
                 // $item->lots()->create($lot);
-                $item->item_lots()->create([
+                $item->lots()->create([
                     'date' => $lot['date'],
                     'series' => $lot['series'],
                     'item_id' => $item->id,

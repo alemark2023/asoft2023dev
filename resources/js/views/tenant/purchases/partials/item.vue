@@ -50,7 +50,7 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3" v-if="form.item_id">
+                    <div class="col-md-6 mt-2" v-if="form.item_id">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 Código lote
@@ -279,7 +279,7 @@
         },
         methods: {
             addRowLot(lots){
-                this.form.lots = lots
+                this.lots = lots
             },
             clickLotcode(){
                 // if(this.form.stock <= 0)
@@ -313,6 +313,7 @@
                 }
 
                 this.item_unit_type = {};
+                this.lots = []
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -394,18 +395,22 @@
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             },
             async clickAddItem() {
+
+                if(this.lots.length>0){
+                    if(!this.form.lot_code){
+                        return this.$message.error('El campo código de lote es requerido');
+                    }
+                }
+
                 this.form.item.unit_price = this.form.unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
-
-                await this.lots.forEach(element => {
-                    element.item_id = this.form.item_id
-                });
+ 
                 this.row.lots = await this.lots
 
                 this.row = this.changeWarehouse(this.row)
-                console.log(this.row)
+                // console.log(this.row)
                 
                 this.initForm()
                 // this.initializeFields()

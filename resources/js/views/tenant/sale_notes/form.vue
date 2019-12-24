@@ -308,6 +308,8 @@
                 await this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
                     .then(res => { 
                         this.clickRemoveItem(index)
+                        this.$eventHub.$emit('reloadDataItems', null)
+                        
                     })
                     .catch(error => {
                         if (error.response.status === 500) {
@@ -332,6 +334,7 @@
                         this.$message.error(error.response.data.message);
                     }
                 })
+ 
 
             },
             async isUpdate(){
@@ -537,7 +540,7 @@
                     this.form.enabled_concurrency = (this.form.quantity_period > 0) ? true:false
                 }
 
-                this.loading_submit = true
+                // this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
 
