@@ -25,7 +25,7 @@ use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
-
+use Modules\Inventory\Models\Warehouse as WarehouseModule;
 
 class ItemController extends Controller
 {
@@ -186,12 +186,22 @@ class ItemController extends Controller
             }
         }
 
-        $item->lots()->delete();
+        if(!$id){
 
-        foreach ($request->lots as $lot) {
+            // $item->lots()->delete();
+            $warehouse = WarehouseModule::find(auth()->user()->establishment_id);
 
-            $item->lots()->create($lot);
-
+            foreach ($request->lots as $lot) {
+                
+                // $item->lots()->create($lot);
+                $item->item_lots()->create([
+                    'date' => $lot['date'],
+                    'series' => $lot['series'],
+                    'item_id' => $item->id,
+                    'warehouse_id' => $warehouse ? $warehouse->id:null,
+                    'has_sale' => false
+                ]);
+            }
         }
 
 

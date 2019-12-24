@@ -136,7 +136,7 @@
 
                 if(!this.recordId){
                     if(this.lots.length >= this.stock)
-                        return this.$message.error('La cantidad de registros es superior al stock');
+                        return this.$message.error('La cantidad de registros es superior al stock o cantidad');
                 }
                 
                 this.lots.push({
