@@ -463,6 +463,7 @@ if ($hostname) {
            Route::post('sale_note_payments', 'Tenant\SaleNotePaymentController@store');
            Route::delete('sale_note_payments/{sale_note_payment}', 'Tenant\SaleNotePaymentController@destroy');
 
+           Route::post('sale-notes/enabled-concurrency', 'Tenant\SaleNoteController@enabledConcurrency');
 
 
            //POS

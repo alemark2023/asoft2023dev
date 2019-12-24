@@ -121,6 +121,10 @@
                                 <div class="form-group" >
                                     <label class="control-label">
                                         Tipo periodo
+                                        
+                                        <el-tooltip class="item" effect="dark" content="Creación recurrente de N. Venta de forma automática, por periodo." placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
                                     </label>
                                     <el-select v-model="form.type_period" clearable>
                                         <el-option v-for="option in type_periods" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -130,7 +134,7 @@
                             </div>
                             <div class="col-lg-2 col-md-2" > 
                                 <div class="form-group">
-                                    <label class="control-label">Cantidad de periodos</label>
+                                    <label class="control-label">Cant. Periodos</label>
                                     <el-input-number v-model="form.quantity_period" :min="0"></el-input-number>
     
                                 </div>
@@ -415,6 +419,7 @@
                     type_period:null,
                     quantity_period:0,
                     automatic_date_of_issue:null,
+                    enabled_concurrency:false,
                 }
 
                 this.clickAddPayment()
@@ -528,6 +533,8 @@
                     if(this.form.quantity_period == 0){
                         return this.$message.error('La cantidad de periodos debe ser mayor a 0');
                     }
+
+                    this.form.enabled_concurrency = (this.form.quantity_period > 0) ? true:false
                 }
 
                 this.loading_submit = true

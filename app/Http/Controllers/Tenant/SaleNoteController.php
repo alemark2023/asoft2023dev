@@ -572,5 +572,20 @@ class SaleNoteController extends Controller
     }
 
 
+    public function enabledConcurrency(Request $request)
+    {
+
+        $sale_note = SaleNote::findOrFail($request->id);
+        $sale_note->enabled_concurrency = $request->enabled_concurrency;
+        $sale_note->update();
+
+        return [
+            'success' => true,
+            'message' => ($sale_note->enabled_concurrency) ? 'Recurrencia activada':'Recurrencia desactivada'
+        ];
+
+    }
+
+
  
 }

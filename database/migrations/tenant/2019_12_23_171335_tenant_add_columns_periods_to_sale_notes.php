@@ -17,6 +17,7 @@ class TenantAddColumnsPeriodsToSaleNotes extends Migration
             $table->string('type_period')->index()->nullable()->after('apply_concurrency');
             $table->integer('quantity_period')->index()->nullable()->after('apply_concurrency');
             $table->date('automatic_date_of_issue')->index()->nullable()->after('apply_concurrency');
+            $table->boolean('enabled_concurrency')->index()->default(false)->after('apply_concurrency');
         });
     }
 
@@ -31,6 +32,7 @@ class TenantAddColumnsPeriodsToSaleNotes extends Migration
             $table->dropColumn('type_period');  
             $table->dropColumn('quantity_period');  
             $table->dropColumn('automatic_date_of_issue');  
+            $table->dropColumn('enabled_concurrency');  
         });
     }
 }

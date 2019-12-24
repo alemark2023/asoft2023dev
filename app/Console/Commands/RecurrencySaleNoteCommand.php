@@ -44,14 +44,12 @@ class RecurrencySaleNoteCommand extends Command
     public function handle()
     { 
 
-        // $quantity_period = 1;
-        // $type_period = 'month';
-        // $type_period = 'year';
 
         $today = Carbon::now()->format('Y-m-d');
 
-        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue', $today]])->get();
+        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->get();
 
+        // dd($sale_notes->count());
 
         foreach ($sale_notes as $sale_note) {
 
@@ -66,21 +64,26 @@ class RecurrencySaleNoteCommand extends Command
                 $this->info("La nota de venta no fué generada de forma automática"); 
             }
 
-            // $add_period_date = ($type_period == 'month') ? $sale_note->date_of_issue->addMonths($quantity_period): $sale_note->date_of_issue->addYears($quantity_period);
-            // $today = Carbon::now();
-            // $this->info($add_period_date); 
-            // $this->info($add_period_date->diffIndays($today)); 
-            // if($add_period_date->diffIndays($today) == 0){
-            //     $record = $this->createSaleNote($sale_note);
-            //     if($record['success']){
-            //         $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
-            //         Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
-            //     }else{
-            //         $this->info("La nota de venta no fué generada de forma automática"); 
-            //     }
-            // }
 
         }
+
+        
+        // $quantity_period = 1;
+        // $type_period = 'month';
+        // $type_period = 'year';
+        // $add_period_date = ($type_period == 'month') ? $sale_note->date_of_issue->addMonths($quantity_period): $sale_note->date_of_issue->addYears($quantity_period);
+        // $today = Carbon::now();
+        // $this->info($add_period_date); 
+        // $this->info($add_period_date->diffIndays($today)); 
+        // if($add_period_date->diffIndays($today) == 0){
+        //     $record = $this->createSaleNote($sale_note);
+        //     if($record['success']){
+        //         $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
+        //         Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
+        //     }else{
+        //         $this->info("La nota de venta no fué generada de forma automática"); 
+        //     }
+        // }
 
 
     }
@@ -97,7 +100,7 @@ class RecurrencySaleNoteCommand extends Command
             $sale_note->update();
     
             $replicate_sale_note = $sale_note->replicate();
-            
+
             $replicate_sale_note->external_id = Str::uuid()->toString();
             $replicate_sale_note->state_type_id = '01';
             $replicate_sale_note->date_of_issue = date('Y-m-d');
@@ -105,6 +108,21 @@ class RecurrencySaleNoteCommand extends Command
             $replicate_sale_note->apply_concurrency = false;
             $replicate_sale_note->total_canceled = false;
             $replicate_sale_note->changed = false;
+            
+            $type_period = $replicate_sale_note->type_period;
+            $quantity_period = $replicate_sale_note->quantity_period;
+            $d_of_issue = new Carbon($replicate_sale_note->date_of_issue);
+            $automatic_date_of_issue = null;
+            
+            if($type_period && $quantity_period > 0){
+
+                $add_period_date = ($type_period == 'month') ? $d_of_issue->addMonths($quantity_period): $d_of_issue->addYears($quantity_period);
+                $automatic_date_of_issue = $add_period_date->format('Y-m-d'); 
+
+            }
+            
+            $replicate_sale_note->automatic_date_of_issue = $automatic_date_of_issue;
+
             $replicate_sale_note->save();
 
             // dd($sale_note->items);

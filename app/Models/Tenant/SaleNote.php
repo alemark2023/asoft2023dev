@@ -55,6 +55,7 @@ class SaleNote extends ModelTenant
         'type_period',
         'quantity_period',
         'automatic_date_of_issue',
+        'enabled_concurrency',
     ];
 
     protected $casts = [
