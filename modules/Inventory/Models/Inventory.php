@@ -4,6 +4,7 @@ namespace Modules\Inventory\Models;
 
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
+use Modules\Item\Models\ItemLot;
 
 class Inventory extends ModelTenant
 {
@@ -17,6 +18,7 @@ class Inventory extends ModelTenant
         'warehouse_destination_id',
         'quantity',
         'inventory_transaction_id',
+        'lot_code',
     ];
 
     public function warehouse()
@@ -44,4 +46,8 @@ class Inventory extends ModelTenant
         return $this->belongsTo(InventoryTransaction::class);
     }
 
+    public function lots()
+    {
+        return $this->morphMany(ItemLot::class, 'item_loteable');
+    }
 }

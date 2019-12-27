@@ -13,6 +13,14 @@
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.quantity}">
+                            <label class="control-label">Cantidad</label>
+                            <el-input v-model="form.quantity"></el-input>
+                            <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
+
+                        </div>
+                    </div>
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén</label>
@@ -22,12 +30,15 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group" :class="{'has-danger': errors.quantity}">
-                            <label class="control-label">Cantidad</label>
-                            <el-input v-model="form.quantity"></el-input>
-                            <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
-
+                    <div class="col-md-4" v-if="type == 'input'">
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}">
+                            <label class="control-label">
+                                Código lote
+                            </label>
+                            <el-input v-model="form.lot_code" >
+                                <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
                     <div class="col-md-8">
@@ -39,6 +50,7 @@
                             <small class="form-control-feedback" v-if="errors.inventory_transaction_id" v-text="errors.inventory_transaction_id[0]"></small>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -46,17 +58,27 @@
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Aceptar</el-button>
             </div>
         </form>
+        
+        <lots-form
+            :showDialog.sync="showDialogLots"
+            :stock="form.quantity"
+            :lots="form.lots"
+            @addRowLot="addRowLot">
+        </lots-form>
     </el-dialog>
 
 </template>
 
 <script>
+    import LotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
 
     export default {
+        components: {LotsForm},
         props: ['showDialog', 'recordId','type'],
         data() {
             return {
                 loading_submit: false,
+                showDialogLots:false,
                 titleDialog: null,
                 resource: 'inventory',
                 errors: {},
@@ -70,6 +92,12 @@
             this.initForm()
         },
         methods: {
+            addRowLot(lots){
+                this.form.lots = lots
+            },
+            clickLotcode(){ 
+                this.showDialogLots = true
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -79,6 +107,9 @@
                     inventory_transaction_id: null,
                     quantity: null,
                     type: this.type,
+                    lot_code:null,
+                    lots:[]
+
                 }
             },
             async create() {
@@ -98,7 +129,13 @@
                 // if(this.form.quantity<0)
                 //     return this.$message.error('No puede ingresar cantidad negativa')
 
-                this.loading_submit = true
+                if(this.form.lots.length>0){
+                    if(!this.form.lot_code){
+                        return this.$message.error('El campo código de lote es requerido');
+                    }
+                }
+
+                // this.loading_submit = true
                 this.form.type = this.type
                 // console.log(this.form)
                 this.$http.post(`/${this.resource}/transaction`, this.form)
