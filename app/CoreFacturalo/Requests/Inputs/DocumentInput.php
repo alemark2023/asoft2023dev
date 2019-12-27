@@ -140,6 +140,7 @@ class DocumentInput
                         'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation']:[]):[],
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                         'is_set' => $item->is_set,
+                        'lots' => (isset($row['item']['lots'])) ? $row['item']['lots']:[],
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
