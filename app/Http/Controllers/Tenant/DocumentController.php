@@ -46,6 +46,7 @@ use App\Imports\DocumentsImportTwoFormat;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
 use App\Traits\OfflineTrait;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 
 class DocumentController extends Controller
 {
@@ -235,9 +236,13 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
+            
+            $establishment_id = auth()->user()->establishment_id;
+            $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
             $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
-            return collect($items)->transform(function($row) {
-                $full_description = $this->getFullDescription($row);
+            return collect($items)->transform(function($row) use($warehouse){
+                $full_description = $this->getFullDescription($row, $warehouse);
                 return [
                     'id' => $row->id,
                     'full_description' => $full_description,
@@ -280,13 +285,16 @@ class DocumentController extends Controller
         return [];
     }
 
-    public function getFullDescription($row){
+    public function getFullDescription($row, $warehouse){
 
         $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
         $category = ($row->category) ? " - {$row->category->name}" : "";
         $brand = ($row->brand) ? " - {$row->brand->name}" : "";
 
-        $desc = "{$desc} {$category} {$brand}";
+        $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
+        $stock = ($row->warehouses && $warehouse) ? " - {$warehouse_stock}" : "";
+
+        $desc = "{$desc} {$category} {$brand} {$stock}";
 
         return $desc;
     }
