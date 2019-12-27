@@ -93,7 +93,10 @@ class ViewServiceProvider extends ServiceProvider
         );
 
 
-
+        view()->composer(
+            'tenant.layouts.partials.sidebar',
+            'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
+        );
 
 
     }

@@ -150,12 +150,27 @@ class ClientController extends Controller
 
             //modules
             DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
+            DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->delete();
 
             $array_modules = [];
 
             foreach ($request->modules as $module) {
                 if($module['checked']){
                     $array_modules[] = ['module_id' => $module['id'], 'user_id' => 1];
+                    
+                    if($module['id'] == 1){
+                        DB::connection('tenant')->table('module_level_user')->insert([
+                            ['module_level_id' => 1, 'user_id' => 1],
+                            ['module_level_id' => 2, 'user_id' => 1],
+                            ['module_level_id' => 3, 'user_id' => 1],
+                            ['module_level_id' => 4, 'user_id' => 1],
+                            ['module_level_id' => 5, 'user_id' => 1],
+                            ['module_level_id' => 6, 'user_id' => 1],
+                            ['module_level_id' => 7, 'user_id' => 1],
+                            ['module_level_id' => 8, 'user_id' => 1],
+                            ['module_level_id' => 9, 'user_id' => 1], 
+                        ]);
+                    }
                 }
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
@@ -294,6 +309,20 @@ class ClientController extends Controller
             foreach ($request->modules as $module) {
                 if($module['checked']){
                     $array_modules[] = ['module_id' => $module['id'], 'user_id' => $user_id];
+
+                    if($module['id'] == 1){
+                        DB::connection('tenant')->table('module_level_user')->insert([
+                            ['module_level_id' => 1, 'user_id' => $user_id],
+                            ['module_level_id' => 2, 'user_id' => $user_id],
+                            ['module_level_id' => 3, 'user_id' => $user_id],
+                            ['module_level_id' => 4, 'user_id' => $user_id],
+                            ['module_level_id' => 5, 'user_id' => $user_id],
+                            ['module_level_id' => 6, 'user_id' => $user_id],
+                            ['module_level_id' => 7, 'user_id' => $user_id],
+                            ['module_level_id' => 8, 'user_id' => $user_id],
+                            ['module_level_id' => 9, 'user_id' => $user_id], 
+                        ]);
+                    }
                 }
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);

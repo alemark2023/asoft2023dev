@@ -73,49 +73,75 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
-                        </div>
-                       
-                        <div class="row col-lg-8">
 
-                            <table>
-                                <thead>
-                                    <tr width="100%">
-                                        <th v-if="form.payments.length>0">Método de pago</th>
-                                        <th v-if="form.payments.length>0">Referencia</th>
-                                        <th v-if="form.payments.length>0">Monto</th>
-                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(row, index) in form.payments" :key="index"> 
-                                        <td>
-                                            <div class="form-group mb-2 mr-2">
-                                                <el-select v-model="row.payment_method_type_id">
-                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                </el-select>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="form-group mb-2 mr-2"  >
-                                                <el-input v-model="row.reference"></el-input>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="form-group mb-2 mr-2" >
-                                                <el-input v-model="row.payment"></el-input>
-                                            </div>
-                                        </td>
-                                        <td class="series-table-actions text-center"> 
-                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </td> 
-                                        <br>
-                                    </tr>
-                                </tbody> 
-                            </table> 
+                                
+                            <div class="col-lg-8">
+
+                                <table>
+                                    <thead>
+                                        <tr width="100%">
+                                            <th v-if="form.payments.length>0">Método de pago</th>
+                                            <th v-if="form.payments.length>0">Referencia</th>
+                                            <th v-if="form.payments.length>0">Monto</th>
+                                            <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(row, index) in form.payments" :key="index"> 
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+                                                    <el-select v-model="row.payment_method_type_id">
+                                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2"  >
+                                                    <el-input v-model="row.reference"></el-input>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2" >
+                                                    <el-input v-model="row.payment"></el-input>
+                                                </div>
+                                            </td>
+                                            <td class="series-table-actions text-center"> 
+                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td> 
+                                            <br>
+                                        </tr>
+                                    </tbody> 
+                                </table> 
+                                
+                            </div>
+                            
+                            <div class="col-lg-2 col-md-2">
+                                <div class="form-group" >
+                                    <label class="control-label">
+                                        Tipo periodo
+                                        
+                                        <el-tooltip class="item" effect="dark" content="Creación recurrente de N. Venta de forma automática, por periodo." placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-select v-model="form.type_period" clearable>
+                                        <el-option v-for="option in type_periods" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.type_period" v-text="errors.type_period[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2" > 
+                                <div class="form-group">
+                                    <label class="control-label">Cant. Periodos</label>
+                                    <el-input-number v-model="form.quantity_period" :min="0"></el-input-number>
+    
+                                </div>
+                            </div>
                             
                         </div>
+                       
 
 
                         <div class="row mt-4">
@@ -245,7 +271,8 @@
                 form_payment: {},
                 payment_method_types: [],
                 activePanel: 0,
-                loading_search:false
+                loading_search:false,
+                type_periods:[]
             }
         },
         async created() {
@@ -261,7 +288,7 @@
                     this.company = response.data.company
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
-
+                    this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
                     this.changeCurrencyType()
@@ -281,6 +308,8 @@
                 await this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
                     .then(res => { 
                         this.clickRemoveItem(index)
+                        this.$eventHub.$emit('reloadDataItems', null)
+                        
                     })
                     .catch(error => {
                         if (error.response.status === 500) {
@@ -305,6 +334,7 @@
                         this.$message.error(error.response.data.message);
                     }
                 })
+ 
 
             },
             async isUpdate(){
@@ -387,7 +417,12 @@
                     additional_information:null,
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    apply_concurrency:false,
+                    type_period:null,
+                    quantity_period:0,
+                    automatic_date_of_issue:null,
+                    enabled_concurrency:false,
                 }
 
                 this.clickAddPayment()
@@ -497,8 +532,15 @@
                     return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                 }
 
+                if(this.form.type_period){
+                    if(this.form.quantity_period == 0){
+                        return this.$message.error('La cantidad de periodos debe ser mayor a 0');
+                    }
 
-                this.loading_submit = true
+                    this.form.enabled_concurrency = (this.form.quantity_period > 0) ? true:false
+                }
+
+                // this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
 

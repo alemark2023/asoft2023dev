@@ -25,14 +25,14 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
                             <el-input-number v-model="form.quantity" :min="0.01"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price">
@@ -40,6 +40,10 @@
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
+                    </div>
+                    <div class="col-md-6 mt-4" v-if="form.item_id"> 
+                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar serie]</a>
                     </div>
                     <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                         <div style="margin:3px" class="table-responsive">
@@ -202,6 +206,14 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
+
+                   
+        <select-lots-form
+            :showDialog.sync="showDialogSelectLots"
+            :lots="lots"
+            @addRowSelectLot="addRowSelectLot">
+        </select-lots-form>
+
     </el-dialog>
 </template>
 <style>
@@ -214,15 +226,17 @@
 
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
+    import SelectLotsForm from './lots.vue'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm},
+        components: {itemForm, SelectLotsForm},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
                 resource: 'sale-notes',
                 showDialogNewItem: false,
+                showDialogSelectLots: false,
                 errors: {},
                 form: {},
                 items: [],
@@ -232,7 +246,8 @@
                 charge_types: [],
                 attribute_types: [],
                 use_price: 1,
-                change_affectation_igv_type_id: false
+                change_affectation_igv_type_id: false,
+                lots:[]
             }
         },
         created() {
@@ -243,6 +258,12 @@
             })
         },
         methods: {
+            addRowSelectLot(lots){
+                this.lots = lots
+            },
+            async clickSelectLots(){
+                this.showDialogSelectLots = true
+            },
             getTables(){
 
                 this.$http.get(`/${this.resource}/item/tables`).then(response => {
@@ -370,8 +391,12 @@
                 this.initForm()
                 this.$emit('update:showDialog', false)
             },
-            changeItem() {
-                this.form.item = _.find(this.items, {'id': this.form.item_id})
+            async changeItem() {
+
+                this.form.item = await _.find(this.items, {'id': this.form.item_id})
+                this.lots = this.form.item.lots
+                // console.log(this.form.item.lots)
+
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price = this.form.item.sale_unit_price
 
@@ -379,7 +404,7 @@
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id
                 this.form.quantity = 1;
             },
-            clickAddItem() {
+            async clickAddItem() {
 
                 let unit_price = (this.form.has_igv)?this.form.unit_price:this.form.unit_price*1.18;
 
@@ -389,7 +414,17 @@
 
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.form.item.presentation = this.item_unit_type;
-                this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+                this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+
+                let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
+                let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
+
+                this.row.item.lots = un_select_lots
+                this.row.lots = select_lots
+
+                // console.log(un_select_lots)
+                // console.log(this.row.lots)
+                
                 this.initForm()
                 // this.initializeFields()
                 this.$emit('add', this.row)
@@ -398,7 +433,9 @@
                 this.$http.get(`/${this.resource}/table/items`).then((response) => {
                     this.items = response.data
                     this.form.item_id = item_id
-                    this.changeItem()
+                    if(item_id){
+                        this.changeItem()
+                    }
                     // this.filterItems()
 
                 })

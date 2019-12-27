@@ -9,6 +9,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Purchase;
+use App\Models\Tenant\PurchaseItem;
 use Modules\Purchase\Models\PurchaseOrder;
 
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
@@ -154,18 +155,32 @@ class PurchaseController extends Controller
 
         //return 'asd';
         $data = self::convert($request);
+        
         $purchase = DB::connection('tenant')->transaction(function () use ($data) {
             $doc = Purchase::create($data);
             foreach ($data['items'] as $row)
             {
-                $doc->items()->create($row);
+                // $doc->items()->create($row);
+                $p_item = new PurchaseItem;
+                $p_item->fill($row);
+                $p_item->purchase_id = $doc->id;
+                $p_item->save();  
+
+                foreach ($row['lots'] as $lot){
+
+                    $p_item->lots()->create([
+                        'date' => $lot['date'],
+                        'series' => $lot['series'],
+                        'item_id' => $row['item_id'],
+                        'warehouse_id' => $row['warehouse_id'],
+                        'has_sale' => false
+                    ]);
+
+                }
+
             }
 
-            // $doc->purchase_payments()->create([
-            //     'date_of_payment' => $data['date_of_issue'],
-            //     'payment_method_type_id' => $data['payment_method_type_id'],
-            //     'payment' => $data['total'],
-            // ]);
+            
             foreach ($data['payments'] as $payment) {
                 $doc->purchase_payments()->create($payment);
             }
@@ -173,12 +188,7 @@ class PurchaseController extends Controller
             return $doc;
         });
 
-        // if($request->purchase_order){
-
-        //     $order = PurchaseOrder::find($request->purchase_order['id']);
-        //     $order->state_type_id = '03';
-        //     $order->save();
-        // }
+         
 
         return [
             'success' => true,
@@ -214,18 +224,36 @@ class PurchaseController extends Controller
                 $wr->save();
             }
 
-            $doc->items()->delete();
+            foreach ($doc->items()->get() as $it) {
+                // dd($it);
+                $it->lots()->delete();
+            }
+            
 
+            $doc->items()->delete();
+ 
             foreach ($request['items'] as $row)
             {
-                $doc->items()->create($row);
+                // $doc->items()->create($row);
+                $p_item = new PurchaseItem;
+                $p_item->fill($row);
+                $p_item->purchase_id = $doc->id;
+                $p_item->save();  
+
+                foreach ($row['lots'] as $lot){
+
+                    $p_item->lots()->create([
+                        'date' => $lot['date'],
+                        'series' => $lot['series'],
+                        'item_id' => $row['item_id'],
+                        'warehouse_id' => $row['warehouse_id'],
+                        'has_sale' => false
+                    ]);
+
+                }
+
             }
 
-            // $doc->purchase_payments()->where('id', $request['purchase_payments_id'])->update([
-            //     'date_of_payment' => $request['date_of_issue'],
-            //     'payment_method_type_id' => $request['payment_method_type_id'],
-            //     'payment' => $request['total'],
-            // ]);
             
             $doc->purchase_payments()->delete();
 
