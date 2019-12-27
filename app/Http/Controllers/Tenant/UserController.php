@@ -8,6 +8,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Module;
 use App\Models\Tenant\User;
 use App\Http\Resources\Tenant\UserCollection;
+use Modules\LevelAccess\Models\ModuleLevel;
 
 class UserController extends Controller
 {
@@ -67,6 +68,20 @@ class UserController extends Controller
 
         $modules = collect($request->input('modules'))->where('checked', true)->pluck('id')->toArray();
         $user->modules()->sync($modules);
+
+        
+        $levels = collect($request->input('levels'))->where('checked', true)->pluck('id')->toArray();
+        $user->levels()->sync($levels);
+
+        // dd($user->getModules()->transform(function($row, $key) {
+        //     return [
+        //         'id' => $row->id,
+        //         'privot_id' => $row->pivot,
+        //         'privot_user' => $row->pivot->user_id,
+        //         'privot_module' => $row->pivot->module_id, 
+
+        //     ];
+        // }));
 
         return [
             'success' => true,

@@ -161,7 +161,7 @@
                         </div>
                     </div>
                     
-                    <div class="short-div col-md-3">
+                    <div class="short-div col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->

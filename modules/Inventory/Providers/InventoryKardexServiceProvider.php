@@ -82,7 +82,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                 $presentationQuantity = (!empty($sale_note_item->item->presentation)) ? $sale_note_item->item->presentation->quantity_unit : 1;
                 
-                $warehouse = $this->findWarehouse();
+                $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
                 // $this->createInventoryKardex($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
                 $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
                 $this->updateStock($sale_note_item->item_id, (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
@@ -95,7 +95,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                     $ind_item  = $it->individual_item;
                     $presentationQuantity = 1;                                
-                    $warehouse = $this->findWarehouse();
+                    $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
                     // $this->createInventoryKardex($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
                     $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
                     $this->updateStock($ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);

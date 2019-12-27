@@ -160,6 +160,7 @@
                 this.changeDocumentType()
             },
             submit() { 
+                // console.log(this.form)
                 this.loading_submit = true;
 
                 this.document.exchange_rate_sale = 1;

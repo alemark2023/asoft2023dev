@@ -51,6 +51,11 @@ class SaleNote extends ModelTenant
         'filename',
         'total_canceled',
         'quotation_id',
+        'apply_concurrency',
+        'type_period',
+        'quantity_period',
+        'automatic_date_of_issue',
+        'enabled_concurrency',
     ];
 
     protected $casts = [

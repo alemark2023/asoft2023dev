@@ -24,7 +24,7 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
 use App\Http\Requests\Tenant\SaleNoteRequest;
-use App\Models\Tenant\Warehouse;
+// use App\Models\Tenant\Warehouse;
 use Illuminate\Support\Str;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
@@ -36,8 +36,11 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\PaymentMethodType;
 use App\Mail\Tenant\SaleNoteEmail;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Mail;
+use Modules\Inventory\Models\Warehouse;
+use Modules\Item\Models\ItemLot;
 
 class SaleNoteController extends Controller
 {
@@ -152,10 +155,11 @@ class SaleNoteController extends Controller
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
+
             $this->sale_note =  SaleNote::updateOrCreate(
                 ['id' => $request->input('id')],
                 $data);
-
+            
 //            $this->sale_note =  SaleNote::create($data);
             // $this->sale_note->items()->delete();
             $this->sale_note->payments()->delete();
@@ -168,9 +172,26 @@ class SaleNoteController extends Controller
                     
                 $item_id = isset($row['id']) ? $row['id'] : null;
                 $sale_note_item = SaleNoteItem::firstOrNew(['id' => $item_id]);
+
+                if(isset($row['item']['lots'])){
+                    $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
+                }
+
                 $sale_note_item->fill($row);
                 $sale_note_item->sale_note_id = $this->sale_note->id;
                 $sale_note_item->save();  
+
+                if(isset($row['lots'])){
+
+                    foreach($row['lots'] as $lot) { 
+                        $record_lot = ItemLot::findOrFail($lot['id']);
+                        $record_lot->has_sale = true;
+                        $record_lot->update();
+                    }
+                    
+                }
+
+                // dd($row);
 
             }
 
@@ -199,8 +220,19 @@ class SaleNoteController extends Controller
     
     public function destroy_sale_note_item($id)
     {
-        // dd("epale");
         $item = SaleNoteItem::findOrFail($id);
+
+        if(isset($item->item->lots)){
+            
+            foreach($item->item->lots as $lot) { 
+                // dd($lot->id);
+                $record_lot = ItemLot::findOrFail($lot->id);
+                $record_lot->has_sale = false;
+                $record_lot->update();
+            }
+
+        }
+
         $item->delete();
         
         return [
@@ -211,10 +243,23 @@ class SaleNoteController extends Controller
 
     public function mergeData($inputs)
     {
-
         $this->company = Company::active();
 
+            
+        $type_period = $inputs['type_period'];
+        $quantity_period = $inputs['quantity_period'];
+        $d_of_issue = new Carbon($inputs['date_of_issue']);
+        $automatic_date_of_issue = null;
+        
+        if($type_period && $quantity_period > 0){
+
+            $add_period_date = ($type_period == 'month') ? $d_of_issue->addMonths($quantity_period): $d_of_issue->addYears($quantity_period);
+            $automatic_date_of_issue = $add_period_date->format('Y-m-d'); 
+
+        }
+
         $values = [
+            'automatic_date_of_issue' => $automatic_date_of_issue,
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
             'customer' => PersonInput::set($inputs['customer_id']),
@@ -464,8 +509,12 @@ class SaleNoteController extends Controller
             
             case 'items':
 
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id:null;
+
                 $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
-                return collect($items)->transform(function($row) {
+                return collect($items)->transform(function($row) use($warehouse_id){
                     $full_description = $this->getFullDescription($row);
                     return [
                         'id' => $row->id,
@@ -487,7 +536,18 @@ class SaleNoteController extends Controller
                                 'stock' => $row->stock,
                             ];
                         }),
-                        'item_unit_types' => $row->item_unit_types
+                        'item_unit_types' => $row->item_unit_types,
+                        'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'series' => $row->series,
+                                'date' => $row->date,
+                                'item_id' => $row->item_id,
+                                'warehouse_id' => $row->warehouse_id,
+                                'has_sale' => (bool)$row->has_sale,
+                                'lot_code' => isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null
+                            ];
+                        }),
                     ];
                 });
 //                return $items;
@@ -554,6 +614,21 @@ class SaleNoteController extends Controller
         return [
             'success' => true
         ];
+    }
+
+
+    public function enabledConcurrency(Request $request)
+    {
+
+        $sale_note = SaleNote::findOrFail($request->id);
+        $sale_note->enabled_concurrency = $request->enabled_concurrency;
+        $sale_note->update();
+
+        return [
+            'success' => true,
+            'message' => ($sale_note->enabled_concurrency) ? 'Recurrencia activada':'Recurrencia desactivada'
+        ];
+
     }
 
 

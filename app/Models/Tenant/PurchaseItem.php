@@ -5,10 +5,11 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use Modules\Item\Models\ItemLot;
 
 class PurchaseItem extends ModelTenant
 {
-    protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
+    protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type', 'lots'];
     public $timestamps = false;
 
     protected $fillable = [
@@ -41,6 +42,7 @@ class PurchaseItem extends ModelTenant
 
         'attributes',
         'charges',
+        'lot_code',
         'warehouse_id',
         'discounts'
     ];
@@ -108,5 +110,11 @@ class PurchaseItem extends ModelTenant
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    
+    public function lots()
+    {
+        return $this->morphMany(ItemLot::class, 'item_loteable');
     }
 }
