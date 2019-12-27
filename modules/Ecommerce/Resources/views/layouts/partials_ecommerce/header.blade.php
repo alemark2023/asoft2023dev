@@ -78,7 +78,7 @@
  <header class="header">
 
      <div class="header-middle">
-         <div class="container">
+         <div  id="header_bar" class="container">
              <div class="header-left">
                  <a href="{{ route("tenant.ecommerce.index") }}" class="logo" style="max-width: 180px">
                     @if($information->logo)
@@ -89,7 +89,7 @@
                  </a>
              </div><!-- End .header-left -->
 
-             <div id="header_bar" class="header-center header-dropdowns">
+             <div class="header-center header-dropdowns">
 
                  <div class="header-dropdown" style="min-width:400px;">
 
@@ -118,7 +118,7 @@
                  </button>
                  <div class="header-contact">
                      <span> Atención al</span>
-                     <i class="fab fa-whatsapp"></i> <a href="tel:#"><strong>999 111 888</strong></a>
+                     <i class="fab fa-whatsapp"></i> <a href="#"><strong>{{$information->information_contact_phone}}</strong></a>
                  </div><!-- End .header-contact -->
 
                 @include('ecommerce::layouts.partials_ecommerce.cart_dropdown')
@@ -153,6 +153,16 @@
              this.getItems()
          },
          methods: {
+            /*whatsap(num)
+            {
+                //console.log(num)
+                let message= 'Hola'
+                let message_ = message.split(" ").join("%20");
+
+                console.log(message_)
+
+                window.open(`https://wa.me/51${num}/?text=${message_}`, "_system");
+            },**/
              autoComplete() {
                  if (this.value) {
                     let val = this.value.toUpperCase()
