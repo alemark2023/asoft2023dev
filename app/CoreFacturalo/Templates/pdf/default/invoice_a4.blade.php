@@ -396,10 +396,26 @@
             <td colspan="5" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
-        <tr>
-            <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
-        </tr>
+
+        @if($document->perception)
+            <tr>
+                <td colspan="5" class="text-right font-bold">IMPORTE TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-right font-bold">PERCEPCIÓN: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->perception->amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format(($document->total + $document->perception->amount), 2) }}</td>
+            </tr>
+        @else
+            <tr>
+                <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            </tr>
+        @endif
     </tbody>
 </table>
 <table class="full-width">
