@@ -545,7 +545,7 @@ class SaleNoteController extends Controller
                                 'item_id' => $row->item_id,
                                 'warehouse_id' => $row->warehouse_id,
                                 'has_sale' => (bool)$row->has_sale,
-                                'lot_code' => isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null
+                                'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                             ];
                         }),
                     ];

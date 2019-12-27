@@ -7,7 +7,7 @@
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">Producto</label>
-                            <el-select v-model="form.item_id" filterable>
+                            <el-select v-model="form.item_id" filterable @change="changeItem">
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
@@ -24,7 +24,7 @@
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén</label>
-                            <el-select v-model="form.warehouse_id" filterable>
+                            <el-select v-model="form.warehouse_id" filterable @change="changeItem">
                                 <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
@@ -41,6 +41,11 @@
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
+                    
+                    <div class="col-md-4 mt-4" v-if="type == 'output' && form.item_id && form.warehouse_id"> 
+                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
+                    </div> 
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.inventory_transaction_id}">
                             <label class="control-label">Motivo traslado</label>
@@ -59,26 +64,35 @@
             </div>
         </form>
         
-        <lots-form
+        <input-lots-form
             :showDialog.sync="showDialogLots"
             :stock="form.quantity"
             :lots="form.lots"
             @addRowLot="addRowLot">
-        </lots-form>
+        </input-lots-form>
+        
+        <output-lots-form
+            :showDialog.sync="showDialogLotsOutput"
+            :lots="form.lots"
+            @addRowOutputLot="addRowOutputLot">
+        </output-lots-form>
+
     </el-dialog>
 
 </template>
 
 <script>
-    import LotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
+    import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
+    import OutputLotsForm from './partials/lots.vue'
 
     export default {
-        components: {LotsForm},
+        components: {InputLotsForm, OutputLotsForm},
         props: ['showDialog', 'recordId','type'],
         data() {
             return {
                 loading_submit: false,
                 showDialogLots:false,
+                showDialogLotsOutput:false,
                 titleDialog: null,
                 resource: 'inventory',
                 errors: {},
@@ -92,11 +106,29 @@
             this.initForm()
         },
         methods: {
+            async changeItem(){
+                
+                if(this.type == 'output'){
+
+                    this.form.lots = []
+                    let item = await _.find(this.items,{'id':this.form.item_id})
+                    let lots = await _.filter(item.lots,{'warehouse_id':this.form.warehouse_id})
+                    // console.log(item)
+                    this.form.lots = lots
+
+                }
+            },
+            addRowOutputLot(lots){
+                this.form.lots = lots
+            },
             addRowLot(lots){
                 this.form.lots = lots
             },
             clickLotcode(){ 
                 this.showDialogLots = true
+            },
+            clickLotcodeOutput(){ 
+                this.showDialogLotsOutput = true
             },
             initForm() {
                 this.errors = {}
@@ -124,21 +156,38 @@
                     })
 
             },
-            submit() {
+            async submit() {
 
                 // if(this.form.quantity<0)
                 //     return this.$message.error('No puede ingresar cantidad negativa')
+                if(this.type == 'input'){
 
-                if(this.form.lots.length>0){
-                    if(!this.form.lot_code){
-                        return this.$message.error('El campo código de lote es requerido');
+                    if(this.form.lots.length>0){
+                        if(!this.form.lot_code){
+                            return this.$message.error('El campo código de lote es requerido');
+                        }
                     }
+
+                }else{
+
+                    if(this.form.lots.length>0){
+
+                        let select_lots = await _.filter(this.form.lots, {'has_sale':true})
+                        
+                        if(select_lots.length != this.form.quantity){
+                            return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
+                        }
+                    }
+
+                    // console.log(this.form)
+                    // return
+
                 }
 
-                // this.loading_submit = true
+                this.loading_submit = true
                 this.form.type = this.type
                 // console.log(this.form)
-                this.$http.post(`/${this.resource}/transaction`, this.form)
+                await this.$http.post(`/${this.resource}/transaction`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

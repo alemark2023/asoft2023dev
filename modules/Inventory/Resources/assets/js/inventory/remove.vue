@@ -9,6 +9,12 @@
                             <el-input v-model="form.item_description" :readonly="true"></el-input>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Cantidad</label>
+                            <el-input v-model="form.quantity"></el-input>
+                        </div>
+                    </div>
                     <div class="col-md-8">
                         <div class="form-group">
                             <label class="control-label">Almacén Inicial</label>
@@ -17,16 +23,14 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="control-label">Cantidad</label>
-                            <el-input v-model="form.quantity"></el-input>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
                             <label class="control-label">Cantidad a retirar</label>
                             <el-input v-model="form.quantity_remove"></el-input>
                         </div>
                     </div>
+                    <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id"> 
+                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
+                    </div> 
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -34,17 +38,25 @@
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Aceptar</el-button>
             </div>
         </form>
+        <output-lots-form
+            :showDialog.sync="showDialogLotsOutput"
+            :lots="form.lots"
+            @addRowOutputLot="addRowOutputLot">
+        </output-lots-form>
     </el-dialog>
 
 </template>
 
 <script>
+    import OutputLotsForm from './partials/lots.vue'
 
     export default {
+        components: {OutputLotsForm},
         props: ['showDialog', 'recordId'],
         data() {
             return {
                 loading_submit: false,
+                showDialogLotsOutput:false,
                 titleDialog: null,
                 resource: 'inventory',
                 errors: {},
@@ -62,6 +74,12 @@
                 })
         },
         methods: {
+            addRowOutputLot(lots){
+                this.form.lots = lots
+            },
+            clickLotcodeOutput(){ 
+                this.showDialogLotsOutput = true
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -71,7 +89,8 @@
                     warehouse_id: null,
                     warehouse_description: null,
                     quantity: null,
-                    quantity_remove: 0
+                    quantity_remove: 0,
+                    lots:[]
                 }
             },
             create() {
@@ -79,11 +98,20 @@
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        this.form.lots = Object.values(response.data.data.lots)
                     })
             },
-            submit() {
+            async submit() {
+
+                if(this.form.lots.length>0){
+                    let select_lots = await _.filter(this.form.lots, {'has_sale':true})
+                    if(select_lots.length != this.form.quantity_remove){
+                        return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
+                    }
+                }
+
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}/remove`, this.form)
+                await this.$http.post(`/${this.resource}/remove`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

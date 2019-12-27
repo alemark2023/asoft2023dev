@@ -48,7 +48,18 @@ trait InventoryTrait
         return collect($records)->transform(function($row) {
             return  [
                 'id' => $row->id,
-                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                'lots' => $row->item_lots->where('has_sale', false)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'series' => $row->series,
+                        'date' => $row->date,
+                        'item_id' => $row->item_id,
+                        'warehouse_id' => $row->warehouse_id,
+                        'has_sale' => (bool)$row->has_sale,
+                        'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    ];
+                }),
             ];
         });
     }

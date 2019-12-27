@@ -540,7 +540,7 @@
                     this.form.enabled_concurrency = (this.form.quantity_period > 0) ? true:false
                 }
 
-                // this.loading_submit = true
+                this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
 

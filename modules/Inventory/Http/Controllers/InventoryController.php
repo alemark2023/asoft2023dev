@@ -14,6 +14,7 @@ use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Http\Requests\InventoryRequest;
+use Modules\Item\Models\ItemLot;
 
 class InventoryController extends Controller
 {
@@ -160,7 +161,6 @@ class InventoryController extends Controller
             $inventory->save();
                 
             if($type == 'input'){
-
                 foreach ($lots as $lot){
     
                     $inventory->lots()->create([
@@ -171,6 +171,18 @@ class InventoryController extends Controller
                         'has_sale' => false
                     ]);
     
+                }
+            }else{
+
+                foreach ($lots as $lot){
+
+                    if($lot['has_sale']){
+
+                        $item_lot = ItemLot::findOrFail($lot['id']);
+                        $item_lot->delete();
+                    
+                    }
+                
                 }
 
             }
@@ -188,12 +200,14 @@ class InventoryController extends Controller
     public function move(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
+            // dd($request->all());
             $id = $request->input('id');
             $item_id = $request->input('item_id');
             $warehouse_id = $request->input('warehouse_id');
             $warehouse_new_id = $request->input('warehouse_new_id');
             $quantity = $request->input('quantity');
             $quantity_move = $request->input('quantity_move');
+            $lots = ($request->has('lots')) ? $request->input('lots'):[];
 
             if($warehouse_id === $warehouse_new_id) {
                 return  [
@@ -229,6 +243,18 @@ class InventoryController extends Controller
             $inventory->quantity = $quantity_move;
             $inventory->save();
 
+            foreach ($lots as $lot){
+
+                if($lot['has_sale']){
+
+                    $item_lot = ItemLot::findOrFail($lot['id']);
+                    $item_lot->warehouse_id = $inventory->warehouse_destination_id;
+                    $item_lot->update();
+                
+                }
+            
+            }
+
             return  [
                 'success' => true,
                 'message' => 'Producto trasladado con éxito'
@@ -241,10 +267,12 @@ class InventoryController extends Controller
     public function remove(Request $request)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request) {
+            // dd($request->all());
             $item_id = $request->input('item_id');
             $warehouse_id = $request->input('warehouse_id');
             $quantity = $request->input('quantity');
             $quantity_remove = $request->input('quantity_remove');
+            $lots = ($request->has('lots')) ? $request->input('lots'):[];
 
             //Transaction
             $item_warehouse = ItemWarehouse::where('item_id', $item_id)
@@ -275,6 +303,17 @@ class InventoryController extends Controller
             $inventory->quantity = $quantity_remove;
             $inventory->save();
 
+            foreach ($lots as $lot){
+
+                if($lot['has_sale']){
+
+                    $item_lot = ItemLot::findOrFail($lot['id']);
+                    $item_lot->delete();
+                
+                }
+            
+            }
+            
             return  [
                 'success' => true,
                 'message' => 'Producto trasladado con éxito'
