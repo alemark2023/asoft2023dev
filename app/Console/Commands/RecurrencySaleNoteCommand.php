@@ -49,6 +49,7 @@ class RecurrencySaleNoteCommand extends Command
 
         Log::info("iniciando consul");
         $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->get();
+        Log::info("cant:".$sale_notes->count());
         Log::info("termin consul");
 
         // dd($sale_notes->count());
