@@ -10,6 +10,7 @@ if($current_hostname) {
             Route::prefix('reports')->group(function () {
 
                 Route::get('data-table/persons/{type}', 'ReportController@dataTablePerson');
+                Route::get('data-table/items', 'ReportController@dataTableItem');
 
                 Route::get('purchases', 'ReportPurchaseController@index')->name('tenant.reports.purchases.index');
                 Route::get('purchases/pdf', 'ReportPurchaseController@pdf')->name('tenant.reports.purchases.pdf');
@@ -68,6 +69,11 @@ if($current_hostname) {
                 Route::get('customers/excel', 'ReportCustomerController@excel')->name('tenant.reports.customers.excel');
                 Route::get('customers/filter', 'ReportCustomerController@filter')->name('tenant.reports.customers.filter');
                 Route::get('customers/records', 'ReportCustomerController@records')->name('tenant.reports.customers.records');
+
+                Route::get('items', 'ReportItemController@index')->name('tenant.reports.items.index');
+                Route::get('items/excel', 'ReportItemController@excel')->name('tenant.reports.items.excel');
+                Route::get('items/filter', 'ReportItemController@filter')->name('tenant.reports.items.filter');
+                Route::get('items/records', 'ReportItemController@records')->name('tenant.reports.items.records');
 
             });
 
