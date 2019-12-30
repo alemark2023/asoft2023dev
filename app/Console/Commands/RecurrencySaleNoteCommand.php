@@ -47,13 +47,9 @@ class RecurrencySaleNoteCommand extends Command
 
         $today = Carbon::now()->format('Y-m-d');
 
-        Log::info("iniciando consul");
-        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
-        Log::info("cant:".$sale_notes->count());
-        Log::info("termin consul");
+        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->lockForUpdate()->get();
 
         // dd($sale_notes->count());
-        Log::info("ini for");
 
         foreach ($sale_notes as $sale_note) {
 
@@ -70,7 +66,6 @@ class RecurrencySaleNoteCommand extends Command
 
 
         }
-        Log::info("end for");
 
         
         // $quantity_period = 1;
@@ -100,11 +95,9 @@ class RecurrencySaleNoteCommand extends Command
         $record = DB::connection('tenant')->transaction(function () use ($sale_note) {
 
             // dd($sale_note->establishment);
-            Log::info("ini actu");
 
             $sale_note->apply_concurrency = true;
             $sale_note->update();
-            Log::info("end  actu");
     
             $replicate_sale_note = $sale_note->replicate();
 
@@ -131,7 +124,6 @@ class RecurrencySaleNoteCommand extends Command
             $replicate_sale_note->automatic_date_of_issue = $automatic_date_of_issue;
 
             $replicate_sale_note->save();
-            Log::info("guar cabecera");
 
             // dd($sale_note->items);
             
