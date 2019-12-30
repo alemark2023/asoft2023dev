@@ -8,15 +8,15 @@
                     
                         <div class="col-lg-6 col-md-6" >
                             <div class="form-group"> 
-                                <label class="control-label">Cliente
+                                <label class="control-label">Productos
                                 </label>
                                 
-                                <el-select v-model="form.person_id" filterable remote  popper-class="el-select-customers"  clearable
-                                    placeholder="Nombre o número de documento"
+                                <el-select v-model="form.item_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Código interno o nombre"
                                     :remote-method="searchRemotePersons"
                                     :loading="loading_search"
                                     @change="changePersons">
-                                    <el-option v-for="option in persons" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
  
                             </div>
@@ -140,8 +140,8 @@
         data () {
             return {
                 loading_submit:false,
-                persons: [],
-                all_persons: [],
+                items: [],
+                all_items: [],
                 loading_search:false,
                 columns: [],
                 records: [],
@@ -181,16 +181,12 @@
             await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
                     this.establishments = response.data.establishments;
-                    this.all_persons = response.data.persons
+                    this.all_items = response.data.items
                     this.document_types = response.data.document_types;
-                    // this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                 });
 
 
-            // await this.getRecords()
-            await this.filterPersons()
-            // await this.getTotals()
-            this.form.type_person = 'customers'
+            await this.filterItems()
 
         },
         methods: { 
@@ -204,24 +200,23 @@
                     this.loading_search = true
                     let parameters = `input=${input}`
                     
-                    this.form.type_person = 'customers'
 
-                    this.$http.get(`/reports/data-table/persons/${this.form.type_person}?${parameters}`)
+                    this.$http.get(`/reports/data-table/items/?${parameters}`)
                             .then(response => { 
-                                this.persons = response.data.persons
+                                this.items = response.data.items
                                 this.loading_search = false
                                 
-                                if(this.persons.length == 0){
-                                    this.filterPersons()
+                                if(this.items.length == 0){
+                                    this.filterItems()
                                 }
                             })  
                 } else {
-                    this.filterPersons()
+                    this.filterItems()
                 }
 
             },
-            filterPersons() { 
-                this.persons = this.all_persons
+            filterItems() { 
+                this.items = this.all_items
             }, 
             clickDownload(type) {                 
                 let query = queryString.stringify({
@@ -233,8 +228,7 @@
  
                 this.form = {
                     establishment_id: null,
-                    person_id: null,
-                    type_person:null,
+                    item_id: null,
                     document_type_id:null,
                     period: 'month',
                     date_start: moment().format('YYYY-MM-DD'),
@@ -264,8 +258,8 @@
             }, 
             async getRecordsByFilter(){
                 
-                if(!this.form.person_id){
-                    return this.$message.error('Debe seleccionar un cliente')
+                if(!this.form.item_id){
+                    return this.$message.error('Debe seleccionar un producto')
                 }
 
                 this.loading_submit = await true

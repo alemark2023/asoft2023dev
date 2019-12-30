@@ -5,13 +5,14 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
-use Modules\Report\Exports\CustomerExport;
+use Modules\Report\Exports\ItemExport;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
-use Modules\Report\Http\Resources\DocumentCollection;
+use Modules\Report\Http\Resources\ItemCollection;
 use Modules\Report\Traits\ReportTrait;
 
 
@@ -22,12 +23,10 @@ class ReportItemController extends Controller
     public function filter() {
 
         $document_types = [];
-
-        $persons = $this->getPersons('items');
-
+        $items = $this->getItems('items');
         $establishments = [];
 
-        return compact('document_types','establishments','persons');
+        return compact('document_types','establishments','items');
     }
 
 
@@ -38,9 +37,9 @@ class ReportItemController extends Controller
 
     public function records(Request $request)
     {
-        $records = $this->getRecordsItems($request->all(), Document::class);
+        $records = $this->getRecordsItems($request->all(), DocumentItem::class);
 
-        return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
+        return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
@@ -55,8 +54,7 @@ class ReportItemController extends Controller
         $date_end = $request['date_end'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
-        $person_id = $request['person_id'];
-        $type_person = $request['type_person'];
+        $item_id = $request['item_id'];
 
         $d_start = null;
         $d_end = null;
@@ -82,22 +80,25 @@ class ReportItemController extends Controller
                 break;
         }
 
-        $records = $this->dataItems($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model);
+        $records = $this->dataItems($document_type_id, $establishment_id, $d_start, $d_end, $item_id, $model);
 
         return $records;
 
     }
 
 
-    private function dataItems($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model)
+    private function dataItems($document_type_id, $establishment_id, $date_start, $date_end, $item_id, $model)
     {
 
-        $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
-                        ->where('customer_id', $person_id)
-                        ->whereIn('document_type_id', ['01','03'])
-                        ->whereIn('state_type_id', ['01','03','05','07','13'])
-                        ->latest()
-                        ->whereTypeUser();
+        $data = $model::where('item_id', $item_id)
+                        ->whereHas('document', function($query) use($date_start, $date_end){
+                            $query
+                            ->whereBetween('date_of_issue', [$date_start, $date_end])
+                            ->whereIn('document_type_id', ['01','03'])
+                            ->whereIn('state_type_id', ['01','03','05','07','13'])
+                            ->latest()
+                            ->whereTypeUser();
+                        });
 
         return $data;
 
@@ -110,13 +111,13 @@ class ReportItemController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
-        $records = $this->getRecordsItems($request->all(), Document::class)->get();
+        $records = $this->getRecordsItems($request->all(), DocumentItem::class)->get();
 
-        return (new CustomerExport)
+        return (new ItemExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->download('Reporte_Ventas_por_Cliente_'.Carbon::now().'.xlsx');
+                ->download('Reporte_Ventas_por_Producto_'.Carbon::now().'.xlsx');
 
     }
 }

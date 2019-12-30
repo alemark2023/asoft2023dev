@@ -148,7 +148,7 @@
                                     v-if="isClient && !row.send_server">Enviar Servidor</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickCheckOnline(row.id)"
-                                    v-if="isClient && row.send_server && (row.state_type_id === '01')">Consultar Servidor</button>
+                                    v-if="isClient && row.send_server && (row.state_type_id === '01' || row.state_type_id === '03')">Consultar Servidor</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>

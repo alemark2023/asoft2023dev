@@ -176,7 +176,7 @@ trait ReportTrait
 
     public function getItems(){
 
-        $items = Item::whereNotIsSet()->orderBy('name')->take(20)->get()->transform(function($row) {
+        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
@@ -188,20 +188,17 @@ trait ReportTrait
     }
 
 
-    public function getDataTableItems($type, $request) {
+    public function getDataTableItem($request) {
         
-        $items = Person::where('number','like', "%{$request->input}%")
-                            ->orWhere('name','like', "%{$request->input}%")
-                            ->orderBy('name')
-                            ->get()->transform(function($row) {
-                                return [
-                                    'id' => $row->id,
-                                    'description' => $row->number.' - '.$row->name,
-                                    'name' => $row->name,
-                                    'number' => $row->number,
-                                    'identity_document_type_id' => $row->identity_document_type_id,
-                                ];
-                            });
+        $items = Item::where('description','like', "%{$request->input}%")
+                        ->orWhere('internal_id','like', "%{$request->input}%") 
+                        ->orderBy('description')
+                        ->get()->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                            ];
+                        });
 
         return $items;
 

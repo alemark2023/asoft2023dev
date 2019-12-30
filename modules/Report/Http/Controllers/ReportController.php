@@ -23,4 +23,10 @@ class ReportController extends Controller
     }
 
  
+    public function dataTableItem(Request $request) {
+
+        $items = $this->getDataTableItem($request);
+
+        return compact('items');
+    }
 }
