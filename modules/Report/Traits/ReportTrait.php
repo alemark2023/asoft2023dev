@@ -8,6 +8,7 @@ use App\Models\Tenant\Document;
 use App\Models\Tenant\SaleNote;
 use Carbon\Carbon;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\Item;
  
 
 trait ReportTrait
@@ -170,6 +171,39 @@ trait ReportTrait
                             });
 
         return $persons;
+
+    }
+
+    public function getItems(){
+
+        $items = Item::whereNotIsSet()->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+            ];
+        });
+ 
+        return $items;
+
+    }
+
+
+    public function getDataTableItems($type, $request) {
+        
+        $items = Person::where('number','like', "%{$request->input}%")
+                            ->orWhere('name','like', "%{$request->input}%")
+                            ->orderBy('name')
+                            ->get()->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                    'name' => $row->name,
+                                    'number' => $row->number,
+                                    'identity_document_type_id' => $row->identity_document_type_id,
+                                ];
+                            });
+
+        return $items;
 
     }
 }
