@@ -41,7 +41,7 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 mt-4" v-if="form.item_id"> 
+                    <div class="col-md-6 mt-4" v-if="form.item_id && form.item.lots_enabled"> 
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
                     </div>
@@ -418,6 +418,11 @@
 
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
                 let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
+
+                if(this.form.item.lots_enabled){ 
+                    if(select_lots.length != this.form.quantity)
+                        return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
+                }
 
                 this.row.item.lots = un_select_lots
                 this.row.lots = select_lots

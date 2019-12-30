@@ -152,7 +152,7 @@ class PurchaseController extends Controller
 
     public function store(PurchaseRequest $request)
     {
-
+        
         //return 'asd';
         $data = self::convert($request);
         
@@ -357,6 +357,7 @@ class PurchaseController extends Controller
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'has_perception' => (bool) $row->has_perception,
+                        'lots_enabled' => (bool) $row->lots_enabled,
                         'percentage_perception' => $row->percentage_perception,
                         'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
                             return [

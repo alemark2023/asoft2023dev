@@ -30,7 +30,7 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4" v-if="type == 'input'">
+                    <div class="col-md-4" v-if="type == 'input' && form.lots_enabled">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 Código lote
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     
-                    <div class="col-md-4 mt-4" v-if="type == 'output' && form.item_id && form.warehouse_id"> 
+                    <div class="col-md-4 mt-4" v-if="type == 'output' && form.item_id && form.warehouse_id && form.lots_enabled"> 
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
                     </div> 
@@ -112,10 +112,14 @@
 
                     this.form.lots = []
                     let item = await _.find(this.items,{'id':this.form.item_id})
+                    this.form.lots_enabled = item.lots_enabled
                     let lots = await _.filter(item.lots,{'warehouse_id':this.form.warehouse_id})
                     // console.log(item)
                     this.form.lots = lots
 
+                }else{
+                    let item = await _.find(this.items,{'id':this.form.item_id})
+                    this.form.lots_enabled = item.lots_enabled
                 }
             },
             addRowOutputLot(lots){
@@ -140,6 +144,7 @@
                     quantity: null,
                     type: this.type,
                     lot_code:null,
+                    lots_enabled:false,
                     lots:[]
 
                 }
@@ -161,16 +166,20 @@
                 // if(this.form.quantity<0)
                 //     return this.$message.error('No puede ingresar cantidad negativa')
                 if(this.type == 'input'){
-
-                    if(this.form.lots.length>0){
-                        if(!this.form.lot_code){
-                            return this.$message.error('El campo código de lote es requerido');
-                        }
+ 
+                    if(this.form.lots_enabled){
+    
+                        if(!this.form.lot_code)
+                            return this.$message.error('Código de lote es requerido');
+                        
+                        if(this.form.lots.length != this.form.quantity)
+                            return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');
+    
                     }
 
                 }else{
 
-                    if(this.form.lots.length>0){
+                    if(this.form.lots.length>0 && this.form.lots_enabled){
 
                         let select_lots = await _.filter(this.form.lots, {'has_sale':true})
                         
