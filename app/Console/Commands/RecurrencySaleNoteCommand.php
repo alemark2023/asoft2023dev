@@ -47,7 +47,7 @@ class RecurrencySaleNoteCommand extends Command
 
         $today = Carbon::now()->format('Y-m-d');
 
-        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->lockForUpdate()->get();
+        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
 
         // dd($sale_notes->count());
 
