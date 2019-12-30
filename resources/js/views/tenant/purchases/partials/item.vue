@@ -51,11 +51,11 @@
                         </div>
                     </div>
                     <div class="col-md-6 mt-2" v-if="form.item_id">
-                        <div class="form-group" :class="{'has-danger': errors.lot_code}">
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}" v-if="form.item.lots_enabled">
                             <label class="control-label">
                                 Código lote
                             </label>
-                            <el-input v-model="form.lot_code" >
+                            <el-input v-model="lot_code" >
                                 <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
@@ -257,6 +257,7 @@
                 charge_types: [],
                 attribute_types: [],
                 use_price: 1,
+                lot_code: null,
                 change_affectation_igv_type_id: false,
             }
         },
@@ -314,6 +315,7 @@
 
                 this.item_unit_type = {};
                 this.lots = []
+                this.lot_code = null
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -396,10 +398,14 @@
             },
             async clickAddItem() {
 
-                if(this.lots.length>0){
-                    if(!this.form.lot_code){
-                        return this.$message.error('El campo código de lote es requerido');
-                    }
+                if(this.form.item.lots_enabled){
+ 
+                    if(!this.lot_code)
+                        return this.$message.error('Código de lote es requerido');
+                    
+                    if(this.lots.length != this.form.quantity)
+                        return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');
+ 
                 }
 
                 this.form.item.unit_price = this.form.unit_price
@@ -407,6 +413,7 @@
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
  
+                this.row.lot_code = await this.lot_code
                 this.row.lots = await this.lots
 
                 this.row = this.changeWarehouse(this.row)

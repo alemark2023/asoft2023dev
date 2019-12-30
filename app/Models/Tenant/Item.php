@@ -57,6 +57,7 @@ class Item extends ModelTenant
         'brand_id',
         'category_id',
         'lot_code',
+        'lots_enabled',
         // 'warehouse_id'
     ];
 

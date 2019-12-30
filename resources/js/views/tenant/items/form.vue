@@ -161,7 +161,20 @@
                         </div>
                     </div>
                     
-                    <div class="short-div col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ'">
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
+                        <div class="form-group" :class="{'has-danger': errors.stock_min}">
+                            <label class="control-label">Stock Mínimo</label>
+                            <el-input v-model="form.stock_min"></el-input>
+                            <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 center-el-checkbox" >
+                        <div class="form-group"  >
+                            <el-checkbox v-model="form.lots_enabled" @change="changeLotsEnabled">¿Maneja series o lotes?</el-checkbox><br>
+                        </div>
+                    </div>
+                    <div class="col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ' && form.lots_enabled">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
@@ -171,14 +184,6 @@
                                 <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
-                        <div class="form-group" :class="{'has-danger': errors.stock_min}">
-                            <label class="control-label">Stock Mínimo</label>
-                            <el-input v-model="form.stock_min"></el-input>
-                            <small class="form-control-feedback" v-if="errors.stock_min" v-text="errors.stock_min[0]"></small>
                         </div>
                     </div>
 
@@ -506,6 +511,14 @@
         },
 
         methods: {
+            changeLotsEnabled(){
+
+                // if(!this.form.lots_enabled){
+                //     this.form.lot_code = null
+                //     this.form.lots = []
+                // }
+
+            },
             addRowLot(lots){
                 this.form.lots = lots
             },
@@ -601,6 +614,7 @@
                     brand_id: null,
                     date_of_due:null,
                     lot_code:null,
+                    lots_enabled:false,
                     lots:[]
                 }
                 this.show_has_igv = true
@@ -680,17 +694,25 @@
 
                 if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
-            submit() {
+            async submit() {
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 // if(!this.has_percentage_perception) this.form.percentage_perception = null
                 
-                if(!this.recordId){
+                if(!this.recordId && this.form.lots_enabled){
+
                     if(this.form.lots.length > this.form.stock)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
+                    
+                    if(!this.form.lot_code)
+                        return this.$message.error('Código de lote es requerido');
+                    
+                    if(this.form.lots.length != this.form.stock)
+                        return this.$message.error('La cantidad de series registradas son diferentes al stock');
+
                 }
 
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form)
+                await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

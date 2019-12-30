@@ -52,7 +52,7 @@
         props: ['showDialog', 'lots', 'stock','recordId'],
         data() {
             return {
-                titleDialog: 'Lote',
+                titleDialog: 'Series',
                 loading: false,
                 errors: {},
                 form: {},

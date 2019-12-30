@@ -36,7 +36,7 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_new_id" v-text="errors.warehouse_new_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id"> 
+                    <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id && form.lots_enabled"> 
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
                     </div> 
@@ -98,6 +98,7 @@
                     quantity: null,
                     warehouse_new_id: null,
                     quantity_move: null,
+                    lots_enabled:false,
                     lots:[]
                 }
             },
@@ -111,7 +112,7 @@
             },
             async submit() {
                 
-                if(this.form.lots.length>0){
+                if(this.form.lots_enabled){
                     let select_lots = await _.filter(this.form.lots, {'has_sale':true})
                     if(select_lots.length != this.form.quantity_move){
                         return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
