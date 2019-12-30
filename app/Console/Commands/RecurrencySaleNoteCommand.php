@@ -48,7 +48,7 @@ class RecurrencySaleNoteCommand extends Command
         $today = Carbon::now()->format('Y-m-d');
 
         Log::info("iniciando consul");
-        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->get();
+        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
         Log::info("cant:".$sale_notes->count());
         Log::info("termin consul");
 
