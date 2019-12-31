@@ -44,38 +44,38 @@ class RecurrencySaleNoteCommand extends Command
     public function handle()
     { 
 
+        Log::info("Init recurrency transaction");
+
         DB::connection('tenant')->transaction(function () {
-        $today = Carbon::now()->format('Y-m-d');
 
-        Log::info("init query");
-        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
-        Log::info("quant: {$sale_notes->count()}");
-        Log::info("end query");
+            $today = Carbon::now()->format('Y-m-d');
 
-        // dd($sale_notes->count());
-        Log::info("init for");
+            $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
+            Log::info("quantity: {$sale_notes->count()}");
+            // Log::info("end query");
 
-        foreach ($sale_notes as $sale_note) {
-            Log::info("init create");
+            // dd($sale_notes->count());
+            // Log::info("init for");
 
-            $record = $this->createSaleNote($sale_note);
+            foreach ($sale_notes as $sale_note) {
+                // Log::info("init create");
 
-            if($record['success']){
+                $record = $this->createSaleNote($sale_note);
 
-                $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
-                Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
+                if($record['success']){
 
-            }else{
-                $this->info("La nota de venta no fué generada de forma automática"); 
+                    $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
+                    Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
+
+                }else{
+                    $this->info("La nota de venta no fué generada de forma automática"); 
+                }
+
+
             }
+        });
 
-
-        }
-        Log::info("end for");
-    });
-
-         
-
+        Log::info("End recurrency transaction");
 
     }
 
