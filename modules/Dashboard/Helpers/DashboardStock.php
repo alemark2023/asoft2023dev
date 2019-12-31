@@ -17,6 +17,7 @@ class DashboardStock
     {
         $products = ItemWarehouse::whereHas('item',function($query){
 
+                        $query->whereNotIsSet();
                         $query->where('status',true);
                         $query->where('unit_type_id','!=', 'ZZ');
                         

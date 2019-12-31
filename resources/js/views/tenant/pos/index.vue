@@ -192,23 +192,73 @@
           </div>
         </div>
         <div class="h-25 bg-light" style="overflow-y: auto">
-          <div class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-center">
-            <div class="col-6 text-center px-0">
-              <h4
-                class="font-weight-semibold text-blue m-0"
-              >{{currency_type.symbol}} {{ form.total_taxed }}</h4>
-              <h5 class="d-inline-flex m-0">
-                <span class="font-weight-semibold">Sub Total</span>
-              </h5>
+          <div class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2">
+
+            <div class="col-md-12" style="display: flex; flex-direction: column; align-items: flex-end;">
+              <table> 
+                  <tr v-if="form.total_exonerated > 0" class="font-weight-semibold  m-0">
+                      <td class="font-weight-semibold">OP.EXONERADAS</td>
+                      <td class="font-weight-semibold">:</td>
+                      <td class="text-right text-blue">{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
+                  </tr>
+                  <tr v-if="form.total_free > 0" class="font-weight-semibold  m-0">
+                      <td class="font-weight-semibold">OP.GRATUITAS</td>
+                      <td class="font-weight-semibold">:</td>
+                      <td class="text-right text-blue">{{ currency_type.symbol }} {{ form.total_free }}</td>
+                  </tr>
+                  <tr v-if="form.total_unaffected > 0" class="font-weight-semibold  m-0">
+                      <td class="font-weight-semibold">OP.INAFECTAS</td>
+                      <td class="font-weight-semibold">:</td>
+                      <td class="text-right text-blue">{{ currency_type.symbol }} {{ form.total_unaffected }}</td>
+                  </tr>
+                  <tr v-if="form.total_taxed > 0" class="font-weight-semibold  m-0">
+                      <td class="font-weight-semibold">OP.GRAVADA</td>
+                      <td class="font-weight-semibold">:</td>
+                      <td class="text-right text-blue">{{ currency_type.symbol }} {{ form.total_taxed }}</td>
+                  </tr>
+                  <tr v-if="form.total_igv > 0" class="font-weight-semibold  m-0">
+                      <td class="font-weight-semibold">IGV</td>
+                      <td class="font-weight-semibold">:</td>
+                      <td class="text-right text-blue">{{ currency_type.symbol }} {{ form.total_igv }}</td>
+                  </tr> 
+              </table> 
             </div>
-            <div class="col-6 text-center px-0">
-              <h4
-                class="font-weight-semibold text-blue m-0"
-              >{{currency_type.symbol}} {{form.total_igv}}</h4>
-              <h5 class="d-inline-flex m-0">
-                <span class="font-weight-semibold">IGV</span>
-              </h5>
+
+            <!-- <div class="col-12 text-right px-0" v-if="form.total_taxed > 0">
+              <h4 class="font-weight-semibold  m-0">
+                <span class="font-weight-semibold">OP.GRAVADA: </span>
+                <span class="text-blue">{{currency_type.symbol}} {{ form.total_taxed }}</span>
+              </h4> 
             </div>
+
+            <div class="col-12 text-right px-0" v-if="form.total_free > 0">
+              <h4 class="font-weight-semibold  m-0">
+                <span class="font-weight-semibold">OP.GRATUITAS: </span>
+                <span class="text-blue">{{currency_type.symbol}} {{ form.total_free }}</span>
+              </h4> 
+            </div> 
+
+            <div class="col-12 text-right px-0" v-if="form.total_unaffected > 0">
+              <h4 class="font-weight-semibold  m-0">
+                <span class="font-weight-semibold">OP.INAFECTAS: </span>
+                <span class="text-blue">{{currency_type.symbol}} {{ form.total_unaffected }}</span>
+              </h4> 
+            </div>
+             
+            <div class="col-12 text-right px-0" v-if="form.total_exonerated > 0">
+              <h4 class="font-weight-semibold  m-0">
+                <span class="font-weight-semibold">OP.EXONERADAS: </span>
+                <span class="text-blue">{{currency_type.symbol}} {{ form.total_exonerated }}</span>
+              </h4> 
+            </div>
+            
+            <div class="col-12 text-right px-0" v-if="form.total_igv > 0">
+              <h4 class="font-weight-semibold  m-0">
+                <span class="font-weight-semibold">IGV: </span>
+                <span class="text-blue">{{currency_type.symbol}} {{form.total_igv}}</span>
+              </h4> 
+            </div> -->
+
           </div>
           <div
             class="row text-white m-0 p-0 h-50 d-flex align-items-center"
@@ -698,55 +748,58 @@
           },
 
           calculateTotal() {
-            let total_discount = 0;
-            let total_charge = 0;
-            let total_exportation = 0;
-            let total_taxed = 0;
-            let total_exonerated = 0;
-            let total_unaffected = 0;
-            let total_free = 0;
-            let total_igv = 0;
-            let total_value = 0;
-            let total = 0;
-            this.form.items.forEach(row => {
-              total_discount += parseFloat(row.total_discount);
-              total_charge += parseFloat(row.total_charge);
+                let total_discount = 0;
+                let total_charge = 0;
+                let total_exportation = 0;
+                let total_taxed = 0;
+                let total_exonerated = 0;
+                let total_unaffected = 0;
+                let total_free = 0;
+                let total_igv = 0;
+                let total_value = 0;
+                let total = 0;
+                this.form.items.forEach(row => {
+                  total_discount += parseFloat(row.total_discount);
+                  total_charge += parseFloat(row.total_charge);
 
-              if (row.affectation_igv_type_id === "10") {
-                total_taxed += parseFloat(row.total_value);
-              }
-              if (row.affectation_igv_type_id === "20") {
-                total_exonerated += parseFloat(row.total_value);
-              }
-              if (row.affectation_igv_type_id === "30") {
-                total_unaffected += parseFloat(row.total_value);
-              }
-              if (row.affectation_igv_type_id === "40") {
-                total_exportation += parseFloat(row.total_value);
-              }
-              if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
-                total_free += parseFloat(row.total_value);
-              }
-              if (
-                ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
-              ) {
-                total_igv += parseFloat(row.total_igv);
-                total += parseFloat(row.total);
-              }
-              total_value += parseFloat(row.total_value);
-            });
+                  if (row.affectation_igv_type_id === "10") {
+                    total_taxed += parseFloat(row.total_value);
+                  }
+                  if (row.affectation_igv_type_id === "20") {
+                    total_exonerated += parseFloat(row.total_value);
+                  }
+                  if (row.affectation_igv_type_id === "30") {
+                    total_unaffected += parseFloat(row.total_value);
+                  }
+                  if (row.affectation_igv_type_id === "40") {
+                    total_exportation += parseFloat(row.total_value);
+                  }
+                  if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
+                    total_free += parseFloat(row.total_value);
+                  }
+                  if (
+                    ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
+                  ) {
+                    total_igv += parseFloat(row.total_igv);
+                    total += parseFloat(row.total);
+                  }
+                  total_value += parseFloat(row.total_value);
+                });
 
-            this.form.total_exportation = _.round(total_exportation, 2);
-            this.form.total_exonerated = _.round(total_exonerated, 2);
-            this.form.total_taxed =
-              _.round(total_taxed, 2) + this.form.total_exonerated;
-            // this.form.total_exonerated = _.round(total_exonerated, 2)
-            this.form.total_unaffected = _.round(total_unaffected, 2);
-            this.form.total_free = _.round(total_free, 2);
-            this.form.total_igv = _.round(total_igv, 2);
-            this.form.total_value = _.round(total_value, 2);
-            this.form.total_taxes = _.round(total_igv, 2);
-            this.form.total = _.round(total, 2);
+                this.form.total_exportation = _.round(total_exportation, 2);
+                this.form.total_exonerated = _.round(total_exonerated, 2);
+                this.form.total_taxed = _.round(total_taxed, 2)
+                this.form.total_exonerated = _.round(total_exonerated, 2)
+
+                // this.form.total_taxed =
+                //   _.round(total_taxed, 2) + this.form.total_exonerated;
+                // this.form.total_exonerated = _.round(total_exonerated, 2)
+                this.form.total_unaffected = _.round(total_unaffected, 2);
+                this.form.total_free = _.round(total_free, 2);
+                this.form.total_igv = _.round(total_igv, 2);
+                this.form.total_value = _.round(total_value, 2);
+                this.form.total_taxes = _.round(total_igv, 2);
+                this.form.total = _.round(total, 2);
           },
           changeDateOfIssue() {
             // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
