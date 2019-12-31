@@ -44,14 +44,14 @@ class RecurrencySaleNoteCommand extends Command
     public function handle()
     { 
 
-        Log::info("Init recurrency transaction");
+        // Log::info("Init recurrency transaction");
 
         DB::connection('tenant')->transaction(function () {
 
             $today = Carbon::now()->format('Y-m-d');
 
             $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
-            Log::info("quantity: {$sale_notes->count()}");
+            // Log::info("quantity: {$sale_notes->count()}");
             // Log::info("end query");
 
             // dd($sale_notes->count());
@@ -75,7 +75,7 @@ class RecurrencySaleNoteCommand extends Command
             }
         });
 
-        Log::info("End recurrency transaction");
+        // Log::info("End recurrency transaction");
 
     }
 
