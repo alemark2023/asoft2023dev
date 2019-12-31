@@ -44,47 +44,38 @@ class RecurrencySaleNoteCommand extends Command
     public function handle()
     { 
 
+        // Log::info("Init recurrency transaction");
 
-        $today = Carbon::now()->format('Y-m-d');
+        DB::connection('tenant')->transaction(function () {
 
-        $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->get();
+            $today = Carbon::now()->format('Y-m-d');
 
-        // dd($sale_notes->count());
+            $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
+            // Log::info("quantity: {$sale_notes->count()}");
+            // Log::info("end query");
 
-        foreach ($sale_notes as $sale_note) {
+            // dd($sale_notes->count());
+            // Log::info("init for");
 
-            $record = $this->createSaleNote($sale_note);
+            foreach ($sale_notes as $sale_note) {
+                // Log::info("init create");
 
-            if($record['success']){
+                $record = $this->createSaleNote($sale_note);
 
-                $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
-                Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
+                if($record['success']){
 
-            }else{
-                $this->info("La nota de venta no fué generada de forma automática"); 
+                    $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
+                    Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
+
+                }else{
+                    $this->info("La nota de venta no fué generada de forma automática"); 
+                }
+
+
             }
+        });
 
-
-        }
-
-        
-        // $quantity_period = 1;
-        // $type_period = 'month';
-        // $type_period = 'year';
-        // $add_period_date = ($type_period == 'month') ? $sale_note->date_of_issue->addMonths($quantity_period): $sale_note->date_of_issue->addYears($quantity_period);
-        // $today = Carbon::now();
-        // $this->info($add_period_date); 
-        // $this->info($add_period_date->diffIndays($today)); 
-        // if($add_period_date->diffIndays($today) == 0){
-        //     $record = $this->createSaleNote($sale_note);
-        //     if($record['success']){
-        //         $this->info("La nota de venta: {$record['record']->identifier} fue generada de forma automática"); 
-        //         Log::info("La nota de venta: {$record['record']->identifier} fue generada de forma automática");
-        //     }else{
-        //         $this->info("La nota de venta no fué generada de forma automática"); 
-        //     }
-        // }
-
+        // Log::info("End recurrency transaction");
 
     }
 
