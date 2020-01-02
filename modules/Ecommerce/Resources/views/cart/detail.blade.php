@@ -509,7 +509,7 @@
                     "total_operaciones_gratuitas": 0.00,
                     "total_igv": this.aux_totals.total_igv,
                     "total_impuestos": this.aux_totals.total_igv,
-                    "total_valor": this.aux_totals.total_taxed,
+                    "total_valor": this.aux_totals.total_value,
                     "total_venta": this.aux_totals.total
                 }
 
@@ -572,7 +572,7 @@
                             "codigo_tipo_precio": "01",
                             "precio_unitario": sale_unit_price,
                             "codigo_tipo_afectacion_igv": "20",
-                            "total_base_igv": 0,
+                            "total_base_igv": total_val,
                             "porcentaje_igv": percentage_igv,
                             "total_igv": 0,
                             "total_impuestos": 0,
@@ -646,6 +646,7 @@
                     tax: '0.0',
                     total: '0.0',
                     total_taxed: '0.0',
+                    total_value: '0.0',
                     total_exonerated: '0.0',
                     total_igv: '0.0'
                 }
@@ -655,6 +656,7 @@
 
                 let subtotal = 0.00
                 let total_taxed = 0
+                let total_value = 0
                 let total_exonerated = 0
                 let total_igv = 0
                 let total = 0
@@ -676,6 +678,7 @@
                         total_exonerated += parseFloat(unit_value)
                     }
 
+                    total_value = total_taxed + total_exonerated
                     total += parseFloat(unit_price)
                 })
 
@@ -684,6 +687,7 @@
                 this.summary.total_taxed = total_taxed.toFixed(2)
                 this.summary.total_exonerated = total_exonerated.toFixed(2)
                 this.summary.total_igv = total_igv.toFixed(2)
+                this.summary.total_value = total_value.toFixed(2)
                 this.summary.total = total.toFixed(2)
                 this.aux_totals = this.summary
                 // console.log(this.summary)
