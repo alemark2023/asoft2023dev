@@ -78,7 +78,7 @@
  <header class="header">
 
      <div class="header-middle">
-         <div  id="header_bar" class="container">
+         <div   class="container">
              <div class="header-left">
                  <a href="{{ route("tenant.ecommerce.index") }}" class="logo" style="max-width: 180px">
                     @if($information->logo)
@@ -89,7 +89,7 @@
                  </a>
              </div><!-- End .header-left -->
 
-             <div class="header-center header-dropdowns">
+             <div id="header_bar" class="header-center header-dropdowns">
 
                  <div class="header-dropdown" style="min-width:400px;">
 
