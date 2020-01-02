@@ -54,7 +54,7 @@ class PosController extends Controller
                                     'currency_type_id' => $row->currency_type_id,
                                     'internal_id' => $row->internal_id,
                                     'currency_type_symbol' => $row->currency_type->symbol,
-                                    'sale_unit_price' => $row->sale_unit_price,
+                                    'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
                                     'purchase_unit_price' => $row->purchase_unit_price,
                                     'unit_type_id' => $row->unit_type_id,
                                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -64,8 +64,8 @@ class PosController extends Controller
                                     'edit_unit_price' => false,
                                     'has_igv' => (bool) $row->has_igv,
                                     'aux_quantity' => 1,
-                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
-                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
+                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
 
                                 ];
@@ -135,7 +135,7 @@ class PosController extends Controller
                                     'currency_type_id' => $row->currency_type_id,
                                     'internal_id' => $row->internal_id,
                                     'currency_type_symbol' => $row->currency_type->symbol,
-                                    'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
+                                    'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
                                     'purchase_unit_price' => $row->purchase_unit_price,
                                     'unit_type_id' => $row->unit_type_id,
                                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -145,8 +145,8 @@ class PosController extends Controller
                                     'is_set' => (bool) $row->is_set,
                                     'edit_unit_price' => false,
                                     'aux_quantity' => 1,
-                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
-                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity),
+                                    'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                                    'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
                                     'warehouses' => collect($row->warehouses)->transform(function($row) {
                                         return [
