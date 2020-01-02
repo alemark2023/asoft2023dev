@@ -33,7 +33,7 @@ class PosController extends Controller
 
     public function search_items(Request $request)
     {
-
+        $configuration =  Configuration::first();
 
         $items = Item::where('description','like', "%{$request->input_item}%")
                             ->orWhere('internal_id','like', "%{$request->input_item}%")
