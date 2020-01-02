@@ -60,6 +60,7 @@ class SaleNote extends ModelTenant
 
     protected $casts = [
         'date_of_issue' => 'date',
+        'automatic_date_of_issue' => 'date',
     ];
 
     public function getEstablishmentAttribute($value)
