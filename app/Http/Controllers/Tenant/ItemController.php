@@ -191,7 +191,9 @@ class ItemController extends Controller
             // $item->lots()->delete();
             $warehouse = WarehouseModule::find(auth()->user()->establishment_id);
 
-            foreach ($request->lots as $lot) {
+            $v_lots = isset($request->lots) ? $request->lots:[];
+            
+            foreach ($v_lots as $lot) {
                 
                 // $item->lots()->create($lot);
                 $item->lots()->create([
