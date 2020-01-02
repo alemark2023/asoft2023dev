@@ -63,16 +63,7 @@
         <div class="cart-summary">
             <h3>Resumen</h3>
             <table class="table table-totals">
-                <tbody>
-                    <!-- <tr>
-                        <td>Subtotal</td>
-                        <td>S/ @{{summary.subtotal}}</td>
-                    </tr>
-
-                    <tr>
-                        <td>IGV</td>
-                        <td>S/ @{{summary.tax}}</td>
-                    </tr> -->
+                <tbody> 
                     
                     <tr v-if="summary.total_exonerated > 0">
                         <td>OP.EXONERADAS</td>
