@@ -79,6 +79,7 @@ if ($hostname) {
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
+            Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');

@@ -37,6 +37,13 @@
                             </div>
                         </div>
 
+                         <div class="col-md-4 mt-4" v-if="typeUser != 'integrator'">
+                            <label class="control-label">Impuesto bolsa plástica</label>
+                            <div class="form-group" :class="{'has-danger': errors.amount_plastic_bag_taxes}">
+                                <el-input-number v-model="form.amount_plastic_bag_taxes" @change="changeAmountPlasticBagTaxes" :precision="2" :step="0.1" :max="0.5" :min="0.1"></el-input-number>
+                                <small class="form-control-feedback" v-if="errors.amount_plastic_bag_taxes" v-text="errors.amount_plastic_bag_taxes[0]"></small>
+                            </div>
+                        </div>
                         <!-- <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Cuenta contable venta subtotal</label>
                             <div class="form-group" :class="{'has-danger': errors.subtotal_account}">
@@ -81,7 +88,8 @@
                     id: null,
                     sunat_alternate_server: false,
                     subtotal_account:null,
-                    decimal_quantity: null
+                    decimal_quantity: null,
+                    amount_plastic_bag_taxes: 0.1,
                 };
             },
             submit() {
@@ -104,7 +112,28 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
-            }
+            },
+            changeAmountPlasticBagTaxes() {
+                this.loading_submit = true;
+
+                this.$http.post(`/${this.resource}/icbper`, this.form).then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                    }
+                    else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    }
+                    else {
+                        console.log(error);
+                    }
+                }).then(() => {
+                    this.loading_submit = false;
+                });
+            },
         }
     }
 </script>
