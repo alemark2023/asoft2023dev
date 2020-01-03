@@ -328,6 +328,14 @@ class ItemController extends Controller
     public function visibleStore(Request $request)
     {
         $item = Item::find($request->id);
+
+        if(!$item->internal_id && $request->apply_store){
+            return [
+                'success' => false,
+                'message' =>'Para habilitar la visibilidad, debe asignar un codigo interno al producto',
+            ];
+        }
+
         $visible = $request->apply_store == true ? 1 : 0 ;
         $item->apply_store = $visible;
         $item->save();
