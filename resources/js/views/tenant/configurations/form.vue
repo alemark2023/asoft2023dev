@@ -8,7 +8,7 @@
                 <div class="form-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <label class="control-label">Reenvio de Facturas autssomático</label>
+                            <label class="control-label">Reenvio de Facturas automático</label>
                             <div class="form-group" :class="{'has-danger': errors.send_auto}">
                                 <el-switch v-model="form.send_auto" active-text="Si" inactive-text="No" @change="submit"></el-switch>
                                 <small class="form-control-feedback" v-if="errors.send_auto" v-text="errors.send_auto[0]"></small>
