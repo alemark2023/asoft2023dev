@@ -11,7 +11,7 @@ class FeaturedProductsViewComposer
 {
     public function compose($view)
     {
-        $view->items = Item::where('apply_store', 1)->get()->transform(function($row, $key){
+        $view->items = Item::where([['apply_store', 1], ['internal_id','!=', null]])->get()->transform(function($row, $key){
             return (object)[
                 'id' => $row->id,
                 'internal_id' => $row->internal_id,
