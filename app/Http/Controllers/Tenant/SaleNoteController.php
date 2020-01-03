@@ -72,7 +72,7 @@ class SaleNoteController extends Controller
     {
         $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
                             ->whereTypeUser()
-                            ->latest();
+                            ->latest('id');
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
     }
