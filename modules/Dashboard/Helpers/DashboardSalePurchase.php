@@ -254,7 +254,7 @@ class DashboardSalePurchase
 
             if($item && $difference > 0){
                 $items_by_sales->push([
-                    'total' => number_format($difference,2),
+                    'total' => number_format($difference, 2, ".", ""),
                     'description' => $item->description,
                     'internal_id' => $item->internal_id,
                 ]);    
