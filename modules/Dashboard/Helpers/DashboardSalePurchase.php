@@ -101,7 +101,7 @@ class DashboardSalePurchase
 
             if($difference > 0)
                 $top_customers->push([
-                    'total' => number_format($difference,2),
+                    'total' => number_format($difference,2, ".", ""),
                     'name' => $customer->name,
                     'number' => $customer->number,
                 ]);    
