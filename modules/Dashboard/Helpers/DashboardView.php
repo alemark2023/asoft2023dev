@@ -70,7 +70,7 @@ class DashboardView
                     $join->on('documents.id', '=', 'payments.document_id');
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
-                // ->whereIn('document_type_id', ['01','03','08'])
+                ->whereIn('document_type_id', ['01','03','08'])
                 ->select(DB::raw("documents.id as id, ".
                                     "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                                     "persons.name as customer_name, persons.id as customer_id, documents.document_type_id,".
@@ -90,7 +90,7 @@ class DashboardView
                     $join->on('documents.id', '=', 'payments.document_id');
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
-                // ->whereIn('document_type_id', ['01','03','08'])
+                ->whereIn('document_type_id', ['01','03','08'])
                 ->select(DB::raw("documents.id as id, ".
                                     "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
                                     "persons.name as customer_name, persons.id as customer_id, documents.document_type_id, ".
@@ -207,8 +207,8 @@ class DashboardView
                     'customer_name' => $row->customer_name,
                     'customer_id' => $row->customer_id,
                     'number_full' => $row->number_full,
-                    'total' => number_format((float) $row->total,2),
-                    'total_to_pay' => number_format($total_to_pay,2),
+                    'total' => number_format((float) $row->total,2, ".", ""),
+                    'total_to_pay' => number_format($total_to_pay,2, ".", ""),
                     'type' => $row->type,
                     'guides' => $guides,
                     'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,

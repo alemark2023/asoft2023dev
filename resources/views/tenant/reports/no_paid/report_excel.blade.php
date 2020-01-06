@@ -57,15 +57,17 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
-                            <tr>
-                                <td class="celda">{{$loop->iteration}}</td>
-                                <td class="celda">{{$value['date_of_issue']}}</td>
-                                <td class="celda">{{$value['number_full']}}</td>
+                                @if($value['total_to_pay'] > 0)
+                                    <tr>
+                                        <td class="celda">{{$loop->iteration}}</td>
+                                        <td class="celda">{{$value['date_of_issue']}}</td>
+                                        <td class="celda">{{$value['number_full']}}</td>
 
-                                <td class="celda">{{$value['customer_name']}}</td>
-                                <td class="celda">{{$value['total_to_pay']}}</td>
-                                <td class="celda">{{$value['total']}}</td>
-                            </tr>
+                                        <td class="celda">{{$value['customer_name']}}</td>
+                                        <td class="celda">{{$value['total_to_pay']}}</td>
+                                        <td class="celda">{{$value['total']}}</td>
+                                    </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
