@@ -63,8 +63,8 @@
         <div class="cart-summary">
             <h3>Resumen</h3>
             <table class="table table-totals">
-                <tbody> 
-                    
+                <tbody>
+
                     <tr v-if="summary.total_exonerated > 0">
                         <td>OP.EXONERADAS</td>
                         <td>S/ @{{ summary.total_exonerated }}</td>
@@ -72,11 +72,11 @@
                     <tr v-if="summary.total_taxed > 0">
                         <td>OP.GRAVADA</td>
                         <td>S/ @{{ summary.total_taxed }}</td>
-                    </tr> 
+                    </tr>
                     <tr v-if="summary.total_igv > 0">
                         <td>IGV</td>
                         <td>S/ @{{ summary.total_igv }}</td>
-                    </tr> 
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr>
@@ -542,11 +542,11 @@
                             "total_valor_item": total_val,
                             "total_item": total
                         }
-                        
+
                     }
 
                     if (item.sale_affectation_igv_type_id === '20') {
-                        
+
                         unit_value = parseFloat(item.sale_unit_price)
                         total_igv = 0
                         total = (parseFloat(item.cantidad) * parseFloat(item.sale_unit_price))
@@ -570,10 +570,10 @@
                             "total_valor_item": total_val,
                             "total_item": total
                         }
-                        
+
                     }
 
-                }) 
+                })
 
                 return rec
             },
@@ -631,7 +631,7 @@
                 this.records = []
                 localStorage.setItem('products_cart', JSON.stringify([]))
                 // this.calculateSummary()
-                
+
                 this.summary = {
                     subtotal: '0.0',
                     tax: '0.0',
@@ -659,7 +659,7 @@
                     let unit_price = item.sub_total
                     let unit_value = unit_price
                     let percentage_igv = 18
- 
+
                     if (item.sale_affectation_igv_type_id === '10') {
                         unit_value = item.sub_total / (1 + percentage_igv / 100)
                         total_taxed += parseFloat(unit_value)
@@ -682,13 +682,13 @@
                 this.summary.total = total.toFixed(2)
                 this.aux_totals = this.summary
                 // console.log(this.summary)
- 
+
 
                 $("#total_amount").data('total', this.summary.total);
 
                 this.payment_cash.amount = this.summary.total;
-                
-                // let x = 
+
+                // let x =
                 // console.log(x)
 
                 // let subtotal = 0.00

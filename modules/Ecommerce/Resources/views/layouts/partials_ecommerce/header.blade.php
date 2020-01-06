@@ -153,16 +153,6 @@
              this.getItems()
          },
          methods: {
-            /*whatsap(num)
-            {
-                //console.log(num)
-                let message= 'Hola'
-                let message_ = message.split(" ").join("%20");
-
-                console.log(message_)
-
-                window.open(`https://wa.me/51${num}/?text=${message_}`, "_system");
-            },**/
              autoComplete() {
                  if (this.value) {
                     let val = this.value.toUpperCase()
@@ -173,7 +163,7 @@
                     })
 
                  } else {
-                     this.results = [] //this.suggestions
+                     this.results = []
                  }
              },
              getItems() {
@@ -183,13 +173,10 @@
                          return response.json();
                      })
                      .then(function (myJson) {
-                         // console.log(myJson.data);
-                         contex.suggestions = myJson.data
-                        // contex.results = contex.suggestions
+                        contex.suggestions = myJson.data
                      });
              },
              suggestionClick(item) {
-                 console.log(item)
                  this.results = []
                  this.value = item.description
              }
