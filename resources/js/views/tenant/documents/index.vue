@@ -49,6 +49,7 @@
                         <th class="text-right">T.Gravado</th>
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
+                        <th class="text-center">Saldo</th>
                         <th class="text-center"></th>
                         <th class="text-center">Descargas</th>
                         <!--<th class="text-center">Anulación</th>-->
@@ -95,6 +96,7 @@
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
+                        <td class="text-right">{{ row.balance }}</td>
                         <td class="text-center">
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickPayment(row.id)">Pagos</button>

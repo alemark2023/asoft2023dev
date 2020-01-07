@@ -94,6 +94,11 @@
                             </el-select> 
                         </div>
                     </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 mt-4">
+                        <div class="form-group"  > 
+                            <el-checkbox v-model="search.pending_payment" >PEND. DE PAGO</el-checkbox>
+                        </div>
+                    </div>
                     <div class="col-lg-4 col-md-4 col-md-4 col-sm-12" style="margin-top:29px"> 
                         <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
                         <el-button class="submit" type="info" @click.prevent="cleanInputs"  icon="el-icon-delete" >Limpiar </el-button>
@@ -161,7 +166,7 @@
                 establishments: [],
                 series: [],                
                 activePanel:0,
-                see_more:false,
+                see_more:true,
                 pickerOptionsDates: {
                     disabledDate: (time) => {
                         time = moment(time).format('YYYY-MM-DD')
@@ -206,6 +211,7 @@
                     number:null, 
                     d_start:null, 
                     d_end:null, 
+                    pending_payment:false,
                 }
             },
             changeDocumentType(){                
