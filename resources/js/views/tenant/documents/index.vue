@@ -35,6 +35,7 @@
                         <th>#</th>
                         <th>SOAP</th>
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.date_of_due.visible">Fecha Vencimiento</th>
                         <th>Cliente</th>
                         <th>Número</th>
                         <th v-if="columns.notes.visible">Notas C/D</th>
@@ -57,6 +58,7 @@
                         <td>{{ index }}</td>
                         <td>{{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center" v-if="columns.date_of_due.visible">{{ row.date_of_due }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
@@ -219,6 +221,10 @@
                     },
                     total_exonerated: {
                         title: 'T.Exonerado',
+                        visible: false
+                    },
+                    date_of_due: {
+                        title: 'F. Vencimiento',
                         visible: false
                     },
                 }
