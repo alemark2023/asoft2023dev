@@ -77,7 +77,7 @@ class LockedEmissionProvider extends ServiceProvider
 
             if($configuration->locked_users &&  $configuration->plan->limit_users !== 0){
 
-                if($quantity_users > $configuration->plan->limit_users )
+                if($quantity_users >= $configuration->plan->limit_users )
                 {
                     throw new Exception("Ha superado el límite permitido para la creación de usuarios");
                 }
