@@ -97,13 +97,37 @@ trait TotalsTrait
                                            ->where('changed', false)->get();
         }
 
-        $sale_note_total = collect($sale_notes)->sum('total');
+        
+        //PEN
+        $sale_note_total_pen = 0;
+        $sale_note_total_payment_pen = 0;
 
-        $sale_note_total_payment = 0;
+        $sale_note_total_pen = collect($sale_notes->where('currency_type_id', 'PEN'))->sum('total');
+
+        //USD
+        $sale_note_total_usd = 0;
+        $sale_note_total_payment_usd = 0;
+
+        //TWO CURRENCY
         foreach ($sale_notes as $sale_note)
         {
-            $sale_note_total_payment += collect($sale_note->payments)->sum('payment');
+            
+            if($sale_note->currency_type_id == 'PEN'){
+ 
+                $sale_note_total_payment_pen += collect($sale_note->payments)->sum('payment');
+    
+            }else{
+
+                $sale_note_total_usd += $sale_note->total * $sale_note->exchange_rate_sale;
+                $sale_note_total_payment_usd += collect($sale_note->payments)->sum('payment') * $sale_note->exchange_rate_sale;
+                
+            }
         }
+
+        //TOTALS
+        $sale_note_total = $sale_note_total_pen + $sale_note_total_usd;
+        $sale_note_total_payment = $sale_note_total_payment_pen + $sale_note_total_payment_usd;
+
 
         return [
             'totals' => [
@@ -122,18 +146,53 @@ trait TotalsTrait
         }else{
             $documents = Document::query()->where('establishment_id', $establishment_id)->get();
         }
-        $document_total = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->sum('total');
 
-        $document_total_note_credit = 0;
-        $document_total_payment = 0;
+        //PEN
+        $document_total_pen = 0;
+        $document_total_payment_pen = 0;
+        $document_total_note_credit_pen = 0;
 
+        $document_total_pen = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->where('currency_type_id', 'PEN')->sum('total');
+
+        //USD
+        $document_total_usd = 0;
+        $document_total_note_credit_usd = 0;
+        $document_total_payment_usd = 0;
+
+        $documents_usd = $documents->whereIn('state_type_id', ['01','03','05','07','13'])
+                                    ->whereIn('document_type_id', ['01','03','08'])
+                                    ->where('currency_type_id', 'USD');
+
+        foreach ($documents_usd as $dusd) {
+            $document_total_usd += $dusd->total * $dusd->exchange_rate_sale;
+        }
+
+        //TWO CURRENCY
+        
         foreach ($documents as $document)
         {
-            if(in_array($document->state_type_id,['01','03','05','07','13']))
-                $document_total_payment += collect($document->payments)->sum('payment');
+            if($document->currency_type_id == 'PEN'){
 
-            $document_total_note_credit += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
+                if(in_array($document->state_type_id,['01','03','05','07','13']))
+                    $document_total_payment_pen += collect($document->payments)->sum('payment');
+    
+                $document_total_note_credit_pen += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
+            
+            }else{
+                
+                if(in_array($document->state_type_id,['01','03','05','07','13']))
+                    $document_total_payment_usd += collect($document->payments)->sum('payment') * $document->exchange_rate_sale;
+
+                $document_total_note_credit_usd += ($document->document_type_id == '07') ? $document->total * $document->exchange_rate_sale:0; //nota de credito
+                
+            }
+
         }
+
+        //TOTALS
+        $document_total = $document_total_pen + $document_total_usd;
+        $document_total_note_credit = $document_total_note_credit_pen + $document_total_note_credit_usd;
+        $document_total_payment = $document_total_payment_pen + $document_total_payment_usd;
 
         $document_total = round(($document_total - $document_total_note_credit),2);
 
