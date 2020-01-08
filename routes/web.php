@@ -266,7 +266,7 @@ if ($hostname) {
             Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
             Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
             Route::get('dispatches/records', 'Tenant\DispatchController@records');
-            Route::get('dispatches/create/{document?}', 'Tenant\DispatchController@create');
+            Route::get('dispatches/create/{document?}/{dispatch?}', 'Tenant\DispatchController@create');
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
 
@@ -438,6 +438,7 @@ if ($hostname) {
             // Route::get('sale-notes/print/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
             // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
+            Route::get('sale-notes/dispatches', 'Tenant\SaleNoteController@dispatches');
 
             // Route::get('reports/sale-notes', 'Tenant\ReportSaleNoteController@index')->name('tenant.reports.sale_note.index');
             // Route::get('reports/sale-notes/search', 'Tenant\ReportSaleNoteController@search')->name('tenant.reports.sale_note.search');

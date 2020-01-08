@@ -338,7 +338,7 @@
     import Items from './items.vue';
 
     export default {
-        props: ['document'],
+        props: ['document', 'dispatch'],
         components: {PersonForm, Items},
         data() {
             return {
@@ -410,6 +410,25 @@
                 this.document.customer.district_id
             ]
             this.form.delivery.address = this.document.customer.address
+
+            if(this.dispatch){
+
+                this.form.transfer_reason_description = this.dispatch.transfer_reason_description
+                this.form.unit_type_id = this.dispatch.unit_type_id
+                this.form.total_weight = this.dispatch.total_weight
+                this.form.packages_number = this.dispatch.packages_number
+                this.form.observations = this.dispatch.observations
+
+                this.form.origin.address = (!this.document.establishment.address || this.document.establishment.address == '-') ? this.dispatch.origin.address:this.document.establishment.address
+                this.form.delivery.address = (!this.document.customer.address || this.document.customer.address == '-') ?  this.dispatch.delivery.address:this.document.customer.address
+            
+                this.form.dispatcher = this.dispatch.dispatcher
+                this.form.driver = this.dispatch.driver
+                this.form.license_plate = this.dispatch.license_plate
+
+            }
+
+            // console.log(this.dispatch)
             this.changeEstablishment()
         },
         methods: {
@@ -435,6 +454,7 @@
                     total_weight: 0,
                     packages_number: null,
                     container_number: null,
+                    license_plate: null,
                     dispatcher: {
                         identity_document_type_id: null
                     },

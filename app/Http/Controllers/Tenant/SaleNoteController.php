@@ -22,6 +22,7 @@ use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Dispatch;
 use App\Http\Requests\Tenant\SaleNoteRequest;
 use App\Models\Tenant\Warehouse;
 use Illuminate\Support\Str;
@@ -475,5 +476,18 @@ class SaleNoteController extends Controller
     }
 
 
+    public function dispatches()
+    {
+        $dispatches = Dispatch::latest()->get(['id','series','number'])->transform(function($row) {
+            return [
+                'id' => $row->id, 
+                'series' => $row->series, 
+                'number' => $row->number, 
+                'number_full' => "{$row->series}-{$row->number}",
+            ];
+        }); ;
+        
+        return $dispatches;
+    }
  
 }

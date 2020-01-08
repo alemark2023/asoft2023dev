@@ -46,7 +46,9 @@
                             <tr>
                                 <td class="celda">{{$loop->iteration}}</td>
                                 <td class="celda">{{$value->ruc}}</td>
-                                <td class="celda">{{$value->date }}</td>
+                                <td class="celda"> 
+                                    {{$value->date}}
+                                </td>
                                 <td class="celda">{{$value->invoice }}</td>
                                 <td class="celda">{{$value->comercial_name }}</td>
 
@@ -56,7 +58,7 @@
                                 <td class="celda">{{$value->total }}</td>
 
                                 @for ($i = 0; $i < $payment_count; $i++)
-                                    <td class="celda">{{  ( isset($value->payments[$i]) ) ?  number_format($value->payments[$i]->payment, 2) : '' }}</td>
+                                    <td class="celda">{{  ( isset($value->payments[$i]) ) ?  number_format($value->payments[$i]->payment, 2, ".", "") : '' }}</td>
                                 @endfor
 
                                 <td  class="celda">{{$value->balance }} </td>

@@ -676,12 +676,14 @@ class DocumentController extends Controller
 
                 'id' => $row->id,
                 'ruc' => $row->customer->number,
-                'date' =>  $row->date_of_issue->format('Y-m-d'),
+                // 'date' =>  $row->date_of_issue->format('Y-m-d'),
+                // 'date' =>  $row->date_of_issue,
+                'date' =>  $row->date_of_issue->format('d/m/Y'),
                 'invoice' => $row->number_full,
                 'comercial_name' => $row->customer->trade_name,
                 'business_name' => $row->customer->name,
                 'zone' => $row->customer->department->description,
-                'total' => number_format($row->total, 2),
+                'total' => number_format($row->total, 2, ".",""),
 
                 'payments' => $row->payments,
 
@@ -705,7 +707,7 @@ class DocumentController extends Controller
     public function report_payments()
     {
 
-        $records = Document::where('document_type_id', '01')->get();
+        $records = Document::get();
 
         $source =  $this->transformReportPayment( $records );
 

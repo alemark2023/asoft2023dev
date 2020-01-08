@@ -53,7 +53,7 @@ class DispatchController extends Controller
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
     }
      
-    public function create($document_id = null)
+    public function create($document_id = null, $dispatch_id = null)
     {
         $document = Document::find($document_id);
 
@@ -61,7 +61,9 @@ class DispatchController extends Controller
             return view('tenant.dispatches.create');
         }
 
-        return view('tenant.dispatches.form', compact('document'));
+        $dispatch = Dispatch::find($dispatch_id);
+
+        return view('tenant.dispatches.form', compact('document', 'dispatch'));
     }
 
     
