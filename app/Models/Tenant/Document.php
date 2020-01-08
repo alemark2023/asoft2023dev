@@ -72,6 +72,7 @@ class Document extends ModelTenant
         'success_shipping_status',
         'success_sunat_shipping_status',
         'success_query_status',
+        'total_canceled',
 
     ];
 

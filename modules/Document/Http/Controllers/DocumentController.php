@@ -44,6 +44,7 @@ class DocumentController extends Controller
         $number = $request->number;
         $series = $request->series;
         $state_type_id = $request->state_type_id;
+        $pending_payment = ($request->pending_payment == "true") ? true:false;
  
 
         if($d_start && $d_end){
@@ -69,6 +70,12 @@ class DocumentController extends Controller
                             ->latest();
         }        
 
+        if($pending_payment){ 
+
+            $records = $records->where('total_canceled', false);
+
+        }
+        
         return $records;
 
     }

@@ -166,7 +166,7 @@
                 establishments: [],
                 series: [],                
                 activePanel:0,
-                see_more:true,
+                see_more:false,
                 pickerOptionsDates: {
                     disabledDate: (time) => {
                         time = moment(time).format('YYYY-MM-DD')

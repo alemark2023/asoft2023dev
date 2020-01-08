@@ -604,7 +604,7 @@ class DocumentController extends Controller
         $state_type_id = $request->state_type_id;
         $number = $request->number;
         $series = $request->series;
-        $pending_payment = $request->pending_payment;
+        $pending_payment = ($request->pending_payment == "true") ? true:false;
 
 
         if($d_start && $d_end){
@@ -627,16 +627,14 @@ class DocumentController extends Controller
                             ->whereTypeUser()
                             ->latest();
         }
+        
+        if($pending_payment){ 
 
-        // if($pending_payment){
-        //     // dd($records);
-        //     $records = $records->whereHas('payments', function($q){
-        //         return ($q->sum('payment') != $q->payment->document->total);
-        //     });
-        // }
+            $records = $records->where('total_canceled', false);
+
+        }
 
         return $records;
-
     }
 
     public function data_table()
