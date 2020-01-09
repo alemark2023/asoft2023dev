@@ -464,8 +464,28 @@
                 if(!this.form.percentage_perception) this.has_percentage_perception = false
             })
 
+            this.$eventHub.$on('reloadTables', ()=>{
+                this.reloadTables()
+            })
         },
         methods: {
+            async reloadTables(){
+
+                await this.$http.get(`/${this.resource}/tables`)
+                    .then(response => {
+                        this.unit_types = response.data.unit_types
+                        this.accounts = response.data.accounts
+                        this.currency_types = response.data.currency_types
+                        this.system_isc_types = response.data.system_isc_types
+                        this.affectation_igv_types = response.data.affectation_igv_types
+                        this.warehouses = response.data.warehouses
+                        this.categories = response.data.categories
+                        this.brands = response.data.brands
+
+                        this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
+                        this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
+                    })
+            },
             changeHaveAccount(){
                 if(!this.have_account) this.form.account_id = null
             },
