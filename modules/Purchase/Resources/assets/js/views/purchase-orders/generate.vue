@@ -147,10 +147,10 @@
                                                     <div v-if="currency_type.symbol" class="input-group-prepend">
                                                         <span class="input-group-text" id="basic-addon1">{{ currency_type.symbol }}</span>
                                                     </div>
-                                                    <input v-model="row.unit_price" @change="inputUnitPrice(index)" type="number" min="0" class="form-control" aria-label="Precio Unitario" aria-describedby="basic-addon1">
+                                                    <input v-model="row.unit_price" @change="inputUnitPrice(index)" type="number" min="0" step='0.01' class="form-control" aria-label="Precio Unitario" aria-describedby="basic-addon1">
                                                 </div>
                                             </td>
-                                            <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
+                                            <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                             <!-- <td class="text-right">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
@@ -652,7 +652,7 @@
                     })
             },
             close() {
-                location.href = '/purchases'
+                location.href = '/purchase-orders'
             },
             reloadDataSuppliers(supplier_id) {
 
