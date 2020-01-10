@@ -40,7 +40,7 @@
  
 
     export default { 
-        props:['showDialog', 'warehouses'],
+        props:['showDialog', 'warehouses', 'isUpdateWarehouseId'],
         data() {
             return {
                 showImportDialog: false,
@@ -55,8 +55,18 @@
             // console.log(this.typeUser)
         },
         methods: {
-            create(){
-
+            async create(){
+                // console.log(this.isUpdateWarehouseId)
+                
+                if(this.isUpdateWarehouseId){
+                    await this.warehouses.forEach((it) => {
+                        if(it.warehouse_id == this.isUpdateWarehouseId){
+                            it.checked = true
+                        }else{
+                            it.checked = false
+                        }
+                    });
+                }
             },
             async changeWarehouse(index){
 

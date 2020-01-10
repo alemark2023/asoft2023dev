@@ -409,6 +409,7 @@
 
         <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
+                :isUpdateWarehouseId="isUpdateWarehouseId"
                 :warehouses="warehousesDetail">
             </warehouses-detail>
     </el-dialog>
@@ -456,6 +457,7 @@
                 warehousesDetail:[],
                 showListStock:false,
                 search_item_by_barcode:false,
+                isUpdateWarehouseId:null,
                 //item_unit_type: {}
             }
         },
@@ -559,8 +561,11 @@
                     this.form.quantity = this.recordItem.quantity
                     this.form.unit_price_value = this.recordItem.input_unit_price_value
                     this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
-
+                    this.form.warehouse_id = this.recordItem.warehouse_id
+                    this.isUpdateWarehouseId = this.recordItem.warehouse_id
                     this.calculateQuantity()
+                }else{
+                    this.isUpdateWarehouseId = null
                 }
 
             },
@@ -635,14 +640,15 @@
                 this.cleanTotalItem();
                 this.showListStock = true
                 
-                console.log(this.recordItem)
-                // if (!this.recordItem) {
-                //     await this.form.item.warehouses.forEach(element => {
-                //         if(element.checked){
-                //             this.form.warehouse_id = element.warehouse_id
-                //         }
-                //     });
-                // }
+                // console.log(this.recordItem)
+                if (!this.recordItem) {
+                    await this.form.item.warehouses.forEach(element => {
+                        if(element.checked){
+                            this.form.warehouse_id = element.warehouse_id
+                        }
+                    });
+                }
+
                 //this.item_unit_types = this.form.item.item_unit_types;
                 //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
             },
@@ -675,7 +681,7 @@
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
 
-                console.log(this.form)
+                // console.log(this.form)
                 // return
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
                // this.row.edit = false;
