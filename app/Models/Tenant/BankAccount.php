@@ -18,6 +18,7 @@ class BankAccount extends ModelTenant
         'description',
         'number',
         'currency_type_id',
+        'cci',
         'status'
     ];
 
