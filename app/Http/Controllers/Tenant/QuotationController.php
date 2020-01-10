@@ -410,6 +410,7 @@ class QuotationController extends Controller
     }
     
     public function createPdf($quotation = null, $format_pdf = null, $filename = null) {
+        ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
         
