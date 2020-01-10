@@ -25,7 +25,7 @@
                         <p><strong>Fecha: </strong></p>
                     </td>
                     <td align="center">
-                        <p><strong>{{date('Y-m-d')}}</strong></p>
+                        <p><strong>{{date('d/m/Y')}}</strong></p>
                     </td>
                 </tr>
                 <tr>
@@ -62,7 +62,7 @@
                             @foreach($records as $key => $value)
                             <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
-                                    <td class="celda">{{$value->created_at}}</td>
+                                    <td class="celda">{{$value->created_at->format('d/m/Y H:i')}}</td>
                                     <td class="celda">
 
                                         @switch($value->inventory_kardexable_type)
@@ -107,13 +107,13 @@
 
                                         @switch($value->inventory_kardexable_type)
                                             @case($models[0])
-                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('d/m/Y') : '' }}
                                                 @break
                                             @case($models[1])
-                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('d/m/Y') : '' }}
                                                 @break
                                             @case($models[2])
-                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('d/m/Y') : '' }}
                                                 @break
                                             @case($models[3])
                                                 {{"-"}}                                                 
@@ -195,7 +195,7 @@
                                     @php                             
                                         $balance += $value->quantity;   
                                     @endphp
-                                    <td class="celda">{{number_format($balance, 4)}}</td>
+                                    <td class="celda">{{number_format($balance, 4, ".", "")}}</td>
                                 </tr>
                             @endforeach
                         </tbody>

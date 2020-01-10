@@ -46,6 +46,7 @@ use Modules\BusinessTurn\Models\BusinessTurn;
 use App\Exports\PaymentExport;
 use Carbon\Carbon;
 use App\Traits\OfflineTrait;
+use Modules\Inventory\Models\Warehouse as InventoryWarehouse;
 
 
 class DocumentController extends Controller
@@ -228,8 +229,12 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
+            
+            $current_warehouse = InventoryWarehouse::where('establishment_id',auth()->user()->establishment_id)->first();
+            $warehouse_id = ($current_warehouse) ? $current_warehouse->id : null;
+
             $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
-            return collect($items)->transform(function($row) {
+            return collect($items)->transform(function($row) use($warehouse_id){
                 $full_description = $this->getFullDescription($row);
                 return [
                     'id' => $row->id,
@@ -259,10 +264,12 @@ class DocumentController extends Controller
                             'price_default' => $row->price_default,
                         ];
                     }),
-                    'warehouses' => collect($row->warehouses)->transform(function($row) {
+                    'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
                         return [
                             'warehouse_description' => $row->warehouse->description,
                             'stock' => $row->stock,
+                            'warehouse_id' => $row->warehouse_id,
+                            'checked' => ($row->warehouse_id == $warehouse_id) ? true : false,
                         ];
                     })
                 ];

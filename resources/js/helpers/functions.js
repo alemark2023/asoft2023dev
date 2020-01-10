@@ -7,6 +7,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // } else {
     //     unit_price = parseFloat(row_old.item.unit_price) * 1.18
     // }
+    let warehouse_id = row_old.warehouse_id
 
     // console.log(row_old)
 
@@ -84,7 +85,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         total: 0,
         attributes: row_old.attributes,
         charges: row_old.charges,
-        discounts: row_old.discounts
+        discounts: row_old.discounts,
+        warehouse_id: warehouse_id,
     };
 
     let percentage_igv = 18

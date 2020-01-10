@@ -424,7 +424,7 @@
 
     import ItemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
-    import WarehousesDetail from '../../items/partials/warehouses.vue'
+    import WarehousesDetail from './select_warehouses.vue'
 
     export default {
         props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
@@ -478,6 +478,11 @@
             this.$eventHub.$on('reloadDataItems', (item_id) => {
                 this.reloadDataItems(item_id)
             })
+
+            this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
+                // console.log(warehouse_id)
+                this.form.warehouse_id = warehouse_id
+            })
         },
         methods: {
             filterMethod(query){
@@ -491,6 +496,10 @@
                 // console.log(item)
             },
             clickWarehouseDetail(){
+                
+                if(!this.form.item_id){
+                    return this.$message.error('Seleccione un item');
+                }
 
                 let item = _.find(this.items, {'id': this.form.item_id});
 
@@ -523,7 +532,8 @@
                     attributes: [],
                     has_igv: null,
                     item_unit_types: [],
-                    has_plastic_bag_taxes:false
+                    has_plastic_bag_taxes:false,
+                    warehouse_id:null,
                 };
 
                 this.activePanel = 0;
@@ -613,7 +623,7 @@
                 this.initForm()
                 this.$emit('update:showDialog', false)
             },
-            changeItem() {
+            async changeItem() {
 
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
@@ -624,7 +634,15 @@
                 this.form.quantity = 1;
                 this.cleanTotalItem();
                 this.showListStock = true
-
+                
+                console.log(this.recordItem)
+                // if (!this.recordItem) {
+                //     await this.form.item.warehouses.forEach(element => {
+                //         if(element.checked){
+                //             this.form.warehouse_id = element.warehouse_id
+                //         }
+                //     });
+                // }
                 //this.item_unit_types = this.form.item.item_unit_types;
                 //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
             },
@@ -657,6 +675,8 @@
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
 
+                console.log(this.form)
+                // return
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
                // this.row.edit = false;
                 this.initForm();
