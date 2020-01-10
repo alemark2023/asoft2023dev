@@ -994,6 +994,7 @@
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+                        this.$eventHub.$emit('reloadDataItems', null)
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;

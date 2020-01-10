@@ -641,13 +641,13 @@
                 this.showListStock = true
                 
                 // console.log(this.recordItem)
-                if (!this.recordItem) {
-                    await this.form.item.warehouses.forEach(element => {
-                        if(element.checked){
-                            this.form.warehouse_id = element.warehouse_id
-                        }
-                    });
-                }
+                // if (!this.recordItem) {
+                //     await this.form.item.warehouses.forEach(element => {
+                //         if(element.checked){
+                //             this.form.warehouse_id = element.warehouse_id
+                //         }
+                //     });
+                // }
 
                 //this.item_unit_types = this.form.item.item_unit_types;
                 //(this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
@@ -716,7 +716,7 @@
                 this.$http.get(`/${this.resource}/table/items`).then((response) => {
                     this.items = response.data
                     this.form.item_id = item_id
-                    this.changeItem()
+                    if(item_id) this.changeItem()
                     // this.filterItems()
                 })
             },
