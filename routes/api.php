@@ -12,7 +12,7 @@ if ($hostname) {
             Route::get('document/customers', 'Tenant\Api\MobileController@customers');
             Route::post('document/email', 'Tenant\Api\MobileController@document_email');
             Route::post('sale-note', 'Tenant\Api\SaleNoteController@store');
-            Route::get('sale-note/lists', 'Tenant\Api\SaleNoteController@store');
+            Route::get('sale-note/lists', 'Tenant\Api\SaleNoteController@lists');
 
             Route::post('documents', 'Tenant\Api\DocumentController@store');
             Route::get('documents/lists', 'Tenant\Api\DocumentController@lists');
