@@ -95,8 +95,8 @@ class SaleNoteController extends Controller
                 $this->sale_note->payments()->create($row);
             }*/
 
-           // $this->setFilename();
-           // $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
+            $this->setFilename();
+            $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
 
         });
 
@@ -104,6 +104,7 @@ class SaleNoteController extends Controller
             'success' => true,
             'data' => [
                 'id' => $this->sale_note->id,
+                'number' => $this->sale_note->number_full,
             ],
         ];
 
