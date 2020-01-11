@@ -50,6 +50,12 @@ class SaleNoteController extends Controller
     protected $sale_note;
     protected $company;
 
+    public function lists()
+    {
+        $record = SaleNote::all();
+        $records = new SaleNoteCollection($record);
+        return $records;
+    }
 
     public function store(SaleNoteRequest $request)
     {
@@ -349,6 +355,7 @@ class SaleNoteController extends Controller
     {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
+
 
 
 }
