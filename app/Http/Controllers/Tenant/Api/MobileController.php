@@ -136,6 +136,8 @@ class MobileController extends Controller
         $row->image = 'imagen-no-disponible.jpg';
         $row->save();
 
+        $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+        
         return [
             'success' => true,
             'msg' => 'Producto registrado con éxito',
