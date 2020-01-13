@@ -47,7 +47,8 @@
                 resource: 'items',
                 recordId: null,
                 titleDialog: 'Almacenes/Stock',
-                my_warehouses:[]
+                my_warehouses:[],
+                warehouse_id:null,
 
             }
         },
@@ -56,6 +57,8 @@
         },
         methods: {
             async create(){
+
+                this.warehouse_id = null
                 // console.log(this.isUpdateWarehouseId)
                 
                 if(this.isUpdateWarehouseId){
@@ -77,22 +80,27 @@
                     }
                 });
 
+                await this.selectWarehouseId()
             },
-            async close() {
-
-                let warehouse_id = null
+            async selectWarehouseId(){
 
                 await this.warehouses.forEach((it, ind) => {
                     if(it.checked){
-                        warehouse_id = it.warehouse_id
+                        this.warehouse_id = it.warehouse_id
                     }
                 });
 
-                if(!warehouse_id)
+            },
+            async close() {
+
+                await this.selectWarehouseId()
+
+                if(!this.warehouse_id)
                     return this.$message.error('Debe seleccionar un almacén');
 
-                await this.$eventHub.$emit('selectWarehouseId', warehouse_id) 
+                await this.$eventHub.$emit('selectWarehouseId', this.warehouse_id) 
                 await this.$emit('update:showDialog', false)
+                
             },
         }
     }
