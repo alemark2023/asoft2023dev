@@ -133,9 +133,8 @@ class MobileController extends Controller
         $row->item_type_id = '01';
         $row->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
         $row->fill($request->all());
+        $item->image = 'imagen-no-disponible.jpg';
         $row->save();
-
-
 
         return [
             'success' => true,
