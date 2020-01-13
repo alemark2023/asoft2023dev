@@ -27,6 +27,9 @@
 
                                 <th>Razon Social</th>
                                 <th>Zona</th>
+                                <th>Tipo de cliente</th>
+                                <th>Departamento</th>
+                                <th>Distrito</th>
                                 <th class="">Total Factura</th>
 
                                 @for ($i = 1; $i <= $payment_count; $i++)
@@ -55,6 +58,9 @@
 
                                 <td class="celda">{{$value->business_name }}</td>
                                 <td class="celda">{{$value->zone }}</td>
+                                <td class="celda">{{$value->person_type }}</td>
+                                <td class="celda">{{$value->department }}</td>
+                                <td class="celda">{{$value->district }}</td>
                                 <td class="celda">{{$value->total }}</td>
 
                                 @for ($i = 0; $i < $payment_count; $i++)

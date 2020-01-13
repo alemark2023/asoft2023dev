@@ -24,7 +24,7 @@
                                         <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                                     </el-select>
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
-                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                        <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
@@ -43,7 +43,7 @@
                                         <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                                     </el-select>
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
-                                        <el-button  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                        <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
@@ -430,7 +430,7 @@
     import WarehousesDetail from './select_warehouses.vue'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
         components: {ItemForm, WarehousesDetail},
         data() {
             return {

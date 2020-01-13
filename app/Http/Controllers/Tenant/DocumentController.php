@@ -46,6 +46,7 @@ use App\Imports\DocumentsImportTwoFormat;
 use Maatwebsite\Excel\Excel;
 use Modules\BusinessTurn\Models\BusinessTurn;
 use App\Exports\PaymentExport;
+use Modules\Item\Models\Category;
 use Carbon\Carbon;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
@@ -627,6 +628,8 @@ class DocumentController extends Controller
         $series = $request->series;
         $pending_payment = ($request->pending_payment == "true") ? true:false;
         $customer_id = $request->customer_id;
+        $item_id = $request->item_id;
+        $category_id = $request->category_id;
 
 
         if($d_start && $d_end){
@@ -658,6 +661,21 @@ class DocumentController extends Controller
             $records = $records->where('customer_id', $customer_id);
         }
 
+        if($item_id){
+            $records = $records->whereHas('items', function($query) use($item_id){
+                                    $query->where('item_id', $item_id);
+                                });
+        }
+ 
+        if($category_id){
+
+            $records = $records->whereHas('items', function($query) use($category_id){
+                                    $query->whereHas('relation_item', function($q) use($category_id){
+                                        $q->where('category_id', $category_id);
+                                    });
+                                });
+        }
+
         return $records;
     }
 
@@ -665,16 +683,48 @@ class DocumentController extends Controller
     {
 
         $customers = $this->table('customers');
-        // $customers = [];
+        $items = $this->getItems();
+        $categories = Category::orderBy('name')->get();
         $state_types = StateType::get();
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
-        // $series = Series::where('contingency', false)->whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
 
-        return compact( 'customers', 'document_types','series','establishments', 'state_types');
+        return compact( 'customers', 'document_types','series','establishments', 'state_types', 'items', 'categories');
 
     }
+
+    
+    public function getItems(){
+
+        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+            ];
+        });
+ 
+        return $items;
+
+    }
+
+
+    public function getDataTableItem(Request $request) {
+        
+        $items = Item::where('description','like', "%{$request->input}%")
+                        ->orWhere('internal_id','like', "%{$request->input}%") 
+                        ->orderBy('description')
+                        ->get()->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                            ];
+                        });
+
+        return $items;
+
+    }
+
 
     private function updateMaxCountPayments($value)
     {
@@ -717,6 +767,9 @@ class DocumentController extends Controller
                 'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '', */
 
                 'balance' => $total_difference,
+                'person_type' => $row->person->person_type->description,
+                'department' => $row->customer->department->description,
+                'district' => $row->customer->district->description,
 
                 /*'reference1' => ( isset($row->payments[0]) ) ?  $row->payments[0]->reference : '',
                 'reference2' =>  ( isset($row->payments[1]) ) ?  $row->payments[1]->reference : '',

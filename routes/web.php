@@ -219,6 +219,7 @@ if ($hostname) {
 
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
+            Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level');
