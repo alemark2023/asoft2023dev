@@ -33,14 +33,14 @@ Además puede realizar sus pruebas usando [Postman Collection](https://drive.goo
 
 ## ADMIN
 
-Visite el siguiente enlace: [Sistema](https://eversys.xyz "Clic")
+Visite el siguiente enlace: [Sistema](https://facturador.pro "Clic")
 <br>
 Usuario: admin@gmail.com<br>
 Contraseña: 123456
 
 ## DEMO
 
-Visite el siguiente enlace: [Sistema](https://demo.eversys.xyz "Clic")
+Visite el siguiente enlace: [Sistema](https://demo.facturador.pro "Clic")
 <br>
 Usuario: demo@gmail.com<br>
 Contraseña: 123456
@@ -89,3 +89,6 @@ Manual - Restauración de Mysql|Docker: [Guía](https://docs.google.com/document
 Linux - Eliminar temporales: [Guía](https://docs.google.com/document/d/17-9F9xrQepGfSkZIiCcty-B0GAjeJnN5KO8p0rOBYxY/edit?usp=sharing "Clic")<br>
 Linux - Eliminar archivos por extensión: [Guía](https://docs.google.com/document/d/1M1s6EYF7sA89JccrXh7d_UhLB367F7Kk41yKCpSIzdo/edit#heading=h.ghi3ru1xdrna "Clic")<br>
 
+## Scripts de instalacion con Docker
+
+Linux - Ubuntu 18 - Docker - SSL opcional: [script](https://gist.github.com/rashArt/bf5dac2f8f67edcebfd71f47417f2cba "Clic")<br>

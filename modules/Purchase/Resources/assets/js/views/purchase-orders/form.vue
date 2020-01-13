@@ -681,7 +681,7 @@
                     })
             },
             close() {
-                location.href = '/purchases'
+                location.href = '/purchase-orders'
             },
             reloadDataSuppliers(supplier_id) {
 

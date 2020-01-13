@@ -166,15 +166,19 @@ class PurchaseController extends Controller
                 $p_item->purchase_id = $doc->id;
                 $p_item->save();  
 
-                foreach ($row['lots'] as $lot){
+                if(array_key_exists('lots', $row)){
 
-                    $p_item->lots()->create([
-                        'date' => $lot['date'],
-                        'series' => $lot['series'],
-                        'item_id' => $row['item_id'],
-                        'warehouse_id' => $row['warehouse_id'],
-                        'has_sale' => false
-                    ]);
+                    foreach ($row['lots'] as $lot){
+    
+                        $p_item->lots()->create([
+                            'date' => $lot['date'],
+                            'series' => $lot['series'],
+                            'item_id' => $row['item_id'],
+                            'warehouse_id' => $row['warehouse_id'],
+                            'has_sale' => false
+                        ]);
+    
+                    }
 
                 }
 
@@ -240,18 +244,20 @@ class PurchaseController extends Controller
                 $p_item->purchase_id = $doc->id;
                 $p_item->save();  
 
-                foreach ($row['lots'] as $lot){
+                if(array_key_exists('lots', $row)){
 
-                    $p_item->lots()->create([
-                        'date' => $lot['date'],
-                        'series' => $lot['series'],
-                        'item_id' => $row['item_id'],
-                        'warehouse_id' => $row['warehouse_id'],
-                        'has_sale' => false
-                    ]);
+                    foreach ($row['lots'] as $lot){
 
+                        $p_item->lots()->create([
+                            'date' => $lot['date'],
+                            'series' => $lot['series'],
+                            'item_id' => $row['item_id'],
+                            'warehouse_id' => $row['warehouse_id'],
+                            'has_sale' => false
+                        ]);
+
+                    }
                 }
-
             }
 
             

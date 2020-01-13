@@ -11,6 +11,7 @@
                         <th>#</th>
                         <th>Descripción</th>
                         <th class="text-right">Número</th>
+                        <!-- <th class="text-right">CCI</th> -->
                         <th class="text-right">Acciones</th>
                     </tr>
                     </thead>
@@ -19,6 +20,7 @@
                         <td>{{ index + 1 }}</td>
                         <td>{{ row.description }}</td>
                         <td class="text-right">{{ row.number }}</td>
+                        <!-- <td class="text-right">{{ row.cci }}</td> -->
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
 
