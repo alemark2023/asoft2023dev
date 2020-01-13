@@ -24,6 +24,9 @@
                     <i class="fa fa-receipt"></i>
                 </button>
             </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-4" v-if="form.image_detraction">
+                <a :href="`${this.form.image_detraction}`" download class="text-center font-weight-bold text-dark">Descargar constancia de pago - detracción</a>
+            </div>
         </div>
         <!-- <div class="row mt-4">
             <div class="col-lg-6 col-md-6 col-sm-12 text-center">
@@ -94,6 +97,7 @@
                     download_pdf: null,
                     external_id: null,
                     number: null,
+                    image_detraction: null,
                     id: null
                 };
                 this.locked_emission = {
@@ -108,7 +112,7 @@
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data;
                     this.titleDialog = 'Comprobante: '+this.form.number;
-                    if(this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/${this.dispatchId}`)
+                    if(this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/i/${this.dispatchId}`)
                 });
 
                 await this.$http.get(`/${this.resource}/locked_emission`).then(response => {
@@ -118,6 +122,9 @@
             },
             clickPrint(format){
                 window.open(`/print/document/${this.form.external_id}/${format}`, '_blank');
+            },
+            clickDownloadImage() {
+                window.open(`${this.form.image_detraction}`, '_blank');
             },
             clickDownload(format) {
                 window.open(`${this.form.download_pdf}/${format}`, '_blank');

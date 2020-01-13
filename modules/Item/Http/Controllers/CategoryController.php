@@ -5,19 +5,19 @@ namespace Modules\Item\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Modules\Item\Models\Category; 
+use Modules\Item\Models\Category;
 use Modules\Item\Http\Resources\CategoryCollection;
 use Modules\Item\Http\Resources\CategoryResource;
-use Modules\Item\Http\Requests\CategoryRequest; 
+use Modules\Item\Http\Requests\CategoryRequest;
 
 class CategoryController extends Controller
 {
-     
+
     public function index()
     {
         return view('item::categories.index');
     }
- 
+
 
     public function columns()
     {
@@ -33,7 +33,7 @@ class CategoryController extends Controller
 
         return new CategoryCollection($records->paginate(config('tenant.items_per_page')));
     }
- 
+
 
     public function record($id)
     {
@@ -48,21 +48,23 @@ class CategoryController extends Controller
         $category = Category::firstOrNew(['id' => $id]);
         $category->fill($request->all());
         $category->save();
-  
+
 
         return [
             'success' => true,
             'message' => ($id)?'Categoría editada con éxito':'Categoría registrada con éxito',
+            'data' => $category
+
         ];
- 
+
     }
- 
+
     public function destroy($id)
     {
-        try {            
-            
+        try {
+
             $category = Category::findOrFail($id);
-            $category->delete(); 
+            $category->delete();
 
             return [
                 'success' => true,
@@ -74,10 +76,10 @@ class CategoryController extends Controller
             return ($e->getCode() == '23000') ? ['success' => false,'message' => "La categoría esta siendo usada por otros registros, no puede eliminar"] : ['success' => false,'message' => "Error inesperado, no se pudo eliminar la categoría"];
 
         }
-        
+
     }
 
- 
 
-    
+
+
 }

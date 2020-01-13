@@ -13,6 +13,9 @@ use App\Models\Tenant\Summary;
 use App\Models\Tenant\Voided;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Configuration;
+use Modules\Expense\Models\Expense;
+use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Purchase\Models\PurchaseQuotation;
 
 class OptionController extends Controller
 {
@@ -25,7 +28,11 @@ class OptionController extends Controller
     {
         Summary::where('soap_type_id', '01')->delete();
         Voided::where('soap_type_id', '01')->delete();
+        
         Purchase::where('soap_type_id', '01')->delete();
+        
+        PurchaseOrder::where('soap_type_id', '01')->delete();
+        PurchaseQuotation::where('soap_type_id', '01')->delete();
 
         $quantity = Document::where('soap_type_id', '01')->count();
 
@@ -39,6 +46,7 @@ class OptionController extends Controller
         Perception::where('soap_type_id', '01')->delete();
         SaleNote::where('soap_type_id', '01')->delete();
         Quotation::where('soap_type_id', '01')->delete();
+        Expense::where('soap_type_id', '01')->delete();
 
         return [
             'success' => true,

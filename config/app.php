@@ -166,8 +166,8 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
 
         App\Providers\KardexServiceProvider::class,
-        App\Providers\AnulationServiceProvider::class,        
-        
+        App\Providers\AnulationServiceProvider::class,
+
         App\Providers\InventoryKardexServiceProvider::class,
         App\Providers\InventoryAnulationServiceProvider::class,
         App\Providers\InventoryServiceProvider::class,
@@ -176,6 +176,10 @@ return [
         App\Providers\DocumentPaymentProvider::class,
 
         Intervention\Image\ImageServiceProvider::class,
+
+        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
+
+        App\Providers\CashServiceProvider::class,
 
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 

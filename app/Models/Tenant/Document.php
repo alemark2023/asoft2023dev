@@ -271,6 +271,11 @@ class Document extends ModelTenant
         return $this->belongsTo(Quotation::class);
     }
 
+    public function sale_note()
+    {
+        return $this->belongsTo(SaleNote::class, 'sale_note_id');
+    }
+
     public function hotel()
     {
         return $this->hasOne(DocumentHotel::class);
@@ -328,6 +333,11 @@ class Document extends ModelTenant
     public function reference_guides()
     {
         return $this->hasMany(Dispatch::class, 'reference_document_id', 'id');
+    }
+
+    public function summary_document()
+    {
+        return $this->hasOne(SummaryDocument::class);
     }
 
 }

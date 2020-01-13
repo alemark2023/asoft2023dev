@@ -294,9 +294,11 @@ class Facturalo
             $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $perception       = $this->document->perception != '' ? '10' : '0';
+            $detraction       = $this->document->detraction != '' ? '50' : '0';
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
+            $document_payments     = count($this->document->payments);
 
             $extra_by_item_description = 0;
             $discount_global = 0;
@@ -316,6 +318,7 @@ class Facturalo
                     $width,
                     120 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
+                    ($document_payments * 8) +
                     ($discount_global * 3) +
                     $company_name +
                     $company_address +
@@ -334,6 +337,7 @@ class Facturalo
                     $total_discount +
                     $was_deducted_prepayment +
                     $customer_department_id+
+                    $detraction+
                     $total_plastic_bag_taxes],
                 'margin_top' => 0,
                 'margin_right' => 1,

@@ -2,13 +2,15 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Tenant\Person;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Purchase\Models\PurchaseOrder;
 
 class Purchase extends ModelTenant
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'];
 
@@ -58,6 +60,7 @@ class Purchase extends ModelTenant
         'detraction',
         'legends',
         'date_of_due',
+        'purchase_order_id',
 
     ];
 
@@ -174,7 +177,7 @@ class Purchase extends ModelTenant
 
     public function purchase_payments()
     {
-        return $this->hasOne(PurchasePayment::class);
+        return $this->hasMany(PurchasePayment::class);
     }
 
     public function soap_type()
@@ -203,7 +206,7 @@ class Purchase extends ModelTenant
     }
 
     public function supplier() {
-        return $this->belongsTo(CurrencyType::class, 'supplier_id');
+        return $this->belongsTo(Person::class, 'supplier_id');
     }
 
     public function items()
@@ -244,6 +247,9 @@ class Purchase extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
-
+    public function purchase_order()
+    {
+        return $this->belongsTo(PurchaseOrder::class);
+    }
 
 }

@@ -62,6 +62,33 @@
                                 </div>
                             </div> 
                             <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.date_of_due}"> 
+                                    <label class="control-label">Fec. Vencimiento</label>
+                                    <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6">
+                                <div class="form-group" >
+                                    <label class="control-label">Dirección de envío 
+                                    </label>
+                                    <el-input v-model="form.shipping_address"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.shipping_address" v-text="errors.shipping_address[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
+                                    <label class="control-label">
+                                        Término de pago
+                                    </label>
+                                    <el-select v-model="form.payment_method_type_id" filterable @change="changePaymentMethodType">
+                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
@@ -72,6 +99,7 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+                            
                             <div class="col-lg-6">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Descripcion
@@ -82,7 +110,7 @@
                             </div>
                         </div>
                         
-                        <div class="row mt-2">
+                        <div class="row mt-3">
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -193,6 +221,7 @@
                 discount_types: [],
                 charges_types: [],
                 all_customers: [], 
+                payment_method_types: [],
                 customers: [],
                 company: null,
                 establishments: [],
@@ -215,6 +244,7 @@
                     this.company = response.data.company 
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
+                    this.payment_method_types = response.data.payment_method_types
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
@@ -228,8 +258,24 @@
         },
         methods: {
 
-              searchRemoteCustomers(input) {  
-                  
+            async changePaymentMethodType(flag_submit = true){
+                let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+                if(payment_method_type){
+
+                    if(payment_method_type.number_days){
+                        this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
+                        this.changeDateOfIssue()
+                    }
+                    // else{
+                    //     if(flag_submit){
+                    //         this.form.date_of_issue = moment().format('YYYY-MM-DD')
+                    //         this.changeDateOfIssue()
+                    //     }
+                    // }
+                }
+            },
+            searchRemoteCustomers(input) {  
+                
                 if (input.length > 0) { 
                     this.loading_search = true
                     let parameters = `input=${input}`
@@ -274,13 +320,15 @@
                     total_value: 0,
                     total: 0,
                     operation_type_id: null,
-                    date_of_due: moment().format('YYYY-MM-DD'),
+                    date_of_due: null,
                     items: [],
                     charges: [],
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payment_method_type_id:null,
                     additional_information:null,
+                    shipping_address:null,
                     actions: {
                         format_pdf:'a4',
                     }
@@ -304,7 +352,7 @@
                 this.form.customer_id = null;
             },
             changeDateOfIssue() {
-                this.form.date_of_due = this.form.date_of_issue
+                // this.form.date_of_due = this.form.date_of_issue > this.form.date_of_due ? this.form.date_of_issue:null
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
@@ -377,9 +425,14 @@
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
              },
-            submit() {
+            async submit() {
+                
+                if(this.form.date_of_issue > this.form.date_of_due)
+                    return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
+
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form).then(response => {
+                // await this.changePaymentMethodType(false)
+                await this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
                         this.resetForm();
                         this.quotationNewId = response.data.data.id;

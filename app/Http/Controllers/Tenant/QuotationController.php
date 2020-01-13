@@ -111,8 +111,9 @@ class QuotationController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
+        $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         
-        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types','company', 'document_type_03_filter');
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types','company', 'document_type_03_filter','payment_method_types');
     }
 
     public function option_tables()
@@ -409,6 +410,7 @@ class QuotationController extends Controller
     }
     
     public function createPdf($quotation = null, $format_pdf = null, $filename = null) {
+        ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
         

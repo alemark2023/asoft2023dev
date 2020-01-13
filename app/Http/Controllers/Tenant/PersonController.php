@@ -71,6 +71,16 @@ class PersonController extends Controller
 
     public function store(PersonRequest $request)
     {
+
+        if($request->state){
+            if($request->state != "ACTIVO"){
+                return [
+                    'success' => false,
+                    'message' =>'El estado del contribuyente no es activo, no puede registrarlo',
+                ];
+            }
+        }
+
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
         $person->fill($request->all());

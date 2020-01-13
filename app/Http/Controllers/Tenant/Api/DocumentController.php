@@ -117,8 +117,10 @@ class DocumentController extends Controller
         $document->save();
         
         // Send SUNAT
-        if ($data_json->query) DocumentControllerSend::send($document->id);
-        
+        if($document->group_id === '01'){
+            if ($data_json->query) DocumentControllerSend::send($document->id);
+        }
+
         return [
             'success' => true,
         ];

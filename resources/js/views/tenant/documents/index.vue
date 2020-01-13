@@ -125,6 +125,10 @@
                         <!--</td>-->
 
                         <td class="text-right" v-if="typeUser != 'integrator'">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                                    @click.prevent="clickDeleteDocument(row.id)"
+                                    v-if="row.btn_delete_doc_type_03">Eliminar</button>
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickChangeToRegisteredStatus(row.id)"
                                     v-if="row.btn_change_to_registered_status">Cambiar a estado registrado</button>
@@ -147,7 +151,7 @@
                                     v-if="isClient && !row.send_server">Enviar Servidor</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickCheckOnline(row.id)"
-                                    v-if="isClient && row.send_server && (row.state_type_id === '01')">Consultar Servidor</button>
+                                    v-if="isClient && row.send_server && (row.state_type_id === '01' || row.state_type_id === '03')">Consultar Servidor</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>
@@ -180,8 +184,10 @@
     import DocumentImportSecond from './partials/import_second.vue'
     import DataTable from '../../../components/DataTableDocuments.vue'
     import ItemsImport from './import.vue'
+    import {deletable} from '../../../mixins/deletable'
 
     export default {
+        mixins: [deletable],
         props: ['isClient','typeUser','import_documents','import_documents_second'],
         components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable},
         data() {
@@ -331,6 +337,11 @@
             },
             clickImportSecond() {
                 this.showImportSecondDialog = true
+            },
+            clickDeleteDocument(document_id) {
+                this.destroy(`/${this.resource}/delete_document/${document_id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
             }
         }
     }

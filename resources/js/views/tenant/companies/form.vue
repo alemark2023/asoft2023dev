@@ -46,7 +46,7 @@
                                 <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Logo Tienda Virtual</label>
                                 <el-input v-model="form.logo_store" :readonly="true">
@@ -60,6 +60,18 @@
                                     </el-upload>
                                 </el-input>
                                 <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div>
+                            </div>
+                        </div> -->
+                        <div class="col-md-6">
+                            <div class="form-group" :class="{'has-danger': errors.detraction_account}">
+                                <label class="control-label">N° Cuenta de detracción</label>
+                                <el-input v-model="form.detraction_account"></el-input>
+                                <small class="form-control-feedback" v-if="errors.detraction_account" v-text="errors.detraction_account[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-4" v-show="false">
+                            <div class="form-group" :class="{'has-danger': errors.operation_amazonia}">
+                                <el-checkbox v-model="form.operation_amazonia">¿Emite en la Amazonía?</el-checkbox>
                             </div>
                         </div>
                     </div>
@@ -176,6 +188,8 @@
                     certificate: null,
                     logo: null,
                     logo_store: null,
+                    detraction_account: null,
+                    operation_amazonia: false,
 
                 }
             },

@@ -2,12 +2,12 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Tenant\Catalogs\CurrencyType; 
+use App\Models\Tenant\Catalogs\CurrencyType;
 
 class Quotation extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items'];
-    
+
     protected $fillable = [
         'id',
         'user_id',
@@ -15,15 +15,17 @@ class Quotation extends ModelTenant
         'establishment_id',
         'establishment',
         'soap_type_id',
-        'state_type_id', 
+        'state_type_id',
+        'payment_method_type_id',
 
-        'prefix', 
+        'prefix',
 
         'date_of_issue',
         'time_of_issue',
+        'date_of_due',
         'customer_id',
         'customer',
-        'currency_type_id', 
+        'currency_type_id',
         'exchange_rate_sale',
         'total_prepayment',
         'total_discount',
@@ -48,14 +50,16 @@ class Quotation extends ModelTenant
         'related',
         'perception',
         'detraction',
-        'legends', 
+        'legends',
         'filename',
+        'shipping_address',
         'description'
-         
+
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
+        'date_of_due' => 'date',
     ];
 
     public function getEstablishmentAttribute($value)
@@ -157,7 +161,7 @@ class Quotation extends ModelTenant
     {
         $this->attributes['legends'] = (is_null($value))?null:json_encode($value);
     }
- 
+
     public function getIdentifierAttribute()
     {
         return $this->prefix.'-'.$this->id;
@@ -177,16 +181,16 @@ class Quotation extends ModelTenant
     {
         return $this->belongsTo(StateType::class);
     }
-    
+
     public function person() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
-      
+
 
     public function currency_type()
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
-    } 
+    }
 
     public function items()
     {
@@ -204,7 +208,11 @@ class Quotation extends ModelTenant
         return $this->hasMany(SaleNote::class);
     }
 
-  
+    public function payment_method_type()
+    {
+        return $this->belongsTo(PaymentMethodType::class);
+    }
+
     public function getNumberToLetterAttribute()
     {
         $legends = $this->legends;
@@ -214,8 +222,8 @@ class Quotation extends ModelTenant
 
     public function scopeWhereTypeUser($query)
     {
-        $user = auth()->user();         
-        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
- 
+
 }

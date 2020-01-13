@@ -152,10 +152,12 @@ ul.nav-main li i {
   width: 100%;
   padding-left: 0px;
   padding-right: 0px;
+  background: #fff;  
+  color: #606266;
 }
 
 #custom-select .el-input-group__append {
-  background: #fff;  
+  /* background: #fff;   */
 }
 
 #custom-select .el-input-group__prepend .el-select {

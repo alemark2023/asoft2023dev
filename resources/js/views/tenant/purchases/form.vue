@@ -33,7 +33,7 @@
                                 <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                             </div>
                         </div>
-                        
+
 
 
                         <div class="col-lg-2">
@@ -43,7 +43,7 @@
                                 <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                                 <label class="control-label">Fec. Vencimiento</label>
@@ -53,19 +53,19 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-5">
+                        <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.supplier_id}">
                                 <label class="control-label">
                                     Proveedor
                                     <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                 </label>
-                                <el-select v-model="form.supplier_id" filterable @change="changeSupplier">
+                                <el-select v-model="form.supplier_id" filterable @change="changeSupplier" ref="select_person" @keyup.native="keyupSupplier" @keyup.enter.native="keyupEnterSupplier">
                                     <el-option v-for="option in suppliers" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-3">
+                        <!-- <div class="col-lg-3">
                             <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                                 <label class="control-label">
                                     Forma de pago
@@ -75,7 +75,7 @@
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                 <label class="control-label">Moneda</label>
@@ -95,6 +95,49 @@
                                 <el-input v-model="form.exchange_rate_sale"></el-input>
                                 <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
+                        </div>
+                        
+                        <div class="col-md-8 col-lg-8">
+
+                            <table>
+                                <thead>
+                                    <tr width="100%">
+                                        <th v-if="form.payments.length>0" class="pb-2">Forma de pago</th>
+                                        <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                        <th v-if="form.payments.length>0" class="pb-2">Monto</th>
+                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                        <td>
+                                            <div class="form-group mb-2 mr-2">
+                                                <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(true,index)">
+                                                    <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2"  >
+                                                <el-input v-model="row.reference"></el-input>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2" >
+                                                <el-input v-model="row.payment"></el-input>
+                                            </div>
+                                        </td>
+                                        <td class="series-table-actions text-center"> 
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" :disabled="index==0" @click.prevent="clickCancel(index)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td> 
+                                        <br>
+                                    </tr>
+                                </tbody> 
+                            </table> 
+                        
+
                         </div>
 
                         <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
@@ -189,8 +232,8 @@
                                     </div>
                                 </div>
                                 <h3 class="text-right" v-if="form.total > 0 && !hide_button"><b>MONTO TOTAL : </b>{{ currency_type.symbol }} {{ total_amount }}</h3>
-                                
-                                
+
+
                             </template>
                         </div>
                     </div>
@@ -209,6 +252,7 @@
 
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="suppliers"
+                        :input_person="input_person"
                        :external="true"></person-form>
 
         <purchase-options :showDialog.sync="showDialogOptions"
@@ -230,6 +274,7 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                input_person:{},
                 resource: 'purchases',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -282,20 +327,98 @@
             this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
                 this.reloadDataSuppliers(supplier_id)
            })
+
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            })
         },
         methods: {
+ 
+            validate_payments(){
+ 
+                let error_by_item = 0
+                let acum_total = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
+                }
+
+            },
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
+            },
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    purchase_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment: 0,
+                });
+            },   
+            initInputPerson(){
+                this.input_person = {
+                    number:'',
+                    identity_document_type_id:''
+                }
+            },
+            keyupEnterSupplier(){
+
+                if(this.input_person.number){
+
+                    if(!isNaN(parseInt(this.input_person.number))){
+
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            keyupSupplier(e){
+
+                if(e.key !== "Enter"){
+
+                    this.input_person.number = this.$refs.select_person.$el.getElementsByTagName('input')[0].value
+                    let exist_persons = this.suppliers.filter((supplier)=>{
+                        let pos = supplier.description.search(this.input_person.number);
+                        return (pos >- 1)
+                    })
+
+                    this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
+                }
+
+            },
             inputSeries(){
 
                 const pattern = new RegExp('^[A-Z0-9]+$', 'i');
-                if(!pattern.test(this.form.series)){ 
+                if(!pattern.test(this.form.series)){
                     this.form.series = this.form.series.substring(0, this.form.series.length - 1);
                 } else {
                     this.form.series = this.form.series.toUpperCase()
                 }
-                
+
             },
-            changePaymentMethodType(flag_submit = true){
-                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
+            changePaymentMethodType(flag_submit = true, index = null){
+                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
                 if(payment_method_type.number_days){
                     this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
                     this.changeDateOfIssue()
@@ -315,8 +438,8 @@
 
                 }
             },
-            changeSupplier(){  
-                this.calculatePerception() 
+            changeSupplier(){
+                this.calculatePerception()
             },
             filterSuppliers() {
 
@@ -375,7 +498,13 @@
                     discounts: [],
                     attributes: [],
                     guides: [],
+                    payments: [],
+
                 }
+                this.clickAddPayment()
+
+                this.initInputPerson()
+
             },
             resetForm() {
                 this.initForm()
@@ -463,11 +592,12 @@
                 this.form.total = _.round(total, 2)
 
                 this.calculatePerception()
-                
+
+                this.form.payments[0].payment = this.form.total
 
              },
             calculatePerception(){
-                
+
                 let supplier = _.find(this.all_suppliers,{'id':this.form.supplier_id})
 
                 if(supplier){
@@ -481,9 +611,9 @@
 
                         this.form.perception_date = moment().format('YYYY-MM-DD')
 
-                        this.form.items.forEach((row) => { 
-                            quantity_item_perception += (row.item.has_perception) ? 1:0 
-                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0 
+                        this.form.items.forEach((row) => {
+                            quantity_item_perception += (row.item.has_perception) ? 1:0
+                            total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception)/100)) : 0
                         });
 
                         this.is_perception_agent = (quantity_item_perception > 0) ? true : false
@@ -501,13 +631,18 @@
                     }
 
                 }
-                
-                
+
+
             },
             async submit() {
+          
+                let validate = await this.validate_payments()
+                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                }
 
                 this.loading_submit = true
-                await this.changePaymentMethodType(false)
+                // await this.changePaymentMethodType(false)
                 await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
 

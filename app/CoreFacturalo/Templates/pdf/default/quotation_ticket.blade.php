@@ -36,6 +36,21 @@
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
             {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
+            
+            @isset($establishment->trade_address)
+                <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
+            @endisset
+            <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
+
+            <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
+
+            @isset($establishment->web_address)
+                <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
+            @endisset
+
+            @isset($establishment->aditional_information)
+                <h6>{{ ($establishment->aditional_information !== '-')? $establishment->aditional_information : '' }}</h6>
+            @endisset
         </td>
     </tr>
     <tr>
@@ -57,6 +72,12 @@
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
  
+    @if($document->date_of_due) 
+    <tr>
+        <td width="" class=""><p class="desc">F. Vencimiento:</p></td>
+        <td width="" class=""><p class="desc">{{ $document->date_of_due->format('Y-m-d') }}</p></td>
+    </tr>
+    @endif
 
     <tr>
         <td class="align-top"><p class="desc">Cliente:</p></td>
@@ -79,6 +100,46 @@
             </td>
         </tr>
     @endif
+    @if ($document->shipping_address)
+    <tr>
+        <td class="align-top"><p class="desc">Dir. Envío:</p></td>
+        <td colspan="3">
+            <p class="desc">
+                {{ $document->shipping_address }} 
+            </p>
+        </td>
+    </tr>
+    @endif
+    
+    @if ($customer->telephone)
+    <tr>
+        <td class="align-top"><p class="desc">Teléfono:</p></td>
+        <td >
+            <p class="desc">            
+                {{ $customer->telephone }} 
+            </p>
+        </td>
+    </tr>
+    @endif
+    @if ($document->payment_method_type)
+    <tr>
+        <td class="align-top"><p class="desc">T. Pago:</p></td>
+        <td >
+            <p class="desc">            
+                {{ $document->payment_method_type->description }} 
+            </p>
+        </td>
+    </tr>
+    @endif
+    <tr> 
+        <td class="align-top"><p class="desc">Vendedor:</p></td>
+        <td>
+            <p class="desc">            
+                {{ $document->user->name }} 
+
+            </p>
+        </td>
+    </tr>
     @if ($document->description)
         <tr>
             <td class="align-top"><p class="desc">Descripción:</p></td>

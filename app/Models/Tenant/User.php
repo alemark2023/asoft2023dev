@@ -6,6 +6,7 @@ use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Modules\LevelAccess\Models\ModuleLevel;
 
 class User extends Authenticatable
 {
@@ -33,6 +34,11 @@ class User extends Authenticatable
     public function modules()
     {
         return $this->belongsToMany(Module::class);
+    }
+
+    public function levels()
+    {
+        return $this->belongsToMany(ModuleLevel::class);
     }
 
     public function authorizeModules($modules)
@@ -101,5 +107,51 @@ class User extends Authenticatable
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
+    }
+
+    
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function sale_notes()
+    {
+        return $this->hasMany(SaleNote::class);
+    }
+     
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('id', $user->id) : null;
+    }
+
+    
+
+    public function getLevel()
+    {
+        $level = $this->levels()->orderBy('id')->first();
+        if ($level) {
+            return $level->value;
+        }
+        return null;
+    }
+
+    public function getLevels()
+    {
+        $levels = $this->levels()->get();
+        if ($levels) {
+            return $levels;
+        }
+        return null;
+    }
+
+
+    public function searchLevel($Level)
+    {
+        if ($this->levels()->where('value', $Level)->first()) {
+            return true;
+        }
+        return false;
     }
 }

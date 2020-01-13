@@ -7,10 +7,10 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\SaleNote;
 use Carbon\Carbon;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Item;
+ 
 
-/**
- *
- */
 trait ReportTrait
 {
 
@@ -25,6 +25,8 @@ trait ReportTrait
         $date_end = $request['date_end'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
+        $person_id = $request['person_id'];
+        $type_person = $request['type_person'];
 
         $d_start = null;
         $d_end = null;
@@ -50,14 +52,14 @@ trait ReportTrait
                 break;
         }
 
-        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $model);
+        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model);
 
         return $records;
 
     }
 
 
-    private function data($document_type_id, $establishment_id, $date_start, $date_end, $model)
+    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model)
     {
 
         if($document_type_id && $establishment_id){
@@ -77,6 +79,13 @@ trait ReportTrait
 
         }else{
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()->whereTypeUser();
+        }
+
+        if($person_id && $type_person){
+
+            $column = ($type_person == 'customers') ? 'customer_id':'supplier_id';
+            $data =  $data->where($column, $person_id);
+        
         }
 
         return $data;
@@ -126,5 +135,72 @@ trait ReportTrait
         return $data;
 
     }
+    
 
+
+    public function getPersons($type){
+
+        $persons = Person::whereType($type)->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+ 
+        return $persons;
+
+    }
+
+
+    public function getDataTablePerson($type, $request) {
+        
+        $persons = Person::where('number','like', "%{$request->input}%")
+                            ->orWhere('name','like', "%{$request->input}%")
+                            ->whereType($type)->orderBy('name')
+                            ->get()->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                    'name' => $row->name,
+                                    'number' => $row->number,
+                                    'identity_document_type_id' => $row->identity_document_type_id,
+                                ];
+                            });
+
+        return $persons;
+
+    }
+
+    public function getItems(){
+
+        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+            ];
+        });
+ 
+        return $items;
+
+    }
+
+
+    public function getDataTableItem($request) {
+        
+        $items = Item::where('description','like', "%{$request->input}%")
+                        ->orWhere('internal_id','like', "%{$request->input}%") 
+                        ->orderBy('description')
+                        ->get()->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                            ];
+                        });
+
+        return $items;
+
+    }
 }

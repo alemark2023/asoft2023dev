@@ -46,6 +46,10 @@ class SaleNoteCollection extends ResourceCollection
                 'btn_generate' => $btn_generate,
                 'btn_payments' => $btn_payments,
                 'changed' => (boolean) $row->changed,
+                'enabled_concurrency' => (boolean) $row->enabled_concurrency,
+                'quantity_period' => $row->quantity_period,
+                'type_period' => $row->type_period,
+                'apply_concurrency' => (boolean) $row->apply_concurrency,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

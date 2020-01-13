@@ -4,6 +4,7 @@ return [
     'app_url_base' => env('APP_URL_BASE'),
     'items_per_page' => env('ITEMS_PER_PAGE', 20),
     'items_per_page_simple_d_table' => env('ITEMS_PER_PAGE_SIMPLE_D_TABLE', 5),
+    'items_per_page_simple_d_table_params' => env('ITEMS_PER_PAGE_SIMPLE_D_TABLE_PARAMS', 10),
     'password_change' => env('PASSWORD_CHANGE', false),
     'prefix_database' => env('PREFIX_DATABASE', 'tenancy'),
     'signature_note' => env('SIGNATURE_NOTE', 'FACTURALO'),
@@ -25,5 +26,6 @@ return [
     'import_documents_second_format' => env('IMPORT_DOCUMENTS_SECOND_FORMAT', false),
     'enabled_template_ticket_80' => env('ENABLED_TEMPLATE_TICKET_80', false),
     'enabled_discount_global' => env('ENABLED_DISCOUNT_GLOBAL', false),
+    'delete_document_type_03' => env('DELETE_DOCUMENT_TYPE_03', false),
 
 ];

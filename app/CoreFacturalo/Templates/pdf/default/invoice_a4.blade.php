@@ -80,6 +80,13 @@
         <td width="120px">FECHA DE EMISIÓN</td>
         <td width="8px">:</td>
         <td>{{$document->date_of_issue->format('Y-m-d')}}</td>
+
+        @if ($document->detraction)
+
+            <td width="120px">N. CTA DETRACCIONES</td>
+            <td width="8px">:</td>
+            <td>{{ $document->detraction->bank_account}}</td>
+        @endif
     </tr>
     @if($invoice)
         <tr>
@@ -88,15 +95,37 @@
             <td>{{$invoice->date_of_due->format('Y-m-d')}}</td>
         </tr>
     @endif
+
+    @if ($document->detraction)
+        <td width="140px">B/S SUJETO A DETRACCIÓN</td>
+        <td width="8px">:</td>
+        @inject('detractionType', 'App\Services\DetractionTypeService')
+        <td width="220px">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</td>
+
+    @endif
     <tr>
         <td>CLIENTE:</td>
         <td>:</td>
         <td>{{ $customer->name }}</td>
+
+        @if ($document->detraction)
+            <td width="120px">MÉTODO DE PAGO</td>
+            <td width="8px">:</td>
+            <td width="220px">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
+        @endif
+
     </tr>
     <tr>
         <td>{{ $customer->identity_document_type->description }}</td>
         <td>:</td>
         <td>{{$customer->number}}</td>
+
+        @if ($document->detraction)
+
+            <td width="120px">P. DETRACCIÓN</td>
+            <td width="8px">:</td>
+            <td>{{ $document->detraction->percentage}}%</td>
+        @endif
     </tr>
     @if ($customer->address !== '')
     <tr>
@@ -108,7 +137,24 @@
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
+
+        @if ($document->detraction)
+            <td width="120px">MONTO DETRACCIÓN</td>
+            <td width="8px">:</td>
+            <td>S/ {{ $document->detraction->amount}}</td>
+        @endif
     </tr>
+    @endif
+    @if ($document->detraction)
+        @if($document->detraction->pay_constancy)
+        <tr>
+            <td colspan="3">
+            </td>
+            <td width="120px">CONSTANCIA DE PAGO</td>
+            <td width="8px">:</td>
+            <td>{{ $document->detraction->pay_constancy}}</td>
+        </tr>
+        @endif
     @endif
 </table>
 
@@ -145,6 +191,7 @@
     @endforeach
 </table>
 @endif
+
 
 
 @if ($document->reference_guides)
@@ -242,6 +289,11 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                @isset($row->item->lots)
+                    @foreach($row->item->lots as $lot)
+                        <br/><span style="font-size: 9px">Serie : {{ $lot->series }}</span>
+                    @endforeach
+                @endisset
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -344,10 +396,26 @@
             <td colspan="5" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
-        <tr>
-            <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
-        </tr>
+
+        @if($document->perception)
+            <tr>
+                <td colspan="5" class="text-right font-bold">IMPORTE TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-right font-bold">PERCEPCIÓN: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->perception->amount, 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format(($document->total + $document->perception->amount), 2) }}</td>
+            </tr>
+        @else
+            <tr>
+                <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            </tr>
+        @endif
     </tbody>
 </table>
 <table class="full-width">
@@ -365,6 +433,14 @@
 
             @endforeach
             <br/>
+            @if ($document->detraction)
+            <p>
+                <span class="font-bold">
+                Operación sujeta al Sistema de Pago de Obligaciones Tributarias
+                </span>
+            </p>
+            <br/>
+            @endif
             @if ($customer->department_id == 16)
                 <br/><br/><br/>
                 <div>
@@ -400,6 +476,8 @@
     </tr>
 </table>
 @if($payments->count())
+
+
     <table class="full-width">
         <tr>
             <td>
@@ -417,6 +495,25 @@
         </tr>
 
     </table>
+@endif
+
+@if($document->user)
+     <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>Vendedor:</strong>
+            </td>
+        </tr>
+
+                <tr>
+                    <td>{{ $document->user->name }}</td>
+                </tr>
+
+        </tr>
+
+    </table>
+
 @endif
 </body>
 </html>

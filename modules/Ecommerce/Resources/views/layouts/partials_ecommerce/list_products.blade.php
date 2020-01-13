@@ -24,7 +24,8 @@
                             </div>
                         </div>
                         <h2 class="product-title">
-                            <a href="product.html">{{$item->name}}</a>
+                            <a href="/ecommerce/item/{{ $item->id }}">{{$item->name}}</a>
+                            <!-- <label style="cursor:pointer">{{$item->name}}</label> -->
                         </h2>
                         <div class="price-box">
                             <span class="old-price">S/ {{ number_format( ($item->sale_unit_price * 1.2 ) , 2 )}}</span>
@@ -61,7 +62,8 @@
                             </div>
                         </div>
                         <h2 class="product-title">
-                            <a href="product.html">{{$item->name}}</a>
+                            <a href="/ecommerce/item/{{ $item->id }}">{{$item->name}}</a>
+                            <!-- <label style="cursor:pointer">{{$item->name}}</label> -->
                         </h2>
                         <div class="price-box">
                             <span class="old-price">S/ {{ number_format( ($item->sale_unit_price * 1.2 ) , 2 )}}</span>

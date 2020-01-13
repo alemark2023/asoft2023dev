@@ -115,7 +115,7 @@
                     <div class="row">
                         <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
                             <div class="form-group">
-                                <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="clickAddItemNote()">+ Agregar Producto</button>
                             </div>
                         </div>
                     </div>
@@ -148,6 +148,7 @@
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                         <td class="text-right">
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -173,6 +174,8 @@
         </div>
 
         <document-form-item :showDialog.sync="showDialogAddItem"
+                            :recordItem="recordItem"
+                            :isEditItemNote="isEditItemNote"
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
                             :user="user"
@@ -197,6 +200,8 @@
         props: ['document_affected'],
         data() {
             return {
+                recordItem: null,
+                isEditItemNote:false,
                 showDialogAddItem: false,
                 showDialogOptions: false,
                 loading_submit: false,
@@ -246,7 +251,7 @@
 
         },
         methods: {
-            initForm() {
+            async initForm() {
                 this.errors = {}
                 this.form = {
                     establishment_id: this.document.establishment_id,
@@ -286,6 +291,24 @@
                     operation_type_id: null,
                     hotel: {},
                 }
+
+                await this.form.items.forEach((item)=>{
+                    item.input_unit_price_value = item.unit_price
+                })
+
+            },      
+            clickAddItemNote(){
+                this.recordItem = null
+                this.isEditItemNote = false
+                this.showDialogAddItem = true
+            },     
+            ediItem(row, index)
+            {
+                row.indexi = index
+                this.recordItem = row
+                this.isEditItemNote = true
+                this.showDialogAddItem = true
+
             },
             async resetForm() {
                 await this.getNote()
@@ -325,7 +348,20 @@
                 })
             },
             addRow(row) {
-                this.form.items.push(row)
+                
+                if(this.recordItem){
+
+                    this.form.items[this.recordItem.indexi] = row
+                    this.recordItem = null
+
+                }
+                else{
+
+                    this.form.items.push(JSON.parse(JSON.stringify(row)));
+
+                }
+
+                // this.form.items.push(row)
                 this.calculateTotal()
             },
             clickRemoveItem(index) {

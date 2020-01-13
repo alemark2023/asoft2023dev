@@ -26,7 +26,9 @@ class CompanyResource extends JsonResource
             'soap_url' => $this->soap_url,
             'certificate' => $this->certificate,
             'logo' => $this->logo,
+            'detraction_account' => $this->detraction_account,
             'logo_store' => $this->logo_store,
+            'operation_amazonia' => (bool) $this->operation_amazonia,
 
         ];
     }

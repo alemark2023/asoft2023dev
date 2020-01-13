@@ -53,7 +53,12 @@
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.operation_type_id}">
-                                    <label class="control-label">Tipo Operación</label>
+                                    <label class="control-label">Tipo Operación
+                                    <template v-if="form.operation_type_id == '1001' && has_data_detraction" >
+                                        <a href="#" @click.prevent="showDialogDocumentDetraction = true" class="text-center font-weight-bold text-info"> [+ Ver datos]</a>
+                                    </template>
+
+                                    </label>
                                     <el-select v-model="form.operation_type_id" @change="changeOperationType">
                                         <el-option v-for="option in operation_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
@@ -90,6 +95,7 @@
                                         dusk="customer_id"                                    
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
+                                        @keyup.enter.native="keyupCustomer"
                                         :loading="loading_search">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -136,15 +142,46 @@
                         </div>
 
                         <template v-if="!is_client">
+                            <!-- <div class="row mb-3" v-if="form.operation_type_id == '1001'">
+                                <div class="col-lg-4">
+                                    <div class="form-group" >
+                                        <label class="control-label">Bienes y servicios sujetos a detracciones<span class="text-danger"> *</span></label>
+                                        <el-select v-model="form.detraction.detraction_type_id" @change="changeDetractionType" filterable >
+                                            <el-option v-for="option in detraction_types" :key="option.id" :value="option.id" :label="`${option.description} - ${option.percentage}%`"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group" >
+                                        <label class="control-label">Método pago - Detracción<span class="text-danger"> *</span></label>
+                                        <el-select v-model="form.detraction.payment_method_id"  filterable>
+                                            <el-option v-for="option in cat_payment_method_types" :key="option.id" :value="option.id" :label="`${option.description}`"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Cuenta bancaria<span class="text-danger"> *</span></label>
+                                        <el-input v-model="form.detraction.bank_account" readonly></el-input>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="control-label">T. Detracción<span class="text-danger"> *</span></label>
+                                        <el-input v-model="form.detraction.amount" readonly></el-input>
+                                    </div>
+                                </div>
+                            </div> -->
+
                             <div class="row" >
                                 <div class="col-lg-8" v-if="!is_receivable">
 
                                     <table>
                                         <thead>
                                             <tr width="100%">
-                                                <th v-if="form.payments.length>0">Método de pago</th>
-                                                <th v-if="form.payments.length>0">Referencia</th>
-                                                <th v-if="form.payments.length>0">Monto</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                                 <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
                                             </tr>
                                         </thead>
@@ -179,6 +216,14 @@
                                 
 
                                 </div>
+                                <!-- <div class="col-lg-4" v-if="form.operation_type_id == '1001'"> 
+                                    <div class="form-group">
+                                        <label class="control-label">N° Constancia de pago - detracción</label>
+                                        <el-input v-model="form.detraction.pay_constancy">
+                                            <el-button slot="append" icon="el-icon-upload"  @click.prevent="clickPayConstancy()">Imágen</el-button>
+                                        </el-input>
+                                    </div>
+                                </div> -->
                                 
                                 <div class="col-lg-4" v-if="prepayment_deduction">
                                     <div class="form-group">
@@ -222,7 +267,10 @@
                         <div class="row mt-2">
                             <div class="col-md-12">
                                 <el-collapse v-model="activePanel" accordion>
-                                    <el-collapse-item name="1" title="Información Adicional">
+                                    <el-collapse-item name="1" >
+                                        <template slot="title">
+                                            <i class="fa fa-plus text-info"></i> &nbsp; Información Adicional<i class="header-icon el-icon-information"></i>
+                                        </template>
                                         <div class="row mt-2">
 
                                             <template v-if="!is_client">
@@ -234,7 +282,7 @@
                                                             <a href="#" @click.prevent="clickAddGuide" class="text-center font-weight-bold text-info">[+ Agregar]</a>
                                                         </label>
                                                         <table style="width: 100%">
-                                                            <tr v-for="guide in form.guides">
+                                                            <tr v-for="(guide,index) in form.guides">
                                                                 <td>
                                                                     <el-select v-model="guide.document_type_id">
                                                                         <el-option v-for="option in document_types_guide" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -244,7 +292,7 @@
                                                                     <el-input v-model="guide.number"></el-input>
                                                                 </td>
                                                                 <td align="right">
-                                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide">
+                                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide(index)">
                                                                         <i class="fa fa-trash"></i>
                                                                     </button>
                                                                     <!-- <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a> -->
@@ -260,7 +308,7 @@
                                                 </div>
                                             </template>
 
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label class="control-label">Observaciones</label>
                                                     <el-input
@@ -270,10 +318,14 @@
                                                     </el-input>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <div class="form-group" :class="{'has-danger': errors.purchase_order}">
                                                     <label class="control-label">Orden Compra</label>
-                                                    <el-input v-model="form.purchase_order"></el-input>
+                                                    <!-- <el-input v-model="form.purchase_order"></el-input> -->
+                                                    <el-input
+                                                            type="textarea"
+                                                            v-model="form.purchase_order">
+                                                    </el-input>
                                                     <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
                                                 </div>
                                             </div>
@@ -362,6 +414,12 @@
                                         </td>
                                     </tr>
 
+                                    <tr v-if="form.detraction.amount > 0">
+                                        <td>M. DETRACCIÓN</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                    </tr>
+                                    
                                     <tr v-if="form.total_exportation > 0">
                                         <td>OP.EXPORTACIÓN</td>
                                         <td>:</td>
@@ -424,6 +482,7 @@
 
         <document-form-item :showDialog.sync="showDialogAddItem"
                            :recordItem="recordItem"
+                           :isEditItemNote="false"
                            :operation-type-id="form.operation_type_id"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
@@ -433,6 +492,7 @@
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
                        :external="true"
+                       :input_person="input_person"
                        :document_type_id = form.document_type_id></person-form>
 
         <document-options :showDialog.sync="showDialogOptions"
@@ -446,6 +506,14 @@
             :hotel="form.hotel"
             @addDocumentHotel="addDocumentHotel" 
             ></document-hotel-form>
+
+        <document-detraction 
+            :detraction="form.detraction" 
+            :total="form.total" 
+            :showDialog.sync="showDialogDocumentDetraction"
+            @addDocumentDetraction="addDocumentDetraction" ></document-detraction>
+ 
+
     </div>
     </div>
 </template>
@@ -453,6 +521,11 @@
 <style>
 .input-custom{
     width: 50% !important;
+}
+
+.el-textarea__inner {
+    height: 65px !important;
+    min-height: 65px !important;
 }
 </style>
 <script>
@@ -463,13 +536,17 @@
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
+    import DocumentDetraction from './partials/detraction.vue'
 
     export default {
         props: ['typeUser'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm},
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction},
         mixins: [functions, exchangeRate],
         data() {
             return {
+                input_person:{},
+                showDialogDocumentDetraction:false,
+                has_data_detraction:false,
                 showDialogFormHotel:false,
                 is_client:false,
                 recordItem: null,
@@ -511,6 +588,10 @@
                 user: null,
                 is_receivable:false,
                 is_contingency: false,
+                cat_payment_method_types: [],
+                detraction_types: [],
+                all_detraction_types: [],
+
             }
         },
         async created() {
@@ -539,6 +620,8 @@
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
                     this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
+                    // this.cat_payment_method_types = response.data.cat_payment_method_types;
+                    // this.all_detraction_types = response.data.detraction_types;
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -549,8 +632,44 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+            this.$eventHub.$on('initInputPerson', () => {
+                this.initInputPerson()
+            })
         },
         methods: {
+            keyupCustomer(){ 
+
+                if(this.input_person.number){
+
+                    if(!isNaN(parseInt(this.input_person.number))){
+                        
+                        switch (this.input_person.number.length) {
+                            case 8:
+                                this.input_person.identity_document_type_id = '1'
+                                this.showDialogNewPerson = true
+                                break;
+                        
+                            case 11:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                            default:
+                                this.input_person.identity_document_type_id = '6'
+                                this.showDialogNewPerson = true
+                                break;
+                        }
+                    }
+                }
+            },
+            addDocumentDetraction(detraction) {
+
+                this.form.detraction = detraction
+
+                // this.has_data_detraction = (detraction.pay_constancy || detraction.detraction_type_id || detraction.payment_method_id || (detraction.amount && detraction.amount >0)) ? true:false
+                this.has_data_detraction = (detraction) ? detraction.has_data_detraction:false 
+                
+                // console.log(this.form.detraction)
+            }, 
             clickAddItemInvoice(){
                 this.recordItem = null
                 this.showDialogAddItem = true
@@ -712,10 +831,10 @@
             },
 
             searchRemoteCustomers(input) {  
-                  
+                
                 if (input.length > 0) {
                 // if (input!="") {
-
+                    // console.log("a")
                     this.loading_search = true
                     let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&operation_type_id=${this.form.operation_type_id}`
 
@@ -723,11 +842,18 @@
                             .then(response => { 
                                 this.customers = response.data.customers
                                 this.loading_search = false
-                                if(this.customers.length == 0){this.filterCustomers()}
+                                this.input_person.number = null
+                                
+                                if(this.customers.length == 0){
+                                    // console.log("b")
+                                    this.filterCustomers()
+                                    this.input_person.number = input
+                                }
                             })  
                 } else {
                     // this.customers = []
                     this.filterCustomers()
+                    this.input_person.number = null
                 }
 
             },
@@ -770,6 +896,8 @@
                     guides: [],
                     payments: [],
                     prepayments: [],
+                    legends: [],
+                    detraction: {},
                     additional_information:null,
                     has_prepayment:false,
                     actions: {
@@ -779,10 +907,21 @@
                 }
  
                 this.clickAddPayment()
+                this.clickAddInitGuides()
                 this.is_receivable = false
                 this.total_global_discount = 0
                 this.is_amount = true
                 this.prepayment_deduction = false
+                this.imageDetraction = {}
+                this.$eventHub.$emit('eventInitForm')
+
+                this.initInputPerson()
+            },
+            initInputPerson(){
+                this.input_person = {
+                    number:null,
+                    identity_document_type_id:null
+                }
             },
             resetForm() {
                 this.activePanel = 0
@@ -796,8 +935,66 @@
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
             },
-            changeOperationType() {
-                this.filterCustomers();
+            async changeOperationType() {
+                await this.filterCustomers();
+                await this.setDataDetraction();
+            },
+            // async filterDetractionTypes(){
+            //     this.detraction_types =  await _.filter(this.all_detraction_types, {'operation_type_id':this.form.operation_type_id})
+            // },
+            async setDataDetraction(){
+
+                if(this.form.operation_type_id === '1001'){
+                    
+                    this.showDialogDocumentDetraction = true
+
+                    // this.$message.warning('Sujeta a detracción');
+                    // await this.filterDetractionTypes();
+                    let legend = await _.find(this.form.legends,{'code':'2006'})
+                    if(!legend) this.form.legends.push({code:'2006', value:'Operación sujeta a detracción'})
+                    this.form.detraction.bank_account = this.company.detraction_account
+
+                }else{ 
+
+                    _.remove(this.form.legends,{'code':'2006'})
+                    this.form.detraction = {}
+
+                }
+            },
+            async changeDetractionType(){
+                // let detraction_type = await _.find(this.detraction_types, {'id':this.form.detraction.detraction_type_id})
+
+                if(this.form.detraction){
+
+                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
+                    // console.log(this.form.detraction.amount)
+                }
+            },
+            validateDetraction(){
+                
+                if(this.form.operation_type_id === '1001'){
+
+                    let detraction = this.form.detraction
+                    
+                    if(this.form.total <= 700)
+                        return {success:false, message:'El importe de la operación debe ser mayor a S/ 700.00'}
+
+                    if(!detraction.detraction_type_id)
+                        return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
+                        
+                    if(!detraction.payment_method_id)
+                        return {success:false, message:'El campo método de pago - detracción es obligatorio'}
+                        
+                    if(!detraction.bank_account)
+                        return {success:false, message:'El campo cuenta bancaria es obligatorio'}
+
+                    if(detraction.amount <= 0)
+                        return {success:false, message:'El campo total detracción debe ser mayor a cero'}
+
+                }
+
+                return {success:true}
+
             },
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
@@ -833,7 +1030,7 @@
             },
             filterCustomers() {
                 // this.form.customer_id = null
-                if(this.form.operation_type_id === '0101') {
+                if(this.form.operation_type_id === '0101' || this.form.operation_type_id === '1001') {
                     if(this.form.document_type_id === '01') {
                         this.customers = _.filter(this.all_customers, {'identity_document_type_id': '6'})
                     } else {
@@ -846,6 +1043,15 @@
                 } else {
                     this.customers = this.all_customers
                 }
+            },
+            clickAddInitGuides() {
+                this.form.guides.push({
+                    document_type_id: '09',
+                    number: null
+                },{
+                    document_type_id: '31',
+                    number: null
+                })
             },
             clickAddGuide() {
                 this.form.guides.push({
@@ -939,6 +1145,9 @@
                 if(this.prepayment_deduction)
                     this.discountGlobalPrepayment()
 
+                if(this.form.operation_type_id === '1001')
+                    this.changeDetractionType()
+
             },
             changeTypeDiscount(){
                 this.calculateTotal()
@@ -948,7 +1157,7 @@
                 let base = this.form.total_taxed
 
                 let amount = (this.is_amount) ? parseFloat(this.total_global_discount) : parseFloat(this.total_global_discount)/100 * base
-                let factor = (this.is_amount) ? _.round(amount/base,2) : _.round(parseFloat(this.total_global_discount)/100,2)
+                let factor = (this.is_amount) ? _.round(amount/base,5) : _.round(parseFloat(this.total_global_discount)/100,5)
 
                 if(this.total_global_discount>0 && this.form.discounts.length == 0){
 
@@ -971,14 +1180,21 @@
                     this.form.total_taxes =  _.round(this.form.total_igv,2)
                     this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
 
+                    this.form.total_taxed =  this.form.total_value
+
                     this.form.discounts[0].base = base
-                    this.form.discounts[0].amount = amount
+                    this.form.discounts[0].amount = _.round(amount,2)
                     this.form.discounts[0].factor = factor
                 }
 
 
                 // console.log(this.form.discounts)
             }, 
+            async deleteInitGuides(){
+                //eliminando guias null 
+                await _.remove(this.form.guides,{'number':null})
+
+            },
             async submit() {
                
                 if(this.is_receivable){
@@ -989,6 +1205,12 @@
                         return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                     }
                 }
+
+                await this.deleteInitGuides()
+
+                let val_detraction = await this.validateDetraction()
+                if(!val_detraction.success)
+                    return this.$message.error(val_detraction.message);
 
 
                 this.loading_submit = true

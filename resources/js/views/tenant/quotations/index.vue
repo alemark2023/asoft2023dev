@@ -48,7 +48,7 @@
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{row.state_type_description}}</td>
-                        <td>{{ row.identifier }} 
+                        <td>{{ row.identifier }}
                         </td>
                         <td>
                             <template v-for="(document,i) in row.documents">
@@ -64,30 +64,32 @@
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
-                        <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td> 
+                        <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
-                        <td class="text-right"> 
+                        <td class="text-right">
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptionsPdf(row.id)">PDF</button>
                         </td>
-                        
-                        <td class="text-right"> 
-                            <button v-if="row.state_type_id != '11' && row.btn_generate"  type="button" class="btn waves-effect waves-light btn-xs btn-info" 
+
+                        <td class="text-right">
+                            <button v-if="row.state_type_id != '11' && row.btn_generate"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
-                            
+
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
-                                    
+                            <a :href="`/dispatches/create/${row.id}/q`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
+
+
                         </td>
 
                     </tr>
                 </data-table>
             </div>
- 
+
 
             <quotation-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
@@ -95,7 +97,7 @@
                               :showClose="true"></quotation-options>
 
             <quotation-options-pdf :showDialog.sync="showDialogOptionsPdf"
-                              :recordId="recordId" 
+                              :recordId="recordId"
                               :showClose="true"></quotation-options-pdf>
         </div>
     </div>
@@ -106,17 +108,17 @@
     }
 </style>
 <script>
- 
+
     import QuotationOptions from './partials/options.vue'
     import QuotationOptionsPdf from './partials/options_pdf.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
-    export default { 
+    export default {
         mixins: [deletable],
         components: {DataTable,QuotationOptions, QuotationOptionsPdf},
         data() {
-            return { 
+            return {
                 resource: 'quotations',
                 recordId: null,
                 showDialogOptions: false,
@@ -139,7 +141,7 @@
         },
         created() {
         },
-        methods: {  
+        methods: {
             clickEdit(id)
             {
                 this.recordId = id
@@ -171,7 +173,7 @@
                     }
                 })
                 .catch(error => {
-                  
+
                 })
                 this.$eventHub.$emit('reloadData')
             }

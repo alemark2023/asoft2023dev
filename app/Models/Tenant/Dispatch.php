@@ -54,7 +54,8 @@ class Dispatch extends ModelTenant
         'has_pdf',
         'has_cdr',
 
-        'reference_document_id'
+        'reference_document_id',
+        'reference_quotation_id'
     ];
 
     protected $casts = [

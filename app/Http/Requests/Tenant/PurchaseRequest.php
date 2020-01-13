@@ -7,15 +7,14 @@ use Illuminate\Validation\Rule;
 
 class PurchaseRequest extends FormRequest
 {
-     
+
     public function authorize()
     {
-        return true; 
+        return true;
     }
- 
+
     public function rules()
-    { 
-        
+    {
         return [
             'supplier_id' => [
                 'required',
@@ -29,7 +28,7 @@ class PurchaseRequest extends FormRequest
             ],
             'date_of_issue' => [
                 'required',
-            ], 
+            ],
         ];
     }
 }

@@ -56,9 +56,23 @@ class ClientController extends Controller
             if($row->start_billing_cycle)
             {
                 $day_start_billing = date_format($row->start_billing_cycle, 'j');
-                $init = Carbon::parse( date('Y').'-'.((int)date('n') -1).'-'.$day_start_billing );
-                $end = Carbon::parse(date('Y-m-d'));
-                $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+                $day_now = (int)date('j');
+
+
+                if( $day_now <= $day_start_billing  )
+                {
+                    $init = Carbon::parse( date('Y').'-'.((int)date('n') -1).'-'.$day_start_billing );
+                    $end = Carbon::parse(date('Y-m-d'));
+
+                    $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+                }
+                else{
+
+                    $init = Carbon::parse( date('Y').'-'.((int)date('n') ).'-'.$day_start_billing );
+                    $end = Carbon::parse(date('Y-m-d'));
+                    $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [ $init, $end  ])->count();
+
+                }
 
             }
         }
@@ -136,12 +150,27 @@ class ClientController extends Controller
 
             //modules
             DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
+            DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->delete();
 
             $array_modules = [];
 
             foreach ($request->modules as $module) {
                 if($module['checked']){
                     $array_modules[] = ['module_id' => $module['id'], 'user_id' => 1];
+                    
+                    if($module['id'] == 1){
+                        DB::connection('tenant')->table('module_level_user')->insert([
+                            ['module_level_id' => 1, 'user_id' => 1],
+                            ['module_level_id' => 2, 'user_id' => 1],
+                            ['module_level_id' => 3, 'user_id' => 1],
+                            ['module_level_id' => 4, 'user_id' => 1],
+                            ['module_level_id' => 5, 'user_id' => 1],
+                            ['module_level_id' => 6, 'user_id' => 1],
+                            ['module_level_id' => 7, 'user_id' => 1],
+                            ['module_level_id' => 8, 'user_id' => 1],
+                            ['module_level_id' => 9, 'user_id' => 1], 
+                        ]);
+                    }
                 }
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
@@ -280,6 +309,20 @@ class ClientController extends Controller
             foreach ($request->modules as $module) {
                 if($module['checked']){
                     $array_modules[] = ['module_id' => $module['id'], 'user_id' => $user_id];
+
+                    if($module['id'] == 1){
+                        DB::connection('tenant')->table('module_level_user')->insert([
+                            ['module_level_id' => 1, 'user_id' => $user_id],
+                            ['module_level_id' => 2, 'user_id' => $user_id],
+                            ['module_level_id' => 3, 'user_id' => $user_id],
+                            ['module_level_id' => 4, 'user_id' => $user_id],
+                            ['module_level_id' => 5, 'user_id' => $user_id],
+                            ['module_level_id' => 6, 'user_id' => $user_id],
+                            ['module_level_id' => 7, 'user_id' => $user_id],
+                            ['module_level_id' => 8, 'user_id' => $user_id],
+                            ['module_level_id' => 9, 'user_id' => $user_id], 
+                        ]);
+                    }
                 }
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
@@ -308,10 +351,6 @@ class ClientController extends Controller
 
         }
 
-
-
-
-
         return [
             'success' => true,
             'message' => 'Cliente Registrado satisfactoriamente'
@@ -329,13 +368,13 @@ class ClientController extends Controller
     }
 
     public function renewPlan(Request $request){
-        
+
         // dd($request->all());
-        $client = Client::findOrFail($request->id); 
+        $client = Client::findOrFail($request->id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
 
-        DB::connection('tenant')->table('billing_cycles')->insert([            
+        DB::connection('tenant')->table('billing_cycles')->insert([
             'date_time_start' => date('Y-m-d H:i:s'),
             'renew' => true,
             'quantity_documents' => DB::connection('tenant')->table('configurations')->where('id', 1)->first()->quantity_documents,
@@ -453,6 +492,6 @@ class ClientController extends Controller
         ];
     }
 
-     
+
 
 }

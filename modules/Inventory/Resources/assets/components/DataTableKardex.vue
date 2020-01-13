@@ -7,7 +7,7 @@
                 <div class="row mt-2">  
                          
                         <div class="col-md-6">
-                            <label class="control-label">Fecha ingreso</label>
+                            <label class="control-label">Producto</label>
                             <el-select  v-model="form.item_id"
                                     filterable>
                                 <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>

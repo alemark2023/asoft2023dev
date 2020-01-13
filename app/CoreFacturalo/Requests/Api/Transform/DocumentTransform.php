@@ -189,7 +189,7 @@ class DocumentTransform
         if(key_exists('detraccion', $inputs)) {
             $detraction = $inputs['detraccion'];
             return [
-                'code' => $detraction['codigo'],
+                'detraction_type_id' => $detraction['codigo_tipo_detraccion'],
                 'percentage' => $detraction['porcentaje'],
                 'amount' => $detraction['monto'],
                 'payment_method_id' => $detraction['codigo_metodo_pago'],

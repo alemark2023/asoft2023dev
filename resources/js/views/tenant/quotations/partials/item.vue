@@ -9,7 +9,7 @@
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id" @change="changeItem" filterable>
+                            <el-select v-model="form.item_id" @change="changeItem" filterable ref="select_item" @focus="focusSelectItem">
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
@@ -444,6 +444,16 @@
                 
                 // this.initializeFields()
                 this.$emit('add', this.row);
+                this.setFocusSelectItem()
+            },
+            focusSelectItem(){
+                console.log("foc")
+                this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
+            },
+            setFocusSelectItem(){
+
+                this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
+
             },
             cleanTotalItem(){
                 this.total_item = null;

@@ -9,6 +9,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\SaleNoteItem;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
@@ -24,7 +25,7 @@ use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
 use App\Http\Requests\Tenant\SaleNoteRequest;
-use App\Models\Tenant\Warehouse;
+// use App\Models\Tenant\Warehouse;
 use Illuminate\Support\Str;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
@@ -36,8 +37,11 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\PaymentMethodType;
 use App\Mail\Tenant\SaleNoteEmail;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Mail;
+use Modules\Inventory\Models\Warehouse;
+use Modules\Item\Models\ItemLot;
 
 class SaleNoteController extends Controller
 {
@@ -69,7 +73,7 @@ class SaleNoteController extends Controller
     {
         $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
                             ->whereTypeUser()
-                            ->latest();
+                            ->latest('id');
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -147,21 +151,53 @@ class SaleNoteController extends Controller
 
     public function store(SaleNoteRequest $request)
     {
+        // dd($request->all());
 
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
+
             $this->sale_note =  SaleNote::updateOrCreate(
                 ['id' => $request->input('id')],
                 $data);
-
+            
 //            $this->sale_note =  SaleNote::create($data);
-            $this->sale_note->items()->delete();
+            // $this->sale_note->items()->delete();
             $this->sale_note->payments()->delete();
-            foreach ($data['items'] as $row)
-            {
-                $this->sale_note->items()->create($row);
-            }     
+
+            // foreach ($data['items'] as $row)
+            // {
+            //     $this->sale_note->items()->create($row);
+            // }     
+            foreach($data['items'] as $row) { 
+                    
+                $item_id = isset($row['id']) ? $row['id'] : null;
+                $sale_note_item = SaleNoteItem::firstOrNew(['id' => $item_id]);
+
+                if(isset($row['item']['lots'])){
+                    $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
+                }
+
+                $sale_note_item->fill($row);
+                $sale_note_item->sale_note_id = $this->sale_note->id;
+                $sale_note_item->save();  
+
+                if(isset($row['lots'])){
+
+                    foreach($row['lots'] as $lot) { 
+                        $record_lot = ItemLot::findOrFail($lot['id']);
+                        $record_lot->has_sale = true;
+                        $record_lot->update();
+                    }
+                    
+                }
+
+                // dd($row);
+
+            }
+
+
+
             //pagos
             foreach ($data['payments'] as $row) {
                 $this->sale_note->payments()->create($row);
@@ -181,12 +217,50 @@ class SaleNoteController extends Controller
 
     }
 
+
+    
+    public function destroy_sale_note_item($id)
+    {
+        $item = SaleNoteItem::findOrFail($id);
+
+        if(isset($item->item->lots)){
+            
+            foreach($item->item->lots as $lot) { 
+                // dd($lot->id);
+                $record_lot = ItemLot::findOrFail($lot->id);
+                $record_lot->has_sale = false;
+                $record_lot->update();
+            }
+
+        }
+
+        $item->delete();
+        
+        return [
+            'success' => true,
+            'message' => 'eliminado'
+        ];
+    }
+
     public function mergeData($inputs)
     {
-
         $this->company = Company::active();
 
+            
+        $type_period = $inputs['type_period'];
+        $quantity_period = $inputs['quantity_period'];
+        $d_of_issue = new Carbon($inputs['date_of_issue']);
+        $automatic_date_of_issue = null;
+        
+        if($type_period && $quantity_period > 0){
+
+            $add_period_date = ($type_period == 'month') ? $d_of_issue->addMonths($quantity_period): $d_of_issue->addYears($quantity_period);
+            $automatic_date_of_issue = $add_period_date->format('Y-m-d'); 
+
+        }
+
         $values = [
+            'automatic_date_of_issue' => $automatic_date_of_issue,
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
             'customer' => PersonInput::set($inputs['customer_id']),
@@ -234,6 +308,7 @@ class SaleNoteController extends Controller
 
     public function createPdf($sale_note = null, $format_pdf = null, $filename = null) {
 
+        ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();   
 
@@ -283,7 +358,7 @@ class SaleNoteController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    30 +
+                    40 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
                     ($discount_global * 3) +
                     $company_logo +
@@ -305,7 +380,60 @@ class SaleNoteController extends Controller
                 'margin_bottom' => 0,
                 'margin_left' => 2
             ]);
-        } else {
+        } else if($format_pdf === 'a5'){
+
+            $company_name      = (strlen($this->company->name) / 20) * 10;
+            $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
+            $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
+            $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
+            $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
+            $p_order           = $this->document->purchase_order != '' ? '10' : '0';
+
+            $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
+            $total_free        = $this->document->total_free != '' ? '10' : '0';
+            $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated  = $this->document->total_exonerated != '' ? '10' : '0';
+            $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
+            $quantity_rows     = count($this->document->items);
+            $discount_global = 0;
+            foreach ($this->document->items as $it) {
+                if ($it->discounts) {
+                    $discount_global = $discount_global + 1;
+                }
+            }
+            $legends           = $this->document->legends != '' ? '10' : '0';
+
+
+            $alto = ($quantity_rows * 8) +
+                    ($discount_global * 3) +
+                    $company_name +
+                    $company_address +
+                    $company_number +
+                    $customer_name +
+                    $customer_address +
+                    $p_order +
+                    $legends +
+                    $total_exportation +
+                    $total_free +
+                    $total_unaffected +
+                    $total_exonerated +
+                    $total_taxed;
+            $diferencia = 148 - (float)$alto;
+
+            $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    210,
+                    $diferencia + $alto 
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 5,
+                'margin_bottom' => 0,
+                'margin_left' => 5
+            ]);
+
+
+       } else {
 
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
@@ -383,8 +511,12 @@ class SaleNoteController extends Controller
             
             case 'items':
 
+                $establishment_id = auth()->user()->establishment_id;
+                $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+                $warehouse_id = ($warehouse) ? $warehouse->id:null;
+
                 $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
-                return collect($items)->transform(function($row) {
+                return collect($items)->transform(function($row) use($warehouse_id){
                     $full_description = $this->getFullDescription($row);
                     return [
                         'id' => $row->id,
@@ -398,6 +530,7 @@ class SaleNoteController extends Controller
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'has_igv' => (bool) $row->has_igv,
+                        'lots_enabled' => (bool) $row->lots_enabled,
                         'is_set' => (bool) $row->is_set,
                         'warehouses' => collect($row->warehouses)->transform(function($row) {
                             return [
@@ -406,7 +539,18 @@ class SaleNoteController extends Controller
                                 'stock' => $row->stock,
                             ];
                         }),
-                        'item_unit_types' => $row->item_unit_types
+                        'item_unit_types' => $row->item_unit_types,
+                        'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
+                            return [
+                                'id' => $row->id,
+                                'series' => $row->series,
+                                'date' => $row->date,
+                                'item_id' => $row->item_id,
+                                'warehouse_id' => $row->warehouse_id,
+                                'has_sale' => (bool)$row->has_sale,
+                                'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                            ];
+                        }),
                     ];
                 });
 //                return $items;
@@ -489,5 +633,21 @@ class SaleNoteController extends Controller
         
         return $dispatches;
     }
+    
+    public function enabledConcurrency(Request $request)
+    {
+
+        $sale_note = SaleNote::findOrFail($request->id);
+        $sale_note->enabled_concurrency = $request->enabled_concurrency;
+        $sale_note->update();
+
+        return [
+            'success' => true,
+            'message' => ($sale_note->enabled_concurrency) ? 'Recurrencia activada':'Recurrencia desactivada'
+        ];
+
+    }
+
+
  
 }

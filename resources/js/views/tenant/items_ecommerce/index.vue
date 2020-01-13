@@ -171,8 +171,12 @@ export default {
             } else {
               this.$message.warning(response.data.message);
             }
+            this.$eventHub.$emit("reloadData")
+
           } else {
             this.$message.error(response.data.message);
+            this.$eventHub.$emit("reloadData")
+
           }
         })
         .catch(error => {})

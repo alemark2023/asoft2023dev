@@ -2,7 +2,7 @@
 namespace Modules\Ecommerce\Http\Controllers;
 
 
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Controller;
 use Culqi\Culqi;
@@ -15,6 +15,8 @@ use App\Models\Tenant\Order;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Person;
 use Exception;
+use App\Models\Tenant\ConfigurationEcommerce;
+
 
 
 class CulqiController extends Controller
@@ -27,7 +29,7 @@ class CulqiController extends Controller
 
     public function index()
     {
-      
+
     }
 
     public function payment(Request $request)
@@ -35,8 +37,11 @@ class CulqiController extends Controller
       try{
 
         $user = auth()->user();
+        $configuration = ConfigurationEcommerce::first();
 
-        $SECRET_API_KEY = "sk_test_gZ9jAaILIsIweKfm";
+
+        $SECRET_API_KEY = $configuration->token_private_culqui;
+        
         $culqi = new Culqi(array('api_key' => $SECRET_API_KEY));
 
         $charge = $culqi->Charges->create(
@@ -44,7 +49,7 @@ class CulqiController extends Controller
                 "amount" => $request->precio,
                 "currency_code" => "PEN",
                 "email" => $request->email,
-                "description" =>  $request->producto, 
+                "description" =>  $request->producto,
                 "source_id" => $request->token,
                //  "metadata" => array (
                //      "ruc" => $_POST['ruc'],
@@ -63,7 +68,7 @@ class CulqiController extends Controller
           'reference_payment' => 'culqui',
         ]);
 
-         
+
         $customer_email = $request->email;
         $document = new stdClass;
         $document->client = $user->name;
@@ -86,11 +91,11 @@ class CulqiController extends Controller
         ];
       }
 
-      
 
-       
+
+
     }
 
-    
-      
+
+
 }

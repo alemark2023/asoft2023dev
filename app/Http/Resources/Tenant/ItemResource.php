@@ -39,6 +39,7 @@ class ItemResource extends JsonResource
             'calculate_quantity' => (bool) $this->calculate_quantity,
             'has_igv' => (bool) $this->has_igv,
             'has_perception' => (bool) $this->has_perception,
+            'lots_enabled' => (bool) $this->lots_enabled,
             'percentage_perception' => $this->percentage_perception, 
             'item_unit_types' => $this->item_unit_types,
             'image' => $this->image,
@@ -50,7 +51,10 @@ class ItemResource extends JsonResource
             'apply_store' => (bool)$this->apply_store,
             'tags' => $this->tags,
             'tags_id' => $this->tags->pluck('tag_id'),
-            'individual_items' => collect($this->sets)->pluck('individual_item_id')
+            'individual_items' => collect($this->sets)->pluck('individual_item_id'),
+            'commission_amount' => $this->commission_amount,
+            'lot_code' => $this->lot_code,
+            'lots' => $this->lots,
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

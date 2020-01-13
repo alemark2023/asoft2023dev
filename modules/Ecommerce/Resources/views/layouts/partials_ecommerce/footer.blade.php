@@ -18,10 +18,10 @@
                     <h4 class="widget-title">Ubicación</h4>
                     <ul class="contact-info">
                         <li>
-                            <span class="contact-info-label">Dirección:</span> Jr. Trujillo 123 Lima, Peru
+                            <span class="contact-info-label">Dirección:</span> {{$information->information_contact_address}}
                         </li>
                         <li>
-                            <span class="contact-info-label">Teléfono:</span> <a href="tel:">(01) 456-7890</a>
+                            <span class="contact-info-label">Teléfono:</span> <a href="tel:"> {{$information->information_contact_phone}}</a>
                         </li>
                     </ul>
                 </div><!-- End .widget -->
@@ -64,9 +64,18 @@
                     <h4 class="widget-title">Redes Sociales</h4>
 
                     <div class="social-icons">
-                        <a href="#" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
-                        <a href="#" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
-                        <a href="#" class="social-icon" target="_blank"><i class="icon-linkedin"></i></a>
+                        @if($information->link_facebook)
+                            <a href="{{$information->link_facebook}}" class="social-icon" target="_blank"><i class="icon-facebook"></i></a>
+                        @endif
+
+                        @if($information->link_twitter)
+                            <a href="{{$information->link_twitter}}" class="social-icon" target="_blank"><i class="icon-twitter"></i></a>
+                        @endif
+
+                        @if($information->link_youtube)
+                            <a href="{{$information->link_youtube}}" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+                        @endif
+
                     </div>
                 </div>
             </div>

@@ -125,7 +125,25 @@ class CashController extends Controller
         $income = 0;
 
         foreach ($cash->cash_documents as $cash_document) {
-            $final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
+
+            // $final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
+
+            if($cash_document->sale_note){
+                $final_balance += $cash_document->sale_note->total;
+            }
+            else if($cash_document->document){
+                $final_balance += $cash_document->document->total;
+            }
+            else if($cash_document->expense_payment){
+                $final_balance -= $cash_document->expense_payment->payment;
+            }
+            // else if($cash_document->purchase){
+            //     $final_balance -= $cash_document->purchase->total;
+            // }
+            // else if($cash_document->expense){
+            //     $final_balance -= $cash_document->expense->total;
+            // }
+
         }
 
         $cash->final_balance = $final_balance + $cash->beginning_balance; 

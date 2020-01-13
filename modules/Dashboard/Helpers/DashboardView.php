@@ -3,6 +3,11 @@
 namespace Modules\Dashboard\Helpers;
 
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Dispatch;
+use App\Models\Tenant\DocumentPayment;
+use App\Models\Tenant\SaleNotePayment;
+use App\Models\Tenant\Invoice;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -48,7 +53,7 @@ class DashboardView
                 $d_end = $date_end;
                 break;
         }
- 
+
         /*
          * Documents
          */
@@ -57,7 +62,7 @@ class DashboardView
             ->groupBy('document_id');
 
         if($d_start && $d_end){
-    
+
             $documents = DB::connection('tenant')
                 ->table('documents')
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
@@ -65,10 +70,10 @@ class DashboardView
                     $join->on('documents.id', '=', 'payments.document_id');
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
-                // ->whereIn('document_type_id', ['01','03','08'])
+                ->whereIn('document_type_id', ['01','03','08'])
                 ->select(DB::raw("documents.id as id, ".
-                                    "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
-                                    "persons.name as customer_name, ".
+                                    "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
+                                    "persons.name as customer_name, persons.id as customer_id, documents.document_type_id,".
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
@@ -77,7 +82,7 @@ class DashboardView
                 ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
 
         }else{
-            
+
             $documents = DB::connection('tenant')
                 ->table('documents')
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
@@ -85,10 +90,10 @@ class DashboardView
                     $join->on('documents.id', '=', 'payments.document_id');
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
-                // ->whereIn('document_type_id', ['01','03','08'])
+                ->whereIn('document_type_id', ['01','03','08'])
                 ->select(DB::raw("documents.id as id, ".
-                                    "DATE_FORMAT(documents.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
-                                    "persons.name as customer_name, ".
+                                    "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
+                                    "persons.name as customer_name, persons.id as customer_id, documents.document_type_id, ".
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
@@ -105,7 +110,7 @@ class DashboardView
             ->groupBy('sale_note_id');
 
         if($d_start && $d_end){
-        
+
             $sale_notes = DB::connection('tenant')
                 ->table('sale_notes')
                 ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
@@ -114,8 +119,8 @@ class DashboardView
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
                 ->select(DB::raw("sale_notes.id as id, ".
-                                "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
-                                "persons.name as customer_name, ".
+                                "DATE_FORMAT(sale_notes.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
+                                "persons.name as customer_name, persons.id as customer_id, null as document_type_id,".
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
@@ -135,8 +140,8 @@ class DashboardView
                 })
                 ->whereIn('state_type_id', ['01','03','05','07','13'])
                 ->select(DB::raw("sale_notes.id as id, ".
-                                "DATE_FORMAT(sale_notes.date_of_issue, '%d/%m/%Y') as date_of_issue, ".
-                                "persons.name as customer_name, ".
+                                "DATE_FORMAT(sale_notes.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
+                                "persons.name as customer_name, persons.id as customer_id, null as document_type_id,".
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
@@ -150,16 +155,65 @@ class DashboardView
         $records = $documents->union($sale_notes)->get();
 
         return collect($records)->transform(function($row) {
-            $total_to_pay = (float)$row->total - (float)$row->total_payment;
-//            if($total_to_pay > 0) {
+                $total_to_pay = (float)$row->total - (float)$row->total_payment;
+                $delay_payment = null;
+                $date_of_due = null;
+
+                if($total_to_pay > 0) {
+                    if($row->document_type_id){
+
+                        $invoice = Invoice::where('document_id', $row->id)->first();
+                        if($invoice)
+                        {
+                            $due =   Carbon::parse($invoice->date_of_due); // $invoice->date_of_due;
+                            $date_of_due = $invoice->date_of_due->format('Y-m-d');
+                            $now = Carbon::now();
+
+                            if($now > $due){
+
+                                $delay_payment = $now->diffInDays($due);
+                            }
+
+
+                        }
+                    }
+                }
+
+                $guides = null;
+                $date_payment_last = '';
+
+                if($row->document_type_id){
+                    $guides =  Dispatch::where('reference_document_id', $row->id )->orderBy('series')->orderBy('number', 'desc')->get()->transform(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'external_id' => $item->external_id,
+                            'number' => $item->number_full,
+                            'date_of_issue' => $item->date_of_issue->format('Y-m-d'),
+                            'date_of_shipping' => $item->date_of_shipping->format('Y-m-d'),
+                            'download_external_xml' => $item->download_external_xml,
+                            'download_external_pdf' => $item->download_external_pdf,
+                        ];
+                    });
+
+                    $date_payment_last = DocumentPayment::where('document_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
+                }
+                else{
+                    $date_payment_last = SaleNotePayment::where('sale_note_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
+                }
+
                 return [
                     'id' => $row->id,
                     'date_of_issue' => $row->date_of_issue,
                     'customer_name' => $row->customer_name,
+                    'customer_id' => $row->customer_id,
                     'number_full' => $row->number_full,
-                    'total' => number_format((float) $row->total,2),
-                    'total_to_pay' => number_format($total_to_pay,2),
+                    'total' => number_format((float) $row->total,2, ".", ""),
+                    'total_to_pay' => number_format($total_to_pay,2, ".", ""),
                     'type' => $row->type,
+                    'guides' => $guides,
+                    'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
+                    'delay_payment' => $delay_payment,
+                    'date_of_due' =>  $date_of_due,
                 ];
 //            }
         });

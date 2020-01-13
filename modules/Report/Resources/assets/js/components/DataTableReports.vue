@@ -64,10 +64,27 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-9 col-md-9 col-md-9 col-sm-12" style="margin-top:29px"> 
+                        <div class="col-lg-5 col-md-5" v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
+                            <div class="form-group"> 
+                                <label class="control-label">
+                                    {{(resource == 'reports/sales') ? 'Clientes':'Proveedores'}}
+                                </label>
+                                
+                                <el-select v-model="form.person_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Nombre o número de documento"
+                                    :remote-method="searchRemotePersons"
+                                    :loading="loading_search"
+                                    @change="changePersons">
+                                    <el-option v-for="option in persons" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+ 
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px"> 
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
                             
-                            <template v-if="records.length>0"> 
+                            <template v-if="records.length>0 && resource  !== 'reports/document-detractions'"> 
 
                                 <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
 
@@ -151,6 +168,9 @@
         data () {
             return {
                 loading_submit:false,
+                persons: [],
+                all_persons: [],
+                loading_search:false,
                 columns: [],
                 records: [],
                 headers: headers_token,
@@ -189,16 +209,48 @@
             await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
                     this.establishments = response.data.establishments;
+                    this.all_persons = response.data.persons
                     this.document_types = response.data.document_types;
                     // this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                 });
 
 
             await this.getRecords()
+            await this.filterPersons()
             // await this.getTotals()
+            this.form.type_person = this.resource === 'reports/sales' ? 'customers':'suppliers'
 
         },
         methods: { 
+            changePersons(){
+                // this.form.type_person = this.resource === 'reports/sales' ? 'customers':'suppliers'
+            },
+            searchRemotePersons(input) {  
+                
+                if (input.length > 0) { 
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+                    
+                    this.form.type_person = this.resource === 'reports/sales' ? 'customers':'suppliers'
+
+                    this.$http.get(`/reports/data-table/persons/${this.form.type_person}?${parameters}`)
+                            .then(response => { 
+                                this.persons = response.data.persons
+                                this.loading_search = false
+                                
+                                if(this.persons.length == 0){
+                                    this.filterPersons()
+                                }
+                            })  
+                } else {
+                    this.filterPersons()
+                }
+
+            },
+            filterPersons() { 
+                this.persons = this.all_persons
+            },
             getTotals(records){
 
                 this.initTotals()
@@ -294,6 +346,8 @@
  
                 this.form = {
                     establishment_id: null,
+                    person_id: null,
+                    type_person:null,
                     document_type_id:null,
                     period: 'month',
                     date_start: moment().format('YYYY-MM-DD'),

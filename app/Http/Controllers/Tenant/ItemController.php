@@ -16,6 +16,7 @@ use App\Http\Resources\Tenant\ItemCollection;
 use App\Http\Resources\Tenant\ItemResource;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Warehouse;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\ItemUnitType;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,9 +24,9 @@ use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
-use Modules\Item\Models\Category; 
-use Modules\Item\Models\Brand; 
-
+use Modules\Item\Models\Category;
+use Modules\Item\Models\Brand;
+use Modules\Inventory\Models\Warehouse as WarehouseModule;
 
 class ItemController extends Controller
 {
@@ -44,18 +45,44 @@ class ItemController extends Controller
         return [
             'description' => 'Nombre',
             'internal_id' => 'Código interno',
+            'brand' => 'Marca',
+            'date_of_due' => 'Fecha vencimiento',
+            'lot_code' => 'Código lote',
             // 'description' => 'Descripción'
         ];
     }
 
     public function records(Request $request)
     {
-        $records = Item::whereTypeUser()
-                        ->whereNotIsSet()
-                        ->where($request->column, 'like', "%{$request->value}%")
-                        ->orderBy('description');
-        
+        $records = $this->getRecords($request);
+
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+    
+    public function getRecords($request){
+
+        switch ($request->column) {
+
+            case 'brand':
+                $records = Item::whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                })
+                                ->whereTypeUser()
+                                ->whereNotIsSet()
+                                ->orderBy('description');
+                break;
+ 
+            default:
+                $records = Item::whereTypeUser()
+                                ->whereNotIsSet()
+                                ->where($request->column, 'like', "%{$request->value}%")
+                                ->orderBy('description');
+                break;
+        }
+
+        return $records;
+
     }
 
     public function create()
@@ -77,8 +104,8 @@ class ItemController extends Controller
         $categories = Category::all();
         $brands = Brand::all();
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 
-                        'affectation_igv_types','warehouse', 'accounts', 'tags', 'categories', 'brands');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
+                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands');
     }
 
     public function record($id)
@@ -93,6 +120,7 @@ class ItemController extends Controller
         $id = $request->input('id');
         $item = Item::firstOrNew(['id' => $id]);
         $item->item_type_id = '01';
+        $item->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
         $item->fill($request->all());
 
         $temp_path = $request->input('temp_path');
@@ -127,7 +155,7 @@ class ItemController extends Controller
             });
             Storage::put($directory.$file_name,  (string) $image->encode('jpg', 20));
             $item->image_small = $file_name;
-            
+
 
 
         }else if(!$request->input('image') && !$request->input('temp_path') && !$request->input('image_url')){
@@ -135,7 +163,7 @@ class ItemController extends Controller
         }
 
         $item->save();
-        
+
         foreach ($request->item_unit_types as $value) {
 
             $item_unit_type = ItemUnitType::firstOrNew(['id' => $value['id']]);
@@ -148,7 +176,7 @@ class ItemController extends Controller
             $item_unit_type->price3 = $value['price3'];
             $item_unit_type->price_default = $value['price_default'];
             $item_unit_type->save();
-        
+
         }
 
         if($request->tags_id)
@@ -160,25 +188,44 @@ class ItemController extends Controller
             }
         }
 
-      
-        
+        if(!$id){
+
+            // $item->lots()->delete();
+            $warehouse = WarehouseModule::find(auth()->user()->establishment_id);
+
+            $v_lots = isset($request->lots) ? $request->lots:[];
+            
+            foreach ($v_lots as $lot) {
+                
+                // $item->lots()->create($lot);
+                $item->lots()->create([
+                    'date' => $lot['date'],
+                    'series' => $lot['series'],
+                    'item_id' => $item->id,
+                    'warehouse_id' => $warehouse ? $warehouse->id:null,
+                    'has_sale' => false
+                ]);
+            }
+        }
+
+
         $item->update();
 
-        
-        
+
+
         return [
             'success' => true,
             'message' => ($id)?'Producto editado con éxito':'Producto registrado con éxito',
             'id' => $item->id
         ];
     }
-    
+
     public function destroy($id)
     {
         try {
-            
+
             $item = Item::findOrFail($id);
-            $this->deleteRecordInitialKardex($item); 
+            $this->deleteRecordInitialKardex($item);
             $item->delete();
 
             return [
@@ -192,7 +239,7 @@ class ItemController extends Controller
 
         }
 
-        
+
     }
 
     public function destroyItemUnitType($id)
@@ -281,6 +328,14 @@ class ItemController extends Controller
     public function visibleStore(Request $request)
     {
         $item = Item::find($request->id);
+
+        if(!$item->internal_id && $request->apply_store){
+            return [
+                'success' => false,
+                'message' =>'Para habilitar la visibilidad, debe asignar un codigo interno al producto',
+            ];
+        }
+
         $visible = $request->apply_store == true ? 1 : 0 ;
         $item->apply_store = $visible;
         $item->save();
@@ -289,6 +344,22 @@ class ItemController extends Controller
             'success' => true,
             'message' => ($visible > 0 )?'El Producto ya es visible en tienda virtual' : 'El Producto ya no es visible en tienda virtual',
             'id' => $request->id
+        ];
+
+    }
+
+    public function duplicate(Request $request)
+    {
+       // return $request->id;
+       $obj = Item::find($request->id);
+       $new = $obj->replicate();
+       $new->save();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $new->id,
+            ],
         ];
 
     }

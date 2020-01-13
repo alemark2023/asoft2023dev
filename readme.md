@@ -25,7 +25,7 @@ Visite el [Manual de usuario](https://docs.google.com/document/d/1i7yKGy3rIvv9Tr
 
 Para conocer acerca de la API, visite la [documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 
-Además puede realizar sus pruebas usando [Postman Collection](https://drive.google.com/open?id=1Dk7UbdAw3Xs2i7PGFln6YXveQ10weGkT "Clic")
+Además puede realizar sus pruebas usando [Postman Collection](https://drive.google.com/open?id=1zV8ex7vE9rp3claKY8j6E1L15njhYjdv "Clic")
 
 ## Pruebas
 
@@ -33,14 +33,14 @@ Además puede realizar sus pruebas usando [Postman Collection](https://drive.goo
 
 ## ADMIN
 
-Visite el siguiente enlace: [Sistema](https://eversys.xyz "Clic")
+Visite el siguiente enlace: [Sistema](https://facturador.pro "Clic")
 <br>
 Usuario: admin@gmail.com<br>
 Contraseña: 123456
 
 ## DEMO
 
-Visite el siguiente enlace: [Sistema](https://demo.eversys.xyz "Clic")
+Visite el siguiente enlace: [Sistema](https://demo.facturador.pro "Clic")
 <br>
 Usuario: demo@gmail.com<br>
 Contraseña: 123456
@@ -85,5 +85,10 @@ Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE
 Manual - validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
 Manual - Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5lrDxprwfteKrP6n100LeSox_g34Eg/edit "Clic")<br>
 Manual - Cambio de dominio: [Guía](https://docs.google.com/document/d/14rbElqQ6Ru6hh3UCZm4wTKIUCm_hPbMNYz9EH8fcPRo/edit?usp=sharing "Clic")<br>
+Manual - Restauración de Mysql|Docker: [Guía](https://docs.google.com/document/d/1Aze-O_a0aseyjaDXsD1iHflPr6ptZ8Cq6BWRrs6GhsM/edit?usp=sharing "Clic")<br>
+Linux - Eliminar temporales: [Guía](https://docs.google.com/document/d/17-9F9xrQepGfSkZIiCcty-B0GAjeJnN5KO8p0rOBYxY/edit?usp=sharing "Clic")<br>
+Linux - Eliminar archivos por extensión: [Guía](https://docs.google.com/document/d/1M1s6EYF7sA89JccrXh7d_UhLB367F7Kk41yKCpSIzdo/edit#heading=h.ghi3ru1xdrna "Clic")<br>
 
+## Scripts de instalacion con Docker
 
+Linux - Ubuntu 18 - Docker - SSL opcional: [script](https://gist.github.com/rashArt/bf5dac2f8f67edcebfd71f47417f2cba "Clic")<br>

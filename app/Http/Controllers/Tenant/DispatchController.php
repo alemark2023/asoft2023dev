@@ -26,36 +26,46 @@ use App\Models\Tenant\{
 use App\Models\Tenant\Document;
 use App\Http\Requests\Tenant\DispatchRequest;
 use Exception, Illuminate\Support\Facades\DB;
+use App\Models\Tenant\Quotation;
+
 
 class DispatchController extends Controller
 {
     use StorageDocument;
-    
+
     public function __construct() {
         $this->middleware('input.request:dispatch,web', ['only' => ['store']]);
     }
-    
+
     public function index() {
         return view('tenant.dispatches.index');
     }
-    
+
     public function columns() {
         return [
             'number' => 'Número'
         ];
     }
-    
+
     public function records(Request $request) {
         $records = Dispatch::where($request->column, 'like', "%{$request->value}%")
             ->orderBy('series')
             ->orderBy('number', 'desc');
-        
+
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
     }
      
-    public function create($document_id = null, $dispatch_id = null)
+
+    public function create($document_id = null, $type = null, $dispatch_id = null)
     {
-        $document = Document::find($document_id);
+        if($type == 'q')
+        {
+            $document = Quotation::find($document_id);
+        }
+        else{
+            $type = 'i';
+            $document = Document::find($document_id);
+        }
 
         if(!$document){
             return view('tenant.dispatches.create');
@@ -63,10 +73,10 @@ class DispatchController extends Controller
 
         $dispatch = Dispatch::find($dispatch_id);
 
-        return view('tenant.dispatches.form', compact('document', 'dispatch'));
+        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch'));
     }
 
-    
+
     public function store(DispatchRequest $request) {
         $fact = DB::connection('tenant')->transaction(function () use($request) {
             $facturalo = new Facturalo();
@@ -78,16 +88,16 @@ class DispatchController extends Controller
 
             return $facturalo;
         });
-        
+
         $document = $fact->getDocument();
         $response = $fact->getResponse();
-        
+
         return [
             'success' => true,
             'message' => "Se creo la guía de remisión {$document->series}-{$document->number}",
         ];
     }
-    
+
     /**
      * Tables
      * @param  Request $request
@@ -100,7 +110,7 @@ class DispatchController extends Controller
             ->get()
             ->transform(function($row) {
                 $full_description = ($row->internal_id) ? $row->internal_id.' - '.$row->description : $row->description;
-                
+
                 return [
                     'id' => $row->id,
                     'full_description' => $full_description,
@@ -115,7 +125,7 @@ class DispatchController extends Controller
                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id
                 ];
             });
-        
+
         $identities = ['6'];
         $dni_filter = config('tenant.document_type_03_filter');
         if($dni_filter){
@@ -143,8 +153,8 @@ class DispatchController extends Controller
                     'identity_document_type_code' => $row->identity_document_type->code
                 ];
             });
-        
-        
+
+
         $locations = [];
         $departments = Department::whereActive()->get();
         foreach ($departments as $department)
@@ -184,17 +194,17 @@ class DispatchController extends Controller
         $districts = District::whereActive()->get();
         $establishments = Establishment::all();
         $series = Series::all();
-        
+
         return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items','locations');
     }
-    
+
     public function downloadExternal($type, $external_id) {
         $retention = Dispatch::where('external_id', $external_id)->first();
-        
+
         if (!$retention) {
             throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
         }
-        
+
         switch ($type) {
             case 'pdf':
                 $folder = 'pdf';
@@ -208,7 +218,7 @@ class DispatchController extends Controller
             default:
                 throw new Exception('Tipo de archivo a descargar es inválido');
         }
-        
+
         return $this->downloadStorage($retention->filename, $folder);
     }
 }

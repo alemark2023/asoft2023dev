@@ -12,6 +12,10 @@ use App\Models\Tenant\Person;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Order;
 use App\Models\Tenant\ItemsRating;
+use App\Models\Tenant\ConfigurationEcommerce;
+
+
+
 
 use stdClass;
 use Illuminate\Support\Facades\Mail;
@@ -65,7 +69,8 @@ class EcommerceController extends Controller
 
     public function detailCart()
     {
-        return view('ecommerce::cart.detail');
+        $configuration = ConfigurationEcommerce::first();
+        return view('ecommerce::cart.detail', compact('configuration'));
     }
 
     public function pay()
@@ -243,6 +248,8 @@ class EcommerceController extends Controller
         ];
 
     }
+
+
 
 
 

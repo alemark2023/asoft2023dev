@@ -213,5 +213,9 @@ return [
         'is_client' => 'modo offline',
         'series_id' => 'series',
         'observations' => 'observaciones',
+        'operation_type_id' => 'tipo operación',
+        'percentage ' => 'porcentaje',
+        'start_number ' => 's',
+        'commission_amount' => 'monto de comisión'
     ],
 ];

@@ -40,6 +40,9 @@
                         <th class="text-center">Comprobantes</th> 
                         <th class="text-center"></th>
                         <th class="text-center">Descarga</th> 
+                        <th class="text-center">
+                            Recurrencia
+                        </th> 
                         <th class="text-center">Acciones</th> 
                     <tr>
                     <tr slot-scope="{ index, row }">
@@ -72,6 +75,11 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.external_id)">PDF</button>
                         </td> 
+                        <td class="text-right">
+                            <template v-if="row.type_period && row.quantity_period>0">
+                                <el-switch :disabled="row.apply_concurrency" v-model="row.enabled_concurrency" active-text="Si" inactive-text="No" @change="changeConcurrency(row)"></el-switch>
+                            </template>
+                        </td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)" v-if="row.btn_generate">Editar</button>
@@ -163,6 +171,28 @@
             },
             clickCreate(id = '') {
                 location.href = `/${this.resource}/create/${id}`
+            },
+            
+            changeConcurrency(row) {
+
+                // console.log(row)
+                this.$http.post(`/${this.resource}/enabled-concurrency`, row).then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit('reloadData')
+                    }
+                    else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    }
+                    else {
+                        console.log(error);
+                    }
+                }).then(() => {
+                });
             }
 
         }

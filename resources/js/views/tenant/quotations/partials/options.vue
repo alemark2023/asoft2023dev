@@ -97,7 +97,7 @@
           </div>
         </div>
 
-        
+
 
         <div class="col-lg-8">
           <div class="form-group" :class="{'has-danger': errors.document_type_id}">

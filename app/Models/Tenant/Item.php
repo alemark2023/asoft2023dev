@@ -9,6 +9,7 @@ use App\Models\Tenant\Catalogs\UnitType;
 use Modules\Account\Models\Account;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\ItemLot;
 
 class Item extends ModelTenant
 {
@@ -55,6 +56,8 @@ class Item extends ModelTenant
         'apply_store',
         'brand_id',
         'category_id',
+        'lot_code',
+        'lots_enabled',
         // 'warehouse_id'
     ];
 
@@ -201,4 +204,15 @@ class Item extends ModelTenant
         return $this->belongsTo(Category::class);
     }
 
+    public function item_lots()
+    {
+        return $this->hasMany(ItemLot::class, 'item_id');
+    }
+
+    public function lots()
+    {
+        return $this->morphMany(ItemLot::class, 'item_loteable');
+    }
+
+    
 }

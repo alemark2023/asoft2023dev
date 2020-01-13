@@ -1,4 +1,4 @@
-<template> 
+<template>
     <el-dialog :title="titleDialog" :visible="showDialog"   @close="close"   append-to-body top="7vh">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
@@ -11,7 +11,7 @@
                                 <th class="text-right">Stock</th>
                             </tr>
                             </thead>
-                            <tbody>    
+                            <tbody>
                             <tr v-for="row in warehouses">
                                 <th>{{ row.warehouse_description }}</th>
                                 <th class="text-right">{{ row.stock }}</th>
@@ -29,21 +29,21 @@
 </template>
 
 <script>
- 
 
-    export default { 
+
+    export default {
         props:['showDialog', 'warehouses'],
         data() {
             return {
                 showImportDialog: false,
                 resource: 'items',
                 recordId: null,
-                titleDialog: 'Productos',
+                titleDialog: 'Stock de producto',
 
             }
         },
         created() {
-            console.log(this.typeUser)
+            //console.log(this.typeUser)
         },
         methods: {
             close() {

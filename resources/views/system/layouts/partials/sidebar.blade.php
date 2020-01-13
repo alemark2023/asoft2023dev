@@ -36,6 +36,16 @@
                 </ul>
             </nav>
 
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    <li class="">
+                        <a class="nav-link" href="{{url('logs')}}" target="_BLANK">
+                            <i class="fas fa-shopping-cart"></i><span>Logs</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
         <script>
             // Maintain Scroll Position
             if (typeof localStorage !== 'undefined') {

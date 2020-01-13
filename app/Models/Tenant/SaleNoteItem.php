@@ -43,7 +43,9 @@ class SaleNoteItem extends ModelTenant
 
         'attributes',
         'charges',
-        'discounts'
+        'discounts',
+        'inventory_kardex_id',
+
     ];
 
     public function getItemAttribute($value)
@@ -104,5 +106,10 @@ class SaleNoteItem extends ModelTenant
     public function sale_note()
     {
         return $this->belongsTo(SaleNote::class);
+    }
+    
+    public function relation_item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
     }
 }

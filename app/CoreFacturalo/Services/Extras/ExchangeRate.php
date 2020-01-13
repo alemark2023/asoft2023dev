@@ -7,6 +7,8 @@ use GuzzleHttp\Client;
 use DiDom\Document as DiDom;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ExchangeRate
 {
@@ -19,45 +21,93 @@ class ExchangeRate
 
     private function search($month, $year)
     {
-        $client = new  Client(['base_uri' => 'http://www.sunat.gob.pe/cl-at-ittipcam/']);
+        // $client = new  Client(['base_uri' => 'http://www.sunat.gob.pe/cl-at-ittipcam/', 'verify' => false]);
+        // try {
+        //     $response = $client->request('GET', "tcS01Alias?mes={$month}&anho={$year}", ['http_errors' => true, 'timeout' => 4]);
+        // } catch (ClientException $e) {
+        //     dd($e);
+        //     return $e->getResponse();
+
+        // } catch (RequestException $e) {
+        //     dd($e);
+        //     return $e->getResponse();
+
+        // }
+
         try {
-            $response = $client->request('GET', "tcS01Alias?mes={$month}&anho={$year}", ['http_errors' => true, 'timeout' => 4]);
-        } catch (ClientException $e) {
-            return $e->getResponse();
-        } catch (RequestException $e) {
-            return $e->getResponse();
-        }
 
-        //dd($response->getStatusCode());
-        if ($response->getStatusCode() == 200 && $response != "") {
-            $html = $response->getBody()->getContents();
-            $xp = new DiDom($html);
-            $sub_headings = $xp->find('form table');
-            $trs = $sub_headings[1]->find('tr');
-            $values = [];
-          for($i = 1; $i < count($trs); $i++)
-          {
-              $tr = $trs[$i];
-              $tds = $tr->find('td');
+            $url = "http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?me1s={$month}&anho={$year}";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,$url);        
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $response = curl_exec ($ch);         
+            curl_close ($ch);
+            // dd($response);
 
-              foreach($tds as $td)
-              {
-                  $values[] = trim(preg_replace("/[\t|\n|\r]+/", '', $td->text()));
-              }
-          }
-        return collect($values)->chunk(3)->toArray();
+            //dd($response->getStatusCode());
+            // if ($response->getStatusCode() == 200 && $response != "") {
+            if ($response != "") {
+                // $html = $response->getBody()->getContents();
+                $html = $response;
+                $xp = new DiDom($html);
+                $sub_headings = $xp->find('form table');
+                $trs = $sub_headings[1]->find('tr');
+                $values = [];
+
+                for($i = 1; $i < count($trs); $i++)
+                {
+                    $tr = $trs[$i];
+                    $tds = $tr->find('td');
+
+                    foreach($tds as $td)
+                    {
+                        $values[] = trim(preg_replace("/[\t|\n|\r]+/", '', $td->text()));
+                    }
+                }
+                
+                return collect($values)->chunk(3)->toArray();
+            }
+
+        } catch (Exception $e) {
+            
+            Log::info("Error consulta T/C: ".$e->getMessage());
+            return false;
+            
         }
 
         return false;
     }
 
     public function searchDate($date)
-    {
+    { 
+        // $date = Carbon::parse($date);
+        // do {
+        //     $res = $this->searchByDay($date);
+        //     $date = $date->addDay(-1);
+        // } while (!$res);
+
+        // return $res;
+
         $date = Carbon::parse($date);
-        do {
+
+        $res = $this->searchByDay($date);
+        $date = $date->addDay(-1);
+        
+        if(!$res){
             $res = $this->searchByDay($date);
             $date = $date->addDay(-1);
-        } while (!$res);
+        }
+
+        if(!$res){
+            $res = $this->searchByDay($date);
+            $date = $date->addDay(-1);
+        }
+
+        if(!$res){
+            $res = $this->searchByDay($date);
+            $date = $date->addDay(-1);
+        }
 
         return $res;
     }

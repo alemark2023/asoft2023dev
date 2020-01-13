@@ -4,6 +4,7 @@
 <div class="row" id="app">
     <div class="col-lg-8">
         <div class="cart-table-container">
+
             <table class="table table-cart">
                 <thead>
                     <tr>
@@ -63,14 +64,18 @@
             <h3>Resumen</h3>
             <table class="table table-totals">
                 <tbody>
-                    <tr>
-                        <td>Subtotal</td>
-                        <td>S/ @{{summary.subtotal}}</td>
-                    </tr>
 
-                    <tr>
+                    <tr v-if="summary.total_exonerated > 0">
+                        <td>OP.EXONERADAS</td>
+                        <td>S/ @{{ summary.total_exonerated }}</td>
+                    </tr>
+                    <tr v-if="summary.total_taxed > 0">
+                        <td>OP.GRAVADA</td>
+                        <td>S/ @{{ summary.total_taxed }}</td>
+                    </tr>
+                    <tr v-if="summary.total_igv > 0">
                         <td>IGV</td>
-                        <td>S/ @{{summary.tax}}</td>
+                        <td>S/ @{{ summary.total_igv }}</td>
                     </tr>
                 </tbody>
                 <tfoot>
@@ -101,7 +106,7 @@
                 <div v-show="payment_cash.clicked" style="margin: 3%" class="form-group">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
+                            <span class="input-group-text">S/</span>
                         </div>
                         <input readonly placeholder="0.0" v-model="payment_cash.amount" type="text"
                             onkeypress="return isNumberKey(event)" maxlength="14" class="form-control"
@@ -110,23 +115,12 @@
                     </div>
                 </div>
 
-                <form class="btn btn-block btn-sm " action="https://www.paypal.com/cgi-bin/webscr" method="post"
-                    target="_blank">
-                    <input type="hidden" name="cmd" value="_xclick">
-                    <input type="hidden" name="business" value="cristian.ballon@gmail.com">
-                    <input type="hidden" name="lc" value="AL">
-                    <input type="hidden" name="item_name" value="compras ecommerce">
-                    <input type="hidden" name="item_number" value="0001">
-                    <input type="hidden" name="button_subtype" value="services">
-                    <input type="hidden" name="no_note" value="0">
-                    <input type="hidden" name="currency_code" value="PEN">
-                    <input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHostedGuest">
-                    <input type="image" src="https://simple-membership-plugin.com/wp-content/uploads/2018/09/paypal-smart-payment-button-for-simple-membership.jpg" border="0"
-                        name="submit" alt="PayPal - The safer, easier way to pay online!">
-                    <img alt="" border="0" src="https://www.paypalobjects.com/es_XC/i/scr/pixel.gif" width="1"
-                        height="1">
-                </form>
 
+                @if($information->script_paypal)
+
+                    {!!html_entity_decode($information->script_paypal)!!}
+
+                @endif
 
 
                 @endguest
@@ -256,6 +250,7 @@
                 tax: '0.0',
                 total: '0.0'
             },
+            aux_totals: {},
             form_document: {},
             user: {},
             typeDocumentSelected: ''
@@ -294,7 +289,9 @@
                     return obj
                 })
             }
+            // console.log(this.records)
             this.initForm();
+
         },
         methods: {
             getFormPaymentCash() {
@@ -433,7 +430,7 @@
                     });
 
             },
-            sendDocument() {
+            async sendDocument() {
 
                 $('#modal_ask_document').modal('hide');
                 $('#modal_identity_document').modal('hide');
@@ -446,8 +443,9 @@
                         Swal.showLoading()
                     }
                 });
-
-                axios.post('/api/documents', this.getDocument(), this.getHeaderConfig())
+                let doc = await this.getDocument()
+                // console.log(doc)
+                await axios.post('/api/documents', doc, this.getHeaderConfig())
                     .then(response => {
                         console.log('documento generado correctamente')
                         this.finallyProcess(this.getDataFinally(response.data))
@@ -478,9 +476,9 @@
 
                 }
             },
-            getDocument() {
-                this.form_document.items = this.getItemsDocument()
-                this.form_document.totales = this.getTotales()
+            async getDocument() {
+                this.form_document.items = await this.getItemsDocument()
+                this.form_document.totales = await this.getTotales()
 
                 if (this.formIdentity.identity_document_type_id === '6') {
                     this.form_document.serie_documento = 'F001'
@@ -492,39 +490,92 @@
                 }
                 return this.form_document
             },
-            getTotales() {
-                return {
+            async getTotales() {
+
+                let totals = await {
                     "total_exportacion": 0.00,
-                    "total_operaciones_gravadas": 100.00,
+                    "total_operaciones_gravadas": this.aux_totals.total_taxed,
                     "total_operaciones_inafectas": 0.00,
-                    "total_operaciones_exoneradas": 0.00,
+                    "total_operaciones_exoneradas": this.aux_totals.total_exonerated,
                     "total_operaciones_gratuitas": 0.00,
-                    "total_igv": 18.00,
-                    "total_impuestos": 18.00,
-                    "total_valor": 100,
-                    "total_venta": 118
+                    "total_igv": this.aux_totals.total_igv,
+                    "total_impuestos": this.aux_totals.total_igv,
+                    "total_valor": this.aux_totals.total_value,
+                    "total_venta": this.aux_totals.total
                 }
+
+                return totals
             },
-            getItemsDocument() {
-                return this.records_old.map((item) => {
-                    return {
-                        "codigo_interno": "0",
-                        "descripcion": item.description,
-                        "codigo_producto_sunat": "0",
-                        "unidad_de_medida": "NIU",
-                        "cantidad": item.cantidad,
-                        "valor_unitario": 50,
-                        "codigo_tipo_precio": "01",
-                        "precio_unitario": item.sale_unit_price,
-                        "codigo_tipo_afectacion_igv": "10",
-                        "total_base_igv": 100.00,
-                        "porcentaje_igv": 18,
-                        "total_igv": 18,
-                        "total_impuestos": 18,
-                        "total_valor_item": 100,
-                        "total_item": 118
+            async getItemsDocument() {
+
+                let rec = await this.records_old.map((item) => {
+
+                    let sale_unit_price = 0
+                    let total_exonerated = 0
+                    let total_igv = 0
+                    let total_val = 0
+                    let total = 0
+                    let percentage_igv = 18
+
+                    if (item.sale_affectation_igv_type_id === '10') {
+
+                        unit_value = item.sale_unit_price / (1 + percentage_igv / 100)
+                        total_igv = item.cantidad * parseFloat(item.sale_unit_price - unit_value)
+                        total = (item.cantidad * item.sale_unit_price)
+                        sale_unit_price = parseFloat(item.sale_unit_price)
+                        total_val = (unit_value * item.cantidad)
+
+                        return {
+                            "codigo_interno": (item.internal_id) ? item.internal_id:"",
+                            "descripcion": item.description,
+                            "codigo_producto_sunat": "",
+                            "unidad_de_medida": item.unit_type_id,
+                            "cantidad": item.cantidad,
+                            "valor_unitario": unit_value,
+                            "codigo_tipo_precio": "01",
+                            "precio_unitario": sale_unit_price,
+                            "codigo_tipo_afectacion_igv": "10",
+                            "total_base_igv": total_val,
+                            "porcentaje_igv": percentage_igv,
+                            "total_igv": total_igv,
+                            "total_impuestos": total_igv,
+                            "total_valor_item": total_val,
+                            "total_item": total
+                        }
+
                     }
+
+                    if (item.sale_affectation_igv_type_id === '20') {
+
+                        unit_value = parseFloat(item.sale_unit_price)
+                        total_igv = 0
+                        total = (parseFloat(item.cantidad) * parseFloat(item.sale_unit_price))
+                        sale_unit_price = parseFloat(item.sale_unit_price)
+                        total_val = (parseFloat(unit_value) * parseFloat(item.cantidad))
+
+                        return {
+                            "codigo_interno": (item.internal_id) ? item.internal_id:"",
+                            "descripcion": item.description,
+                            "codigo_producto_sunat": "",
+                            "unidad_de_medida": item.unit_type_id,
+                            "cantidad": item.cantidad,
+                            "valor_unitario": unit_value,
+                            "codigo_tipo_precio": "01",
+                            "precio_unitario": sale_unit_price,
+                            "codigo_tipo_afectacion_igv": "20",
+                            "total_base_igv": total_val,
+                            "porcentaje_igv": percentage_igv,
+                            "total_igv": 0,
+                            "total_impuestos": 0,
+                            "total_valor_item": total_val,
+                            "total_item": total
+                        }
+
+                    }
+
                 })
+
+                return rec
             },
             initForm() {
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
@@ -545,7 +596,6 @@
                     "codigo_tipo_documento": "01",
                     "codigo_tipo_moneda": "PEN",
                     "fecha_de_vencimiento": moment().format('YYYY-MM-DD'),
-                    "numero_orden_de_compra": "000001",
                     "datos_del_cliente_o_receptor": {
                         "codigo_tipo_documento_identidad": "0",
                         "numero_documento": "0",
@@ -558,7 +608,6 @@
                     },
                     "totales": {},
                     "items": [],
-                    "informacion_adicional": "Forma de pago:Efectivo|Caja: 1"
                 }
 
             },
@@ -577,25 +626,84 @@
 
             },
             clearShoppingCart() {
+
                 this.records_old = this.records
                 this.records = []
                 localStorage.setItem('products_cart', JSON.stringify([]))
-                this.calculateSummary()
+                // this.calculateSummary()
+
+                this.summary = {
+                    subtotal: '0.0',
+                    tax: '0.0',
+                    total: '0.0',
+                    total_taxed: '0.0',
+                    total_value: '0.0',
+                    total_exonerated: '0.0',
+                    total_igv: '0.0'
+                }
+
             },
             calculateSummary() {
+
                 let subtotal = 0.00
+                let total_taxed = 0
+                let total_value = 0
+                let total_exonerated = 0
+                let total_igv = 0
+                let total = 0
+
                 this.records.forEach(function (item) {
                     //console.log(item)
                     subtotal += parseFloat(item.sub_total)
+
+                    let unit_price = item.sub_total
+                    let unit_value = unit_price
+                    let percentage_igv = 18
+
+                    if (item.sale_affectation_igv_type_id === '10') {
+                        unit_value = item.sub_total / (1 + percentage_igv / 100)
+                        total_taxed += parseFloat(unit_value)
+                        total_igv += parseFloat(unit_price - unit_value)
+                    }
+                    if (item.sale_affectation_igv_type_id === '20') {
+                        total_exonerated += parseFloat(unit_value)
+                    }
+
+                    total_value = total_taxed + total_exonerated
+                    total += parseFloat(unit_price)
                 })
 
-                this.summary.subtotal = subtotal.toFixed(2)
-                let tax = (subtotal * 0.18)
-                this.summary.tax = tax.toFixed(2)
-                this.summary.total = (subtotal + tax).toFixed(2)
+                // console.log(total_taxed, total_exonerated, total_igv)
+
+                this.summary.total_taxed = total_taxed.toFixed(2)
+                this.summary.total_exonerated = total_exonerated.toFixed(2)
+                this.summary.total_igv = total_igv.toFixed(2)
+                this.summary.total_value = total_value.toFixed(2)
+                this.summary.total = total.toFixed(2)
+                this.aux_totals = this.summary
+                // console.log(this.summary)
+
+
                 $("#total_amount").data('total', this.summary.total);
 
-                this.payment_cash.amount = this.summary.total
+                this.payment_cash.amount = this.summary.total;
+
+                // let x =
+                // console.log(x)
+
+                // let subtotal = 0.00
+                // this.records.forEach(function (item) {
+                //     //console.log(item)
+                //     subtotal += parseFloat(item.sub_total)
+                // })
+
+                // this.summary.subtotal = subtotal.toFixed(2)
+                // let tax = (subtotal * 0.18)
+                // this.summary.tax = tax.toFixed(2)
+                // this.summary.total = (subtotal + tax).toFixed(2)
+                // $("#total_amount").data('total', this.summary.total);
+
+                // this.payment_cash.amount = this.summary.total
             }
         }
     })
@@ -603,7 +711,7 @@
 </script>
 
 <script>
-    Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
+    Culqi.publicKey = {!! json_encode($configuration->token_public_culqui ) !!};
     Culqi.options({
         installments: true
     });

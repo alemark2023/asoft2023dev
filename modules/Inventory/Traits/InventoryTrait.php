@@ -12,6 +12,7 @@ use Modules\Inventory\Models\{
 use App\Models\Tenant\{
     Configuration,
     Establishment,
+    SaleNoteItem,
     Item
 };
 use Exception;
@@ -47,7 +48,19 @@ trait InventoryTrait
         return collect($records)->transform(function($row) {
             return  [
                 'id' => $row->id,
-                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+                'lots_enabled' => (bool) $row->lots_enabled,
+                'lots' => $row->item_lots->where('has_sale', false)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'series' => $row->series,
+                        'date' => $row->date,
+                        'item_id' => $row->item_id,
+                        'warehouse_id' => $row->warehouse_id,
+                        'has_sale' => (bool)$row->has_sale,
+                        'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    ];
+                }),
             ];
         });
     }
@@ -115,6 +128,7 @@ trait InventoryTrait
         ]);
     }
     
+
     private function updateStock($item_id, $quantity, $warehouse_id) {
 
         $inventory_configuration = InventoryConfiguration::firstOrFail();
@@ -163,4 +177,34 @@ trait InventoryTrait
     public function findWarehouseById($warehouse_id) {
         return Warehouse::findOrFail($warehouse_id);
     }
+
+    
+    ////kardex sale note
+    public function findSaleNoteItem($sale_note_item_id) {
+        return SaleNoteItem::find($sale_note_item_id);
+    }
+    
+    private function createInventoryKardexSaleNote($model, $item_id, $quantity, $warehouse_id, $sale_note_item_id) {
+
+        $sale_note_kardex = $model->inventory_kardex()->create([
+            'date_of_issue' => date('Y-m-d'),
+            'item_id' => $item_id,
+            'warehouse_id' => $warehouse_id,
+            'quantity' => $quantity,
+        ]);
+
+        $sale_note_item = $this->findSaleNoteItem($sale_note_item_id);
+        $sale_note_item->inventory_kardex_id = $sale_note_kardex->id;
+        $sale_note_item->update();
+    }
+
+    private function deleteInventoryKardex($model, $inventory_kardex_id) {
+        $model->inventory_kardex()->where('id',$inventory_kardex_id)->delete();
+    }
+    ////kardex sale note
+
+    private function deleteAllInventoryKardexByModel($model) {
+        $model->inventory_kardex()->delete();
+    }
+
 }

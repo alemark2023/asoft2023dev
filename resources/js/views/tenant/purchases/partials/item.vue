@@ -50,6 +50,17 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-6 mt-2" v-if="form.item_id">
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}" v-if="form.item.lots_enabled">
+                            <label class="control-label">
+                                Código lote
+                            </label>
+                            <el-input v-model="lot_code" >
+                                <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
+                        </div>
+                    </div>
                     <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                         <div style="margin:3px" class="table-responsive">
                             <h3>Lista de Precios</h3>
@@ -59,30 +70,30 @@
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Descripción</th>
                                 <th class="text-center">Factor</th>
-                               
+
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr v-for="(row, index) in form.item_unit_types">
-                               
+
                                     <td class="text-center">{{row.unit_type_id}}</td>
                                     <td class="text-center">{{row.description}}</td>
                                     <td class="text-center">{{row.quantity_unit}}</td>
-                 
+
                                     <td class="series-table-actions text-right">
                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
                                             <i class="el-icon-check"></i>
                                         </button>
                                     </td>
-                                
-                               
+
+
                             </tr>
                             </tbody>
                         </table>
 
                         </div>
-                        
+
                     </div>
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
@@ -204,10 +215,18 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
+                   
+        <lots-form
+            :showDialog.sync="showDialogLots"
+            :stock="form.quantity"
+            :lots="lots"
+            @addRowLot="addRowLot">
+        </lots-form>
+
     </el-dialog>
 </template>
 <style>
-.el-select-dropdown { 
+.el-select-dropdown {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
@@ -216,32 +235,36 @@
 
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
+    import LotsForm from '../../items/partials/lots.vue'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm},
+        components: {itemForm, LotsForm},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
+                showDialogLots:false,
                 resource: 'purchases',
                 showDialogNewItem: false,
                 errors: {},
                 form: {},
                 items: [],
                 warehouses: [],
+                lots: [],
                 affectation_igv_types: [],
                 system_isc_types: [],
                 discount_types: [],
                 charge_types: [],
                 attribute_types: [],
                 use_price: 1,
-                change_affectation_igv_type_id: false, 
+                lot_code: null,
+                change_affectation_igv_type_id: false,
             }
         },
         created() {
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.items = response.data.items 
+                this.items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
@@ -256,6 +279,15 @@
             })
         },
         methods: {
+            addRowLot(lots){
+                this.lots = lots
+            },
+            clickLotcode(){
+                // if(this.form.stock <= 0)
+                //     return this.$message.error('El stock debe ser mayor a 0')
+
+                this.showDialogLots = true
+            },
             filterItems(){
                 this.items = this.items.filter(item => item.warehouses.length >0)
             },
@@ -277,10 +309,13 @@
                     charges: [],
                     discounts: [],
                     attributes: [],
-                    item_unit_types: []
+                    item_unit_types: [],
+                    lot_code:null,
                 }
 
                 this.item_unit_type = {};
+                this.lots = []
+                this.lot_code = null
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -359,18 +394,33 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id})
                 this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
-
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             },
-            clickAddItem() {
+            async clickAddItem() {
+
+                if(this.form.item.lots_enabled){
+ 
+                    if(!this.lot_code)
+                        return this.$message.error('Código de lote es requerido');
+                    
+                    if(this.lots.length != this.form.quantity)
+                        return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');
+ 
+                }
+
                 this.form.item.unit_price = this.form.unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-                this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+                this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
+ 
+                this.row.lot_code = await this.lot_code
+                this.row.lots = await this.lots
+
                 this.row = this.changeWarehouse(this.row)
-             
+                // console.log(this.row)
+                
                 this.initForm()
-                // this.initializeFields() 
+                // this.initializeFields()
                 this.$emit('add', this.row)
             },
             changeWarehouse(row){

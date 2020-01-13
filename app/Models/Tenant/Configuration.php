@@ -17,7 +17,9 @@ class Configuration extends ModelTenant
         'quantity_documents',
         'date_time_start',
         'locked_tenant',
-        'compact_sidebar'
+        'compact_sidebar',
+        'decimal_quantity',
+        'amount_plastic_bag_taxes',
     ];
 
     public function setPlanAttribute($value)
