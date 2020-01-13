@@ -13,7 +13,7 @@ class ReportKardexCollection extends ResourceCollection
     public function toArray($request)
     { 
         return $this->collection->transform(function($row, $key) {
-
+            
             return self::determinateRow($row);
 
         });
@@ -33,6 +33,7 @@ class ReportKardexCollection extends ResourceCollection
             case $models[0]: 
                 return [
                     'id' => $row->id,
+                    'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'type_transaction' => ($row->quantity < 0) ? "Venta":"Anulación Venta",
@@ -45,6 +46,7 @@ class ReportKardexCollection extends ResourceCollection
             case $models[1]:
                 return [
                     'id' => $row->id,
+                    'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'type_transaction' => ($row->quantity < 0) ? "Anulación Compra":"Compra",
@@ -57,6 +59,7 @@ class ReportKardexCollection extends ResourceCollection
             case $models[2]: 
                 return [
                     'id' => $row->id,
+                    'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'type_transaction' => "Nota de venta",
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
@@ -92,6 +95,7 @@ class ReportKardexCollection extends ResourceCollection
 
                 return [
                     'id' => $row->id,
+                    'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => '-',
                     'type_transaction' => $row->inventory_kardexable->description,

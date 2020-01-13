@@ -8,24 +8,26 @@
                     <data-table :resource="resource">
                         <tr slot="heading">
                             <th>#</th>
+                            <th v-if="!item_id">Producto</th>
                             <th>Fecha y hora transacción</th>
                             <th>Tipo transacción</th>
                             <th>Número</th>
                             <th>Feha emisión</th>
                             <th>Entrada</th>
                             <th>Salida</th>
-                            <th>Saldo</th>
+                            <th v-if="item_id">Saldo</th>
  
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>  
+                            <td v-if="!item_id">{{row.item_name}}</td>
                             <td>{{row.date_time}}</td>
                             <td>{{row.type_transaction}}</td>
                             <td>{{row.number}}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.input}}</td> 
                             <td>{{row.output}}</td> 
-                            <td>{{row.balance}}</td> 
+                            <td v-if="item_id">{{row.balance}}</td> 
                         </tr>
                         
                     </data-table>
@@ -47,10 +49,14 @@
             return {
                 resource: 'reports/kardex',                 
                 form: {}, 
-
+                item_id:null
             }
         },
-        async created() { 
+        created() { 
+            this.$eventHub.$on('emitItemID', (item_id) => {
+                // console.log(item_id)
+                this.item_id = item_id
+            })
         },
         methods: { 
              

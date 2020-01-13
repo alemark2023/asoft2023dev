@@ -87,16 +87,35 @@ class ReportKardexController extends Controller
         if($date_start && $date_end){
 
             $data = InventoryKardex::with(['inventory_kardexable'])
-                        ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])      
+                        ->where([['warehouse_id', $warehouse->id]])      
                         ->whereBetween('date_of_issue', [$date_start, $date_end])  
-                        ->orderBy('id');
+                        ->orderBy('item_id')->orderBy('id');
 
         }else{
 
             $data = InventoryKardex::with(['inventory_kardexable'])
-                        ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])                                         
-                        ->orderBy('id');
+                        ->where([['warehouse_id', $warehouse->id]])                                         
+                        ->orderBy('item_id')->orderBy('id');
         }
+
+        if($item_id){
+            $data = $data->where('item_id', $item_id);
+        }
+
+
+        // if($date_start && $date_end){
+
+        //     $data = InventoryKardex::with(['inventory_kardexable'])
+        //                 ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])      
+        //                 ->whereBetween('date_of_issue', [$date_start, $date_end])  
+        //                 ->orderBy('id');
+
+        // }else{
+
+        //     $data = InventoryKardex::with(['inventory_kardexable'])
+        //                 ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])                                         
+        //                 ->orderBy('id');
+        // }
        
         return $data;
         

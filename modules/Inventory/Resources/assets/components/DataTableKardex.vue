@@ -9,7 +9,7 @@
                         <div class="col-md-6">
                             <label class="control-label">Producto</label>
                             <el-select  v-model="form.item_id"
-                                    filterable>
+                                    filterable clearable>
                                 <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select>
                         </div>
@@ -156,6 +156,8 @@
 
             },
             getRecords() {
+                this.$eventHub.$emit('emitItemID', this.form.item_id)
+
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
                     this.pagination = response.data.meta
