@@ -7,7 +7,7 @@ use Modules\Inventory\Models\InventoryTransaction;
 
 class ReportKardexCollection extends ResourceCollection
 {
-    //funciona correctamente, usar cuando se cambie a vue
+
     protected static $balance = 0;
 
     public function toArray($request)
@@ -41,6 +41,7 @@ class ReportKardexCollection extends ResourceCollection
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
+                    'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
                 ];
             
             case $models[1]:
@@ -54,6 +55,7 @@ class ReportKardexCollection extends ResourceCollection
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
+                    'sale_note_asoc' => '-',
                 ]; 
             
             case $models[2]: 
@@ -67,6 +69,7 @@ class ReportKardexCollection extends ResourceCollection
                     'input' => "-",
                     'output' => $row->quantity,
                     'balance' => self::$balance+= $row->quantity,
+                    'sale_note_asoc' => '-',
                 ]; 
             
             case $models[3]:{
@@ -103,6 +106,7 @@ class ReportKardexCollection extends ResourceCollection
                     'input' => $input,
                     'output' => $output,
                     'balance' => self::$balance+= $row->quantity,
+                    'sale_note_asoc' => '-',
                 ]; 
             } 
 

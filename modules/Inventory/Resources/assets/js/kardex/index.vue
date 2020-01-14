@@ -12,6 +12,7 @@
                             <th>Fecha y hora transacción</th>
                             <th>Tipo transacción</th>
                             <th>Número</th>
+                            <th>NV. Asociada</th>
                             <th>Feha emisión</th>
                             <th>Entrada</th>
                             <th>Salida</th>
@@ -24,6 +25,7 @@
                             <td>{{row.date_time}}</td>
                             <td>{{row.type_transaction}}</td>
                             <td>{{row.number}}</td>
+                            <td>{{row.sale_note_asoc}}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.input}}</td> 
                             <td>{{row.output}}</td> 

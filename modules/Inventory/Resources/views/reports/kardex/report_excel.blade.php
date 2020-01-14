@@ -48,6 +48,9 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                @if(!$item_id)
+                                <th>Producto</th>
+                                @endif
                                 <th>Fecha y hora transacción</th>
                                 <th>Tipo transacción</th>
                                 <th>Número</th>
@@ -56,13 +59,18 @@
 
                                 <th>Entrada</th>
                                 <th>Salida</th>
+                                @if($item_id)
                                 <th>Saldo</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
                             <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
+                                    @if(!$item_id)
+                                        <td class="celda">{{$value->item->description}}</td>
+                                    @endif
                                     <td class="celda">{{$value->created_at->format('d/m/Y H:i')}}</td>
                                     <td class="celda">
 
@@ -212,7 +220,10 @@
                                     @php                             
                                         $balance += $value->quantity;   
                                     @endphp
-                                    <td class="celda">{{number_format($balance, 4, ".", "")}}</td>
+                                    
+                                    @if($item_id)
+                                        <td class="celda">{{number_format($balance, 4, ".", "")}}</td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>

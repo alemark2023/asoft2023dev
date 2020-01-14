@@ -143,34 +143,40 @@ class ReportKardexController extends Controller
      */
     public function pdf(Request $request) {
 
+        // dd($request->all());
+
         $balance = 0;
         $company = Company::first();
         $establishment = Establishment::first();
         $d = $request->date_start;
         $a = $request->date_end;
-        $item_selected = $request->item_id;
+        $item_id = $request->item_id;
 
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
         if($d && $a){
 
             $reports = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])      
+                                        ->where([['warehouse_id', $warehouse->id]])      
                                         ->whereBetween('date_of_issue', [$d, $a])                                   
-                                        ->orderBy('id')                                  
+                                        ->orderBy('item_id')->orderBy('id')                                  
                                         ->get();
 
         }else{
 
             $reports = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])  
-                                        ->orderBy('id')     
+                                        ->where([['warehouse_id', $warehouse->id]])  
+                                        ->orderBy('item_id')->orderBy('id')     
                                         ->get();
+        }
+
+        if($item_id){
+            $reports = $reports->where('item_id', $item_id);
         }
 
         $models = $this->models;
         
-        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_selected"));
+        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_id"));
         $filename = 'Reporte_Kardex'.date('YmdHis');
         
         return $pdf->download($filename.'.pdf');
@@ -188,29 +194,35 @@ class ReportKardexController extends Controller
         $establishment = Establishment::first();
         $d = $request->date_start;
         $a = $request->date_end;
+        $item_id = $request->item_id;
        
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
         if($d && $a){
 
             $records = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])      
+                                        ->where([['warehouse_id', $warehouse->id]])      
                                         ->whereBetween('date_of_issue', [$d, $a])                                   
-                                        ->orderBy('id')                                  
+                                        ->orderBy('item_id')->orderBy('id')                                  
                                         ->get();
 
         }else{
 
             $records = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])  
-                                        ->orderBy('id')     
+                                        ->where([['warehouse_id', $warehouse->id]])  
+                                        ->orderBy('item_id')->orderBy('id')     
                                         ->get();
+        }
+
+        if($item_id){
+            $records = $records->where('item_id', $item_id);
         }
 
         $models = $this->models;
         
         return (new KardexExport)
             ->balance($balance)
+            ->item_id($item_id)
             ->records($records)
             ->models($models)
             ->company($company)
