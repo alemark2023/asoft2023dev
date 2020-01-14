@@ -51,7 +51,7 @@
                             <template v-if="!is_client">
                                 <el-checkbox  v-model="search_item_by_barcode" :disabled="recordItem != null" >Buscar por código de barras</el-checkbox><br>
                             </template>
-                            <el-checkbox v-model="form.has_plastic_bag_taxes" >Impuesto a la Bolsa Plástica</el-checkbox>
+                            <el-checkbox v-model="form.has_plastic_bag_taxes" :disabled="isEditItemNote" >Impuesto a la Bolsa Plástica</el-checkbox>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
@@ -430,7 +430,7 @@
     import WarehousesDetail from '../../items/partials/warehouses.vue'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
         components: {ItemForm, WarehousesDetail},
         data() {
             return {
@@ -552,6 +552,12 @@
                     this.form.quantity = this.recordItem.quantity
                     this.form.unit_price_value = this.recordItem.input_unit_price_value
                     this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
+
+                    if(this.isEditItemNote){
+                        this.form.item.currency_type_id = this.currencyTypeIdActive
+                        this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+                    }
+
 
                     this.calculateQuantity()
                 }

@@ -48,12 +48,14 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownload(row.id)">Reporte</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummary(row.id)">R. Ingreso</button>
 
-                            <template v-if="row.state">                
+                            <template v-if="row.state">      
+
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
                                 <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                            </template>
+                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                            </template>
+                            
                         </td>
                     </tr>
                 </data-table>

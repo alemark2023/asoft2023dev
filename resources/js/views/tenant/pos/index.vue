@@ -36,7 +36,10 @@
             <div class="col-lg-3 col-md-4 col-sm-6" :key="index" >
               <section class="card ">
                 <div class="card-body pointer px-2 pt-2" @click="clickAddItem(item,index)">
-                  <p class="font-weight-semibold mb-0">{{item.description}}</p>
+                  <p class="font-weight-semibold mb-0" v-if="item.description.length > 50" data-toggle="tooltip" data-placement="top" :title="item.description">
+                    {{item.description.substring(0,50)}}
+                  </p>
+                  <p class="font-weight-semibold mb-0" v-if="item.description.length < 50">{{item.description}}</p>
                   <img :src="item.image_url" class="img-thumbail img-custom" />
                   <p class="text-muted font-weight-lighter mb-0">
                     <small>{{item.internal_id}}</small>
@@ -78,7 +81,7 @@
                     <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
                       <i class="fa fa-search"></i>
                     </button>
-                    </el-tooltip>
+                  </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
                     <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
@@ -159,7 +162,7 @@
                       <p class="font-weight-semibold m-0 text-center">
                         <el-input
                           v-model="item.item.unit_price"
-                          @blur="blurCalculateQuantity2(index)" 
+                          @blur="blurCalculateQuantity2(index)"
                         >
                         </el-input>
                       </p>
@@ -195,7 +198,7 @@
           <div class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2">
 
             <div class="col-md-12" style="display: flex; flex-direction: column; align-items: flex-end;">
-              <table> 
+              <table>
                   <tr v-if="form.total_exonerated > 0" class="font-weight-semibold  m-0">
                       <td class="font-weight-semibold">OP.EXONERADAS</td>
                       <td class="font-weight-semibold">:</td>
@@ -220,43 +223,43 @@
                       <td class="font-weight-semibold">IGV</td>
                       <td class="font-weight-semibold">:</td>
                       <td class="text-right text-blue">{{ currency_type.symbol }} {{ form.total_igv }}</td>
-                  </tr> 
-              </table> 
+                  </tr>
+              </table>
             </div>
 
             <!-- <div class="col-12 text-right px-0" v-if="form.total_taxed > 0">
               <h4 class="font-weight-semibold  m-0">
                 <span class="font-weight-semibold">OP.GRAVADA: </span>
                 <span class="text-blue">{{currency_type.symbol}} {{ form.total_taxed }}</span>
-              </h4> 
+              </h4>
             </div>
 
             <div class="col-12 text-right px-0" v-if="form.total_free > 0">
               <h4 class="font-weight-semibold  m-0">
                 <span class="font-weight-semibold">OP.GRATUITAS: </span>
                 <span class="text-blue">{{currency_type.symbol}} {{ form.total_free }}</span>
-              </h4> 
-            </div> 
+              </h4>
+            </div>
 
             <div class="col-12 text-right px-0" v-if="form.total_unaffected > 0">
               <h4 class="font-weight-semibold  m-0">
                 <span class="font-weight-semibold">OP.INAFECTAS: </span>
                 <span class="text-blue">{{currency_type.symbol}} {{ form.total_unaffected }}</span>
-              </h4> 
+              </h4>
             </div>
-             
+
             <div class="col-12 text-right px-0" v-if="form.total_exonerated > 0">
               <h4 class="font-weight-semibold  m-0">
                 <span class="font-weight-semibold">OP.EXONERADAS: </span>
                 <span class="text-blue">{{currency_type.symbol}} {{ form.total_exonerated }}</span>
-              </h4> 
+              </h4>
             </div>
-            
+
             <div class="col-12 text-right px-0" v-if="form.total_igv > 0">
               <h4 class="font-weight-semibold  m-0">
                 <span class="font-weight-semibold">IGV: </span>
                 <span class="text-blue">{{currency_type.symbol}} {{form.total_igv}}</span>
-              </h4> 
+              </h4>
             </div> -->
 
           </div>
