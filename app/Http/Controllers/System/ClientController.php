@@ -101,8 +101,8 @@ class ClientController extends Controller
             $tenancy->tenant($row->hostname->website);
             for($i = 1; $i <= 12; $i++)
             {
-                $date_initial = Carbon::parse('2019-'.$i.'-1');
-                $date_final = Carbon::parse('2019-'.$i.'-'.cal_days_in_month(CAL_GREGORIAN, $i, 2018));
+                $date_initial = Carbon::parse('2020-'.$i.'-1');
+                $date_final = Carbon::parse('2020-'.$i.'-'.cal_days_in_month(CAL_GREGORIAN, $i, 2019));
                 $count_documents[] = [
                     'client' => $row->number,
                     'month' => $i,
@@ -157,7 +157,7 @@ class ClientController extends Controller
             foreach ($request->modules as $module) {
                 if($module['checked']){
                     $array_modules[] = ['module_id' => $module['id'], 'user_id' => 1];
-                    
+
                     if($module['id'] == 1){
                         DB::connection('tenant')->table('module_level_user')->insert([
                             ['module_level_id' => 1, 'user_id' => 1],
@@ -168,7 +168,7 @@ class ClientController extends Controller
                             ['module_level_id' => 6, 'user_id' => 1],
                             ['module_level_id' => 7, 'user_id' => 1],
                             ['module_level_id' => 8, 'user_id' => 1],
-                            ['module_level_id' => 9, 'user_id' => 1], 
+                            ['module_level_id' => 9, 'user_id' => 1],
                         ]);
                     }
                 }
@@ -320,7 +320,7 @@ class ClientController extends Controller
                             ['module_level_id' => 6, 'user_id' => $user_id],
                             ['module_level_id' => 7, 'user_id' => $user_id],
                             ['module_level_id' => 8, 'user_id' => $user_id],
-                            ['module_level_id' => 9, 'user_id' => $user_id], 
+                            ['module_level_id' => 9, 'user_id' => $user_id],
                         ]);
                     }
                 }
