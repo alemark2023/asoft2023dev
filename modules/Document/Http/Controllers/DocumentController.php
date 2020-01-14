@@ -10,6 +10,8 @@ use Modules\Document\Http\Resources\DocumentNotSentCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Series;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DetractionType;
@@ -172,5 +174,41 @@ class DocumentController extends Controller
                             });
 
         return compact('customers');
+    }
+
+
+    
+    public function savePayConstancy(Request $request)
+    {
+        $document = Document::findOrFail($request->id);
+
+        $detraction = $document->detraction;
+        $detraction->pay_constancy = $request->pay_constancy;
+
+
+        if($request->upload_image_pay_constancy){
+            //hacer proceso de carga de imagen
+            $image_pay_constancy = $request->upload_image_pay_constancy;
+            $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR;
+
+            $file_name_old = $image_pay_constancy['image'];
+            $file_name_old_array = explode('.', $file_name_old);
+            $file_content = file_get_contents($image_pay_constancy['temp_path']);
+            $datenow = date('YmdHis');
+            $file_name =  $detraction->detraction_type_id.'-'.$detraction->bank_account.'-'.$datenow.'.'.$file_name_old_array[1];
+            Storage::put($directory.$file_name, $file_content);
+            $set_image_pay_constancy = $file_name;
+            $detraction->image_pay_constancy = $set_image_pay_constancy;
+
+        }
+
+        // dd($detraction, $request->upload_image_pay_constancy['temp_path']);
+        $document->detraction = $detraction;
+        $document->save();
+
+        return [
+            'success' => true,
+            'message' =>  'Constancia de pago guardada',
+        ];
     }
 }

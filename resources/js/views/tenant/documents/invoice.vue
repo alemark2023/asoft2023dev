@@ -510,6 +510,8 @@
         <document-detraction
             :detraction="form.detraction"
             :total="form.total"
+            :currency-type-id-active="form.currency_type_id"
+            :exchange-rate-sale="form.exchange_rate_sale"
             :showDialog.sync="showDialogDocumentDetraction"
             @addDocumentDetraction="addDocumentDetraction" ></document-detraction>
 
@@ -676,6 +678,7 @@
             },
             getFormatUnitPriceRow(unit_price){
                 return _.round(unit_price, 6)
+                // return unit_price.toFixed(6)
             },
             discountGlobalPrepayment(){
 
@@ -966,7 +969,9 @@
 
                 if(this.form.detraction){
 
-                    this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
+                    this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage)/100),2)
+
+                    // this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
                     // console.log(this.form.detraction.amount)
                 }
             },
@@ -976,8 +981,11 @@
 
                     let detraction = this.form.detraction
 
-                    if(this.form.total <= 700)
-                        return {success:false, message:'El importe de la operación debe ser mayor a S/ 700.00'}
+                    let tot = (this.form.currency_type_id == 'PEN') ? this.form.total:(this.form.total * this.form.exchange_rate_sale)
+                    // console.log(tot)
+
+                    if(tot <= 700)
+                        return {success:false, message:'El importe de la operación debe ser mayor a S/ 700.00 o equivalente en USD'}
 
                     if(!detraction.detraction_type_id)
                         return {success:false, message:'El campo bien o servicio sujeto a detracción es obligatorio'}
