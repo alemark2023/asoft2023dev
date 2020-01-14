@@ -55,7 +55,8 @@ class MobileController extends Controller
                 'name' => $row->name,
                 'number' => $row->number,
                 'identity_document_type_id' => $row->identity_document_type_id,
-                'identity_document_type_code' => $row->identity_document_type->code
+                'identity_document_type_code' => $row->identity_document_type->code,
+                'selected' => false
             ];
         });
 
@@ -102,6 +103,7 @@ class MobileController extends Controller
                 'has_igv' => (bool) $row->has_igv,
                 'is_set' => (bool) $row->is_set,
                 'aux_quantity' => 1,
+
             ];
         });
 
@@ -137,7 +139,7 @@ class MobileController extends Controller
         $row->save();
 
         $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-        
+
         return [
             'success' => true,
             'msg' => 'Producto registrado con éxito',
