@@ -6,6 +6,8 @@ $final_balance = 0;
 $cash_income = 0;
 $cash_egress = 0;
 $cash_final_balance = 0;
+ 
+
 $cash_documents = $cash->cash_documents;
 
 foreach ($cash_documents as $cash_document) {
@@ -13,16 +15,48 @@ foreach ($cash_documents as $cash_document) {
     //$final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
     
     if($cash_document->sale_note){
-        $cash_income += $cash_document->sale_note->total;
-        $final_balance += $cash_document->sale_note->total;
+
+        if($cash_document->sale_note->currency_type_id == 'PEN'){
+            
+            $cash_income += $cash_document->sale_note->total;
+            $final_balance += $cash_document->sale_note->total;
+        
+        }else{
+
+            $cash_income += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
+            $final_balance += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
+
+        }
+
     }
     else if($cash_document->document){
-        $cash_income += $cash_document->document->total;
-        $final_balance += $cash_document->document->total;
+
+        if($cash_document->document->currency_type_id == 'PEN'){
+
+            $cash_income += $cash_document->document->total;
+            $final_balance += $cash_document->document->total;
+
+        }else{
+            
+            $cash_income += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
+            $final_balance += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
+        }
+
     } 
     else if($cash_document->expense_payment){
-        $cash_egress += $cash_document->expense_payment->payment;
-        $final_balance -= $cash_document->expense_payment->payment;
+
+        if($cash_document->expense_payment->expense->currency_type_id == 'PEN'){
+
+            $cash_egress += $cash_document->expense_payment->payment;
+            $final_balance -= $cash_document->expense_payment->payment;
+
+        }else{
+
+            $cash_egress += $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+            $final_balance -= $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+
+        }
+
     }
 
 }
@@ -163,6 +197,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                 <th>Fecha emisión</th>
                                 <th>Cliente/Proveedor</th>
                                 <th>N° Documento</th> 
+                                <th>Moneda</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
@@ -178,6 +213,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                         $date_of_issue = null;
                                         $customer_name = null;
                                         $customer_number = null;
+                                        $currency_type_id = null;
                                         $total = null;
 
                                         if($value->sale_note){
@@ -189,6 +225,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $customer_name = $value->sale_note->customer->name;
                                             $customer_number = $value->sale_note->customer->number;
                                             $total = $value->sale_note->total;
+                                            $currency_type_id = $value->sale_note->currency_type_id;
 
                                         }
                                         else if($value->document){
@@ -200,6 +237,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $customer_name = $value->document->customer->name;
                                             $customer_number = $value->document->customer->number;
                                             $total = $value->document->total;
+                                            $currency_type_id = $value->document->currency_type_id;
 
                                         }
                                         else if($value->expense_payment){
@@ -211,6 +249,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $customer_name = $value->expense_payment->expense->supplier->name;
                                             $customer_number = $value->expense_payment->expense->supplier->number;
                                             $total = -$value->expense_payment->payment;
+                                            $currency_type_id = $value->expense_payment->expense->currency_type_id;
 
                                         } 
 
@@ -224,6 +263,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                     <td class="celda">{{ $date_of_issue}}</td>
                                     <td class="celda">{{ $customer_name }}</td>
                                     <td class="celda">{{$customer_number }}</td>  
+                                    <td class="celda">{{ $currency_type_id }}</td>
                                     <td class="celda">{{ number_format($total,2) }}</td>
 
                                 </tr>

@@ -126,17 +126,29 @@ class CashController extends Controller
 
         foreach ($cash->cash_documents as $cash_document) {
 
-            // $final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
 
             if($cash_document->sale_note){
-                $final_balance += $cash_document->sale_note->total;
+                
+                $final_balance += ($cash_document->sale_note->currency_type_id == 'PEN') ? $cash_document->sale_note->total : ($cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale);
+                
+                // $final_balance += $cash_document->sale_note->total;
+
             }
             else if($cash_document->document){
-                $final_balance += $cash_document->document->total;
+
+                $final_balance += ($cash_document->document->currency_type_id == 'PEN') ? $cash_document->document->total : ($cash_document->document->total * $cash_document->document->exchange_rate_sale);
+
+                // $final_balance += $cash_document->document->total;
+
             }
             else if($cash_document->expense_payment){
-                $final_balance -= $cash_document->expense_payment->payment;
+
+                $final_balance -= ($cash_document->expense_payment->expense->currency_type_id == 'PEN') ? $cash_document->expense_payment->payment:($cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale);
+
+                // $final_balance -= $cash_document->expense_payment->payment;
+
             }
+
             // else if($cash_document->purchase){
             //     $final_balance -= $cash_document->purchase->total;
             // }
