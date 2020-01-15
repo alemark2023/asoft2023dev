@@ -171,7 +171,7 @@ class MobileController extends Controller
 
     public function person(Request $request)
     {
-        $row = new Person()
+        $row = new Person();
         $row->fill($request->all());
         $row->save();
 
