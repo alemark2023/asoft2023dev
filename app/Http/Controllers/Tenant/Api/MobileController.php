@@ -188,7 +188,7 @@ class MobileController extends Controller
                 'address' => $row->address,
                 'email' => $row->email,
                 'selected' => false
-            ];
+            ]
         ];
     }
 
