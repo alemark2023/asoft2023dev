@@ -158,8 +158,8 @@ class CashController extends Controller
 
         }
 
-        $cash->final_balance = $final_balance + $cash->beginning_balance; 
-        $cash->income = $final_balance; 
+        $cash->final_balance = round($final_balance + $cash->beginning_balance, 2); 
+        $cash->income = round($final_balance, 2); 
         $cash->state = false;          
         $cash->save();         
         

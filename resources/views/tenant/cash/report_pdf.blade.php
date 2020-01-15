@@ -168,18 +168,18 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                 </tr>
                 <tr>
                     <td class="td-custom">
-                        <p><strong>Saldo inicial: </strong>S/. {{number_format($cash->beginning_balance,2)}}</p>
+                        <p><strong>Saldo inicial: </strong>S/. {{number_format($cash->beginning_balance, 2, ".", "")}}</p>
                     </td>
                     <td  class="td-custom">
-                        <p><strong>Ingreso: </strong>S/. {{number_format($cash_income,2)}} </p>
+                        <p><strong>Ingreso: </strong>S/. {{number_format($cash_income, 2, ".", "")}} </p>
                     </td>
                 </tr>
                 <tr> 
                     <td  class="td-custom">
-                        <p><strong>Saldo final: </strong>S/. {{number_format($cash_final_balance,2)}} </p>
+                        <p><strong>Saldo final: </strong>S/. {{number_format($cash_final_balance, 2, ".", "")}} </p>
                     </td>
                     <td  class="td-custom">
-                        <p><strong>Egreso: </strong>S/. {{number_format($cash_egress,2)}} </p>
+                        <p><strong>Egreso: </strong>S/. {{number_format($cash_egress, 2, ".", "")}} </p>
                     </td>
                 </tr>
             </table> 
@@ -264,7 +264,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                     <td class="celda">{{ $customer_name }}</td>
                                     <td class="celda">{{$customer_number }}</td>  
                                     <td class="celda">{{ $currency_type_id }}</td>
-                                    <td class="celda">{{ number_format($total,2) }}</td>
+                                    <td class="celda">{{ number_format($total,2, ".", "") }}</td>
 
                                 </tr>
                             @endforeach
