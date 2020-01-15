@@ -44,9 +44,9 @@ class PurchaseController extends Controller
     }
 
 
-    public function create()
+    public function create($purchase_order_id = null)
     {
-        return view('tenant.purchases.form');
+        return view('tenant.purchases.form', compact('purchase_order_id'));
     }
 
     public function columns()

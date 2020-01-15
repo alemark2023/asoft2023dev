@@ -375,7 +375,7 @@ if ($hostname) {
             Route::get('purchases', 'Tenant\PurchaseController@index')->name('tenant.purchases.index');
             Route::get('purchases/columns', 'Tenant\PurchaseController@columns');
             Route::get('purchases/records', 'Tenant\PurchaseController@records');
-            Route::get('purchases/create', 'Tenant\PurchaseController@create')->name('tenant.purchases.create');
+            Route::get('purchases/create/{purchase_order_id?}', 'Tenant\PurchaseController@create')->name('tenant.purchases.create');
             Route::get('purchases/tables', 'Tenant\PurchaseController@tables');
             Route::get('purchases/table/{table}', 'Tenant\PurchaseController@table');
             Route::post('purchases', 'Tenant\PurchaseController@store');
