@@ -29,6 +29,8 @@ use App\Models\Tenant\Catalogs\Tag;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Inventory\Models\Warehouse as WarehouseModule;
+use App\Models\Tenant\Establishment;
+
 
 class ItemController extends Controller
 {
@@ -193,7 +195,10 @@ class ItemController extends Controller
         if(!$id){
 
             // $item->lots()->delete();
-            $warehouse = WarehouseModule::find(auth()->user()->establishment_id);
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+
+            //$warehouse = WarehouseModule::find(auth()->user()->establishment_id);
 
             $v_lots = isset($request->lots) ? $request->lots:[];
 
@@ -213,7 +218,9 @@ class ItemController extends Controller
         else{
 
              // $item->lots()->delete();
-             $warehouse = WarehouseModule::find(auth()->user()->establishment_id);
+             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+             //$warehouse = WarehouseModule::find(auth()->user()->establishment_id);
 
              $v_lots = isset($request->lots) ? $request->lots:[];
 
