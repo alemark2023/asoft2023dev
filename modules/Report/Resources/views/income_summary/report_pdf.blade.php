@@ -113,6 +113,7 @@ $cash_documents = $cash->cash_documents;
                                 <th>Tipo documento</th>
                                 <th>Documento</th>
                                 <th>Método de pago</th> 
+                                <th>Moneda</th>
                                 <th>Monto</th>
                             </tr>
                         </thead>
@@ -127,6 +128,7 @@ $cash_documents = $cash->cash_documents;
                                     $date_time_of_issue = null;
                                     $payment_method_description = null;
                                     $total = null;  
+                                    $currency_type_id = null;
 
                                 @endphp
 
@@ -141,6 +143,7 @@ $cash_documents = $cash->cash_documents;
                                             $date_time_of_issue = "{$value->sale_note->date_of_issue->format('Y-m-d')} {$value->sale_note->time_of_issue}";
                                             $payment_method_description = $payment->payment_method_type->description;
                                             $total = $payment->payment;
+                                            $currency_type_id = $value->sale_note->currency_type_id;
 
                                         @endphp
 
@@ -150,6 +153,7 @@ $cash_documents = $cash->cash_documents;
                                         <td class="celda">{{ $document_type_description }}</td>
                                         <td class="celda">{{ $number }}</td>
                                         <td class="celda">{{$payment_method_description }}</td>  
+                                        <td class="celda">{{$currency_type_id }}</td>  
                                         <td class="celda">{{ number_format($total,2) }}</td>
 
                                     </tr>
@@ -166,6 +170,7 @@ $cash_documents = $cash->cash_documents;
                                             $date_time_of_issue = "{$value->document->date_of_issue->format('Y-m-d')} {$value->document->time_of_issue}";
                                             $payment_method_description = $payment->payment_method_type->description;
                                             $total = $payment->payment;
+                                            $currency_type_id = $value->document->currency_type_id;
 
                                         @endphp
 
@@ -175,6 +180,7 @@ $cash_documents = $cash->cash_documents;
                                         <td class="celda">{{ $document_type_description }}</td>
                                         <td class="celda">{{ $number }}</td>
                                         <td class="celda">{{$payment_method_description }}</td>  
+                                        <td class="celda">{{$currency_type_id }}</td>  
                                         <td class="celda">{{ number_format($total,2) }}</td>
 
                                     </tr>
