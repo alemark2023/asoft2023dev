@@ -680,7 +680,7 @@ class SaleNoteController extends Controller
             $item->sale_note->inventory_kardex()->create([
                 'date_of_issue' => date('Y-m-d'),
                 'item_id' => $item->item_id,
-                'warehouse_id' => $establishment->id,
+                'warehouse_id' => $warehouse->id,
                 'quantity' => $item->quantity,
             ]);
             $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
