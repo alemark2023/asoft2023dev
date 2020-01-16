@@ -14,7 +14,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(row, index) in lots" :key="index" width="100%">
+                            <tr v-for="(row, index) in lots" :key="index" width="100%" v-show="row.deleted == false">
                                 <td>
                                     <div class="form-group mb-2 mr-2"  >
                                         <el-input v-model="row.series"></el-input>
@@ -158,7 +158,8 @@
                     item_id: null,
                     series: null,
                     date:  moment().format('YYYY-MM-DD'),
-                    state: 'Activo'
+                    state: 'Activo',
+                    deleted: false,
                 });
 
                 this.$emit('addRowLot', this.lots);
