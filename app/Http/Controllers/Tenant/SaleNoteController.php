@@ -683,8 +683,12 @@ class SaleNoteController extends Controller
                 'quantity' => $item->quantity,
             ]);
             $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
-            $wr->stock =  $wr->stock + $item->quantity;
-            $wr->save();
+            if($wr)
+            {
+                $wr->stock =  $wr->stock + $item->quantity;
+                $wr->save();
+            }
+
         }
 
         return [
