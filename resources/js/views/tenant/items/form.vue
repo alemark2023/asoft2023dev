@@ -160,7 +160,7 @@
                             <small class="form-control-feedback" v-if="errors.stock" v-text="errors.stock[0]"></small>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-3" v-show="form.unit_type_id !='ZZ'">
                         <div class="form-group" :class="{'has-danger': errors.stock_min}">
                             <label class="control-label">Stock Mínimo</label>
@@ -174,7 +174,7 @@
                             <el-checkbox v-model="form.lots_enabled" @change="changeLotsEnabled">¿Maneja series o lotes?</el-checkbox><br>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ' && form.lots_enabled">
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.lots_enabled">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
@@ -429,7 +429,7 @@
                 :showDialog.sync="showPercentagePerception"
                 :percentage_perception="percentage_perception">
         </percentage-perception> -->
-        
+
         <lots-form
             :showDialog.sync="showDialogLots"
             :stock="form.stock"
@@ -660,7 +660,7 @@
                             this.changeAffectationIgvType()
                         })
                 }
-                
+
             },
             loadRecord(){
                 if (this.recordId) {
@@ -697,15 +697,15 @@
             async submit() {
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 // if(!this.has_percentage_perception) this.form.percentage_perception = null
-                
+
                 if(!this.recordId && this.form.lots_enabled){
 
                     if(this.form.lots.length > this.form.stock)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
-                    
+
                     if(!this.form.lot_code)
                         return this.$message.error('Código de lote es requerido');
-                    
+
                     if(this.form.lots.length != this.form.stock)
                         return this.$message.error('La cantidad de series registradas son diferentes al stock');
 
