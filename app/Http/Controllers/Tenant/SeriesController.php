@@ -23,7 +23,7 @@ class SeriesController extends Controller
 
     public function tables()
     {
-        $document_types = DocumentType::whereActive()->whereIn('id', ['01', '03', '07', '08', '09', '20','40'])->get();
+        $document_types = DocumentType::whereActive()->whereIn('id', ['01', '03', '07', '08', '09', '20','40', '80'])->get();
 
         return compact('document_types');
     }
@@ -31,7 +31,7 @@ class SeriesController extends Controller
     public function store(SeriesRequest $request)
     {
         $record = Series::where([['document_type_id',$request->document_type_id],['number', $request->number]])->first();
-        
+
         if($record){
             return [
                 'success' => false,

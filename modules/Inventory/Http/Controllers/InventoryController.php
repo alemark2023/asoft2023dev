@@ -24,7 +24,7 @@ class InventoryController extends Controller
     {
         return view('inventory::inventory.index');
     }
-    
+
     public function columns()
     {
         return [
@@ -33,13 +33,13 @@ class InventoryController extends Controller
             'warehouse' => 'Almacén',
         ];
     }
-    
+
     public function records(Request $request)
     {
         $column = $request->input('column');
 
         if($column == 'warehouse'){
-            
+
             $records = ItemWarehouse::with(['item', 'warehouse'])
                             ->whereHas('item', function($query) use($request) {
                                 $query->where('unit_type_id', '!=','ZZ');
@@ -159,10 +159,10 @@ class InventoryController extends Controller
             $inventory->inventory_transaction_id = $inventory_transaction_id;
             $inventory->lot_code = $lot_code;
             $inventory->save();
-                
+
             if($type == 'input'){
                 foreach ($lots as $lot){
-    
+
                     $inventory->lots()->create([
                         'date' => $lot['date'],
                         'series' => $lot['series'],
@@ -170,7 +170,7 @@ class InventoryController extends Controller
                         'warehouse_id' => $warehouse_id,
                         'has_sale' => false
                     ]);
-    
+
                 }
             }else{
 
@@ -180,9 +180,9 @@ class InventoryController extends Controller
 
                         $item_lot = ItemLot::findOrFail($lot['id']);
                         $item_lot->delete();
-                    
+
                     }
-                
+
                 }
 
             }
@@ -208,6 +208,7 @@ class InventoryController extends Controller
             $quantity = $request->input('quantity');
             $quantity_move = $request->input('quantity_move');
             $lots = ($request->has('lots')) ? $request->input('lots'):[];
+            $detail = $request->input('detail');
 
             if($warehouse_id === $warehouse_new_id) {
                 return  [
@@ -221,7 +222,7 @@ class InventoryController extends Controller
                     'message' => 'La cantidad a trasladar no puede ser mayor al que se tiene en el almacén.'
                 ];
             }
-            
+
             //Transaction
             // $item_warehouse_new = ItemWarehouse::firstOrNew(['item_id' => $item_id,
             //                                                  'warehouse_id' => $warehouse_new_id]);
@@ -241,6 +242,8 @@ class InventoryController extends Controller
             $inventory->warehouse_id = $warehouse_id;
             $inventory->warehouse_destination_id = $warehouse_new_id;
             $inventory->quantity = $quantity_move;
+            $inventory->detail = $detail;
+
             $inventory->save();
 
             foreach ($lots as $lot){
@@ -250,9 +253,9 @@ class InventoryController extends Controller
                     $item_lot = ItemLot::findOrFail($lot['id']);
                     $item_lot->warehouse_id = $inventory->warehouse_destination_id;
                     $item_lot->update();
-                
+
                 }
-            
+
             }
 
             return  [
@@ -309,11 +312,11 @@ class InventoryController extends Controller
 
                     $item_lot = ItemLot::findOrFail($lot['id']);
                     $item_lot->delete();
-                
+
                 }
-            
+
             }
-            
+
             return  [
                 'success' => true,
                 'message' => 'Producto trasladado con éxito'
@@ -327,6 +330,6 @@ class InventoryController extends Controller
     {
         $this->initializeInventory();
     }
-    
-    
+
+
 }

@@ -43,11 +43,18 @@ class SaleNotePaymentController extends Controller
         $total = $sale_note->total;
         $total_difference = round($total - $total_paid, 2);
 
+        if($total_difference < 1)
+        {
+            $sale_note->paid = true;
+            $sale_note->save();
+        }
+
         return [
             'number_full' => $sale_note->identifier,
             'total_paid' => $total_paid,
             'total' => $total,
-            'total_difference' => $total_difference
+            'total_difference' => $total_difference,
+            'paid' => $sale_note->paid
         ];
     }
 
@@ -107,14 +114,14 @@ class SaleNotePaymentController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     78,
-                    220 
+                    220
                     ],
                 'margin_top' => 2,
                 'margin_right' => 5,
                 'margin_bottom' => 0,
                 'margin_left' => 5
             ]);
-           
+
         }
         else{
            $pdf = new Mpdf();
@@ -183,5 +190,5 @@ class SaleNotePaymentController extends Controller
 
     }
 
-    
+
 }

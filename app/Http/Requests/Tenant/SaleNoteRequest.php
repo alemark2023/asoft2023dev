@@ -7,15 +7,15 @@ use Illuminate\Validation\Rule;
 
 class SaleNoteRequest extends FormRequest
 {
-     
+
     public function authorize()
     {
-        return true; 
+        return true;
     }
- 
+
     public function rules()
-    { 
-        
+    {
+
         return [
             'customer_id' => [
                 'required',
@@ -29,7 +29,10 @@ class SaleNoteRequest extends FormRequest
             ],
             'date_of_issue' => [
                 'required',
-            ], 
+            ],
+            'series_id' => [
+                'required',
+            ],
         ];
     }
 }

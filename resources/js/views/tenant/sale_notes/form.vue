@@ -46,6 +46,24 @@
                                 </div>
                             </div>
                             <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.establishment_id}">
+                                    <label class="control-label">Establecimiento</label>
+                                    <el-select v-model="form.establishment_id" @change="changeEstablishment">
+                                        <el-option v-for="option in establishments" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.establishment_id" v-text="errors.establishment_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.series_id}">
+                                    <label class="control-label">Serie</label>
+                                    <el-select v-model="form.series_id">
+                                        <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                     <label class="control-label">Moneda</label>
                                     <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
@@ -54,25 +72,7 @@
                                     <small class="form-control-feedback" v-if="errors.currency_type_id" v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                                    <!--<label class="control-label">Fecha de emisión</label>-->
-                                    <label class="control-label">Fec. Emisión</label>
-                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
-                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
-                                    <label class="control-label">Tipo de cambio
-                                        <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
-                                </div>
-                            </div>
+
 
 
                             <div class="col-lg-8">
@@ -117,6 +117,26 @@
 
                             </div>
 
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+                                    <!--<label class="control-label">Fecha de emisión</label>-->
+                                    <label class="control-label">Fec. Emisión</label>
+                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                    <label class="control-label">Tipo de cambio
+                                        <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
+                                </div>
+                            </div>
+
                             <div class="col-lg-2 col-md-2">
                                 <div class="form-group" >
                                     <label class="control-label">
@@ -137,6 +157,12 @@
                                     <label class="control-label">Cant. Periodos</label>
                                     <el-input-number v-model="form.quantity_period" :min="0"></el-input-number>
 
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2" >
+                                <div class="form-group">
+                                    <label class="control-label">Placa</label>
+                                    <el-input v-model="form.license_plate" :maxlength="200"></el-input>
                                 </div>
                             </div>
 
@@ -272,7 +298,11 @@
                 payment_method_types: [],
                 activePanel: 0,
                 loading_search:false,
-                type_periods:[]
+                type_periods:[],
+                series: [],
+                all_series: [],
+                is_contingency: false,
+
             }
         },
         async created() {
@@ -289,6 +319,7 @@
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
+                    this.all_series = response.data.series
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
@@ -303,6 +334,11 @@
 
         },
         methods: {
+            filterSeries() {
+                this.form.series_id = null
+                this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id, 'document_type_id': '80', 'contingency': this.is_contingency});
+                this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+            },
             async clickDeleteSNItem(id, index){
 
                 await this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
@@ -383,6 +419,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    series_id: null,
                     prefix:'NV',
                     establishment_id: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),
@@ -423,6 +460,7 @@
                     quantity_period:0,
                     automatic_date_of_issue:null,
                     enabled_concurrency:false,
+                    license_plate: null
                 }
 
                 this.clickAddPayment()
@@ -440,7 +478,7 @@
             },
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
-
+                this.filterSeries()
             },
             cleanCustomer(){
                 this.form.customer_id = null

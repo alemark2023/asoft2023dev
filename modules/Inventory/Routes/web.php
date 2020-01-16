@@ -27,6 +27,9 @@ if($hostname) {
                 Route::post('/', 'InventoryController@store');
                 Route::post('/transaction', 'InventoryController@store_transaction');
                 Route::post('move', 'InventoryController@move');
+
+                Route::get('moves', 'MovesController@index')->name('inventory.moves.index');
+
                 Route::post('remove', 'InventoryController@remove');
                 Route::get('initialize', 'InventoryController@initialize');
             });
@@ -49,8 +52,17 @@ if($hostname) {
                 Route::get('configuration', 'InventoryConfigurationController@index')->name('tenant.inventories.configuration.index');
                 Route::get('configuration/record', 'InventoryConfigurationController@record');
                 Route::post('configuration', 'InventoryConfigurationController@store');
+            });
+
+            Route::prefix('moves')->group(function () {
+
+                Route::get('/', 'MovesController@index')->name('moves.index');
+                Route::get('records', 'MovesController@records');
+                Route::get('columns', 'MovesController@columns');
 
             });
+
+
 
         });
     });
