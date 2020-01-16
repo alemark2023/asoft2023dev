@@ -38,7 +38,7 @@
                                     </div>
                                 </td>
                                 <td class="series-table-actions text-center">
-                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(row)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
@@ -169,8 +169,9 @@
                 this.$emit('update:showDialog', false)
                 this.$emit('addRowLot', this.lots);
             },
-            clickCancel(index) {
-                this.lots.splice(index, 1);
+            clickCancel(item) {
+                //this.lots.splice(index, 1);
+                item.deleted = true
                 this.$emit('addRowLot', this.lots);
             },
 

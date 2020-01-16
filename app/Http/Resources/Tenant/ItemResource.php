@@ -40,7 +40,7 @@ class ItemResource extends JsonResource
             'has_igv' => (bool) $this->has_igv,
             'has_perception' => (bool) $this->has_perception,
             'lots_enabled' => (bool) $this->lots_enabled,
-            'percentage_perception' => $this->percentage_perception, 
+            'percentage_perception' => $this->percentage_perception,
             'item_unit_types' => $this->item_unit_types,
             'image' => $this->image,
             'account_id' => $this->account_id,
@@ -54,7 +54,22 @@ class ItemResource extends JsonResource
             'individual_items' => collect($this->sets)->pluck('individual_item_id'),
             'commission_amount' => $this->commission_amount,
             'lot_code' => $this->lot_code,
-            'lots' => $this->lots,
+            'lots' => $this->lots->transform(function($row, $key) {
+                return [
+                    'id' => $row->id,
+                    'series' => $row->series,
+                    'date' => $row->date,
+                    'item_id' => $row->item_id,
+                    'warehouse_id' => $row->warehouse_id,
+                    'item_loteable_type' => $row->item_loteable_type,
+                    'item_loteable_id' => $row->item_loteable_id,
+                    'has_sale' => $row->has_sale,
+                    'state' => $row->state,
+                    'created_at' => $row->created_at,
+                    'updated_at' => $row->updated_at,
+                    'deleted' => false
+                ];
+            }),
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

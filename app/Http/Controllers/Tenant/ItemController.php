@@ -219,25 +219,34 @@ class ItemController extends Controller
 
              foreach ($v_lots as $lot) {
 
-                if( isset( $lot['id'] ))
-                {
-                    ItemLot::find($lot['id'])->update([
-                        'date' => $lot['date'],
-                        'series' => $lot['series'],
-                        'state' => $lot['state'],
-                    ]);
+                if($lot['deleted'] == true){
 
-                }else{
-
-                    $item->lots()->create([
-                        'date' => $lot['date'],
-                        'series' => $lot['series'],
-                        'item_id' => $item->id,
-                        'warehouse_id' => $warehouse ? $warehouse->id:null,
-                        'has_sale' => false,
-                        'state' => $lot['state'],
-                    ]);
+                    ItemLot::find($lot['id'])->delete();
                 }
+                else{
+
+                    if( isset( $lot['id'] ))
+                    {
+                        ItemLot::find($lot['id'])->update([
+                            'date' => $lot['date'],
+                            'series' => $lot['series'],
+                            'state' => $lot['state'],
+                        ]);
+
+                    }else{
+
+                        $item->lots()->create([
+                            'date' => $lot['date'],
+                            'series' => $lot['series'],
+                            'item_id' => $item->id,
+                            'warehouse_id' => $warehouse ? $warehouse->id:null,
+                            'has_sale' => false,
+                            'state' => $lot['state'],
+                        ]);
+                    }
+
+                }
+
 
              }
 
