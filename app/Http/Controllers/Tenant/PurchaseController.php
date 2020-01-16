@@ -198,6 +198,7 @@ class PurchaseController extends Controller
             'success' => true,
             'data' => [
                 'id' => $purchase->id,
+                'number_full' => "{$purchase->series}-{$purchase->number}",
             ],
         ];
     }

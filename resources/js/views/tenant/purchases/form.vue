@@ -171,7 +171,7 @@
                                         <td class="text-left">{{ row.warehouse_description }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
@@ -336,6 +336,10 @@
             await this.isGeneratePurchaseOrder()
         },
         methods: {
+            getFormatUnitPriceRow(unit_price){
+                return _.round(unit_price, 6)
+                // return unit_price.toFixed(6)
+            },
             async isGeneratePurchaseOrder(){
 
                 // console.log(this.purchase_order_id)
@@ -359,14 +363,19 @@
                             // console.log(purchase_order.supplier_id)
                             
                             this.form.items = response.data.data.purchase_order.items
-                            this.form.supplier_id = purchase_order.supplier_id
+                            this.form.supplier_id = purchase_order.supplier_id 
+                            this.form.currency_type_id = purchase_order.currency_type_id
                             this.form.purchase_order_id = purchase_order.id
                             this.form.payments[0].payment_method_type_id = purchase_order.payment_method_type_id
                             this.form.payments[0].payment = purchase_order.total
                             this.form.total = purchase_order.total
+                            this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                             
                             this.form.items.forEach((it)=>{
                                 it.warehouse_id = warehouse.id
+                                it.charges = it.charges ? Object.values(it.charges):[]
+                                it.attributes = it.attributes ? Object.values(it.attributes):[]
+                                it.discounts = it.discounts ? Object.values(it.discounts):[]
                             })
                             // this.changeDocumentType()
 
@@ -687,9 +696,26 @@
                     .then(response => {
 
                         if (response.data.success) {
-                            this.resetForm()
-                            this.purchaseNewId = response.data.data.id
-                            this.showDialogOptions = true
+
+                            if(this.purchase_order_id){
+
+                                this.$message({
+                                    showClose: true,
+                                    message: `Compra registrada : ${response.data.data.number_full}`,
+                                    duration: 2 * 3000,
+                                    type: "success"
+                                });
+
+                                this.close()
+
+                            }else{
+
+                                this.resetForm()
+                                this.purchaseNewId = response.data.data.id
+                                this.showDialogOptions = true
+
+                            }
+
                         } else {
                             this.$message.error(response.data.message)
                         }

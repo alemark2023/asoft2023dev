@@ -167,7 +167,8 @@
                                             <!-- <td class="text-left">{{ row.warehouse_description }}</td> -->
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-right">{{ row.quantity }}</td>
-                                            <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
+                                            <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                            <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
@@ -338,7 +339,11 @@
 
         },
         methods: {
-            
+
+            getFormatUnitPriceRow(unit_price){
+                return _.round(unit_price, 6)
+                // return unit_price.toFixed(6)
+            },
             onSuccess(response, file, fileList) {
                 // console.log(response, file, fileList)
                 this.fileList = fileList
