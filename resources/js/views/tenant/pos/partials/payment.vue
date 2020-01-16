@@ -300,6 +300,8 @@
             }
         },
         async created() {
+            
+            await this.initLStoPayment()
             await this.getTables()  
             this.initFormPayment()
             this.inputAmount()
@@ -307,11 +309,33 @@
             this.$eventHub.$on('reloadDataCardBrands', (card_brand_id) => {
                 this.reloadDataCardBrands(card_brand_id)
             })
+            
+            this.$eventHub.$on('localSPayments', (payments) => {
+                this.payments = payments
+            })
+
+            await this.getFormPosLocalStorage()
+            
         }, 
         mounted(){
             // console.log(this.currencyTypeActive)
         },
         methods: {
+            async initLStoPayment(){
+
+                this.amount = await this.getLocalStoragePayment('amount', 0)
+                this.enter_amount = await this.getLocalStoragePayment('enter_amount', 0)
+                this.difference = await this.getLocalStoragePayment('difference', 0)
+            },
+            getFormPosLocalStorage(){
+
+                let form_pos = localStorage.getItem('form_pos');
+                form_pos = JSON.parse(form_pos)
+                if (form_pos) {
+                    this.form.payments = form_pos.payments
+                }
+
+            },
             clickAddPayment(){
                 this.showDialogMultiplePayment = true
             },
@@ -324,7 +348,7 @@
             },
             getDescriptionPaymentMethodType(id){
                 let payment_method_type = _.find(this.payment_method_types,{'id':id})   
-                return payment_method_type.description
+                return (payment_method_type) ? payment_method_type.description:''
 
             },
             changePaymentMethodType(){
@@ -367,20 +391,24 @@
                 this.setAmount(acum_payment)
               
             },
-            enterAmount(){
+            async enterAmount(){
 
-                let item = _.last(this.payments, { 'payment_method_type_id' : '01' }) 
-                item.payment = parseFloat(this.enter_amount)
+                let r_item = await _.last(this.payments, { 'payment_method_type_id' : '01' }) 
+                r_item.payment = await parseFloat(this.enter_amount)
+                console.log(r_item)
                 // this.setAmount(item.payment)
 
                 let acum_payment = 0
 
-                this.form.payments.forEach((item)=>{
+                await this.form.payments.forEach((item)=>{
                     acum_payment += parseFloat(item.payment)
+                    // item.payment = r_item.payment//setear por id
                 })
                 
                 // this.amount = item.payment
                 this.amount = acum_payment
+                // this.amount = this.enter_amount
+                console.log(this.amount)
                 this.difference = this.amount - this.form.total
 
                 if(isNaN(this.difference)) {
@@ -394,6 +422,24 @@
                 } 
                 this.difference = _.round(this.difference,2)  
 
+                this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+
+                await this.lStoPayment()
+
+            },
+            getLocalStoragePayment(key, re_default = null){
+                
+                let ls_obj = localStorage.getItem(key);
+                ls_obj = JSON.parse(ls_obj)
+                
+                if (ls_obj) {
+                    return ls_obj
+                }
+
+                return re_default
+            },
+            setLocalStoragePayment(key, obj){
+                localStorage.setItem(key, JSON.stringify(obj));
             },
             inputAmount(){
 
@@ -410,6 +456,18 @@
                 } 
                 this.difference = _.round(this.difference,2)    
                 // this.form_payment.payment = this.amount
+
+                this.$eventHub.$emit('eventSetFormPosLocalStorage', this.form)
+                this.lStoPayment()
+
+            },
+            lStoPayment(){
+
+                this.setLocalStoragePayment('enter_amount', this.enter_amount)               
+                this.setLocalStoragePayment('amount', this.amount)
+                console.log(this.amount)
+                this.setLocalStoragePayment('difference', this.difference)
+
             },
             initFormPayment() {
                 
@@ -442,8 +500,15 @@
                 this.loading_submit = true
                 await this.sleep(800); 
                 this.loading_submit = false
+                this.cleanLocalStoragePayment()
                 this.$eventHub.$emit('cancelSale')
 
+            },
+            cleanLocalStoragePayment(){
+                
+                this.setLocalStoragePayment('amount', null)
+                this.setLocalStoragePayment('enter_amount', null)               
+                this.setLocalStoragePayment('difference', null)
             },
             sleep(ms) { 
                 return new Promise(resolve => setTimeout(resolve, ms));                
