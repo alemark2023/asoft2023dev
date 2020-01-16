@@ -674,6 +674,7 @@ class SaleNoteController extends Controller
         $obj->save();
 
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $warehouse = Warehouse::where('establishment_id',$establishment_id)->first();
 
         foreach ($obj->items as $item) {
             $item->sale_note->inventory_kardex()->create([
@@ -682,7 +683,7 @@ class SaleNoteController extends Controller
                 'warehouse_id' => $establishment->id,
                 'quantity' => $item->quantity,
             ]);
-            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
+            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
             if($wr)
             {
                 $wr->stock =  $wr->stock + $item->quantity;
