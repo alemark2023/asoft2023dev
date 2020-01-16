@@ -674,7 +674,7 @@ class SaleNoteController extends Controller
         $obj->save();
 
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        $warehouse = Warehouse::where('establishment_id',$establishment_id)->first();
+        $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
         foreach ($obj->items as $item) {
             $item->sale_note->inventory_kardex()->create([

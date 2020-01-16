@@ -288,7 +288,7 @@ class PurchaseController extends Controller
         $obj->save();
 
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        $warehouse = Warehouse::where('establishment_id',$establishment_id)->first();
+        $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
         //proceso para eliminar los actualizar el stock de proiductos
         foreach ($obj->items as $item) {
