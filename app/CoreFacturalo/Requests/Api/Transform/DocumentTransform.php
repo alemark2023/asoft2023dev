@@ -60,6 +60,7 @@ class DocumentTransform
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
             'actions' => ActionTransform::transform($inputs),
             'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
+            'transport' => Functions::valueKeyInArray($inputs, 'transport',[]),
             'payments' => self::payments($inputs),
             'data_json' => $inputs
         ];

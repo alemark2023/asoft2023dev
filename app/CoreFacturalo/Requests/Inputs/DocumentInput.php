@@ -113,7 +113,9 @@ class DocumentInput
             'invoice' => $invoice,
             'note' => $note,
             'hotel' => self::hotel($inputs),
+            'transport' => self::transport($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'additional_information'),
+            'plate_number' => Functions::valueKeyInArray($inputs, 'plate_number'),
             'legends' => LegendInput::set($inputs),
             'actions' => ActionInput::set($inputs),
             'data_json' => $data_json,
@@ -391,6 +393,17 @@ class DocumentInput
     {
         // dd($inputs);
         return $inputs['hotel'];
+    }
+
+    private static function transport($inputs)
+    {
+        // dd($inputs);
+        if(array_key_exists('transport', $inputs)){
+
+            return $inputs['transport'];
+        }
+
+        return [];
     }
 
     private static function invoice($inputs)
