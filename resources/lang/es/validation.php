@@ -216,6 +216,18 @@ return [
         'operation_type_id' => 'tipo operación',
         'percentage ' => 'porcentaje',
         'start_number ' => 's',
-        'commission_amount' => 'monto de comisión'
+        'commission_amount' => 'monto de comisión',
+
+
+        'number_identity_document' => 'número documento',
+        'passenger_fullname' => 'nombre y apellidos',
+        'passenger_manifest' => 'manifiesto pasajeros',
+        'seat_number' => 'número asiento',
+        'start_date' => 'fecha inicio',
+        'start_time' => 'hora inicio',
+        'origin_address' => 'dirección origen',
+        'origin_district_id' => 'ubigeo',
+        'destinatation_district_id' => 'ubigeo',
+        'destinatation_address' => 'dirección destino',
     ],
 ];

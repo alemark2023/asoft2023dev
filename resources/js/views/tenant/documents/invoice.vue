@@ -260,6 +260,9 @@
                                 <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('hotel')">
                                     <a href="#" @click.prevent="clickAddDocumentHotel" class="text-center font-weight-bold text-info">[+ Datos personales para reserva de hospedaje]</a>
                                 </div>
+                                <div class="col-lg-8 mt-2" v-if="isActiveBussinessTurn('transport')">
+                                    <a href="#" @click.prevent="clickAddDocumentTransport" class="text-center font-weight-bold text-info">[+ Datos para transporte de pasajeros]</a>
+                                </div>
                             </div>
 
                         </template>
@@ -273,62 +276,138 @@
                                         </template>
                                         <div class="row mt-2">
 
-                                            <template v-if="!is_client">
 
-                                                <div class="col-md-6">
+                                            <template v-if="!isActiveBussinessTurn('tap')">
+                                                
+                                                <template v-if="!is_client">
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label class="control-label">
+                                                                Guias
+                                                                <a href="#" @click.prevent="clickAddGuide" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                                            </label>
+                                                            <table style="width: 100%">
+                                                                <tr v-for="(guide,index) in form.guides">
+                                                                    <td>
+                                                                        <el-select v-model="guide.document_type_id">
+                                                                            <el-option v-for="option in document_types_guide" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                        </el-select>
+                                                                    </td>
+                                                                    <td>
+                                                                        <el-input v-model="guide.number"></el-input>
+                                                                    </td>
+                                                                    <td align="right">
+                                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide(index)">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                        <!-- <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a> -->
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <!--<el-input-->
+                                                                    <!--type="textarea"-->
+                                                                    <!--autosize-->
+                                                                    <!--v-model="form.additional_information">-->
+                                                            <!--</el-input>-->
+                                                        </div>
+                                                    </div>
+                                                </template>
+
+                                                <div class="col-md-3">
                                                     <div class="form-group">
-                                                        <label class="control-label">
-                                                            Guias
-                                                            <a href="#" @click.prevent="clickAddGuide" class="text-center font-weight-bold text-info">[+ Agregar]</a>
-                                                        </label>
-                                                        <table style="width: 100%">
-                                                            <tr v-for="(guide,index) in form.guides">
-                                                                <td>
-                                                                    <el-select v-model="guide.document_type_id">
-                                                                        <el-option v-for="option in document_types_guide" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                                    </el-select>
-                                                                </td>
-                                                                <td>
-                                                                    <el-input v-model="guide.number"></el-input>
-                                                                </td>
-                                                                <td align="right">
-                                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide(index)">
-                                                                        <i class="fa fa-trash"></i>
-                                                                    </button>
-                                                                    <!-- <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a> -->
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                        <!--<el-input-->
-                                                                <!--type="textarea"-->
-                                                                <!--autosize-->
-                                                                <!--v-model="form.additional_information">-->
-                                                        <!--</el-input>-->
+                                                        <label class="control-label">Observaciones</label>
+                                                        <el-input
+                                                                type="textarea"
+                                                                autosize
+                                                                v-model="form.additional_information">
+                                                        </el-input>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group" :class="{'has-danger': errors.purchase_order}">
+                                                        <label class="control-label">Orden Compra</label>
+                                                        <!-- <el-input v-model="form.purchase_order"></el-input> -->
+                                                        <el-input
+                                                                type="textarea"
+                                                                v-model="form.purchase_order">
+                                                        </el-input>
+                                                        <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
                                                     </div>
                                                 </div>
                                             </template>
+                                            <template v-else>
+                                                
+                                                <template v-if="!is_client">
 
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label class="control-label">Observaciones</label>
-                                                    <el-input
-                                                            type="textarea"
-                                                            autosize
-                                                            v-model="form.additional_information">
-                                                    </el-input>
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label class="control-label">
+                                                                Guias
+                                                                <a href="#" @click.prevent="clickAddGuide" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                                            </label>
+                                                            <table style="width: 100%">
+                                                                <tr v-for="(guide,index) in form.guides">
+                                                                    <td>
+                                                                        <el-select v-model="guide.document_type_id">
+                                                                            <el-option v-for="option in document_types_guide" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                        </el-select>
+                                                                    </td>
+                                                                    <td>
+                                                                        <el-input v-model="guide.number"></el-input>
+                                                                    </td>
+                                                                    <td align="right">
+                                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveGuide(index)">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                        <!-- <a href="#" @click.prevent="clickRemoveGuide" style="color:red">Remover</a> -->
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                            <!--<el-input-->
+                                                                    <!--type="textarea"-->
+                                                                    <!--autosize-->
+                                                                    <!--v-model="form.additional_information">-->
+                                                            <!--</el-input>-->
+                                                        </div>
+                                                    </div>
+                                                </template>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label">Observaciones</label>
+                                                        <el-input
+                                                                type="textarea"
+                                                                autosize
+                                                                v-model="form.additional_information">
+                                                        </el-input>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group" :class="{'has-danger': errors.purchase_order}">
-                                                    <label class="control-label">Orden Compra</label>
-                                                    <!-- <el-input v-model="form.purchase_order"></el-input> -->
-                                                    <el-input
-                                                            type="textarea"
-                                                            v-model="form.purchase_order">
-                                                    </el-input>
-                                                    <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
+                                                <div class="col-md-2">
+                                                    <div class="form-group" :class="{'has-danger': errors.purchase_order}">
+                                                        <label class="control-label">Orden Compra</label>
+                                                        <!-- <el-input v-model="form.purchase_order"></el-input> -->
+                                                        <el-input
+                                                                type="textarea"
+                                                                v-model="form.purchase_order">
+                                                        </el-input>
+                                                        <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                                
+                                                <div class="col-md-2">
+                                                    <div class="form-group" :class="{'has-danger': errors.plate_number}">
+                                                        <label class="control-label">N° Placa</label>
+                                                        <!-- <el-input v-model="form.plate_number"></el-input> -->
+                                                        <el-input
+                                                                type="textarea"
+                                                                v-model="form.plate_number">
+                                                        </el-input>
+                                                        <small class="form-control-feedback" v-if="errors.plate_number" v-text="errors.plate_number[0]"></small>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            
                                         </div>
                                     </el-collapse-item>
                                 </el-collapse>
@@ -507,6 +586,12 @@
             @addDocumentHotel="addDocumentHotel"
             ></document-hotel-form>
 
+        <document-transport-form
+            :showDialog.sync="showDialogFormTransport"
+            :transport="form.transport"
+            @addDocumentTransport="addDocumentTransport"
+            ></document-transport-form>
+
         <document-detraction
             :detraction="form.detraction"
             :total="form.total"
@@ -538,11 +623,12 @@
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
+    import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
     import DocumentDetraction from './partials/detraction.vue'
 
     export default {
         props: ['typeUser'],
-        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction},
+        components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
             return {
@@ -550,6 +636,7 @@
                 showDialogDocumentDetraction:false,
                 has_data_detraction:false,
                 showDialogFormHotel:false,
+                showDialogFormTransport:false,
                 is_client:false,
                 recordItem: null,
                 resource: 'documents',
@@ -804,10 +891,17 @@
             clickAddDocumentHotel(){
                 this.showDialogFormHotel = true
             },
+            clickAddDocumentTransport(){
+                this.showDialogFormTransport = true
+            },
 
             addDocumentHotel(hotel) {
                 this.form.hotel = hotel
                 // console.log(this.form.hotel)
+            },
+            addDocumentTransport(transport) {
+                this.form.transport = transport
+                // console.log(this.form.transport)
             },
             changeIsReceivable(){
 
@@ -902,11 +996,13 @@
                     legends: [],
                     detraction: {},
                     additional_information:null,
+                    plate_number:null,
                     has_prepayment:false,
                     actions: {
                         format_pdf:'a4',
                     },
-                    hotel: {}
+                    hotel: {},
+                    transport: {},
                 }
 
                 this.clickAddPayment()
@@ -1203,6 +1299,29 @@
                 await _.remove(this.form.guides,{'number':null})
 
             },
+            async asignPlateNumberToItems(){
+                
+                if(this.form.plate_number){
+
+                    await this.form.items.forEach(item => {
+
+                        let at = _.find(item.attributes, {'attribute_type_id': '5010'})
+
+                        if(!at){
+                            item.attributes.push({
+                                attribute_type_id: '5010',
+                                description: "Numero de Placa",
+                                value: this.form.plate_number,
+                                start_date: null,
+                                end_date: null,
+                                duration: null,
+                            })
+                        }
+                             
+                    });
+
+                }
+            },
             async submit() {
 
                 if(this.is_receivable){
@@ -1215,6 +1334,7 @@
                 }
 
                 await this.deleteInitGuides()
+                await this.asignPlateNumberToItems()
 
                 let val_detraction = await this.validateDetraction()
                 if(!val_detraction.success)
