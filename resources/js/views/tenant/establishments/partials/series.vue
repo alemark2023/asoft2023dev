@@ -14,7 +14,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in records">
+                            <tr v-for="(row, index) in records" :key="index">
                                 <template v-if="row.id">
                                     <td>{{ row.document_type_description }}</td>
                                     <td>{{ row.number }}</td>
@@ -42,7 +42,7 @@
                                     <td>
                                         <div class="col-md-3 center-el-checkbox">
                                             <div class="form-group" :class="{'has-danger': row.errors.contingency}">
-                                                <el-checkbox v-model="row.contingency" @change="filterDocumentType(row)">Contingencia</el-checkbox> 
+                                                <el-checkbox v-model="row.contingency" @change="filterDocumentType(row)">Contingencia</el-checkbox>
                                                 <small class="form-control-feedback" v-if="row.errors.contingency" v-text="row.errors.contingency[0]"></small>
                                             </div>
                                         </div>
@@ -153,7 +153,7 @@
                     })
             },
             filterDocumentType(row){
-                
+
                 if(row.contingency){
                     this.document_types = _.filter(this.all_document_types, item => (item.id == '01' || item.id =='03' || item.id =='07' || item.id =='08'))
                     row.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
@@ -173,7 +173,7 @@
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.getData(),
-                    this.initDocumentTypes()                    
+                    this.initDocumentTypes()
                 )
             }
         }

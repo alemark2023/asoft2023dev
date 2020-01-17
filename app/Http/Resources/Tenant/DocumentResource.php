@@ -27,7 +27,7 @@ class DocumentResource extends JsonResource
             'print_a5' => url('')."/print/document/{$this->external_id}/a5",
             'image_detraction' => ($this->detraction) ? (($this->detraction->image_pay_constancy) ?
             asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->detraction->image_pay_constancy):false):false,
-
+            'detraction' => $this->detraction
         ];
     }
 }

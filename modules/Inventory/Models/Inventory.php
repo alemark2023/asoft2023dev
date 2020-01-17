@@ -19,6 +19,7 @@ class Inventory extends ModelTenant
         'quantity',
         'inventory_transaction_id',
         'lot_code',
+        'detail'
     ];
 
     public function warehouse()

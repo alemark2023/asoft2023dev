@@ -7,7 +7,7 @@
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">
                                 Producto/Servicio
-                                <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
+                                <a href="#" v-if="typeUser != 'seller'" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
                             <el-select v-model="form.item_id" @change="changeItem" filterable>
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
@@ -41,7 +41,7 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 mt-4" v-if="form.item_id && form.item.lots_enabled"> 
+                    <div class="col-md-6 mt-4" v-if="form.item_id && form.item.lots_enabled">
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
                     </div>
@@ -63,7 +63,7 @@
                             </thead>
                             <tbody>
                             <tr v-for="(row, index) in form.item_unit_types">
-                               
+
                                     <td class="text-center">{{row.unit_type_id}}</td>
                                     <td class="text-center">{{row.description}}</td>
                                     <td class="text-center">{{row.quantity_unit}}</td>
@@ -76,14 +76,14 @@
                                             <i class="el-icon-check"></i>
                                         </button>
                                     </td>
-                                
-                               
+
+
                             </tr>
                             </tbody>
                         </table>
 
                         </div>
-                        
+
                     </div>
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
@@ -204,10 +204,10 @@
                 <el-button type="primary" native-type="submit">Agregar</el-button>
             </div>
         </form>
-        <item-form :showDialog.sync="showDialogNewItem"
+        <item-form  :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
 
-                   
+
         <select-lots-form
             :showDialog.sync="showDialogSelectLots"
             :lots="lots"
@@ -217,7 +217,7 @@
     </el-dialog>
 </template>
 <style>
-.el-select-dropdown { 
+.el-select-dropdown {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
@@ -229,7 +229,7 @@
     import SelectLotsForm from './lots.vue'
 
     export default {
-        props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
+        props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
         components: {itemForm, SelectLotsForm},
         data() {
             return {
@@ -279,7 +279,7 @@
             },
             selectedPrice(row)
             {
-                // debugger 
+                // debugger
                 let valor = 0
                 switch(row.price_default)
                 {
@@ -419,7 +419,7 @@
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
                 let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
 
-                if(this.form.item.lots_enabled){ 
+                if(this.form.item.lots_enabled){
                     if(select_lots.length != this.form.quantity)
                         return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
                 }
@@ -429,7 +429,7 @@
 
                 // console.log(un_select_lots)
                 // console.log(this.row.lots)
-                
+
                 this.initForm()
                 // this.initializeFields()
                 this.$emit('add', this.row)

@@ -55,7 +55,10 @@ class MobileController extends Controller
                 'name' => $row->name,
                 'number' => $row->number,
                 'identity_document_type_id' => $row->identity_document_type_id,
-                'identity_document_type_code' => $row->identity_document_type->code
+                'identity_document_type_code' => $row->identity_document_type->code,
+                'address' => $row->address,
+                'email' => $row->email,
+                'selected' => false
             ];
         });
 
@@ -102,6 +105,7 @@ class MobileController extends Controller
                 'has_igv' => (bool) $row->has_igv,
                 'is_set' => (bool) $row->is_set,
                 'aux_quantity' => 1,
+
             ];
         });
 
@@ -137,7 +141,7 @@ class MobileController extends Controller
         $row->save();
 
         $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-        
+
         return [
             'success' => true,
             'msg' => 'Producto registrado con éxito',
@@ -165,6 +169,28 @@ class MobileController extends Controller
 
     }
 
+    public function person(Request $request)
+    {
+        $row = new Person();
+        $row->fill($request->all());
+        $row->save();
+
+        return [
+            'success' => true,
+            'msg' => 'Cliente registrado con éxito',
+            'data' => (object)[
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+                'identity_document_type_code' => $row->identity_document_type->code,
+                'address' => $row->address,
+                'email' => $row->email,
+                'selected' => false
+            ]
+        ];
+    }
 
 
 

@@ -54,7 +54,7 @@
                         {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
-                        
+
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -104,7 +104,7 @@
                                         </a>
                                     </li>
                                 @endif
-                                
+
                             @endif
 
                             @if(in_array('documents', $vc_modules))
@@ -326,7 +326,7 @@
                             <ul class="nav nav-children" style="">
 
 
-                                        
+
                                 <li class="{{ ($path[0] === 'purchases' && $path[1] === 'create')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.purchases.create')}}">
                                         Nuevo
@@ -337,7 +337,7 @@
                                     <a class="nav-link" href="{{route('tenant.purchases.index')}}">
                                         Listado
                                     </a>
-                                </li> 
+                                </li>
 
                                 <li class="{{ ($path[0] === 'purchase-orders')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.purchase-orders.index')}}">
@@ -349,7 +349,7 @@
                                         Gastos diversos
                                     </a>
                                 </li>
-                                
+
                                 <li class="nav-parent
                                     {{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active nav-expanded':'' }}
                                     {{ ($path[0] === 'purchase-quotations')?'nav-active nav-expanded':'' }}
@@ -358,7 +358,7 @@
                                         Proveedores
                                     </a>
                                     <ul class="nav nav-children">
-                                         
+
                                         <li class="{{ ($path[0] === 'persons' && $path[1] === 'suppliers')?'nav-active':'' }}">
                                             <a class="nav-link" href="{{route('tenant.persons.index', ['type' => 'suppliers'])}}">
                                                 Listado
@@ -369,14 +369,14 @@
                                                 Solicitar cotización
                                             </a>
                                         </li>
-                                    </ul> 
+                                    </ul>
                                 </li>
                             </ul>
                         </li>
                         @endif
 
                         @if(in_array('inventory', $vc_modules))
-                        <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses']) ||
+                        <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses', 'moves']) ||
                                                 ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory'])))?'nav-active nav-expanded':'' }}">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-warehouse" aria-hidden="true"></i>
@@ -388,6 +388,9 @@
                                 </li>
                                 <li class="{{ ($path[0] === 'inventory')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('inventory.index')}}">Movimientos</a>
+                                </li>
+                                <li class="{{ ($path[0] === 'moves')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('moves.index')}}">Traslados</a>
                                 </li>
                                 <li class="{{(($path[0] === 'reports') && ($path[1] === 'kardex')) ? 'nav-active' : ''}}">
                                     <a class="nav-link" href="{{route('reports.kardex.index')}}">
@@ -439,7 +442,7 @@
                         <ul class="nav nav-children" style="">
                             <li class="{{ ($path[0] === 'retentions')?'nav-active':'' }}">
                                 <a class="nav-link" href="{{route('tenant.retentions.index')}}">
-                                    Retenciones 
+                                    Retenciones
                                 </a>
                             </li>
                             <li class="{{ ($path[0] === 'dispatches')?'nav-active':'' }}">

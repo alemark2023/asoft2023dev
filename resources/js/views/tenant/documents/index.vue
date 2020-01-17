@@ -36,6 +36,7 @@
                         <th>#</th>
                         <th>SOAP</th>
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.date_of_due.visible">Fecha Vencimiento</th>
                         <th>Cliente</th>
                         <th>Número</th>
                         <th v-if="columns.notes.visible">Notas C/D</th>
@@ -59,6 +60,7 @@
                         <td>{{ index }}</td>
                         <td>{{ row.soap_type_description }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center" v-if="columns.date_of_due.visible">{{ row.date_of_due }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
@@ -154,6 +156,9 @@
                                     v-if="isClient && row.send_server && (row.state_type_id === '01' || row.state_type_id === '03')">Consultar Servidor</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickOptions(row.id)">Opciones</button>
+
+                            <button type="button" v-if="row.btn_constancy_detraction" class="btn waves-effect waves-light btn-xs btn-success m-1__2"
+                                    @click.prevent="clickCDetraction(row.id)">C. Detracción</button>
                         </td>
                     </tr>
                 </data-table>
@@ -172,6 +177,10 @@
 
             <document-payments :showDialog.sync="showDialogPayments"
                                :documentId="recordId"></document-payments>
+
+                               
+            <document-constancy-detraction :showDialog.sync="showDialogCDetraction"
+                              :recordId="recordId"></document-constancy-detraction>
         </div>
     </div>
 </template>
@@ -185,15 +194,17 @@
     import DataTable from '../../../components/DataTableDocuments.vue'
     import ItemsImport from './import.vue'
     import {deletable} from '../../../mixins/deletable'
+    import DocumentConstancyDetraction from './partials/constancy_detraction.vue'
 
     export default {
         mixins: [deletable],
         props: ['isClient','typeUser','import_documents','import_documents_second'],
-        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable},
+        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction},
         data() {
             return {
                 showDialogVoided: false,
                 showImportDialog: false,
+                showDialogCDetraction: false,
                 showImportSecondDialog: false,
                 resource: 'documents',
                 recordId: null,
@@ -222,6 +233,10 @@
                     },
                     total_exonerated: {
                         title: 'T.Exonerado',
+                        visible: false
+                    },
+                    date_of_due: {
+                        title: 'F. Vencimiento',
                         visible: false
                     },
                 }
@@ -279,6 +294,10 @@
                     .catch(error => {
                         this.$message.error(error.response.data.message)
                     })
+            },
+            clickCDetraction(recordId){
+                this.recordId = recordId
+                this.showDialogCDetraction = true
             },
             clickOptions(recordId = null) {
                 this.recordId = recordId

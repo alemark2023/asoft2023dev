@@ -433,6 +433,8 @@ if ($hostname) {
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');
             Route::get('sale-notes/columns', 'Tenant\SaleNoteController@columns');
+            Route::get('sale-notes/columns2', 'Tenant\SaleNoteController@columns2');
+
             Route::get('sale-notes/records', 'Tenant\SaleNoteController@records');
             // Route::get('sale-notes/create', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create');
             Route::get('sale-notes/create/{salenote?}', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create')->middleware('redirect.level');
@@ -469,6 +471,8 @@ if ($hostname) {
            Route::delete('sale_note_payments/{sale_note_payment}', 'Tenant\SaleNotePaymentController@destroy');
 
            Route::post('sale-notes/enabled-concurrency', 'Tenant\SaleNoteController@enabledConcurrency');
+
+           Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
 
            //POS

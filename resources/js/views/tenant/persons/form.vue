@@ -288,17 +288,17 @@
             },
             async opened() {
 
-                if(this.external && this.input_person) { 
+                if(this.external && this.input_person) {
                     if(this.form.number.length === 8 || this.form.number.length === 11){
-                        if(this.api_service_token != false){ 
+                        if(this.api_service_token != false){
                             await this.$eventHub.$emit('enableClickSearch')
                         }else{
                             this.searchCustomer()
-                        } 
+                        }
                     }
-                } 
+                }
 
-            }, 
+            },
             create() {
                 // console.log(this.input_person)
                 if(this.external) {
@@ -307,8 +307,8 @@
                     }
                     if(this.document_type_id === '03') {
                         this.form.identity_document_type_id = '1'
-                    } 
-                    
+                    }
+
                     if(this.input_person) {
                         this.form.identity_document_type_id = (this.input_person.identity_document_type_id) ? this.input_person.identity_document_type_id: this.form.identity_document_type_id
                         this.form.number = (this.input_person.number) ? this.input_person.number:''
@@ -328,7 +328,7 @@
                             this.filterDistricts()
                         })
                 }
-            },  
+            },
             clickAddAddress() {
                 this.form.more_address.push({
                     location_id: [],

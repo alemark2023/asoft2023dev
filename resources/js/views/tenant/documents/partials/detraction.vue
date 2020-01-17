@@ -83,7 +83,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'detraction','total'],
+        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'exchangeRateSale'],
         data() {
             return {
                 headers: headers_token,
@@ -105,6 +105,7 @@
                     this.detraction_types = response.data.detraction_types
                     this.cat_payment_method_types = response.data.cat_payment_method_types
                 })
+
             this.initForm()
              
             this.$eventHub.$on('eventInitForm', () => {
@@ -112,7 +113,7 @@
             })
         }, 
         mounted(){
-
+            // console.log(this.currencyTypeIdActive, this.exchangeRateSale)
         },
         methods: {
             async changeDetractionType(){
@@ -121,7 +122,7 @@
                 if(detraction_type){
 
                     this.detraction.percentage = detraction_type.percentage
-                    this.detraction.amount = _.round(parseFloat(this.total) * (detraction_type.percentage/100),2)
+                    this.detraction.amount = (this.currencyTypeIdActive == 'PEN') ? _.round(parseFloat(this.total) * (detraction_type.percentage/100),2): _.round((parseFloat(this.total) * this.exchangeRateSale) * (detraction_type.percentage/100),2)
                     // console.log(detraction_type, this.form.detraction)
                 
                 }

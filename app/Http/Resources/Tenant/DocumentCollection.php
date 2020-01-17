@@ -22,6 +22,7 @@ class DocumentCollection extends ResourceCollection
             $btn_voided = false;
             $btn_consult_cdr = false;
             $btn_delete_doc_type_03 = false;
+            $btn_constancy_detraction = false;
 
             $affected_document = null;
 
@@ -62,6 +63,10 @@ class DocumentCollection extends ResourceCollection
 
             }
 
+            if (in_array($row->document_type_id, ['01', '03'])) {
+                $btn_constancy_detraction = ($row->detraction) ? true:false;
+            }
+
             $btn_recreate_document = config('tenant.recreate_document');
 
             $btn_change_to_registered_status = false;
@@ -78,6 +83,7 @@ class DocumentCollection extends ResourceCollection
                 'soap_type_id' => $row->soap_type_id,
                 'soap_type_description' => $row->soap_type->description,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
+                'date_of_due' => (in_array($row->document_type_id, ['01', '03'])) ? $row->invoice->date_of_due->format('Y-m-d') : null,
                 'number' => $row->number_full,
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
@@ -105,6 +111,7 @@ class DocumentCollection extends ResourceCollection
 //                'btn_ticket' => $btn_ticket,
                 'btn_resend' => $btn_resend,
                 'btn_consult_cdr' => $btn_consult_cdr,
+                'btn_constancy_detraction' => $btn_constancy_detraction,
                 'btn_recreate_document' => $btn_recreate_document,
                 'btn_change_to_registered_status' => $btn_change_to_registered_status,
                 'btn_delete_doc_type_03' => $btn_delete_doc_type_03,
