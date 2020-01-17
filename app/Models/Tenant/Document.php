@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\BusinessTurn\Models\DocumentHotel;
+use Modules\BusinessTurn\Models\DocumentTransport;
 
 class Document extends ModelTenant
 {
@@ -72,6 +73,7 @@ class Document extends ModelTenant
         'success_shipping_status',
         'success_sunat_shipping_status',
         'success_query_status',
+        'plate_number',
 
     ];
 
@@ -278,6 +280,11 @@ class Document extends ModelTenant
     public function hotel()
     {
         return $this->hasOne(DocumentHotel::class);
+    }
+
+    public function transport()
+    {
+        return $this->hasOne(DocumentTransport::class);
     }
 
     public function getNumberFullAttribute()

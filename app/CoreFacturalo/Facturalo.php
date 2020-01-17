@@ -115,6 +115,7 @@ class Facturalo
                 }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
+                if($inputs['transport']) $document->transport()->create($inputs['transport']);
                 $document->invoice()->create($inputs['invoice']);
                 $this->document = Document::find($document->id);
                 break;

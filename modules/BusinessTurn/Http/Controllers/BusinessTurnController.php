@@ -7,7 +7,14 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use Modules\BusinessTurn\Http\Requests\DocumentHotelRequest;
+use Modules\BusinessTurn\Http\Requests\DocumentTransportRequest;
 use Modules\BusinessTurn\Models\BusinessTurn;
+use App\Models\Tenant\Catalogs\{
+    Department,
+    Province,
+    District
+};
+use Modules\BusinessTurn\Models\DocumentTransport;
 
 class BusinessTurnController extends Controller
 {
@@ -48,6 +55,15 @@ class BusinessTurnController extends Controller
         ];
     }
 
+    
+    public function validate_transports(DocumentTransportRequest $request)
+    { 
+        return [
+            'success' => true, 
+        ];
+    }
+
+
     public function tables()
     { 
         $identity_document_types = IdentityDocumentType::whereIn('id',['1','4','7'])->get();
@@ -65,5 +81,41 @@ class BusinessTurnController extends Controller
         ];
 
         return compact('identity_document_types','civil_status','sexs');
+    }
+
+    public function tablesTransports()
+    { 
+        
+        $identity_document_types = IdentityDocumentType::whereIn('id',['1','4','7'])->get();
+
+        $locations = [];
+        $departments = Department::whereActive()->get();
+        foreach ($departments as $department)
+        {
+            $children_provinces = [];
+            foreach ($department->provinces as $province)
+            {
+                $children_districts = [];
+                foreach ($province->districts as $district)
+                {
+                    $children_districts[] = [
+                        'value' => $district->id,
+                        'label' => $district->description
+                    ];
+                }
+                $children_provinces[] = [
+                    'value' => $province->id,
+                    'label' => $province->description,
+                    'children' => $children_districts
+                ];
+            }
+            $locations[] = [
+                'value' => $department->id,
+                'label' => $department->description,
+                'children' => $children_provinces
+            ];
+        }
+
+        return compact('identity_document_types','locations');
     }
 }
