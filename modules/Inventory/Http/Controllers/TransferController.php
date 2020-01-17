@@ -34,6 +34,7 @@ class TransferController extends Controller
     {
         $records = Inventory::with(['item', 'warehouse', 'warehouse_destination'])
                             ->where('type', 2)
+                            ->whereHas('warehouse_destination')
                             ->whereHas('item', function($query) use($request) {
                                 $query->where('description', 'like', '%' . $request->value . '%');
 
