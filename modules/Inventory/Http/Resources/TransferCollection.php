@@ -17,7 +17,7 @@ class TransferCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) {
             return [
                 'id' => $row->id,
-                'item_description' => $row->item->description,
+                'item_description' => optional($row->item)->description,
                 'quantity' => $row->quantity,
                 'warehouse' => $row->warehouse->description,
                 'warehouse_destination' => $row->warehouse_destination->description,
