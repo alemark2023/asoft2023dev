@@ -176,6 +176,7 @@
                             this.$message.success(response.data.message);
                             this.getData();
                             // this.initDocumentTypes()
+                            this.$eventHub.$emit('reloadData')
                             this.showAddButton = true;
                         } else {
                             this.$message.error(response.data.message);
@@ -208,8 +209,10 @@
                 // this.initForm()
             },
             clickDelete(id) {
-                this.destroy(`/${this.resource}/${id}`).then(() =>
-                    this.getData()
+                this.destroy(`/${this.resource}/${id}`).then(() =>{
+                        this.getData()
+                        this.$eventHub.$emit('reloadData')
+                    }
                     // this.initDocumentTypes()
                 )
             }

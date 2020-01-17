@@ -63,6 +63,17 @@ if($hostname) {
             });
 
 
+            Route::prefix('transfers')->group(function () {
+                Route::get('/', 'TransferController@index')->name('transfers.index');
+                Route::get('records', 'TransferController@records');
+                Route::get('columns', 'TransferController@columns');
+                Route::get('tables', 'TransferController@tables');
+                Route::get('record/{inventory}', 'TransferController@record');
+                Route::post('/', 'TransferController@store');
+
+                Route::delete('{inventory}', 'TransferController@destroy');
+
+            });
 
         });
     });

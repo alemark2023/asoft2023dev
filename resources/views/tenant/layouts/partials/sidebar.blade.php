@@ -374,7 +374,7 @@
                         @endif
 
                         @if(in_array('inventory', $vc_modules))
-                        <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses', 'moves']) ||
+                        <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses', 'moves', 'transfers']) ||
                                                 ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory'])))?'nav-active nav-expanded':'' }}">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-warehouse" aria-hidden="true"></i>
@@ -387,8 +387,8 @@
                                 <li class="{{ ($path[0] === 'inventory')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('inventory.index')}}">Movimientos</a>
                                 </li>
-                                <li class="{{ ($path[0] === 'moves')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('moves.index')}}">Traslados</a>
+                                <li class="{{ ($path[0] === 'transfers')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('transfers.index')}}">Traslados</a>
                                 </li>
                                 <li class="{{(($path[0] === 'reports') && ($path[1] === 'kardex')) ? 'nav-active' : ''}}">
                                     <a class="nav-link" href="{{route('reports.kardex.index')}}">
