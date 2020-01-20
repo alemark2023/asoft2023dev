@@ -315,7 +315,7 @@
             })
 
             await this.getFormPosLocalStorage()
-            
+            // console.log(this.form.payments, this.payments)
         }, 
         mounted(){
             // console.log(this.currencyTypeActive)
@@ -378,9 +378,10 @@
             },
             setAmountCash(amount)
             {
-               let row = _.last(this.payments, { 'payment_method_type_id' : '01' }) 
-               row.payment = parseFloat(row.payment) + parseFloat(amount)
-
+                let row = _.last(this.payments, { 'payment_method_type_id' : '01' }) 
+                row.payment = parseFloat(row.payment) + parseFloat(amount)
+                // console.log(row.payment)
+                
                 this.form.payments = this.payments
                 let acum_payment = 0
 
@@ -395,20 +396,23 @@
 
                 let r_item = await _.last(this.payments, { 'payment_method_type_id' : '01' }) 
                 r_item.payment = await parseFloat(this.enter_amount)
-                console.log(r_item)
+                // console.log(r_item.payment)
+
+                let ind = this.form.payments.length - 1
+                this.form.payments[ind].payment = parseFloat(this.enter_amount)
                 // this.setAmount(item.payment)
 
                 let acum_payment = 0
 
                 await this.form.payments.forEach((item)=>{
                     acum_payment += parseFloat(item.payment)
-                    // item.payment = r_item.payment//setear por id
                 })
+                // console.log(this.form.payments)
                 
                 // this.amount = item.payment
                 this.amount = acum_payment
                 // this.amount = this.enter_amount
-                console.log(this.amount)
+                // console.log(this.amount)
                 this.difference = this.amount - this.form.total
 
                 if(isNaN(this.difference)) {
@@ -465,7 +469,7 @@
 
                 this.setLocalStoragePayment('enter_amount', this.enter_amount)               
                 this.setLocalStoragePayment('amount', this.amount)
-                console.log(this.amount)
+                // console.log(this.amount)
                 this.setLocalStoragePayment('difference', this.difference)
 
             },
@@ -552,6 +556,7 @@
                         this.saveCashDocument();
 
                         // this.initFormPayment() ;
+                        this.cleanLocalStoragePayment()
                         this.$eventHub.$emit('saleSuccess');
                     }
                     else {

@@ -521,6 +521,7 @@
             );
             this.form.items[index] = this.row;
             this.calculateTotal();
+            this.setFormPosLocalStorage()
           },
           blurCalculateQuantity2(index) {
             this.row = calculateRowItem(

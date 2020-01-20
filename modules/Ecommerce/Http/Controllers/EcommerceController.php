@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Models\Tenant\Order;
 use App\Models\Tenant\ItemsRating;
 use App\Models\Tenant\ConfigurationEcommerce;
+use Modules\Ecommerce\Http\Resources\ItemBarCollection;
 
 
 
@@ -20,6 +21,7 @@ use App\Models\Tenant\ConfigurationEcommerce;
 use stdClass;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
+use App\Http\Controllers\Tenant\Api\ServiceController;
 
 class EcommerceController extends Controller
 {
@@ -35,16 +37,27 @@ class EcommerceController extends Controller
     public function item($id)
     {
         $row = Item::find($id);
+        $exchange_rate_sale = $this->getExchangeRateSale();
+
         $record = (object)[
             'id' => $row->id,
+            'internal_id' => $row->internal_id,
+            'unit_type_id' => $row->unit_type_id,
             'description' => $row->description,
             'name' => $row->name,
             'second_name' => $row->second_name,
-            'sale_unit_price' => $row->sale_unit_price,
+            'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $row->sale_unit_price : ($row->sale_unit_price*$exchange_rate_sale),
+            'currency_type_id' => $row->currency_type_id,
+            'has_igv' => (bool) $row->has_igv,
+            // 'sale_unit_price' => $row->sale_unit_price,
+            'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+            'currency_type_symbol' => $row->currency_type->symbol,
             'image' =>  $row->image,
             'image_medium' => $row->image_medium,
-            'image_small' => $row->image_small
+            'image_small' => $row->image_small,
+            'tags' => $row->tags->pluck('tag_id')->toArray()
         ];
+
         return view('ecommerce::items.record', compact('record'));
     }
 
@@ -57,7 +70,8 @@ class EcommerceController extends Controller
     public function itemsBar()
     {
         $records = Item::where('apply_store', 1)->get();
-        return new ItemCollection($records);
+        // return new ItemCollection($records);
+        return new ItemBarCollection($records);
 
     }
 
@@ -251,6 +265,14 @@ class EcommerceController extends Controller
 
 
 
+    
+    private function getExchangeRateSale(){
+
+        $exchange_rate = app(ServiceController::class)->exchangeRateTest(date('Y-m-d'));
+
+        return (array_key_exists('sale', $exchange_rate)) ? $exchange_rate['sale'] : 1;
+
+    }
 
 
 
