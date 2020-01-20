@@ -433,6 +433,7 @@ if ($hostname) {
             Route::get('sale-notes/columns2', 'Tenant\SaleNoteController@columns2');
 
             Route::get('sale-notes/records', 'Tenant\SaleNoteController@records');
+            Route::get('sale-notes/totals', 'Tenant\SaleNoteController@totals');
             // Route::get('sale-notes/create', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create');
             Route::get('sale-notes/create/{salenote?}', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create')->middleware('redirect.level');
 

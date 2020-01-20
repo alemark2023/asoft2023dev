@@ -701,5 +701,32 @@ class SaleNoteController extends Controller
     }
 
 
+    
+    public function totals()
+    {
+
+        $records = SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
+        $total_pen = 0;
+        $total_paid_pen = 0;
+        $total_pending_paid_pen = 0;
+
+
+        $total_pen = $records->sum('total');
+
+        foreach ($records as $sale_note) {
+
+            $total_paid_pen += $sale_note->payments->sum('payment');
+
+        }
+        
+        $total_pending_paid_pen = $total_pen - $total_paid_pen;
+
+        return [
+            'total_pen' => number_format($total_pen, 2, ".", ""),
+            'total_paid_pen' => number_format($total_paid_pen, 2, ".", ""),
+            'total_pending_paid_pen' => number_format($total_pending_paid_pen, 2, ".", "")
+        ];
+
+    }
 
 }

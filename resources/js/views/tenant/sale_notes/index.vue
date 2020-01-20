@@ -39,6 +39,8 @@
                         <th class="text-right">Total</th>
                         <th class="text-center">Comprobantes</th>
                         <th class="text-center">Estado pago</th>
+                        <th class="text-center" v-if="columns.total_paid.visible">Pagado</th>
+                        <th class="text-center" v-if="columns.total_pending_paid.visible">Por pagar</th>
                         <th class="text-center">Pagos</th>
                         <th class="text-center">Descarga</th>
                         <th class="text-center">
@@ -81,6 +83,12 @@
                         </td>
                         <td class="text-center">
                             <span class="badge text-white" :class="{'bg-success': (row.paid), 'bg-warning': (!row.paid)}">{{row.paid ? 'Pagado':'Pendiente'}}</span>
+                        </td>
+                        <td class="text-center" v-if="columns.total_paid.visible">
+                            {{row.total_paid}}
+                        </td>
+                        <td class="text-center" v-if="columns.total_pending_paid.visible">
+                            {{row.total_pending_paid}}
                         </td>
                         <td class="text-center">
                             <!-- <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
@@ -219,6 +227,14 @@
                     },
                     license_plate:{
                         title: 'Placa',
+                        visible: false
+                    },
+                    total_paid:{
+                        title: 'Pagado',
+                        visible: false
+                    },
+                    total_pending_paid:{
+                        title: 'Por pagar',
                         visible: false
                     }
 
