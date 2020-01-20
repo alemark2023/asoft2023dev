@@ -19,6 +19,7 @@ class Inventory extends ModelTenant
         'quantity',
         'inventory_transaction_id',
         'lot_code',
+        'detail'
     ];
 
     public function warehouse()
@@ -33,7 +34,7 @@ class Inventory extends ModelTenant
 
     public function item()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Item::class, 'item_id');
     }
 
     public function inventory_kardex()

@@ -8,6 +8,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\Item;
+use Modules\Item\Models\ItemLot;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -27,6 +29,8 @@ use App\Models\Tenant\Catalogs\Tag;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Inventory\Models\Warehouse as WarehouseModule;
+use App\Models\Tenant\Establishment;
+
 
 class ItemController extends Controller
 {
@@ -59,7 +63,7 @@ class ItemController extends Controller
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-    
+
     public function getRecords($request){
 
         switch ($request->column) {
@@ -72,7 +76,7 @@ class ItemController extends Controller
                                 ->whereNotIsSet()
                                 ->orderBy('description');
                 break;
- 
+
             default:
                 $records = Item::whereTypeUser()
                                 ->whereNotIsSet()
@@ -191,27 +195,72 @@ class ItemController extends Controller
         if(!$id){
 
             // $item->lots()->delete();
-            $warehouse = WarehouseModule::find(auth()->user()->establishment_id);
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+
+            //$warehouse = WarehouseModule::find(auth()->user()->establishment_id);
 
             $v_lots = isset($request->lots) ? $request->lots:[];
-            
+
             foreach ($v_lots as $lot) {
-                
+
                 // $item->lots()->create($lot);
                 $item->lots()->create([
                     'date' => $lot['date'],
                     'series' => $lot['series'],
                     'item_id' => $item->id,
                     'warehouse_id' => $warehouse ? $warehouse->id:null,
-                    'has_sale' => false
+                    'has_sale' => false,
+                    'state' => $lot['state'],
                 ]);
             }
         }
+        else{
 
+             // $item->lots()->delete();
+             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+             //$warehouse = WarehouseModule::find(auth()->user()->establishment_id);
+
+             $v_lots = isset($request->lots) ? $request->lots:[];
+
+             foreach ($v_lots as $lot) {
+
+                if($lot['deleted'] == true){
+
+                    ItemLot::find($lot['id'])->delete();
+                }
+                else{
+
+                    if( isset( $lot['id'] ))
+                    {
+                        ItemLot::find($lot['id'])->update([
+                            'date' => $lot['date'],
+                            'series' => $lot['series'],
+                            'state' => $lot['state'],
+                        ]);
+
+                    }else{
+
+                        $item->lots()->create([
+                            'date' => $lot['date'],
+                            'series' => $lot['series'],
+                            'item_id' => $item->id,
+                            'warehouse_id' => $warehouse ? $warehouse->id:null,
+                            'has_sale' => false,
+                            'state' => $lot['state'],
+                        ]);
+                    }
+
+                }
+
+
+             }
+
+
+        }
 
         $item->update();
-
-
 
         return [
             'success' => true,

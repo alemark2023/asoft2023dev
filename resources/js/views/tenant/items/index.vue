@@ -27,7 +27,7 @@
                         <th>Cód. SUNAT</th>
                         <th  class="text-left">Stock</th>
                         <th  class="text-right">P.Unitario (Venta)</th>
-                        <th  class="text-right">P.Unitario (Compra)</th>
+                        <th v-if="typeUser != 'seller'" class="text-right">P.Unitario (Compra)</th>
                         <th class="text-center">Tiene Igv</th>
                         <th class="text-right">Acciones</th>
                     <tr>
@@ -52,7 +52,7 @@
 
                         </td>
                         <td class="text-right">{{ row.sale_unit_price }}</td>
-                        <td class="text-right">{{ row.purchase_unit_price }}</td>
+                        <td v-if="typeUser != 'seller'" class="text-right">{{ row.purchase_unit_price }}</td>
                         <td class="text-center">{{ row.has_igv_description }}</td>
                         <td class="text-right">
                             <template v-if="typeUser === 'admin'">

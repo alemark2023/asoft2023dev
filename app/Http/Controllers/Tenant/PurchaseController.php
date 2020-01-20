@@ -72,7 +72,7 @@ class PurchaseController extends Controller
 
         switch ($request->column) {
             case 'name':
-                
+
                 $records = Purchase::whereHas('supplier', function($query) use($request){
                                 return $query->where($request->column, 'like', "%{$request->value}%");
                             })
@@ -82,7 +82,7 @@ class PurchaseController extends Controller
                 break;
 
             case 'date_of_payment':
-                
+
                 $records = Purchase::whereHas('purchase_payments', function($query) use($request){
                                 return $query->where($request->column, 'like', "%{$request->value}%");
                             })
@@ -90,9 +90,9 @@ class PurchaseController extends Controller
                             ->latest();
 
                 break;
-            
+
             default:
-            
+
                 $records = Purchase::where($request->column, 'like', "%{$request->value}%")
                             ->whereTypeUser()
                             ->latest();
@@ -152,10 +152,10 @@ class PurchaseController extends Controller
 
     public function store(PurchaseRequest $request)
     {
-        
+
         //return 'asd';
         $data = self::convert($request);
-        
+
         $purchase = DB::connection('tenant')->transaction(function () use ($data) {
             $doc = Purchase::create($data);
             foreach ($data['items'] as $row)
@@ -164,12 +164,12 @@ class PurchaseController extends Controller
                 $p_item = new PurchaseItem;
                 $p_item->fill($row);
                 $p_item->purchase_id = $doc->id;
-                $p_item->save();  
+                $p_item->save();
 
                 if(array_key_exists('lots', $row)){
 
                     foreach ($row['lots'] as $lot){
-    
+
                         $p_item->lots()->create([
                             'date' => $lot['date'],
                             'series' => $lot['series'],
@@ -177,14 +177,14 @@ class PurchaseController extends Controller
                             'warehouse_id' => $row['warehouse_id'],
                             'has_sale' => false
                         ]);
-    
+
                     }
 
                 }
 
             }
 
-            
+
             foreach ($data['payments'] as $payment) {
                 $doc->purchase_payments()->create($payment);
             }
@@ -192,7 +192,7 @@ class PurchaseController extends Controller
             return $doc;
         });
 
-         
+
 
         return [
             'success' => true,
@@ -233,17 +233,17 @@ class PurchaseController extends Controller
                 // dd($it);
                 $it->lots()->delete();
             }
-            
+
 
             $doc->items()->delete();
- 
+
             foreach ($request['items'] as $row)
             {
                 // $doc->items()->create($row);
                 $p_item = new PurchaseItem;
                 $p_item->fill($row);
                 $p_item->purchase_id = $doc->id;
-                $p_item->save();  
+                $p_item->save();
 
                 if(array_key_exists('lots', $row)){
 
@@ -261,7 +261,7 @@ class PurchaseController extends Controller
                 }
             }
 
-            
+
             $doc->purchase_payments()->delete();
 
             foreach ($request['payments'] as $payment) {
@@ -289,6 +289,7 @@ class PurchaseController extends Controller
         $obj->save();
 
         $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
         //proceso para eliminar los actualizar el stock de proiductos
         foreach ($obj->items as $item) {
@@ -298,7 +299,7 @@ class PurchaseController extends Controller
                 'warehouse_id' => $establishment->id,
                 'quantity' => -$item->quantity,
             ]);
-            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
+            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
             $wr->stock =  $wr->stock - $item->quantity;
             $wr->save();
         }

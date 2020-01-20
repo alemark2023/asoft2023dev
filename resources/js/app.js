@@ -105,6 +105,7 @@ Vue.component('tenant-payment-method-index', require('./views/tenant/payment_met
 
 // Modules
 Vue.component('inventory-index', require('../../modules/Inventory/Resources/assets/js/inventory/index.vue'));
+Vue.component('inventory-transfers-index', require('../../modules/Inventory/Resources/assets/js/transfers/index.vue'));
 Vue.component('warehouses-index', require('../../modules/Inventory/Resources/assets/js/warehouses/index.vue'));
 Vue.component('tenant-inventories-form', require('../../modules/Inventory/Resources/assets/js/config/form.vue'));
 Vue.component('tenant-expenses-index', require('../../modules/Expense/Resources/assets/js/views/expenses/index.vue'));
@@ -146,6 +147,7 @@ Vue.component('tenant-purchase-orders-index', require('../../modules/Purchase/Re
 Vue.component('tenant-purchase-orders-form', require('../../modules/Purchase/Resources/assets/js/views/purchase-orders/form.vue'));
 Vue.component('tenant-purchase-orders-generate', require('../../modules/Purchase/Resources/assets/js/views/purchase-orders/generate.vue'));
 
+Vue.component('moves-index', require('../../modules/Inventory/Resources/assets/js/moves/index.vue'));
 
 
 // System

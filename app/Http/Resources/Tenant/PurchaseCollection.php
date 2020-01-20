@@ -15,7 +15,7 @@ class PurchaseCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
-        
+
             $total = $row->total;
             if($row->total_perception)
             {
@@ -50,12 +50,20 @@ class PurchaseCollection extends ResourceCollection
                         'id' => $row->id,
                         'payment_method_type_description' => $row->payment_method_type->description,
                         'reference' => $row->reference,
-                        'payment' => $row->payment, 
-                        'payment_method_type_id' => $row->payment_method_type_id, 
+                        'payment' => $row->payment,
+                        'payment_method_type_id' => $row->payment_method_type_id,
+                    ];
+                }),
+                'items' => $row->items->transform(function($row, $key) {
+                    return [
+                        'key' => $key + 1,
+                        'id' => $row->id,
+                        'description' => $row->item->description,
+                        'quantity' => round($row->quantity,2)
                     ];
                 }),
             ];
         });
     }
-    
+
 }

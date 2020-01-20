@@ -2,12 +2,12 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Tenant\Catalogs\CurrencyType; 
+use App\Models\Tenant\Catalogs\CurrencyType;
 
 class SaleNote extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
-    
+
     protected $fillable = [
         'user_id',
         'external_id',
@@ -16,13 +16,13 @@ class SaleNote extends ModelTenant
         'soap_type_id',
         'state_type_id',
 
-        'prefix', 
+        'prefix',
 
         'date_of_issue',
         'time_of_issue',
         'customer_id',
         'customer',
-        'currency_type_id', 
+        'currency_type_id',
         'exchange_rate_sale',
         'total_prepayment',
         'total_discount',
@@ -47,7 +47,7 @@ class SaleNote extends ModelTenant
         'related',
         'perception',
         'detraction',
-        'legends', 
+        'legends',
         'filename',
         'total_canceled',
         'quotation_id',
@@ -56,6 +56,10 @@ class SaleNote extends ModelTenant
         'quantity_period',
         'automatic_date_of_issue',
         'enabled_concurrency',
+        'series',
+        'number',
+        'paid',
+        'license_plate'
     ];
 
     protected $casts = [
@@ -162,7 +166,7 @@ class SaleNote extends ModelTenant
     {
         $this->attributes['legends'] = (is_null($value))?null:json_encode($value);
     }
- 
+
     public function getIdentifierAttribute()
     {
         return $this->prefix.'-'.$this->id;
@@ -187,22 +191,22 @@ class SaleNote extends ModelTenant
     {
         return $this->belongsTo(StateType::class);
     }
-    
+
     public function person() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
-      
+
 
     public function currency_type()
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
-    } 
+    }
 
     public function items()
     {
         return $this->hasMany(SaleNoteItem::class);
     }
-  
+
     public function kardex()
     {
         return $this->hasMany(Kardex::class);
@@ -235,12 +239,12 @@ class SaleNote extends ModelTenant
     {
         return $this->prefix.'-'.$this->id;
     }
- 
-    
+
+
     public function scopeWhereTypeUser($query)
     {
-        $user = auth()->user();         
-        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
 }

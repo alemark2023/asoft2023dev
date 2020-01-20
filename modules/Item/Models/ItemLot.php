@@ -9,7 +9,7 @@ use Modules\Inventory\Models\Warehouse;
 class ItemLot extends ModelTenant
 {
 
-    protected $fillable = [ 
+    protected $fillable = [
         'series',
         'date',
         'item_id',
@@ -17,13 +17,14 @@ class ItemLot extends ModelTenant
         'item_loteable_type',
         'item_loteable_id',
         'has_sale',
+        'state'
     ];
- 
+
     public function item()
     {
         return $this->belongsTo(Item::class);
     }
- 
+
     public function item_loteable()
     {
         return $this->morphTo();
@@ -45,5 +46,5 @@ class ItemLot extends ModelTenant
     //     });
 
     // }
-    
+
 }

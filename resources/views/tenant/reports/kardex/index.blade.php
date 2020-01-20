@@ -68,10 +68,10 @@
                                                     {{($value->sale_note_id) ? "Nota de Venta" : (($value->quantity >= 0) ? "Venta" : "Anulación")}}
                                                     @break
                                                 @case('purchase')
-                                                    {{"Compra"}}                                                    
+                                                    {{"Compra"}}
                                                     @break
-                                                @default                                                    
-                                                    {{"Stock Inicial"}}                                                    
+                                                @default
+                                                    {{"Stock Inicial"}}
                                                 @break
                                             @endswitch
                                         </td>
@@ -81,10 +81,10 @@
                                                     {{($value->document_id) ? "{$value->document->series}-{$value->document->number}" : "{$value->sale_note->prefix}-{$value->sale_note->id}"}}
                                                     @break
                                                 @case('purchase')
-                                                    {{"{$value->purchase->series}-{$value->purchase->number}"}}                                                    
+                                                    {{"{$value->purchase->series}-{$value->purchase->number}"}}
                                                     @break
-                                                @default                                                    
-                                                    {{"-"}}                                                    
+                                                @default
+                                                    {{"-"}}
                                                 @break
                                             @endswitch
                                         </td>

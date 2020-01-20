@@ -161,7 +161,6 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                     @endif
                 </tr>
                 <tr>
-                
                     <td colspan="2" class="td-custom">
                         <p><strong>Montos de operación: </strong></p>
                     </td>
@@ -206,7 +205,6 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                 <tr>
                                     @php
                                     
-
                                         $type_transaction =  null;
                                         $document_type_description = null;
                                         $number = null;

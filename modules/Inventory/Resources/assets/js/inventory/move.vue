@@ -27,7 +27,7 @@
                             <el-input v-model="form.quantity_move"></el-input>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_new_id}">
                             <label class="control-label">Almacén Final</label>
                             <el-select v-model="form.warehouse_new_id">
@@ -36,10 +36,17 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_new_id" v-text="errors.warehouse_new_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id && form.lots_enabled"> 
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.detail}">
+                            <label class="control-label">Motivo de Traslado</label>
+                              <el-input v-model="form.detail"></el-input>
+                            <small class="form-control-feedback" v-if="errors.detail" v-text="errors.detail[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id && form.lots_enabled">
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
-                    </div> 
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -84,7 +91,7 @@
             addRowOutputLot(lots){
                 this.form.lots = lots
             },
-            clickLotcodeOutput(){ 
+            clickLotcodeOutput(){
                 this.showDialogLotsOutput = true
             },
             initForm() {
@@ -99,7 +106,8 @@
                     warehouse_new_id: null,
                     quantity_move: null,
                     lots_enabled:false,
-                    lots:[]
+                    lots:[],
+                    detail:null
                 }
             },
             create() {
@@ -111,7 +119,7 @@
                     })
             },
             async submit() {
-                
+
                 if(this.form.lots_enabled){
                     let select_lots = await _.filter(this.form.lots, {'has_sale':true})
                     if(select_lots.length != this.form.quantity_move){
