@@ -767,7 +767,7 @@ class DocumentController extends Controller
                 'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '', */
 
                 'balance' => $total_difference,
-                'person_type' => $row->person->person_type->description,
+                'person_type' => isset($row->person->person_type->description) ? $row->person->person_type->description:'',
                 'department' => $row->customer->department->description,
                 'district' => $row->customer->district->description,
 
