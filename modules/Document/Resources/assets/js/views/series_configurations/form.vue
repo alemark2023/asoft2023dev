@@ -2,7 +2,7 @@
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
-                <div class="row">                    
+                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                             <label class="control-label">Tipo comprobante</label>
@@ -28,8 +28,8 @@
                             <el-input v-model="form.number"  ></el-input>
                             <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                         </div>
-                    </div> 
-                    
+                    </div>
+
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -52,7 +52,7 @@
                 errors: {},
                 form: {},
                 series: [],
-                all_series: [],                
+                all_series: [],
                 document_types: [],
 
             }
@@ -75,9 +75,9 @@
                 let serie = await _.find(this.series,{'id':this.form.series_id})
                 this.form.series = serie.number
                 // console.log(this.form.series)
-            },            
+            },
             async changeDocumentType() {
-                await this.filterSeries(); 
+                await this.filterSeries();
             },
             async filterSeries() {
                 this.form.series_id = null
@@ -85,12 +85,12 @@
             },
 
             async create() {
-                this.titleDialog = 'Registrar configuración' 
+                this.titleDialog = 'Registrar configuración'
 
                 await this.$http.get(`/${this.resource}/tables`)
-                    .then(response => {                       
-                        this.all_series = response.data.series; 
-                        this.document_types = response.data.document_types; 
+                    .then(response => {
+                        this.all_series = response.data.series;
+                        this.document_types = response.data.document_types;
                     })
             },
             submit() {

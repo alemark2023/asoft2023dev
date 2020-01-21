@@ -4,6 +4,7 @@ namespace Modules\Expense\Models;
 
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
+use App\Models\Tenant\StateType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\CurrencyType;
@@ -23,6 +24,7 @@ class Expense extends ModelTenant
         'supplier_id',
         'currency_type_id',
         'external_id',
+        'state_type_id',
         'number',
         'date_of_issue',
         'time_of_issue',
@@ -57,6 +59,11 @@ class Expense extends ModelTenant
     public function soap_type()
     {
         return $this->belongsTo(SoapType::class);
+    }
+
+    public function state_type()
+    {
+        return $this->belongsTo(StateType::class);
     }
 
     public function user()

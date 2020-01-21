@@ -146,6 +146,19 @@ class ExpenseController extends Controller
         }
     }
 
-
+    public function voided ($record)
+    {
+        $expense = Expense::findOrFail($record);
+        $expense->state_type_id = 11;
+        $expense->save();
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $expense->id,
+            ],
+            'message' => 'Giro anulado',
+        ];
+        // dd($expense);
+    }
 
 }
