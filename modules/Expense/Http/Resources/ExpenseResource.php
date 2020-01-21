@@ -18,7 +18,7 @@ class ExpenseResource extends JsonResource
             'id' => $this->id,
             'external_id' => $this->external_id,
             'number' => $this->number,
-            'state_type_id' => '05',
+            'state_type_id' => $this->state_type_id,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
             'payments' => $this->payments->transform(function($row, $key) {
                 return [
