@@ -253,7 +253,8 @@
             aux_totals: {},
             form_document: {},
             user: {},
-            typeDocumentSelected: ''
+            typeDocumentSelected: '',
+            response_order_total:0
         },
         computed: {
             maxLength: function () {
@@ -320,8 +321,9 @@
                 let response = await axios.post(url_finally, this.getFormPaymentCash(), this
                     .getHeaderConfig())
                 if (response.data.success) {
-
+                    // console.log(response)
                     this.clearShoppingCart()
+                    this.response_order_total = response.data.order.total
                     swal({
                         title: "Gracias por su pago!",
                         text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
@@ -391,23 +393,34 @@
             checkDocument(typeDocument) {
                 this.formIdentity.identity_document_type_id = typeDocument
                 //this.typeDocumentSelected = typeDocument
-                let total = this.summary.total
+                let total = parseFloat(this.response_order_total)
+                // console.log(total, this.response_order_total)
 
-                if (total > 700 || typeDocument === '6') {
+                if (typeDocument == '6') {
                     let tipoDocumento = this.user.identity_document_type_id
                     let number = this.user.number
+                    // console.log(this.user)
 
-                    if (!tipoDocumento || !number || number.length !== 11) {
-                        $('#modal_identity_document').modal('show');
-                    } else {
-                        this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad =
-                            tipoDocumento
-                        this.form_document.datos_del_cliente_o_receptor.numero_documento = number
-                        this.sendDocument()
-                    }
+                    // if (!tipoDocumento || !number || number.length !== 11) {
+                    $('#modal_identity_document').modal('show');
+                    // } else {
+                    //     this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad =
+                    //         tipoDocumento
+                    //     this.form_document.datos_del_cliente_o_receptor.numero_documento = number
+                    //     this.sendDocument()
+                    // }
 
                 } else {
-                    this.sendDocument()
+
+                    if(total > 700){
+
+                        $('#modal_identity_document').modal('show');
+
+                    }else{
+
+                        this.sendDocument()
+                    }
+                    
                 }
 
             },
@@ -415,6 +428,7 @@
                 let url_finally = '{{ route("tenant_ecommerce_transaction_finally")}}';
                 axios.post(url_finally, form, this.getHeaderConfig())
                     .then(response => {
+                        console.log(response)
                         console.log('transaccion finalizada correctamente')
                         swal({
                             title: "Gracias por su pago!",
@@ -444,11 +458,13 @@
                     }
                 });
                 let doc = await this.getDocument()
-                // console.log(doc)
+                console.log(doc)
+                // return
                 await axios.post('/api/documents', doc, this.getHeaderConfig())
                     .then(response => {
                         console.log('documento generado correctamente')
                         this.finallyProcess(this.getDataFinally(response.data))
+                        this.initForm()
                     })
                     .catch(error => {
                         console.log(error)
@@ -608,6 +624,11 @@
                     },
                     "totales": {},
                     "items": [],
+                }
+
+                
+                this.formIdentity = {
+                    identity_document_type_id: '6'
                 }
 
             },

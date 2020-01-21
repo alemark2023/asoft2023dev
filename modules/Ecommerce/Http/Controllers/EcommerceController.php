@@ -176,7 +176,8 @@ class EcommerceController extends Controller
             $user->update(['identity_document_type_id' => $request->identity_document_type_id, 'number'=>$request->number]);
             return [
                 'success' => true,
-                'message' => 'Order Actualizada'
+                'message' => 'Order Actualizada',
+                'order_total' => $order_generated->total
             ];
         }
         catch(Exception $e)
