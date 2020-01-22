@@ -95,7 +95,7 @@
                                     @click.prevent="clickPayment(row.id)"  v-if="row.btn_payments">Pagos</button> -->
 
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickPayment(row.id)"  v-if="row.btn_payments" :disabled="row.paid"><i class="fas fa-money-bill-alt"></i></button>
+                                    @click.prevent="clickPayment(row.id)"  v-if="row.btn_payments" ><i class="fas fa-money-bill-alt"></i></button>
                         </td>
 
                         <td class="text-right">
@@ -124,11 +124,11 @@
                         <td class="text-right" v-if="columns.license_plate.visible" >
                             {{row.license_plate}}
                         </td>
-                        
+
                         <td class="text-right">
 
                             <!-- <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickVoided(row.id)">Anular</button> -->
-                            <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" 
+                            <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                              @click.prevent="clickVoided(row.id)"><i class="fas fa-trash"></i></button>
 
                             <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
@@ -146,7 +146,7 @@
 
                             <!-- <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)">Opciones</button> -->
-                                    
+
                             <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)"><i class="fas fa-print"></i></button>
                         </td>
@@ -219,15 +219,15 @@
                     },
                     type_period: {
                         title: 'Tipo Periodo',
-                        visible: false
+                        visible: true
                     },
                     quantity_period: {
                         title: 'Cantidad Periodo',
-                        visible: false
+                        visible: true
                     },
                     license_plate:{
                         title: 'Placa',
-                        visible: false
+                        visible: true
                     },
                     total_paid:{
                         title: 'Pagado',

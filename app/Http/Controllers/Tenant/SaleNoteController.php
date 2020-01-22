@@ -213,7 +213,6 @@ class SaleNoteController extends Controller
 
                 }
 
-                // dd($row);
 
             }
 
@@ -690,6 +689,9 @@ class SaleNoteController extends Controller
                 $wr->save();
             }
 
+            //habilito las series
+            ItemLot::where('item_id', $item->item_id )->where('warehouse_id', $warehouse->id)->update(['has_sale' => false]);
+
         }
 
         return [
@@ -701,7 +703,7 @@ class SaleNoteController extends Controller
     }
 
 
-    
+
     public function totals()
     {
 
@@ -718,7 +720,7 @@ class SaleNoteController extends Controller
             $total_paid_pen += $sale_note->payments->sum('payment');
 
         }
-        
+
         $total_pending_paid_pen = $total_pen - $total_paid_pen;
 
         return [

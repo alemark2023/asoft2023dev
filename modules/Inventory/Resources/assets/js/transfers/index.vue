@@ -32,10 +32,10 @@
                         <td>{{ row.warehouse_destination }}</td>
                         <td >{{ row.quantity }}</td>
                         <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                          <!--  <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)">Editar</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                    @click.prevent="clickDelete(row.id)">Eliminar</button> -->
                         </td>
                     </tr>
                 </data-table>
@@ -62,7 +62,7 @@
         data() {
             return {
                 title: null,
-                showDialog: false, 
+                showDialog: false,
                 resource: 'transfers',
                 recordId: null,
                 typeTransaction:null,
@@ -75,7 +75,7 @@
             clickCreate(recordId = null) {
                 this.recordId = recordId
                 this.showDialog = true
-            }, 
+            },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')

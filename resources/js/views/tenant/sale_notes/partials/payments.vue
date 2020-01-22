@@ -162,6 +162,14 @@
                     this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
                     return;
                 }
+
+                let paid = false
+                if(this.records[index].payment == parseFloat(this.document.total_difference))
+                {
+                    paid = true
+                }
+
+
                 let form = {
                     id: this.records[index].id,
                     sale_note_id: this.documentId,
@@ -169,6 +177,7 @@
                     payment_method_type_id: this.records[index].payment_method_type_id,
                     reference: this.records[index].reference,
                     payment: this.records[index].payment,
+                    paid: paid
                 };
                 this.$http.post(`/${this.resource}`, form)
                     .then(response => {
