@@ -14,7 +14,8 @@ class DocumentHotelRequest extends FormRequest
     public function rules() {
         
         return [   
-            'number'=> ['required','numeric','integer'],
+            // 'number'=> ['required','numeric','integer'],
+            'number'=> ['required','numeric'],
             'name'=> ['required'], 
             'identity_document_type_id'=> ['required'], 
             'sex'=> ['required'], 
