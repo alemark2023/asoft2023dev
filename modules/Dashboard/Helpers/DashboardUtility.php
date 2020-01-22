@@ -12,20 +12,55 @@ use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Item;
 use Carbon\Carbon;
 use Modules\Dashboard\Traits\TotalsTrait;
+use Modules\Expense\Models\Expense;
 
 class DashboardUtility
 {
 
     // use TotalsTrait;
     
-    public function data($establishment_id, $d_start, $d_end)
+    public function data($request)
     { 
-        return $this->utilities_totals($establishment_id, $d_start, $d_end);
+        
+        $establishment_id = $request['establishment_id'];
+        $period = $request['period'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        $month_start = $request['month_start'];
+        $month_end = $request['month_end'];
+        $enabled_expense = $request['enabled_expense'];
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        return [
+            'utilities' => $this->utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense),
+        ];
+
     }
   
 
     
-    private function utilities_totals($establishment_id, $d_start, $d_end){
+    private function utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense){
  
 
         if($d_start && $d_end){
@@ -47,6 +82,9 @@ class DashboardUtility
                                             })
                                             ->get();
 
+            $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get():null;
+        
+        
         }else{
 
             $document_items = DocumentItem::whereHas('document', function($query) use($establishment_id){
@@ -64,16 +102,139 @@ class DashboardUtility
                                             })
                                             ->get();
 
+
+            $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->get():null;
+
         }          
 
         // dd($document_items);
         $getTotalDocumentItems = $this->getTotalDocumentItems($document_items);
+        $getTotalSaleNoteItems = $this->getTotalSaleNoteItems($sale_note_items);
+        $getTotalExpenses = $this->getTotalExpenses($expenses);
 
+        // dd($getTotalDocumentItems, $getTotalSaleNoteItems, $getTotalExpenses);
+
+        $total_income = $getTotalDocumentItems['document_sale_total'] + $getTotalSaleNoteItems['sale_note_sale_total'];
+        $total_egress = $getTotalDocumentItems['document_purchase_total'] + $getTotalSaleNoteItems['sale_note_purchase_total'] + $getTotalExpenses;
+        $utility = $total_income - $total_egress;
+ 
+        
         return [
-            'getTotalDocumentItems' => $getTotalDocumentItems
+            'totals' => [
+                'total_income' => number_format($total_income,2, ".", ""),
+                'total_egress' => number_format($total_egress,2, ".", ""),
+                'utility' => number_format($utility,2, ".", ""),
+            ],
+            'graph' => [
+                'labels' => ['Ingreso', 'Egreso'],
+                'datasets' => [
+                    [
+                        'label' => 'Utilidades',
+                        'data' => [round($total_income,2), round($total_egress,2)],
+                        'backgroundColor' => [
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 99, 132)',
+                        ]
+                    ]
+                ],
+            ]
         ];
 
     } 
+
+    
+    private function getTotalExpenses($expenses){
+
+        if($expenses){
+
+            $total = 0;
+            foreach ($expenses as $ex) {
+                $total += ($ex->currency_type_id == 'USD') ? $ex->total * $ex->exchange_rate_sale: $ex->total;
+            }
+
+            return number_format($total, 2, ".", "");
+        }
+
+        return 0;
+    }
+
+
+    private function getPurchaseUnitPrice($record){
+
+        $purchase_unit_price = 0;
+
+        if($record->item->unit_type_id != 'ZZ'){
+
+            if($record->relation_item->purchase_unit_price > 0){
+
+                $purchase_unit_price = $record->relation_item->purchase_unit_price;
+    
+            }else{
+    
+                $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $record->item_id)->latest('id')->first();
+                $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
+    
+            }
+        
+        }
+
+        return $purchase_unit_price;
+    }
+ 
+    private function getTotalSaleNoteItems($sale_note_items){
+
+        $purchase_unit_price = 0;
+
+        //PEN
+        $sale_note_sale_total_pen = 0;
+        $sale_note_purchase_total_pen = 0;
+        $sale_note_utility_total_pen = 0;
+
+        //USD
+        $sale_note_sale_total_usd = 0;
+        $sale_note_purchase_total_usd = 0;
+        $sale_note_utility_total_usd = 0;
+
+        foreach ($sale_note_items as $sln) {
+
+            $purchase_unit_price = $this->getPurchaseUnitPrice($sln);
+
+            $sln_total_purchase = $purchase_unit_price * $sln->quantity;
+
+            if($sln->sale_note->currency_type_id === 'PEN'){
+    
+                    $sale_note_purchase_total_pen += $sln_total_purchase;
+                    $sale_note_sale_total_pen += $sln->total;
+    
+            }else{
+                
+                $sale_note_purchase_total_usd += $sln_total_purchase;
+                $sale_note_sale_total_usd += $sln->total * $sln->sale_note->exchange_rate_sale;
+     
+            }
+            
+        }
+
+        $sale_note_utility_total_pen = $sale_note_sale_total_pen - $sale_note_purchase_total_pen;
+        $sale_note_utility_total_usd = $sale_note_sale_total_usd - $sale_note_purchase_total_usd;
+
+ 
+        return [
+
+            // 'sale_note_sale_total_pen' => round($sale_note_sale_total_pen, 2),
+            // 'sale_note_purchase_total_pen' => round($sale_note_purchase_total_pen, 2),
+
+            // 'sale_note_purchase_total_usd' => round($sale_note_purchase_total_usd, 2),
+            // 'sale_note_sale_total_usd' => round($sale_note_sale_total_usd, 2),
+            
+            // 'sale_note_utility_total_pen' => round($sale_note_utility_total_pen, 2),
+            // 'sale_note_utility_total_usd' => round($sale_note_utility_total_usd, 2),
+
+            'sale_note_sale_total' => $sale_note_sale_total_usd + $sale_note_sale_total_pen,
+            'sale_note_purchase_total' => $sale_note_purchase_total_usd + $sale_note_purchase_total_pen,
+
+        ];
+    }
 
     private function getTotalDocumentItems($document_items){
 
@@ -96,50 +257,52 @@ class DashboardUtility
         foreach ($document_items as $doc_it) {
 
             //compra por item
-            if($doc_it->relation_item->purchase_unit_price > 0){
+            // if($doc_it->relation_item->purchase_unit_price > 0){
 
-                $purchase_unit_price = $doc_it->relation_item->purchase_unit_price;
-                $purchase_currency_type = $doc_it->relation_item->currency_type_id;
+            //     $purchase_unit_price = $doc_it->relation_item->purchase_unit_price;
+            //     // $purchase_currency_type = $doc_it->relation_item->currency_type_id;
 
-            }else{
+            // }else{
 
-                $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $doc_it->item_id)->last();
-                $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $doc_it->unit_price;
-                $purchase_currency_type = ($purchase_item) ? $purchase_item->purchase->currency_type_id : $doc_it->document->currency_type_id;
+            //     $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $doc_it->item_id)->last();
+            //     $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $doc_it->unit_price;
+            //     // $purchase_currency_type = ($purchase_item) ? $purchase_item->purchase->currency_type_id : $doc_it->document->currency_type_id;
 
-            }
+            // }
+            $purchase_unit_price = $this->getPurchaseUnitPrice($doc_it);
 
 
-            if($doc_it->document->currency_type_id == 'PEN'){
+            $doc_total_purchase = $purchase_unit_price * $doc_it->quantity;
 
-                $doc_total_purchase_pen = ($purchase_currency_type == 'PEN') ? ($purchase_unit_price * $doc_it->quantity):($purchase_unit_price * $doc_it->quantity * $doc_it->document->exchange_rate_sale);
+            if($doc_it->document->currency_type_id === 'PEN'){
+
+                // $doc_total_purchase_pen = ($purchase_currency_type == 'PEN') ? ($purchase_unit_price * $doc_it->quantity):($purchase_unit_price * $doc_it->quantity * $doc_it->document->exchange_rate_sale);
                 
                 if(in_array($doc_it->document->document_type_id,['01','03','08'])){
     
-                    $document_purchase_total_pen += $doc_total_purchase_pen;
+                    $document_purchase_total_pen += $doc_total_purchase;
                     $document_sale_total_pen += $doc_it->total;
     
                 }else{
 
-                    $document_purchase_total_pen -= $doc_total_purchase_pen;
+                    $document_purchase_total_pen -= $doc_total_purchase;
                     $document_sale_total_pen -= $doc_it->total;
 
                 } 
 
             }else{
 
-                $doc_total_purchase_usd = ($purchase_currency_type == 'PEN') ? ($purchase_unit_price * $doc_it->quantity):(($purchase_unit_price / $doc_it->document->exchange_rate_sale) * $doc_it->quantity);
                 
                 if(in_array($doc_it->document->document_type_id,['01','03','08'])){
 
-                    $document_purchase_total_usd += $doc_total_purchase_usd;
+                    $document_purchase_total_usd += $doc_total_purchase;
                     $document_sale_total_usd += $doc_it->total * $doc_it->document->exchange_rate_sale;
     
                 }else{
 
-                    $document_purchase_total_usd -= $doc_total_purchase_usd;
+                    $document_purchase_total_usd -= $doc_total_purchase;
                     $document_sale_total_usd -= $doc_it->total * $doc_it->document->exchange_rate_sale;
-                } 
+                }  
 
             }
 
@@ -150,7 +313,6 @@ class DashboardUtility
         $document_utility_total_pen = $document_sale_total_pen - $document_purchase_total_pen;
         $document_utility_total_usd = $document_sale_total_usd - $document_purchase_total_usd;
 
-        // dd($document_utility_total_pen, $document_utility_total_usd);
  
         return [
 
@@ -162,6 +324,9 @@ class DashboardUtility
             
             'document_utility_total_pen' => round($document_utility_total_pen, 2),
             'document_utility_total_usd' => round($document_utility_total_usd, 2),
+
+            'document_sale_total' => $document_sale_total_usd + $document_sale_total_pen,
+            'document_purchase_total' => $document_purchase_total_usd + $document_purchase_total_pen,
 
         ];
     }

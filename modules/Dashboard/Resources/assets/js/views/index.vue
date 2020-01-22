@@ -206,7 +206,7 @@
               </div>
             </section>
           </div>
-          <div class="col-xl-6">
+          <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" v-if="general">
                 <div class="widget-summary">
@@ -266,77 +266,8 @@
             </section>
           </div>
 
-          <div class="col-xl-3">
-            <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="general">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
-                    <div class="summary">
-                      <div class="row no-gutters">
-                        <div class="col-md-12 m-b-10">
-                          <h2 class="card-title">
-                            Compras
-                            <el-tooltip
-                              class="item"
-                              effect="dark"
-                              content="Aplica filtro por establecimiento"
-                              placement="top-start"
-                            >
-                              <i class="fa fa-info-circle"></i>
-                            </el-tooltip>
-                          </h2>
-                        </div>
-                        <div class="col-lg-4">
-                          <div class="summary">
-                            <h4 class="title text-danger">
-                              Total
-                              <br />percepciones
-                            </h4>
-                            <div class="info">
-                              <strong
-                                class="amount text-danger"
-                              >S/ {{ purchase.totals.purchases_total_perception }}</strong>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-4">
-                          <div class="summary">
-                            <h4 class="title text-info">
-                              Total
-                              <br />compras
-                            </h4>
-                            <div class="info">
-                              <strong
-                                class="amount text-info"
-                              >S/ {{ purchase.totals.purchases_total }}</strong>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-4">
-                          <div class="summary">
-                            <h4 class="title">
-                              Total
-                              <br />&nbsp;
-                            </h4>
-                            <div class="info">
-                              <strong class="amount">S/ {{ purchase.totals.total }}</strong>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row m-t-20">
-                        <div class="col-md-12">
-                          <x-graph-line :all-data="purchase.graph"></x-graph-line>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
 
-          <div class="col-xl-3">
+          <div class="col-xl-3 col-md-3">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" v-if="document">
                 <div class="widget-summary">
@@ -406,7 +337,139 @@
             </section>
           </div>
 
-          <div class="col-xl-3">
+
+          <div class="col-xl-3 col-md-3">
+            <section class="card card-featured-left card-featured-secondary">
+              <div class="card-body" v-if="utilities">
+                <div class="widget-summary">
+                  <div class="widget-summary-col">
+                    <div class="row no-gutters">
+                      <div class="col-md-12 m-b-10">
+                        <h2 class="card-title">Utilidades/Ganancias</h2>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title text-info">
+                            Ingreso
+                          </h4>
+                          <div class="info">
+                            <strong class="amount text-info">S/ {{ utilities.totals.total_income }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title text-danger">
+                            Egreso
+                          </h4>
+                          <div class="info">
+                            <strong class="amount text-danger">S/ {{ utilities.totals.total_egress }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title">
+                            Utilidad
+                            <br />&nbsp;
+                          </h4>
+                          <div class="info">
+                            <strong class="amount">S/ {{ utilities.totals.utility }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 ">
+                        <div class="summary">
+                          <h4 class="title">
+                            <br>
+                            <el-checkbox  v-model="form.enabled_expense" @change="loadDataUtilities">Considerar gastos</el-checkbox><br>
+                          </h4> 
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row m-t-20">
+                      <div class="col-md-12">
+                        <x-graph type="doughnut" :all-data="utilities.graph"></x-graph>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+
+          <div class="col-xl-6 col-md-6">
+            <section class="card card-featured-left card-featured-secondary">
+              <div class="card-body" v-if="general">
+                <div class="widget-summary">
+                  <div class="widget-summary-col">
+                    <div class="summary">
+                      <div class="row no-gutters">
+                        <div class="col-md-12 m-b-10">
+                          <h2 class="card-title">
+                            Compras
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              content="Aplica filtro por establecimiento"
+                              placement="top-start"
+                            >
+                              <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                          </h2>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="summary">
+                            <h4 class="title text-danger">
+                              Total
+                              <br />percepciones
+                            </h4>
+                            <div class="info">
+                              <strong
+                                class="amount text-danger"
+                              >S/ {{ purchase.totals.purchases_total_perception }}</strong>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="summary">
+                            <h4 class="title text-info">
+                              Total
+                              <br />compras
+                            </h4>
+                            <div class="info">
+                              <strong
+                                class="amount text-info"
+                              >S/ {{ purchase.totals.purchases_total }}</strong>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="summary">
+                            <h4 class="title">
+                              Total
+                              <br />&nbsp;
+                            </h4>
+                            <div class="info">
+                              <strong class="amount">S/ {{ purchase.totals.total }}</strong>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row m-t-20">
+                        <div class="col-md-12">
+                          <x-graph-line :all-data="purchase.graph"></x-graph-line>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
                 <h2 class="card-title">Ventas por producto</h2>
@@ -435,7 +498,7 @@
               </div>
             </section>
           </div>
-          <div class="col-xl-3">
+          <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
                 <h2 class="card-title">Top clientes</h2>
@@ -467,7 +530,7 @@
             </section>
           </div>
 
-          <div class="col-xl-12">
+          <div class="col-xl-6 col-md-12 col-lg-12">
             <dashboard-stock></dashboard-stock>
           </div>
 
@@ -718,6 +781,10 @@ export default {
         totals: {},
         graph: {}
       },
+      utilities: {
+        totals: {},
+        graph: {}
+      },
       form: {},
       pickerOptionsDates: {
         disabledDate: time => {
@@ -830,6 +897,7 @@ export default {
     initForm() {
       this.form = {
         establishment_id: null,
+        enabled_expense: null,
         period: "all",
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
@@ -880,6 +948,7 @@ export default {
       this.loadData();
       this.loadUnpaid();
       this.loadDataAditional();
+      this.loadDataUtilities();
       //this.loadCustomer();
     },
     loadData() {
@@ -898,6 +967,13 @@ export default {
           this.purchase = response.data.data.purchase;
           this.items_by_sales = response.data.data.items_by_sales;
           this.top_customers = response.data.data.top_customers;
+        });
+    },
+    loadDataUtilities() {
+      this.$http
+        .post(`/${this.resource}/utilities`, this.form)
+        .then(response => {
+          this.utilities = response.data.data.utilities; 
         });
     },
     loadUnpaid() {

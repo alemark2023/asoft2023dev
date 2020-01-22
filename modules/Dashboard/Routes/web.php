@@ -15,6 +15,7 @@ if($current_hostname) {
                 Route::post('data_aditional', 'DashboardController@data_aditional');
                 Route::post('unpaid', 'DashboardController@unpaid');
                 Route::get('stock-by-product/records', 'DashboardController@stockByProduct');
+                Route::post('utilities', 'DashboardController@utilities');
             });
 
         });

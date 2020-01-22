@@ -66,7 +66,6 @@ class DashboardData
             'general' => $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end),
             'balance' => $this->balance($establishment_id, $d_start, $d_end),
             'customers' => $customers,
-            'utilities' => (new DashboardUtility())->data($establishment_id, $d_start, $d_end)
         ];
     }
 

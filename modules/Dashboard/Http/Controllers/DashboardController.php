@@ -5,6 +5,7 @@ namespace Modules\Dashboard\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Dashboard\Helpers\DashboardData;
+use Modules\Dashboard\Helpers\DashboardUtility;
 use Modules\Dashboard\Helpers\DashboardSalePurchase;
 use Modules\Dashboard\Helpers\DashboardView;
 use Modules\Dashboard\Helpers\DashboardStock;
@@ -51,4 +52,13 @@ class DashboardController extends Controller
     {
         return  (new DashboardStock())->data($request);
     }
+
+
+    public function utilities(Request $request)
+    {
+        return [
+            'data' => (new DashboardUtility())->data($request->all()),
+        ];
+    }
+
 }
