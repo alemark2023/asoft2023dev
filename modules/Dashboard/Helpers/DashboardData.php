@@ -65,7 +65,7 @@ class DashboardData
             'sale_note' => $this->sale_note_totals($establishment_id, $d_start, $d_end),
             'general' => $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end),
             'balance' => $this->balance($establishment_id, $d_start, $d_end),
-            'customers' => $customers
+            'customers' => $customers,
         ];
     }
 
