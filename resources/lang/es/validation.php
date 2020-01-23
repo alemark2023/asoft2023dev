@@ -86,7 +86,7 @@ return [
     'unique' => ':attribute ya ha sido registrado.',
     'uploaded' => 'Subir :attribute ha fallado.',
     'url' => 'El formato :attribute es inválido.',
-    
+
 
     /*
     |--------------------------------------------------------------------------
@@ -190,7 +190,7 @@ return [
         'quantity' => 'cantidad',
         'category_id' => 'categoría',
         'brand_id' => 'marca',
-        
+
         'sex' => 'sexo',
         'age' => 'edad',
         'civil_status' => 'estado civil',
@@ -201,13 +201,13 @@ return [
         'time_entry' => 'hora ingreso',
         'date_exit' => 'fecha salida',
         'time_exit' => 'hora salida',
+        'person_type_id' => 'tipo de cliente',
+        'customers' => 'cliente',
         'sale_unit_price' => 'precio unitario de venta',
-
         'transport_mode_type_id' => 'modo de translado',
         'delivery.address' => 'dirección',
         'origin.address' => 'dirección',
         'transfer_reason_type_id' => 'motivo de translado',
-
         'token_server' => 'token servidor',
         'url_server' => 'url servidor',
         'is_client' => 'modo offline',

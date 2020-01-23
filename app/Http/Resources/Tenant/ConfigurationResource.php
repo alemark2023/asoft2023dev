@@ -19,6 +19,7 @@ class ConfigurationResource extends JsonResource
             'stock' => (bool) $this->stock,
             'cron' => (bool) $this->cron,
             'sunat_alternate_server' => (bool) $this->sunat_alternate_server,
+            'compact_sidebar' => (bool) $this->compact_sidebar,
             'subtotal_account' => $this->subtotal_account,
             'decimal_quantity' => $this->decimal_quantity,
             'amount_plastic_bag_taxes' => $this->amount_plastic_bag_taxes,

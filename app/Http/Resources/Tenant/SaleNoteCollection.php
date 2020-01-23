@@ -42,6 +42,7 @@ class SaleNoteCollection extends ResourceCollection
                 'state_type_description' => $row->state_type->description,
                 'documents' => $row->documents->transform(function($row) {
                     return [
+                        'id' => $row->id,
                         'number_full' => $row->number_full,
                     ];
                 }),

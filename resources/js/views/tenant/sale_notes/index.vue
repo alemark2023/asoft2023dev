@@ -146,6 +146,13 @@
 
                             <!-- <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)">Opciones</button> -->
+                            <template v-for="(document,i) in row.documents" >
+                                <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                    v-if="row.changed" :key="i"><i class="fas fa-file-alt"></i></a>
+                            </template>
+
+                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickGenerate(row.id)" v-if="!row.changed && row.state_type_id != '11' ">Generar comprobante</button> -->
 
                             <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)"><i class="fas fa-print"></i></button>

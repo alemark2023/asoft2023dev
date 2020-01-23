@@ -28,8 +28,16 @@
                                 <small class="form-control-feedback" v-if="errors.sunat_alternate_server" v-text="errors.sunat_alternate_server[0]"></small>
                             </div>
                         </div>
-
-                         <div class="col-md-4 mt-4" v-if="typeUser != 'integrator'">
+                 
+                        <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
+                            <label class="control-label">Menú lateral contraído</label>
+                            <div class="form-group" :class="{'has-danger': errors.compact_sidebar}">
+                                <el-switch v-model="form.compact_sidebar" active-text="Si" inactive-text="No" @change="compactSidebar"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.compact_sidebar" v-text="errors.compact_sidebar[0]"></small>
+                            </div>
+                        </div>
+                        
+                         <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Cantidad decimales POS</label>
                             <div class="form-group" :class="{'has-danger': errors.decimal_quantity}">
                                 <el-input-number v-model="form.decimal_quantity" @change="submit" :min="2" :max="10"></el-input-number>
@@ -37,7 +45,7 @@
                             </div>
                         </div>
 
-                         <div class="col-md-4 mt-4" v-if="typeUser != 'integrator'">
+                         <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Impuesto bolsa plástica</label>
                             <div class="form-group" :class="{'has-danger': errors.amount_plastic_bag_taxes}">
                                 <el-input-number v-model="form.amount_plastic_bag_taxes" @change="changeAmountPlasticBagTaxes" :precision="2" :step="0.1" :max="0.5" :min="0.1"></el-input-number>
@@ -88,6 +96,7 @@
                     id: null,
                     sunat_alternate_server: false,
                     subtotal_account:null,
+                    compact_sidebar:true,
                     decimal_quantity: null,
                     amount_plastic_bag_taxes: 0.1,
                 };
@@ -98,6 +107,28 @@
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
+                    }
+                    else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                    }
+                    else {
+                        console.log(error);
+                    }
+                }).then(() => {
+                    this.loading_submit = false;
+                });
+            },
+            compactSidebar() {
+                this.loading_submit = true;
+                
+                this.$http.post(`/${this.resource}`, this.form).then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        location.reload()
                     }
                     else {
                         this.$message.error(response.data.message);
@@ -133,7 +164,7 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
-            },
+            }
         }
     }
 </script>

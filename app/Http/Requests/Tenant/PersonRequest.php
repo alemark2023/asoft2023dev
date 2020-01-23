@@ -37,6 +37,9 @@ class PersonRequest extends FormRequest
             'country_id' => [
                 'required',
             ],
+            // 'person_type_id' => [
+            //     'required_if:type,"customers"',
+            // ],
             'department_id' => [
                 'required_if:identity_document_type_id,"066"',
             ],

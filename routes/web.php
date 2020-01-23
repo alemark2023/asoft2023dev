@@ -201,11 +201,12 @@ if ($hostname) {
             Route::get('documents/re_store/{document}', 'Tenant\DocumentController@reStore');
             Route::get('documents/locked_emission', 'Tenant\DocumentController@messageLockedEmission');
 
-            Route::get('document_payments/records/{document_id}', 'Tenant\DocumentPaymentController@records');
-            Route::get('document_payments/document/{document_id}', 'Tenant\DocumentPaymentController@document');
-            Route::get('document_payments/tables', 'Tenant\DocumentPaymentController@tables');
-            Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
-            Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
+           Route::get('document_payments/records/{document_id}', 'Tenant\DocumentPaymentController@records');
+           Route::get('document_payments/document/{document_id}', 'Tenant\DocumentPaymentController@document');
+           Route::get('document_payments/tables', 'Tenant\DocumentPaymentController@tables');
+           Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
+           Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
+           Route::get('document_payments/initialize_balance', 'Tenant\DocumentPaymentController@initialize_balance');
 
             Route::get('documents/send_server/{document}/{query?}', 'Tenant\DocumentController@sendServer');
             Route::get('documents/check_server/{document}', 'Tenant\DocumentController@checkServer');
@@ -214,9 +215,11 @@ if ($hostname) {
             Route::post('documents/import', 'Tenant\DocumentController@import');
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
+            Route::get('documents/payments/excel', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
 
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
+            Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level');
@@ -270,7 +273,7 @@ if ($hostname) {
             Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
             Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
             Route::get('dispatches/records', 'Tenant\DispatchController@records');
-            Route::get('dispatches/create/{document?}/{type?}', 'Tenant\DispatchController@create');
+            Route::get('dispatches/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
 
@@ -453,6 +456,7 @@ if ($hostname) {
             // Route::get('sale-notes/print/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
             // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
+            Route::get('sale-notes/dispatches', 'Tenant\SaleNoteController@dispatches');
             Route::delete('sale-notes/destroy_sale_note_item/{sale_note_item}', 'Tenant\SaleNoteController@destroy_sale_note_item');
 
             // Route::get('reports/sale-notes', 'Tenant\ReportSaleNoteController@index')->name('tenant.reports.sale_note.index');
@@ -531,6 +535,13 @@ if ($hostname) {
            Route::post('item-sets/import', 'Tenant\ItemSetController@import');
            Route::post('item-sets/upload', 'Tenant\ItemSetController@upload');
            Route::post('item-sets/visible_store', 'Tenant\ItemSetController@visibleStore');
+
+           Route::get('person-types/columns', 'Tenant\PersonTypeController@columns');
+           Route::get('person-types', 'Tenant\PersonTypeController@index')->name('tenant.person_types.index');
+           Route::get('person-types/records', 'Tenant\PersonTypeController@records');
+           Route::get('person-types/record/{person}', 'Tenant\PersonTypeController@record');
+           Route::post('person-types', 'Tenant\PersonTypeController@store');
+           Route::delete('person-types/{person}', 'Tenant\PersonTypeController@destroy');
 
            //Cuenta
            Route::get('cuenta/payment_index', 'Tenant\AccountController@paymentIndex')->name('tenant.payment.index');

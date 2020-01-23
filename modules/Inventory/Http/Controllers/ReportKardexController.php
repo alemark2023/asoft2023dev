@@ -32,60 +32,110 @@ class ReportKardexController extends Controller
     ];
 
     public function index() {
-        
-        $items = Item::query()->whereNotIsSet()
-            ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
-            ->latest()
-            ->get();
-
-           // return json_encode( $items);
+         
             
-        return view('inventory::reports.kardex.index', compact('items'));
+        return view('inventory::reports.kardex.index');
     }
     
-    /**
-     * Search
-     * @param  Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function search(Request $request) { 
-        //return $request->item_selected;
-        $balance = 0;
-        $d = $request->d;
-        $a = $request->a;
-        $item_selected = $request->item_selected;
+
+    public function filter() {
 
         $items = Item::query()->whereNotIsSet()
             ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
             ->latest()
-            ->get();
+            ->get()->transform(function($row) {
+                $full_description = $this->getFullDescription($row);
+                return [
+                    'id' => $row->id,
+                    'full_description' => $full_description,
+                    'internal_id' => $row->internal_id,
+                    'description' => $row->description, 
+                ];
+            });
         
+        return compact('items');
+    }
+      
+
+    public function records(Request $request)
+    {
+        $records = $this->getRecords($request->all());
+
+        return new ReportKardexCollection($records->paginate(config('tenant.items_per_page')));
+    }
+ 
+
+
+    public function getRecords($request){
+ 
+        $item_id = $request['item_id']; 
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end']; 
+ 
+        $records = $this->data($item_id, $date_start, $date_end);
+
+        return $records;
+
+    }
+
+
+    private function data($item_id, $date_start, $date_end)
+    {
+         
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+ 
+        if($date_start && $date_end){
 
-        if($d && $a){
-
-            $reports = InventoryKardex::with(['inventory_kardexable'])
-                        ->where([['item_id', $request->item_selected],['warehouse_id', $warehouse->id]])      
-                        ->whereBetween('date_of_issue', [$d, $a])                                   
-                        ->orderBy('id')                                  
-                        ->paginate(config('tenant.items_per_page'));
+            $data = InventoryKardex::with(['inventory_kardexable'])
+                        ->where([['warehouse_id', $warehouse->id]])      
+                        ->whereBetween('date_of_issue', [$date_start, $date_end])  
+                        ->orderBy('item_id')->orderBy('id');
 
         }else{
 
-            $reports = InventoryKardex::with(['inventory_kardexable'])
-                        ->where([['item_id', $request->item_selected],['warehouse_id', $warehouse->id]])                                         
-                        ->orderBy('id')                                  
-                        ->paginate(config('tenant.items_per_page'));
-
+            $data = InventoryKardex::with(['inventory_kardexable'])
+                        ->where([['warehouse_id', $warehouse->id]])                                         
+                        ->orderBy('item_id')->orderBy('id');
         }
 
-        //return json_encode($reports);
+        if($item_id){
+            $data = $data->where('item_id', $item_id);
+        }
+
+
+        // if($date_start && $date_end){
+
+        //     $data = InventoryKardex::with(['inventory_kardexable'])
+        //                 ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])      
+        //                 ->whereBetween('date_of_issue', [$date_start, $date_end])  
+        //                 ->orderBy('id');
+
+        // }else{
+
+        //     $data = InventoryKardex::with(['inventory_kardexable'])
+        //                 ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])                                         
+        //                 ->orderBy('id');
+        // }
+       
+        return $data;
         
-        $models = $this->models;
-        
-        return view('inventory::reports.kardex.index', compact('items', 'reports', 'balance','models', 'a', 'd','item_selected'));
     }
-    
+
+
+
+    public function getFullDescription($row){
+
+        $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
+        $category = ($row->category) ? " - {$row->category->name}" : "";
+        $brand = ($row->brand) ? " - {$row->brand->name}" : "";
+
+        $desc = "{$desc} {$category} {$brand}";
+
+        return $desc;
+    }
+
+
+
     /**
      * PDF
      * @param  Request $request
@@ -93,34 +143,40 @@ class ReportKardexController extends Controller
      */
     public function pdf(Request $request) {
 
+        // dd($request->all());
+
         $balance = 0;
         $company = Company::first();
         $establishment = Establishment::first();
-        $d = $request->d;
-        $a = $request->a;
-        $item_selected = $request->item_id;
+        $d = $request->date_start;
+        $a = $request->date_end;
+        $item_id = $request->item_id;
 
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
         if($d && $a){
 
             $reports = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])      
+                                        ->where([['warehouse_id', $warehouse->id]])      
                                         ->whereBetween('date_of_issue', [$d, $a])                                   
-                                        ->orderBy('id')                                  
+                                        ->orderBy('item_id')->orderBy('id')                                  
                                         ->get();
 
         }else{
 
             $reports = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])  
-                                        ->orderBy('id')     
+                                        ->where([['warehouse_id', $warehouse->id]])  
+                                        ->orderBy('item_id')->orderBy('id')     
                                         ->get();
+        }
+
+        if($item_id){
+            $reports = $reports->where('item_id', $item_id);
         }
 
         $models = $this->models;
         
-        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_selected"));
+        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_id"));
         $filename = 'Reporte_Kardex'.date('YmdHis');
         
         return $pdf->download($filename.'.pdf');
@@ -136,35 +192,83 @@ class ReportKardexController extends Controller
         $balance = 0;
         $company = Company::first();
         $establishment = Establishment::first();
-        $d = $request->d;
-        $a = $request->a;
+        $d = $request->date_start;
+        $a = $request->date_end;
+        $item_id = $request->item_id;
        
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
         if($d && $a){
 
             $records = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])      
+                                        ->where([['warehouse_id', $warehouse->id]])      
                                         ->whereBetween('date_of_issue', [$d, $a])                                   
-                                        ->orderBy('id')                                  
+                                        ->orderBy('item_id')->orderBy('id')                                  
                                         ->get();
 
         }else{
 
             $records = InventoryKardex::with(['inventory_kardexable'])
-                                        ->where([['item_id', $request->item_id],['warehouse_id', $warehouse->id]])  
-                                        ->orderBy('id')     
+                                        ->where([['warehouse_id', $warehouse->id]])  
+                                        ->orderBy('item_id')->orderBy('id')     
                                         ->get();
+        }
+
+        if($item_id){
+            $records = $records->where('item_id', $item_id);
         }
 
         $models = $this->models;
         
         return (new KardexExport)
             ->balance($balance)
+            ->item_id($item_id)
             ->records($records)
             ->models($models)
             ->company($company)
             ->establishment($establishment)
             ->download('ReporteKar'.Carbon::now().'.xlsx');
     }
+
+
+    
+ 
+    // public function search(Request $request) { 
+    //     //return $request->item_selected;
+    //     $balance = 0;
+    //     $d = $request->d;
+    //     $a = $request->a;
+    //     $item_selected = $request->item_selected;
+
+    //     $items = Item::query()->whereNotIsSet()
+    //         ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])
+    //         ->latest()
+    //         ->get();
+        
+    //     $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
+    //     if($d && $a){
+
+    //         $reports = InventoryKardex::with(['inventory_kardexable'])
+    //                     ->where([['item_id', $request->item_selected],['warehouse_id', $warehouse->id]])      
+    //                     ->whereBetween('date_of_issue', [$d, $a])                                   
+    //                     ->orderBy('id')                                  
+    //                     ->paginate(config('tenant.items_per_page'));
+
+    //     }else{
+
+    //         $reports = InventoryKardex::with(['inventory_kardexable'])
+    //                     ->where([['item_id', $request->item_selected],['warehouse_id', $warehouse->id]])                                         
+    //                     ->orderBy('id')                                  
+    //                     ->paginate(config('tenant.items_per_page'));
+
+    //     }
+
+    //     //return json_encode($reports);
+        
+    //     $models = $this->models;
+        
+    //     return view('inventory::reports.kardex.index', compact('items', 'reports', 'balance','models', 'a', 'd','item_selected'));
+    // }
+    
 }
