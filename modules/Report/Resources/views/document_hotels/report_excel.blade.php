@@ -49,6 +49,7 @@
                                 <th>Tipo doc. Indetidad</th>
                                 <th>Número</th>
                                 <th>Sexo</th>
+                                <th >Ocupación</th>
                                 <th >Edad</th>
                                 <th >E. Civil</th>
                                 <th >Nacionalidad</th>
@@ -70,6 +71,7 @@
                                 <td>{{$value->identity_document_type->description}}</td>
                                 <td>{{$value->number}}</td>
                                 <td>{{$value->sex}}</td>
+                                <td>{{$value->ocupation}}</td>
                                 <td >{{ $value->age }}</td>
                                 <td >{{ $value->civil_status }}</td>
                                 <td >{{ $value->nacionality }}</td>

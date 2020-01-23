@@ -11,6 +11,7 @@
                             <th >Nombres y Apellidos</th>
                             <th>T. Documento</th>
                             <th>Número</th>
+                            <th  >Ocupación</th>
                             <th  >Edad</th>
                             <th  >E. civil</th>
                             <th  >Nacionalidad</th>
@@ -23,6 +24,7 @@
                             <td>{{row.name}}</td>
                             <td>{{row.identity_document_type_description}}</td>
                             <td>{{row.number}}</td>
+                            <td>{{row.ocupation}}</td>
                             <td>{{row.age}}</td>
                             <td>{{row.civil_status}}</td>
                             <td >{{ row.nacionality }}</td>

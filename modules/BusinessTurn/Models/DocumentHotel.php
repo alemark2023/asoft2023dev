@@ -23,6 +23,8 @@ class DocumentHotel extends ModelTenant
         'time_entry',
         'date_exit',
         'time_exit',
+        'room_type',
+        'ocupation',
     ];
   
     public function document()

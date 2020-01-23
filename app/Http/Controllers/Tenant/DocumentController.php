@@ -161,6 +161,7 @@ class DocumentController extends Controller
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
+        $select_first_document_type_03 = config('tenant.select_first_document_type_03');
         
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function($row) {
             return [
@@ -187,7 +188,7 @@ class DocumentController extends Controller
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
                         'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','prepayment_documents','is_client');
+                        'business_turns','prepayment_documents','is_client','select_first_document_type_03');
 
     }
 
