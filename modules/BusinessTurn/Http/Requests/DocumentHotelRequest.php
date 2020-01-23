@@ -28,6 +28,8 @@ class DocumentHotelRequest extends FormRequest
             'time_entry'=> ['required'], 
             'date_exit'=> ['required','after_or_equal:date_entry'], 
             'time_exit'=> ['required'], 
+            'ocupation'=> ['required'], 
+            'room_type'=> ['required'], 
         ];
     }
 }

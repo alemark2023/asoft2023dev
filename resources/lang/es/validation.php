@@ -191,6 +191,8 @@ return [
         'category_id' => 'categoría',
         'brand_id' => 'marca',
         
+        'room_type' => 'tipo de habitación',
+        'ocupation' => 'ocupación',
         'sex' => 'sexo',
         'age' => 'edad',
         'civil_status' => 'estado civil',
