@@ -33,6 +33,8 @@ class ItemBarCollection extends ResourceCollection
                 
             }
 
+            $sale_unit_price = ($row->has_igv) ? $row->sale_unit_price : $row->sale_unit_price*1.18;
+
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->unit_type_id,
@@ -48,11 +50,11 @@ class ItemBarCollection extends ResourceCollection
                 'currency_type_id' => $row->currency_type_id,
                 'currency_type_symbol' => $row->currency_type->symbol,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                'amount_sale_unit_price' => $row->sale_unit_price,
+                'amount_sale_unit_price' => $sale_unit_price,
                 'calculate_quantity' => (bool) $row->calculate_quantity,
                 'has_igv' => (bool) $row->has_igv,
                 'has_igv_description' => $has_igv_description,
-                'sale_unit_price' => ($row->currency_type_id === 'PEN') ? 'S/ '.$row->sale_unit_price : 'S/ '.($row->sale_unit_price*$exchange_rate_sale),
+                'sale_unit_price' => ($row->currency_type_id === 'PEN') ? 'S/ '.round($sale_unit_price,2) : 'S/ '.round(($sale_unit_price*$exchange_rate_sale),2),
                 // 'sale_unit_price' => "{$row->currency_type->symbol} {$row->sale_unit_price}",
                 'purchase_unit_price' => "{$row->currency_type->symbol} {$row->purchase_unit_price}",
                 'created_at' => ($row->created_at) ? $row->created_at->format('Y-m-d H:i:s') : '',

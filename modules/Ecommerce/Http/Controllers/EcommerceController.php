@@ -38,6 +38,7 @@ class EcommerceController extends Controller
     {
         $row = Item::find($id);
         $exchange_rate_sale = $this->getExchangeRateSale();
+        $sale_unit_price = ($row->has_igv) ? $row->sale_unit_price : $row->sale_unit_price*1.18;
 
         $record = (object)[
             'id' => $row->id,
@@ -46,7 +47,7 @@ class EcommerceController extends Controller
             'description' => $row->description,
             'name' => $row->name,
             'second_name' => $row->second_name,
-            'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $row->sale_unit_price : ($row->sale_unit_price*$exchange_rate_sale),
+            'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $sale_unit_price : ($sale_unit_price * $exchange_rate_sale),
             'currency_type_id' => $row->currency_type_id,
             'has_igv' => (bool) $row->has_igv,
             // 'sale_unit_price' => $row->sale_unit_price,
