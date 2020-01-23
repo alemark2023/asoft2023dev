@@ -37,15 +37,16 @@
                             </div>
                         </div>
                         
-                         <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
+                         <div class="col-md-4 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Cantidad decimales POS</label>
                             <div class="form-group" :class="{'has-danger': errors.decimal_quantity}">
                                 <el-input-number v-model="form.decimal_quantity" @change="submit" :min="2" :max="10"></el-input-number>
                                 <small class="form-control-feedback" v-if="errors.decimal_quantity" v-text="errors.decimal_quantity[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-2"></div>
 
-                         <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
+                         <div class="col-md-4 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Impuesto bolsa plástica</label>
                             <div class="form-group" :class="{'has-danger': errors.amount_plastic_bag_taxes}">
                                 <el-input-number v-model="form.amount_plastic_bag_taxes" @change="changeAmountPlasticBagTaxes" :precision="2" :step="0.1" :max="0.5" :min="0.1"></el-input-number>
