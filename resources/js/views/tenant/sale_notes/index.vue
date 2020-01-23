@@ -95,7 +95,7 @@
                                     @click.prevent="clickPayment(row.id)"  v-if="row.btn_payments">Pagos</button> -->
 
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickPayment(row.id)"  v-if="row.btn_payments" ><i class="fas fa-money-bill-alt"></i></button>
+                                    @click.prevent="clickPayment(row.id)" ><i class="fas fa-money-bill-alt"></i></button>
                         </td>
 
                         <td class="text-right">

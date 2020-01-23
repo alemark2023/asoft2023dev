@@ -11,7 +11,10 @@ use Modules\Inventory\Models\Inventory;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\Warehouse;
+use Modules\Inventory\Models\InventoryTransfer;
 use Modules\Inventory\Http\Requests\InventoryRequest;
+use Modules\Inventory\Http\Requests\TransferRequest;
+
 use Modules\Item\Models\ItemLot;
 
 class TransferController extends Controller
@@ -23,6 +26,14 @@ class TransferController extends Controller
         return view('inventory::transfers.index');
     }
 
+    public function create()
+    {
+        $establishment_id = auth()->user()->establishment_id;
+        $current_warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        return view('inventory::transfers.form', compact('current_warehouse'));
+
+    }
+
     public function columns()
     {
         return [
@@ -32,14 +43,16 @@ class TransferController extends Controller
 
     public function records(Request $request)
     {
-        $records = Inventory::with(['item', 'warehouse', 'warehouse_destination'])
+        $records = InventoryTransfer::with(['warehouse','warehouse_destination', 'inventory'])->latest();
+        //return json_encode( $records );
+        /*$records = Inventory::with(['item', 'warehouse', 'warehouse_destination'])
                             ->where('type', 2)
                             ->whereHas('warehouse_destination')
                             ->whereHas('item', function($query) use($request) {
                                 $query->where('description', 'like', '%' . $request->value . '%');
 
                             })
-                            ->latest();
+                            ->latest();*/
 
 
         return new TransferCollection($records->paginate(config('tenant.items_per_page')));
@@ -49,7 +62,7 @@ class TransferController extends Controller
     public function tables()
     {
         return [
-            'items' => $this->optionsItem(),
+            'items' => $this->optionsItemWareHouse(),
             'warehouses' => $this->optionsWarehouse()
         ];
     }
@@ -62,11 +75,9 @@ class TransferController extends Controller
     }
 
 
-    public function store(Request $request)
+   /* public function store(Request $request)
     {
 
-        // dd($request->all());
-        
         $result = DB::connection('tenant')->transaction(function () use ($request) {
 
             $id = $request->input('id');
@@ -91,7 +102,7 @@ class TransferController extends Controller
             }
 
             $re_it_warehouse = ItemWarehouse::where([['item_id',$item_id],['warehouse_id', $warehouse_destination_id]])->first();
-            
+
             if(!$re_it_warehouse) {
                 return  [
                     'success' => false,
@@ -99,9 +110,9 @@ class TransferController extends Controller
                 ];
             }
 
-            
+
             $inventory = Inventory::findOrFail($id);
-            
+
             //proccess stock
             $origin_inv_kardex = $inventory->inventory_kardex->first();
             $origin_item_warehouse = ItemWarehouse::where([['item_id',$origin_inv_kardex->item_id],['warehouse_id', $origin_inv_kardex->warehouse_id]])->first();
@@ -110,11 +121,11 @@ class TransferController extends Controller
             $origin_item_warehouse->update();
 
 
-            $destination_inv_kardex = $inventory->inventory_kardex->last(); 
+            $destination_inv_kardex = $inventory->inventory_kardex->last();
             $destination_item_warehouse = ItemWarehouse::where([['item_id',$destination_inv_kardex->item_id],['warehouse_id', $destination_inv_kardex->warehouse_id]])->first();
             $destination_item_warehouse->stock -= $inventory->quantity;
             $destination_item_warehouse->update();
- 
+
 
             $new_item_warehouse = ItemWarehouse::where([['item_id',$item_id],['warehouse_id', $warehouse_destination_id]])->first();
             $new_item_warehouse->stock += $quantity;
@@ -136,8 +147,8 @@ class TransferController extends Controller
             $inventory->detail = $detail;
 
 
-            $inventory->update(); 
- 
+            $inventory->update();
+
             return  [
                 'success' => true,
                 'message' => 'Traslado actualizado con éxito'
@@ -145,7 +156,7 @@ class TransferController extends Controller
         });
 
         return $result;
-    }
+    }*/
 
 
     public function destroy($id)
@@ -156,7 +167,7 @@ class TransferController extends Controller
             $record = Inventory::findOrFail($id);
 
             $origin_inv_kardex = $record->inventory_kardex->first();
-            $destination_inv_kardex = $record->inventory_kardex->last(); 
+            $destination_inv_kardex = $record->inventory_kardex->last();
 
             $destination_item_warehouse = ItemWarehouse::where([['item_id',$destination_inv_kardex->item_id],['warehouse_id', $destination_inv_kardex->warehouse_id]])->first();
             $destination_item_warehouse->stock -= $record->quantity;
@@ -177,6 +188,64 @@ class TransferController extends Controller
             'message' => 'Traslado eliminado con éxito'
         ];
 
+
+
+    }
+
+    public function stock ($item_id, $warehouse_id)
+    {
+
+       $row = ItemWarehouse::where([['item_id', $item_id],['warehouse_id', $warehouse_id]])->first();
+
+       return [
+           'stock' => ($row) ? $row->stock : 0
+       ];
+
+    }
+
+    public function store(TransferRequest $request)
+    {
+
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+
+            $row = InventoryTransfer::create([
+                'description' => $request->description,
+                'warehouse_id' => $request->warehouse_id,
+                'warehouse_destination_id' => $request->warehouse_destination_id,
+                'quantity' =>  count( $request->items ),
+            ]);
+
+            foreach ($request->items as $it)
+            {
+                $inventory = new Inventory();
+                $inventory->type = 2;
+                $inventory->description = 'Traslado';
+                $inventory->item_id = $it['id'];
+                $inventory->warehouse_id = $request->warehouse_id;
+                $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                $inventory->quantity = $it['quantity'];
+                $inventory->inventories_transfer_id = $row->id;
+
+                $inventory->save();
+
+                foreach ($it['lots'] as $lot){
+
+                    if($lot['has_sale']){
+                        $item_lot = ItemLot::findOrFail($lot['id']);
+                        $item_lot->warehouse_id = $inventory->warehouse_destination_id;
+                        $item_lot->update();
+                    }
+
+                }
+            }
+
+            return  [
+                'success' => true,
+                'message' => 'Traslado creado con éxito'
+            ];
+        });
+
+        return $result;
 
 
     }

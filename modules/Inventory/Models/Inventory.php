@@ -8,7 +8,7 @@ use Modules\Item\Models\ItemLot;
 
 class Inventory extends ModelTenant
 {
-    protected $with = ['transaction'];
+    protected $with = ['transaction', 'warehouse', 'warehouse_destination', 'item'];
 
     protected $fillable = [
         'type',
@@ -19,7 +19,8 @@ class Inventory extends ModelTenant
         'quantity',
         'inventory_transaction_id',
         'lot_code',
-        'detail'
+        'detail',
+        'inventories_transfer_id'
     ];
 
     public function warehouse()

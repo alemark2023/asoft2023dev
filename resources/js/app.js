@@ -148,6 +148,8 @@ Vue.component('tenant-purchase-orders-form', require('../../modules/Purchase/Res
 Vue.component('tenant-purchase-orders-generate', require('../../modules/Purchase/Resources/assets/js/views/purchase-orders/generate.vue'));
 
 Vue.component('moves-index', require('../../modules/Inventory/Resources/assets/js/moves/index.vue'));
+Vue.component('inventory-form-masive', require('../../modules/Inventory/Resources/assets/js/transfers/form_masive.vue'));
+
 
 
 // System

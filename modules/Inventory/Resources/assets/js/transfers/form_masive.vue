@@ -1,150 +1,285 @@
 <template>
   <div class="card mb-0 pt-2 pt-md-0">
-    <div class="tab-content">
-         <form autocomplete="off" @submit.prevent="submit">
-            <div class="form-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Producto</label>
-                            <el-input v-model="form.item_description" :readonly="true"></el-input>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label">Cantidad Actual</label>
-                            <el-input v-model="form.stock" :readonly="true"></el-input>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="control-label">Cant. Trasladada</label>
-                            <el-input v-model="form.quantity"></el-input>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Almacén Inicial</label>
-                            <el-input v-model="form.warehouse_description" :readonly="true"></el-input>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.warehouse_destination_id}">
-                            <label class="control-label">Almacén Final</label>
-                            <el-select v-model="form.warehouse_destination_id">
-                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.warehouse_destination_id" v-text="errors.warehouse_destination_id[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group" :class="{'has-danger': errors.detail}">
-                            <label class="control-label">Motivo de Traslado</label>
-                              <el-input v-model="form.detail"></el-input>
-                            <small class="form-control-feedback" v-if="errors.detail" v-text="errors.detail[0]"></small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="form-actions text-right mt-4">
-                <el-button @click.prevent="close()">Cancelar</el-button>
-                <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
-            </div>
-        </form>
+    <div class="card-header bg-info">
+      <h3 class="my-0">Nuevo Traslado</h3>
     </div>
+    <div class="tab-content">
+      <form autocomplete="off" @submit.prevent="submit">
+        <div class="form-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label">Almacén Inicial</label>
+                <el-input v-model="current_warehouse.description" :readonly="true"></el-input>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group" :class="{'has-danger': errors.warehouse_destination_id}">
+                <label class="control-label">Almacén Final</label>
+                <el-select v-model="form.warehouse_destination_id">
+                  <el-option
+                    :disabled="option.id == current_warehouse.id"
+                    v-for="option in warehouses"
+                    :key="option.id"
+                    :value="option.id"
+                    :label="option.description"
+                  ></el-option>
+                </el-select>
+                <small
+                  class="form-control-feedback"
+                  v-if="errors.warehouse_destination_id"
+                  v-text="errors.warehouse_destination_id[0]"
+                ></small>
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group" :class="{'has-danger': errors.description}">
+                <label class="control-label">Motivo de Traslado</label>
+                <el-input type="textarea" :rows="3" v-model="form.description"></el-input>
+                <small
+                  class="form-control-feedback"
+                  v-if="errors.description"
+                  v-text="errors.description[0]"
+                ></small>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label">Producto</label>
+                <!-- <el-input v-model="form.item_description" :readonly="true"></el-input> -->
+                <el-select
+                  @change="changeItem"
+                  v-model="form_add.item_id"
+                  filterable
+                  popper-class="el-select-document_type"
+                  class="border-left rounded-left border-info"
+                >
+                  <el-option
+                    v-for="option in items"
+                    :key="option.id"
+                    :value="option.id"
+                    :label="option.description"
+                  ></el-option>
+                </el-select>
+
+                <a
+                  v-if="form_add.item_id  && form_add.lots_enabled"
+                  href="#"
+                  class="text-center font-weight-bold text-info"
+                  @click.prevent="clickLotcodeOutput"
+                >[&#10004; Seleccionar series]</a>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label class="control-label">Cantidad Actual</label>
+                <el-input v-model="form_add.stock" :readonly="true"></el-input>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label class="control-label">Cantidad a Trasladar</label>
+                <el-input type="number" v-model="form_add.quantity"></el-input>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <el-button
+                  style="margin-top:10%;"
+                  @click.prevent="clickAddItem"
+                  type="primary"
+                  :loading="loading_item"
+                >Agregar Producto</el-button>
+              </div>
+            </div>
+          </div>
+          <br />
+          <div class="row">
+            <div class="col-lg-6 col-md-6">
+              <table class="table" width="100%">
+                <thead>
+                  <tr width="100%">
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in form.items" :key="index" width="100%">
+                    <td>{{index + 1}}</td>
+                    <td>{{row.description}}</td>
+                    <td>{{row.quantity}}</td>
+                    <td class="series-table-actions text-center">
+                      <button
+                        type="button"
+                        class="btn waves-effect waves-light btn-xs btn-danger"
+                        @click.prevent="clickCancel(index)"
+                      >
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions text-right mt-4">
+          <el-button @click.prevent="close()">Cancelar</el-button>
+          <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+        </div>
+      </form>
+    </div>
+
+    <output-lots-form
+      :showDialog.sync="showDialogLotsOutput"
+      :lots="form_add.lots"
+      @addRowOutputLot="addRowOutputLot"
+    ></output-lots-form>
   </div>
-
-
-
 </template>
 
 <script>
+import OutputLotsForm from "./partials/lots.vue";
 
-    export default {
-        props: ['showDialog', 'recordId'],
-        data() {
-            return {
-                loading_submit: false,
-                titleDialog: null,
-                showDialogLotsOutput:false,
-                resource: 'transfers',
-                errors: {},
-                form: {},
-                warehouses: [],
-            }
-        },
-        created() {
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
-                .then(response => {
-                    this.warehouses = response.data.warehouses
-                })
-        },
-        methods: {
-            addRowOutputLot(lots){
-                this.form.lots = lots
-            },
-            clickLotcodeOutput(){
-                this.showDialogLotsOutput = true
-            },
-            initForm() {
-                this.errors = {}
-                this.form = {
-                    id: null,
-                    item_id: null,
-                    item_description: null,
-                    warehouse_id: null,
-                    warehouse_destination_id: null,
-                    warehouse_description: null,
-                    stock: 0,
-                    quantity: 0,
-                    // lots:[],
-                    detail:null
-                }
-            },
-            create() {
-                this.titleDialog = 'Editar traslado'
-                this.$http.get(`/${this.resource}/record/${this.recordId}`)
-                    .then(response => {
-                        this.form = response.data.data
-                        // this.form.lots = Object.values(response.data.data.lots)
-                    })
-            },
-            async submit() {
+export default {
+  props: ["current_warehouse"],
+  components: { OutputLotsForm },
+  data() {
+    return {
+      loading_item: false,
+      loading_submit: false,
+      titleDialog: null,
+      showDialogLotsOutput: false,
+      resource: "transfers",
+      errors: {},
+      form: {},
+      warehouses: [],
+      items: [],
+      form_add: {}
+    };
+  },
+  async created() {
+    await this.$http.get(`/${this.resource}/tables`).then(response => {
+      this.warehouses = response.data.warehouses;
+      this.items = response.data.items;
+    });
 
-                // if(this.form.lots_enabled){
-                //     let select_lots = await _.filter(this.form.lots, {'has_sale':true})
-                //     if(select_lots.length != this.form.quantity_move){
-                //         return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
-                //     }
-                // }
+    await this.initForm();
+    this.initFormAdd();
+  },
+  methods: {
+    addRowOutputLot(lots) {
+      let row = this.items.find(x => x.id == this.form_add.item_id);
+      row.lots = lots;
+    },
+    clickCancel(index) {
+      this.form.items.splice(index, 1);
+    },
+    async changeItem() {
+      this.loading_item = true;
+      await this.$http
+        .get(
+          `/${this.resource}/stock/${this.form_add.item_id}/${this.current_warehouse.id}`
+        )
+        .then(response => {
+          this.form_add.stock = response.data.stock;
+          this.loading_item = false;
+        });
 
-                this.loading_submit = true
-                await this.$http.post(`/${this.resource}`, this.form)
-                    .then(response => {
-                        if (response.data.success) {
-                            this.$message.success(response.data.message)
-                            this.$eventHub.$emit('reloadData')
-                            this.close()
-                        } else {
-                            this.$message.error(response.data.message)
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.errors = error.response.data.errors
-                        } else {
-                            console.log(error)
-                        }
-                    })
-                    .then(() => {
-                        this.loading_submit = false
-                    })
-            },
-            close() {
-                this.$emit('update:showDialog', false)
-                this.initForm()
-            },
-        }
+      let row = this.items.find(x => x.id == this.form_add.item_id);
+      this.form_add.lots = row.lots;
+      this.form_add.lots_enabled = row.lots_enabled;
+    },
+    initFormAdd() {
+      this.form_add = {
+        item_id: null,
+        stock: 0,
+        quantity: 0,
+        lots: [],
+        lots_enabled: false
+      };
+    },
+    clickAddItem() {
+      if (!this.form_add.item_id) {
+        return;
+      }
+
+      if (parseFloat(this.form_add.stock) < 1) {
+        return;
+      }
+
+      if (this.form_add.quantity < 1) {
+        return;
+      }
+
+      if (parseFloat(this.form_add.stock) < this.form_add.quantity) {
+        return;
+      }
+
+      let dup = this.form.items.find(x => x.id == this.form_add.item_id);
+      if (dup) {
+        return;
+      }
+
+      let row = this.items.find(x => x.id == this.form_add.item_id);
+      this.form.items.push({
+        id: row.id,
+        description: row.description,
+        quantity: this.form_add.quantity,
+        lots: this.form_add.lots
+      });
+
+      this.initFormAdd();
+    },
+
+    clickLotcodeOutput() {
+      this.showDialogLotsOutput = true;
+    },
+    initForm() {
+      this.errors = {};
+      this.form = {
+        warehouse_id: this.current_warehouse.id,
+        warehouse_destination_id: null,
+        description: null,
+        items: []
+      };
+    },
+    async submit() {
+      if (this.form.items.length == 0) {
+        return this.$message.error("Debe agregar productos.");
+      }
+
+      this.loading_submit = true;
+      await this.$http
+        .post(`/${this.resource}`, this.form)
+        .then(response => {
+          if (response.data.success) {
+            this.$message.success(response.data.message);
+            this.$eventHub.$emit("reloadData");
+            this.close();
+          } else {
+            this.$message.error(response.data.message);
+          }
+        })
+        .catch(error => {
+          if (error.response.status === 422) {
+            this.errors = error.response.data;
+          } else {
+            console.log(error);
+          }
+        })
+        .then(() => {
+          this.loading_submit = false;
+        });
+    },
+    close() {
+      this.$emit("update:showDialog", false);
+      this.initForm();
     }
+  }
+};
 </script>

@@ -73,6 +73,10 @@ if($hostname) {
 
                 Route::delete('{inventory}', 'TransferController@destroy');
 
+                Route::get('create', 'TransferController@create')->name('transfer.create');
+
+                Route::get('stock/{item_id}/{warehouse_id}', 'TransferController@stock');
+
             });
 
         });

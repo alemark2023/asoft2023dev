@@ -6,6 +6,7 @@
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
             <div class="right-wrapper pull-right">
+                <a href="#" @click.prevent="clickCreate()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -14,29 +15,41 @@
             </div>
             <div class="card-body">
 
-                <data-table :resource="resource">
+                <data-table :apply-filter="false" :resource="resource">
                     <tr slot="heading">
                         <th>#</th>
                         <th>Fecha</th>
-                        <th>Producto</th>
                         <th>Almacen Inicial</th>
                         <th>Almacen Destino</th>
-                        <th >Cantidad</th>
-                        <th class="text-right">Acciones</th>
+                        <th>Detalle Productos</th>
+                        <th>Cantidad Total Productos</th>
+                        <!--<th class="text-right">Acciones</th> -->
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.created_at }}</td>
-                        <td>{{ row.item_description }}</td>
+
                         <td>{{ row.warehouse }}</td>
                         <td>{{ row.warehouse_destination }}</td>
+                        <td>
+                            <el-popover
+                                placement="right"
+                                width="400"
+                                trigger="click">
+                                <el-table :data="row.inventory">
+                                    <el-table-column width="260" property="description" label="Producto"></el-table-column>
+                                    <el-table-column width="100" property="quantity" label="Cantidad"></el-table-column>
+                                </el-table>
+                                <el-button slot="reference" icon="el-icon-zoom-in"></el-button>
+                            </el-popover>
+                        </td>
                         <td >{{ row.quantity }}</td>
-                        <td class="text-right">
-                          <!--  <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                        <!--<td class="text-right">
+                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)">Editar</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickDelete(row.id)">Eliminar</button> -->
-                        </td>
+                                    @click.prevent="clickDelete(row.id)">Eliminar</button>
+                        </td>-->
                     </tr>
                 </data-table>
 
@@ -73,8 +86,9 @@
         },
         methods: {
             clickCreate(recordId = null) {
-                this.recordId = recordId
-                this.showDialog = true
+                location.href = `/${this.resource}/create`
+                //this.recordId = recordId
+                //this.showDialog = true
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>
