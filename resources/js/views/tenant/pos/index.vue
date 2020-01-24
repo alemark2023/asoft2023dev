@@ -291,6 +291,7 @@
     </div>
     <template v-else>
       <payment-form
+        :is_payment.sync="is_payment"
         :form="form"
         :currency-type-id-active="form.currency_type_id"
         :currency-type-active="currency_type"
@@ -380,7 +381,7 @@
           await this.initForm();
           await this.getTables();
           this.events();
-          
+
           await this.getFormPosLocalStorage()
           await this.initCurrencyType()
           this.customer = await this.getLocalStorageIndex('customer')
@@ -412,7 +413,7 @@
 
           },
           cancelFormPosLocalStorage(){
-            
+
             localStorage.setItem('form_pos', JSON.stringify(null));
             this.setLocalStorageIndex('customer', null)
 
@@ -539,12 +540,12 @@
             this.setLocalStorageIndex('customer', this.customer)
             this.setFormPosLocalStorage()
           },
-          
+
           getLocalStorageIndex(key, re_default = null){
-              
+
               let ls_obj = localStorage.getItem(key);
               ls_obj = JSON.parse(ls_obj)
-              
+
               if (ls_obj) {
                   return ls_obj
               }
@@ -955,7 +956,7 @@
               });
               this.form.items = items
               this.calculateTotal()
-              
+
               await this.setFormPosLocalStorage()
 
           }

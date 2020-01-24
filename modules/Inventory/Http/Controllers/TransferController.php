@@ -28,22 +28,29 @@ class TransferController extends Controller
 
     public function create()
     {
-        $establishment_id = auth()->user()->establishment_id;
-        $current_warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-        return view('inventory::transfers.form', compact('current_warehouse'));
+       // $establishment_id = auth()->user()->establishment_id;
+        //$current_warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        return view('inventory::transfers.form');
 
     }
 
     public function columns()
     {
         return [
-            'description' => 'Producto',
+            'created_at' => 'Fecha de emisión',
         ];
     }
 
     public function records(Request $request)
     {
-        $records = InventoryTransfer::with(['warehouse','warehouse_destination', 'inventory'])->latest();
+        if($request->column)
+        {
+            $records = InventoryTransfer::with(['warehouse','warehouse_destination', 'inventory'])->where('created_at', 'like', "%{$request->value}%")->latest();
+        }
+        else{
+            $records = InventoryTransfer::with(['warehouse','warehouse_destination', 'inventory'])->latest();
+
+        }
         //return json_encode( $records );
         /*$records = Inventory::with(['item', 'warehouse', 'warehouse_destination'])
                             ->where('type', 2)
@@ -62,7 +69,7 @@ class TransferController extends Controller
     public function tables()
     {
         return [
-            'items' => $this->optionsItemWareHouse(),
+            //'items' => $this->optionsItemWareHouse(),
             'warehouses' => $this->optionsWarehouse()
         ];
     }
@@ -250,6 +257,13 @@ class TransferController extends Controller
 
     }
 
+
+    public function items($warehouse_id)
+    {
+        return [
+            'items' => $this->optionsItemWareHousexId($warehouse_id),
+        ];
+    }
 
 
 

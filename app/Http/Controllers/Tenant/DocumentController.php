@@ -161,8 +161,6 @@ class DocumentController extends Controller
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
-        $select_first_document_type_03 = config('tenant.select_first_document_type_03');
-        
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -242,11 +240,16 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
-            
+
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
-            $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+            $items_u = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+
+            $items_s = Item::where('unit_type_id','ZZ')->orderBy('description')->get();
+
+            $items = $items_u->merge($items_s);
+
             return collect($items)->transform(function($row) use($warehouse){
                 $full_description = $this->getFullDescription($row, $warehouse);
                 return [
@@ -299,8 +302,12 @@ class DocumentController extends Controller
         $category = ($row->category) ? " - {$row->category->name}" : "";
         $brand = ($row->brand) ? " - {$row->brand->name}" : "";
 
-        $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
-        $stock = ($row->warehouses && $warehouse) ? " - {$warehouse_stock}" : "";
+        $stock = '';
+        if($row->unit_type_id != 'ZZ')
+        {
+            $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
+            $stock = ($row->warehouses && $warehouse) ? " - {$warehouse_stock}" : "";
+        }
 
         $desc = "{$desc} {$category} {$brand} {$stock}";
 
@@ -653,8 +660,8 @@ class DocumentController extends Controller
                             ->whereTypeUser()
                             ->latest();
         }
-        
-        if($pending_payment){ 
+
+        if($pending_payment){
             $records = $records->where('total_canceled', false);
         }
 
@@ -667,7 +674,7 @@ class DocumentController extends Controller
                                     $query->where('item_id', $item_id);
                                 });
         }
- 
+
         if($category_id){
 
             $records = $records->whereHas('items', function($query) use($category_id){
@@ -695,112 +702,11 @@ class DocumentController extends Controller
 
     }
 
-    
-    public function getItems(){
-
-        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
-            return [
-                'id' => $row->id,
-                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-            ];
-        });
- 
-        return $items;
-
-    }
-
-
-    public function getDataTableItem(Request $request) {
-        
-        $items = Item::where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%") 
-                        ->orderBy('description')
-                        ->get()->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                            ];
-                        });
-
-        return $items;
-
-    }
-
-
-    private function updateMaxCountPayments($value)
-    {
-        if($value > $this->max_count_payment)
-        {
-            $this->max_count_payment = $value;
-        }
-       // $this->max_count_payment = 20 ;//( $value > $this->max_count_payment) ? $value : $this->$max_count_payment;
-    }
-
-    private function transformReportPayment($resource)
-    {
-
-        $records = $resource->transform(function($row) {
-
-            $total_paid = collect($row->payments)->sum('payment');
-            $total = $row->total;
-            $total_difference = round($total - $total_paid, 2);
-
-            $this->updateMaxCountPayments($row->payments->count());
-
-            return (object)[
-
-                'id' => $row->id,
-                'ruc' => $row->customer->number,
-                // 'date' =>  $row->date_of_issue->format('Y-m-d'),
-                // 'date' =>  $row->date_of_issue,
-                'date' =>  $row->date_of_issue->format('d/m/Y'),
-                'invoice' => $row->number_full,
-                'comercial_name' => $row->customer->trade_name,
-                'business_name' => $row->customer->name,
-                'zone' => $row->customer->department->description,
-                'total' => number_format($row->total, 2, ".",""),
-
-                'payments' => $row->payments,
-
-                /*'payment1' =>  ( isset($row->payments[0]) ) ?  number_format($row->payments[0]->payment, 2) : '',
-                'payment2' =>  ( isset($row->payments[1]) ) ?  number_format($row->payments[1]->payment, 2) : '',
-                'payment3' =>   ( isset($row->payments[2]) ) ?  number_format($row->payments[2]->payment, 2) : '',
-                'payment4' =>   ( isset($row->payments[3]) ) ?  number_format($row->payments[3]->payment, 2) : '', */
-
-                'balance' => $total_difference,
-                'person_type' => isset($row->person->person_type->description) ? $row->person->person_type->description:'',
-                'department' => $row->customer->department->description,
-                'district' => $row->customer->district->description,
-
-                /*'reference1' => ( isset($row->payments[0]) ) ?  $row->payments[0]->reference : '',
-                'reference2' =>  ( isset($row->payments[1]) ) ?  $row->payments[1]->reference : '',
-                'reference3' =>  ( isset($row->payments[2]) ) ?  $row->payments[2]->reference : '',
-                'reference4' =>  ( isset($row->payments[3]) ) ?  $row->payments[3]->reference : '', */
-            ];
-        });
-
-        return $records;
-    }
-
-    public function report_payments()
-    {
-
-        $records = Document::get();
-
-        $source =  $this->transformReportPayment( $records );
-
-
-        return (new PaymentExport)
-                ->records($source)
-                ->payment_count($this->max_count_payment)
-                ->download('Reporte_Pagos_'.Carbon::now().'.xlsx');
-                
-    }
 
     public function destroyDocument($document_id)
     {
         try {
-            
+
             $record = Document::findOrFail($document_id);
             $record->delete();
 
@@ -815,7 +721,7 @@ class DocumentController extends Controller
 
         }
 
-        
+
     }
 
 }

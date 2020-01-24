@@ -548,7 +548,12 @@ class SaleNoteController extends Controller
                 $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
                 $warehouse_id = ($warehouse) ? $warehouse->id:null;
 
-                $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+                $items_u = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+
+                $items_s = Item::where('unit_type_id','ZZ')->orderBy('description')->get();
+
+                $items = $items_u->merge($items_s);
+
                 return collect($items)->transform(function($row) use($warehouse_id){
                     $full_description = $this->getFullDescription($row);
                     return [

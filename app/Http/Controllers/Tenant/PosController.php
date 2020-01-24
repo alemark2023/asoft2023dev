@@ -124,7 +124,7 @@ class PosController extends Controller
 
             $configuration =  Configuration::first();
 
-            $items = Item::whereWarehouse()->orderBy('description')->take(20)
+            $items = Item::whereWarehouse()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->take(20)
                             ->get()->transform(function($row) use ($configuration) {
                                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                                 return [
