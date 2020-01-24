@@ -660,7 +660,7 @@
               charges: [],
               discounts: [],
               attributes: [],
-              has_igv: null
+              has_igv: false
             };
           },
           async clickPayment() {
@@ -698,6 +698,7 @@
             let response = null;
 
             // console.log(item.calculate_quantity)
+            // console.log(exist_item)
 
             if (exist_item) {
               if (input) {
@@ -732,6 +733,11 @@
                 exist_item.item.unit_price = parseFloat(search_item_bd.sale_unit_price)
               }
 
+              let unit_price = exist_item.item.has_igv ? exist_item.item.sale_unit_price : exist_item.item.sale_unit_price * 1.18
+              // exist_item.unit_price = unit_price
+              exist_item.item.unit_price = unit_price
+
+
               this.row = calculateRowItem(
                 exist_item,
                 this.form.currency_type_id,
@@ -753,9 +759,7 @@
               this.form_item.quantity = 1;
               this.form_item.aux_quantity = 1;
 
-              let unit_price = this.form_item.has_igv
-                ? this.form_item.unit_price_value
-                : this.form_item.unit_price_value * 1.18;
+              let unit_price = this.form_item.has_igv ? this.form_item.unit_price_value : this.form_item.unit_price_value * 1.18;
 
               this.form_item.unit_price = unit_price;
               this.form_item.item.unit_price = unit_price;

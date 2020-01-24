@@ -112,7 +112,7 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input v-model="form.exchange_rate_sale" :readonly="true"></el-input>
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
@@ -543,7 +543,7 @@
             changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-                    this.form.exchange_rate_sale = response
+                    this.form.exchange_rate_sale = (response == 0) ? 1 : response
                 })
             },
             changeDocumentType() {
