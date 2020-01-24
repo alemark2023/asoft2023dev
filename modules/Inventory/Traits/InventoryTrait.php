@@ -67,6 +67,35 @@ trait InventoryTrait
         });
     }
 
+    public function optionsItemWareHousexId($warehouse_id) {
+        //$establishment_id = auth()->user()->establishment_id;
+        //$current_warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $records = Item::whereHas('warehouses', function($query) use ($warehouse_id){
+            $query->where('warehouse_id', $warehouse_id);
+        })
+        ->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->whereNotIsSet()->get();
+
+        return collect($records)->transform(function($row) use ($warehouse_id) {
+            return  [
+                'id' => $row->id,
+                'description' => $row->description,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'series' => $row->series,
+                        'date' => $row->date,
+                        'item_id' => $row->item_id,
+                        'warehouse_id' => $row->warehouse_id,
+                        'has_sale' => (bool)$row->has_sale,
+                        'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    ];
+                }),
+            ];
+        });
+    }
+
 
     public function optionsItemFull() {
         $records = Item::where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']])->whereNotIsSet()->get();

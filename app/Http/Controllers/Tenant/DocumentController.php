@@ -156,7 +156,7 @@ class DocumentController extends Controller
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
-        
+
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -236,11 +236,16 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
-            
+
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
-            $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+            $items_u = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+
+            $items_s = Item::where('unit_type_id','ZZ')->orderBy('description')->get();
+
+            $items = $items_u->merge($items_s);
+
             return collect($items)->transform(function($row) use($warehouse){
                 $full_description = $this->getFullDescription($row, $warehouse);
                 return [
@@ -291,8 +296,12 @@ class DocumentController extends Controller
         $category = ($row->category) ? " - {$row->category->name}" : "";
         $brand = ($row->brand) ? " - {$row->brand->name}" : "";
 
-        $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
-        $stock = ($row->warehouses && $warehouse) ? " - {$warehouse_stock}" : "";
+        $stock = '';
+        if($row->unit_type_id != 'ZZ')
+        {
+            $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
+            $stock = ($row->warehouses && $warehouse) ? " - {$warehouse_stock}" : "";
+        }
 
         $desc = "{$desc} {$category} {$brand} {$stock}";
 
@@ -666,11 +675,11 @@ class DocumentController extends Controller
 
     }
 
-    
+
     public function destroyDocument($document_id)
     {
         try {
-            
+
             $record = Document::findOrFail($document_id);
             $record->delete();
 
@@ -685,7 +694,7 @@ class DocumentController extends Controller
 
         }
 
-        
+
     }
 
 }

@@ -298,7 +298,7 @@
                       <div class="col-lg-6">
                         <div class="summary">
                           <h4 class="title text-danger">
-                            Total Pagos 
+                            Total Pagos
                             <el-popover placement="right" width="100%" trigger="hover">
                               <p><span class="custom-badge">T. Pagos Ventas - T. Pagos Compras/Gastos</span></p>
                               <p>Total pagos comprobantes:<span class="custom-badge pull-right">S/ {{ balance.totals.total_payment_document }}</span></p>
@@ -383,7 +383,7 @@
                           <h4 class="title">
                             <br>
                             <el-checkbox  v-model="form.enabled_expense" @change="loadDataUtilities">Considerar gastos</el-checkbox><br>
-                          </h4> 
+                          </h4>
                         </div>
                       </div>
                     </div>
@@ -571,17 +571,27 @@
                   </div>
                   <div class="col-md-1">
                     <el-badge :value="getTotalRowsUnpaid" class="item">
-                      <span size="small">Total facturas</span>
+                      <span size="small">Total comprobantes</span>
                     </el-badge>
                   </div>
                   <div class="col-md-1">
                     <el-badge :value="getTotalAmountUnpaid" class="item">
-                      <span size="small">Monto total</span>
+                      <span size="small">Monto general (PEN)</span>
                     </el-badge>
                   </div>
                   <div class="col-md-1">
                     <el-badge :value="getCurrentBalance" class="item">
-                      <span size="small">Saldo corriente</span>
+                      <span size="small">Saldo corriente (PEN)</span>
+                    </el-badge>
+                  </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getTotalAmountUnpaidUsd" class="item">
+                      <span size="small">Monto general (USD)</span>
+                    </el-badge>
+                  </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getCurrentBalanceUsd" class="item">
+                      <span size="small">Saldo corriente (USD)</span>
                     </el-badge>
                   </div>
                 </div>
@@ -598,7 +608,7 @@
                         <th>Guías</th>
 
                         <th>Ver Cartera</th>
-
+                        <th>Moneda</th>
                         <th class="text-right">Por cobrar</th>
                         <th class="text-right">Total</th>
                         <th></th>
@@ -681,7 +691,7 @@
                               <el-button icon="el-icon-view" slot="reference"></el-button>
                             </el-popover>
                           </td>
-
+                            <td>{{row.currency_type_id}}</td>
                           <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                           <td class="text-right">{{ row.total }}</td>
                           <td class="text-right">
@@ -827,17 +837,37 @@ export default {
       if (self.selected_customer) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'PEN'
           );
         });
       } else {
         source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0;
+          return item.total_to_pay > 0 && item.currency_type_id == 'PEN';
         });
       }
 
       return _.sumBy(source, function(item) {
         return parseFloat(item.total_to_pay);
+      }).toFixed(2);
+    },
+    getCurrentBalanceUsd() {
+
+      const self = this;
+      let source = [];
+      if (self.selected_customer) {
+        source = _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'USD'
+          );
+        });
+      } else {
+        source = _.filter(this.records, function(item) {
+          return item.total_to_pay > 0 && item.currency_type_id == 'USD';
+        });
+      }
+
+      return _.sumBy(source, function(item) {
+        return  parseFloat(item.total_to_pay);
       }).toFixed(2);
     },
     getTotalRowsUnpaid() {
@@ -861,21 +891,51 @@ export default {
       if (self.selected_customer) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'PEN'
           );
         });
       } else {
         source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0;
+          return item.total_to_pay > 0 &&  item.currency_type_id == 'PEN';
         });
       }
 
       return _.sumBy(source, function(item) {
-        return parseFloat(item.total);
-      }).toFixed(2);
+        return  parseFloat(item.total)
+      }).toFixed(2)
+    },
+    getTotalAmountUnpaidUsd() {
+      const self = this;
+      let source = [];
+      if (self.selected_customer) {
+        source = _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'USD'
+          );
+        });
+      } else {
+        source = _.filter(this.records, function(item) {
+          return item.total_to_pay > 0 && item.currency_type_id == 'USD';
+        });
+      }
+
+      return _.sumBy(source, function(item) {
+        return  parseFloat(item.total);
+      }).toFixed(2)
     }
   },
+
   methods: {
+    calculateTotalCurrency(currency_type_id, exchange_rate_sale,  total )
+    {
+        if(currency_type_id == 'USD')
+        {
+            return parseFloat(total) * exchange_rate_sale;
+        }
+        else{
+            return parseFloat(total);
+        }
+    },
     clickDownloadDispatch(download) {
       window.open(download, "_blank");
     },
@@ -973,7 +1033,7 @@ export default {
       this.$http
         .post(`/${this.resource}/utilities`, this.form)
         .then(response => {
-          this.utilities = response.data.data.utilities; 
+          this.utilities = response.data.data.utilities;
         });
     },
     loadUnpaid() {

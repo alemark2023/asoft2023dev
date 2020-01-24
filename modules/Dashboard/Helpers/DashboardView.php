@@ -77,7 +77,7 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "'document' AS 'type'"))
+                                    "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale"))
                 ->where('documents.establishment_id', $establishment_id)
                 ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
 
@@ -97,7 +97,7 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "'document' AS 'type'"))
+                                    "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale"))
                 ->where('documents.establishment_id', $establishment_id);
 
         }
@@ -124,7 +124,7 @@ class DashboardView
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                "'sale_note' AS 'type'"))
+                                "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
                 ->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
                 ->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end])
@@ -145,7 +145,7 @@ class DashboardView
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                "'sale_note' AS 'type'"))
+                                "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
                 ->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
                 ->where('sale_notes.total_canceled', false);
@@ -214,6 +214,8 @@ class DashboardView
                     'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
                     'delay_payment' => $delay_payment,
                     'date_of_due' =>  $date_of_due,
+                    'currency_type_id' => $row->currency_type_id,
+                    'exchange_rate_sale' => (float)$row->exchange_rate_sale
                 ];
 //            }
         });

@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <inventory-form-masive :current_warehouse="{{$current_warehouse}}"></inventory-form-masive>
+    <inventory-form-masive></inventory-form-masive>
 
 @endsection

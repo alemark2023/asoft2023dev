@@ -10,7 +10,19 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label class="control-label">Almacén Inicial</label>
-                <el-input v-model="current_warehouse.description" :readonly="true"></el-input>
+                <el-select v-model="form.warehouse_id" @change="changeWarehouseInit">
+                  <el-option
+                    v-for="option in warehouses"
+                    :key="option.id"
+                    :value="option.id"
+                    :label="option.description"
+                  ></el-option>
+                </el-select>
+                <small
+                  class="form-control-feedback"
+                  v-if="errors.warehouse_id"
+                  v-text="errors.warehouse_id[0]"
+                ></small>
               </div>
             </div>
             <div class="col-md-6">
@@ -18,7 +30,7 @@
                 <label class="control-label">Almacén Final</label>
                 <el-select v-model="form.warehouse_destination_id">
                   <el-option
-                    :disabled="option.id == current_warehouse.id"
+                    :disabled="option.id == form.warehouse_id"
                     v-for="option in warehouses"
                     :key="option.id"
                     :value="option.id"
@@ -88,6 +100,7 @@
             <div class="col-md-2">
               <div class="form-group">
                 <el-button
+                  :disabled="form_add.item_id == null"
                   style="margin-top:10%;"
                   @click.prevent="clickAddItem"
                   type="primary"
@@ -146,7 +159,7 @@
 import OutputLotsForm from "./partials/lots.vue";
 
 export default {
-  props: ["current_warehouse"],
+  props: [],
   components: { OutputLotsForm },
   data() {
     return {
@@ -172,6 +185,16 @@ export default {
     this.initFormAdd();
   },
   methods: {
+    changeWarehouseInit() {
+      this.form.warehouse_destination_id = null;
+      this.form.items = [];
+
+      this.$http
+        .get(`/${this.resource}/items/${this.form.warehouse_id}`)
+        .then(response => {
+          this.items = response.data.items;
+        });
+    },
     addRowOutputLot(lots) {
       let row = this.items.find(x => x.id == this.form_add.item_id);
       row.lots = lots;
@@ -183,7 +206,7 @@ export default {
       this.loading_item = true;
       await this.$http
         .get(
-          `/${this.resource}/stock/${this.form_add.item_id}/${this.current_warehouse.id}`
+          `/${this.resource}/stock/${this.form_add.item_id}/${this.form.warehouse_id}`
         )
         .then(response => {
           this.form_add.stock = response.data.stock;
@@ -204,9 +227,9 @@ export default {
       };
     },
     clickAddItem() {
-      if (!this.form_add.item_id) {
+      /* if (!this.form_add.item_id) {
         return;
-      }
+      }*/
 
       if (parseFloat(this.form_add.stock) < 1) {
         return;
@@ -218,6 +241,15 @@ export default {
 
       if (parseFloat(this.form_add.stock) < this.form_add.quantity) {
         return;
+      }
+
+      if (this.form_add.lots.length > 0) {
+        let selected_lots = this.form_add.lots.filter(x => x.has_sale == true)
+          .length;
+
+        if (this.form_add.quantity != selected_lots) {
+          return;
+        }
       }
 
       let dup = this.form.items.find(x => x.id == this.form_add.item_id);
@@ -242,7 +274,7 @@ export default {
     initForm() {
       this.errors = {};
       this.form = {
-        warehouse_id: this.current_warehouse.id,
+        warehouse_id: null,
         warehouse_destination_id: null,
         description: null,
         items: []
@@ -259,7 +291,6 @@ export default {
         .then(response => {
           if (response.data.success) {
             this.$message.success(response.data.message);
-            this.$eventHub.$emit("reloadData");
             this.close();
           } else {
             this.$message.error(response.data.message);
@@ -277,8 +308,7 @@ export default {
         });
     },
     close() {
-      this.$emit("update:showDialog", false);
-      this.initForm();
+        location.href = '/transfers'
     }
   }
 };

@@ -77,6 +77,9 @@ if($hostname) {
 
                 Route::get('stock/{item_id}/{warehouse_id}', 'TransferController@stock');
 
+                Route::get('items/{warehouse_id}', 'TransferController@items');
+
+
             });
 
         });
