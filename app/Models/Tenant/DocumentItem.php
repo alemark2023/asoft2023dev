@@ -45,6 +45,7 @@ class DocumentItem extends ModelTenant
         'charges',
         'discounts',
         'total_plastic_bag_taxes',
+        'warehouse_id',
     ];
 
     public function getItemAttribute($value)
@@ -100,6 +101,11 @@ class DocumentItem extends ModelTenant
     public function price_type()
     {
         return $this->belongsTo(PriceType::class, 'price_type_id');
+    }
+
+    public function m_item()
+    {
+        return $this->belongsTo(Item::class,'item_id');
     }
 
     public function document()

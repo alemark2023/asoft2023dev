@@ -178,6 +178,7 @@
                             this.getData();
                             // this.initDocumentTypes()
                             this.showAddButton = true;
+                            this.$eventHub.$emit('reloadData')
                         } else {
                             this.$message.error(response.data.message);
                         }
@@ -209,9 +210,11 @@
                 // this.initForm()
             },
             clickDelete(id) {
-                this.destroy(`/${this.resource}/${id}`).then(() =>
-                    this.getData()
-                    // this.initDocumentTypes()
+                this.destroy(`/${this.resource}/${id}`).then(() =>{
+                        this.getData()
+                        this.$eventHub.$emit('reloadData')
+                        // this.initDocumentTypes()
+                    }
                 )
             }
         }

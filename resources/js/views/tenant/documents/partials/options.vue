@@ -68,7 +68,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'recordId', 'showClose','isContingency'],
+        props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId'],
         data() {
             return {
                 titleDialog: null,
@@ -112,6 +112,7 @@
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                     this.form = response.data.data;
                     this.titleDialog = 'Comprobante: '+this.form.number;
+                    if(this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/i/${this.dispatchId}`)
                 });
 
                 await this.$http.get(`/${this.resource}/locked_emission`).then(response => {

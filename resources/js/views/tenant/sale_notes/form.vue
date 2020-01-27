@@ -193,7 +193,9 @@
                                                 <td>{{ row.item.description }} <template v-if="row.item.presentation">{{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}</template><br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
                                                 <td class="text-right">{{ row.quantity }}</td>
-                                                <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
+                                                <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                                <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
+
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
@@ -373,6 +375,10 @@
 
 
             },
+            getFormatUnitPriceRow(unit_price){
+                return _.round(unit_price, 6)
+                // return unit_price.toFixed(6)
+            },
             async isUpdate(){
 
                 if (this.id) {
@@ -460,7 +466,8 @@
                     quantity_period:0,
                     automatic_date_of_issue:null,
                     enabled_concurrency:false,
-                    license_plate: null
+                    license_plate: null,
+                    paid: false
                 }
 
                 this.clickAddPayment()
@@ -577,6 +584,14 @@
 
                     this.form.enabled_concurrency = (this.form.quantity_period > 0) ? true:false
                 }
+
+
+                if(validate.acum_total == parseFloat(this.form.total) )
+                {
+                  this.form.paid = true
+                }
+
+
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {

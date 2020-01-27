@@ -14,7 +14,8 @@ class DocumentHotelRequest extends FormRequest
     public function rules() {
         
         return [   
-            'number'=> ['required','numeric','integer'],
+            // 'number'=> ['required','numeric','integer'],
+            'number'=> ['required','numeric'],
             'name'=> ['required'], 
             'identity_document_type_id'=> ['required'], 
             'sex'=> ['required'], 
@@ -27,6 +28,8 @@ class DocumentHotelRequest extends FormRequest
             'time_entry'=> ['required'], 
             'date_exit'=> ['required','after_or_equal:date_entry'], 
             'time_exit'=> ['required'], 
+            'ocupation'=> ['required'], 
+            'room_type'=> ['required'], 
         ];
     }
 }

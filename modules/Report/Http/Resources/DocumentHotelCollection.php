@@ -23,6 +23,7 @@ class DocumentHotelCollection extends ResourceCollection
                 'sex' => $row->sex,
                 'age' => $row->age, 
                 'civil_status' => $row->civil_status,
+                'ocupation' => $row->ocupation,
                 'nacionality' =>  $row->nacionality,
                 'origin' =>  $row->origin, 
                 'room_number' => $row->room_number, 

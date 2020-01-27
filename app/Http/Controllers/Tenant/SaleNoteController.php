@@ -23,6 +23,7 @@ use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Dispatch;
 use App\Http\Requests\Tenant\SaleNoteRequest;
 // use App\Models\Tenant\Warehouse;
 use Illuminate\Support\Str;
@@ -213,7 +214,6 @@ class SaleNoteController extends Controller
 
                 }
 
-                // dd($row);
 
             }
 
@@ -548,7 +548,12 @@ class SaleNoteController extends Controller
                 $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
                 $warehouse_id = ($warehouse) ? $warehouse->id:null;
 
-                $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+                $items_u = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get();
+
+                $items_s = Item::where('unit_type_id','ZZ')->orderBy('description')->get();
+
+                $items = $items_u->merge($items_s);
+
                 return collect($items)->transform(function($row) use($warehouse_id){
                     $full_description = $this->getFullDescription($row);
                     return [
@@ -653,6 +658,20 @@ class SaleNoteController extends Controller
     }
 
 
+    public function dispatches()
+    {
+        $dispatches = Dispatch::latest()->get(['id','series','number'])->transform(function($row) {
+            return [
+                'id' => $row->id, 
+                'series' => $row->series, 
+                'number' => $row->number, 
+                'number_full' => "{$row->series}-{$row->number}",
+            ];
+        }); ;
+        
+        return $dispatches;
+    }
+    
     public function enabledConcurrency(Request $request)
     {
 
@@ -690,6 +709,9 @@ class SaleNoteController extends Controller
                 $wr->save();
             }
 
+            //habilito las series
+            ItemLot::where('item_id', $item->item_id )->where('warehouse_id', $warehouse->id)->update(['has_sale' => false]);
+
         }
 
         return [
@@ -701,5 +723,32 @@ class SaleNoteController extends Controller
     }
 
 
+
+    public function totals()
+    {
+
+        $records = SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
+        $total_pen = 0;
+        $total_paid_pen = 0;
+        $total_pending_paid_pen = 0;
+
+
+        $total_pen = $records->sum('total');
+
+        foreach ($records as $sale_note) {
+
+            $total_paid_pen += $sale_note->payments->sum('payment');
+
+        }
+
+        $total_pending_paid_pen = $total_pen - $total_paid_pen;
+
+        return [
+            'total_pen' => number_format($total_pen, 2, ".", ""),
+            'total_paid_pen' => number_format($total_paid_pen, 2, ".", ""),
+            'total_pending_paid_pen' => number_format($total_pending_paid_pen, 2, ".", "")
+        ];
+
+    }
 
 }

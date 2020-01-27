@@ -112,7 +112,7 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input v-model="form.exchange_rate_sale" :readonly="true"></el-input>
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
@@ -167,7 +167,8 @@
                                             <!-- <td class="text-left">{{ row.warehouse_description }}</td> -->
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-right">{{ row.quantity }}</td>
-                                            <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
+                                            <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                            <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                             <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
@@ -338,7 +339,11 @@
 
         },
         methods: {
-            
+
+            getFormatUnitPriceRow(unit_price){
+                return _.round(unit_price, 6)
+                // return unit_price.toFixed(6)
+            },
             onSuccess(response, file, fileList) {
                 // console.log(response, file, fileList)
                 this.fileList = fileList
@@ -538,7 +543,7 @@
             changeDateOfIssue() {
                 this.form.date_of_due = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-                    this.form.exchange_rate_sale = response
+                    this.form.exchange_rate_sale = (response == 0) ? 1 : response
                 })
             },
             changeDocumentType() {

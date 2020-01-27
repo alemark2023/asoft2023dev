@@ -47,6 +47,11 @@ class ViewServiceProvider extends ServiceProvider
             'Modules\BusinessTurn\Http\ViewComposers\BusinessTurnViewComposer'
         );
 
+        view()->composer(
+            'tenant.layouts.app',
+            'App\Http\ViewComposers\Tenant\CompactSidebarViewComposer'
+        );
+
         //Ecommerce
 
         /*view()->composer(

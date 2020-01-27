@@ -206,7 +206,7 @@
               </div>
             </section>
           </div>
-          <div class="col-xl-6">
+          <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" v-if="general">
                 <div class="widget-summary">
@@ -266,7 +266,140 @@
             </section>
           </div>
 
-          <div class="col-xl-3">
+
+          <div class="col-xl-3 col-md-3">
+            <section class="card card-featured-left card-featured-secondary">
+              <div class="card-body" v-if="document">
+                <div class="widget-summary">
+                  <div class="widget-summary-col">
+                    <div class="row no-gutters">
+                      <div class="col-md-12 m-b-10 mb-4">
+                        <h2 class="card-title">Balance Ventas - Compras - Gastos</h2>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="summary">
+                          <h4 class="title text-info">
+                            Totales
+                            <el-popover placement="right" width="100%" trigger="hover">
+                              <p><span class="custom-badge">T. Ventas - T. Compras/Gastos</span></p>
+                              <p>Total comprobantes:<span class="custom-badge pull-right">S/ {{ balance.totals.total_document }}</span></p>
+                              <p>Total notas de venta:<span class="custom-badge pull-right">S/ {{ balance.totals.total_sale_note }}</span></p>
+                              <p>Total compras:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_purchase }}</span></p>
+                              <p>Total gastos:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_expense }}</span></p>
+                              <el-button icon="el-icon-view" type="primary" size="mini" slot="reference" circle></el-button>
+                            </el-popover>
+                            <br />
+                          </h4>
+                          <div class="info">
+                            <strong class="amount text-info">S/ {{ balance.totals.all_totals }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="summary">
+                          <h4 class="title text-danger">
+                            Total Pagos
+                            <el-popover placement="right" width="100%" trigger="hover">
+                              <p><span class="custom-badge">T. Pagos Ventas - T. Pagos Compras/Gastos</span></p>
+                              <p>Total pagos comprobantes:<span class="custom-badge pull-right">S/ {{ balance.totals.total_payment_document }}</span></p>
+                              <p>Total pagos notas de venta:<span class="custom-badge pull-right">S/ {{ balance.totals.total_payment_sale_note }}</span></p>
+                              <p>Total pagos compras:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_payment_purchase }}</span></p>
+                              <p>Total pagos gastos:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_payment_expense }}</span></p>
+                              <el-button icon="el-icon-view" type="danger" size="mini" slot="reference" circle></el-button>
+                            </el-popover>
+                            <br />
+                          </h4>
+                          <div class="info">
+                            <strong class="amount text-danger">S/ {{ balance.totals.all_totals_payment }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title">
+                            Total
+                            <br />&nbsp;
+                          </h4>
+                          <div class="info">
+                            <strong class="amount">S/ {{ balance.totals.total }}</strong>
+                          </div>
+                        </div>
+                      </div> -->
+                    </div>
+                    <div class="row m-t-20">
+                      <div class="col-md-12">
+                        <x-graph type="doughnut" :all-data="balance.graph"></x-graph>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+
+          <div class="col-xl-3 col-md-3">
+            <section class="card card-featured-left card-featured-secondary">
+              <div class="card-body" v-if="utilities">
+                <div class="widget-summary">
+                  <div class="widget-summary-col">
+                    <div class="row no-gutters">
+                      <div class="col-md-12 m-b-10">
+                        <h2 class="card-title">Utilidades/Ganancias</h2>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title text-info">
+                            Ingreso
+                          </h4>
+                          <div class="info">
+                            <strong class="amount text-info">S/ {{ utilities.totals.total_income }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title text-danger">
+                            Egreso
+                          </h4>
+                          <div class="info">
+                            <strong class="amount text-danger">S/ {{ utilities.totals.total_egress }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-4">
+                        <div class="summary">
+                          <h4 class="title">
+                            Utilidad
+                            <br />&nbsp;
+                          </h4>
+                          <div class="info">
+                            <strong class="amount">S/ {{ utilities.totals.utility }}</strong>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 ">
+                        <div class="summary">
+                          <h4 class="title">
+                            <br>
+                            <el-checkbox  v-model="form.enabled_expense" @change="loadDataUtilities">Considerar gastos</el-checkbox><br>
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row m-t-20">
+                      <div class="col-md-12">
+                        <x-graph type="doughnut" :all-data="utilities.graph"></x-graph>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+
+          <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" v-if="general">
                 <div class="widget-summary">
@@ -336,77 +469,7 @@
             </section>
           </div>
 
-          <div class="col-xl-3">
-            <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="document">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
-                    <div class="row no-gutters">
-                      <div class="col-md-12 m-b-10 mb-4">
-                        <h2 class="card-title">Balance Ventas - Compras - Gastos</h2>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="summary">
-                          <h4 class="title text-info">
-                            Totales
-                            <el-popover placement="right" width="100%" trigger="hover">
-                              <p><span class="custom-badge">T. Ventas - T. Compras/Gastos</span></p>
-                              <p>Total comprobantes:<span class="custom-badge pull-right">S/ {{ balance.totals.total_document }}</span></p>
-                              <p>Total notas de venta:<span class="custom-badge pull-right">S/ {{ balance.totals.total_sale_note }}</span></p>
-                              <p>Total compras:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_purchase }}</span></p>
-                              <p>Total gastos:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_expense }}</span></p>
-                              <el-button icon="el-icon-view" type="primary" size="mini" slot="reference" circle></el-button>
-                            </el-popover>
-                            <br />
-                          </h4>
-                          <div class="info">
-                            <strong class="amount text-info">S/ {{ balance.totals.all_totals }}</strong>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-lg-6">
-                        <div class="summary">
-                          <h4 class="title text-danger">
-                            Total Pagos 
-                            <el-popover placement="right" width="100%" trigger="hover">
-                              <p><span class="custom-badge">T. Pagos Ventas - T. Pagos Compras/Gastos</span></p>
-                              <p>Total pagos comprobantes:<span class="custom-badge pull-right">S/ {{ balance.totals.total_payment_document }}</span></p>
-                              <p>Total pagos notas de venta:<span class="custom-badge pull-right">S/ {{ balance.totals.total_payment_sale_note }}</span></p>
-                              <p>Total pagos compras:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_payment_purchase }}</span></p>
-                              <p>Total pagos gastos:<span class="custom-badge pull-right">- S/ {{ balance.totals.total_payment_expense }}</span></p>
-                              <el-button icon="el-icon-view" type="danger" size="mini" slot="reference" circle></el-button>
-                            </el-popover>
-                            <br />
-                          </h4>
-                          <div class="info">
-                            <strong class="amount text-danger">S/ {{ balance.totals.all_totals_payment }}</strong>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- <div class="col-lg-4">
-                        <div class="summary">
-                          <h4 class="title">
-                            Total
-                            <br />&nbsp;
-                          </h4>
-                          <div class="info">
-                            <strong class="amount">S/ {{ balance.totals.total }}</strong>
-                          </div>
-                        </div>
-                      </div> -->
-                    </div>
-                    <div class="row m-t-20">
-                      <div class="col-md-12">
-                        <x-graph type="doughnut" :all-data="balance.graph"></x-graph>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <div class="col-xl-3">
+          <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
                 <h2 class="card-title">Ventas por producto</h2>
@@ -435,7 +498,7 @@
               </div>
             </section>
           </div>
-          <div class="col-xl-3">
+          <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
                 <h2 class="card-title">Top clientes</h2>
@@ -467,7 +530,7 @@
             </section>
           </div>
 
-          <div class="col-xl-12">
+          <div class="col-xl-6 col-md-12 col-lg-12">
             <dashboard-stock></dashboard-stock>
           </div>
 
@@ -508,17 +571,27 @@
                   </div>
                   <div class="col-md-1">
                     <el-badge :value="getTotalRowsUnpaid" class="item">
-                      <span size="small">Total facturas</span>
+                      <span size="small">Total comprobantes</span>
                     </el-badge>
                   </div>
                   <div class="col-md-1">
                     <el-badge :value="getTotalAmountUnpaid" class="item">
-                      <span size="small">Monto total</span>
+                      <span size="small">Monto general (PEN)</span>
                     </el-badge>
                   </div>
                   <div class="col-md-1">
                     <el-badge :value="getCurrentBalance" class="item">
-                      <span size="small">Saldo corriente</span>
+                      <span size="small">Saldo corriente (PEN)</span>
+                    </el-badge>
+                  </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getTotalAmountUnpaidUsd" class="item">
+                      <span size="small">Monto general (USD)</span>
+                    </el-badge>
+                  </div>
+                  <div class="col-md-1">
+                    <el-badge :value="getCurrentBalanceUsd" class="item">
+                      <span size="small">Saldo corriente (USD)</span>
                     </el-badge>
                   </div>
                 </div>
@@ -535,7 +608,7 @@
                         <th>Guías</th>
 
                         <th>Ver Cartera</th>
-
+                        <th>Moneda</th>
                         <th class="text-right">Por cobrar</th>
                         <th class="text-right">Total</th>
                         <th></th>
@@ -618,7 +691,7 @@
                               <el-button icon="el-icon-view" slot="reference"></el-button>
                             </el-popover>
                           </td>
-
+                            <td>{{row.currency_type_id}}</td>
                           <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                           <td class="text-right">{{ row.total }}</td>
                           <td class="text-right">
@@ -718,6 +791,10 @@ export default {
         totals: {},
         graph: {}
       },
+      utilities: {
+        totals: {},
+        graph: {}
+      },
       form: {},
       pickerOptionsDates: {
         disabledDate: time => {
@@ -760,17 +837,37 @@ export default {
       if (self.selected_customer) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'PEN'
           );
         });
       } else {
         source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0;
+          return item.total_to_pay > 0 && item.currency_type_id == 'PEN';
         });
       }
 
       return _.sumBy(source, function(item) {
         return parseFloat(item.total_to_pay);
+      }).toFixed(2);
+    },
+    getCurrentBalanceUsd() {
+
+      const self = this;
+      let source = [];
+      if (self.selected_customer) {
+        source = _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'USD'
+          );
+        });
+      } else {
+        source = _.filter(this.records, function(item) {
+          return item.total_to_pay > 0 && item.currency_type_id == 'USD';
+        });
+      }
+
+      return _.sumBy(source, function(item) {
+        return  parseFloat(item.total_to_pay);
       }).toFixed(2);
     },
     getTotalRowsUnpaid() {
@@ -794,21 +891,51 @@ export default {
       if (self.selected_customer) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'PEN'
           );
         });
       } else {
         source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0;
+          return item.total_to_pay > 0 &&  item.currency_type_id == 'PEN';
         });
       }
 
       return _.sumBy(source, function(item) {
-        return parseFloat(item.total);
-      }).toFixed(2);
+        return  parseFloat(item.total)
+      }).toFixed(2)
+    },
+    getTotalAmountUnpaidUsd() {
+      const self = this;
+      let source = [];
+      if (self.selected_customer) {
+        source = _.filter(self.records, function(item) {
+          return (
+            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'USD'
+          );
+        });
+      } else {
+        source = _.filter(this.records, function(item) {
+          return item.total_to_pay > 0 && item.currency_type_id == 'USD';
+        });
+      }
+
+      return _.sumBy(source, function(item) {
+        return  parseFloat(item.total);
+      }).toFixed(2)
     }
   },
+
   methods: {
+    calculateTotalCurrency(currency_type_id, exchange_rate_sale,  total )
+    {
+        if(currency_type_id == 'USD')
+        {
+            return parseFloat(total) * exchange_rate_sale;
+        }
+        else{
+            return parseFloat(total);
+        }
+    },
     clickDownloadDispatch(download) {
       window.open(download, "_blank");
     },
@@ -830,6 +957,7 @@ export default {
     initForm() {
       this.form = {
         establishment_id: null,
+        enabled_expense: null,
         period: "all",
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
@@ -880,6 +1008,7 @@ export default {
       this.loadData();
       this.loadUnpaid();
       this.loadDataAditional();
+      this.loadDataUtilities();
       //this.loadCustomer();
     },
     loadData() {
@@ -898,6 +1027,13 @@ export default {
           this.purchase = response.data.data.purchase;
           this.items_by_sales = response.data.data.items_by_sales;
           this.top_customers = response.data.data.top_customers;
+        });
+    },
+    loadDataUtilities() {
+      this.$http
+        .post(`/${this.resource}/utilities`, this.form)
+        .then(response => {
+          this.utilities = response.data.data.utilities;
         });
     },
     loadUnpaid() {

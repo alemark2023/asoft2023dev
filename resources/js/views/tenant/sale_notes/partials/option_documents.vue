@@ -1,33 +1,18 @@
 <template>
     <div>
-        <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%"  
+        <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                :show-close="false"> 
-            <!--<div class="row" v-show="!showGenerate">-->
-                <!--<div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold">-->
-                    <!--<p>Descargar PDF</p>-->
-                    <!--<button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload()">-->
-                        <!--<i class="fa fa-file-alt"></i>-->
-                    <!--</button>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<br>-->
-            <!--<div class="row"> -->
-                <!--<div class="col-md-9">-->
-                    <!--<div class="form-group"> -->
-                        <!--<el-checkbox v-model="generate">Generar comprobante electrónico</el-checkbox>                            -->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
+                :show-close="false">  
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="form-group" :class="{'has-danger': errors.document_type_id}"> 
+                    <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                         <label class="control-label">Tipo comprobante</label>
                         <el-select v-model="document.document_type_id" @change="changeDocumentType" popper-class="el-select-document_type" dusk="document_type_id" class="border-left rounded-left border-info">
                             <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                         </el-select>
                         <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
+                        <!-- <el-checkbox  v-model="generate_dispatch">Generar Guía Remisión</el-checkbox> -->
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -39,22 +24,36 @@
                         <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
                     </div>
                 </div>
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label class="control-label">Observaciones</label>
+                        <el-input
+                                type="textarea"
+                                autosize
+                                v-model="document.additional_information">
+                        </el-input>
+                    </div>
+                </div>
+                <div class="col-lg-8 mt-3">
+                    <div class="form-group" :class="{'has-danger': errors.dipatch_id}"> 
+                        <!-- <label class="control-label">Tipo comprobante</label> -->
+                        <el-checkbox  v-model="generate_dispatch">Generar Guía Remisión</el-checkbox>
+                        <el-select v-model="dispatch_id" popper-class="el-select-document_type" filterable  class="border-left rounded-left border-info" v-if="generate_dispatch">
+                            <el-option v-for="option in dispatches" :key="option.id" :value="option.id" :label="option.number_full"></el-option>
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.dipatch_id" v-text="errors.dipatch_id[0]"></small>
+                    </div>
+                </div>
             </div>
             <span slot="footer" class="dialog-footer"> 
-                <!--<template v-if="showClose">-->
-                    <el-button @click="clickClose">Cerrar</el-button>         
-                    <el-button class="submit" type="primary" @click="submit" :loading="loading_submit" v-if="flag_generate">Generar</el-button>
-
-                <!--</template>-->
-                <!--<template v-else>-->
-                    <!--&lt;!&ndash;<el-button class="submit" type="primary" plain  @click="submit" :loading="loading_submit" v-if="generate">Generar comprobante</el-button>                &ndash;&gt;-->
-                    <!--<el-button @click="clickFinalize">Ir al listado</el-button>-->
-                    <!--<el-button type="primary" @click="clickNewQuotation">Nueva cotización</el-button>-->
-                <!--</template>-->
+                <el-button @click="clickClose">Cerrar</el-button>         
+                <el-button class="submit" type="primary" @click="submit" :loading="loading_submit" v-if="flag_generate">Generar</el-button>
             </span>
 
             <document-options :showDialog.sync="showDialogDocumentOptions"
                               :recordId="documentNewId"
+                              :generatDispatch="generate_dispatch"
+                              :dispatchId="dispatch_id"
                               :isContingency="false"
                               :showClose="true"></document-options>
 
@@ -87,7 +86,10 @@
                 loading_submit:false,
                 showDialogDocumentOptions: false,
                 documentNewId: null,
-                flag_generate:true
+                flag_generate:true,
+                dispatches: [],
+                generate_dispatch:false,
+                dispatch_id:null
             }
         },
         created() {
@@ -102,17 +104,18 @@
                 this.errors = {}
                 this.form = {
                     id: null,
-                    external_id: null, 
+                    external_id: null,
                     identifier: null,
                     date_of_issue:null,
                     sale_note:null,
                 }
+                this.generate_dispatch = false
             },
             initDocument(){
                 this.document = {
                     document_type_id:null,
                     series_id:null,
-                    establishment_id: null, 
+                    establishment_id: null,
                     number: '#',
                     date_of_issue: null,
                     time_of_issue: null,
@@ -159,13 +162,18 @@
                 this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
             },
-            submit() { 
-                // console.log(this.form)
+            async submit() {
+                
+                if(this.generate_dispatch){
+                    if(!this.dispatch_id){
+                        return this.$message.error('Debe seleccionar una guía base')
+                    }
+                }
                 this.loading_submit = true;
 
                 this.document.exchange_rate_sale = 1;
 
-                this.$http.post(`/${this.resource_documents}`, this.document).then(response => {
+                await this.$http.post(`/${this.resource_documents}`, this.document).then(response => {
                         if (response.data.success) {
                             this.documentNewId = response.data.data.id;
                             this.showDialogDocumentOptions = true;
@@ -173,7 +181,7 @@
                                 this.$eventHub.$emit('reloadData');
                                 this.flag_generate = false
                             });
-                            this.resetDocument() 
+                            this.resetDocument()
 
                             // this.clickClose();
                         } else {
@@ -190,11 +198,11 @@
                         this.loading_submit = false;
                     });
             },
-            assignDocument(){ 
+            assignDocument(){
                 let q = this.form.sale_note;
                 // console.log(q);
 
-                this.document.establishment_id = q.establishment_id  
+                this.document.establishment_id = q.establishment_id
                 this.document.date_of_issue =  moment().format('YYYY-MM-DD')//q.date_of_issue
                 this.document.date_of_due = moment().format('YYYY-MM-DD') //q.date_of_issue
                 this.document.time_of_issue = q.time_of_issue
@@ -219,7 +227,7 @@
                 this.document.total_value = q.total_value
                 this.document.total = q.total
                 this.document.operation_type_id = '0101'
-              
+
                 this.document.items = q.items
                 this.document.charges = q.charges
                 this.document.discounts = q.discounts
@@ -250,6 +258,12 @@
                         this.assignDocument();
                         this.titleDialog = 'Nota de venta registrada: '+this.form.identifier
                     })
+
+                    
+                await this.$http.get(`/${this.resource}/dispatches`)
+                    .then(response => {
+                        this.dispatches = response.data 
+                    })
             },
             changeDocumentType() {
                 this.filterSeries();
@@ -270,7 +284,7 @@
 
                 this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 await this.changeDocumentType()
-                
+
             },
             filterSeries() {
                 this.document.series_id = null
@@ -291,7 +305,7 @@
             },
             clickToPrint(){
                 window.open(`/downloads/saleNote/sale_note/${this.form.external_id}`, '_blank');
-            } 
+            }
         }
     }
 </script>

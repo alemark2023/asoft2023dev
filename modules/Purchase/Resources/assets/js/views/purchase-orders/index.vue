@@ -74,7 +74,7 @@
                                     @click.prevent="clickDownload(row.external_id)">PDF</button>
                         </td>
                         
-            <td>
+            <td class="text-right">
               <!-- <el-button
                 @click.prevent="clickOptions(row.id)"
                 size="mini"
@@ -92,8 +92,12 @@
               <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-custom m-1__2"
                       @click.prevent="clickCreate(row.id)">Editar</button>
 
-              <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-success m-1__2"
-                      @click.prevent="clickGenerateDocument(row.id)">Generar compra</button>
+              <!-- <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-success m-1__2"
+                      @click.prevent="clickGenerateDocument(row.id)">Generar compra</button> -->
+
+                      
+              <a :href="`/purchases/create/${row.id}`" class="btn waves-effect waves-light btn-xs btn-success m-1__2"  
+                      v-if="!row.has_purchases && row.state_type_id!='11'">Generar compra</a>
 
               <button type="button" v-if="!row.has_purchases && row.state_type_id!='11'" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                       @click.prevent="clickAnulate(row.id)">Anular</button>
@@ -108,11 +112,11 @@
       <!-- <documents-voided :showDialog.sync="showDialogVoided"
       :recordId="recordId"></documents-voided>-->
 
-      <document-generate
+      <!-- <document-generate
         :showDialog.sync="showDialogGenerateDocument"
         :recordId="recordId"
         :showClose="true"
-      ></document-generate>
+      ></document-generate> -->
 
       
         <purchase-options :showDialog.sync="showDialogOptions"
@@ -123,7 +127,7 @@
 </template>
 
 <script>
-    import DocumentGenerate from "./partials/document_generate.vue";
+    // import DocumentGenerate from "./partials/document_generate.vue";
     // import DocumentOptions from './partials/document_options.vue'
     import DataTable from "../../../../../../../resources/js/components/DataTable.vue";
     import PurchaseOptions from './partials/options.vue'
@@ -134,7 +138,7 @@
 export default {
       mixins: [deletable],
       // components: {DocumentsVoided, DocumentOptions, DataTable},
-      components: { DataTable, DocumentGenerate , PurchaseOptions}, //DocumentOptions
+      components: { DataTable , PurchaseOptions}, //DocumentOptions
       data() {
         return {
           showDialogVoided: false,

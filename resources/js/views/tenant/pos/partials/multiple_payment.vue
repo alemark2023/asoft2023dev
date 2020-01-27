@@ -78,10 +78,27 @@
                 .then(response => { 
                     this.payment_method_types = response.data.payment_method_types  
                     this.cards_brand = response.data.cards_brand  
-                    this.clickAddPayment()
+                    // this.clickAddPayment()
+                    this.getFormPosLocalStorage()
                 })  
         },
         methods: {
+            getFormPosLocalStorage(){
+
+                let form_pos = localStorage.getItem('form_pos');
+                form_pos = JSON.parse(form_pos)
+                if (form_pos) {
+                    
+                    if(form_pos.payments.length == 0){
+
+                        this.clickAddPayment()
+
+                    }else{
+                        this.$eventHub.$emit('localSPayments', (form_pos.payments))
+                    }
+                }
+
+            },
             create(){
                 
                 

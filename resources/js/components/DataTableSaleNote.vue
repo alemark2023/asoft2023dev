@@ -57,6 +57,13 @@
                         <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
                     </table>
+                    
+                    <div class="row mb-5">
+                        <div class="col-md-4 text-center">Total notas de venta en soles S/. {{totals.total_pen}}</div>
+                        <div class="col-md-4 text-center">Total pagado en soles S/. {{totals.total_paid_pen}}</div>
+                        <div class="col-md-4 text-center">Total por cobrar en soles S/. {{totals.total_pending_paid_pen}}</div>
+                    </div>
+
                     <div>
                         <el-pagination
                                 @current-change="getRecords"
@@ -95,6 +102,11 @@
                     value: null,
                     series: null
                 },
+                totals: {
+                    total_pen: 0,
+                    total_paid_pen: 0,
+                    total_pending_paid_pen: 0
+                },
                 columns: [],
                 records: [],
                 pagination: {},
@@ -106,6 +118,7 @@
         created() {
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
+                this.getTotals()
             })
         },
         async mounted () {
@@ -122,9 +135,18 @@
 
 
             await this.getRecords()
-
+            await this.getTotals()
         },
         methods: {
+            getTotals(){
+
+                this.$http.get(`/${this.resource}/totals`)
+                    .then((response) => {
+                        // console.log(response)
+                        this.totals = response.data
+                    });
+
+            },
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },

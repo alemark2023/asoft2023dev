@@ -65,6 +65,13 @@ class SaleNotePaymentController extends Controller
         $record->fill($request->all());
         $record->save();
 
+        if($request->paid == true)
+        {
+            $sale_note = SaleNote::find($request->sale_note_id);
+            $sale_note->paid = true;
+            $sale_note->save();
+        }
+
         $this->createPdf($request->input('sale_note_id'));
 
         return [
@@ -78,6 +85,10 @@ class SaleNotePaymentController extends Controller
         $item = SaleNotePayment::findOrFail($id);
         $sale_note_id = $item->sale_note_id;
         $item->delete();
+
+        $sale_note = SaleNote::find($item->sale_note_id);
+        $sale_note->paid = false;
+        $sale_note->save();
 
         $this->createPdf($sale_note_id);
 

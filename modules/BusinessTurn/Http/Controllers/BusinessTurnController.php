@@ -80,7 +80,16 @@ class BusinessTurnController extends Controller
             ['id'=>'D','description'=>'Divorciado/a'],
         ];
 
-        return compact('identity_document_types','civil_status','sexs');
+        $room_types = [
+            ['id'=>'single','description'=>'Simple'],
+            ['id'=>'matrimonial','description'=>'Matrimonial'],
+            ['id'=>'double','description'=>'Doble'],
+            ['id'=>'triple','description'=>'Triple'],
+        ];
+
+        $api_service_token = config('configuration.api_service_token');
+
+        return compact('identity_document_types','civil_status','sexs', 'room_types','api_service_token');
     }
 
     public function tablesTransports()

@@ -32,6 +32,8 @@ class PersonResource extends JsonResource
             'percentage_perception' => $this->percentage_perception,
             'state' => $this->state,
             'condition' => $this->condition,
+            'person_type_id' => $this->person_type_id,
+            'comment' => $this->comment,
 
             // 'more_address' =>  $this->more_address,
         ];

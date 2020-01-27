@@ -8,6 +8,7 @@ use App\Http\Resources\Tenant\DocumentPaymentCollection;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PaymentMethodType;
+use Exception, Illuminate\Support\Facades\DB;
 
 class DocumentPaymentController extends Controller
 {
@@ -65,4 +66,39 @@ class DocumentPaymentController extends Controller
             'message' => 'Pago eliminado con éxito'
         ];
     }
+
+    public function initialize_balance()
+    {
+
+        DB::connection('tenant')->transaction(function (){
+
+            $documents = Document::get();
+
+            foreach ($documents as $document) {
+                
+                $total_payments = $document->payments->sum('payment');
+        
+                $balance = $document->total - $total_payments;
+        
+                if($balance <= 0){
+        
+                    $document->total_canceled = true;
+                    $document->update();
+        
+                }else{
+                    
+                    $document->total_canceled = false;
+                    $document->update();
+                }
+
+            }
+
+        });
+        
+        return [
+            'success' => true,
+            'message' => 'Acción realizada con éxito'
+        ];
+    }
+ 
 }

@@ -15,7 +15,6 @@ class DashboardSalePurchase
 {
     public function data($request)
     {
-// dd($request);
         $establishment_id = $request['establishment_id'];
         $period = $request['period'];
         $date_start = $request['date_start'];
@@ -54,47 +53,57 @@ class DashboardSalePurchase
 
     private function top_customers($establishment_id, $d_start, $d_end){
 
-        // $documents = Document::get(); 
-        // $sale_notes = SaleNote::get(); 
+        // $documents = Document::get();
+        // $sale_notes = SaleNote::get();
         if($d_start && $d_end){
 
             $documents = Document::query()->where('establishment_id', $establishment_id)
                                     ->whereIn('state_type_id', ['01','03','05','07','13'])
                                     ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
-    
-                                    
+
+
             $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
                                     ->whereIn('state_type_id', ['01','03','05','07','13'])
                                     ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
         }else{
-            
+
             $documents = Document::query()->where('establishment_id', $establishment_id)
                     ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
 
-                    
+
             $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
                     ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
 
         }
 
-        foreach ($sale_notes as $sn) { 
+        foreach ($sale_notes as $sn) {
             $documents->push($sn);
         }
 
         $all_records = $documents;
 
         $group_customers = $all_records->groupBy('customer_id');
+
         $top_customers = collect([]);
 
-        foreach ($group_customers as $customers) {  
+        foreach ($group_customers as $customers) {
 
             // $customers es un cliente con todos sus documentos generados
             // dd($customers[0]->total);
 
             $customer = Person::where('type','customers')->find($customers[0]->customer_id);
 
-            $totals = $customers->whereIn('document_type_id', ['01','03','08'])->sum('total'); //totales en documents
-            $totals_sale_note = $customers->where('prefix', 'NV')->sum('total'); //key diferenciar de documents 
+            $totals = $customers->whereIn('document_type_id', ['01','03','08'])->sum(function ($row) {
+                return $this->calculateTotalCurrency($row->currency_type_id, $row->exchange_rate_sale, $row->total);//count($product['colors']);
+            });    //('total');
+
+
+            //totales en documents
+            $totals_sale_note = $customers->where('prefix', 'NV')->sum(function ($row) {
+                return $this->calculateTotalCurrency($row->currency_type_id, $row->exchange_rate_sale, $row->total);//count($product['colors']);
+            });  
+
+
             $total_credit_note = $customers->where('document_type_id','07')->sum('total');
 
             $difference = ($totals + $totals_sale_note) - $total_credit_note;
@@ -104,16 +113,18 @@ class DashboardSalePurchase
                     'total' => number_format($difference,2, ".", ""),
                     'name' => $customer->name,
                     'number' => $customer->number,
-                ]);    
-        
+                ]);
+
         }
 
         $sorted = $top_customers->sortByDesc('total');
 
         return $sorted->values()->take(10);
-        
+
     }
- 
+
+
+
     private function purchase_totals($establishment_id, $d_start, $d_end)
     {
         // $purchases = Purchase::get();
@@ -121,24 +132,24 @@ class DashboardSalePurchase
 
         $purchases_total = round($purchases->sum('total'),2);
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
- 
-      
+
+
         $data_array = ['Ene', 'Feb','Mar', 'Abr','May', 'Jun','Jul', 'Ago','Sep', 'Oct', 'Nov', 'Dic'];
 
-        $purchases_by_month = $purchases->groupBy(function($date) { 
-                                return Carbon::parse($date->date_of_issue)->format('m');  
-                            }); 
- 
-                            
+        $purchases_by_month = $purchases->groupBy(function($date) {
+                                return Carbon::parse($date->date_of_issue)->format('m');
+                            });
+
+
         return [
-            'totals' => [ 
+            'totals' => [
                 'purchases_total_perception' => number_format($purchases_total_perception,2),
                 'purchases_total' => number_format($purchases_total,2),
                 'total' => number_format($purchases_total + $purchases_total_perception,2),
             ],
             'graph' => [
                 'labels' => $data_array,
-                'datasets' => [ 
+                'datasets' => [
                     [
                         'label' => 'Total percepciones',
                         'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_perception'),
@@ -173,10 +184,10 @@ class DashboardSalePurchase
     }
 
 
-    
+
     private function items_by_sales($establishment_id, $d_start, $d_end){
 
-        // $document_items = DocumentItem::get(); 
+        // $document_items = DocumentItem::get();
         // $sale_note_items = SaleNoteItem::get();
         if($d_start && $d_end){
 
@@ -197,7 +208,7 @@ class DashboardSalePurchase
             $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
                         ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
 
-        }         
+        }
 
         // dd($documents->count(),$sale_notes->count());
 
@@ -215,9 +226,9 @@ class DashboardSalePurchase
                 $sale_note_items->push($item);
             }
         }
- 
 
-        foreach ($sale_note_items as $sni) { 
+
+        foreach ($sale_note_items as $sni) {
             $document_items->push($sni);
         }
 
@@ -226,7 +237,7 @@ class DashboardSalePurchase
 
         $items_by_sales = collect([]);
 
-        foreach ($group_items as $items) {  
+        foreach ($group_items as $items) {
 
             $item = Item::where('status',true)->find($items[0]->item_id);
 
@@ -235,21 +246,25 @@ class DashboardSalePurchase
             $total_credit_note = 0;
 
             foreach ($items as $it) {
-                
+
                 if($it->document){
 
                     if(in_array($it->document->document_type_id,['01','03','08'])){
-                        $totals += $it->document->total;
+
+
+                        $totals += $this->calculateTotalCurrency($it->document->currency_type_id, $it->document->exchange_rate_sale, $it->document->total);
+
                     }else{
-                        $total_credit_note += $it->document->total;
+
+                        $total_credit_note += $this->calculateTotalCurrency($it->document->currency_type_id, $it->document->exchange_rate_sale, $it->document->total);
                     }
 
                 }else{
-                    $totals += $it->sale_note->total;
+                    $totals += $this->calculateTotalCurrency($it->sale_note->currency_type_id, $it->sale_note->exchange_rate_sale, $it->sale_note->total);
                 }
-                    
+
             }
- 
+
             $difference = $totals - $total_credit_note;
 
             if($item && $difference > 0){
@@ -257,7 +272,8 @@ class DashboardSalePurchase
                     'total' => number_format($difference, 2, ".", ""),
                     'description' => $item->description,
                     'internal_id' => $item->internal_id,
-                ]);    
+                   // 'currency' => $item->currency_type->symbol
+                ]);
             }
         }
 
@@ -274,22 +290,34 @@ class DashboardSalePurchase
     private function arrayPurchasesbyMonth($purchases_by_month, $total){
 
         return [
-            isset($purchases_by_month['01']) ? round($purchases_by_month['01']->sum($total), 2) : 0, 
-            isset($purchases_by_month['02']) ? round($purchases_by_month['02']->sum($total), 2) : 0, 
-            isset($purchases_by_month['03']) ? round($purchases_by_month['03']->sum($total), 2) : 0, 
-            isset($purchases_by_month['04']) ? round($purchases_by_month['04']->sum($total), 2) : 0, 
-            isset($purchases_by_month['05']) ? round($purchases_by_month['05']->sum($total), 2) : 0, 
-            isset($purchases_by_month['06']) ? round($purchases_by_month['06']->sum($total), 2) : 0, 
-            isset($purchases_by_month['07']) ? round($purchases_by_month['07']->sum($total), 2) : 0, 
-            isset($purchases_by_month['08']) ? round($purchases_by_month['08']->sum($total), 2) : 0, 
-            isset($purchases_by_month['09']) ? round($purchases_by_month['09']->sum($total), 2) : 0, 
-            isset($purchases_by_month['10']) ? round($purchases_by_month['10']->sum($total), 2) : 0, 
-            isset($purchases_by_month['11']) ? round($purchases_by_month['11']->sum($total), 2) : 0, 
+            isset($purchases_by_month['01']) ? round($purchases_by_month['01']->sum($total), 2) : 0,
+            isset($purchases_by_month['02']) ? round($purchases_by_month['02']->sum($total), 2) : 0,
+            isset($purchases_by_month['03']) ? round($purchases_by_month['03']->sum($total), 2) : 0,
+            isset($purchases_by_month['04']) ? round($purchases_by_month['04']->sum($total), 2) : 0,
+            isset($purchases_by_month['05']) ? round($purchases_by_month['05']->sum($total), 2) : 0,
+            isset($purchases_by_month['06']) ? round($purchases_by_month['06']->sum($total), 2) : 0,
+            isset($purchases_by_month['07']) ? round($purchases_by_month['07']->sum($total), 2) : 0,
+            isset($purchases_by_month['08']) ? round($purchases_by_month['08']->sum($total), 2) : 0,
+            isset($purchases_by_month['09']) ? round($purchases_by_month['09']->sum($total), 2) : 0,
+            isset($purchases_by_month['10']) ? round($purchases_by_month['10']->sum($total), 2) : 0,
+            isset($purchases_by_month['11']) ? round($purchases_by_month['11']->sum($total), 2) : 0,
             isset($purchases_by_month['12']) ? round($purchases_by_month['12']->sum($total), 2) : 0
         ];
 
     }
- 
- 
- 
+
+    private function calculateTotalCurrency($currency_type_id, $exchange_rate_sale,  $total)
+    {
+        if($currency_type_id == 'USD')
+        {
+            return $total * $exchange_rate_sale;
+        }
+        else{
+            return $total;
+        }
+    }
+
+
+
+
 }

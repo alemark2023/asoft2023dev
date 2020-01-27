@@ -74,6 +74,7 @@
                 if (response.success) {
                     this.$message.success(response.message)
                     this.$eventHub.$emit('reloadData')
+                    this.$eventHub.$emit('reloadTables')
                     this.$refs.upload.clearFiles()
                     this.close()
                 } else {

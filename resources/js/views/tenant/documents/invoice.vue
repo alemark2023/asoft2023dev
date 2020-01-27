@@ -678,6 +678,7 @@
                 is_receivable:false,
                 is_contingency: false,
                 cat_payment_method_types: [],
+                select_first_document_type_03:false,
                 detraction_types: [],
                 all_detraction_types: [],
 
@@ -703,6 +704,7 @@
                     this.company = response.data.company;
                     this.user = response.data.user;
                     this.document_type_03_filter = response.data.document_type_03_filter;
+                    this.select_first_document_type_03 = response.data.select_first_document_type_03 
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
@@ -711,6 +713,7 @@
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
+                    this.selectDocumentType()
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -726,6 +729,9 @@
             })
         },
         methods: {
+            selectDocumentType(){
+                this.form.document_type_id = (this.select_first_document_type_03) ? '03':'01'
+            },
             keyupCustomer(){
 
                 if(this.input_person.number){
@@ -1029,6 +1035,7 @@
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                this.selectDocumentType()
                 this.changeEstablishment()
                 this.changeDocumentType()
                 this.changeDateOfIssue()
@@ -1344,6 +1351,7 @@
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
+                        this.$eventHub.$emit('reloadDataItems', null)
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;

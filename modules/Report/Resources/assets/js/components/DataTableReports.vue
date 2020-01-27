@@ -110,9 +110,9 @@
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
-                        <tfoot v-if="resource == 'reports/sales'">
+                        <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
                             <tr>
-                                <td colspan="7"></td>                                
+                                <td :colspan="(resource == 'reports/sales') ? 7:8"></td>                                
                                 <td ><strong>Totales PEN</strong></td>
                                 <td>{{totals.acum_total_exonerated}}</td>
                                 <td>{{totals.acum_total_unaffected}}</td>
@@ -123,7 +123,7 @@
                                 <td>{{totals.acum_total}}</td>
                             </tr>
                             <tr>
-                                <td colspan="7"></td>
+                                <td :colspan="(resource == 'reports/sales') ? 7:8"></td>
                                 <td ><strong>Totales USD</strong></td>
                                 <td></td>
                                 <td></td>
@@ -389,7 +389,7 @@
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.loading_submit = false
                     // this.initTotals()
-                    if(this.resource == 'reports/sales') this.getTotals(response.data.data)
+                    if(this.resource == 'reports/sales' || this.resource == 'reports/purchases') this.getTotals(response.data.data)
                 });
 
 

@@ -291,6 +291,7 @@
     </div>
     <template v-else>
       <payment-form
+        :is_payment.sync="is_payment"
         :form="form"
         :currency-type-id-active="form.currency_type_id"
         :currency-type-active="currency_type"
@@ -380,8 +381,43 @@
           await this.initForm();
           await this.getTables();
           this.events();
+
+          await this.getFormPosLocalStorage()
+          await this.initCurrencyType()
+          this.customer = await this.getLocalStorageIndex('customer')
         },
         methods: {
+          initCurrencyType(){
+              this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+          },
+          getFormPosLocalStorage(){
+
+            let form_pos = localStorage.getItem('form_pos');
+            form_pos = JSON.parse(form_pos)
+            if (form_pos) {
+              this.form = form_pos
+              // this.calculateTotal()
+            }
+
+          },
+          setFormPosLocalStorage(form_param = null){
+
+            if(form_param){
+
+              localStorage.setItem('form_pos', JSON.stringify(form_param));
+
+            }else{
+
+              localStorage.setItem('form_pos', JSON.stringify(this.form));
+            }
+
+          },
+          cancelFormPosLocalStorage(){
+
+            localStorage.setItem('form_pos', JSON.stringify(null));
+            this.setLocalStorageIndex('customer', null)
+
+          },
           clickOpenInputEditUP(index){
             this.items[index].edit_unit_price = true
           },
@@ -486,6 +522,7 @@
             );
             this.form.items[index] = this.row;
             this.calculateTotal();
+            this.setFormPosLocalStorage()
           },
           blurCalculateQuantity2(index) {
             this.row = calculateRowItem(
@@ -499,8 +536,24 @@
           changeCustomer() {
             let customer = _.find(this.all_customers, { id: this.form.customer_id });
             this.customer = customer;
-            this.form.document_type_id =
-              customer.identity_document_type_id == "1" ? "03" : "01";
+            this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
+            this.setLocalStorageIndex('customer', this.customer)
+            this.setFormPosLocalStorage()
+          },
+
+          getLocalStorageIndex(key, re_default = null){
+
+              let ls_obj = localStorage.getItem(key);
+              ls_obj = JSON.parse(ls_obj)
+
+              if (ls_obj) {
+                  return ls_obj
+              }
+
+              return re_default
+          },
+          setLocalStorageIndex(key, obj){
+            localStorage.setItem(key, JSON.stringify(obj));
           },
           async events() {
 
@@ -508,14 +561,20 @@
                 this.initInputPerson()
             })
 
+            await this.$eventHub.$on('eventSetFormPosLocalStorage', (form_param) => {
+                this.setFormPosLocalStorage(form_param)
+            })
+
             await this.$eventHub.$on("cancelSale", () => {
               this.is_payment = false;
               this.initForm();
               this.changeExchangeRate()
+              this.cancelFormPosLocalStorage()
             });
 
             await this.$eventHub.$on("reloadDataPersons", customer_id => {
               this.reloadDataCustomers(customer_id);
+              this.setFormPosLocalStorage()
             });
 
             await this.$eventHub.$on("reloadDataItems", item_id => {
@@ -526,6 +585,7 @@
               // this.is_payment = false
               this.initForm();
               this.getTables();
+              this.setFormPosLocalStorage()
             });
           },
           initForm() {
@@ -601,7 +661,7 @@
               charges: [],
               discounts: [],
               attributes: [],
-              has_igv: null
+              has_igv: false
             };
           },
           async clickPayment() {
@@ -629,6 +689,7 @@
           },
           clickDeleteCustomer() {
             this.form.customer_id = null;
+            this.setFormPosLocalStorage()
           },
           async clickAddItem(item, index, input = false) {
             this.loading = true;
@@ -638,6 +699,7 @@
             let response = null;
 
             // console.log(item.calculate_quantity)
+            // console.log(exist_item)
 
             if (exist_item) {
               if (input) {
@@ -672,6 +734,11 @@
                 exist_item.item.unit_price = parseFloat(search_item_bd.sale_unit_price)
               }
 
+              let unit_price = exist_item.item.has_igv ? exist_item.item.sale_unit_price : exist_item.item.sale_unit_price * 1.18
+              // exist_item.unit_price = unit_price
+              exist_item.item.unit_price = unit_price
+
+
               this.row = calculateRowItem(
                 exist_item,
                 this.form.currency_type_id,
@@ -693,9 +760,7 @@
               this.form_item.quantity = 1;
               this.form_item.aux_quantity = 1;
 
-              let unit_price = this.form_item.has_igv
-                ? this.form_item.unit_price_value
-                : this.form_item.unit_price_value * 1.18;
+              let unit_price = this.form_item.has_igv ? this.form_item.unit_price_value : this.form_item.unit_price_value * 1.18;
 
               this.form_item.unit_price = unit_price;
               this.form_item.item.unit_price = unit_price;
@@ -730,10 +795,13 @@
               duration: 700
             });
 
+
             // console.log(this.row)
             // console.log(this.form.items)
-            this.calculateTotal();
+            await this.calculateTotal();
             this.loading = false;
+
+            await this.setFormPosLocalStorage()
           },
           async getStatusStock(item_id, quantity) {
             let data = {};
@@ -745,9 +813,12 @@
               });
             return data;
           },
-          clickDeleteItem(index) {
+          async clickDeleteItem(index) {
             this.form.items.splice(index, 1);
+
             this.calculateTotal();
+
+            await this.setFormPosLocalStorage()
           },
 
           calculateTotal() {
@@ -803,6 +874,8 @@
                 this.form.total_value = _.round(total_value, 2);
                 this.form.total_taxes = _.round(total_igv, 2);
                 this.form.total = _.round(total, 2);
+
+
           },
           changeDateOfIssue() {
             // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
@@ -827,7 +900,7 @@
               this.form.currency_type_id =
               this.currency_types.length > 0 ? this.currency_types[0].id : null;
               // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
-              this.changeCurrencyType();
+              // this.changeCurrencyType();
               this.filterItems();
               this.changeDateOfIssue();
               this.changeExchangeRate()
@@ -883,6 +956,9 @@
               });
               this.form.items = items
               this.calculateTotal()
+
+              await this.setFormPosLocalStorage()
+
           }
         }
       };

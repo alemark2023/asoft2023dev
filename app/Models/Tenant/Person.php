@@ -31,6 +31,9 @@ class Person extends ModelTenant
         'state',
         'condition',
         'percentage_perception',
+        'person_type_id',
+        'comment',
+
     ];
 
     // protected static function boot()
@@ -45,6 +48,11 @@ class Person extends ModelTenant
     public function identity_document_type()
     {
         return $this->belongsTo(IdentityDocumentType::class, 'identity_document_type_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'customer_id');
     }
 
     public function country()
@@ -85,5 +93,10 @@ class Person extends ModelTenant
     public function more_address()
     {
         return $this->hasMany(PersonAddress::class);
+    }
+
+    public function person_type()
+    {
+        return $this->belongsTo(PersonType::class);
     }
 }

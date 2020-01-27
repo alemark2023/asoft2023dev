@@ -16,13 +16,13 @@
 
                             <th class="">F. Pago</th>
                             <th class="text-center">Moneda</th>
+                            <th>Percepcion</th>
                             <th class="" >T. Exonerado</th>
 
                             <th class="" >T. Inafecta</th>
                             <th class="" >T. Gratuito</th>
                             <th class="">T. Gravado</th>
                             <th class="">T. IGV</th>
-                            <th>Percepcion</th>
 
                             <th class="">Total</th>
                         <tr>
@@ -38,6 +38,7 @@
                             </td>
                             <td>{{row.payment_method_type_description}}</td>
                             <td class="text-center">{{ row.currency_type_id }}</td>
+                            <td class="text-right">{{ (row.total_perception && row.state_type_id != '11') ? row.total_perception : '0.00' }}</td>
 
                             <td>{{ row.state_type_id == '11' ? '0.00' : row.total_exonerated}}</td>
 
@@ -45,7 +46,6 @@
                             <td>{{ row.state_type_id == '11' ? '0.00' : row.total_free}}</td>
                             <td>{{ row.state_type_id == '11' ? '0.00' : row.total_taxed}}</td>
                             <td>{{ row.state_type_id == '11' ? '0.00' : row.total_igv}}</td>
-                            <td class="text-right">{{ (row.total_perception && row.state_type_id != '11') ? row.total_perception : '0.00' }}</td>
 
                             <td>{{ row.state_type_id == '11' ? '0.00' : row.total}}</td>
 

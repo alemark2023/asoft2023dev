@@ -50,6 +50,15 @@ if($current_hostname) {
                 Route::get('document-hotels/filter', 'ReportDocumentHotelController@filter')->name('tenant.reports.document_hotels.filter');
                 Route::get('document-hotels/records', 'ReportDocumentHotelController@records')->name('tenant.reports.document_hotels.records');
 
+                
+                
+                Route::get('commercial-analysis', 'ReportCommercialAnalysisController@index')->name('tenant.reports.commercial_analysis.index');
+                Route::get('commercial-analysis/pdf', 'ReportCommercialAnalysisController@pdf')->name('tenant.reports.commercial_analysis.pdf');
+                Route::get('commercial-analysis/excel', 'ReportCommercialAnalysisController@excel')->name('tenant.reports.commercial_analysis.excel');
+                Route::get('commercial-analysis/filter', 'ReportCommercialAnalysisController@filter')->name('tenant.reports.commercial_analysis.filter');
+                Route::get('commercial-analysis/records', 'ReportCommercialAnalysisController@records')->name('tenant.reports.commercial_analysis.records');
+                Route::get('commercial-analysis/data_table', 'ReportCommercialAnalysisController@data_table');
+                Route::get('commercial-analysis/columns', 'ReportCommercialAnalysisController@columns');
                 Route::get('no_paid/excel', 'ReportUnpaidController@excel')->name('tenant.reports.no_paid.excel');
 
                 Route::get('document-detractions', 'ReportDocumentDetractionController@index')->name('tenant.reports.document_detractions.index');

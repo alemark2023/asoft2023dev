@@ -83,11 +83,26 @@
                                 :remote-method="searchRemoteCustomers"
                                 :loading="loading_search">
                                 <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-
-                            <!-- <el-select v-model="search.customer_id"  popper-class="el-select-document_type" filterable clearable>
-                                <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select> -->
+                            </el-select> 
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 " v-if="resource == 'documents'">
+                        <div class="form-group"> 
+                            <label class="control-label">Productos</label>
+                            <el-select v-model="search.item_id" filterable remote  popper-class="el-select-customers"  clearable
+                                placeholder="Nombre o código interno"
+                                :remote-method="searchRemoteItems"
+                                :loading="loading_search_item">
+                                <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select> 
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 pb-2" v-if="resource == 'documents'">
+                        <div class="form-group"  >
+                            <label class="control-label">Categoría</label>
+                            <el-select v-model="search.category_id" filterable clearable>
+                                <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select> 
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2 col-sm-12 pb-2"> 
@@ -108,6 +123,11 @@
                             <el-select v-model="search.state_type_id" filterable clearable>
                                 <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select> 
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 mt-4">
+                        <div class="form-group"  > 
+                            <el-checkbox v-model="search.pending_payment" >PEND. DE PAGO</el-checkbox>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4 col-md-4 col-sm-12" style="margin-top:29px"> 
@@ -169,8 +189,12 @@
                 records: [],
                 customers: [],
                 all_customers: [],
+                items: [],
+                all_items: [],
                 loading_search:false,
+                loading_search_item:false,
                 document_types: [],
+                categories: [],
                 state_types: [],
                 pagination: {}, 
                 search: {}, 
@@ -200,6 +224,8 @@
 
             await this.$http.get(`/${this.resource}/data_table`).then((response) => {
                 this.all_customers = response.data.customers
+                this.all_items = response.data.items
+                this.categories = response.data.categories
                 this.state_types = response.data.state_types
                 this.document_types = response.data.document_types
                 this.all_series = response.data.series
@@ -209,9 +235,35 @@
 
             await this.getRecords()
             await this.filterCustomers()
+            await this.filterItems()
         },
         methods: {
             
+            searchRemoteItems(input) {  
+                
+                if (input.length > 0) { 
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    this.$http.get(`/documents/data-table/items?${parameters}`)
+                            .then(response => { 
+                                // console.log(response.data)
+                                this.items = response.data
+                                this.loading_search = false
+                                
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })  
+                } else {
+                    this.filterItems()
+                }
+
+            },
+            filterItems() { 
+                this.items = this.all_items
+            },
             searchRemoteCustomers(input) {  
                 
                 if (input.length > 0) { 
@@ -245,11 +297,14 @@
                     date_of_issue: null,
                     document_type_id:null,
                     customer_id:null,
+                    item_id:null,
+                    category_id:null,
                     state_type_id:null,
                     series:null, 
                     number:null, 
                     d_start:null, 
                     d_end:null, 
+                    pending_payment:false,
                 }
             },
             changeDocumentType(){                

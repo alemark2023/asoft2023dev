@@ -168,6 +168,7 @@ class DocumentInput
                     'attributes' => self::attributes($row),
                     'discounts' => self::discounts($row),
                     'charges' => self::charges($row),
+                    'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                 ];
             }
             return $items;
