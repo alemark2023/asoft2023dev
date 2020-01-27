@@ -17,7 +17,7 @@ class TenantAddSoapTypeIdToExpenses extends Migration
 
             $table->char('soap_type_id', 2)->nullable()->after('user_id');
             $table->foreign('soap_type_id')->references('id')->on('soap_types');
-            
+
         });
     }
 
@@ -31,7 +31,7 @@ class TenantAddSoapTypeIdToExpenses extends Migration
         Schema::table('expenses', function (Blueprint $table) {
 
             $table->dropForeign(['soap_type_id']);
-            $table->dropColumn('soap_type_id');  
+            $table->dropColumn('soap_type_id');
 
         });
     }
