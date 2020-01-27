@@ -3,7 +3,7 @@
     $customer = $document->customer;
     $invoice = $document->invoice;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
-    $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+    $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $payments = $document->payments;
 
 @endphp
@@ -56,7 +56,7 @@
         <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
- 
+
 
     <tr>
         <td class="align-top"><p class="desc">Cliente:</p></td>
@@ -84,9 +84,9 @@
             <td><p class="desc">Orden de Compra:</p></td>
             <td><p class="desc">{{ $document->purchase_order }}</p></td>
         </tr>
-    @endif 
+    @endif
 </table>
- 
+
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr>
@@ -183,15 +183,15 @@
                     <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
                     @if (count((array) $document->legends)>1)
                     <tr><td class="desc pt-3"><span class="font-bold">Leyendas</span></td></tr>
-                    @endif 
+                    @endif
                 @else
-                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>                                                  
+                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>
                 @endif
             </tr>
         @endforeach
     </tr>
 
- 
+
 </table>
 <table class="full-width">
     <tr><td><strong>PAGOS:</strong> </td></tr>

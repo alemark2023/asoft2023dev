@@ -662,16 +662,16 @@ class SaleNoteController extends Controller
     {
         $dispatches = Dispatch::latest()->get(['id','series','number'])->transform(function($row) {
             return [
-                'id' => $row->id, 
-                'series' => $row->series, 
-                'number' => $row->number, 
+                'id' => $row->id,
+                'series' => $row->series,
+                'number' => $row->number,
                 'number_full' => "{$row->series}-{$row->number}",
             ];
         }); ;
-        
+
         return $dispatches;
     }
-    
+
     public function enabledConcurrency(Request $request)
     {
 

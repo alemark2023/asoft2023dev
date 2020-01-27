@@ -67,7 +67,7 @@
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td>{{ row.identifier }}
+                        <td>{{ row.full_number }}
                         </td>
                         <td>{{ row.state_type_description }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>

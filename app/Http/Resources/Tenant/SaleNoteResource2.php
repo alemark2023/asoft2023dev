@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Resources\Tenant;
- 
+
 use App\Models\Tenant\SaleNote;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Tenant\Series;
+
 
 class SaleNoteResource2 extends JsonResource
 {
@@ -15,7 +17,9 @@ class SaleNoteResource2 extends JsonResource
      */
     public function toArray($request)
     {
+        $serie = Series::where('number', $this->series)->first();
         return [
+            'series_id' => ($serie) ? $serie->id : null,
             'id' => $this->id,
             'prefix' => $this->prefix,
             'establishment_id' => $this->establishment_id,

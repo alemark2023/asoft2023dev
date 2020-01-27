@@ -71,11 +71,11 @@
                     <el-radio-group v-model="form.document_type_id" size="small"   @change="filterSeries">
                         <el-radio-button label="01" >FACTURA  </el-radio-button>
                         <el-radio-button label="03">BOLETA  </el-radio-button>
-                        <el-radio-button label="NV">N. VENTA  </el-radio-button>
+                        <el-radio-button label="80">N. VENTA  </el-radio-button>
                     </el-radio-group>
                 </div>
 
-                <div class="col-lg-2 col-md-2" v-if="form.document_type_id != 'NV'">
+                <div class="col-lg-2 col-md-2" >
 
                     <el-select v-model="form.series_id" class="c-width">
                         <el-option   v-for="option in series" :key="option.id" :label="option.number" :value="option.id">
@@ -529,7 +529,7 @@
             async clickPayment(){
                 // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
-                if (this.form.document_type_id === "NV") {
+                if (this.form.document_type_id === "80") {
                     this.form.prefix = "NV";
                     this.resource_documents = "sale-notes";
                     this.resource_payments = "sale_note_payments";
@@ -545,7 +545,7 @@
                 await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
 
-                        if (this.form.document_type_id === "NV") {
+                        if (this.form.document_type_id === "80") {
 
                             // this.form_payment.sale_note_id = response.data.data.id;
                             this.form_cash_document.sale_note_id = response.data.data.id;

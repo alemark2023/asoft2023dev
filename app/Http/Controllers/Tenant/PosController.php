@@ -92,7 +92,7 @@ class PosController extends Controller
 
     public function payment_tables(){
 
-        $series = Series::whereIn('document_type_id',['01','03'])
+        $series = Series::whereIn('document_type_id',['01','03','80'])
                         ->where([['establishment_id', auth()->user()->establishment_id],['contingency',false]])
                         ->get();
 

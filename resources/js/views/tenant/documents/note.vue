@@ -243,9 +243,9 @@
 
                     this.changeDocumentType()
                     this.changeDateOfIssue()
-                }) 
+                })
 
-            this.getCustomer()               
+            this.getCustomer()
         },
         mounted() {
 
@@ -296,12 +296,12 @@
                     item.input_unit_price_value = item.unit_price
                 })
 
-            },      
+            },
             clickAddItemNote(){
                 this.recordItem = null
                 this.isEditItemNote = false
                 this.showDialogAddItem = true
-            },     
+            },
             ediItem(row, index)
             {
                 row.indexi = index
@@ -320,7 +320,7 @@
             },
             getNote(){
                 this.$http.get(`/${this.resource}/note/record/${this.form.affected_document_id}`)
-                    .then(response => { 
+                    .then(response => {
                         // console.log(response)
                         this.document = response.data
                     })
@@ -348,7 +348,7 @@
                 })
             },
             addRow(row) {
-                
+
                 if(this.recordItem){
 
                     this.form.items[this.recordItem.indexi] = row
@@ -416,7 +416,7 @@
                 this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
                 // this.form.total = _.round(total, 2)
                 this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
-                
+
             },
             submit() {
                 this.loading_submit = true
@@ -445,7 +445,7 @@
                 this.$http.get(`/${this.resource}/search/customer/${this.document.customer_id}`).then((response) => {
                     this.customers = response.data.customers
                     this.form.customer_id = this.document.customer_id
-                }) 
+                })
             },
             close() {
                 location.href = '/documents'

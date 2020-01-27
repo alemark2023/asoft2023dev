@@ -309,6 +309,8 @@
         },
         async created() {
             await this.initForm()
+
+          //  console.log(this.form)
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.currency_types = response.data.currency_types
