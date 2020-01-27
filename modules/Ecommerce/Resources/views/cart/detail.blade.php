@@ -173,7 +173,7 @@
 
                         </div>
                         <div class="form-group">
-                            <label class="control-label">Número <span class="text-danger">*</span></label>
+                            <label class="control-label">Ingrese Número <span> (Se debe validar el numero ingresado)</span> <span class="text-danger">*</span></label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" v-model="formIdentity.number"
                                     :maxlength="maxLength" aria-label="Recipient's username"
@@ -355,7 +355,7 @@
 
                 if (response.data.success) {
                     this.response_search.success = response.data.success
-                    this.response_search.message = 'Datos Encontrados'
+                    this.response_search.message = 'Datos Encontrados (Ahora puede enviar su comprobante.)'
                     // let data = response.data.data
                     this.formIdentity.validate = true
                     this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this
@@ -389,12 +389,17 @@
                 return axiosConfig;
             },
             checkDocument(typeDocument) {
+
+                $('#modal_ask_document').modal('hide');
+
                 this.formIdentity.identity_document_type_id = typeDocument
+
+                $('#modal_identity_document').modal('show');
                 //this.typeDocumentSelected = typeDocument
-                let total = parseFloat(this.response_order_total)
+                //let total = parseFloat(this.response_order_total)
                 // console.log(total, this.response_order_total)
 
-                if (typeDocument == '6') {
+                /*if (typeDocument == '6') {
                     let tipoDocumento = this.user.identity_document_type_id
                     let number = this.user.number
                     // console.log(this.user)
@@ -419,7 +424,7 @@
                         this.sendDocument()
                     }
 
-                }
+                }*/
 
             },
             finallyProcess(form) {
