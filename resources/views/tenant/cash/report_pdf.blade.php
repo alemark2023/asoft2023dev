@@ -6,21 +6,21 @@ $final_balance = 0;
 $cash_income = 0;
 $cash_egress = 0;
 $cash_final_balance = 0;
- 
+
 
 $cash_documents = $cash->cash_documents;
 
 foreach ($cash_documents as $cash_document) {
 
     //$final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
-    
+
     if($cash_document->sale_note){
 
         if($cash_document->sale_note->currency_type_id == 'PEN'){
-            
+
             $cash_income += $cash_document->sale_note->total;
             $final_balance += $cash_document->sale_note->total;
-        
+
         }else{
 
             $cash_income += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
@@ -37,32 +37,34 @@ foreach ($cash_documents as $cash_document) {
             $final_balance += $cash_document->document->total;
 
         }else{
-            
+
             $cash_income += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
             $final_balance += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
         }
 
-    } 
+    }
     else if($cash_document->expense_payment){
 
-        if($cash_document->expense_payment->expense->currency_type_id == 'PEN'){
+        if($cash_document->expense_payment->expense->state_type_id == '05'){
 
-            $cash_egress += $cash_document->expense_payment->payment;
-            $final_balance -= $cash_document->expense_payment->payment;
+            if($cash_document->expense_payment->expense->currency_type_id == 'PEN'){
 
-        }else{
+                $cash_egress += $cash_document->expense_payment->payment;
+                $final_balance -= $cash_document->expense_payment->payment;
 
-            $cash_egress += $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
-            $final_balance -= $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+            }else{
+
+                $cash_egress += $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+                $final_balance -= $cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale;
+            }
 
         }
-
     }
 
 }
 
-$cash_final_balance = $final_balance + $cash->beginning_balance; 
-//$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0; 
+$cash_final_balance = $final_balance + $cash->beginning_balance;
+//$cash_income = ($final_balance > 0) ? ($cash_final_balance - $cash->beginning_balance) : 0;
 
 @endphp
 <!DOCTYPE html>
@@ -78,38 +80,38 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: center;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 12px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -124,7 +126,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
             <p align="center" class="title"><strong>Reporte Punto de Venta</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
-            <table> 
+            <table>
                 <tr>
                     <td class="td-custom">
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
@@ -141,7 +143,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                 </tr>
-                
+
                 <tr>
                     <td class="td-custom">
                         <p><strong>Vendedor: </strong>{{$cash->user->name}}</p>
@@ -173,7 +175,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                         <p><strong>Ingreso: </strong>S/. {{number_format($cash_income, 2, ".", "")}} </p>
                     </td>
                 </tr>
-                <tr> 
+                <tr>
                     <td  class="td-custom">
                         <p><strong>Saldo final: </strong>S/. {{number_format($cash_final_balance, 2, ".", "")}} </p>
                     </td>
@@ -181,7 +183,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                         <p><strong>Egreso: </strong>S/. {{number_format($cash_egress, 2, ".", "")}} </p>
                     </td>
                 </tr>
-            </table> 
+            </table>
         </div>
         @if($cash_documents->count())
             <div class="">
@@ -195,16 +197,30 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                 <th>Documento</th>
                                 <th>Fecha emisión</th>
                                 <th>Cliente/Proveedor</th>
-                                <th>N° Documento</th> 
+                                <th>N° Documento</th>
                                 <th>Moneda</th>
                                 <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($cash_documents as $key => $value)
+                            @php
+                                $all_documents = [];
+                                foreach ($cash_documents as $key => $value) {
+                                    if($value->sale_note){
+                                        $all_documents[] = $value;
+                                    }else if($value->document){
+                                        $all_documents[] = $value;
+                                    }else if($value->expense_payment){
+                                        if($value->expense_payment->expense->state_type_id == '05'){
+                                            $all_documents[] = $value;
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @foreach($all_documents as $key => $value)
                                 <tr>
                                     @php
-                                    
+
                                         $type_transaction =  null;
                                         $document_type_description = null;
                                         $number = null;
@@ -239,7 +255,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
 
                                         }
                                         else if($value->expense_payment){
-                                            
+
                                             $type_transaction =  'Gasto';
                                             $document_type_description =  $value->expense_payment->expense->expense_type->description;
                                             $number = $value->expense_payment->expense->number;
@@ -249,7 +265,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $total = -$value->expense_payment->payment;
                                             $currency_type_id = $value->expense_payment->expense->currency_type_id;
 
-                                        } 
+                                        }
 
                                     @endphp
 
@@ -260,7 +276,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                     <td class="celda">{{ $number }}</td>
                                     <td class="celda">{{ $date_of_issue}}</td>
                                     <td class="celda">{{ $customer_name }}</td>
-                                    <td class="celda">{{$customer_number }}</td>  
+                                    <td class="celda">{{$customer_number }}</td>
                                     <td class="celda">{{ $currency_type_id }}</td>
                                     <td class="celda">{{ number_format($total,2, ".", "") }}</td>
 
