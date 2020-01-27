@@ -11,7 +11,7 @@
                             <el-input type="textarea" autosize v-model="form.description"></el-input>
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
-                    </div>  
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.total}">
                             <label class="control-label">
@@ -22,19 +22,19 @@
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.total" v-text="errors.total[0]"></small>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cerrar</el-button>
                 <el-button type="primary" native-type="submit">Agregar</el-button>
             </div>
-        </form> 
+        </form>
     </el-dialog>
 </template>
 
 <script>
-  
+
 
     export default {
         props: ['showDialog', 'currencyType', 'exchangeRateSale'],
@@ -46,9 +46,9 @@
             }
         },
         created() {
-            this.initForm()  
+            this.initForm()
         },
-        methods: { 
+        methods: {
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -57,13 +57,13 @@
                     total_original: null,
                     currency_type_id : null
                 }
-            }, 
+            },
             close() {
                 this.initForm()
                 this.$emit('update:showDialog', false)
-            }, 
+            },
             clickAddItem() {
-console.log(this.form)
+                // console.log(this.form)
                 // let total = 0
                 this.form.currency_type_id = this.currencyType.id
                 this.form.total_original = parseFloat(this.form.total)
@@ -77,7 +77,7 @@ console.log(this.form)
                 // this.form.total = _.round(total,4)
                 this.$emit('add', this.form)
                 this.initForm()
-            }, 
+            },
         }
     }
 

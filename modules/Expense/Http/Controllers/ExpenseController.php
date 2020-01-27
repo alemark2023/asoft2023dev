@@ -110,6 +110,7 @@ class ExpenseController extends Controller
 
         $values = [
             'user_id' => auth()->id(),
+            'state_type_id' => '05',
             'soap_type_id' => $company->soap_type_id,
             'external_id' => Str::uuid()->toString(),
             'supplier' => PersonInput::set($inputs['supplier_id']),
@@ -146,6 +147,28 @@ class ExpenseController extends Controller
         }
     }
 
-
+    public function voided ($record)
+    {
+        try {
+            $expense = Expense::findOrFail($record);
+            $expense->state_type_id = 11;
+            $expense->save();
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $expense->id,
+                ],
+                'message' => 'Giro anulado exitosamente',
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'data' => [
+                    'id' => $record,
+                ],
+                'message' => 'Falló al anular',
+            ];
+        }
+    }
 
 }

@@ -18,48 +18,56 @@
                         <th>Proveedor</th>
                         <th>Número</th>
                         <th>Motivo</th>
-                        <th class="text-center">Moneda</th> 
-                        <th class="text-right">Total</th> 
+                        <th class="text-center">Moneda</th>
+                        <th class="text-right">Total</th>
                         <th class="text-center">Dist. Gasto</th>
                     <tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{'text-danger': (row.state_type_id === '11'), 'text-warning': (row.state_type_id === '13'), 'border-light': (row.state_type_id === '01'), 'border-left border-info': (row.state_type_id === '03'), 'border-left border-success': (row.state_type_id === '05'), 'border-left border-secondary': (row.state_type_id === '07'), 'border-left border-dark': (row.state_type_id === '09'), 'border-left border-danger': (row.state_type_id === '11'), 'border-left border-warning': (row.state_type_id === '13')}">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
                         <td>{{ row.number }}<br/>
-                            <small v-text="row.expense_type_description"></small><br/> 
+                            <small v-text="row.expense_type_description"></small><br/>
                         </td>
-                        <td class="">{{ row.expense_reason_description }}</td> 
-                        <td class="text-center">{{ row.currency_type_id }}</td> 
+                        <td class="">{{ row.expense_reason_description }}</td>
+                        <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right">{{ row.total }}</td>
-                        
+
                         <td class="text-center">
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickPayment(row.id)">
-                                    <i class="fa fa-search"></i>        
+                                    <i class="fa fa-search"></i>
+                            </button>
+                            <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                                    @click.prevent="clickVoided(row.id)"
+                                    v-if="row.state_type_id === '05'">
+                                    <i class="fa fa-trash"></i>
                             </button>
                         </td>
-                        
+
                     </tr>
                 </data-table>
             </div>
 
-            
+
             <document-payments :showDialog.sync="showDialogPayments"
                                :expenseId="recordId"></document-payments>
- 
+            <expense-voided :showDialog.sync="showDialogVoided"
+                               :expenseId="recordId"></expense-voided>
+
         </div>
     </div>
-    
+
 </template>
 
 <script>
- 
-    import DataTable from '../../../../../../../resources/js/components/DataTable.vue'
+
+    import DataTable from '@components/DataTable.vue'
     import DocumentPayments from './partials/payments.vue'
+    import ExpenseVoided from './partials/voided.vue'
 
     export default {
-        components: {DataTable, DocumentPayments},
+        components: {DataTable, DocumentPayments, ExpenseVoided},
         data() {
             return {
                 showDialogVoided: false,
@@ -72,13 +80,13 @@
         created() {
         },
         methods: {
-            clickVoided(recordId = null) {
-                this.recordId = recordId
-                this.showDialogVoided = true
-            }, 
+            clickVoided(recordId) {
+                this.recordId = recordId;
+                this.showDialogVoided = true;
+            },
             clickDownload(download) {
                 window.open(download, '_blank');
-            },  
+            },
             clickOptions(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptions = true

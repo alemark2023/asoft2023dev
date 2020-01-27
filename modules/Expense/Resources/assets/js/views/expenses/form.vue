@@ -17,7 +17,7 @@
                                 <small class="form-control-feedback" v-if="errors.expense_type_id" v-text="errors.expense_type_id[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.number}">
                                 <label class="control-label">Número <span class="text-danger">*</span></label>
@@ -69,7 +69,7 @@
                                 <small class="form-control-feedback" v-if="errors.supplier_id" v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors.expense_reason_id}">
                                 <label class="control-label">Motivo</label>
@@ -79,7 +79,7 @@
                                 <small class="form-control-feedback" v-if="errors.expense_reason_id" v-text="errors.expense_reason_id[0]"></small>
                             </div>
                         </div>
-  
+
                     </div>
                     <div class="row col-lg-8 mt-3">
 
@@ -93,7 +93,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, index) in form.payments" :key="index"> 
+                                <tr v-for="(row, index) in form.payments" :key="index">
                                     <td>
                                         <div class="form-group mb-2 mr-2">
                                             <el-select v-model="row.expense_method_type_id">
@@ -111,16 +111,16 @@
                                             <el-input v-model="row.payment"></el-input>
                                         </div>
                                     </td>
-                                    <td class="series-table-actions text-center"> 
+                                    <td class="series-table-actions text-center">
                                         <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
                                             <i class="fa fa-trash"></i>
                                         </button>
-                                    </td> 
+                                    </td>
                                     <br>
                                 </tr>
-                            </tbody> 
-                        </table> 
-                        
+                            </tbody>
+                        </table>
+
                     </div>
                     <div class="row">
                         <div class="col-lg-2 col-md-6 mt-4">
@@ -154,7 +154,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="col-md-12"> 
+                        <div class="col-md-12">
                             <h3 class="text-right" v-if="form.total > 0"><b>TOTAL: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                         </div>
                     </div>
@@ -229,7 +229,7 @@
                     this.form.expense_reason_id = (this.expense_reasons.length > 0)?this.expense_reasons[0].id:null
 
                     this.changeDateOfIssue()
-                    
+
                     this.changeCurrencyType()
                 })
 
@@ -238,7 +238,7 @@
            })
         },
         methods: {
-            
+
             selectSupplier(){
 
                 let supplier = _.find(this.suppliers, {'id': this.aux_supplier_id})
@@ -257,10 +257,10 @@
                     time_of_issue: moment().format('HH:mm:ss'),
                     supplier_id: null,
                     currency_type_id: null,
-                    exchange_rate_sale: 0,                    
-                    total: 0,  
-                    items: [], 
-                    payments: [], 
+                    exchange_rate_sale: 0,
+                    total: 0,
+                    items: [],
+                    payments: [],
                 }
 
                 this.clickAddPayment()
@@ -272,7 +272,7 @@
                 this.form.expense_type_id = (this.expense_types.length > 0)?this.expense_types[0].id:null
                 this.form.expense_reason_id = (this.expense_reasons.length > 0)?this.expense_reasons[0].id:null
 
-                this.changeDateOfIssue()                
+                this.changeDateOfIssue()
                 this.changeCurrencyType()
             },
             changeDateOfIssue() {
@@ -280,7 +280,7 @@
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
-            },         
+            },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
             },
@@ -293,7 +293,7 @@
                     reference: null,
                     payment: 0,
                 });
-            },               
+            },
             addRow(row) {
                 this.form.items.push(row)
                 this.calculateTotal()
@@ -308,21 +308,21 @@
                 this.form.items.forEach((row) => {
                     items.push(this.calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
 
-                     
+
                 });
                 this.form.items = items
                 this.calculateTotal()
             },
             calculateRowItem(row, currency_type_id,exchange_rate_sale){
- 
-                let currency_type_id_old = row.currency_type_id 
+
+                let currency_type_id_old = row.currency_type_id
 
                 row.total = row.total_original
 
                 if (currency_type_id_old === 'PEN' && currency_type_id_old !== currency_type_id)
                 {
                     row.total = row.total_original / exchange_rate_sale;
-                }   
+                }
 
                 if (currency_type_id === 'PEN' && currency_type_id_old !== currency_type_id)
                 {
@@ -333,11 +333,11 @@
 
                 return row
             },
-            calculateTotal() { 
+            calculateTotal() {
                 let total = 0
-                this.form.items.forEach((row) => { 
+                this.form.items.forEach((row) => {
                     total += parseFloat(row.total)
-                }); 
+                });
                 this.form.total = _.round(total, 2)
                 this.form.payments[0].payment = this.form.total
             },
@@ -371,7 +371,7 @@
                         this.loading_submit = false
                     })
             },
-            validate_payments(){ 
+            validate_payments(){
 
                 let error_by_item = 0
                 let acum_total = 0

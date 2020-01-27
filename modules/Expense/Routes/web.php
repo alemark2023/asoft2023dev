@@ -19,6 +19,7 @@ if($current_hostname) {
                 Route::get('table/{table}', 'ExpenseController@table');
                 Route::post('', 'ExpenseController@store');
                 Route::get('record/{expense}', 'ExpenseController@record');
+                Route::get('{record}/voided', 'ExpenseController@voided');
 
             });
 
