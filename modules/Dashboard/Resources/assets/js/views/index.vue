@@ -473,6 +473,9 @@
             <section class="card">
               <div class="card-body">
                 <h2 class="card-title">Ventas por producto</h2>
+                <div class="mt-3">
+                  <el-checkbox  v-model="form.enabled_move_item" @change="loadDataAditional">Ordenar por movimientos</el-checkbox><br>
+                </div>
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
@@ -480,6 +483,17 @@
                         <th>#</th>
                         <th>Código</th>
                         <th>Nombre</th>
+                        <th class="text-right">
+                          Mov.
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              content="Movimientos (Cantidad de veces vendido)"
+                              placement="top-start"
+                            >
+                              <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                        </th>
                         <th class="text-right">Total</th>
                       </tr>
                     </thead>
@@ -489,6 +503,7 @@
                           <td>{{ index + 1 }}</td>
                           <td>{{ row.internal_id }}</td>
                           <td>{{ row.description }}</td>
+                          <td class="text-right">{{ row.move_quantity }}</td>
                           <td class="text-right">{{ row.total }}</td>
                         </tr>
                       </template>
@@ -502,12 +517,26 @@
             <section class="card">
               <div class="card-body">
                 <h2 class="card-title">Top clientes</h2>
+                <div class="mt-3">
+                  <el-checkbox  v-model="form.enabled_transaction_customer" @change="loadDataAditional">Ordenar por transacciones</el-checkbox><br>
+                </div>
                 <div class="table-responsive">
                   <table class="table">
                     <thead>
                       <tr>
                         <th>#</th>
                         <th>Cliente</th>
+                        <th class="text-right">
+                          Trans.
+                            <el-tooltip
+                              class="item"
+                              effect="dark"
+                              content="Transacciones (Cantidad de ventas realizadas)"
+                              placement="top-start"
+                            >
+                              <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                        </th>
                         <th class="text-right">Total</th>
                       </tr>
                     </thead>
@@ -520,6 +549,7 @@
                             <br />
                             <small v-text="row.number"></small>
                           </td>
+                          <td class="text-right">{{ row.transaction_quantity }}</td>
                           <td class="text-right">{{ row.total }}</td>
                         </tr>
                       </template>
@@ -958,6 +988,8 @@ export default {
       this.form = {
         establishment_id: null,
         enabled_expense: null,
+        enabled_move_item:false,
+        enabled_transaction_customer:false,
         period: "all",
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
