@@ -183,14 +183,10 @@ class SaleNoteController extends Controller
                 ['id' => $request->input('id')],
                 $data);
 
-//            $this->sale_note =  SaleNote::create($data);
-            // $this->sale_note->items()->delete();
+
             $this->sale_note->payments()->delete();
 
-            // foreach ($data['items'] as $row)
-            // {
-            //     $this->sale_note->items()->create($row);
-            // }
+
             foreach($data['items'] as $row) {
 
                 $item_id = isset($row['id']) ? $row['id'] : null;
@@ -211,13 +207,9 @@ class SaleNoteController extends Controller
                         $record_lot->has_sale = true;
                         $record_lot->update();
                     }
-
                 }
 
-
             }
-
-
 
             //pagos
             foreach ($data['payments'] as $row) {
@@ -283,10 +275,22 @@ class SaleNoteController extends Controller
         $series = Series::find($inputs['series_id'])->number;
 
 
-        $document = SaleNote::select('number')->where('soap_type_id', $this->company->soap_type_id)
+        $number = null;
+
+        if($inputs['id'])
+        {
+            $number = $inputs['number'];
+        }
+        else{
+
+            $document = SaleNote::select('number')->where('soap_type_id', $this->company->soap_type_id)
                                 ->where('series', $series)
                                 ->orderBy('number', 'desc')
                                 ->first();
+
+            $number = ($document) ? $document->number + 1 : 1;
+
+        }
 
         $values = [
             'automatic_date_of_issue' => $automatic_date_of_issue,
@@ -297,7 +301,7 @@ class SaleNoteController extends Controller
             'soap_type_id' => $this->company->soap_type_id,
             'state_type_id' => '01',
             'series' => $series,
-            'number' => ($document) ? $document->number + 1 : 1
+            'number' => $number
         ];
 
         unset($inputs['series_id']);
@@ -315,7 +319,7 @@ class SaleNoteController extends Controller
 
     private function setFilename(){
 
-        $name = [$this->sale_note->prefix,$this->sale_note->id,date('Ymd')];
+        $name = [$this->sale_note->series,$this->sale_note->number,date('Ymd')];
         $this->sale_note->filename = join('-', $name);
         $this->sale_note->save();
 
@@ -591,7 +595,7 @@ class SaleNoteController extends Controller
                         }),
                     ];
                 });
-//                return $items;
+
 
                 break;
             default:
@@ -601,7 +605,6 @@ class SaleNoteController extends Controller
                 break;
         }
     }
-
 
 
     public function getFullDescription($row){
@@ -748,6 +751,14 @@ class SaleNoteController extends Controller
             'total_paid_pen' => number_format($total_paid_pen, 2, ".", ""),
             'total_pending_paid_pen' => number_format($total_pending_paid_pen, 2, ".", "")
         ];
+
+    }
+
+    public function downloadExternal($external_id)
+    {
+        $document = SaleNote::where('external_id', $external_id)->first();
+        $this->reloadPDF($document, 'a4', null);
+        return $this->downloadStorage($document->filename, 'sale_note');
 
     }
 

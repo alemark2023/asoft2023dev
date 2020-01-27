@@ -19,12 +19,13 @@ class SaleNoteResource2 extends JsonResource
     {
         $serie = Series::where('number', $this->series)->first();
         return [
+            'number' => $this->number,
             'series_id' => ($serie) ? $serie->id : null,
             'id' => $this->id,
             'prefix' => $this->prefix,
             'establishment_id' => $this->establishment_id,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
-            'time_of_issue' => $this->date_of_issue->format('H:i:s'),
+            'time_of_issue' => $this->time_of_issue,
             'customer_id' => $this->customer_id,
             'currency_type_id' => $this->currency_type_id,
             'purchase_order' => $this->purchase_order,

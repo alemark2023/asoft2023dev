@@ -318,10 +318,8 @@
                 });
 
                 let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
-                let response = await axios.post(url_finally, this.getFormPaymentCash(), this
-                    .getHeaderConfig())
+                let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig())
                 if (response.data.success) {
-                    // console.log(response)
                     this.clearShoppingCart()
                     this.response_order_total = response.data.order.total
                     swal({
@@ -420,7 +418,7 @@
 
                         this.sendDocument()
                     }
-                    
+
                 }
 
             },
@@ -458,17 +456,17 @@
                     }
                 });
                 let doc = await this.getDocument()
-                console.log(doc)
+               // console.log(doc)
                 // return
                 await axios.post('/api/documents', doc, this.getHeaderConfig())
                     .then(response => {
-                        console.log('documento generado correctamente')
+                       // console.log('documento generado correctamente')
                         this.finallyProcess(this.getDataFinally(response.data))
                         this.initForm()
                     })
                     .catch(error => {
-                        console.log(error)
-                        console.log('error al generar documento')
+                      // console.log(error)
+                        //console.log('error al generar documento')
                         swal({
                             type: 'error',
                             title: 'Oops...',
@@ -626,7 +624,7 @@
                     "items": [],
                 }
 
-                
+
                 this.formIdentity = {
                     identity_document_type_id: '6'
                 }

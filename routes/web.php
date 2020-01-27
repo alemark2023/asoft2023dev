@@ -475,6 +475,8 @@ if ($hostname) {
 
            Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
+           Route::get('sale-notes/downloadExternal/{external_id}', 'Tenant\SaleNoteController@downloadExternal');
+
 
            //POS
            Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');

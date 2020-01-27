@@ -32,7 +32,7 @@ class DocumentController extends Controller
             $facturalo->updateHash();
             $facturalo->updateQr();
             $facturalo->createPdf();
-            $facturalo->sendEmail();
+           // $facturalo->sendEmail();
             $facturalo->senderXmlSignedBill();
 
             return $facturalo;
@@ -99,23 +99,23 @@ class DocumentController extends Controller
         $fact = DB::connection('tenant')->transaction(function() use($request) {
             $facturalo = new Facturalo();
             $facturalo->save($request->all());
-            
+
             return $facturalo;
         });
-        
+
         $document = $fact->getDocument();
         $data_json = $document->data_json;
-        
+
        // $zipFly = new ZipFly();
-       
+
         $this->uploadStorage($document->filename, base64_decode($data_json->file_xml_signed), 'signed');
         $this->uploadStorage($document->filename, base64_decode($data_json->file_pdf), 'pdf');
-        
+
         $document->external_id = $data_json->external_id;
         $document->hash = $data_json->hash;
         $document->qr = $data_json->qr;
         $document->save();
-        
+
         // Send SUNAT
         if($document->group_id === '01'){
             if ($data_json->query) DocumentControllerSend::send($document->id);
@@ -125,17 +125,17 @@ class DocumentController extends Controller
             'success' => true,
         ];
     }
-    
+
     public function documentCheckServer($external_id) {
         $document = Document::where('external_id', $external_id)->first();
-        
+
         if ($document->state_type_id === '05' && $document->group_id === '01') {
             $file_cdr = base64_encode($this->getStorage($document->filename, 'cdr'));
         }
         else {
             $file_cdr = null;
         }
-        
+
         return [
             'success' => true,
             'state_type_id' => $document->state_type_id,

@@ -280,7 +280,7 @@
         },
         methods: {
             clickDownload(external_id) {
-                window.open(`/downloads/saleNote/sale_note/${external_id}`, '_blank');
+                window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
             },
             clickOptions(recordId) {
                 this.saleNotesNewId = recordId
