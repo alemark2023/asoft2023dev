@@ -18,6 +18,7 @@
                         <th>#</th>
                         <!-- <th>Cód. Interno</th> -->
                         <th>Producto</th> 
+                        <th>Tipo</th> 
                         <th>Comisión</th>
                         <th class="text-right">Acciones</th>
                     <tr>
@@ -25,6 +26,7 @@
                         <td>{{ index }}</td>
                         <!-- <td>{{ row.internal_id }}</td> -->
                         <td>{{ row.full_description }}</td> 
+                        <td>{{ row.commission_type }}</td>
                         <td>{{ row.commission_amount }}</td>
                         <td class="text-right">
                             <template v-if="typeUser === 'admin'">

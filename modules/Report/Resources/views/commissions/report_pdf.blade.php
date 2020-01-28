@@ -107,7 +107,18 @@
                                         // $total_commision_document += $document->items->sum('relation_item.commission_amount'); 
                                         foreach ($document->items as $item) {
                                             if ($item->relation_item->commission_amount) {
-                                                $total_commision_document += $item->quantity * $item->relation_item->commission_amount;
+
+                                                if(!$item->relation_item->commission_type || $item->relation_item->commission_type == 'amount'){
+
+                                                    $total_commision_document += $item->quantity * $item->relation_item->commission_amount;
+                                                }
+                                                else{
+
+                                                    $total_commision_document += $item->quantity * $item->unit_price * ($item->relation_item->commission_amount/100);
+                                                    
+                                                }
+                                                
+                                                //$total_commision_document += $item->quantity * $item->relation_item->commission_amount;
                                             }
                                         } 
 
@@ -117,7 +128,17 @@
                                         // $total_commision_sale_note += $sale_note->items->sum('relation_item.commission_amount'); 
                                         foreach ($sale_note->items as $item) {
                                             if ($item->relation_item->commission_amount) {
-                                                $total_commision_sale_note += ($item->quantity * $item->relation_item->commission_amount);
+                                                
+                                                if(!$item->relation_item->commission_type || $item->relation_item->commission_type == 'amount'){
+
+                                                    $total_commision_sale_note += $item->quantity * $item->relation_item->commission_amount;
+                                                }
+                                                else{
+
+                                                    $total_commision_sale_note += $item->quantity * $item->unit_price * ($item->relation_item->commission_amount/100);
+                                                    
+                                                }
+                                                //$total_commision_sale_note += ($item->quantity * $item->relation_item->commission_amount);
                                             }
                                         }
                                     }

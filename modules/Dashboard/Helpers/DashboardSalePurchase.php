@@ -21,6 +21,8 @@ class DashboardSalePurchase
         $date_end = $request['date_end'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
+        $enabled_move_item = $request['enabled_move_item'];
+        $enabled_transaction_customer = $request['enabled_transaction_customer'];
 
         $d_start = null;
         $d_end = null;
@@ -46,12 +48,12 @@ class DashboardSalePurchase
 
         return [
             'purchase' => $this->purchase_totals($establishment_id, $d_start, $d_end),
-            'items_by_sales' => $this->items_by_sales($establishment_id, $d_start, $d_end),
-            'top_customers' => $this->top_customers($establishment_id, $d_start, $d_end),
+            'items_by_sales' => $this->items_by_sales($establishment_id, $d_start, $d_end, $enabled_move_item),
+            'top_customers' => $this->top_customers($establishment_id, $d_start, $d_end, $enabled_transaction_customer),
         ];
     }
 
-    private function top_customers($establishment_id, $d_start, $d_end){
+    private function top_customers($establishment_id, $d_start, $d_end, $enabled_transaction_customer){
 
         // $documents = Document::get();
         // $sale_notes = SaleNote::get();
@@ -91,6 +93,11 @@ class DashboardSalePurchase
             // $customers es un cliente con todos sus documentos generados
             // dd($customers[0]->total);
 
+            $transaction_quantity_sale = $customers->whereIn('document_type_id', ['01','03','08'])->count() + $customers->where('prefix', 'NV')->count();
+            $transaction_quantity_credit_note =$customers->where('document_type_id', '07')->count();
+            
+            $transaction_quantity = $transaction_quantity_sale - $transaction_quantity_credit_note;
+
             $customer = Person::where('type','customers')->find($customers[0]->customer_id);
 
             $totals = $customers->whereIn('document_type_id', ['01','03','08'])->sum(function ($row) {
@@ -113,11 +120,13 @@ class DashboardSalePurchase
                     'total' => number_format($difference,2, ".", ""),
                     'name' => $customer->name,
                     'number' => $customer->number,
+                    'transaction_quantity' => $transaction_quantity,
                 ]);
 
         }
 
-        $sorted = $top_customers->sortByDesc('total');
+        $order_column = ($enabled_transaction_customer) ? 'transaction_quantity' : 'total';
+        $sorted = $top_customers->sortByDesc($order_column);
 
         return $sorted->values()->take(10);
 
@@ -185,7 +194,7 @@ class DashboardSalePurchase
 
 
 
-    private function items_by_sales($establishment_id, $d_start, $d_end){
+    private function items_by_sales($establishment_id, $d_start, $d_end, $enabled_move_item){
 
         // $document_items = DocumentItem::get();
         // $sale_note_items = SaleNoteItem::get();
@@ -234,16 +243,18 @@ class DashboardSalePurchase
 
         $all_items = $document_items;
         $group_items = $all_items->groupBy('item_id');
-
+        
         $items_by_sales = collect([]);
 
         foreach ($group_items as $items) {
+            // dd($items);
 
             $item = Item::where('status',true)->find($items[0]->item_id);
 
 
             $totals = 0;
             $total_credit_note = 0;
+            $move_quantity = 0;
 
             foreach ($items as $it) {
 
@@ -253,14 +264,20 @@ class DashboardSalePurchase
 
 
                         $totals += $this->calculateTotalCurrency($it->document->currency_type_id, $it->document->exchange_rate_sale, $it->document->total);
+                        $move_quantity += $it->quantity;
 
                     }else{
 
                         $total_credit_note += $this->calculateTotalCurrency($it->document->currency_type_id, $it->document->exchange_rate_sale, $it->document->total);
+                        $move_quantity -= $it->quantity;
+                        
                     }
 
                 }else{
+
                     $totals += $this->calculateTotalCurrency($it->sale_note->currency_type_id, $it->sale_note->exchange_rate_sale, $it->sale_note->total);
+                    $move_quantity += $it->quantity;
+
                 }
 
             }
@@ -272,12 +289,14 @@ class DashboardSalePurchase
                     'total' => number_format($difference, 2, ".", ""),
                     'description' => $item->description,
                     'internal_id' => $item->internal_id,
+                    'move_quantity' => number_format($move_quantity, 2, ".", ""),
                    // 'currency' => $item->currency_type->symbol
                 ]);
             }
         }
 
-        $sorted = $items_by_sales->sortByDesc('total');
+        $order_column = ($enabled_move_item) ? 'move_quantity' : 'total';
+        $sorted = $items_by_sales->sortByDesc($order_column);
 
         return $sorted->values()->take(10);
 
