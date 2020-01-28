@@ -27,6 +27,9 @@ class ConfigurationEcommerceResource extends JsonResource
             'link_youtube' => $this->link_youtube,
             'link_twitter' => $this->link_twitter,
             'link_facebook' => $this->link_facebook,
+            'tag_shipping' => $this->tag_shipping,
+            'tag_dollar' => $this->tag_dollar,
+            'tag_support' => $this->tag_support,
 
         ];
     }
