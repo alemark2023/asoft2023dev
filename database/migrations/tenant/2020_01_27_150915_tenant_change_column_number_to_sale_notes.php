@@ -13,9 +13,7 @@ class TenantChangeColumnNumberToSaleNotes extends Migration
      */
     public function up()
     {
-        Schema::table('sale_notes', function (Blueprint $table) {
-            $table->integer('number')->change();
-        });
+        DB::statement('ALTER TABLE sale_notes MODIFY number int(11)');
     }
 
     /**
@@ -25,8 +23,6 @@ class TenantChangeColumnNumberToSaleNotes extends Migration
      */
     public function down()
     {
-        Schema::table('sale_notes', function (Blueprint $table) {
-            $table->string('number')->change();
-        });
+
     }
 }
