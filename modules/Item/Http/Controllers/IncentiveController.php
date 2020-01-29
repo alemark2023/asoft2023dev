@@ -22,19 +22,53 @@ class IncentiveController extends Controller
         return [
             'description' => 'Nombre',
             'internal_id' => 'Código interno',
+            'brand' => 'Marca',
+            'category' => 'Categoría', 
         ];
     }
 
     public function records(Request $request)
     {
-        $records = Item::whereTypeUser()
-                        ->whereNotIsSet()
-                        ->where($request->column, 'like', "%{$request->value}%")
-                        ->orderBy('description');
+
+        $records = $this->getRecords($request);
 
         return new IncentiveCollection($records->paginate(config('tenant.items_per_page')));
     }
   
+    public function getRecords($request){
+
+        switch ($request->column) {
+
+            case 'brand':
+                $records = Item::whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                })
+                                ->whereTypeUser()
+                                ->whereNotIsSet()
+                                ->orderBy('description');
+                break;
+
+            case 'category':
+                $records = Item::whereHas('category',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                })
+                                ->whereTypeUser()
+                                ->whereNotIsSet()
+                                ->orderBy('description');
+                break;
+
+            default:
+                        
+                $records = Item::whereTypeUser()
+                                ->whereNotIsSet()
+                                ->where($request->column, 'like', "%{$request->value}%")
+                                ->orderBy('description');
+                break;
+        }
+
+        return $records;
+
+    }
 
     public function record($id)
     {
@@ -52,6 +86,7 @@ class IncentiveController extends Controller
         $id = $request->input('id');
         $item = Item::findOrFail($id);
         $item->commission_amount = $request->commission_amount;
+        $item->commission_type = $request->commission_type;
         $item->update();
 
         return [
@@ -66,6 +101,7 @@ class IncentiveController extends Controller
 
         $item = Item::findOrFail($id);
         $item->commission_amount = null;
+        $item->commission_type = null;
         $item->update();
 
         return [

@@ -16,7 +16,10 @@ class ConfigurationEcommerce extends ModelTenant
         'token_public_culqui',
         'link_youtube',
         'link_twitter',
-        'link_facebook'
+        'link_facebook',
+        'tag_shipping',
+        'tag_dollar',
+        'tag_support'
     ];
 
 }

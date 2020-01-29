@@ -11,9 +11,18 @@
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
                     </div>    
-                    <div class="col-md-6">
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.commission_type}">
+                            <label class="control-label">Tipo comisión</label>
+                            <el-select v-model="form.commission_type">
+                                <el-option v-for="option in commission_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.commission_type" v-text="errors.commission_type[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.commission_amount}">
-                            <label class="control-label">Monto de comisión</label>
+                            <label class="control-label">Comisión</label>
                             <el-input v-model="form.commission_amount" ></el-input>
                             <small class="form-control-feedback" v-if="errors.commission_amount" v-text="errors.commission_amount[0]"></small>
                         </div>
@@ -40,9 +49,14 @@
                 titleDialog: null,
                 resource: 'incentives', 
                 form: {}, 
+                text_commission_type:null,
+                commission_types:[]
             }
         },
         created() {
+            
+            this.commission_types = [{id:'amount', description:'Monto'}, {id:'percentage', description:'Porcentaje'}]
+            
             this.initForm() 
 
         },
@@ -85,7 +99,8 @@
                     category_id: null,
                     brand_id: null,
                     date_of_due:null,
-                    commission_amount:0
+                    commission_amount:0,
+                    commission_type:'amount'
                 }
                 this.show_has_igv = true
                 this.enabled_percentage_of_profit = false

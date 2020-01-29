@@ -2,6 +2,7 @@
     $establishment = $document->establishment;
     $customer = $document->customer;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
+    $accounts = \App\Models\Tenant\BankAccount::all();
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
 @endphp
 <html>
@@ -243,6 +244,20 @@
     </tbody>
 </table>
 <table class="full-width">
+    <tr>
+        <td width="65%" style="text-align: top; vertical-align: top;"> 
+            <br>
+            @foreach($accounts as $account)
+                <p>
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} 
+                <span class="font-bold">N°:</span> {{$account->number}} 
+                @if($account->cci)
+                - <span class="font-bold">CCI:</span> {{$account->cci}}
+                @endif
+                </p>
+            @endforeach
+        </td> 
+    </tr>
     <tr>
         {{-- <td width="65%">
             @foreach($document->legends as $row)

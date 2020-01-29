@@ -8,18 +8,24 @@
 
         <div class="widget widget-info">
             <ul>
-                <li>
-                    <i class="icon-shipping"></i>
-                    <h4>ENVIO<br>GRATIS</h4>
-                </li>
+                @if($information->tag_shipping)
+                    <li>
+                        <i class="icon-shipping"></i>
+                        <h4>{!!$information->tag_shipping!!}</h4>
+                    </li>
+                @endif
+                @if($information->tag_dollar)
                 <li>
                     <i class="icon-us-dollar"></i>
-                    <h4>100% GARANTIA<br>DEVOLVEMOS TU DINERO</h4>
+                    <h4>{!!$information->tag_dollar!!}</h4>
                 </li>
+                @endif
+                @if($information->tag_support)
                 <li>
                     <i class="icon-online-support"></i>
-                    <h4>ONLINE<br>SOPORTE 24/7</h4>
+                    <h4>{!!$information->tag_support!!}</h4>
                 </li>
+                @endif
             </ul>
         </div><!-- End .widget -->
 

@@ -66,6 +66,19 @@ class ConfigurationController extends Controller
         ];
     }
 
+    public function store_configuration_tag(Request $request)
+    {
+        $id = $request->input('id');
+        $configuration = ConfigurationEcommerce::find($id);
+        $configuration->fill($request->all());
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración Tags actualizada'
+        ];
+    }
+
     public function store_configuration_social(Request $request)
     {
         $id = $request->input('id');

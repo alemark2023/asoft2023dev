@@ -18,6 +18,7 @@ class IncentiveCollection extends ResourceCollection
 
             return [
                 'id' => $row->id,
+                'commission_type' => $row->commission_type ? ($row->commission_type == 'amount' ? 'Monto':'Porcentaje') : ($row->commission_amount ? 'Monto':''),
                 'commission_amount' => $row->commission_amount,
                 'internal_id' => $row->internal_id,
                 'description' => $row->description,

@@ -70,6 +70,7 @@ class ItemResource extends JsonResource
                     'deleted' => false
                 ];
             }),
+            'commission_type' => $this->commission_type ?? 'amount',
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [
