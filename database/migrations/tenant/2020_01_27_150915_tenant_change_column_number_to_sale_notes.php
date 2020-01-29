@@ -14,7 +14,7 @@ class TenantChangeColumnNumberToSaleNotes extends Migration
     public function up()
     {
         Schema::table('sale_notes', function (Blueprint $table) {
-            $table->integer('number')->charset(null)->nullable()->change();
+            $table->integer('number')->change();
         });
     }
 
@@ -26,7 +26,7 @@ class TenantChangeColumnNumberToSaleNotes extends Migration
     public function down()
     {
         Schema::table('sale_notes', function (Blueprint $table) {
-            $table->string('number')->nullable()->change();
+            $table->string('number')->change();
         });
     }
 }
