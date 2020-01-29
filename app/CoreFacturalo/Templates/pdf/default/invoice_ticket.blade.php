@@ -16,6 +16,9 @@
     }
     $document->load('reference_guides');
 
+    $total_payment = $document->payments->sum('payment');
+    $balance = ($document->total - $total_payment);
+
 @endphp
 <html>
 <head>
@@ -329,6 +332,12 @@
             <td colspan="4" class="text-right font-bold desc">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold desc">{{ number_format($document->total, 2) }}</td>
         </tr>
+        @if($balance < 0)
+           <tr>
+               <td colspan="4" class="text-right font-bold desc">VUELTO: </td>
+               <td class="text-right font-bold desc">{{ number_format(abs($balance),2, ".", "") }}</td>
+           </tr>
+        @endif
     </tbody>
 </table>
 <table class="full-width">

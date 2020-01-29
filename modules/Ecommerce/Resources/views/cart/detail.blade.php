@@ -180,14 +180,14 @@
                                     aria-describedby="button-addon2">
                                 <div class="input-group-append">
 
-                                    <button :disabled="!formIdentity.number" @click.prevent="searchCustomer"
+                                    <button  :disabled="!formIdentity.number" @click.prevent="searchCustomer"
                                         class="btn btn-outline-secondary" type="button" id="button-addon2">
 
                                         <template v-if="formIdentity.identity_document_type_id === '6'">
-                                            <i class="icon-search"></i> <span>SUNAT</span>
+                                            <i class="icon-search"></i> <span>SUNAT @{{ text_search }}</span>
                                         </template>
                                         <template v-if="formIdentity.identity_document_type_id === '1'">
-                                            <i class="icon-search"></i> <span>RENIEC</span>
+                                            <i class="icon-search"></i> <span>RENIEC @{{ text_search }}</span>
                                         </template>
                                     </button>
                                 </div>
@@ -231,6 +231,7 @@
                 clicked: false
             },
             response_search: {},
+            text_search: '',
             loading_search: false,
             identity_document_types: [{
                 id: '1',
@@ -338,6 +339,7 @@
                 window.location = "{{ route('tenant.ecommerce.index') }}";
             },
             async searchCustomer() {
+                this.text_search = 'Buscando...'
                 this.response_search = {
                     succes: false,
                     message: ''
@@ -376,6 +378,8 @@
                     this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = "0"
                     this.form_document.datos_del_cliente_o_receptor.numero_documento = "0"
                 }
+
+                this.text_search = ''
 
             },
             getHeaderConfig() {
