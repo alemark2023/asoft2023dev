@@ -7,6 +7,8 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <template  v-if="open_cash">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickDownloadGeneral()"><i class="fas fa-shopping-cart"></i> Reporte general</button>
+
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fas fa-shopping-cart"></i> Aperturar caja chica</button>
                 </template>
                 <!-- <template v-else>                 -->
@@ -48,19 +50,19 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownload(row.id)">Reporte</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummary(row.id)">R. Ingreso</button>
 
-                            <template v-if="row.state">      
+                            <template v-if="row.state">
 
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickCloseCash(row.id)">Cerrar caja</button>
                                 <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
 
                             </template>
-                            
+
                         </td>
                     </tr>
                 </data-table>
             </div>
- 
+
         </div>
         <cash-form :showDialog.sync="showDialog" :typeUser="typeUser"
                             :recordId="recordId"></cash-form>
@@ -90,20 +92,20 @@
 
             /*await this.$http.get(`/${this.resource}/opening_cash`)
                 .then(response => {
-                    this.cash = response.data.cash 
-                    this.open_cash = (this.cash) ? false : true                   
+                    this.cash = response.data.cash
+                    this.open_cash = (this.cash) ? false : true
                 })*/
- 
+
             /*this.$eventHub.$on('openCash', () => {
                 this.open_cash = false
             })*/
 
         },
         methods: {
-            clickDownload(id) { 
+            clickDownload(id) {
                 window.open(`/${this.resource}/report/${id}`, '_blank');
             },
-            clickDownloadIncomeSummary(id) { 
+            clickDownloadIncomeSummary(id) {
                 window.open(`/${this.resource}/report/income-summary/${id}`, '_blank');
             },
             clickCreate(recordId = null) {
@@ -120,27 +122,27 @@
                     message: h('p', null, [
                         h('p', { style: 'text-align: justify; font-size:15px' }, '¿Está seguro de cerrar la caja?'),
                     ]),
-                    
+
                     showCancelButton: true,
                     confirmButtonText: 'Cerrar',
                     cancelButtonText: 'Cancelar',
                     beforeClose: (action, instance, done) => {
-                        if (action === 'confirm') {                            
-                            this.createRegister(instance, done)                            
+                        if (action === 'confirm') {
+                            this.createRegister(instance, done)
                         } else {
                             done();
                         }
                     }
                     })
-                    .then(action => { 
+                    .then(action => {
                         })
-                    .catch(action => { 
+                    .catch(action => {
                     });
 
-                
-                
-            }, 
-            createRegister(instance, done){ 
+
+
+            },
+            createRegister(instance, done){
 
                 instance.confirmButtonLoading = true;
                 instance.confirmButtonText = 'Cerrando caja...';
@@ -149,20 +151,20 @@
                     .then(response => {
                         if(response.data.success){
                             this.$eventHub.$emit('reloadData')
-                            this.open_cash = true   
+                            this.open_cash = true
                             this.$message.success(response.data.message)
                         }else{
                             console.log(response)
-                        }                    
+                        }
                     })
-                    .catch(error => { 
-                        console.log(error)                         
+                    .catch(error => {
+                        console.log(error)
                     })
                     .then(() => {
                         instance.confirmButtonLoading = false
                         instance.confirmButtonText = 'Iniciar prueba'
                         done()
-                    }) 
+                    })
 
             },
             clickOpenPos() {
@@ -172,6 +174,10 @@
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            clickDownloadGeneral()
+            {
+                  window.open(`/${this.resource}/report`, '_blank');
             }
         }
     }

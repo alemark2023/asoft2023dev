@@ -501,6 +501,8 @@ if ($hostname) {
            Route::post('cash/cash_document', 'Tenant\CashController@cash_document');
            Route::get('cash/close/{cash}', 'Tenant\CashController@close');
            Route::get('cash/report/{cash}', 'Tenant\CashController@report');
+           Route::get('cash/report', 'Tenant\CashController@report_general');
+
            Route::get('cash/record/{cash}', 'Tenant\CashController@record');
            Route::delete('cash/{cash}', 'Tenant\CashController@destroy');
            Route::get('cash/item/tables', 'Tenant\CashController@item_tables');
