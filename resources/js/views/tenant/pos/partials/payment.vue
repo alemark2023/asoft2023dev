@@ -507,6 +507,11 @@
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'document_type_id': this.form.document_type_id });
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
+
+                if(!this.form.series_id)
+                {
+                   return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
+                }
             },
             async clickCancel(){
 
@@ -528,6 +533,11 @@
             },
             async clickPayment(){
                 // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
+
+                if(!this.form.series_id)
+                {
+                   return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
+                }
 
                 if (this.form.document_type_id === "80") {
                     this.form.prefix = "NV";
