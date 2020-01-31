@@ -6,15 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant\Company;
 use Exception;
 use Illuminate\Http\Request;
+use App\Models\Tenant\Configuration;
+
 
 class CertificateController extends Controller
 {
     public function record()
     {
         $company = Company::active();
+        $configuration = Configuration::first();
 
         return [
-            'certificate' => $company->certificate
+            'certificate' => $company->certificate,
+            'config_system_env' => (bool)$configuration->config_system_env
         ];
     }
 

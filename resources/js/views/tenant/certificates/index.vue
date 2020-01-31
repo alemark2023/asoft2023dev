@@ -4,7 +4,7 @@
             <h3 class="my-0">Certificado</h3>
         </div>
         <div class="card-body">
-            <div class="table-responsive" v-if="record.certificate">
+            <div class="table-responsive" v-if="record">
                 <table class="table">
                     <thead>
                     <tr>
@@ -14,7 +14,7 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td>{{ record.certificate }}</td>
+                        <td>{{ record }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                     @click.prevent="clickDelete">Eliminar</button>
@@ -25,7 +25,7 @@
             </div>
             <div class="row" v-else>
                 <div class="col-md-12 text-center">
-                    <el-button type="primary" icon="el-icon-plus" @click="clickCreate">Subir</el-button>
+                    <el-button  :disabled="!config_system_env" type="primary" icon="el-icon-plus" @click="clickCreate">Subir</el-button>
                 </div>
             </div>
         </div>
@@ -48,6 +48,7 @@
                 resource: 'certificates',
                 recordId: null,
                 record: {},
+                config_system_env: false
             }
         },
         created() {
@@ -60,7 +61,8 @@
             getData() {
                 this.$http.get(`/${this.resource}/record`)
                     .then(response => {
-                        this.record = response.data
+                        this.record = response.data.certificate
+                        this.config_system_env = response.data.config_system_env
                     })
             },
             clickCreate() {

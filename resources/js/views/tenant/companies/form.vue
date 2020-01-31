@@ -85,7 +85,7 @@
                         <div class="col-md-6">
                             <div class="form-group" :class="{'has-danger': errors.soap_send_id}">
                                 <label class="control-label">SOAP Envio</label>
-                                <el-select v-model="form.soap_send_id">
+                                <el-select :disabled="!form.config_system_env" v-model="form.soap_send_id" >
                                     <el-option v-for="(option, index) in soap_sends" :key="index" :value="index" :label="option"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.soap_send_id" v-text="errors.soap_send_id[0]"></small>
@@ -94,7 +94,7 @@
                         <div class="col-md-6">
                             <div class="form-group" :class="{'has-danger': errors.soap_type_id}">
                                 <label class="control-label">SOAP Tipo</label>
-                                <el-select v-model="form.soap_type_id">
+                                <el-select :disabled="!form.config_system_env" v-model="form.soap_type_id">
                                     <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
 
@@ -198,6 +198,7 @@
                     detraction_account: null,
                     operation_amazonia: false,
                     toggle: false,
+                    config_system_env: false
 
                 }
             },

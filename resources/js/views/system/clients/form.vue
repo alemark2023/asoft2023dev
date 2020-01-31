@@ -191,6 +191,13 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 center-el-checkbox mt-4">
+                        <div class="form-group">
+                            <el-checkbox v-model="form.config_system_env">Puede configurar entorno del sistema</el-checkbox><br>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -269,6 +276,7 @@
                     soap_username: null,
                     soap_password: null,
                     soap_url: null,
+                    config_system_env: true
 
                 }
 

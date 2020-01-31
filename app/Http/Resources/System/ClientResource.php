@@ -52,6 +52,8 @@ class ClientResource extends JsonResource
                 'soap_username' => $this->soap_username,
                 'soap_password' => $this->soap_password,
                 'soap_url' => $this->soap_url,
+                'config_system_env' => (bool)$this->config_system_env,
+
 
 
         ];

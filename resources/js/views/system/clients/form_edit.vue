@@ -3,7 +3,7 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
-                   
+
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Nombre de la Empresa</label>
@@ -40,7 +40,7 @@
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.plan_id" v-text="errors.plan_id[0]"></small>
                         </div>
-                    </div>                   
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right pt-2">
@@ -93,17 +93,17 @@
         methods: {
             initRecord()
             {
-                
+
                 this.$http.get(`/${this.resource}/record/${this.recordId}` )
                     .then(response => {
-                        
+
                         let dato = response.data.data
                         this.form.id = dato.id
                         this.form.name = dato.name
                         this.form.email = dato.email
                         this.form.plan_id = dato.plan_id
                         this.form.hostname = dato.hostname
-                       
+
                     })
             },
             initForm() {

@@ -90,12 +90,16 @@ class ClientController extends Controller
         $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get();
 
         $company =  DB::connection('tenant')->table('companies')->first();
+        $config =  DB::connection('tenant')->table('configurations')->first();
+
 
         $client->soap_send_id = $company->soap_send_id;
         $client->soap_type_id = $company->soap_type_id;
         $client->soap_username = $company->soap_username;
         $client->soap_password = $company->soap_password;
         $client->soap_url = $company->soap_url;
+        $client->config_system_env = $config->config_system_env;
+
 
         $record = new ClientResource($client);
 
@@ -156,7 +160,7 @@ class ClientController extends Controller
 
             $tenancy = app(Environment::class);
             $tenancy->tenant($client->hostname->website);
-            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan)]);
+            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan), 'config_system_env' => $request->config_system_env]);
 
             DB::connection('tenant')->table('companies')->where('id', 1)->update([
                 'soap_type_id' => $request->soap_type_id,
@@ -319,6 +323,7 @@ class ClientController extends Controller
             'plan' => json_encode($plan),
             'date_time_start' =>  date('Y-m-d H:i:s'),
             'quantity_documents' =>  0,
+            'config_system_env' => $request->config_system_env
         ]);
 
 
