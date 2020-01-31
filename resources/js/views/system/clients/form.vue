@@ -164,16 +164,16 @@
                             <small class="form-control-feedback" v-if="errors.soap_url" v-text="errors.soap_url[0]"></small>
                         </div>
                     </div>
-                </div>
-                <div v-if="!form.is_update" class="row">
-                    <div class="col-md-5">
+                </div> <br>
+                <div  class="row">
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.password_certificate}">
                             <label class="control-label">Contraseña certificado</label>
                             <el-input v-model="form.password_certificate"></el-input>
                             <small class="form-control-feedback" v-if="errors.password_certificate" v-text="errors.password_certificate[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.certificate}">
                             <label class="control-label">Certificado pfx</label>
                             <el-upload
@@ -190,7 +190,15 @@
                             <small class="form-control-feedback" v-if="errors.certificate" v-text="errors.certificate[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Archivo cargado</label>
+                            <el-input :disabled="true" v-model="form.certificate"></el-input>
+
+                        </div>
+                    </div>
                 </div>
+
                 <div class="row">
                     <div class="col-md-6 center-el-checkbox mt-4">
                         <div class="form-group">
@@ -276,7 +284,8 @@
                     soap_username: null,
                     soap_password: null,
                     soap_url: null,
-                    config_system_env: true
+                    config_system_env: true,
+                    password_certificate: null
 
                 }
 

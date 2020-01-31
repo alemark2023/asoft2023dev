@@ -99,7 +99,8 @@ class ClientController extends Controller
         $client->soap_password = $company->soap_password;
         $client->soap_url = $company->soap_url;
         $client->config_system_env = $config->config_system_env;
-
+        $client->config_system_env = $config->config_system_env;
+        $client->certificate = $company->certificate;
 
         $record = new ClientResource($client);
 
@@ -149,6 +150,30 @@ class ClientController extends Controller
 
     public function update(Request $request)
     {
+        $temp_path = $request->input('temp_path');
+        $name_certificate = null;
+
+        if($temp_path)
+        {
+            try {
+                $password = $request->input('password_certificate');
+                $pfx = file_get_contents($temp_path);
+                $pem = GenerateCertificate::typePEM($pfx, $password);
+                $name = 'certificate_'.'admin_tenant'.'.pem';
+                if(!file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'))) {
+                    mkdir(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'));
+                }
+                file_put_contents(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'.DIRECTORY_SEPARATOR.$name), $pem);
+                $name_certificate = $name;
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+
+        }
+
         try
         {
 
@@ -169,6 +194,14 @@ class ClientController extends Controller
                 'soap_password'=> $request->soap_password,
                 'soap_url'=> $request->soap_url,
             ]);
+
+
+            if($name_certificate)
+            {
+                DB::connection('tenant')->table('companies')->where('id', 1)->update([
+                    'certificate' => $name_certificate,
+                ]);
+            }
 
             //modules
             DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
@@ -239,20 +272,12 @@ class ClientController extends Controller
                 }
                 file_put_contents(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'.DIRECTORY_SEPARATOR.$name), $pem);
                 $name_certificate = $name;
-               // $company->certificate = $name;
-               // $company->save();
-                /*return [
-                    'success' => true,
-                    'message' =>  __('app.actions.upload.success'),
-                ];*/
-
             } catch (Exception $e) {
                 return [
                     'success' => false,
                     'message' =>  $e->getMessage()
                 ];
             }
-
         }
 
         $subDom = strtolower($request->input('subdomain'));
