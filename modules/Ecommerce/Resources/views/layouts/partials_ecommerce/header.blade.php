@@ -25,6 +25,12 @@
     padding: 4px;
 }
 
+@media (max-width: 768px) {
+    .header-dropdown {
+        min-width: 100px !important;
+    }
+}
+
 
 .header-menu ul a {
     padding: 3px 6px;
