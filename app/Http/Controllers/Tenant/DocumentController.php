@@ -251,15 +251,18 @@ class DocumentController extends Controller
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
-                $full_description = $this->getFullDescription($row, $warehouse);
+                $detail = $this->getFullDescription($row, $warehouse);
                 return [
                     'id' => $row->id,
-                    'full_description' => $full_description,
+                    'full_description' => $detail['full_description'],
+                    'brand' => $detail['brand'],
+                    'category' => $detail['category'],
+                    'stock' => $detail['stock'],
                     'internal_id' => $row->internal_id,
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => $row->sale_unit_price,
+                    'sale_unit_price' => number_format($row->sale_unit_price, 2),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -287,7 +290,8 @@ class DocumentController extends Controller
                             'warehouse_id' => $row->warehouse_id,
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];
-                    })
+                    }),
+
                 ];
             });
 //            return $items;
@@ -299,15 +303,20 @@ class DocumentController extends Controller
     public function getFullDescription($row, $warehouse){
 
         $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
-        $category = ($row->category) ? " - {$row->category->name}" : "";
-        $brand = ($row->brand) ? " - {$row->brand->name}" : "";
+        $category = ($row->category) ? "{$row->category->name}" : "";
+        $brand = ($row->brand) ? "{$row->brand->name}" : "";
 
         $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
-        $stock = ($row->warehouses && $warehouse) ? " - {$warehouse_stock}" : "";
+        $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
 
-        $desc = "{$desc} {$category} {$brand} {$stock}";
+        $desc = "{$desc} - {$brand}";
 
-        return $desc;
+        return [
+            'full_description' => $desc,
+            'brand' => $brand,
+            'category' => $category,
+            'stock' => $stock,
+        ];
     }
 
 

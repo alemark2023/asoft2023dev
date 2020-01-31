@@ -21,7 +21,15 @@
                                             @visible-change="focusTotalItem"
                                             slot="prepend"
                                             id="select-width">
-                                        <el-option v-for="option in items"  :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                        <el-tooltip v-for="option in items"  :key="option.id" placement="top">
+                                            <div slot="content">
+                                                Marca: {{option.brand}} <br>
+                                                Categoria: {{option.category}} <br>
+                                                Stock: {{option.stock}} <br>
+                                                Precio: {{option.currency_type_symbol}} {{option.sale_unit_price}} <br>
+                                            </div>
+                                            <el-option  :value="option.id" :label="option.full_description"></el-option>
+                                        </el-tooltip>
                                     </el-select>
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
                                         <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
@@ -500,7 +508,7 @@
                 // console.log(item)
             },
             clickWarehouseDetail(){
-                
+
                 if(!this.form.item_id){
                     return this.$message.error('Seleccione un item');
                 }
@@ -648,7 +656,7 @@
                 this.form.quantity = 1;
                 this.cleanTotalItem();
                 this.showListStock = true
-                
+
                 // console.log(this.recordItem)
                 // if (!this.recordItem) {
                 //     await this.form.item.warehouses.forEach(element => {
