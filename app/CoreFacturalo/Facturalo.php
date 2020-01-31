@@ -276,13 +276,14 @@ class Facturalo
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
-            
+            if(config('tenant.enabled_template_ticket_70')) $width = 70;
+
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
             $company_number    = $this->document->establishment->telephone != '' ? '10' : '0';
             $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
             $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
-            $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0; 
+            $customer_department_id  = ($this->document->customer->department_id == 16) ? 20:0;
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
 
             $total_prepayment = $this->document->total_prepayment != '' ? '10' : '0';
@@ -395,7 +396,7 @@ class Facturalo
                 'mode' => 'utf-8',
                 'format' => [
                     210,
-                    $diferencia + $height 
+                    $diferencia + $height
                     ],
                 'margin_top' => 2,
                 'margin_right' => 5,
@@ -405,7 +406,7 @@ class Facturalo
 
 
        } else {
-            
+
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
 

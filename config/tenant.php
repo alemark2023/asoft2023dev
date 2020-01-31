@@ -25,6 +25,7 @@ return [
     'import_documents' => env('IMPORT_DOCUMENTS', false),
     'import_documents_second_format' => env('IMPORT_DOCUMENTS_SECOND_FORMAT', false),
     'enabled_template_ticket_80' => env('ENABLED_TEMPLATE_TICKET_80', false),
+    'enabled_template_ticket_70' => env('ENABLED_TEMPLATE_TICKET_70', false),
     'enabled_discount_global' => env('ENABLED_DISCOUNT_GLOBAL', false),
     'delete_document_type_03' => env('DELETE_DOCUMENT_TYPE_03', false),
     'select_first_document_type_03' => env('SELECT_FIRST_DOCUMENT_TYPE_03', false),
