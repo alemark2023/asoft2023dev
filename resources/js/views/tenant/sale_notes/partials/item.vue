@@ -10,7 +10,16 @@
                                 <a href="#" v-if="typeUser != 'seller'" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
                             <el-select v-model="form.item_id" @change="changeItem" filterable>
-                                <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                <el-tooltip v-for="option in items"  :key="option.id" placement="top">
+                                    <div slot="content">
+                                        Marca: {{option.brand}} <br>
+                                        Categoria: {{option.category}} <br>
+                                        Stock: {{option.stock}} <br>
+                                        Precio: {{option.currency_type_symbol}} {{option.sale_unit_price}} <br>
+                                    </div>
+                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                </el-tooltip>
+
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
