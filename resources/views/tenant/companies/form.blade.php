@@ -7,7 +7,7 @@
             <tenant-companies-form></tenant-companies-form>
         </div>
         <div class="col-lg-6 col-md-12">
-            <tenant-certificates-index></tenant-certificates-index>
+            <!-- <tenant-certificates-index></tenant-certificates-index> -->
         </div>
     </div>
     {{--<div class="row">--}}

@@ -76,7 +76,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <!--  <div class="row">
                         <div class="col-md-12 mt-2">
                             <h4 class="border-bottom">Entorno del sistema</h4>
                         </div>
@@ -97,7 +97,7 @@
                                 <el-select v-model="form.soap_type_id">
                                     <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
-                                <!--Input CheckBox agregado-->
+
                                 <el-checkbox
                                        v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
                                        v-model="toggle"
@@ -106,8 +106,8 @@
                                 <small class="form-control-feedback" v-if="errors.soap_type_id" v-text="errors.soap_type_id[0]"></small>
                             </div>
                         </div>
-                    </div>
-                    <template v-if="form.soap_type_id == '02' || toggle == true ">
+                    </div> -->
+                    <!--<template v-if="form.soap_type_id == '02' || toggle == true ">
                         <div class="row" >
                             <div class="col-md-12 mt-2">
                                 <h4 class="border-bottom">Usuario Secundario Sunat</h4>
@@ -139,7 +139,7 @@
                                 <small class="form-control-feedback" v-if="errors.soap_url" v-text="errors.soap_url[0]"></small>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
                 <div class="form-actions text-right pt-2">
                     <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
