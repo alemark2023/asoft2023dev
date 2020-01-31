@@ -46,7 +46,15 @@ class ClientResource extends JsonResource
                 //'max_users' => (int) $this->plan->limit_users,
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+
+                'soap_send_id' => $this->soap_send_id,
+                'soap_type_id' => $this->soap_type_id,
+                'soap_username' => $this->soap_username,
+                'soap_password' => $this->soap_password,
+                'soap_url' => $this->soap_url,
+
+
         ];
-        
+
     }
 }

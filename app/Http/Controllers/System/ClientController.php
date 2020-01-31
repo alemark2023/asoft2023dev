@@ -19,6 +19,8 @@ use Hyn\Tenancy\Models\Website;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Configuration;
+use App\CoreFacturalo\Helpers\Certificate\GenerateCertificate;
+
 
 class ClientController extends Controller
 {
@@ -87,6 +89,14 @@ class ClientController extends Controller
         $tenancy->tenant($client->hostname->website);
         $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get();
 
+        $company =  DB::connection('tenant')->table('companies')->first();
+
+        $client->soap_send_id = $company->soap_send_id;
+        $client->soap_type_id = $company->soap_type_id;
+        $client->soap_username = $company->soap_username;
+        $client->soap_password = $company->soap_password;
+        $client->soap_url = $company->soap_url;
+
         $record = new ClientResource($client);
 
         return $record;
@@ -148,6 +158,14 @@ class ClientController extends Controller
             $tenancy->tenant($client->hostname->website);
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan)]);
 
+            DB::connection('tenant')->table('companies')->where('id', 1)->update([
+                'soap_type_id' => $request->soap_type_id,
+                'soap_send_id'=> $request->soap_send_id,
+                'soap_username'=> $request->soap_username,
+                'soap_password'=> $request->soap_password,
+                'soap_url'=> $request->soap_url,
+            ]);
+
             //modules
             DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
             DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->delete();
@@ -194,6 +212,44 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
+
+
+        $temp_path = $request->input('temp_path');
+        $name_certificate = null;
+        if(!$temp_path){
+
+            return [
+                'success' => false,
+                'message' => 'Es necesario adjuntar el certificado'
+            ];
+        }
+        else{
+
+            try {
+                $password = $request->input('password_certificate');
+                $pfx = file_get_contents($temp_path);
+                $pem = GenerateCertificate::typePEM($pfx, $password);
+                $name = 'certificate_'.'admin_tenant'.'.pem';
+                if(!file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'))) {
+                    mkdir(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'));
+                }
+                file_put_contents(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'.DIRECTORY_SEPARATOR.$name), $pem);
+                $name_certificate = $name;
+               // $company->certificate = $name;
+               // $company->save();
+                /*return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                ];*/
+
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+
+        }
 
         $subDom = strtolower($request->input('subdomain'));
         $uuid = config('tenant.prefix_database').'_'.$subDom;
@@ -243,7 +299,12 @@ class ClientController extends Controller
             'number' => $request->input('number'),
             'name' => $request->input('name'),
             'trade_name' => $request->input('name'),
-            'soap_type_id' => '01'
+            'soap_type_id' => $request->input('soap_send_id'),
+            'soap_send_id' => $request->input('soap_send_id'),
+            'soap_username' => $request->input('soap_username'),
+            'soap_password' => $request->input('soap_password'),
+            'soap_url' => $request->input('soap_url'),
+            'certificate' => $name_certificate,
         ]);
 
         $plan = Plan::findOrFail($request->input('plan_id'));
@@ -491,6 +552,45 @@ class ClientController extends Controller
             'message' => ($client->start_billing_cycle) ? 'Ciclo de Facturacion definido.' : 'No se pudieron guardar los cambios.'
         ];
     }
+
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type'),
+            ];
+
+            return $this->upload_certificate($new_request);
+        }
+        return [
+            'success' => false,
+            'message' => 'Error al subir file.',
+        ];
+    }
+
+    function upload_certificate($request)
+    {
+        $file = $request['file'];
+        $type = $request['type'];
+
+        $temp = tempnam(sys_get_temp_dir(), $type);
+        file_put_contents($temp, file_get_contents($file));
+
+        $mime = mime_content_type($temp);
+        $data = file_get_contents($temp);
+
+        return [
+            'success' => true,
+            'data' => [
+                'filename' => $file->getClientOriginalName(),
+                'temp_path' => $temp,
+                //'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
+            ]
+        ];
+    }
+
 
 
 

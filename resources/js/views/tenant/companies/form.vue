@@ -97,7 +97,7 @@
                                 <el-select v-model="form.soap_type_id">
                                     <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
-                                <!--Input CheckBox agregado-->
+
                                 <el-checkbox
                                        v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
                                        v-model="toggle"

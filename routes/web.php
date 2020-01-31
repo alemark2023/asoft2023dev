@@ -600,6 +600,9 @@ if ($hostname) {
 
             Route::post('clients/locked_tenant', 'System\ClientController@lockedTenant');
 
+            Route::post('clients/upload', 'System\ClientController@upload');
+
+
 
 
             Route::get('client_payments/records/{client_id}', 'System\ClientPaymentController@records');
@@ -613,6 +616,8 @@ if ($hostname) {
             Route::get('client_account_status/records/{client_id}', 'System\AccountStatusController@records');
             Route::get('client_account_status/client/{client_id}', 'System\AccountStatusController@client');
             Route::get('client_account_status/tables', 'System\AccountStatusController@tables');
+
+
 
             //Planes
             Route::get('plans', 'System\PlanController@index')->name('system.plans.index');
