@@ -190,7 +190,7 @@
 </table>
 @endif
 
-@if ($document->reference_guides)
+@if (count($document->reference_guides) > 0)
 <br/>
 <strong>Guias de remisión</strong>
 <table>
