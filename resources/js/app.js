@@ -161,6 +161,8 @@ Vue.component('system-clients-index', require('./views/system/clients/index.vue'
 Vue.component('system-clients-form', require('./views/system/clients/form.vue'));
 Vue.component('system-users-form', require('./views/system/users/form.vue'));
 
+Vue.component('system-certificate-index', require('./views/system/certificate/index.vue'));
+
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
