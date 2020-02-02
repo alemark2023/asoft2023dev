@@ -640,6 +640,8 @@ if ($hostname) {
             Route::delete('certificates', 'System\CertificateController@destroy');
             Route::get('configurations', 'System\ConfigurationController@index')->name('system.configuration.index');
 
+            Route::get('companies/record', 'System\CompanyController@record');
+            Route::post('companies', 'System\CompanyController@store');
 
 
         });
