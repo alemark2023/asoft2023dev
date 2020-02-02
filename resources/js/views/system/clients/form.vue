@@ -101,7 +101,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+               <!-- <div class="row">
                     <div class="col-md-12 mt-2">
                         <h4 class="border-bottom">Entorno del sistema</h4>
                     </div>
@@ -122,7 +122,7 @@
                             <el-select v-model="form.soap_type_id">
                                 <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
-                            <!--Input CheckBox agregado-->
+
                             <el-checkbox
                                    v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
                                    v-model="toggle"
@@ -197,7 +197,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div>-->
 
                 <div class="row">
                     <div class="col-md-6 center-el-checkbox mt-4">
@@ -277,16 +277,8 @@
                     type:null,
                     is_update:false,
                     modules: [],
-                    soap_send_id: '01',
-                    soap_type_id: '01',
                     temp_path:null,
-                    certificate:null,
-                    soap_username: null,
-                    soap_password: null,
-                    soap_url: null,
                     config_system_env: true,
-                    password_certificate: null
-
                 }
 
                 this.modules.forEach(module => {
