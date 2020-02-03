@@ -576,6 +576,7 @@ class SaleNoteController extends Controller
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'has_igv' => (bool) $row->has_igv,
                         'lots_enabled' => (bool) $row->lots_enabled,
+                        'series_enabled' => (bool) $row->series_enabled,
                         'is_set' => (bool) $row->is_set,
                         'warehouses' => collect($row->warehouses)->transform(function($row) {
                             return [
@@ -596,6 +597,8 @@ class SaleNoteController extends Controller
                                 'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                             ];
                         }),
+                        'lot_code' => $row->lot_code,
+                        'date_of_due' => $row->date_of_due
                     ];
                 });
 
