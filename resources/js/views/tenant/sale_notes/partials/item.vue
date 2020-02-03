@@ -17,7 +17,7 @@
                                         Stock: {{option.stock}} <br>
                                         Precio: {{option.currency_type_symbol}} {{option.sale_unit_price}} <br>
                                     </div>
-                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                    <el-option :value="option.id" :label="option.full_description"></el-option>
                                 </el-tooltip>
 
                             </el-select>
