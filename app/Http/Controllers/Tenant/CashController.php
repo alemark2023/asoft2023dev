@@ -207,7 +207,7 @@ class CashController extends Controller
 
         $filename = "Reporte_POS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
 
-        return $pdf->download($filename.'.pdf');
+        return $pdf->stream($filename.'.pdf');
     }
 
     public function report_general()
