@@ -154,6 +154,9 @@ Vue.component('tenant-purchase-orders-generate', require('../../modules/Purchase
 Vue.component('moves-index', require('../../modules/Inventory/Resources/assets/js/moves/index.vue'));
 Vue.component('inventory-form-masive', require('../../modules/Inventory/Resources/assets/js/transfers/form_masive.vue'));
 
+Vue.component('tenant-report-kardex-master', require('../../modules/Inventory/Resources/assets/js/kardex_master/index.vue'));
+Vue.component('tenant-report-kardex-lots', require('../../modules/Inventory/Resources/assets/js/kardex/lots.vue'));
+Vue.component('tenant-report-kardex-series', require('../../modules/Inventory/Resources/assets/js/kardex/series.vue'));
 
 
 // System

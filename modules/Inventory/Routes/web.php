@@ -52,7 +52,9 @@ if($hostname) {
                 Route::get('kardex/excel', 'ReportKardexController@excel')->name('reports.kardex.excel');
                 Route::get('kardex/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
                 Route::get('kardex/records', 'ReportKardexController@records')->name('reports.kardex.records');
-    
+                Route::get('kardex/lots/filter', 'ReportKardexController@records_lots');
+
+
             });
 
 

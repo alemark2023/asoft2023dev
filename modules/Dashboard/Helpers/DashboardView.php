@@ -31,6 +31,8 @@ class DashboardView
         $date_end = $request['date_end'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
+        $customer_id = $request['customer_id'];
+
 
         $d_start = null;
         $d_end = null;
@@ -65,6 +67,7 @@ class DashboardView
 
             $documents = DB::connection('tenant')
                 ->table('documents')
+                ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
                 ->leftJoinSub($document_payments, 'payments', function ($join) {
                     $join->on('documents.id', '=', 'payments.document_id');
@@ -85,6 +88,7 @@ class DashboardView
 
             $documents = DB::connection('tenant')
                 ->table('documents')
+                ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
                 ->leftJoinSub($document_payments, 'payments', function ($join) {
                     $join->on('documents.id', '=', 'payments.document_id');
@@ -113,6 +117,7 @@ class DashboardView
 
             $sale_notes = DB::connection('tenant')
                 ->table('sale_notes')
+                ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
                 ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
                     $join->on('sale_notes.id', '=', 'payments.sale_note_id');
@@ -134,6 +139,7 @@ class DashboardView
 
             $sale_notes = DB::connection('tenant')
                 ->table('sale_notes')
+                ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
                 ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
                     $join->on('sale_notes.id', '=', 'payments.sale_note_id');

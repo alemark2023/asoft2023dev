@@ -588,8 +588,8 @@
                       @change="changeCustomerUnpaid"
                       filterable
                       clearable
-                      v-model="selected_customer"
-                      placeholder="Todos"
+                      v-model="form.customer_id"
+                      placeholder="Seleccionar cliente"
                     >
                       <el-option
                         v-for="item in customers"
@@ -864,10 +864,10 @@ export default {
 
       const self = this;
       let source = [];
-      if (self.selected_customer) {
+      if (self.form.customer_id) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'PEN'
+            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'PEN'
           );
         });
       } else {
@@ -884,10 +884,10 @@ export default {
 
       const self = this;
       let source = [];
-      if (self.selected_customer) {
+      if (self.form.customer_id) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'USD'
+            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'USD'
           );
         });
       } else {
@@ -903,10 +903,10 @@ export default {
     getTotalRowsUnpaid() {
       const self = this;
 
-      if (self.selected_customer) {
+      if (self.form.customer_id) {
         return _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer
+            item.total_to_pay > 0 && item.customer_id == self.form.customer_id
           );
         }).length;
       } else {
@@ -918,10 +918,10 @@ export default {
     getTotalAmountUnpaid() {
       const self = this;
       let source = [];
-      if (self.selected_customer) {
+      if (self.form.customer_id) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'PEN'
+            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'PEN'
           );
         });
       } else {
@@ -937,10 +937,10 @@ export default {
     getTotalAmountUnpaidUsd() {
       const self = this;
       let source = [];
-      if (self.selected_customer) {
+      if (self.form.customer_id) {
         source = _.filter(self.records, function(item) {
           return (
-            item.total_to_pay > 0 && item.customer_id == self.selected_customer && item.currency_type_id == 'USD'
+            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'USD'
           );
         });
       } else {
@@ -970,12 +970,14 @@ export default {
       window.open(download, "_blank");
     },
     changeCustomerUnpaid() {
-      if (this.selected_customer) {
-        this.records = _.filter(this.records_base, {
+      if (this.form.customer_id) {
+
+        this.loadUnpaid()
+        /*this.records = _.filter(this.records_base, {
           customer_id: this.selected_customer
-        });
+        });*/
       } else {
-        this.records = this.records_base;
+        this.records = []
       }
     },
     clickDownload(type) {
@@ -994,7 +996,8 @@ export default {
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
         month_start: moment().format("YYYY-MM"),
-        month_end: moment().format("YYYY-MM")
+        month_end: moment().format("YYYY-MM"),
+        customer_id: null
       };
     },
     changeDisabledDates() {
@@ -1038,7 +1041,7 @@ export default {
     },
     loadAll() {
       this.loadData();
-      this.loadUnpaid();
+     // this.loadUnpaid();
       this.loadDataAditional();
       this.loadDataUtilities();
       //this.loadCustomer();
@@ -1071,7 +1074,7 @@ export default {
     loadUnpaid() {
       this.$http.post(`/${this.resource}/unpaid`, this.form).then(response => {
         this.records = response.data.records;
-        this.records_base = response.data.records;
+        //this.records_base = response.data.records;
       });
     },
     clickDocumentPayment(recordId) {
