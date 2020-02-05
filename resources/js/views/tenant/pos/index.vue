@@ -453,7 +453,7 @@
             },
           getColor(i)
           {
-            return this.colors[i] ? this.colors[i]  : this.colors[0]
+            return this.colors[(i % this.colors.length )]
           },
           initCurrencyType(){
               this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
