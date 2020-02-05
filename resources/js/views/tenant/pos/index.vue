@@ -23,18 +23,8 @@
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
       <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
 
-        <div class="container testimonial-group">
-            <div class="row text-center flex-nowrap">
-                <div  v-for="(item, index) in categories" @click="filterCategorie(item.id)"  :style="{ backgroundColor: item.color}" :key="index" class="col-sm-3 pointer">{{item.name}}</div>
 
-            </div>
-        </div>
 
-        <!--<div class="row flex-row flex-nowrap">
-            <div @click="filterCategorie(item.id)" :style="{ backgroundColor: item.color}" v-for="(item, index) in categories" :key="index" class="cat_c pointer" >
-                <p>{{item.name}}</p>
-            </div>
-        </div> -->
         <el-input
             placeholder="Buscar productos"
             size="medium"
@@ -45,6 +35,13 @@
           >
           <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
         </el-input>
+
+        <div class="container testimonial-group">
+            <div class="row text-center flex-nowrap">
+                <div  v-for="(item, index) in categories" @click="filterCategorie(item.id)"  :style="{ backgroundColor: item.color}" :key="index" class="col-sm-3 pointer">{{item.name}}</div>
+
+            </div>
+        </div> <br>
 
         <div class="row">
           <template v-for="(item,index) in items">
@@ -426,7 +423,7 @@
             user: {},
             form: {},
             categories: [ ],
-            colors: ['#F9A825', '#B2F925', '#25F9C6', '#2585F9', '#F925D6', '#2595F9', 'orange', 'coral', 'darkcyan', 'red', 'crimson', 'green', 'darkgreen']
+            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3']
           };
         },
         async created() {
@@ -450,9 +447,9 @@
                     this.filterItems()
                 }
             },
-          getColor()
+          getColor(i)
           {
-            return this.colors[Math.floor(Math.random() * this.colors.length)]
+            return this.colors[i] ? this.colors[i]  : this.colors[0]
           },
           initCurrencyType(){
               this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
@@ -981,14 +978,14 @@
                 return {
                     id: obj.id,
                     name: obj.name,
-                    color: contex.getColor()
+                    color: contex.getColor(index)
                 }
             })
 
             this.categories.unshift({
                     id: null,
                     name: 'Todos',
-                    color: 'green'
+                    color: '#2C8DE3'
                     })
           },
           searchItems() {
