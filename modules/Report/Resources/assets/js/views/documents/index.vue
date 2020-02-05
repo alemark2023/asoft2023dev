@@ -5,7 +5,7 @@
         </div>
         <div class="card mb-0">
                 <div class="card-body">
-                    <data-table :resource="resource">
+                    <data-table :applyCustomer="true" :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
                             <th class="">Tipo Documento</th>
@@ -19,17 +19,17 @@
                             <th class="">Total Inafecto</th>
                             <th class="">Total Gratuito</th>
                             <th class="">Total Gravado</th>
-                            
+
                             <th class="">Total IGV</th>
                             <th class="">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
-                            <td>{{ index }}</td> 
+                            <td>{{ index }}</td>
                             <td>{{row.document_type_description}}</td>
                             <td>{{row.number}}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.affected_document}}</td>
-                            <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td> 
+                            <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                             <td>{{row.state_type_description}}</td>
 
                             <td>{{ row.currency_type_id}}</td>
@@ -42,50 +42,50 @@
  -->
 
 
-                            <td>{{ (row.document_type_id == '07') ? ( (row.total_exonerated == 0) ? '0.00': '-'+row.total_exonerated) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_exonerated) }}</td> 
-                         
-                            <td>{{ (row.document_type_id == '07') ? ( (row.total_unaffected == 0) ? '0.00': '-'+row.total_unaffected) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? ( (row.total_free == 0) ? '0.00': '-'+row.total_free) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? ( (row.total_taxed == 0) ? '0.00': '-'+row.total_taxed) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_taxed) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? ( (row.total_igv == 0) ? '0.00': '-'+row.total_igv) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_igv) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? ( (row.total == 0) ? '0.00': '-'+row.total) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total) }}</td> 
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_exonerated == 0) ? '0.00': '-'+row.total_exonerated) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_exonerated) }}</td>
+
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_unaffected == 0) ? '0.00': '-'+row.total_unaffected) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_free == 0) ? '0.00': '-'+row.total_free) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_taxed == 0) ? '0.00': '-'+row.total_taxed) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_taxed) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total_igv == 0) ? '0.00': '-'+row.total_igv) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_igv) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? ( (row.total == 0) ? '0.00': '-'+row.total) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total) }}</td>
 
 
-                            <!-- <td>{{ (row.document_type_id == '07') ? -row.total_unaffected : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? -row.total_free : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? -row.total_taxed : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_taxed) }}</td> 
-                            <td>{{ (row.document_type_id == '07') ? -row.total_igv : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_igv) }}</td> 
+                            <!-- <td>{{ (row.document_type_id == '07') ? -row.total_unaffected : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_unaffected) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? -row.total_free : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_free) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? -row.total_taxed : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_taxed) }}</td>
+                            <td>{{ (row.document_type_id == '07') ? -row.total_igv : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_igv) }}</td>
                             <td>{{ (row.document_type_id == '07') ? -row.total : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total) }}</td>  -->
 
                         </tr>
-                        
+
                     </data-table>
-                     
-                    
-                </div> 
+
+
+                </div>
         </div>
- 
+
     </div>
 </template>
 
 <script>
- 
+
     import DataTable from '../../components/DataTableReports.vue'
 
-    export default { 
+    export default {
         components: {DataTable},
         data() {
             return {
-                resource: 'reports/sales',                 
-                form: {}, 
+                resource: 'reports/sales',
+                form: {},
 
             }
         },
-        async created() { 
+        async created() {
         },
-        methods: { 
-             
-            
+        methods: {
+
+
         }
     }
 </script>

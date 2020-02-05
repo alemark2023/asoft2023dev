@@ -25,6 +25,7 @@ class ReportDocumentController extends Controller
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
 
         $persons = $this->getPersons('customers');
+        $sellers = $this->getSellers();
 
         $establishments = Establishment::all()->transform(function($row) {
             return [
@@ -33,7 +34,7 @@ class ReportDocumentController extends Controller
             ];
         });
 
-        return compact('document_types','establishments','persons');
+        return compact('document_types','establishments','persons', 'sellers');
     }
 
 
