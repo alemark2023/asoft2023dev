@@ -15,10 +15,12 @@ use App\Models\Tenant\Catalogs\{
     District
 };
 use Modules\BusinessTurn\Models\DocumentTransport;
+use Modules\BusinessTurn\Http\Requests\DocumentHotelGuestRequest;
+
 
 class BusinessTurnController extends Controller
 {
-    
+
     public function index()
     {
         return view('businessturn::configurations.index');
@@ -30,42 +32,49 @@ class BusinessTurnController extends Controller
             return [
                 'id' => $row->id,
                 'active' => (bool)$row->active,
-                'name' => $row->name, 
+                'name' => $row->name,
             ];
         });
     }
 
     public function store(Request $request)
-    { 
+    {
 
         $record = BusinessTurn::findOrFail($request->id);
         $record->active = ($record->active) ? false:true;
         $record->save();
 
         return [
-            'success' => true, 
-            'message' => $record->active ? 'Giro de negocio activado' : 'Giro de negocio desactivado', 
+            'success' => true,
+            'message' => $record->active ? 'Giro de negocio activado' : 'Giro de negocio desactivado',
         ];
     }
 
     public function validate_hotel(DocumentHotelRequest $request)
-    { 
+    {
         return [
-            'success' => true, 
+            'success' => true,
         ];
     }
 
-    
-    public function validate_transports(DocumentTransportRequest $request)
-    { 
+    public function validate_hotel_guest(DocumentHotelGuestRequest $request)
+    {
         return [
-            'success' => true, 
+            'success' => true,
+        ];
+    }
+
+
+    public function validate_transports(DocumentTransportRequest $request)
+    {
+        return [
+            'success' => true,
         ];
     }
 
 
     public function tables()
-    { 
+    {
         $identity_document_types = IdentityDocumentType::whereIn('id',['1','4','7'])->get();
 
         $sexs = [
@@ -93,8 +102,8 @@ class BusinessTurnController extends Controller
     }
 
     public function tablesTransports()
-    { 
-        
+    {
+
         $identity_document_types = IdentityDocumentType::whereIn('id',['1','4','7'])->get();
 
         $locations = [];

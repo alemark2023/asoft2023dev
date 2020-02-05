@@ -16,6 +16,8 @@ if($hostname) {
 
                 Route::post('validate_transports', 'BusinessTurnController@validate_transports');
                 Route::get('tables/transports', 'BusinessTurnController@tablesTransports');
+                Route::post('validate_hotel_guest', 'BusinessTurnController@validate_hotel_guest');
+
 
             });
 

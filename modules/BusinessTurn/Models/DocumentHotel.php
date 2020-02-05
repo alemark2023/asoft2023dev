@@ -1,7 +1,7 @@
 <?php
 
 namespace Modules\BusinessTurn\Models;
- 
+
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
@@ -25,8 +25,9 @@ class DocumentHotel extends ModelTenant
         'time_exit',
         'room_type',
         'ocupation',
+        'guests'
     ];
-  
+
     public function document()
     {
         return $this->belongsTo(Document::class);
