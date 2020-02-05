@@ -22,11 +22,11 @@
                                       <li><a href="#">Laptops</a></li>
                                       <li><a href="#">Mac Book Pro</a></li>
                                       <li><a href="#">Tablets</a></li>
-                                    
+
                                   </ul>
                               </div><!-- End .col-lg-6 -->
                               <div class="col-lg-6">
-                              
+
 
                               </div><!-- End .col-lg-6 -->
                           </div><!-- End .row -->
@@ -137,6 +137,6 @@
           @foreach ($items as $item)
             <li class="{{ ($tagid == $item->id) ? 'active':'' }}"><a href="{{ route("tenant.ecommerce.index", ['tagid' => $item->id]) }}"><i class="icon-cat-gift"></i>{{ $item->name }}</a></li>
           @endforeach
-        
+
       </ul>
   </nav>
