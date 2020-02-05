@@ -22,11 +22,19 @@
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
       <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
-        <div class="row flex-row flex-nowrap">
+
+        <div class="container testimonial-group">
+            <div class="row text-center flex-nowrap">
+                <div  v-for="(item, index) in categories" @click="filterCategorie(item.id)"  :style="{ backgroundColor: item.color}" :key="index" class="col-sm-3 pointer">{{item.name}}</div>
+
+            </div>
+        </div>
+
+        <!--<div class="row flex-row flex-nowrap">
             <div @click="filterCategorie(item.id)" :style="{ backgroundColor: item.color}" v-for="(item, index) in categories" :key="index" class="cat_c pointer" >
                 <p>{{item.name}}</p>
             </div>
-        </div>
+        </div> -->
         <el-input
             placeholder="Buscar productos"
             size="medium"
@@ -326,6 +334,22 @@
   </div>
 </template>
 <style>
+
+
+/* The heart of the matter */
+.testimonial-group > .row {
+  overflow-x: auto;
+  white-space: nowrap;
+  overflow-y: hidden;
+}
+.testimonial-group > .row > .col-sm-3 {
+  display: inline-block;
+  float: none;
+}
+
+/* Decorations */
+.col-sm-3 { height: 70px; margin-right: 0.5%; color: white; font-size: 18px; padding-bottom: 20px; padding-top: 18px; font-weight: bold }
+
 
 .card-block {
     min-height: 220px;
