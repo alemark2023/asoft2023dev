@@ -19,6 +19,8 @@ use App\Models\Tenant\Configuration;
 use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Inventory\Models\ItemWarehouse;
 use Exception;
+use Modules\Item\Models\Category;
+
 
 class PosController extends Controller
 {
@@ -86,7 +88,9 @@ class PosController extends Controller
 
         $items = $this->table('items');
 
-        return compact('items', 'customers','affectation_igv_types','establishment','user','currency_types');
+        $categories = Category::all();
+
+        return compact('items', 'customers','affectation_igv_types','establishment','user','currency_types', 'categories');
 
     }
 
@@ -124,7 +128,7 @@ class PosController extends Controller
 
             $configuration =  Configuration::first();
 
-            $items = Item::whereWarehouse()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->take(20)
+            $items = Item::whereWarehouse()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->take(100)
                             ->get()->transform(function($row) use ($configuration) {
                                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                                 return [
@@ -153,7 +157,8 @@ class PosController extends Controller
                                             'warehouse_description' => $row->warehouse->description,
                                             'stock' => $row->stock,
                                         ];
-                                    })
+                                    }),
+                                    'category_id' => ($row->category) ? $row->category->id : null,
                                 ];
                             });
             return $items;

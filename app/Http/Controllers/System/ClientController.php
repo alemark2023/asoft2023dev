@@ -19,6 +19,7 @@ use Hyn\Tenancy\Models\Website;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\System\Configuration;
+use App\CoreFacturalo\Helpers\Certificate\GenerateCertificate;
 
 class ClientController extends Controller
 {
@@ -34,12 +35,15 @@ class ClientController extends Controller
 
     public function tables()
     {
+
         $url_base = '.'.config('tenant.app_url_base');
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
         $modules = Module::orderBy('description')->get();
+        $certificate_admin = Configuration::first()->certificate;
 
-        return compact('url_base','plans','types', 'modules');
+
+        return compact('url_base','plans','types', 'modules', 'certificate_admin');
     }
 
     public function records()
@@ -90,7 +94,17 @@ class ClientController extends Controller
         $config =  DB::connection('tenant')->table('configurations')->first();
 
         $client->config_system_env = $config->config_system_env;
-        //$client->certificate = $company->certificate;
+
+        $company =  DB::connection('tenant')->table('companies')->first();
+
+        $client->soap_send_id = $company->soap_send_id;
+        $client->soap_type_id = $company->soap_type_id;
+        $client->soap_username = $company->soap_username;
+        $client->soap_password = $company->soap_password;
+        $client->soap_url = $company->soap_url;
+        $client->certificate = $company->certificate;
+        $client->number = $company->number;
+
 
         $record = new ClientResource($client);
 
@@ -143,6 +157,32 @@ class ClientController extends Controller
         try
         {
 
+            $temp_path = $request->input('temp_path');
+
+            $name_certificate = $request->input('certificate');
+
+            if($temp_path){
+
+                try {
+                    $password = $request->input('password_certificate');
+                    $pfx = file_get_contents($temp_path);
+                    $pem = GenerateCertificate::typePEM($pfx, $password);
+                    $name = 'certificate_'.$request->input('number').'.pem';
+                    if(!file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'))) {
+                        mkdir(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'));
+                    }
+                    file_put_contents(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'.DIRECTORY_SEPARATOR.$name), $pem);
+                    $name_certificate = $name;
+
+                } catch (Exception $e) {
+                    return [
+                        'success' => false,
+                        'message' =>  $e->getMessage()
+                    ];
+                }
+            }
+
+
             $client = Client::findOrFail($request->id);
             $client->plan_id = $request->plan_id;
             $client->save();
@@ -152,6 +192,16 @@ class ClientController extends Controller
             $tenancy = app(Environment::class);
             $tenancy->tenant($client->hostname->website);
             DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan), 'config_system_env' => $request->config_system_env]);
+
+            DB::connection('tenant')->table('companies')->where('id', 1)->update([
+                'soap_type_id' => $request->soap_type_id,
+                'soap_send_id'=> $request->soap_send_id,
+                'soap_username'=> $request->soap_username,
+                'soap_password'=> $request->soap_password,
+                'soap_url'=> $request->soap_url,
+                'certificate' => $name_certificate
+            ]);
+
 
             //modules
             DB::connection('tenant')->table('module_user')->where('user_id', 1)->delete();
@@ -199,7 +249,32 @@ class ClientController extends Controller
 
     public function store(ClientRequest $request)
     {
+        $temp_path = $request->input('temp_path');
         $configuration = Configuration::first();
+
+        $name_certificate = $configuration->certificate;
+
+        if($temp_path){
+
+            try {
+                $password = $request->input('password_certificate');
+                $pfx = file_get_contents($temp_path);
+                $pem = GenerateCertificate::typePEM($pfx, $password);
+                $name = 'certificate_'.'admin_tenant'.'.pem';
+                if(!file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'))) {
+                    mkdir(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'));
+                }
+                file_put_contents(storage_path('app'.DIRECTORY_SEPARATOR.'certificates'.DIRECTORY_SEPARATOR.$name), $pem);
+                $name_certificate = $name;
+
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+
 
         $subDom = strtolower($request->input('subdomain'));
         $uuid = config('tenant.prefix_database').'_'.$subDom;
@@ -249,12 +324,12 @@ class ClientController extends Controller
             'number' => $request->input('number'),
             'name' => $request->input('name'),
             'trade_name' => $request->input('name'),
-            'soap_type_id' => ($configuration->soap_type_id) ? $configuration->soap_type_id : '01',
-            'soap_send_id' => $configuration->soap_send_id,
-            'soap_username' => $configuration->soap_username,
-            'soap_password' => $configuration->soap_password,
-            'soap_url' => $configuration->soap_url,
-            'certificate' => $configuration->certificate,
+            'soap_type_id' => $request->soap_type_id,
+            'soap_send_id' => $request->soap_send_id,
+            'soap_username' => $request->soap_username,
+            'soap_password' => $request->soap_password,
+            'soap_url' => $request->soap_url,
+            'certificate' => $name_certificate,
         ]);
 
         $plan = Plan::findOrFail($request->input('plan_id'));
@@ -503,6 +578,45 @@ class ClientController extends Controller
             'message' => ($client->start_billing_cycle) ? 'Ciclo de Facturacion definido.' : 'No se pudieron guardar los cambios.'
         ];
     }
+
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type'),
+            ];
+
+            return $this->upload_certificate($new_request);
+        }
+        return [
+            'success' => false,
+            'message' => 'Error al subir file.',
+        ];
+    }
+
+    function upload_certificate($request)
+    {
+        $file = $request['file'];
+        $type = $request['type'];
+
+        $temp = tempnam(sys_get_temp_dir(), $type);
+        file_put_contents($temp, file_get_contents($file));
+
+        $mime = mime_content_type($temp);
+        $data = file_get_contents($temp);
+
+        return [
+            'success' => true,
+            'data' => [
+                'filename' => $file->getClientOriginalName(),
+                'temp_path' => $temp,
+                //'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
+            ]
+        ];
+    }
+
+
 
 
 

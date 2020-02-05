@@ -101,7 +101,7 @@
                         </div>
                     </div>
                 </div>
-               <!-- <div class="row">
+               <div class="row">
                     <div class="col-md-12 mt-2">
                         <h4 class="border-bottom">Entorno del sistema</h4>
                     </div>
@@ -190,14 +190,21 @@
                             <small class="form-control-feedback" v-if="errors.certificate" v-text="errors.certificate[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" v-show="form.is_update == false && certificate_admin">
                         <div class="form-group">
-                            <label class="control-label">Archivo cargado</label>
+                            <label class="control-label">Archivo cargado (Administrador) </label>
+                            <el-input :disabled="true" v-model="certificate_admin"></el-input>
+
+                        </div>
+                    </div>
+                    <div class="col-md-6" v-show="form.is_update == true">
+                        <div class="form-group">
+                            <label class="control-label">Archivo cargado (Cliente) {{form.certificate ? '(1)' : '(0)'}}  </label>
                             <el-input :disabled="true" v-model="form.certificate"></el-input>
 
                         </div>
                     </div>
-                </div>-->
+                </div>
 
                 <div class="row">
                     <div class="col-md-6 center-el-checkbox mt-4">
@@ -248,6 +255,8 @@
                 soap_sends: [ { value: '01', text: 'Sunat' }, { value: '02', text: 'Ose' }],
                 soap_types: [{id: "01", description: "Demo"}, {id: "02", description: "Producción"}],
                 toggle: false,
+                certificate_admin: ''
+
             }
         },
         async created() {
@@ -257,6 +266,8 @@
                     this.plans = response.data.plans
                     this.modules = response.data.modules
                     this.types = response.data.types
+                    this.certificate_admin = response.data.certificate_admin
+
                 })
 
             await this.initForm()
@@ -277,8 +288,15 @@
                     type:null,
                     is_update:false,
                     modules: [],
-                    temp_path:null,
                     config_system_env: true,
+                    soap_send_id: '01',
+                    soap_type_id: '01',
+                    soap_username: null,
+                    soap_password: null,
+                    soap_url: null,
+                    password_certificate: null,
+                    certificate: null,
+                    temp_path: null,
                 }
 
                 this.modules.forEach(module => {
@@ -316,6 +334,17 @@
                 let has_modules = await this.hasModules()
                 if(!has_modules)
                     return this.$message.error('Debe seleccionar al menos un módulo')
+
+
+                if(!this.form.is_update)
+                {
+                    if(this.form.certificate && !this.form.password_certificate)
+                    {
+                     return this.$message.error('Si carga un certificado, es necesario ingresar el password del certificado')
+                    }
+                }
+
+
 
                 this.button_text = (this.form.is_update) ? 'Actualizando cliente...':'Creando base de datos...'
                 this.loading_submit = true

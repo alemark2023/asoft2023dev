@@ -40,7 +40,7 @@
                 <ul class="nav nav-main">
                     <li class="">
                         <a class="nav-link" href="{{url('logs')}}" target="_BLANK">
-                            <i class="fas fa-shopping-cart"></i><span>Logs</span>
+                            <i class="fas fa-bug"></i><span>Logs</span>
                         </a>
                     </li>
                 </ul>

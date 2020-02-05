@@ -18,8 +18,15 @@
         </div>
       </div>
     </header>
+
+
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
       <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
+        <div class="row flex-row flex-nowrap">
+            <div @click="filterCategorie(item.id)" :style="{ backgroundColor: item.color}" v-for="(item, index) in categories" :key="index" class="cat_c pointer" >
+                <p>{{item.name}}</p>
+            </div>
+        </div>
         <el-input
             placeholder="Buscar productos"
             size="medium"
@@ -319,6 +326,25 @@
   </div>
 </template>
 <style>
+
+.card-block {
+    min-height: 220px;
+}
+
+.ex1 {
+  overflow-x: scroll;
+}
+.cat_c{
+    width: 100px;
+    margin: 1%;
+    padding: 3px;
+    font-weight: bold;
+    color: white;
+    min-height: 90px;
+}
+.cat_c p {
+    color: white;
+}
 .c-width {
   width: 80px !important;
   padding: 0 !important;
@@ -374,7 +400,9 @@
             customer: {},
             row: {},
             user: {},
-            form: {}
+            form: {},
+            categories: [ ],
+            colors: ['#F9A825', '#B2F925', '#25F9C6', '#2585F9', '#F925D6', '#2595F9', 'orange', 'coral', 'darkcyan', 'red', 'crimson', 'green', 'darkgreen']
           };
         },
         async created() {
@@ -386,7 +414,22 @@
           await this.initCurrencyType()
           this.customer = await this.getLocalStorageIndex('customer')
         },
+
         methods: {
+            filterCategorie(id)
+            {
+                if(id)
+                {
+                    this.items = this.all_items.filter(x => x.category_id == id)
+
+                }else{
+                    this.filterItems()
+                }
+            },
+          getColor()
+          {
+            return this.colors[Math.floor(Math.random() * this.colors.length)]
+          },
           initCurrencyType(){
               this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
           },
@@ -899,12 +942,30 @@
               this.user = response.data.user;
               this.form.currency_type_id =
               this.currency_types.length > 0 ? this.currency_types[0].id : null;
+              this.renderCategories(response.data.categories)
               // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
               // this.changeCurrencyType();
               this.filterItems();
               this.changeDateOfIssue();
               this.changeExchangeRate()
             });
+          },
+          renderCategories(source)
+          {
+            const contex = this
+            this.categories = source.map(( obj, index ) => {
+                return {
+                    id: obj.id,
+                    name: obj.name,
+                    color: contex.getColor()
+                }
+            })
+
+            this.categories.unshift({
+                    id: null,
+                    name: 'Todos',
+                    color: 'green'
+                    })
           },
           searchItems() {
             if (this.input_item.length > 0) {
