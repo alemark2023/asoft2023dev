@@ -342,6 +342,11 @@
                     {
                      return this.$message.error('Si carga un certificado, es necesario ingresar el password del certificado')
                     }
+                }else
+                {
+                    if(this.form.temp_path && !this.form.password_certificate){
+                         return this.$message.error('Si carga un certificado, es necesario ingresar el password del certificado')
+                    }
                 }
 
 
