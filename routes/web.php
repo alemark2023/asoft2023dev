@@ -480,6 +480,8 @@ if ($hostname) {
 
            //POS
            Route::get('pos', 'Tenant\PosController@index')->name('tenant.pos.index');
+           Route::get('pos_full', 'Tenant\PosController@index_full')->name('tenant.pos_full.index');
+
            Route::get('pos/search_items', 'Tenant\PosController@search_items');
            Route::get('pos/tables', 'Tenant\PosController@tables');
            Route::get('pos/table/{table}', 'Tenant\PosController@table');
@@ -508,6 +510,9 @@ if ($hostname) {
            Route::get('cash/item/tables', 'Tenant\CashController@item_tables');
            Route::get('cash/search/customers', 'Tenant\CashController@searchCustomers');
            Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
+
+           Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
+
 
            //Tags
            Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');

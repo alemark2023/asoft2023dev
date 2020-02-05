@@ -8,9 +8,14 @@ html.sidebar-light:not(.dark) .page-header h2 {
 
 .content-body {
     display: table-cell;
-    padding: 0px; 
+    padding: 0px;
     position: relative;
     vertical-align: top;
+}
+
+.content-body-r {
+    display: block;
+    padding: 0px;
 }
 
 .hyo {
@@ -41,7 +46,7 @@ html.sidebar-light:not(.dark) .page-header h2 {
 
 .el-dialog__body_custom{
     margin-top: -50px !important;
-} 
+}
 
 .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
@@ -74,7 +79,7 @@ html.sidebar-light:not(.dark) .page-header h2 {
       height: 100px;
   }
 
-  
+
 
 .btn-primary-pos {
 	background-color: #007bff ;

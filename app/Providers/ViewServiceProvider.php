@@ -51,6 +51,10 @@ class ViewServiceProvider extends ServiceProvider
             'tenant.layouts.app',
             'App\Http\ViewComposers\Tenant\CompactSidebarViewComposer'
         );
+        view()->composer(
+            'tenant.layouts.app_pos',
+            'App\Http\ViewComposers\Tenant\CompactSidebarViewComposer'
+        );
 
         //Ecommerce
 

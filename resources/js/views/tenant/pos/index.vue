@@ -434,6 +434,10 @@
           await this.getFormPosLocalStorage()
           await this.initCurrencyType()
           this.customer = await this.getLocalStorageIndex('customer')
+
+           if(document.querySelector('.sidebar-toggle')){
+               document.querySelector('.sidebar-toggle').click()
+           }
         },
 
         methods: {
@@ -1041,7 +1045,10 @@
 
               await this.setFormPosLocalStorage()
 
-          }
+          },
+          openFullWindow() {
+                location.href = `/${this.resource}/pos_full`
+            },
         }
       };
 </script>

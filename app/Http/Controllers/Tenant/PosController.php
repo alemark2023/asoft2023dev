@@ -33,6 +33,15 @@ class PosController extends Controller
         return view('tenant.pos.index');
     }
 
+    public function index_full()
+    {
+        $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
+
+        if(!$cash) return redirect()->route('tenant.cash.index');
+
+        return view('tenant.pos.index_full');
+    }
+
     public function search_items(Request $request)
     {
         $configuration =  Configuration::first();

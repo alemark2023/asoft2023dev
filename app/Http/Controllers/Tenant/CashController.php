@@ -19,6 +19,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
 use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\Tenant\DocumentItem;
+
+
 
 class CashController extends Controller
 {
@@ -199,7 +202,6 @@ class CashController extends Controller
 
         $cash = Cash::findOrFail($cash);
         $company = Company::first();
-        // dd($cash);
 
         set_time_limit(0);
 
@@ -221,6 +223,34 @@ class CashController extends Controller
         $pdf = PDF::loadView('tenant.cash.report_general_pdf', compact("cash_documents", "company"));
         $filename = "Reporte_POS";
         return $pdf->download($filename.'.pdf');
+
+    }
+
+    public function report_products($id)
+    {
+        $cash = Cash::findOrFail($id);
+        $company = Company::first();
+        $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
+
+        $source = DocumentItem::with('document')->whereIn('document_id', $cash_documents)->get();
+
+        $documents = collect($source)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->document->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+        
+
+        $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents"));
+
+        $filename = "Reporte_POS_PRODUCTOS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
+
+
 
     }
 
