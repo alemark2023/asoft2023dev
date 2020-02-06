@@ -42,8 +42,8 @@ class Item extends ModelTenant
         'percentage_of_profit',
 
         'attributes',
-        'has_perception',        
-        'percentage_perception',        
+        'has_perception',
+        'percentage_perception',
         'image',
         'image_medium',
         'image_small',
@@ -137,25 +137,25 @@ class Item extends ModelTenant
         if ($warehouse) {
             return $query->whereHas('warehouses', function($query) use($warehouse) {
                             $query->where('warehouse_id', $warehouse->id);
-                        });
+                        })->orWhere('unit_type_id', 'ZZ');
         }
         return $query;
      }
- 
+
     public function scopeWhereTypeUser($query)
     {
-        $user = auth()->user();         
-        return ($user->type == 'seller') ? $this->scopeWhereWarehouse($query) : null; 
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $this->scopeWhereWarehouse($query) : null;
     }
 
     public function scopeWhereNotIsSet($query)
     {
-        return $query->where('is_set', false); 
+        return $query->where('is_set', false);
     }
 
     public function scopeWhereIsSet($query)
     {
-        return $query->where('is_set', true); 
+        return $query->where('is_set', true);
     }
 
     public function getStockByWarehouse()
@@ -167,9 +167,9 @@ class Item extends ModelTenant
             if ($warehouse) {
                 $item_warehouse = $this->warehouses->where('warehouse_id',$warehouse->id)->first();
                 return ($item_warehouse) ? $item_warehouse->stock : 0;
-            } 
+            }
         }
-        
+
         return 0;
     }
 
@@ -188,17 +188,17 @@ class Item extends ModelTenant
     {
         return $this->hasMany(ItemTag::class);
     }
-    
+
     public function sets()
     {
         return $this->hasMany(ItemSet::class);
     }
-    
+
     public function brand()
     {
         return $this->belongsTo(Brand::class);
     }
-    
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -214,5 +214,5 @@ class Item extends ModelTenant
         return $this->morphMany(ItemLot::class, 'item_loteable');
     }
 
-    
+
 }
