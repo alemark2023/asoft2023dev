@@ -5,11 +5,11 @@
 @endpush
 
 @section('content')
-<div class="row">
+    <!--<div class="row">
     <div class="col text-center">
       <a target="_blank" href="pos_full" class="btn btn-primary"> <i class="fas fa-arrows-alt"></i> Pantalla completa</a></a>
     </div>
-  </div>
+  </div>-->
 
     <tenant-pos-index></tenant-pos-index>
 @endsection
