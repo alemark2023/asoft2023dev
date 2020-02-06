@@ -306,8 +306,16 @@ class DocumentController extends Controller
         $category = ($row->category) ? "{$row->category->name}" : "";
         $brand = ($row->brand) ? "{$row->brand->name}" : "";
 
-        $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
-        $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
+
+
+        if($row->unit_type_id != 'ZZ')
+        {
+            $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
+            $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
+        }
+        else{
+            $stock = '';
+        }
 
         $desc = "{$desc} - {$brand}";
 
