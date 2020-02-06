@@ -9,6 +9,7 @@
       <div class="row">
         <div class="col-md-8">
           <h2 class="text-sm">POS</h2>
+          <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
         </div>
         <div class="col-md-4">
           <div class="right-wrapper">
@@ -397,6 +398,7 @@
         data() {
           return {
             history_item_id:null,
+            search_item_by_barcode:false,
             warehousesDetail:[],
             input_person:{},
             showDialogHistoryPurchases: false,
@@ -993,6 +995,7 @@
                     })
           },
           searchItems() {
+
             if (this.input_item.length > 0) {
               this.loading = true;
               let parameters = `input_item=${this.input_item}`;
@@ -1002,6 +1005,9 @@
                 .then(response => {
                   // console.log(response)
                   this.items = response.data.items;
+
+                  this.enabledSearchItemsBarcode()
+
                   this.loading = false;
                   if (this.items.length == 0) {
                     this.filterItems();
@@ -1011,6 +1017,30 @@
               // this.customers = []
               this.filterItems();
             }
+
+          },
+          enabledSearchItemsBarcode(){
+
+            if (this.search_item_by_barcode) {
+
+              if (this.items.length == 1) {
+
+                  // console.log(this.items)
+                  this.clickAddItem(this.items[0], 0);
+                  this.filterItems();
+
+              }
+
+              this.cleanInput();
+
+            }
+
+          },
+          changeSearchItemBarcode(){
+            this.cleanInput()
+          },
+          cleanInput() {
+            this.input_item = null;
           },
           filterItems() {
             this.items = this.all_items;

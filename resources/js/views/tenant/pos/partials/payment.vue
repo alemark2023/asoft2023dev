@@ -131,6 +131,32 @@
 
                 <div class="col-lg-8">
                     <div class="card card-default">
+
+                        <div class="card-body text-center">
+
+                            <div class="row col-lg-12">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Aplicar descuento"></el-switch></h2>
+                                    </div>  
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Monto descuento</label>
+                                        <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
+                                            <template slot="prepend">{{currencyTypeActive.symbol}}</template>
+                                        </el-input>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card card-default">
                         <div class="card-body">
                             <!-- <p class="text-center">Método de Pago</p> -->
                             <div class="input-group mb-3">
@@ -275,6 +301,8 @@
         props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment'],
         data() {
             return {
+                enabled_discount: false,
+                discount_amount:0,
                 loading_submit: false,
                 showDialogOptions:false,
                 showDialogMultiplePayment:false,
@@ -325,7 +353,164 @@
             // console.log(this.currencyTypeActive)
         },
         methods: {
+            changeEnabledDiscount(){
 
+                if(!this.enabled_discount){
+
+                    this.discount_amount = 0
+                    this.deleteDiscountGlobal()
+                    this.reCalculateTotal()
+
+                }
+
+            },
+            inputDiscountAmount(){
+                
+                if(this.enabled_discount){
+
+                    if(this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0){
+
+                        if(this.discount_amount >= this.form.total)
+                            return this.$message.error("El monto de descuento debe ser menor al total de venta")
+
+                        this.reCalculateTotal()
+                    
+                    }else{
+                        
+                        // this.discount_amount = 0
+                        this.deleteDiscountGlobal()
+                        this.reCalculateTotal()
+
+                    }
+
+                    // console.log(this.discount_amount)
+                }
+            },
+            discountGlobal(){
+
+                let global_discount = parseFloat(this.discount_amount) 
+
+                let base = parseFloat(this.form.total)
+                let amount = parseFloat(global_discount)
+                let factor = _.round(amount/base, 4)
+
+                let discount = _.find(this.form.discounts,{'discount_type_id':'03'})
+
+                if(global_discount>0 && !discount){
+
+                    this.form.total_discount =  _.round(amount,2)
+
+                    this.form.total =  _.round(this.form.total - amount, 2)
+
+                    this.form.total_value =  _.round(this.form.total / 1.18, 2)
+                    this.form.total_taxed =  this.form.total_value
+
+                    this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
+                    this.form.total_taxes =  this.form.total_igv
+
+                    this.form.discounts.push({
+                            discount_type_id: '03',
+                            description: 'Descuentos globales que no afectan la base imponible del IGV/IVAP',
+                            factor: factor,
+                            amount: amount,
+                            base: base
+                        })
+
+                }else{
+
+                    let index = this.form.discounts.indexOf(discount);
+
+                    if(index > -1){
+
+                        this.form.total_discount =  _.round(amount,2)
+
+                        this.form.total =  _.round(this.form.total - amount, 2)
+
+                        this.form.total_value =  _.round(this.form.total / 1.18, 2)
+                        this.form.total_taxed =  this.form.total_value
+
+                        this.form.total_igv =  _.round(this.form.total_value * 0.18, 2)
+                        this.form.total_taxes =  this.form.total_igv
+
+                        this.form.discounts[index].base = base
+                        this.form.discounts[index].amount = amount
+                        this.form.discounts[index].factor = factor
+
+                    }
+
+                }
+
+                this.difference = this.enter_amount - this.form.total
+                // console.log(this.form.discounts)
+            },
+            reCalculateTotal() {
+
+                let total_discount = 0
+                let total_charge = 0
+                let total_exportation = 0
+                let total_taxed = 0
+                let total_exonerated = 0
+                let total_unaffected = 0
+                let total_free = 0
+                let total_igv = 0
+                let total_value = 0
+                let total = 0
+                let total_plastic_bag_taxes = 0
+
+                this.form.items.forEach((row) => {
+                    total_discount += parseFloat(row.total_discount)
+                    total_charge += parseFloat(row.total_charge)
+
+                    if (row.affectation_igv_type_id === '10') {
+                        total_taxed += parseFloat(row.total_value)
+                    }
+                    if (row.affectation_igv_type_id === '20') {
+                        total_exonerated += parseFloat(row.total_value)
+                    }
+                    if (row.affectation_igv_type_id === '30') {
+                        total_unaffected += parseFloat(row.total_value)
+                    }
+                    if (row.affectation_igv_type_id === '40') {
+                        total_exportation += parseFloat(row.total_value)
+                    }
+                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                        total_free += parseFloat(row.total_value)
+                    }
+                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                        total_igv += parseFloat(row.total_igv)
+                        total += parseFloat(row.total)
+                    }
+                    total_value += parseFloat(row.total_value)
+                    total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+                });
+
+                this.form.total_exportation = _.round(total_exportation, 2)
+                this.form.total_taxed = _.round(total_taxed, 2)
+                this.form.total_exonerated = _.round(total_exonerated, 2)
+                this.form.total_unaffected = _.round(total_unaffected, 2)
+                this.form.total_free = _.round(total_free, 2)
+                this.form.total_igv = _.round(total_igv, 2)
+                this.form.total_value = _.round(total_value, 2)
+                this.form.total_taxes = _.round(total_igv, 2)
+                this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+                // this.form.total = _.round(total, 2)
+                this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+
+                this.discountGlobal()
+ 
+
+            },
+            deleteDiscountGlobal(){
+
+                let discount = _.find(this.form.discounts, {'discount_type_id':'03'})
+                let index = this.form.discounts.indexOf(discount)
+
+                if (index > -1) {
+                    this.form.discounts.splice(index, 1)
+                    this.form.total_discount = 0
+                }
+
+            },
             back()
             {
                 this.$emit('update:is_payment', false)
