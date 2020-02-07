@@ -10,6 +10,9 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Item;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Exports\InventoryExport;
+use Modules\Inventory\Models\Warehouse;
+
+
 
 use Carbon\Carbon;
 
@@ -20,14 +23,28 @@ class ReportInventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request) {
 
-        $reports = ItemWarehouse::with(['item'])->whereHas('item',function($q){
-                                    $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
-                                    $q->whereNotIsSet();
-                                })->latest()->paginate(config('tenant.items_per_page'));
 
-        return view('inventory::reports.inventory.index', compact('reports'));
+        if($request->warehouse_id && $request->warehouse_id != 'all')
+        {
+            $reports = ItemWarehouse::with(['item'])->where('warehouse_id', $request->warehouse_id)->whereHas('item',function($q){
+                $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                $q->whereNotIsSet();
+            })->latest()->paginate(config('tenant.items_per_page'));
+        }
+        else{
+
+            $reports = ItemWarehouse::with(['item'])->whereHas('item',function($q){
+                $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                $q->whereNotIsSet();
+            })->latest()->paginate(config('tenant.items_per_page'));
+        }
+
+
+        $warehouses = Warehouse::select('id', 'description')->get();
+
+        return view('inventory::reports.inventory.index', compact('reports', 'warehouses'));
     }
 
     /**
