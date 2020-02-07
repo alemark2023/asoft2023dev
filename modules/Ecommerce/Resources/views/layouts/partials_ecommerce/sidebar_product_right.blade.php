@@ -29,14 +29,30 @@
             </ul>
         </div><!-- End .widget -->
 
-        <div class="widget widget-banner">
-            <div class="banner banner-image">
-                <a href="#">
-                    <img src="{{ asset('porto-ecommerce/assets/images/banners/banner-sidebar.jpg') }}"
-                        alt="Banner Desc">
-                </a>
-            </div><!-- End .banner -->
-        </div><!-- End .widget -->
+<!-- Carousel a Editar-->
+       <div class="widget widget-banners box-carousel">
+         <div class="widget-banners-slider owl-carousel owl-theme">
+             @forelse($records as $data)
+                <div class="banner banner-image box-image">
+                    <a href="#">
+                        <img class="image" src="{{ asset('storage/uploads/items/'.$data->image) }}"alt="banner">
+                     </a>
+                        <span class="product-label label-hot">New Sales Recent</span>
+                        <span class="product-label">{{$data->description}}</span>
+                </div>
+                  @empty
+                     <div class="widget widget-banner">
+                         <div class="banner banner-image">
+                             <a href="#">
+                                <img src="{{ asset('porto-ecommerce/assets/images/banners/banner-sidebar.jpg') }}"alt="Banner Desc">
+                                    </a>
+                        </div><!-- End .banner -->
+                    </div>
+
+                @endforelse
+                            <!-- End .banner -->
+            </div><!-- End .banner-->
+        </div>
 
         @include('ecommerce::layouts.partials_ecommerce.widget_products')
     </div>
