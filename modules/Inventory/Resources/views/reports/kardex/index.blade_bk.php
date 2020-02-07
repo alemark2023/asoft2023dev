@@ -14,15 +14,15 @@
                         <form action="{{route('reports.kardex.search')}}" class="el-form demo-form-inline el-form--inline" method="GET">
                             <div class="box">
                                 <div class="box-body no-padding">
-                                    
+
                                    <!-- {{Form::label('item_id', 'Producto')}}-->
                                     <!--{{Form::select('item_id', $items->pluck('description', 'id'), old('item_id', request()->item_id), ['class' => 'form-control col-md-6'])}} -->
-                                    <tenant-product 
-                                        :data_d="{{json_encode(isset($_GET['d']) ? $_GET['d']:null)}}" 
-                                        :data_a="{{json_encode(isset($_GET['a']) ? $_GET['a']:null)}}" 
-                                        :data_products="{{json_encode($items)}}" 
+                                    <tenant-product
+                                        :data_d="{{json_encode(isset($_GET['d']) ? $_GET['d']:null)}}"
+                                        :data_a="{{json_encode(isset($_GET['a']) ? $_GET['a']:null)}}"
+                                        :data_products="{{json_encode($items)}}"
                                         :item_selected="{{json_encode(isset($_GET['item_selected']) ? $_GET['item_selected']:null)}}"
-                                    
+
                                     ></tenant-product>
                                 </div>
                                 <div class="el-form-item col-xs-12">
@@ -40,7 +40,7 @@
                                 @if(isset($reports))
                                     <form action="{{route('reports.kardex.pdf')}}" class="d-inline" method="POST">
                                         {{csrf_field()}}
-                                        
+
                                         <input type="hidden" value="{{$d}}" name="d">
                                         <input type="hidden" value="{{$a}}" name="a">
                                         <input type="hidden" name="item_id" value="{{$_GET['item_selected']}}">
@@ -48,7 +48,7 @@
                                     </form>
                                 <form action="{{route('reports.kardex.report_excel')}}" class="d-inline" method="POST">
                                     {{csrf_field()}}
-                                    
+
                                     <input type="hidden" value="{{$d}}" name="d">
                                     <input type="hidden" value="{{$a}}" name="a">
                                     <input type="hidden" name="item_id" value="{{$_GET['item_selected']}}">
@@ -82,18 +82,18 @@
                                                     @break
                                                 @case($models[1])
                                                     {{($value->quantity < 0) ? "Anulación Compra":"Compra"}}
-                                                    @break 
-                                                    
+                                                    @break
+
                                                 @case($models[2])
-                                                    {{"Nota de venta"}}                                                    
-                                                    @break  
+                                                    {{"Nota de venta"}}
+                                                    @break
 
                                                 @case($models[3])
-                                                    {{$value->inventory_kardexable->description}}                                                    
-                                                    @break  
+                                                    {{$value->inventory_kardexable->description}}
+                                                    @break
                                             @endswitch
 
-                                            
+
                                         </td>
                                         <td>
                                             @switch($value->inventory_kardexable_type)
@@ -107,12 +107,12 @@
                                                     {{ optional($value->inventory_kardexable)->prefix.'-'.optional($value->inventory_kardexable)->id }}
                                                     @break
                                                 @case($models[3])
-                                                    {{"-"}}                                                 
-                                                    @break  
+                                                    {{"-"}}
+                                                    @break
                                             @endswitch
- 
+
                                         </td>
-                                        
+
                                         <td>
 
                                             @switch($value->inventory_kardexable_type)
@@ -126,8 +126,8 @@
                                                     {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                     @break
                                                 @case($models[3])
-                                                    {{"-"}}                                                 
-                                                    @break  
+                                                    {{"-"}}
+                                                    @break
                                             @endswitch
 
 
@@ -135,72 +135,72 @@
                                         </td>
 
                                         @php
-                                        if($value->inventory_kardexable_type == $models[3]){                                             
+                                        if($value->inventory_kardexable_type == $models[3]){
                                             if(!$value->inventory_kardexable->type){
                                                 $transaction = Modules\Inventory\Models\InventoryTransaction::findOrFail($value->inventory_kardexable->inventory_transaction_id);
                                             }
-                                        }                                           
+                                        }
                                         @endphp
-                                        
+
 
                                         <td>
-                                            @switch($value->inventory_kardexable_type) 
+                                            @switch($value->inventory_kardexable_type)
 
                                                 @case($models[0])
                                                     {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
                                                     @break
 
                                                 @case($models[1])
-                                                    {{ ($value->quantity > 0) ?  $value->quantity:"-"}}                                                    
-                                                    @break 
-                                                    
+                                                    {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
+                                                    @break
+
                                                 @case($models[3])
                                                     @if($value->inventory_kardexable->type != null)
 
-                                                        {{ ($value->inventory_kardexable->type == 1) ? $value->quantity : "-" }}                                                    
+                                                        {{ ($value->inventory_kardexable->type == 1) ? $value->quantity : "-" }}
 
                                                     @else
 
-                                                        {{($transaction->type == 'input') ? $value->quantity : "-" }} 
+                                                        {{($transaction->type == 'input') ? $value->quantity : "-" }}
 
                                                     @endif
-                                                    @break  
+                                                    @break
 
                                                 @default
-                                                    {{"-"}}                                                 
-                                                    @break  
+                                                    {{"-"}}
+                                                    @break
                                             @endswitch
                                         </td>
                                         <td>
-                                            @switch($value->inventory_kardexable_type) 
+                                            @switch($value->inventory_kardexable_type)
                                                 @case($models[0])
-                                                    {{ ($value->quantity < 0) ?  $value->quantity:"-" }}                                                    
-                                                    @break 
+                                                    {{ ($value->quantity < 0) ?  $value->quantity:"-" }}
+                                                    @break
                                                 @case($models[1])
-                                                    {{ ($value->quantity < 0) ?  $value->quantity:"-"}}                                                    
-                                                    @break 
+                                                    {{ ($value->quantity < 0) ?  $value->quantity:"-"}}
+                                                    @break
                                                 @case($models[2])
-                                                    {{  $value->quantity }}                                                    
-                                                    @break      
+                                                    {{  $value->quantity }}
+                                                    @break
                                                 @case($models[3])
                                                     @if($value->inventory_kardexable->type != null)
 
-                                                        {{($value->inventory_kardexable->type == 2 || $value->inventory_kardexable->type == 3) ? $value->quantity : "-" }} 
+                                                        {{($value->inventory_kardexable->type == 2 || $value->inventory_kardexable->type == 3) ? $value->quantity : "-" }}
 
                                                     @else
 
-                                                        {{($transaction->type == 'output') ? $value->quantity : "-" }}  
+                                                        {{($transaction->type == 'output') ? $value->quantity : "-" }}
 
                                                     @endif
-                                                    @break  
+                                                    @break
                                                 @default
-                                                    {{"-"}}                                                 
-                                                    @break  
+                                                    {{"-"}}
+                                                    @break
                                             @endswitch
-                                        
+
                                         </td>
-                                        @php                  
-                                            $balance += $value->quantity;    
+                                        @php
+                                            $balance += $value->quantity;
                                         @endphp
                                         <td>{{number_format($balance, 4)}}</td>
                                     </tr>
@@ -209,7 +209,7 @@
                             </table>
                             Total {{$reports->total()}}
                             <label class="pagination-wrapper ml-2">
-                                {{$reports->appends($_GET)->render()}} 
+                                {{$reports->appends($_GET)->render()}}
                             </label>
                         </div>
                     </div>
