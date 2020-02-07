@@ -25,13 +25,34 @@
                         <div class="box-body no-padding">
 
                             <div style="margin-bottom: 10px" class="row">
+
+                                <div style="padding-top: 0.5%" class="col-md-6">
+                                    <form action="{{route('reports.inventory.index')}}" method="get">
+                                        {{csrf_field()}}
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <select class="form-control" name="warehouse_id" id="">
+                                                    <option {{ request()->warehouse_id == 'all' ?  'selected' : ''}} selected value="all">Todos</option>
+                                                    @foreach($warehouses as $item)
+                                                    <option {{ request()->warehouse_id == $item->id ?  'selected' : ''}} value="{{$item->id}}">{{$item->description}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4"> <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i> Buscar</button></div>
+                                        </div>
+                                    </form>
+                                </div>
                                 @if(isset($reports))
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <form action="{{route('reports.inventory.pdf')}}" class="d-inline" method="POST">
                                             {{csrf_field()}}
                                             <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
                                             {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                         </form>
+
+                                    </div>
+                                    <div class="col-md-2">
+
                                         <form action="{{route('reports.inventory.report_excel')}}" class="d-inline" method="POST">
                                             {{csrf_field()}}
                                             <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-excel"></i> Exportar Excel</button>
@@ -40,22 +61,6 @@
 
                                     </div>
                                 @endif
-                                    <div style="padding-top: 0.5%" class="col-md-6">
-                                        <form action="{{route('reports.inventory.index')}}" method="get">
-                                            {{csrf_field()}}
-                                            <div class="row">
-                                                <div class="col-md-8">
-                                                    <select class="form-control" name="warehouse_id" id="">
-                                                        <option {{ request()->warehouse_id == 'all' ?  'selected' : ''}} selected value="all">Todos</option>
-                                                        @foreach($warehouses as $item)
-                                                        <option {{ request()->warehouse_id == $item->id ?  'selected' : ''}} value="{{$item->id}}">{{$item->description}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-4"> <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i> Buscar</button></div>
-                                            </div>
-                                        </form>
-                                    </div>
 
 
                             </div>
