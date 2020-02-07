@@ -632,8 +632,10 @@
                       <tr>
                         <th>#</th>
                         <th>F.Emisión</th>
+                        <th>F.Vencimiento</th>
                         <th>Número</th>
                         <th>Cliente</th>
+                        <th>Días de retraso</th>
 
                         <th>Guías</th>
 
@@ -649,8 +651,10 @@
                         <tr v-if="row.total_to_pay > 0">
                           <td>{{ index + 1 }}</td>
                           <td>{{ row.date_of_issue }}</td>
+                          <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
                           <td>{{ row.number_full }}</td>
                           <td>{{ row.customer_name }}</td>
+                          <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
 
                           <td>
                             <template>
@@ -705,19 +709,19 @@
                                 >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
                               </p>
 
-                              <p>
+                              <!-- <p>
                                 Dia de retraso en el pago:
                                 <span
                                   class="custom-badge"
                                 >{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.'}}</span>
-                              </p>
+                              </p> -->
 
-                              <p>
+                              <!-- <p>
                                 Fecha de vencimiento:
                                 <span
                                   class="custom-badge"
                                 >{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
-                              </p>
+                              </p> -->
                               <el-button icon="el-icon-view" slot="reference"></el-button>
                             </el-popover>
                           </td>
