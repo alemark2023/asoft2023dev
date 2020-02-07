@@ -337,7 +337,7 @@
         </tr>
         @if($balance < 0)
            <tr>
-               <td colspan="4" class="text-right font-bold desc">VUELTO: </td>
+               <td colspan="4" class="text-right font-bold desc">VUELTO: {{ $document->currency_type->symbol }}</td>
                <td class="text-right font-bold desc">{{ number_format(abs($balance),2, ".", "") }}</td>
            </tr>
         @endif
