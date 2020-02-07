@@ -43,23 +43,20 @@
                                     </form>
                                 </div>
                                 @if(isset($reports))
-                                    <div class="col-md-2">
+                                    <div class="col-md-4">
                                         <form action="{{route('reports.inventory.pdf')}}" class="d-inline" method="POST">
                                             {{csrf_field()}}
                                             <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
                                             {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                         </form>
 
-                                    </div>
-                                    <div class="col-md-2">
-
                                         <form action="{{route('reports.inventory.report_excel')}}" class="d-inline" method="POST">
                                             {{csrf_field()}}
                                             <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-excel"></i> Exportar Excel</button>
                                             {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                         </form>
-
                                     </div>
+
                                 @endif
 
 
