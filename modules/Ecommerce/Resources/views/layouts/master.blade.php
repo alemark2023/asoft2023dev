@@ -29,7 +29,20 @@
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
 </head>
+<style>
 
+.box-carousel{
+
+}
+.box-image{
+    width: 100%;
+    height: 100%;
+    min-height: 245px;
+}
+.image{
+    height: 245px;
+}
+</style>
 <body>
     <div class="page-wrapper">
 
@@ -43,6 +56,7 @@
 
                     @php
                         $tagid = request()->query('tagid');
+                      
                     @endphp
 
                         @if(!$tagid)
@@ -106,26 +120,39 @@
                         <div class="side-menu-container">
                             <h2>CATEGORIAS</h2>
                             @include('ecommerce::layouts.partials_ecommerce.sidemenu')
-
                         </div><!-- End .side-menu-container -->
-                        <div class="widget widget-banners">
-                            <div class="widget-banners-slider owl-carousel owl-theme">
+
+                        <!-- SlidShow Side Bar, Carousel a Editar -->
+
+                <div class="widget widget-banners box-carousel">
+                   <div class="widget-banners-slider owl-carousel owl-theme">
+                     @forelse($records as $data)
+                         <div class="banner banner-image box-image">
+                            <a href="#">
+                                <img class="image" src="{{ asset('storage/uploads/items/'.$data->image) }}"
+                                            alt="banner">
+                             </a>
+                            <span class="product-label label-hot">New Sales Recent</span>
+                            <span class="product-label">{{$data->description}}</span>
+                        </div>
+                        @empty
+                            <div class="widget widget-banner">
                                 <div class="banner banner-image">
                                     <a href="#">
                                         <img src="{{ asset('porto-ecommerce/assets/images/banners/banner-sidebar.jpg') }}"
-                                            alt="banner">
+                                            alt="Banner Desc">
                                     </a>
-                                </div><!-- End .banner -->
+                            </div><!-- End .banner -->
+                    </div>
 
-                                <div class="banner banner-image">
-                                    <a href="#">
-                                        <img src="{{ asset('porto-ecommerce/assets/images/banners/banner-sidebar-2.jpg') }}"
-                                            alt="banner">
-                                    </a>
-                                </div><!-- End .banner -->
-                            </div><!-- End .banner-slider -->
-                        </div><!-- End .widget -->
+                    @endforelse
+                            <!-- End .banner -->
+                 </div><!-- End .banner-slider -->
+                       <!-- End .widget or  SlideShow-->
+                </div>
 
+       
+          
                         <!-- <div class="widget widget-newsletters">
                            <h3 class="widget-title">Newsletter</h3>
                             <p>Get all the latest information on Events, Sales and Offers. </p>

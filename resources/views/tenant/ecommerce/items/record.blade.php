@@ -8,8 +8,7 @@
             <div class="product-slider-container product-item">
                 <div class="product-single-carousel owl-carousel owl-theme">
                     <div class="product-item">
-                        <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image) }}"
-                            data-zoom-image="{{ asset('storage/uploads/items/'.$record->image) }}" />
+                       
                     </div>
                     <!--<div class="product-item">
                         <img class="product-single-image" src="assets/images/products/zoom/product-2.jpg"
@@ -29,20 +28,7 @@
                     <i class="icon-plus"></i>
                 </span>
             </div>
-            <div class="prod-thumbnail row owl-dots" id='carousel-custom-dots'>
-                <div class="col-3 owl-dot">
-                    <img src="{{ asset('storage/uploads/items/'.$record->image) }}" />
-                </div>
-                <!--<div class="col-3 owl-dot">
-                    <img src="assets/images/products/zoom/product-2.jpg" />
-                </div>
-                <div class="col-3 owl-dot">
-                    <img src="assets/images/products/zoom/product-3.jpg" />
-                </div>
-                <div class="col-3 owl-dot">
-                    <img src="assets/images/products/zoom/product-4.jpg" />
-                </div> -->
-            </div>
+           
         </div><!-- End .col-lg-7 -->
 
         <div class="col-lg-5 col-md-6">
@@ -77,10 +63,7 @@
                     </div>-->
                     <!-- End .product-single-qty -->
 
-                    <a href="#" class="paction add-cart" data-product="{{ json_encode( $record ) }}"
-                        title="Add to Cart">
-                        <span>Agregar a Carrito</span>
-                    </a>
+                   
                     <!-- <a href="#" class="paction add-wishlist" title="Add to Wishlist">
                         <span>Add to Wishlist</span>
                     </a>
