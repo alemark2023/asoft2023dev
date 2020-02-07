@@ -39,6 +39,7 @@
                                         </form>
 
                                     </div>
+                                @endif
                                     <div class="col-md-8">
                                         <form action="{{route('reports.inventory.index')}}" method="get">
                                             {{csrf_field()}}
@@ -55,7 +56,7 @@
                                         </div>
                                         </form>
                                     </div>
-                                @endif
+
 
                             </div>
                             <table width="100%" class="table table-striped table-responsive-xl table-bordered table-hover">
