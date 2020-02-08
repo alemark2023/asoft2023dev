@@ -3,7 +3,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use App\Models\Tenant\Item;
 
 class ViewServiceProvider extends ServiceProvider
 {
@@ -113,6 +112,10 @@ class ViewServiceProvider extends ServiceProvider
             'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
         );
 
+       /*view()->composer(
+            'ecommerce',
+            'Modules\Ecommerce\Http\ViewComposers\TakeProductoViewComposer'
+        ); */
     }
 
     /**
