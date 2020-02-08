@@ -113,8 +113,6 @@ class ViewServiceProvider extends ServiceProvider
             'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
         );
 
-        view()->share('records', Item::orderBy('id', 'DESC')->take(2)->get());
-
     }
 
     /**
