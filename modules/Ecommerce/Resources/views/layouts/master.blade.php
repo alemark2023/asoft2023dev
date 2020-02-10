@@ -31,18 +31,7 @@
 </head>
 <style>
 
-.box-carousel{
-    height: 245px;
-}
-.box-image{
-    width: 100%;
-    height: 100%;
-}
-.image{
-    background-size:cover;
-    width: 100%;
-    height: 100%;
-}
+
 </style>
 <body>
     <div class="page-wrapper">
@@ -125,19 +114,19 @@
 
                         <!-- SlidShow Side Bar, Carousel a Editar -->
 
-                <div class="widget widget-banners box-carousel">
+                <div class="box-carousel">
                    <div class="widget-banners-slider owl-carousel owl-theme">
                      @forelse($records as $data)
                             @if($data->apply_store === 1)
-                             <div class="banner banner-image box-image">
-     
-                            <a href="/ecommerce/item/{{ $data->id }}" class="image product-image">
-                                <img src="{{ asset('storage/uploads/items/'.$data->image) }}" alt="product" class="image">
-                            </a>
-                            <a href="{{route('item_partial', ['id' => $data->id])}}" class="btn-quickview">Vista Rápida</a>
-                            <span class="product-label label-hot">New Sales Recent</span>
+
+                    <figure class="product-image-container boxing">
+                        <a href="/ecommerce/item/{{ $data->id }}" class="product-image">
+                            <img src="{{ asset('storage/uploads/items/'.$data->image) }}" alt="product" class="image">
+                        </a>
+                        <a href="{{route('item_partial', ['id' => $data->id])}}" class="btn-quickview">Vista Rápida</a>
+                     <span class="product-label label-hot">New Sales Recent</span>
                                 <span class="product-label">{{$data->description}}</span>
-                            </div>
+                    </figure>
                             @endif
                         @empty
                             <div class="widget widget-banner">
