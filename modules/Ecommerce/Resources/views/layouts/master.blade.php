@@ -128,6 +128,7 @@
                 <div class="widget widget-banners box-carousel">
                    <div class="widget-banners-slider owl-carousel owl-theme">
                      @forelse($records as $data)
+                        @if($data->apply_store === 1)
                          <div class="banner banner-image box-image">
  
                         <a href="/ecommerce/item/{{ $data->id }}" class="image product-image">
@@ -137,6 +138,7 @@
                         <span class="product-label label-hot">New Sales Recent</span>
                             <span class="product-label">{{$data->description}}</span>
                         </div>
+                        @endif
                         @empty
                             <div class="widget widget-banner">
                                 <div class="banner banner-image">
@@ -145,8 +147,7 @@
                                             alt="Banner Desc">
                                     </a>
                             </div><!-- End .banner -->
-                    </div>
-
+                        </div>
                     @endforelse
                             <!-- End .banner -->
                  </div><!-- End .banner-slider -->
