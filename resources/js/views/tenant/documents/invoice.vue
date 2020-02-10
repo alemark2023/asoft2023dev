@@ -26,11 +26,11 @@
                                 <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
                                 
-                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeAffectationTypePrepayment">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
                                 
                                 <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
-                                        @change="changePrepaymentDeduction" 
+                                        @change="changeAffectationTypePrepayment" 
                                         active-color="#409EFF" 
                                         inactive-color="#409EFF" 
                                         active-text="Exonerado" 
@@ -879,7 +879,6 @@
                 // this.activePanel = (this.prepayment_deduction) ? '1':0
                 if(this.prepayment_deduction){
 
-                    this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10:this.form.affectation_type_prepayment
                     await this.changeTotalPrepayment()
                     await this.getDocumentsPrepayment()
 
@@ -887,10 +886,14 @@
                 else{
 
                     this.form.total_prepayment = 0
-                    this.form.affectation_type_prepayment = null
                     await this.deletePrepaymentDiscount()
 
                 }
+
+            },
+            changeAffectationTypePrepayment(){
+                
+                this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10:this.form.affectation_type_prepayment
 
             },
             deletePrepaymentDiscount(){
