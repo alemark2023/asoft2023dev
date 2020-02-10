@@ -26,7 +26,7 @@
                                 <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
                                 
-                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeAffectationTypePrepayment">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
                                 
                                 <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
@@ -795,48 +795,88 @@
                     global_discount += parseFloat(item.amount)
                 })
 
-                let base = parseFloat(this.form.total_taxed)
-                let amount = parseFloat(global_discount)
-                let factor = _.round(amount/base,2)
+                let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
+                let amount = _.round(parseFloat(global_discount), 2)
+                let factor = _.round(amount/base, 4)
 
-                this.form.total_prepayment = global_discount
+                this.form.total_prepayment = _.round(global_discount, 2)
 
-                let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
+                if(this.form.affectation_type_prepayment == 10){
 
-                if(global_discount>0 && !discount){
-                    // console.log("gl 0")
+                    
+                    let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
 
-                    this.form.total_discount =  _.round(amount,2)
-                    this.form.total_value =  _.round(base - amount,2)
-                    this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
-                    this.form.total_taxes =  _.round(this.form.total_igv,2)
-                    this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
-
-                    this.form.discounts.push({
-                            discount_type_id: "04",
-                            description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
-                            factor: factor,
-                            amount: amount,
-                            base: base
-                        })
-
-                }else{
-
-                    let pos = this.form.discounts.indexOf(discount);
-
-                    if(pos > -1){
+                    if(global_discount>0 && !discount){
+                        // console.log("gl 0")
 
                         this.form.total_discount =  _.round(amount,2)
+                        this.form.total_taxed =  _.round(base - amount,2)
                         this.form.total_value =  _.round(base - amount,2)
                         this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
                         this.form.total_taxes =  _.round(this.form.total_igv,2)
                         this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
-                        this.form.discounts[pos].base = base
-                        this.form.discounts[pos].amount = amount
-                        this.form.discounts[pos].factor = factor
+
+                        this.form.discounts.push({
+                                discount_type_id: "04",
+                                description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
+                                factor: factor,
+                                amount: amount,
+                                base: base
+                            })
+
+                    }else{
+
+                        let pos = this.form.discounts.indexOf(discount);
+
+                        if(pos > -1){
+
+                            this.form.total_discount =  _.round(amount,2)
+                            this.form.total_value =  _.round(base - amount,2)
+                            this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
+                            this.form.total_taxes =  _.round(this.form.total_igv,2)
+                            this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+                            this.form.discounts[pos].base = base
+                            this.form.discounts[pos].amount = amount
+                            this.form.discounts[pos].factor = factor
+
+                        }
 
                     }
 
+                }else{
+
+                    let exonerated_discount = _.find(this.form.discounts,{'discount_type_id':'05'})
+
+
+                    this.form.total_discount =  _.round(amount,2)
+                    this.form.total_exonerated =  _.round(base - amount,2)
+                    this.form.total_value =  this.form.total_exonerated
+                    this.form.total =  this.form.total_value
+
+                    if(global_discount>0 && !exonerated_discount){
+
+                        // console.log("gl 0")
+                        this.form.discounts.push({
+                                discount_type_id: '05',
+                                description: 'Descuentos globales por anticipos exonerados',
+                                factor: factor,
+                                amount: amount,
+                                base: base
+                            })
+
+                    }else{
+
+                        let position = this.form.discounts.indexOf(exonerated_discount);
+
+                        if(position > -1){ 
+
+                            this.form.discounts[position].base = base
+                            this.form.discounts[position].amount = amount
+                            this.form.discounts[position].factor = factor
+
+                        }
+
+                    }
                 }
 
             },
@@ -878,7 +918,8 @@
                 this.form.prepayments = []
                 // this.activePanel = (this.prepayment_deduction) ? '1':0
                 if(this.prepayment_deduction){
-
+                    
+                    await this.initialValueATPrepayment()
                     await this.changeTotalPrepayment()
                     await this.getDocumentsPrepayment()
 
@@ -891,9 +932,28 @@
                 }
 
             },
+            initialValueATPrepayment(){
+                this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10 : this.form.affectation_type_prepayment
+            },
+            cleanValueATPrepayment(){
+                this.form.affectation_type_prepayment = null
+            },
+            changeHasPrepayment(){
+
+                if(this.form.has_prepayment){
+                    this.initialValueATPrepayment()
+                }else{
+                    this.cleanValueATPrepayment()
+                }
+
+            },
             changeAffectationTypePrepayment(){
+
+                this.initialValueATPrepayment()                
                 
-                this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10:this.form.affectation_type_prepayment
+                if(this.prepayment_deduction){
+                    this.changePrepaymentDeduction()
+                } 
 
             },
             deletePrepaymentDiscount(){
