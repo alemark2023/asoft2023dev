@@ -63,6 +63,7 @@ class Document extends ModelTenant
         'has_pdf',
         'has_cdr',
         'has_prepayment',
+        'affectation_type_prepayment',
         'data_json',
         'send_server',
         'shipping_status',
@@ -347,4 +348,8 @@ class Document extends ModelTenant
         return $this->hasOne(SummaryDocument::class);
     }
 
+    public function scopeWhereAffectationTypePrepayment($query, $type)
+    {
+        return $query->where('affectation_type_prepayment', $type);
+    }
 }

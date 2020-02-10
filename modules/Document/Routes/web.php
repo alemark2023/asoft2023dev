@@ -19,6 +19,7 @@ if($current_hostname) {
                 Route::post('pay-constancy/save', 'DocumentController@savePayConstancy');
                 Route::get('detraction/tables', 'DocumentController@detractionTables');
                 Route::get('data-table/customers', 'DocumentController@dataTableCustomers');
+                Route::get('prepayments/{type}', 'DocumentController@prepayments');
             });
 
             Route::prefix('series-configurations')->group(function() {

@@ -135,7 +135,7 @@ class DocumentController extends Controller
     public function tables()
     {
         $customers = $this->table('customers');
-        $prepayment_documents = $this->table('prepayment_documents');
+        // $prepayment_documents = $this->table('prepayment_documents');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();// Establishment::all();
         $series = collect(Series::all())->transform(function($row) {
             return [
@@ -188,7 +188,7 @@ class DocumentController extends Controller
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
                         'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','prepayment_documents','is_client','select_first_document_type_03');
+                        'business_turns','is_client','select_first_document_type_03');
 
     }
 

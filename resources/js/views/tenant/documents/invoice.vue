@@ -22,8 +22,23 @@
                         <div class="col-sm-4">
                             <el-checkbox v-model="is_contingency" @change="changeEstablishment">¿Es comprobante de contigencia?</el-checkbox>
                             <template v-if="!is_client">
-                                <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
-                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
+                                
+                                <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
+                                
+                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
+                                
+                                <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
+                                        @change="changePrepaymentDeduction" 
+                                        active-color="#409EFF" 
+                                        inactive-color="#409EFF" 
+                                        active-text="Exonerado" 
+                                        inactive-text="Gravado" 
+                                        :active-value="20" 
+                                        :inactive-value="10">
+                                </el-switch>
+
                             </template>
                         </div>
                     </div>
@@ -709,7 +724,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
-                    this.prepayment_documents = response.data.prepayment_documents;
+                    // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
@@ -860,15 +875,21 @@
             async changePrepaymentDeduction(){
                 // console.log(this.prepayment_deduction)
 
+                this.form.prepayments = []
                 // this.activePanel = (this.prepayment_deduction) ? '1':0
                 if(this.prepayment_deduction){
+
+                    this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10:this.form.affectation_type_prepayment
                     await this.changeTotalPrepayment()
                     await this.getDocumentsPrepayment()
+
                 }
                 else{
-                    this.form.prepayments = []
+
                     this.form.total_prepayment = 0
+                    this.form.affectation_type_prepayment = null
                     await this.deletePrepaymentDiscount()
+
                 }
 
             },
@@ -884,7 +905,7 @@
 
             },
             getDocumentsPrepayment(){
-                this.$http.get(`/${this.resource}/table/prepayment_documents`).then((response) => {
+                this.$http.get(`/${this.resource}/prepayments/${this.form.affectation_type_prepayment}`).then((response) => {
                     this.prepayment_documents = response.data
                 })
             },
@@ -1004,6 +1025,7 @@
                     additional_information:null,
                     plate_number:null,
                     has_prepayment:false,
+                    affectation_type_prepayment:null,
                     actions: {
                         format_pdf:'a4',
                     },
@@ -1329,7 +1351,29 @@
 
                 }
             },
+            async validateAffectationTypePrepayment() {
+                
+                let not_equal_affectation_type = 0
+
+                await this.form.items.forEach(item => {
+                    if(item.affectation_igv_type_id != this.form.affectation_type_prepayment){
+                        not_equal_affectation_type++
+                    }
+                });
+
+                return {
+                    success: (not_equal_affectation_type > 0) ? false:true,
+                    message: 'Los items deben tener tipo de afectación igual al seleccionado en el anticipo'
+                }
+            },
             async submit() {
+
+                if(this.form.has_prepayment || this.prepayment_deduction){
+                    let error_prepayment = await this.validateAffectationTypePrepayment()
+                    if(!error_prepayment.success)
+                        return this.$message.error(error_prepayment.message);
+                }
+                
 
                 if(this.is_receivable){
                     this.form.payments = []
