@@ -272,11 +272,15 @@ class Facturalo
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
-        if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')) {
+        if (($format_pdf === 'ticket') OR 
+            ($format_pdf === 'ticket_58') OR 
+            ($format_pdf === 'ticket_50')) 
+        {
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
             if(config('tenant.enabled_template_ticket_70')) $width = 70;
+            if($format_pdf === 'ticket_50') $width = 45;
 
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
@@ -346,7 +350,7 @@ class Facturalo
                 'margin_bottom' => 0,
                 'margin_left' => 1
             ]);
-        } else if($format_pdf === 'a5'){
+        }else if($format_pdf === 'a5'){
 
             $company_name      = (strlen($this->company->name) / 20) * 10;
             $company_address   = (strlen($this->document->establishment->address) / 30) * 10;
