@@ -54,7 +54,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- <div class="row" v-if="type === 'customers'">
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.person_type_id}">
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                 </div> -->
-                
+
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.country_id}">
@@ -177,27 +177,59 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="row mt-2">
-                    <div class="col-md-12">
-                        <a href="#" @click.prevent="clickAddAddress">Agregar otra dirección</a>
+                <div class="row m-t-10">
+                    <div class="col-md-12 text-center">
+                        <el-button size="mini" icon="el-icon-plus" @click.prevent="clickAddAddress()">Agregar dirección</el-button>
                     </div>
+                </div>
+                <div class="row m-t-10" v-for="(row, index) in form.addresses">
                     <div class="col-md-12">
-                        <div class="row" v-for="row in form.more_address">
-                            <div class="col-md-5">
-                                <div class="form-group">
-                                    <label class="control-label">Ubigeo</label>
-                                    <el-cascader :options="locations" v-model="row.location_id" :clearable="true" filterable></el-cascader>
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="form-group">
-                                    <label class="control-label">Dirección</label>
-                                    <el-input v-model="row.address"></el-input>
-                                </div>
-                            </div>
+                        <label class="control-label" v-if="index === 0">
+                            Dirección principal
+                        </label>
+                        <label class="control-label" v-else>
+                            Dirección secundaria # {{ index }}
+                            <el-button size="mini" icon="el-icon-minus" @click.prevent="clickRemoveAddress(index)" class="btn-default-danger">Eliminar dirección</el-button>
+                        </label>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.country_id}">
+                            <label class="control-label">País</label>
+                            <el-select v-model="row.country_id" filterable>
+                                <el-option v-for="option in countries" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.country_id" v-text="errors.country_id[0]"></small>
                         </div>
                     </div>
-                </div> -->
+                    <div class="col-md-8">
+                        <div class="form-group" :class="{'has-danger': errors.location_id}">
+                            <label class="control-label">Ubigeo</label>
+                            <el-cascader :options="locations" v-model="row.location_id" :clearable="true" filterable></el-cascader>
+                            <small class="form-control-feedback" v-if="errors.location_id" v-text="errors.location_id[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group" :class="{'has-danger': errors.address}">
+                            <label class="control-label">Dirección</label>
+                            <el-input v-model="row.address"></el-input>
+                            <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.phone}">
+                            <label class="control-label">Teléfono</label>
+                            <el-input v-model="row.phone"></el-input>
+                            <small class="form-control-feedback" v-if="errors.phone" v-text="errors.phone[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.email}">
+                            <label class="control-label">Correo electrónico</label>
+                            <el-input v-model="row.email"></el-input>
+                            <small class="form-control-feedback" v-if="errors.email" v-text="errors.email[0]"></small>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -283,7 +315,7 @@
                     percentage_perception:0,
                     person_type_id:null,
                     comment:null,
-                    more_address: []
+                    addresses: []
                 }
             },
             async opened() {
@@ -330,10 +362,20 @@
                 }
             },
             clickAddAddress() {
-                this.form.more_address.push({
+               /* this.form.more_address.push({
                     location_id: [],
                     address: null,
-                })
+                })*/
+
+                this.form.addresses.push({
+                    'id': null,
+                    'country_id': 'PE',
+                    'location_id': [],
+                    'address': null,
+                    'email': null,
+                    'phone': null,
+                    'main': false,
+                });
             },
             submit() {
                 this.loading_submit = true
@@ -399,6 +441,10 @@
                 this.filterDistricts()
 //                this.form.addresses[0].telephone = data.telefono;
            },
+           clickRemoveAddress()
+           {
+                this.form.addresses.splice(index, 1);
+           }
         }
     }
 </script>

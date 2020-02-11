@@ -96,12 +96,19 @@
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
                                         @keyup.enter.native="keyupCustomer"
-                                        :loading="loading_search">
+                                        :loading="loading_search"
+                                        @change="changeCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+                                </div>
+                                <div v-if="customer_addresses.length > 0" class="form-group">
+                                    <label class="control-label font-weight-bold text-info">Dirección</label>
+                                    <el-select v-model="form.customer_address_id">
+                                        <el-option v-for="option in customer_addresses" :key="option.id" :value="option.id" :label="option.address"></el-option>
+                                    </el-select>
                                 </div>
                             </div>
                             <div class="col-lg-2">
@@ -278,7 +285,7 @@
 
 
                                             <template v-if="!isActiveBussinessTurn('tap')">
-                                                
+
                                                 <template v-if="!is_client">
 
                                                     <div class="col-md-6">
@@ -337,7 +344,7 @@
                                                 </div>
                                             </template>
                                             <template v-else>
-                                                
+
                                                 <template v-if="!is_client">
 
                                                     <div class="col-md-5">
@@ -394,7 +401,7 @@
                                                         <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="col-md-2">
                                                     <div class="form-group" :class="{'has-danger': errors.plate_number}">
                                                         <label class="control-label">N° Placa</label>
@@ -407,7 +414,7 @@
                                                     </div>
                                                 </div>
                                             </template>
-                                            
+
                                         </div>
                                     </el-collapse-item>
                                 </el-collapse>
@@ -681,6 +688,7 @@
                 select_first_document_type_03:false,
                 detraction_types: [],
                 all_detraction_types: [],
+                customer_addresses:  []
 
             }
         },
@@ -704,7 +712,7 @@
                     this.company = response.data.company;
                     this.user = response.data.user;
                     this.document_type_03_filter = response.data.document_type_03_filter;
-                    this.select_first_document_type_03 = response.data.select_first_document_type_03 
+                    this.select_first_document_type_03 = response.data.select_first_document_type_03
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
@@ -1009,6 +1017,7 @@
                     },
                     hotel: {},
                     transport: {},
+                    customer_address_id:null
                 }
 
                 this.clickAddPayment()
@@ -1307,7 +1316,7 @@
 
             },
             async asignPlateNumberToItems(){
-                
+
                 if(this.form.plate_number){
 
                     await this.form.items.forEach(item => {
@@ -1324,7 +1333,7 @@
                                 duration: null,
                             })
                         }
-                             
+
                     });
 
                 }
@@ -1408,6 +1417,24 @@
                     this.form.customer_id = customer_id
                 })
             },
+             changeCustomer() {
+                this.customer_addresses = [];
+                let customer = _.find(this.customers, {'id': this.form.customer_id});
+                this.customer_addresses = customer.addresses;
+                if(customer.address)
+                {
+                    this.customer_addresses.unshift({
+                        id:null,
+                        address: customer.address
+                    })
+                }
+
+
+                /*if(this.customer_addresses.length > 0) {
+                    let address = _.find(this.customer_addresses, {'main' : 1});
+                    this.form.customer_address_id = address.id;
+                }*/
+            }
         }
     }
 </script>

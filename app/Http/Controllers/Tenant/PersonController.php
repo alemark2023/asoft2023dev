@@ -86,10 +86,12 @@ class PersonController extends Controller
         $person->fill($request->all());
         $person->save();
 
-        // foreach ($request->input('more_address') as $row)
-        // {
-        //     $person->more_address()->create($row);
-        // }
+        $person->addresses()->delete();
+        $addresses = $request->input('addresses');
+        foreach ($addresses as $row)
+        {
+            $person->addresses()->updateOrCreate( ['id' => $row['id']], $row);
+        }
 
         return [
             'success' => true,

@@ -44,7 +44,11 @@ class Person extends ModelTenant
     //         $builder->where('status', 1);
     //     });
     // }
-
+    
+    public function addresses()
+    {
+        return $this->hasMany(PersonAddress::class);
+    }
     public function identity_document_type()
     {
         return $this->belongsTo(IdentityDocumentType::class, 'identity_document_type_id');
