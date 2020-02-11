@@ -29,8 +29,13 @@ class EcommerceController extends Controller
      * Display a listing of the resource.
      * @return Response
      */
+    public function __construct(){
+        return view()->share('records', Item::where('apply_store', 1)->orderBy('id', 'DESC')->take(2)->get());
+    }
+    
     public function index()
     {
+
         return view('ecommerce::index');
     }
 
