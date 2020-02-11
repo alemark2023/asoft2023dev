@@ -201,7 +201,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="form-group mb-2 mr-2" >
-                                                        <el-input v-model="row.payment"></el-input>
+             <!--form.total suplanto a row.payment -->   <el-input v-model="form.total"></el-input>
                                                     </div>
                                                 </td>
                                                 <td class="series-table-actions text-center">
@@ -699,7 +699,7 @@
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
-                    this.payment_method_types = response.data.payment_method_types
+                   this.payment_method_types = response.data.payment_method_types
                     this.enabled_discount_global = response.data.enabled_discount_global
                     this.company = response.data.company;
                     this.user = response.data.user;
@@ -920,6 +920,7 @@
                     payment_method_type_id: '01',
                     reference: null,
                     payment: 0,
+
                 });
             },
             clickCancel(index) {
