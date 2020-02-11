@@ -256,6 +256,7 @@
         @endif
     </cac:TaxTotal>
     <cac:RequestedMonetaryTotal>
+        <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:TaxInclusiveAmount>
         @if($document->total_other_charges > 0)
         <cbc:ChargeTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_other_charges }}</cbc:ChargeTotalAmount>
         @endif
