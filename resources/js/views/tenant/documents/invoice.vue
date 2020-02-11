@@ -831,10 +831,12 @@
                         if(pos > -1){
 
                             this.form.total_discount =  _.round(amount,2)
+                            this.form.total_taxed =  _.round(base - amount,2)
                             this.form.total_value =  _.round(base - amount,2)
                             this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
                             this.form.total_taxes =  _.round(this.form.total_igv,2)
                             this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+                            
                             this.form.discounts[pos].base = base
                             this.form.discounts[pos].amount = amount
                             this.form.discounts[pos].factor = factor
@@ -913,10 +915,11 @@
 
             },
             async changePrepaymentDeduction(){
-                // console.log(this.prepayment_deduction)
 
                 this.form.prepayments = []
-                // this.activePanel = (this.prepayment_deduction) ? '1':0
+                this.form.total_prepayment = 0
+                await this.deletePrepaymentDiscount()
+                
                 if(this.prepayment_deduction){
                     
                     await this.initialValueATPrepayment()
@@ -924,12 +927,12 @@
                     await this.getDocumentsPrepayment()
 
                 }
-                else{
+                // else{
 
-                    this.form.total_prepayment = 0
-                    await this.deletePrepaymentDiscount()
+                    // this.form.total_prepayment = 0
+                    // await this.deletePrepaymentDiscount()
 
-                }
+                // }
 
             },
             initialValueATPrepayment(){
@@ -947,18 +950,23 @@
                 }
 
             },
-            changeAffectationTypePrepayment(){
+            async changeAffectationTypePrepayment(){
 
-                this.initialValueATPrepayment()                
+                await this.initialValueATPrepayment()                
                 
                 if(this.prepayment_deduction){
-                    this.changePrepaymentDeduction()
+                    
+                    this.form.total_prepayment = 0
+                    await this.deletePrepaymentDiscount()
+                    await this.changePrepaymentDeduction()
                 } 
 
             },
-            deletePrepaymentDiscount(){
+            async deletePrepaymentDiscount(){
 
-                let discount = _.find(this.form.discounts, {'discount_type_id':'04'})
+                let discount = await _.find(this.form.discounts, {'discount_type_id':'04'})
+                let discount_exonerated = await _.find(this.form.discounts, {'discount_type_id':'05'})
+
                 let pos = this.form.discounts.indexOf(discount)
                 if (pos > -1) {
                     // console.log(' ya existe en la colección de verduras.');
@@ -966,6 +974,11 @@
                     this.changeTotalPrepayment()
                 }
 
+                let pos_exonerated = this.form.discounts.indexOf(discount_exonerated)
+                if (pos_exonerated > -1) {
+                    this.form.discounts.splice(pos_exonerated, 1)
+                    this.changeTotalPrepayment()
+                }
             },
             getDocumentsPrepayment(){
                 this.$http.get(`/${this.resource}/prepayments/${this.form.affectation_type_prepayment}`).then((response) => {
