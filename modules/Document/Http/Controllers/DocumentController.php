@@ -216,4 +216,24 @@ class DocumentController extends Controller
             'message' =>  'Constancia de pago guardada',
         ];
     }
+
+    
+    public function prepayments($type)
+    {
+
+        $prepayment_documents = Document::whereHasPrepayment()->whereAffectationTypePrepayment($type)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->series.'-'.$row->number,
+                'series' => $row->series,
+                'number' => $row->number,
+                'document_type_id' => ($row->document_type_id == '01') ? '02':'03',
+                'amount' => $row->total_value,
+                'total' => $row->total,
+
+            ];
+        });
+        return $prepayment_documents;
+
+    }
 }

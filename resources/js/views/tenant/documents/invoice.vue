@@ -22,8 +22,23 @@
                         <div class="col-sm-4">
                             <el-checkbox v-model="is_contingency" @change="changeEstablishment">¿Es comprobante de contigencia?</el-checkbox>
                             <template v-if="!is_client">
-                                <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
-                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
+                                
+                                <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
+                                
+                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
+                                
+                                <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
+                                        @change="changeAffectationTypePrepayment" 
+                                        active-color="#409EFF" 
+                                        inactive-color="#409EFF" 
+                                        active-text="Exonerado" 
+                                        inactive-text="Gravado" 
+                                        :active-value="20" 
+                                        :inactive-value="10">
+                                </el-switch>
+
                             </template>
                         </div>
                     </div>
@@ -717,7 +732,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
-                    this.prepayment_documents = response.data.prepayment_documents;
+                    // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
@@ -788,48 +803,90 @@
                     global_discount += parseFloat(item.amount)
                 })
 
-                let base = parseFloat(this.form.total_taxed)
-                let amount = parseFloat(global_discount)
-                let factor = _.round(amount/base,2)
+                let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
+                let amount = _.round(parseFloat(global_discount), 2)
+                let factor = _.round(amount/base, 4)
 
-                this.form.total_prepayment = global_discount
+                this.form.total_prepayment = _.round(global_discount, 2)
 
-                let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
+                if(this.form.affectation_type_prepayment == 10){
 
-                if(global_discount>0 && !discount){
-                    // console.log("gl 0")
+                    
+                    let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
 
-                    this.form.total_discount =  _.round(amount,2)
-                    this.form.total_value =  _.round(base - amount,2)
-                    this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
-                    this.form.total_taxes =  _.round(this.form.total_igv,2)
-                    this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
-
-                    this.form.discounts.push({
-                            discount_type_id: "04",
-                            description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
-                            factor: factor,
-                            amount: amount,
-                            base: base
-                        })
-
-                }else{
-
-                    let pos = this.form.discounts.indexOf(discount);
-
-                    if(pos > -1){
+                    if(global_discount>0 && !discount){
+                        // console.log("gl 0")
 
                         this.form.total_discount =  _.round(amount,2)
+                        this.form.total_taxed =  _.round(base - amount,2)
                         this.form.total_value =  _.round(base - amount,2)
                         this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
                         this.form.total_taxes =  _.round(this.form.total_igv,2)
                         this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
-                        this.form.discounts[pos].base = base
-                        this.form.discounts[pos].amount = amount
-                        this.form.discounts[pos].factor = factor
+
+                        this.form.discounts.push({
+                                discount_type_id: "04",
+                                description: "Descuentos globales por anticipos gravados que afectan la base imponible del IGV/IVAP",
+                                factor: factor,
+                                amount: amount,
+                                base: base
+                            })
+
+                    }else{
+
+                        let pos = this.form.discounts.indexOf(discount);
+
+                        if(pos > -1){
+
+                            this.form.total_discount =  _.round(amount,2)
+                            this.form.total_taxed =  _.round(base - amount,2)
+                            this.form.total_value =  _.round(base - amount,2)
+                            this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
+                            this.form.total_taxes =  _.round(this.form.total_igv,2)
+                            this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
+                            
+                            this.form.discounts[pos].base = base
+                            this.form.discounts[pos].amount = amount
+                            this.form.discounts[pos].factor = factor
+
+                        }
 
                     }
 
+                }else{
+
+                    let exonerated_discount = _.find(this.form.discounts,{'discount_type_id':'05'})
+
+
+                    this.form.total_discount =  _.round(amount,2)
+                    this.form.total_exonerated =  _.round(base - amount,2)
+                    this.form.total_value =  this.form.total_exonerated
+                    this.form.total =  this.form.total_value
+
+                    if(global_discount>0 && !exonerated_discount){
+
+                        // console.log("gl 0")
+                        this.form.discounts.push({
+                                discount_type_id: '05',
+                                description: 'Descuentos globales por anticipos exonerados',
+                                factor: factor,
+                                amount: amount,
+                                base: base
+                            })
+
+                    }else{
+
+                        let position = this.form.discounts.indexOf(exonerated_discount);
+
+                        if(position > -1){ 
+
+                            this.form.discounts[position].base = base
+                            this.form.discounts[position].amount = amount
+                            this.form.discounts[position].factor = factor
+
+                        }
+
+                    }
                 }
 
             },
@@ -866,23 +923,58 @@
 
             },
             async changePrepaymentDeduction(){
-                // console.log(this.prepayment_deduction)
 
-                // this.activePanel = (this.prepayment_deduction) ? '1':0
+                this.form.prepayments = []
+                this.form.total_prepayment = 0
+                await this.deletePrepaymentDiscount()
+                
                 if(this.prepayment_deduction){
+                    
+                    await this.initialValueATPrepayment()
                     await this.changeTotalPrepayment()
                     await this.getDocumentsPrepayment()
+
                 }
-                else{
-                    this.form.prepayments = []
-                    this.form.total_prepayment = 0
-                    await this.deletePrepaymentDiscount()
+                // else{
+
+                    // this.form.total_prepayment = 0
+                    // await this.deletePrepaymentDiscount()
+
+                // }
+
+            },
+            initialValueATPrepayment(){
+                this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10 : this.form.affectation_type_prepayment
+            },
+            cleanValueATPrepayment(){
+                this.form.affectation_type_prepayment = null
+            },
+            changeHasPrepayment(){
+
+                if(this.form.has_prepayment){
+                    this.initialValueATPrepayment()
+                }else{
+                    this.cleanValueATPrepayment()
                 }
 
             },
-            deletePrepaymentDiscount(){
+            async changeAffectationTypePrepayment(){
 
-                let discount = _.find(this.form.discounts, {'discount_type_id':'04'})
+                await this.initialValueATPrepayment()                
+                
+                if(this.prepayment_deduction){
+                    
+                    this.form.total_prepayment = 0
+                    await this.deletePrepaymentDiscount()
+                    await this.changePrepaymentDeduction()
+                } 
+
+            },
+            async deletePrepaymentDiscount(){
+
+                let discount = await _.find(this.form.discounts, {'discount_type_id':'04'})
+                let discount_exonerated = await _.find(this.form.discounts, {'discount_type_id':'05'})
+
                 let pos = this.form.discounts.indexOf(discount)
                 if (pos > -1) {
                     // console.log(' ya existe en la colección de verduras.');
@@ -890,9 +982,14 @@
                     this.changeTotalPrepayment()
                 }
 
+                let pos_exonerated = this.form.discounts.indexOf(discount_exonerated)
+                if (pos_exonerated > -1) {
+                    this.form.discounts.splice(pos_exonerated, 1)
+                    this.changeTotalPrepayment()
+                }
             },
             getDocumentsPrepayment(){
-                this.$http.get(`/${this.resource}/table/prepayment_documents`).then((response) => {
+                this.$http.get(`/${this.resource}/prepayments/${this.form.affectation_type_prepayment}`).then((response) => {
                     this.prepayment_documents = response.data
                 })
             },
@@ -1013,6 +1110,7 @@
                     additional_information:null,
                     plate_number:null,
                     has_prepayment:false,
+                    affectation_type_prepayment:null,
                     actions: {
                         format_pdf:'a4',
                     },
@@ -1339,7 +1437,29 @@
 
                 }
             },
+            async validateAffectationTypePrepayment() {
+                
+                let not_equal_affectation_type = 0
+
+                await this.form.items.forEach(item => {
+                    if(item.affectation_igv_type_id != this.form.affectation_type_prepayment){
+                        not_equal_affectation_type++
+                    }
+                });
+
+                return {
+                    success: (not_equal_affectation_type > 0) ? false:true,
+                    message: 'Los items deben tener tipo de afectación igual al seleccionado en el anticipo'
+                }
+            },
             async submit() {
+
+                if(this.form.has_prepayment || this.prepayment_deduction){
+                    let error_prepayment = await this.validateAffectationTypePrepayment()
+                    if(!error_prepayment.success)
+                        return this.$message.error(error_prepayment.message);
+                }
+                
 
                 if(this.is_receivable){
                     this.form.payments = []
