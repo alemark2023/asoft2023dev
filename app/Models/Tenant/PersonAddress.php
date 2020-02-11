@@ -5,20 +5,31 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\Department;
 use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\Province;
+use App\Models\Tenant\Catalogs\Country;
+
 
 class PersonAddress extends ModelTenant
 {
-    protected $table = 'person_address';
-    protected $with = ['identity_document_type', 'country', 'department', 'province', 'district'];
+    protected $table = 'person_addresses';
+    protected $with = [];
     public $timestamps = false;
     protected $fillable = [
         'person_id',
+        'country_id',
         'department_id',
         'province_id',
         'district_id',
         'address',
         'location_id',
+        'phone',
+        'email',
+        'main',
     ];
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
 
     public function department()
     {

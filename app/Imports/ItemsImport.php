@@ -8,6 +8,8 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Modules\Item\Models\Category;
+use Modules\Item\Models\Brand;
+
 
 class ItemsImport implements ToCollection
 {
@@ -41,7 +43,7 @@ class ItemsImport implements ToCollection
                 }else{
 
                     $has_igv = (strtoupper($row[7]) === 'SI')?true:false;
-                    
+
                 }
 
                 $purchase_unit_price = ($row[8])?:0;
@@ -49,6 +51,8 @@ class ItemsImport implements ToCollection
                 $stock = $row[10];
                 $stock_min = $row[11];
                 $category_name = $row[12];
+                $brand_name = $row[13];
+
 
                 if($internal_id) {
                     $item = Item::where('internal_id', $internal_id)
@@ -63,6 +67,8 @@ class ItemsImport implements ToCollection
                 if(!$item) {
 
                     $category = Category::updateOrCreate(['name' => $category_name]);
+                    $brand = Brand::updateOrCreate(['name' => $brand_name]);
+
 
                     Item::create([
                         'description' => $description,
@@ -79,6 +85,7 @@ class ItemsImport implements ToCollection
                         'stock' => $stock,
                         'stock_min' => $stock_min,
                         'category_id' => $category->id,
+                        'brand_id' => $brand->id,
                         // 'warehouse_id' => $warehouse->id
                     ]);
 
@@ -100,7 +107,7 @@ class ItemsImport implements ToCollection
                         'purchase_affectation_igv_type_id' => $purchase_affectation_igv_type_id,
                         'stock_min' => $stock_min,
                     ]);
-                    
+
                     $registered += 1;
 
                 }

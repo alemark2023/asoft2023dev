@@ -3,15 +3,26 @@
 namespace App\CoreFacturalo\Requests\Inputs\Common;
 
 use App\Models\Tenant\Person as PersonModel;
+use App\Models\Tenant\PersonAddress;
+use App\Models\Tenant\Catalogs\Country;
+use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\Catalogs\District;
+
 
 class PersonInput
 {
-    public static function set($person_id)
+    public static function set($person_id, $address_id = null)
     {
         $person = PersonModel::find($person_id);
 
         if(!$person) {
             return null;
+        }
+
+        $customer_address = null;
+        if($address_id)
+        {
+            $customer_address = PersonAddress::find($address_id);
         }
 
         return [
@@ -25,27 +36,27 @@ class PersonInput
             'trade_name' => $person->trade_name,
             'country_id' => $person->country_id,
             'country' => [
-                'id' => $person->country_id,
-                'description' => optional($person->country)->description,
+                'id' => ($customer_address) ? $customer_address->country_id : $person->country_id,
+                'description' => ($customer_address) ?  optional($customer_address->country)->description :  optional($person->country)->description,
             ],
-            'department_id' => $person->department_id,
+            'department_id' =>  ($customer_address) ? $customer_address->department_id : $person->department_id,
             'department' => [
-                'id' => $person->department_id,
-                'description' => optional($person->department)->description,
+                'id' =>  ($customer_address) ? $customer_address->department_id : $person->department_id,  //$person->department_id,
+                'description' => ($customer_address) ?  optional($customer_address->department)->description :  optional($person->department)->description, // optional($person->department)->description,
             ],
-            'province_id' => $person->province_id,
+            'province_id' => ($customer_address) ? $customer_address->province_id : $person->province_id, //$person->province_id,
             'province' => [
-                'id' => $person->province_id,
-                'description' => optional($person->province)->description,
+                'id' => ($customer_address) ? $customer_address->province_id : $person->province_id, //$person->province_id,
+                'description' => ($customer_address) ?  optional($customer_address->province)->description :  optional($person->province)->description, //optional($person->province)->description,
             ],
-            'district_id' => $person->district_id,
+            'district_id' =>  ($customer_address) ? $customer_address->district_id : $person->district_id, //$person->district_id,
             'district' => [
-                'id' => $person->district_id,
-                'description' => optional($person->district)->description,
+                'id' => ($customer_address) ? $customer_address->district_id : $person->district_id, //$person->district_id,
+                'description' => ($customer_address) ?  optional($customer_address->district)->description :  optional($person->district)->description, //optional($person->district)->description,
             ],
-            'address' => $person->address,
-            'email' => $person->email,
-            'telephone' => $person->telephone,
+            'address' => ($customer_address) ? $customer_address->address : $person->address,//$person->address,
+            'email' =>  ($customer_address) ? $customer_address->email : $person->email,  //$person->email,
+            'telephone' => ($customer_address) ? $customer_address->telephone : $person->telephone, //$person->telephone,
             'perception_agent' => $person->perception_agent,
         ];
     }
