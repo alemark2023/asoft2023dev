@@ -58,17 +58,17 @@ class Item extends ModelTenant
         'category_id',
         'lot_code',
         'lots_enabled',
+        'active'
         // 'warehouse_id'
     ];
 
-    //  protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::addGlobalScope('active', function (Builder $builder) {
-    //         $builder->where('status', 1);
-    //     });
-    // }
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('active', 1);
+        });
+    }
 
     public function getAttributesAttribute($value)
     {

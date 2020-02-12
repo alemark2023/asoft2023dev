@@ -81,6 +81,35 @@ export const deletable = {
                 });
             })
         },
+        disable(url) {
+            return new Promise((resolve) => {
+                this.$confirm('¿Desea inhabilitar el registro?', 'Inhabilitar', {
+                    confirmButtonText: 'Inhabilitar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(url)
+                        .then(res => {
+                            if(res.data.success) {
+                                this.$message.success(res.data.message)
+                                resolve()
+                            }else{
+                                this.$message.error(res.data.message)
+                                resolve()
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar inhabilitar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            })
+        },
 
     }
 }

@@ -413,6 +413,26 @@ class ItemController extends Controller
 
     }
 
+    public function disable($id)
+    {
+        try {
+
+            $item = Item::findOrFail($id);
+            $item->active = 0;
+            $item->save();
+
+            return [
+                'success' => true,
+                'message' => 'Producto inhabilitado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return  ['success' => false, 'message' => 'Error inesperado, no se pudo inhabilitar el producto'];
+
+        }
+    }
+
 
 
 

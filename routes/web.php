@@ -146,6 +146,8 @@ if ($hostname) {
             Route::post('items/upload', 'Tenant\ItemController@upload');
             Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
             Route::post('items/duplicate', 'Tenant\ItemController@duplicate');
+            Route::get('items/disable/{item}', 'Tenant\ItemController@disable');
+
 
 
 

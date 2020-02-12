@@ -59,6 +59,7 @@
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="duplicate(row.id)">Clonar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDisable(row.id)">Inhabilitar</button>
 
                             </template>
                         </td>
@@ -133,6 +134,12 @@
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            },
+            clickDisable(id)
+            {
+                this.disable(`/${this.resource}/disable/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
             }
