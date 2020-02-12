@@ -92,3 +92,10 @@ Linux - Eliminar archivos por extensión: [Guía](https://docs.google.com/docume
 ## Scripts de instalacion con Docker
 
 Linux - Ubuntu 18 - Docker - SSL opcional: [script](https://gist.github.com/rashArt/bf5dac2f8f67edcebfd71f47417f2cba "Clic")<br>
+
+## Nombres de carpetas = plantilla para PDF
+
+editar el parametro PDF_TEMPLATE de su archivo .env
+
+[nombres](https://gitlab.com/b.mendoza/facturadorpro3/-/tree/master/app/CoreFacturalo/Templates/pdf "Clic")<br>
+
