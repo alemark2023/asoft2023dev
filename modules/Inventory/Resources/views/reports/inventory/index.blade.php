@@ -46,12 +46,14 @@
                                     <div class="col-md-4">
                                         <form action="{{route('reports.inventory.pdf')}}" class="d-inline" method="POST">
                                             {{csrf_field()}}
+                                            <input type="hidden" name="warehouse_id" value="{{request()->warehouse_id ? request()->warehouse_id : 'all'}}">
                                             <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
                                             {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                         </form>
 
                                         <form action="{{route('reports.inventory.report_excel')}}" class="d-inline" method="POST">
                                             {{csrf_field()}}
+                                            <input type="hidden" name="warehouse_id" value="{{request()->warehouse_id ? request()->warehouse_id : 'all'}}">
                                             <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-excel"></i> Exportar Excel</button>
                                             {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                         </form>

@@ -72,10 +72,23 @@ class ReportInventoryController extends Controller
         $company = Company::first();
         $establishment = Establishment::first();
 
-        $reports = ItemWarehouse::with(['item'])->whereHas('item', function($q){
-            $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
-            $q->whereNotIsSet();
-        })->latest()->get();
+
+        if($request->warehouse_id && $request->warehouse_id != 'all')
+        {
+            $reports = ItemWarehouse::with(['item'])->where('warehouse_id', $request->warehouse_id)->whereHas('item', function($q){
+                $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                $q->whereNotIsSet();
+            })->latest()->get();
+        }
+        else{
+
+            $reports = ItemWarehouse::with(['item'])->whereHas('item', function($q){
+                $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                $q->whereNotIsSet();
+            })->latest()->get();
+        }
+
+
 
         $pdf = PDF::loadView('inventory::reports.inventory.report_pdf', compact("reports", "company", "establishment"));
         $filename = 'Reporte_Inventario'.date('YmdHis');
@@ -92,10 +105,23 @@ class ReportInventoryController extends Controller
         $company = Company::first();
         $establishment = Establishment::first();
 
-        $records = ItemWarehouse::with(['item'])->whereHas('item', function($q){
-            $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
-            $q->whereNotIsSet();
-        })->latest()->get();
+
+        if($request->warehouse_id && $request->warehouse_id != 'all')
+        {
+            $records = ItemWarehouse::with(['item'])->where('warehouse_id', $request->warehouse_id)->whereHas('item', function($q){
+                $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                $q->whereNotIsSet();
+            })->latest()->get();
+
+        }
+        else{
+            $records = ItemWarehouse::with(['item'])->whereHas('item', function($q){
+                $q->where([['item_type_id', '01'], ['unit_type_id', '!=','ZZ']]);
+                $q->whereNotIsSet();
+            })->latest()->get();
+
+        }
+
 
         return (new InventoryExport)
             ->records($records)
