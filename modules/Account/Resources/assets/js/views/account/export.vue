@@ -93,6 +93,7 @@
                         <el-select v-model="form.type">
                             <el-option key="concar" value="concar" label="CONCAR"></el-option>
                             <el-option key="siscont" value="siscont" label="SISCONT"></el-option>
+                            <el-option key="foxcont" value="foxcont" label="FOXCONT"></el-option>
                         </el-select>
                     </div>
                 </div>

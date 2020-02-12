@@ -415,7 +415,7 @@
         </tr>
         @foreach($payments as $row)
             <tr>
-                <td class="desc">- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+                <td class="desc">&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
             </tr>
         @endforeach
     @endif

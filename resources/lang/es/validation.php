@@ -231,5 +231,7 @@ return [
         'origin_district_id' => 'ubigeo',
         'destinatation_district_id' => 'ubigeo',
         'destinatation_address' => 'dirección destino',
+        'date_start' => 'fecha inicial',
+        'date_end' => 'fecha final',
     ],
 ];
