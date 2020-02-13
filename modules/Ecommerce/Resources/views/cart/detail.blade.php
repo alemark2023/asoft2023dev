@@ -135,7 +135,7 @@
             <form autocomplete="off" action="#">
                 <div class="form-group">
                     <label for="email">Telefono:</label>
-                    <input v-model="form_contact.telephone" type="text" required autocomplete="off" class="form-control" id="name_reg"
+                    <input v-model="form_contact.telephone" type="text" required autocomplete="off" class="form-control"
                         placeholder="Ingrese número de teléfono" name="name">
                 </div>
                 <div class="form-group">
