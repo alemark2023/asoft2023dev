@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Tenant\Item;
 use Illuminate\Routing\Controller; 
-use Mpdf\QrCode\QrCode;
-use Mpdf\QrCode\Output;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class ItemController extends Controller
 {
@@ -16,21 +15,21 @@ class ItemController extends Controller
     {
 
         $item = Item::findOrFail($id);
-
-        $mpdf = new \Mpdf\Mpdf();
-
-        $mpdf->writeBarcode('978-1234-567-890');
-
-        return $mpdf->Output();
         
-        dd($item);
-    }
+        $colour = [150,150,150];
 
-    public function displayPNGBase64($value, $w = 150, $level = 'L', $background = [255, 255, 255], $color = [0, 0, 0], $filename = null, $quality = 0)
-    {
-        $qrCode = new QrCode($value, $level);
-        $output = new Output\Png();
-        $base64 = base64_encode($output->output($qrCode, $w, $background, $color, $quality));
-        return ($base64);
+        $generator = new BarcodeGeneratorPNG();
+        
+        $temp = tempnam(sys_get_temp_dir(), 'item_barcode');
+
+        file_put_contents($temp, $generator->getBarcode($item->internal_id, $generator::TYPE_CODE_128, 5, 70, $colour));
+
+        $headers = [
+            'Content-Type' => 'application/png',
+        ];
+
+        return response()->download($temp, "{$item->internal_id}-{$item->description}.png", $headers);
+
     }
+ 
 }

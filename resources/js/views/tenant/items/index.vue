@@ -60,7 +60,7 @@
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="duplicate(row.id)">Clonar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDisable(row.id)">Inhabilitar</button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickBarcode(row.id)">Cod. Barras</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickBarcode(row)">Cod. Barras</button>
 
                             </template>
                         </td>
@@ -144,8 +144,13 @@
                     this.$eventHub.$emit('reloadData')
                 )
             },
-            clickBarcode(recordId) {
-                window.open(`/${this.resource}/barcode/${recordId}`)
+            clickBarcode(row) {
+
+                if(!row.internal_id){
+                    return this.$message.error('Para generar el código de barras debe registrar el código interno.')
+                }
+
+                window.open(`/${this.resource}/barcode/${row.id}`)
             }
         }
     }
