@@ -522,7 +522,7 @@ class DocumentController extends Controller
     public function searchCustomerById($id)
     {
 
-        $customers = Person::whereType('customers')
+        $customers = Person::with('addresses')->whereType('customers')
                     ->where('id',$id)
                     ->get()->transform(function($row) {
                         return [
@@ -531,7 +531,9 @@ class DocumentController extends Controller
                             'name' => $row->name,
                             'number' => $row->number,
                             'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code
+                            'identity_document_type_code' => $row->identity_document_type->code,
+                            'addresses' => $row->addresses,
+                            'address' =>  $row->address
                         ];
                     });
 
