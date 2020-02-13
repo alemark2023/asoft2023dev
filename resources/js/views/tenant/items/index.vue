@@ -60,6 +60,7 @@
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="duplicate(row.id)">Clonar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDisable(row.id)">Inhabilitar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickBarcode(row.id)">Cod. Barras</button>
 
                             </template>
                         </td>
@@ -142,6 +143,9 @@
                 this.disable(`/${this.resource}/disable/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            clickBarcode(recordId) {
+                window.open(`/${this.resource}/barcode/${recordId}`)
             }
         }
     }
