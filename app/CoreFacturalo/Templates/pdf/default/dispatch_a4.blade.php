@@ -145,12 +145,14 @@
 </table>
 @if ($document->reference_document)
 <table class="full-width border-box">
+    @if($document->reference_document)
     <tr>
-        <td class="text-bold border-bottom font-bold">FACTURA</td>
+        <td class="text-bold border-bottom font-bold">{{$document->reference_document->document_type->description}}</td>
     </tr>
     <tr>
         <td>{{ ($document->reference_document) ? $document->reference_document->number_full : "" }}</td>
     </tr>
+    @endif
 </table>
 @endif
 
