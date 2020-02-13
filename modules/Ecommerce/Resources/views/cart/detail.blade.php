@@ -127,7 +127,27 @@
 
             </div><!-- End .checkout-methods -->
         </div><!-- End .cart-summary -->
+
+
+        <div class="cart-summary">
+            <h3>Datos de contacto y  envío</h3>
+
+            <form autocomplete="off" action="#">
+                <div class="form-group">
+                    <label for="email">Telefono:</label>
+                    <input v-model="form_contact.telephone" type="text" required autocomplete="off" class="form-control" id="name_reg"
+                        placeholder="Ingrese número de teléfono" name="name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Dirección:</label>
+                        <textarea v-model="form_contact.address" class="form-control" placeholder="Ingrese dirección de  envío" rows="2" cols="10">
+                        </textarea>
+                </div>
+            </form>
+        </div>
     </div><!-- End .col-lg-4 -->
+
+
 
 
     <div class="modal fade" id="modal_ask_document" tabindex="-1" role="dialog" data-backdrop="static"
@@ -226,6 +246,10 @@
     var app_cart = new Vue({
         el: '#app',
         data: {
+            form_contact: {
+                address:   '',
+                telephone:   '',
+            },
             payment_cash: {
                 amount: '',
                 clicked: false
@@ -321,6 +345,7 @@
                 let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
                 let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig())
                 if (response.data.success) {
+                    this.saveContactDataUser()
                     this.clearShoppingCart()
                     this.response_order_total = response.data.order.total
                     swal({
@@ -638,6 +663,10 @@
                     identity_document_type_id: '6'
                 }
 
+                this.form_contact.address =  this.user.address
+                this.form_contact.telephone =  this.user.telephone
+
+
             },
             deleteItem(id, index) {
                 //remove en fronted
@@ -732,6 +761,17 @@
                 // $("#total_amount").data('total', this.summary.total);
 
                 // this.payment_cash.amount = this.summary.total
+            },
+            saveContactDataUser()
+            {
+                let url_finally = '{{ route("tenant_ecommerce_user_data")}}';
+                axios.post(url_finally, this.form_contact, this.getHeaderConfig())
+                    .then(response => {
+                       conssole.log(ressponse.data)
+                    })
+                    .catch(error => {
+
+                    });
             }
         }
     })
@@ -812,6 +852,7 @@
                         }).then((x) => {
 
                             askedDocument(data.order);
+                            app_cart.saveContactDataUser();
                             //window.location = "{{ route('tenant.ecommerce.index') }}";
                         })
                     } else {

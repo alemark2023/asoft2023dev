@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'establishment_id','type','locked', 'identity_document_type_id', 'number'
+        'name', 'email', 'password', 'establishment_id','type','locked', 'identity_document_type_id', 'number', 'address', 'telephone'
     ];
 
     /**
@@ -109,7 +109,7 @@ class User extends Authenticatable
         return $this->belongsTo(Establishment::class);
     }
 
-    
+
     public function documents()
     {
         return $this->hasMany(Document::class);
@@ -119,14 +119,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(SaleNote::class);
     }
-     
+
     public function scopeWhereTypeUser($query)
     {
         $user = auth()->user();
         return ($user->type == 'seller') ? $query->where('id', $user->id) : null;
     }
 
-    
+
 
     public function getLevel()
     {

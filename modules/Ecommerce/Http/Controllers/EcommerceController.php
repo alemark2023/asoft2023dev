@@ -14,10 +14,6 @@ use App\Models\Tenant\Order;
 use App\Models\Tenant\ItemsRating;
 use App\Models\Tenant\ConfigurationEcommerce;
 use Modules\Ecommerce\Http\Resources\ItemBarCollection;
-
-
-
-
 use stdClass;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
@@ -32,7 +28,7 @@ class EcommerceController extends Controller
     public function __construct(){
         return view()->share('records', Item::where('apply_store', 1)->orderBy('id', 'DESC')->take(2)->get());
     }
-    
+
     public function index()
     {
 
@@ -214,7 +210,7 @@ class EcommerceController extends Controller
             $document->client = $user->name;
             $document->product = $request->producto;
             $document->total = $request->precio_culqi;
-            Mail::to($customer_email)->send(new CulqiEmail($document));
+           // Mail::to($customer_email)->send(new CulqiEmail($document));
             return [
                 'success' => true,
                 'order' => $order
@@ -270,16 +266,34 @@ class EcommerceController extends Controller
 
     }
 
-
-
-
     private function getExchangeRateSale(){
 
         $exchange_rate = app(ServiceController::class)->exchangeRateTest(date('Y-m-d'));
 
         return (array_key_exists('sale', $exchange_rate)) ? $exchange_rate['sale'] : 1;
 
+
     }
+
+    public function saveDataUser(Request $request)
+    {
+        $user = auth()->user();
+        if($request->address)
+        {
+            $user->address = $request->address;
+        }
+        if($user->telephone = $request->telephone)
+        {
+            $user->telephone = $request->telephone;
+        }
+
+        $user->save();
+
+        return ['success' => true];
+
+    }
+
+
 
 
 
