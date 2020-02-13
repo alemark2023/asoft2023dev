@@ -787,7 +787,6 @@
             title: "Culqi configuración",
             text: "El pago con visa aun no esta disponible. Intente con efectivo.",
             type: "error",
-            showConfirmButton: false,
             position: 'top-end',
             icon: 'warning',
         })
