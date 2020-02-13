@@ -36,8 +36,31 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                     }
 
+                    $this->voidedWasDeductedPrepayment($document);
+
                 }
             }         
         });
+    }
+
+    
+    private function voidedWasDeductedPrepayment($document)
+    {
+
+        if($document->prepayments){
+            
+            foreach ($document->prepayments as $row) {
+                $fullnumber = explode('-', $row->number);
+                $series = $fullnumber[0];
+                $number = $fullnumber[1];
+
+                $doc = Document::where([['series',$series],['number',$number]])->first();
+                if($doc){
+                    $doc->was_deducted_prepayment = false;
+                    $doc->save();
+                }
+            }
+        }
+        
     }
 }
