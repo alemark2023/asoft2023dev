@@ -780,6 +780,18 @@
 
 <script>
     Culqi.publicKey = {!! json_encode($configuration->token_public_culqui ) !!};
+    if(!Culqi.publicKey)
+    {
+        swal({
+
+            title: "Culqi configuración",
+            text: "El pago con visa aun no esta disponible. Intente con efectivo.",
+            type: "error",
+            showConfirmButton: false,
+            position: 'top-end',
+            icon: 'warning',
+        })
+    }
     Culqi.options({
         installments: true
     });
