@@ -44,7 +44,6 @@
                                 <th class="text-center"><h4><strong>Fecha Emisión</strong></h4></th>
                                 <th><h4><strong>Número</strong></h4></th>
                                 <th class="text-center"><h4><strong>Clientes</strong></h4></th>
-                                <th class="text-center"><h4><strong>Impuestos</strong></h4></th>
                                 <th class="text-center"><h4><strong>Por Cobrar</strong></h4></th>
                                 <th class="text-center"><h4><strong>Total</strong></h4></th>
                             </tr>
@@ -55,11 +54,9 @@
                                         <td class="celda">{{$loop->iteration}}</td>
                                         <td class="celda">{{$value->date_of_issue}}</td>
                                         <td class="celda">
-                                            {{$value->filename}}
+                                            {{$value->full_number}}
                                         </td>
                                         <td class="celda">{{$value->name}}</td>
-
-                                        <td class="celda">{{$value->total_taxes}}</td>
                                          <td class="celda">{{$value->total_value}}</td>
                                         <td class="celda">{{$value->total}}</td>
                                     </tr>
