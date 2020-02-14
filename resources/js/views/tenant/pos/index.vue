@@ -7,9 +7,14 @@
         <h2 class="text-sm">{{user.name}}</h2>
       </div> -->
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-4">
           <h2 class="text-sm">POS</h2>
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
+        </div>
+        <div class="col-md-4">
+            <h2>  <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
+             <h2>  <button type="button" :disabled="place== 'cat'"   class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
+             <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
         </div>
         <div class="col-md-4">
           <div class="right-wrapper">
@@ -37,14 +42,32 @@
           <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
         </el-input>
 
-        <div class="container testimonial-group">
+        <!--<div class="container testimonial-group">
             <div class="row text-center flex-nowrap">
                 <div  v-for="(item, index) in categories" @click="filterCategorie(item.id)"  :style="{ backgroundColor: item.color}" :key="index" class="col-sm-3 pointer">{{item.name}}</div>
 
             </div>
-        </div> <br>
+        </div> <br>-->
 
-        <div class="row">
+
+        <div  v-if="place == 'cat'" class="row">
+
+            <template  v-for="(item, index) in categories" >
+                <div class="col-md-2" :key="index">
+                    <div @click="filterCategorie(item.id)"  class="card">
+                        <div :style="{ backgroundColor: item.color}" class="card-body pointer" style="font-weight: bold;color: white;font-size: 18px;">
+                            {{item.name}}
+                        </div>
+                    </div>
+
+                </div>
+
+            </template>
+
+        </div>
+
+
+        <div v-if="place == 'prod'" class="row">
           <template v-for="(item,index) in items">
             <div class="col-lg-3 col-md-4 col-sm-6" :key="index" >
               <section class="card ">
@@ -108,6 +131,8 @@
             </div>
           </template>
         </div>
+
+
       </div>
       <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
         <div class="h-75 bg-light" style="overflow-y: auto">
@@ -397,6 +422,7 @@
 
         data() {
           return {
+            place : 'cat',
             history_item_id:null,
             search_item_by_barcode:false,
             warehousesDetail:[],
@@ -445,6 +471,7 @@
         methods: {
             filterCategorie(id)
             {
+
                 if(id)
                 {
                     this.items = this.all_items.filter(x => x.category_id == id)
@@ -452,6 +479,8 @@
                 }else{
                     this.filterItems()
                 }
+
+                this.place= 'prod'
             },
           getColor(i)
           {
@@ -1079,6 +1108,10 @@
           openFullWindow() {
                 location.href = `/${this.resource}/pos_full`
             },
+            back()
+            {
+                this.place = 'cat'
+            }
         }
       };
 </script>
