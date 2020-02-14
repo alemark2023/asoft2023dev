@@ -62,13 +62,13 @@ class Item extends ModelTenant
         // 'warehouse_id'
     ];
 
-    protected static function boot()
+    /*protected static function boot()
     {
         parent::boot();
         static::addGlobalScope('active', function (Builder $builder) {
             $builder->where('active', 1);
         });
-    }
+    }*/
 
     public function getAttributesAttribute($value)
     {
