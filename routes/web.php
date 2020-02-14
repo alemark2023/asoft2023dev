@@ -179,6 +179,8 @@ if ($hostname) {
             Route::post('persons/import', 'Tenant\PersonController@import');
 
             //Documents
+            Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
+            Route::post('documents/brands', 'Tenant\DocumentController@storeBrands');
             Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
             Route::get('documents/search/customer/{id}', 'Tenant\DocumentController@searchCustomerById');
 
