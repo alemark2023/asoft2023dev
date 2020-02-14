@@ -12,9 +12,9 @@
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
         </div>
         <div class="col-md-4">
-            <h2>  <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
-             <h2>  <button type="button" :disabled="place== 'cat'"   class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
-             <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
+            <h2>  <button type="button"  @click="place = 'cat'" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
+            <h2>  <button type="button" :disabled="place == 'cat2'" @click="setView"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
+            <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
         </div>
         <div class="col-md-4">
           <div class="right-wrapper">
@@ -28,10 +28,8 @@
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
       <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
-
-
-
         <el-input
+            v-show="place  == 'prod' || place == 'cat2'"
             placeholder="Buscar productos"
             size="medium"
             v-model="input_item"
@@ -42,12 +40,11 @@
           <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
         </el-input>
 
-        <!--<div class="container testimonial-group">
+        <div v-if="place == 'cat2'"  class="container testimonial-group">
             <div class="row text-center flex-nowrap">
-                <div  v-for="(item, index) in categories" @click="filterCategorie(item.id)"  :style="{ backgroundColor: item.color}" :key="index" class="col-sm-3 pointer">{{item.name}}</div>
-
+                <div  v-for="(item, index) in categories" @click="filterCategorie(item.id, true)"  :style="{ backgroundColor: item.color}" :key="index" class="col-sm-3 pointer">{{item.name}}</div>
             </div>
-        </div> <br>-->
+        </div> <br>
 
 
         <div  v-if="place == 'cat'" class="row">
@@ -67,7 +64,7 @@
         </div>
 
 
-        <div v-if="place == 'prod'" class="row">
+        <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
             <div class="col-lg-3 col-md-4 col-sm-6" :key="index" >
               <section class="card ">
@@ -469,7 +466,7 @@
         },
 
         methods: {
-            filterCategorie(id)
+            filterCategorie(id,  mod = false)
             {
 
                 if(id)
@@ -480,7 +477,14 @@
                     this.filterItems()
                 }
 
-                this.place= 'prod'
+                if(mod)
+                {
+                        this.place= 'cat2'
+                }
+                else{
+                    this.place= 'prod'
+                }
+
             },
           getColor(i)
           {
@@ -1105,12 +1109,16 @@
               await this.setFormPosLocalStorage()
 
           },
-          openFullWindow() {
+            openFullWindow() {
                 location.href = `/${this.resource}/pos_full`
             },
             back()
             {
                 this.place = 'cat'
+            },
+            setView()
+            {
+                  this.place = 'cat2'
             }
         }
       };
