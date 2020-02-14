@@ -9,6 +9,8 @@ use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PaymentMethodType;
 use Exception, Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
+
 
 class DocumentPaymentController extends Controller
 {
@@ -75,18 +77,18 @@ class DocumentPaymentController extends Controller
             $documents = Document::get();
 
             foreach ($documents as $document) {
-                
+
                 $total_payments = $document->payments->sum('payment');
-        
+
                 $balance = $document->total - $total_payments;
-        
+
                 if($balance <= 0){
-        
+
                     $document->total_canceled = true;
                     $document->update();
-        
+
                 }else{
-                    
+
                     $document->total_canceled = false;
                     $document->update();
                 }
@@ -94,11 +96,38 @@ class DocumentPaymentController extends Controller
             }
 
         });
-        
+
         return [
             'success' => true,
             'message' => 'Acción realizada con éxito'
         ];
     }
- 
+
+    public function  report($id)
+    {
+
+        $document = Document::find($id);
+
+        $customer = $document->customer;
+        $number = $document->number_full;
+        $records = collect($document->payments)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'date_of_payment' => $row->date_of_payment->format('d/m/Y'),
+                'payment_method_type_description' => $row->payment_method_type->description,
+                'reference' => $row->reference,
+                'payment' => $row->payment,
+            ];
+        });
+
+        //return json_encode($records);
+
+
+        $pdf = PDF::loadView('tenant.document_payments.report', compact("customer", "number","records"));
+
+        $filename = "Reporte_Pagos";
+
+        return $pdf->stream($filename.'.pdf');
+    }
+
 }

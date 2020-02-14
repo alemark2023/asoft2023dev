@@ -3,6 +3,10 @@
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12" v-if="records.length > 0">
+                    <div class="right-wrapper pull-right">
+                        <button type="button" @click.prevent="clickDownloadReport()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fas fa-money-bill-wave-alt"></i> Reporte</button>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
@@ -216,6 +220,10 @@
                         // this.initDocumentTypes()
                     }
                 )
+            },
+            clickDownloadReport(id)
+            {
+                window.open(`/${this.resource}/report/${this.documentId}`, '_blank');
             }
         }
     }
