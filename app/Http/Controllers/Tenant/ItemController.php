@@ -74,12 +74,14 @@ class ItemController extends Controller
                                 })
                                 ->whereTypeUser()
                                 ->whereNotIsSet()
+                                ->whereIsActive()
                                 ->orderBy('description');
                 break;
 
             default:
                 $records = Item::whereTypeUser()
                                 ->whereNotIsSet()
+                                ->whereIsActive()
                                 ->where($request->column, 'like', "%{$request->value}%")
                                 ->orderBy('description');
                 break;

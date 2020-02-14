@@ -83,7 +83,7 @@ class MobileController extends Controller
             ];
         });*/
 
-        $items = Item::whereWarehouse()->whereNotIsSet()->orderBy('description')->get()->transform(function($row){
+        $items = Item::whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->get()->transform(function($row){
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
             return [

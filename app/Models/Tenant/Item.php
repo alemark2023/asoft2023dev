@@ -153,6 +153,11 @@ class Item extends ModelTenant
         return $query->where('is_set', false);
     }
 
+    public function scopeWhereIsActive($query)
+    {
+        return $query->where('active', true);
+    }
+
     public function scopeWhereIsSet($query)
     {
         return $query->where('is_set', true);

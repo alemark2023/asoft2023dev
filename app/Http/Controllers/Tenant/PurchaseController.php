@@ -349,7 +349,7 @@ class PurchaseController extends Controller
 
             case 'items':
 
-                $items = Item::whereNotIsSet()->orderBy('description')->get(); //whereWarehouse()
+                $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->get(); //whereWarehouse()
                 return collect($items)->transform(function($row) {
                     $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [

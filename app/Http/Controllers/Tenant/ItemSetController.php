@@ -33,7 +33,7 @@ class ItemSetController extends Controller
     {
         return view('tenant.item_sets.index');
     }
- 
+
 
     public function columns()
     {
@@ -49,7 +49,7 @@ class ItemSetController extends Controller
                         ->whereIsSet()
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->orderBy('description');
-        
+
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -68,14 +68,14 @@ class ItemSetController extends Controller
         // $warehouses = Warehouse::all();
         // $accounts = Account::all();
         // $tags = Tag::all();
-        $individual_items = Item::whereWarehouse()->whereTypeUser()->whereNotIsSet()->get()->transform(function($row) {
+        $individual_items = Item::whereWarehouse()->whereTypeUser()->whereNotIsSet()->whereIsActive()->get()->transform(function($row) {
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
             return [
                 'id' => $row->id,
                 'full_description' => $full_description,
                 'internal_id' => $row->internal_id,
                 'description' => $row->description,
-                'sale_unit_price' => $row->sale_unit_price, 
+                'sale_unit_price' => $row->sale_unit_price,
             ];
         });
 
@@ -117,18 +117,18 @@ class ItemSetController extends Controller
             }
 
             $item->save();
-            
+
             $item->sets()->delete();
 
             foreach ($request->individual_items as $value) {
                 $item->sets()->create([
                     'individual_item_id' => $value
                 ]);
-            }            
+            }
             $item->update();
 
             return $item;
-        });      
+        });
 
         return [
             'success' => true,
@@ -137,13 +137,13 @@ class ItemSetController extends Controller
         ];
 
     }
-    
+
     public function destroy($id)
     {
         try {
-            
+
             $item = Item::findOrFail($id);
-            $this->deleteRecordInitialKardex($item); 
+            $this->deleteRecordInitialKardex($item);
             $item->delete();
 
             return [
@@ -157,7 +157,7 @@ class ItemSetController extends Controller
 
         }
 
-        
+
     }
 
     public function destroyItemUnitType($id)
