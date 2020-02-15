@@ -48,19 +48,8 @@ class DashboardController extends Controller
 
     public function unpaidall()
     {
-        $document_payments = DB::table('document_payments')
-            ->select('document_id', DB::raw('SUM(payment) as total_payment'))
-            ->groupBy('document_id');
-        return dd(DB::connection('tenant')
-                            ->table('documents')
-                            ->join('persons', 'documents.customer_id', '=', 'persons.id')
-                            ->join('companies', 'documents.user_id', '=', 'companies.id')
-                            ->leftJoinSub($document_payments, 'payments', function ($join) {
-                            $join->on('documents.id', '=', 'payments.document_id');
-                            })
-                            ->select('companies.trade_name','companies.number','date_of_issue', 'time_of_issue','filename','persons.name', 'total_value','total', DB::raw('CONCAT(documents.series, "-", documents.number) AS full_number','IFNULL(payments.total_payment, 0) AS total_payment'), 'total_payment')
-                            ->where('total_canceled', 0)->get()
-                        );
+        
+        return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
          
     }
 

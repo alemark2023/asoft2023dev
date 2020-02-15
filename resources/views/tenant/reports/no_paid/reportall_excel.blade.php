@@ -8,16 +8,31 @@
         <title>Reporte de Cuentas</title>
 </head>
 <body>
-      <div style="margin-top:20px; margin-bottom:15px;">
-            <h3 align="center" class="title"><strong>Reporte de Cuentas Por Cobrar</strong></h3>
-             <table>
+    <div>
+            <h3 align="center" class="title"><strong>Reporte de Cuentas por Cobrar</strong></h3>
+        </div>
+        <br>
+        <div style="margin-top:20px; margin-bottom:15px;">
+            <table>
                 <tr>
                     <td>
                         <p><b>Empresa: </b></p>
                     </td>
+                @foreach($companies as $value)
+            
                     <td align="center">
-                        <p><strong>{{$records[0]->trade_name}}</strong></p>
+                        <p><strong>{{$value->name}}</strong></p>
                     </td>
+        
+                </tr>
+                <tr>
+                    <td>
+                        <p><strong>Ruc: </strong></p>
+                    </td>
+                    <td align="center">{{$value->number}}</td>
+                
+                @endforeach
+        
                     <td>
                         <p><strong>Fecha: </strong></p>
                     </td>
@@ -25,41 +40,37 @@
                         <p><strong>{{date('Y-m-d')}}</strong></p>
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <p><strong>Ruc: </strong></p>
-                    </td>
-                    <td align="center">{{$records[0]->number}}</td>
-
-                </tr>
             </table>
-        </div>
-          @if(!empty($records))
+        @if(!empty($records))
             <div class="">
                 <div class=" ">
                     <table class="">
                         <thead>
                             <tr>
-                                <th><h4><strong>#</strong></h4></th>
-                                <th class="text-center"><h4><strong>Fecha Emisión</strong></h4></th>
-                                <th><h4><strong>Número</strong></h4></th>
-                                <th class="text-center"><h4><strong>Clientes</strong></h4></th>
-                                <th class="text-center"><h4><strong>Por Cobrar</strong></h4></th>
-                                <th class="text-center"><h4><strong>Total</strong></h4></th>
+                                <th>#</th>
+                                <th class="text-center">Fecha Emisión</th>
+                                <th>Número</th>
+
+                                <th>Cliente</th>
+                                <th>Por cobrar</th>
+                                <th>Total</th>
+
+
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
+                                @if($value['total_to_pay'] > 0)
                                     <tr>
                                         <td class="celda">{{$loop->iteration}}</td>
-                                        <td class="celda">{{$value->date_of_issue}}</td>
-                                        <td class="celda">
-                                            {{$value->full_number}}
-                                        </td>
-                                        <td class="celda">{{$value->name}}</td>
-                                         <td class="celda">{{$value->total_value}}</td>
-                                        <td class="celda">{{$value->total}}</td>
+                                        <td class="celda">{{$value['date_of_issue']}}</td>
+                                        <td class="celda">{{$value['number_full']}}</td>
+
+                                        <td class="celda">{{$value['customer_name']}}</td>
+                                        <td class="celda">{{$value['total_to_pay']}}</td>
+                                        <td class="celda">{{$value['total']}}</td>
                                     </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -70,5 +81,4 @@
                 <p>No se encontraron registros.</p>
             </div>
         @endif
-</body>
 </html>
