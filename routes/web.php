@@ -76,6 +76,7 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
+            Route::get('configurations/getFormat', 'Tenant\ConfigurationController@getFormat');
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');

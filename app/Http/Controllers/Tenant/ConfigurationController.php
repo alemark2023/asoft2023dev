@@ -8,18 +8,21 @@ use App\Models\Tenant\Item;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\Tenant\FormatTemplate;
 
 class ConfigurationController extends Controller
 {
     public function create() {
         return view('tenant.configurations.form');
     }
+
+
     
     public function record() {
         $configuration = Configuration::first();
         $record = new ConfigurationResource($configuration);
-        
-        return $record;
+        $formats = FormatTemplate::all();
+        return  $formats;
     }
     
     public function store(ConfigurationRequest $request) {

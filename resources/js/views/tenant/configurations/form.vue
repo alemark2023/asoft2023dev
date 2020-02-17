@@ -84,6 +84,7 @@
 
             await this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== '') this.form = response.data.data;
+                console.log(response)
             });
         },
         methods: {
