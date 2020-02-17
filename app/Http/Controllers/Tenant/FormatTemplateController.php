@@ -2,13 +2,16 @@
 namespace App\Http\Controllers\Tenant;
 
 
-use App\Models\Tenant\FormatTemplate;
-use App\Models\Tenant\Item;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
+use App\Models\Tenant\FormatTemplate;
+use App\Http\Resources\Tenant\FormatTemplateCollection;
 
 class FormatTemplateController extends Controller
 {
-   
+	public function records() {
+
+		$formats = FormatTemplate::all();
+
+        return new FormatTemplateCollection($formats);
+	}
 }

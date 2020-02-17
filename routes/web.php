@@ -567,6 +567,9 @@ if ($hostname) {
            Route::post('payment_method', 'Tenant\PaymentMethodTypeController@store');
            Route::delete('payment_method/{code}', 'Tenant\PaymentMethodTypeController@destroy');
 
+           //formats PDF
+           Route::get('templates', 'Tenant\FormatTemplateController@records');
+
         });
     });
 } else {
