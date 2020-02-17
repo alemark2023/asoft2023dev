@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <tenant-quotations-index></tenant-quotations-index>
+    <tenant-quotations-index :type-user="{{json_encode(Auth::user()->type)}}"></tenant-quotations-index>
 
 @endsection

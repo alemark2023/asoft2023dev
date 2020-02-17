@@ -29,8 +29,10 @@ class ReportSaleNoteController extends Controller
                 'name' => $row->description
             ];
         });
+        
+        $sellers = $this->getSellers();
 
-        return compact('document_types','establishments');
+        return compact('document_types','establishments', 'sellers');
     }
 
 

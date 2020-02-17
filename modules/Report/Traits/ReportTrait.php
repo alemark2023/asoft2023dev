@@ -215,7 +215,7 @@ trait ReportTrait
 
     public function getSellers(){
 
-        $persons = User::whereType('seller')->orderBy('name')->get()->transform(function($row) {
+        $persons = User::whereIn('type', ['seller', 'admin'])->orderBy('name')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'name' => $row->name,

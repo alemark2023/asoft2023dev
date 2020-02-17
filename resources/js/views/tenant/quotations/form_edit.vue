@@ -45,15 +45,6 @@
                                 </div>
                             </div>
                             <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
-                                    <label class="control-label">Moneda</label>
-                                    <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
-                                        <el-option v-for="option in currency_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                    <small class="form-control-feedback" v-if="errors.currency_type_id" v-text="errors.currency_type_id[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <!--<label class="control-label">Fecha de emisión</label>-->
                                     <label class="control-label">Fec. Emisión</label>
@@ -69,6 +60,13 @@
                                     <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.delivery_date}"> 
+                                    <label class="control-label">Fec. Entrega</label>
+                                    <el-date-picker v-model="form.delivery_date" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
+                                </div>
+                            </div>
                             <div class="col-lg-6">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Descripcion
@@ -77,7 +75,7 @@
                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                                     <label class="control-label">
                                         Término de pago
@@ -86,6 +84,15 @@
                                         <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
+                                    <label class="control-label">Moneda</label>
+                                    <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
+                                        <el-option v-for="option in currency_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.currency_type_id" v-text="errors.currency_type_id[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2">
@@ -185,6 +192,7 @@
         <quotation-options :type="type" :showDialog.sync="showDialogOptions"
                           :recordId="quotationNewId"
                           :showGenerate="false"
+                          :typeUser="typeUser"
                           :showClose="false"></quotation-options>
     </div>
 </template>
@@ -204,7 +212,10 @@
                 required: true,
             
                 default: 0
-            }
+            },
+            'typeUser': {
+                required: true,
+            },
         },
         mixins: [functions, exchangeRate],
         data() {
@@ -298,6 +309,7 @@
                     this.form.payment_method_type_id = dato.payment_method_type_id
                     this.form.date_of_due = dato.date_of_due
                     this.form.date_of_issue = dato.date_of_issue
+                    this.form.delivery_date = dato.delivery_date
                     this.form.exchange_rate_sale = dato.exchange_rate_sale
                     this.form.description = dato.description
                     this.form.items = dato.items
@@ -356,6 +368,7 @@
                     payment_method_type_id:null,
                     operation_type_id: null,
                     date_of_due: moment().format('YYYY-MM-DD'),
+                    delivery_date: null,
                     items: [],
                     charges: [],
                     discounts: [],
@@ -463,6 +476,9 @@
 
                 if(this.form.date_of_issue > this.form.date_of_due)
                     return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
+
+                if(this.form.date_of_issue > this.form.delivery_date)
+                    return this.$message.error('La fecha de emisión no puede ser posterior a la de entrega');
 
                 this.loading_submit = true
                 await this.$http.post(`/${this.resource}/update`, this.form).then(response => {

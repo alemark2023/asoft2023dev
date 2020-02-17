@@ -56,7 +56,7 @@
         </div>
       </div>
       <br />
-      <div class="row">
+      <div class="row" v-if="typeUser == 'admin'">
         <div class="col-md-9" v-show="!showGenerate">
           <div class="form-group">
             <el-checkbox v-model="generate">Generar comprobante electrónico</el-checkbox>
@@ -292,7 +292,7 @@ import SaleNoteOptions from "../../sale_notes/partials/options.vue";
 export default {
   components: { DocumentOptions, SaleNoteOptions },
 
-  props: ["showDialog", "recordId", "showClose", "showGenerate", "type"],
+  props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser'],
   data() {
     return {
       customer_email: "",

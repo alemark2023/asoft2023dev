@@ -69,17 +69,38 @@ class QuotationController extends Controller
     public function columns()
     {
         return [
-            'date_of_issue' => 'Fecha de emisión'
+            'date_of_issue' => 'Fecha de emisión',
+            'delivery_date' => 'Fecha de entrega',
+            'user_name' => 'Vendedor'
         ];
     }
 
     public function records(Request $request)
     {
-        $records = Quotation::where($request->column, 'like', "%{$request->value}%")
-                            ->whereTypeUser()
-                            ->latest();
+        $records = $this->getRecords($request);
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+    private function getRecords($request){
+
+        if($request->column == 'user_name'){
+            
+            $records = Quotation::whereHas('user', function($query) use($request){
+                            $query->where('name', 'like', "%{$request->value}%");
+                        })
+                        ->whereTypeUser()
+                        ->latest();
+
+        }else{
+
+            $records = Quotation::where($request->column, 'like', "%{$request->value}%")
+                                ->whereTypeUser()
+                                ->latest();
+        
+        }
+        
+        return $records;
     }
 
     public function searchCustomers(Request $request)
@@ -342,15 +363,14 @@ class QuotationController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
+                        }),
+                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                            return [
+                                'warehouse_id' => $row->warehouse->id,
+                                'warehouse_description' => $row->warehouse->description,
+                                'stock' => $row->stock,
+                            ];
                         })
-
-                        // 'warehouses' => collect($row->warehouses)->transform(function($row) {
-                        //     return [
-                        //         'warehouse_id' => $row->warehouse->id,
-                        //         'warehouse_description' => $row->warehouse->description,
-                        //         'stock' => $row->stock,
-                        //     ];
-                        // })
                     ];
                 });
                 return $items;

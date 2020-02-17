@@ -75,12 +75,16 @@
     @if ($customer->address !== '')
     <tr>
         <td class="align-top">Dirección:</td>
-        <td colspan="3">
+        <td>
             {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
+        @if($document->delivery_date)
+            <td width="25%">Fecha de entrega:</td>
+            <td width="15%">{{ $document->delivery_date->format('Y-m-d') }}</td>
+        @endif
     </tr>
     @endif
     

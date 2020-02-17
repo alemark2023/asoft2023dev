@@ -64,7 +64,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4 col-md-4" v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
+                        <div class="col-lg-5 col-md-5" v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
                             <div class="form-group">
                                 <label class="control-label">
                                     {{(resource == 'reports/sales') ? 'Clientes':'Proveedores'}}
@@ -81,14 +81,14 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4 col-md-4" v-if="applyCustomer">
+                        <div :class="resource == 'reports/sales' ? 'col-lg-4 col-md-4':'col-lg-3 col-md-3'" v-if="applyCustomer">
                             <div class="form-group">
                                 <label class="control-label">
-                                   Vendedor
+                                   Vendedores
                                 </label>
 
                                 <el-select v-model="form.seller_id" filterable  popper-class="el-select-customers" clearable
-                                    placeholder="Nombre o número de documento" >
+                                    placeholder="Nombre vendedor" >
                                     <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
 

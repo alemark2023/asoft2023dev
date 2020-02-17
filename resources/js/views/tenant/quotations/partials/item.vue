@@ -3,19 +3,42 @@
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.item_id}">
+                    <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7">
+                        <div class="form-group" id="custom-select"  :class="{'has-danger': errors.item_id}">
                             <label class="control-label">
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id" @change="changeItem" filterable ref="select_item" @focus="focusSelectItem">
+
+                            <!-- <el-select v-model="form.item_id" @change="changeItem" filterable  ref="select_item" @focus="focusSelectItem">
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
-                            </el-select>
+                            </el-select> -->
+
+                            
+                            <template  id="select-append">
+                                <el-input id="custom-input">
+                                    <el-select
+                                            v-model="form.item_id" @change="changeItem"
+                                            filterable
+                                            placeholder="Buscar"
+                                            popper-class="el-select-items"
+                                            ref="select_item"
+                                            @focus="focusSelectItem"
+                                            slot="prepend"
+                                            id="select-width"> 
+                                            
+                                            <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
+                                    </el-select>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" >
+                                        <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                    </el-tooltip>
+                                </el-input>
+                            </template>
+
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-5">
                         <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id" :disabled="!change_affectation_igv_type_id" filterable>
@@ -220,6 +243,12 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
+
+                   
+        <warehouses-detail
+                :showDialog.sync="showWarehousesDetail"
+                :warehouses="warehousesDetail">
+            </warehouses-detail>
     </el-dialog>
 </template>
 <style>
@@ -232,15 +261,17 @@
 
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
+    import WarehousesDetail from './warehouses.vue'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm},
+        components: {itemForm, WarehousesDetail},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
                 resource: 'quotations',
                 showDialogNewItem: false,
+                showWarehousesDetail: false,
                 errors: {},
                 form: {},
                 items: [],
@@ -254,6 +285,7 @@
                 change_affectation_igv_type_id: false,
                 total_item: 0,
                 has_list_prices: false,
+                warehousesDetail:[],
                 item_unit_types: [],
                 item_unit_type: {}
             }
@@ -276,7 +308,18 @@
             })
         },
         methods: {
-           
+            
+            clickWarehouseDetail(){
+
+                if(!this.form.item_id){
+                    return this.$message.error('Seleccione un item');
+                }
+
+                let item = _.find(this.items, {'id': this.form.item_id});
+
+                this.warehousesDetail = item.warehouses
+                this.showWarehousesDetail = true
+            },
             filterItems(){
                 // this.items = this.items.filter(item => item.warehouses.length >0)
             },
