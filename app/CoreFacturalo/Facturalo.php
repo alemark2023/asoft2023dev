@@ -270,14 +270,16 @@ class Facturalo
         $this->type = ($type != null) ? $type : $this->type;
 
         $configuration = $this->configuration->formats;
-        $base_pdf_template = $configuration;//config[tenant.pdf_template].
         
+        $base_pdf_template = $configuration;//config(['tenant.pdf_template'=> $configuration]);
+        // dd($base_pdf_template);
+
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
-        if (($format_pdf === 'ticket') OR 
-            ($format_pdf === 'ticket_58') OR 
-            ($format_pdf === 'ticket_50')) 
+        if (($format_pdf === 'ticket') OR
+            ($format_pdf === 'ticket_58') OR
+            ($format_pdf === 'ticket_50'))
         {
 
             $width = ($format_pdf === 'ticket_58') ? 56 : 78 ;
@@ -454,6 +456,7 @@ class Facturalo
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58')) {
+            // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
                 $html_footer = $template->pdfFooter($base_pdf_template);
                 $pdf->SetHTMLFooter($html_footer);
