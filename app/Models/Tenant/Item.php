@@ -219,5 +219,10 @@ class Item extends ModelTenant
         return $this->morphMany(ItemLot::class, 'item_loteable');
     }
 
+    public  function images()
+    {
+        return $this->hasMany(ItemImage::class, 'item_id');
+    }
+
 
 }

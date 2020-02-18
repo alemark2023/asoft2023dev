@@ -8,6 +8,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemImage;
+
 use Modules\Item\Models\ItemLot;
 
 use App\Http\Controllers\Controller;
@@ -215,6 +217,20 @@ class ItemController extends Controller
                     'has_sale' => false,
                     'state' => $lot['state'],
                 ]);
+            }
+
+            $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
+
+
+            $multi_images = isset($request->multi_images) ? $request->multi_images:[];
+
+            foreach ($multi_images as $im) {
+
+                $file_name = $im['filename'];
+                $file_content = file_get_contents($im['temp_path']);
+                Storage::put($directory.$file_name, $file_content);
+
+                ItemImage::create(['item_id'=> $item->id, 'image' => $file_name]);
             }
         }
         else{

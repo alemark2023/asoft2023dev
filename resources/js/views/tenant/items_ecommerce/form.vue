@@ -282,6 +282,8 @@
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                                 <div class="sub-title text-danger"><small>Se recomienda resoluciones Full Hd 1024x720</small></div>
+                                 <el-button type="primary" @click="openImages" >Agregar más fotos</el-button>
+
                             </div>
                         </div>
 
@@ -360,15 +362,19 @@
                 :showDialog.sync="showPercentagePerception"
                 :percentage_perception="percentage_perception">
         </percentage-perception> -->
+
+        <form-images ref="form_images" @saveImages="saveImages" :showDialog.sync="showDialogImages"></form-images>
+
     </el-dialog>
 </template>
 
 <script>
     // import PercentagePerception from './partials/percentage_perception.vue'
+    import FormImages from "./partials/form_images.vue";
 
     export default {
         props: ['showDialog', 'recordId', 'external'],
-        // components: {PercentagePerception},
+        components: {FormImages},
 
         data() {
             return {
@@ -399,7 +405,8 @@
                         price3:0,
                         price_default:2,
 
-                }
+                },
+                showDialogImages: false
             }
         },
         created() {
@@ -505,7 +512,8 @@
                     temp_path: null,
                     account_id: null,
                     apply_store: false,
-                    tags_id: []
+                    tags_id: [],
+                    multi_images: []
                 }
                 this.show_has_igv = true
             },
@@ -581,6 +589,8 @@
                 if(this.has_percentage_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 if(!this.has_percentage_perception) this.form.percentage_perception = null
 
+                this.$refs.form_images.clear()
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -610,6 +620,7 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.resetForm()
+                this.$refs.form_images.clear()
             },
             changeHasIsc() {
                 this.form.system_isc_type_id = null
@@ -620,6 +631,15 @@
                 if (this.form.system_isc_type_id !== '03') {
                     this.form.suggested_price = 0
                 }
+            },
+            openImages()
+            {
+                this.showDialogImages = true
+            },
+            saveImages(source)
+            {
+
+                this.form.multi_images = source
             }
         }
     }

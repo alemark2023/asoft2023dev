@@ -103,7 +103,7 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function  report($id)
+    public function report($id)
     {
 
         $document = Document::find($id);
