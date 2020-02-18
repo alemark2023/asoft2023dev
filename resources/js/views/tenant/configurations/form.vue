@@ -54,12 +54,13 @@
                             </div>
                         </div>
 
-                         <div class="col-md-4 mt-4">
+                         <div class="col-md-6 mt-6">
                             <label>Escoge su formato</label>
                              <el-select v-model="formato.formats" @change="changeFormat(formato.formats)">
                                     <el-option disabled value="">Selecciona Formato</el-option>
                                     <el-option v-for="(option, index) in formatos" :key="index" v-bind:value="option.formats"> {{option.formats}}</el-option>
                                 </el-select>
+                              <el-button type="success" @click="addSeeder" icon="el-icon-refresh" circle></el-button> 
                                 <small class="form-control-feedback" v-model="form.formats"> Formato actual: {{form.formats}}</small>
                          </div>
                         <!-- <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
@@ -91,6 +92,7 @@
                     formats: ''
                 },
                 placeholder:'',
+                
             }
         },
         async created() {
@@ -109,6 +111,10 @@
             });
         },
         methods: {
+           addSeeder(){
+            var ruta = location.host 
+            location.href="/configurations/addSeeder"
+            },
             changeFormat(value){
                this.formato = {
                     formats: value,

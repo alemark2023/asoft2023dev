@@ -9,11 +9,26 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tenant\FormatTemplate;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class ConfigurationController extends Controller
 {
     public function create() {
         return view('tenant.configurations.form');
+    }
+
+    public function addSeeder(){
+       $eliminar =  DB::connection('tenant')
+                        ->table('format_templates')
+                        ->truncate();
+       $prueba = Storage::disk('core')->allDirectories('Templates/pdf');
+       foreach($prueba as $value){
+            $insertar =  DB::connection('tenant')
+            ->table('format_templates')
+            ->insert(['formats' => $value ]);
+       }
+         return redirect()->route('tenant.advanced.index');
     }
 
     public function changeFormat(Request $request){
@@ -33,7 +48,7 @@ class ConfigurationController extends Controller
     }
 
     public function getFormats(){
-         $formats = FormatTemplate::all();
+         $formats = DB::connection('tenant')->table('format_templates')->get();
          return $formats;
     }
     

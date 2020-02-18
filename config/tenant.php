@@ -13,7 +13,7 @@
   'token_server' => 'YqlOsLAaajRfIChCshfFEcsVoMF2GmWOkZiy6YtapxZcf2yRoS',
   'url_server' => 'http://offline.2facturaloperuonline.com',
   'recreate_document' => false,
-  'pdf_template' => 'santiago',
+  'pdf_template' => 'Templates/pdf/font_swz/font',
   'pdf_template_footer' => true,
   'pdf_name_regular' => 'SWZ721LC',
   'pdf_name_bold' => 'SWZCONDN',
