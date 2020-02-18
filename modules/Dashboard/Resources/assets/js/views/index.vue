@@ -571,19 +571,27 @@
                   <div class="col-md-6">
                     <h2 class="card-title">Cuentas por cobrar</h2>
                   </div>
-                  <div class="col-md-6 text-right">
+                  <div class="col-md-6 text-right p-2">
+                  <el-button
+                      class="submit"
+                      type="success"
+                      @click.prevent="clickOpen()"
+                    >
+                      <i class="fa fa-file-excel"></i> Exportar Todo
+                  </el-button><br><br>
+
                     <el-button
                       v-if="records.length > 0"
                       class="submit"
                       type="success"
                       @click.prevent="clickDownload('excel')"
                     >
-                      <i class="fa fa-file-excel"></i> Exportal Excel
+                      <i class="fa fa-file-excel"></i> Exportar Excel
                     </el-button>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-4">
+                  <div class="col-md-4 text-right">
                     <el-select
                       @change="changeCustomerUnpaid"
                       filterable
@@ -599,27 +607,27 @@
                       ></el-option>
                     </el-select>
                   </div>
-                  <div class="col-md-1">
+                  <div class="col-md-1 text-right">
                     <el-badge :value="getTotalRowsUnpaid" class="item">
                       <span size="small">Total comprobantes</span>
                     </el-badge>
                   </div>
-                  <div class="col-md-1">
+                  <div class="col-md-1 text-right">
                     <el-badge :value="getTotalAmountUnpaid" class="item">
                       <span size="small">Monto general (PEN)</span>
                     </el-badge>
                   </div>
-                  <div class="col-md-1">
+                  <div class="col-md-1 text-right">
                     <el-badge :value="getCurrentBalance" class="item">
                       <span size="small">Saldo corriente (PEN)</span>
                     </el-badge>
                   </div>
-                  <div class="col-md-1">
+                  <div class="col-md-1 text-right">
                     <el-badge :value="getTotalAmountUnpaidUsd" class="item">
                       <span size="small">Monto general (USD)</span>
                     </el-badge>
                   </div>
-                  <div class="col-md-1">
+                  <div class="col-md-1 text-right">
                     <el-badge :value="getCurrentBalanceUsd" class="item">
                       <span size="small">Saldo corriente (USD)</span>
                     </el-badge>
@@ -983,6 +991,9 @@ export default {
       } else {
         this.records = []
       }
+    },
+    clickOpen(){
+      window.open('dashboard/unpaidall', "_blank");
     },
     clickDownload(type) {
       let query = queryString.stringify({
