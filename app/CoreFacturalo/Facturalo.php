@@ -270,7 +270,8 @@ class Facturalo
         $this->type = ($type != null) ? $type : $this->type;
 
         $configuration = $this->configuration->formats;
-        $base_pdf_template = config(['tenant.pdf_template'=> $configuration]);
+        $base_pdf_template = $configuration;//config[tenant.pdf_template].
+        
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
