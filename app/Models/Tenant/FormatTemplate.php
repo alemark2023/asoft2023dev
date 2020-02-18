@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
-
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Illuminate\Notifications\Notifiable;

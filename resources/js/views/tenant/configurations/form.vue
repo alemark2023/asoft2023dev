@@ -53,6 +53,15 @@
                                 <small class="form-control-feedback" v-if="errors.amount_plastic_bag_taxes" v-text="errors.amount_plastic_bag_taxes[0]"></small>
                             </div>
                         </div>
+
+                         <div class="col-md-4 mt-4">
+                            <label>Escoge su formato</label>
+                             <el-select v-model="formato.formats" @change="changeFormat(formato.formats)">
+                                    <el-option disabled value="">Selecciona Formato</el-option>
+                                    <el-option v-for="(option, index) in formatos" :key="index" v-bind:value="option.formats"> {{option.formats}}</el-option>
+                                </el-select>
+                                <small class="form-control-feedback" v-model="form.formats"> Formato actual: {{form.formats}}</small>
+                         </div>
                         <!-- <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                             <label class="control-label">Cuenta contable venta subtotal</label>
                             <div class="form-group" :class="{'has-danger': errors.subtotal_account}">
@@ -76,23 +85,46 @@
                 loading_submit: false,
                 resource: 'configurations',
                 errors: {},
-                form: {}
+                form: {},
+                formatos: [],
+                formato: {
+                    formats: ''
+                },
+                placeholder:'',
             }
         },
         async created() {
             await this.initForm();
 
             await this.$http.get(`/${this.resource}/record`) .then(response => {
-                if (response.data !== '') this.form = response.data.data;
-                console.log(response)
+                if (response.data !== ''){
+                this.form = response.data.data;
+                this.placeholder = response.data.data.formats;
+                } 
+                console.log(this.placeholder)
+            });
+             await this.$http.get(`/${this.resource}/getFormats`) .then(response => {
+                if (response.data !== '') this.formatos = response.data
+                console.log(this.formatos)
             });
         },
         methods: {
+            changeFormat(value){
+               this.formato = {
+                    formats: value,
+               }
+
+               this.$http.post(`/${this.resource}/changeFormat`, this.formato).then(response =>{
+                   this.$message.success(response.data.message);
+                    location.reload()
+               })
+
+            },
             initForm() {
                 this.errors = {};
-
                 this.form = {
                     send_auto: true,
+                    formats: 'default',
                     stock: true,
                     cron: true,
                     id: null,

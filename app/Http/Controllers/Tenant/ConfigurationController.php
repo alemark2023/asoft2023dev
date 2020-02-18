@@ -16,13 +16,31 @@ class ConfigurationController extends Controller
         return view('tenant.configurations.form');
     }
 
+    public function changeFormat(Request $request){
+        $format = Configuration::first();
+        $format->fill($request->all());
+        $format->save();
+    
+        $config_format = config(['tenant.pdf_template' => $format->formats]);
+        $fp = fopen(base_path() .'/config/tenant.php' , 'w');
+        fwrite($fp, '<?php return ' . var_export(config('tenant'), true) . ';');
+        fclose($fp);
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
 
+    }
+
+    public function getFormats(){
+         $formats = FormatTemplate::all();
+         return $formats;
+    }
     
     public function record() {
         $configuration = Configuration::first();
         $record = new ConfigurationResource($configuration);
-        $formats = FormatTemplate::all();
-        return  $formats;
+        return  $record;
     }
     
     public function store(ConfigurationRequest $request) {

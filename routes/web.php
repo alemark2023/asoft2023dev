@@ -76,11 +76,12 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
-            Route::get('configurations/getFormat', 'Tenant\ConfigurationController@getFormat');
+            Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
+            Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
