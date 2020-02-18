@@ -103,9 +103,9 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function report($id)
+    public function  report($id)
     {
-
+        //$document = Document::select('id')->orderBy('date_of_issue', 'DESC')->take(50)->pluck('id');
         $document = Document::find($id);
 
         $customer = $document->customer;
