@@ -9,7 +9,9 @@ table {
     padding: 0;
     width: 100%;
 }
-
+.font-sm{
+  font-size: 8px !important;
+}
 .font-md {
     font-size: 12px;
 }
@@ -22,7 +24,17 @@ table {
 .font-bold {
     font-weight: bold;
 }
-
+.company_logo_sm{
+  max-height: 70px !important;
+  max-width: 70px !important;
+}
+.company_logo_box_sm{
+  height: 70px !important;
+  width: 70px !important;
+}
+.content{
+  object-fit: contain;
+}
 .company_logo {
   max-height: 100px;
 }
@@ -32,6 +44,10 @@ table {
 .company_logo_ticket {
   max-width: 200px;
   max-height: 80px
+}
+.company_logo_ticket-sm{
+    max-width: 100px;
+    max-height: 80px
 }
 .contain {object-fit: cover;}
 
@@ -114,6 +130,11 @@ table {
 
 .qr_code {
     width: 150px;
+}
+
+.qr_code-sm{
+  width: 90px !important;
+  height: 90px !important;
 }
 
 /* Headings */

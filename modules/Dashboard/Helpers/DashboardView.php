@@ -1,13 +1,11 @@
 <?php
 
 namespace Modules\Dashboard\Helpers;
-
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Invoice;
-
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -226,4 +224,5 @@ class DashboardView
 //            }
         });
     }
+
 }
