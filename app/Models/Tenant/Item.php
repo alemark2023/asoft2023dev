@@ -196,7 +196,7 @@ class Item extends ModelTenant
 
     public function sets()
     {
-        return $this->hasMany(ItemSet::class);
+    return $this->hasMany(ItemSet::class);
     }
 
     public function brand()

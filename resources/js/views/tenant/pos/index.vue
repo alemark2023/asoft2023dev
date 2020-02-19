@@ -76,6 +76,11 @@
                   <img :src="item.image_url" class="img-thumbail img-custom" />
                   <p class="text-muted font-weight-lighter mb-0">
                     <small>{{item.internal_id}}</small>
+                    <template v-if="item.sets.length  > 0">
+                        <br>
+                        <small > {{ item.sets.join('-') }} </small>
+                    </template>
+
                     <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
                       <el-table  :data="item.warehouses">
                         <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
