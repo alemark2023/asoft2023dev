@@ -76,10 +76,13 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
+            Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
+            Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
+            Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -571,6 +574,9 @@ if ($hostname) {
            Route::get('payment_method/record/{code}', 'Tenant\PaymentMethodTypeController@record');
            Route::post('payment_method', 'Tenant\PaymentMethodTypeController@store');
            Route::delete('payment_method/{code}', 'Tenant\PaymentMethodTypeController@destroy');
+
+           //formats PDF
+           Route::get('templates', 'Tenant\FormatTemplateController@records');
 
         });
     });
