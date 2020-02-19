@@ -79,6 +79,11 @@ class PosController extends Controller
                                     'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
                                     'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
                                     'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
+                                    'sets' => collect($row->sets)->transform(function($r){
+                                        return [
+                                            $r->individual_item->description
+                                        ];
+                                    }),
 
                                 ];
                             });
