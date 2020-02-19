@@ -103,27 +103,29 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function  report($id)
+    public function  report($start, $end)
     {
         //$document = Document::select('id')->orderBy('date_of_issue', 'DESC')->take(50)->pluck('id');
-        $document = Document::find($id);
+        $documents = DocumentPayment::whereBetween('date_of_payment', [$start , $end])->get();
 
-        $customer = $document->customer;
-        $number = $document->number_full;
-        $records = collect($document->payments)->transform(function($row){
+        //$customer = $document->customer;
+        //$number = $document->number_full;
+        $records = collect($documents)->transform(function($row){
             return [
                 'id' => $row->id,
                 'date_of_payment' => $row->date_of_payment->format('d/m/Y'),
                 'payment_method_type_description' => $row->payment_method_type->description,
-                'reference' => $row->reference,
                 'payment' => $row->payment,
+                'reference' => $row->reference,
+                'customer' => $row->document->customer->name,
+                'number'=>  $row->document->number_full,
             ];
         });
 
         //return json_encode($records);
 
 
-        $pdf = PDF::loadView('tenant.document_payments.report', compact("customer", "number","records"));
+        $pdf = PDF::loadView('tenant.document_payments.report', compact("records"));
 
         $filename = "Reporte_Pagos";
 

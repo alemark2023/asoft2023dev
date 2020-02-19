@@ -211,7 +211,7 @@ if ($hostname) {
            Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
            Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
            Route::get('document_payments/initialize_balance', 'Tenant\DocumentPaymentController@initialize_balance');
-           Route::get('document_payments/report/{id}', 'Tenant\DocumentPaymentController@report');
+           Route::get('document_payments/report/{start}/{end}', 'Tenant\DocumentPaymentController@report');
 
 
             Route::get('documents/send_server/{document}/{query?}', 'Tenant\DocumentController@sendServer');
