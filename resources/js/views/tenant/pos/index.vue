@@ -193,6 +193,7 @@
                     </td>
                     <td width="20%">
                       <p class="m-0">{{item.item.description}}</p>
+                      <small> {{nameSets(item.item_id)}} </small>
                       <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                     </td>
                     <!-- <td>
@@ -1124,6 +1125,17 @@
             setView()
             {
                   this.place = 'cat2'
+            },
+            nameSets(id)
+            {
+                let row  =  this.items.find( x=> x.item_id  == id)
+                if(row.sets.length > 0)
+                {
+                    return row.sets.join('-')
+                }
+                else{
+                    return ''
+                }
             }
         }
       };
