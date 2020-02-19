@@ -7,11 +7,22 @@
                         <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image) }}"
                             data-zoom-image="{{ asset('storage/uploads/items/'.$record->image) }}" />
                     </div>
+
+                    @foreach($record->images as $row)
+
                     <div class="product-item">
+                        <img class="product-single-image"
+                            src="{{ asset('storage/uploads/items/'.$row->image) }}"
+                            data-zoom-image="{{ asset('storage/uploads/items/'.$row->image) }}" />
+                    </div>
+
+                    @endforeach
+
+                    <!--<div class="product-item">
                         <img class="product-single-image"
                             src="{{ asset('storage/uploads/items/'.$record->image_medium) }}"
                             data-zoom-image="{{ asset('storage/uploads/items/'.$record->image_medium) }}" />
-                    </div>
+                    </div> -->
 
                 </div>
 
@@ -20,9 +31,15 @@
                 <div class="col-3 owl-dot">
                     <img src="{{ asset('storage/uploads/items/'.$record->image) }}" />
                 </div>
-                <div class="col-3 owl-dot">
-                    <img src="{{ asset('storage/uploads/items/'.$record->image_medium) }}" />
-                </div>
+
+                @foreach($record->images as $row)
+
+                    <div class="col-3 owl-dot">
+                        <img src="{{ asset('storage/uploads/items/'.$row->image) }}" />
+                    </div>
+
+                @endforeach
+
                 <!--<div class="col-3 owl-dot">
                     <img src="{{ asset('porto_ecommerce/ajax/assets/images/products/zoom/product-2.html') }}" />
                 </div>
@@ -37,7 +54,7 @@
 
         <div class="col-lg-6 col-md-6">
             <div class="product-single-details">
-                <h1 class="product-title">{{ $record->name }}</h1>
+                <h1 class="product-title">{{ $record->name }} </h1>
 
                 <div class="ratings-container">
                     <div class="product-ratings">

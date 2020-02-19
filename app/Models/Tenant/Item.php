@@ -72,7 +72,7 @@ class Item extends ModelTenant
 
     public function getAttributesAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value))?null:json_decode($value);
     }
 
     public function setAttributesAttribute($value)
@@ -196,7 +196,7 @@ class Item extends ModelTenant
 
     public function sets()
     {
-        return $this->hasMany(ItemSet::class);
+    return $this->hasMany(ItemSet::class);
     }
 
     public function brand()
@@ -217,6 +217,11 @@ class Item extends ModelTenant
     public function lots()
     {
         return $this->morphMany(ItemLot::class, 'item_loteable');
+    }
+
+    public  function images()
+    {
+        return $this->hasMany(ItemImage::class, 'item_id');
     }
 
 

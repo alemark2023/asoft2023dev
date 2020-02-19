@@ -14,6 +14,7 @@
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportSecond()"><i class="fa fa-upload"></i> Importar Formato 2</button>
                 </span>
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
+                <button type="button" @click.prevent="clickReportPayments()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fas fa-money-bill-wave-alt"></i> Reporte de Pagos</button>
             </div>
         </div>
         <div class="card mb-0">
@@ -178,9 +179,10 @@
             <document-payments :showDialog.sync="showDialogPayments"
                                :documentId="recordId"></document-payments>
 
-                               
+
             <document-constancy-detraction :showDialog.sync="showDialogCDetraction"
                               :recordId="recordId"></document-constancy-detraction>
+            <report-payment  :showDialog.sync="showDialogReportPayment" ></report-payment>
         </div>
     </div>
 </template>
@@ -195,13 +197,16 @@
     import ItemsImport from './import.vue'
     import {deletable} from '../../../mixins/deletable'
     import DocumentConstancyDetraction from './partials/constancy_detraction.vue'
+    import ReportPayment from './partials/report_payment.vue'
+
 
     export default {
         mixins: [deletable],
         props: ['isClient','typeUser','import_documents','import_documents_second'],
-        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction},
+        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction, ReportPayment},
         data() {
             return {
+                showDialogReportPayment:false,
                 showDialogVoided: false,
                 showImportDialog: false,
                 showDialogCDetraction: false,
@@ -361,6 +366,10 @@
                 this.destroy(`/${this.resource}/delete_document/${document_id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            clickReportPayments()
+            {
+                this.showDialogReportPayment = true
             }
         }
     }

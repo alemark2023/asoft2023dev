@@ -58,27 +58,7 @@
             <p align="center" class="title"><strong>Reporte de Pagos</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
-            <table>
-                <tr>
-                    <td class="td-custom">
-                        <p><strong>Cliente: </strong>{{$customer->name}}</p>
-                    </td>
-                    <td class="td-custom">
-                        <p><strong>Ruc: </strong>{{$customer->number}}</p>
-                    </td>
 
-                </tr>
-                <tr>
-                <td class="td-custom">
-                        <p><strong>Comprobante: </strong>{{$number}}</p>
-                    </td>
-                    <td class="td-custom">
-                        <p><strong>Fecha reporte: </strong>{{date('Y-m-d')}}</p>
-                    </td>
-
-                </tr>
-
-            </table>
         </div>
         @if($records->count())
             <div class="">
@@ -87,6 +67,8 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Cliente</th>
+                                <th>Tipo Comprobante</th>
                                 <th>Método de pago</th>
                                 <th>Referencia</th>
                                 <th>Monto</th>
@@ -98,6 +80,8 @@
                             @foreach($records as $item)
                                 <tr>
                                     <td class="celda">{{ $loop->iteration }}</td>
+                                    <td class="celda">{{ $item['customer'] }}</td>
+                                    <td class="celda">{{ $item['number'] }}</td>
                                     <td class="celda">{{ $item['payment_method_type_description'] }}</td>
                                     <td class="celda">{{ $item['reference'] }}</td>
                                     <td class="celda">{{ $item['payment'] }}</td>

@@ -169,6 +169,11 @@ class PosController extends Controller
                                         ];
                                     }),
                                     'category_id' => ($row->category) ? $row->category->id : null,
+                                    'sets' => collect($row->sets)->transform(function($r){
+                                        return [
+                                            $r->individual_item->description
+                                        ];
+                                    }),
                                 ];
                             });
             return $items;

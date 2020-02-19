@@ -16,6 +16,7 @@ class ConfigurationResource extends JsonResource
         return [
             'id' => $this->id,
             'send_auto' => (bool) $this->send_auto,
+            'formats' => $this->formats,
             'stock' => (bool) $this->stock,
             'cron' => (bool) $this->cron,
             'sunat_alternate_server' => (bool) $this->sunat_alternate_server,

@@ -54,6 +54,10 @@ return [
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ],
+            'core' => [
+                'driver' => 'local',
+                'root' => app_path('CoreFacturalo')
+            ],
 
         's3' => [
             'driver' => 's3',

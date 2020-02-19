@@ -76,6 +76,11 @@
                   <img :src="item.image_url" class="img-thumbail img-custom" />
                   <p class="text-muted font-weight-lighter mb-0">
                     <small>{{item.internal_id}}</small>
+                    <template v-if="item.sets.length  > 0">
+                        <br>
+                        <small > {{ item.sets.join('-') }} </small>
+                    </template>
+
                     <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
                       <el-table  :data="item.warehouses">
                         <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
@@ -188,6 +193,7 @@
                     </td>
                     <td width="20%">
                       <p class="m-0">{{item.item.description}}</p>
+                      <small> {{nameSets(item.item_id)}} </small>
                       <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                     </td>
                     <!-- <td>
@@ -1119,6 +1125,17 @@
             setView()
             {
                   this.place = 'cat2'
+            },
+            nameSets(id)
+            {
+                let row  =  this.items.find( x=> x.item_id  == id)
+                if(row.sets.length > 0)
+                {
+                    return row.sets.join('-')
+                }
+                else{
+                    return ''
+                }
             }
         }
       };

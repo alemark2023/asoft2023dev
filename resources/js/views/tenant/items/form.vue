@@ -245,6 +245,7 @@
                              <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
                         </h5>
                     </div>
+
                     <div v-show="form.unit_type_id !='ZZ'" class="col-md-12" v-if="form.item_unit_types.length > 0">
                         <div class="table-responsive">
                             <table class="table">
@@ -345,6 +346,43 @@
                         </div>
                     </div>
 
+                    <div v-if="attribute_types.length > 0" class="col-md-12">
+                        <h5 class="separator-title ">
+                           Atributos
+                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                            <a href="#" class="control-label font-weight-bold text-info" @click.prevent="clickAddAttribute">[+ Agregar]</a>
+                        </h5>
+                    </div>
+                    <div v-if="form.attributes.length > 0" class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(row, index) in form.attributes">
+                                    <td>
+                                        <el-select v-model="row.attribute_type_id" filterable @change="changeAttributeType(index)">
+                                            <el-option v-for="option in attribute_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                        </el-select>
+                                    </td>
+                                    <td>
+                                        <el-input v-model="row.value"></el-input>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" @click.prevent="clickRemoveAttribute(index)">x</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     <div class="col-md-12">
                         <h5 class="separator-title">Campos adicionales</h5>
@@ -483,7 +521,8 @@
                         price3:0,
                         price_default:2,
 
-                }
+                },
+                attribute_types:  []
             }
         },
         created() {
@@ -498,6 +537,7 @@
                     this.warehouses = response.data.warehouses
                     this.categories = response.data.categories
                     this.brands = response.data.brands
+                    this.attribute_types = response.data.attribute_types
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -514,6 +554,16 @@
         },
 
         methods: {
+            clickAddAttribute() {
+                this.form.attributes.push({
+                    attribute_type_id: null,
+                    description: null,
+                    value: null,
+                    start_date: null,
+                    end_date: null,
+                    duration: null,
+                })
+            },
             async reloadTables(){
 
                 await this.$http.get(`/${this.resource}/tables`)
@@ -635,7 +685,8 @@
                     date_of_due:null,
                     lot_code:null,
                     lots_enabled:false,
-                    lots:[]
+                    lots:[],
+                    attributes: []
                 }
                 this.show_has_igv = true
                 this.enabled_percentage_of_profit = false
@@ -810,7 +861,15 @@
 
 
 
-            }
+            },
+            changeAttributeType(index) {
+                let attribute_type_id = this.form.attributes[index].attribute_type_id
+                let attribute_type = _.find(this.attribute_types, {id: attribute_type_id})
+                this.form.attributes[index].description = attribute_type.description
+            },
+            clickRemoveAttribute(index) {
+                this.form.attributes.splice(index, 1)
+            },
         }
     }
 </script>

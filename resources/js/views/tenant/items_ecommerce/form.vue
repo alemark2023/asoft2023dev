@@ -264,6 +264,44 @@
                         </div>
                     </div>
 
+                    <div v-if="attribute_types.length > 0" class="col-md-12">
+                        <h5 class="separator-title ">
+                           Atributos
+                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
+                                <i class="fa fa-info-circle"></i>
+                            </el-tooltip>
+                            <a href="#" class="control-label font-weight-bold text-info" @click.prevent="clickAddAttribute">[+ Agregar]</a>
+                        </h5>
+                    </div>
+                    <div v-if="form.attributes.length > 0" class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(row, index) in form.attributes">
+                                    <td>
+                                        <el-select v-model="row.attribute_type_id" filterable @change="changeAttributeType(index)">
+                                            <el-option v-for="option in attribute_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                        </el-select>
+                                    </td>
+                                    <td>
+                                        <el-input v-model="row.value"></el-input>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" @click.prevent="clickRemoveAttribute(index)">x</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
 
                     <div class="col-md-12">
                         <h5 class="separator-title">Campos adicionales</h5>
@@ -282,6 +320,8 @@
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                                 <div class="sub-title text-danger"><small>Se recomienda resoluciones Full Hd 1024x720</small></div>
+                                <el-button type="primary" @click="openImages" >Agregar más fotos</el-button>
+
                             </div>
                         </div>
 
@@ -360,15 +400,19 @@
                 :showDialog.sync="showPercentagePerception"
                 :percentage_perception="percentage_perception">
         </percentage-perception> -->
+
+        <form-images ref="form_images"  @saveImages="saveImages" :showDialog.sync="showDialogImages" :recordId="recordId" ></form-images>
+
     </el-dialog>
 </template>
 
 <script>
     // import PercentagePerception from './partials/percentage_perception.vue'
+    import FormImages from "./partials/form_images.vue";
 
     export default {
         props: ['showDialog', 'recordId', 'external'],
-        // components: {PercentagePerception},
+        components: {FormImages},
 
         data() {
             return {
@@ -399,7 +443,9 @@
                         price3:0,
                         price_default:2,
 
-                }
+                },
+                showDialogImages: false,
+                attribute_types: []
             }
         },
         created() {
@@ -413,6 +459,7 @@
                     this.affectation_igv_types = response.data.affectation_igv_types
                     this.warehouse = response.data.warehouse
                     this.tags = response.data.tags
+                    this.attribute_types = response.data.attribute_types
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -425,6 +472,16 @@
 
         },
         methods: {
+             clickAddAttribute() {
+                this.form.attributes.push({
+                    attribute_type_id: null,
+                    description: null,
+                    value: null,
+                    start_date: null,
+                    end_date: null,
+                    duration: null,
+                })
+            },
             changeHaveAccount(){
                 if(!this.have_account) this.form.account_id = null
             },
@@ -505,7 +562,9 @@
                     temp_path: null,
                     account_id: null,
                     apply_store: false,
-                    tags_id: []
+                    tags_id: [],
+                    multi_images: [],
+                    attributes: []
                 }
                 this.show_has_igv = true
             },
@@ -581,6 +640,8 @@
                 if(this.has_percentage_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 if(!this.has_percentage_perception) this.form.percentage_perception = null
 
+                this.$refs.form_images.clear()
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -610,6 +671,7 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.resetForm()
+                this.$refs.form_images.clear()
             },
             changeHasIsc() {
                 this.form.system_isc_type_id = null
@@ -620,7 +682,24 @@
                 if (this.form.system_isc_type_id !== '03') {
                     this.form.suggested_price = 0
                 }
-            }
+            },
+            openImages()
+            {
+                this.showDialogImages = true
+            },
+            saveImages(source)
+            {
+
+                this.form.multi_images = source
+            },
+            changeAttributeType(index) {
+                let attribute_type_id = this.form.attributes[index].attribute_type_id
+                let attribute_type = _.find(this.attribute_types, {id: attribute_type_id})
+                this.form.attributes[index].description = attribute_type.description
+            },
+             clickRemoveAttribute(index) {
+                this.form.attributes.splice(index, 1)
+            },
         }
     }
 </script>

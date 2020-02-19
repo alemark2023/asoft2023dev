@@ -76,10 +76,13 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
+            Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
+            Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
+            Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -147,6 +150,10 @@ if ($hostname) {
             Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
             Route::post('items/duplicate', 'Tenant\ItemController@duplicate');
             Route::get('items/disable/{item}', 'Tenant\ItemController@disable');
+            Route::get('items/images/{item}', 'Tenant\ItemController@images');
+            Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
+
+
 
 
 
@@ -181,6 +188,8 @@ if ($hostname) {
             Route::post('persons/import', 'Tenant\PersonController@import');
 
             //Documents
+            Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
+            Route::post('documents/brands', 'Tenant\DocumentController@storeBrands');
             Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
             Route::get('documents/search/customer/{id}', 'Tenant\DocumentController@searchCustomerById');
 
@@ -209,7 +218,7 @@ if ($hostname) {
            Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
            Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
            Route::get('document_payments/initialize_balance', 'Tenant\DocumentPaymentController@initialize_balance');
-           Route::get('document_payments/report/{id}', 'Tenant\DocumentPaymentController@report');
+           Route::get('document_payments/report/{start}/{end}', 'Tenant\DocumentPaymentController@report');
 
 
             Route::get('documents/send_server/{document}/{query?}', 'Tenant\DocumentController@sendServer');
@@ -569,6 +578,9 @@ if ($hostname) {
            Route::get('payment_method/record/{code}', 'Tenant\PaymentMethodTypeController@record');
            Route::post('payment_method', 'Tenant\PaymentMethodTypeController@store');
            Route::delete('payment_method/{code}', 'Tenant\PaymentMethodTypeController@destroy');
+
+           //formats PDF
+           Route::get('templates', 'Tenant\FormatTemplateController@records');
 
         });
     });

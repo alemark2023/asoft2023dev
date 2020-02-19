@@ -19,6 +19,7 @@ class ConfigurationRequest extends FormRequest
             'cron' => ['required', 'boolean'],
             'decimal_quantity' => ['required', 'integer'],
 
+
             // 'subtotal_account' => ['required'],
             // 'stock' => ['required', 'boolean']
         ];

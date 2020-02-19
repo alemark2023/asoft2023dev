@@ -6,6 +6,7 @@ class Configuration extends ModelTenant
 {
     protected $fillable = [
         'send_auto',
+        'formats',
         'cron',
         'stock',
         'locked_emission',

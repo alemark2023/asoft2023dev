@@ -8,6 +8,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemImage;
+
 use Modules\Item\Models\ItemLot;
 
 use App\Http\Controllers\Controller;
@@ -216,6 +218,8 @@ class ItemController extends Controller
                     'state' => $lot['state'],
                 ]);
             }
+
+
         }
         else{
 
@@ -261,6 +265,19 @@ class ItemController extends Controller
 
 
         }
+
+            $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
+
+            $multi_images = isset($request->multi_images) ? $request->multi_images:[];
+
+            foreach ($multi_images as $im) {
+
+                $file_name = $im['filename'];
+                $file_content = file_get_contents($im['temp_path']);
+                Storage::put($directory.$file_name, $file_content);
+
+                ItemImage::create(['item_id'=> $item->id, 'image' => $file_name]);
+            }
 
         $item->update();
 
@@ -433,6 +450,35 @@ class ItemController extends Controller
             return  ['success' => false, 'message' => 'Error inesperado, no se pudo inhabilitar el producto'];
 
         }
+    }
+
+    public function images($item)
+    {
+        $records = ItemImage::where('item_id', $item)->get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'item_id' => $row->item_id,
+                'image' => $row->image,
+                'id' => $row->id,
+                'name' => $row->image,
+                'url'=> asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image)
+            ];
+        });
+        return [
+            'success' => true,
+            'data' => $records
+        ];
+    }
+
+    public function delete_images($id)
+    {
+        $record = ItemImage::findOrFail($id);
+        $record->delete();
+
+        return [
+            'success' => true,
+            'message' => 'Imagen eliminada con éxito'
+        ];
     }
 
 
