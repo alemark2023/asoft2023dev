@@ -12,6 +12,7 @@ use App\Models\Tenant\Document;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\ModelTenant;
+use Modules\Inventory\Models\InventoryKardex;
 
 class OrderNote extends ModelTenant
 {
@@ -233,6 +234,12 @@ class OrderNote extends ModelTenant
     {
         $user = auth()->user();
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
+    }
+
+    
+    public function inventory_kardex()
+    {
+        return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
 }

@@ -105,6 +105,6 @@ class OrderNoteItem extends ModelTenant
 
     public function order_note()
     {
-        return $this->belongsTo(OrderNote::class);
+        return $this->belongsTo(OrderNote::class, 'order_note_id');
     }
 }

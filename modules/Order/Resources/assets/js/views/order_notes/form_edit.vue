@@ -138,7 +138,13 @@
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                                 <td class="text-right">
-                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+
+                                                    <template v-if="row.id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteONItem(row.id, index)">x</button>
+                                                    </template>
+                                                    <template v-else>
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    </template>
                                                 </td>
                                             </tr>
                                             <tr><td colspan="8"></td></tr>
@@ -270,12 +276,49 @@
                 this.reloadDataCustomers(customer_id)
             })
 
-
-
-
         },
         methods: {
 
+            async clickDeleteONItem(id, index){
+
+                this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.delete(`/${this.resource}/destroy_order_note_item/${id}`)
+                        .then(res => {
+                            if(res.data.success) {
+                                this.$message.success(res.data.message)
+                                this.clickRemoveItem(index)
+                                this.$eventHub.$emit('reloadDataItems', null)
+                                this.isUpdate() 
+
+                            }else{
+                                this.$message.error(res.data.message)
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar eliminar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+
+
+            },
+            async isUpdate(){
+                if (this.resourceId) {
+                    await this.$http.get(`/${this.resource}/record2/${this.resourceId}`)
+                        .then(response => {
+                            this.form = response.data.data.order_note;
+                        })
+                }
+            },
             getFormatUnitPriceRow(unit_price){
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)

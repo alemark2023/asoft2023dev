@@ -32,6 +32,7 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Order\Models\OrderNote;
+use Modules\Order\Models\OrderNoteItem;
 use Modules\Order\Http\Resources\OrderNoteCollection;
 use Modules\Order\Http\Resources\OrderNoteResource;
 use Modules\Order\Http\Resources\OrderNoteResource2;
@@ -212,15 +213,23 @@ class OrderNoteController extends Controller
     public function update(OrderNoteRequest $request)
     {
 
-         DB::connection('tenant')->transaction(function () use ($request) { 
+        DB::connection('tenant')->transaction(function () use ($request) { 
 
-           $this->order_note = OrderNote::firstOrNew(['id' => $request['id']]);
-           $this->order_note->fill($request->all());
-           $this->order_note->items()->delete();
+            $data = $this->mergeData($request);
+
+            $this->order_note = OrderNote::firstOrNew(['id' => $request['id']]);
+            $this->order_note->fill($data);
+            //$this->order_note->items()->delete();
 
             foreach ($request['items'] as $row) {
 
-                $this->order_note->items()->create($row);
+                // $this->order_note->items()->create($row);
+                $item_id = isset($row['id']) ? $row['id'] : null;
+                $order_note_item = OrderNoteItem::firstOrNew(['id' => $item_id]);
+                $order_note_item->fill($row);
+                $order_note_item->order_note_id = $this->order_note->id;
+                $order_note_item->save();
+
             }
 
             $this->setFilename();
@@ -233,6 +242,23 @@ class OrderNoteController extends Controller
             ],
         ];
 
+    }
+
+
+    public function destroy_order_note_item($id)
+    {
+
+        DB::connection('tenant')->transaction(function () use ($id) {
+        
+            $item = OrderNoteItem::findOrFail($id);
+            $item->delete();
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Item eliminado'
+        ];
     }
 
 
@@ -265,9 +291,15 @@ class OrderNoteController extends Controller
 
     public function voided($id)
     {
-        $obj =  OrderNote::find($id);
-        $obj->state_type_id = 11;
-        $obj->save();
+
+        DB::connection('tenant')->transaction(function () use ($id) {
+        
+            $obj =  OrderNote::find($id);
+            $obj->state_type_id = 11;
+            $obj->save();
+
+        });
+
         return [
             'success' => true,
             'message' => 'Pedido anulado con éxito'

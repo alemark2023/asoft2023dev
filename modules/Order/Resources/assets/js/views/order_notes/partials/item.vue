@@ -526,7 +526,9 @@
                 this.$http.get(`/${this.resource}/table/items`).then((response) => {
                     this.items = response.data
                     this.form.item_id = item_id
-                    this.changeItem()
+                    if(item_id){
+                        this.changeItem()
+                    }
                     // this.filterItems()
 
                 })
