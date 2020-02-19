@@ -30,7 +30,7 @@ class BankAccount extends ModelTenant
     //         $builder->where('status', 1);
     //     });
     // }
-    
+
     public function bank()
     {
         return $this->belongsTo(Bank::class);
