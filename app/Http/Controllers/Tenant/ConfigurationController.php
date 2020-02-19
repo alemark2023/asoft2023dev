@@ -19,16 +19,26 @@ class ConfigurationController extends Controller
     }
 
     public function addSeeder(){
-       $eliminar =  DB::connection('tenant')
+       $reiniciar =  DB::connection('tenant')
                         ->table('format_templates')
                         ->truncate();
-       $prueba = Storage::disk('core')->allDirectories('Templates/pdf');
-       foreach($prueba as $value){
-            $insertar =  DB::connection('tenant')
-            ->table('format_templates')
-            ->insert(['formats' => $value ]);
+       $archivos = Storage::disk('core')->allDirectories('Templates/pdf');
+       $colection = array();
+       $valor = array();
+     foreach($archivos as $valor){
+        $lina = explode( '/', $valor);
+        if(count($lina) <= 3){
+        array_push($colection, $lina);
+        }
        }
-         return redirect()->route('tenant.advanced.index');
+
+       foreach ($colection as $insertar) {
+           $insertar =  DB::connection('tenant')
+            ->table('format_templates')
+            ->insert(['formats' => $insertar[2] ]);
+       }
+      
+        return redirect()->route('tenant.advanced.index');
     }
 
     public function changeFormat(Request $request){
