@@ -119,6 +119,7 @@ class DocumentPaymentController extends Controller
                 'reference' => $row->reference,
                 'customer' => $row->document->customer->name,
                 'number'=>  $row->document->number_full,
+                'total' => $row->document->total,
             ];
         });
 
