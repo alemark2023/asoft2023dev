@@ -11,6 +11,14 @@
                         <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$record->image) }}"
                             data-zoom-image="{{ asset('storage/uploads/items/'.$record->image) }}" />
                     </div>
+                    @foreach($record->images as $row)
+
+                        <div class="product-item">
+                            <img class="product-single-image" src="{{ asset('storage/uploads/items/'.$row->image) }}"
+                                data-zoom-image="{{ asset('storage/uploads/items/'.$row->image) }}" />
+                        </div>
+
+                    @endforeach
                     <!--<div class="product-item">
                         <img class="product-single-image" src="assets/images/products/zoom/product-2.jpg"
                             data-zoom-image="assets/images/products/zoom/product-2-big.jpg" />
@@ -33,6 +41,11 @@
                 <div class="col-3 owl-dot">
                     <img src="{{ asset('storage/uploads/items/'.$record->image) }}" />
                 </div>
+                @foreach($record->images as $row)
+                    <div class="col-3 owl-dot">
+                        <img src="{{ asset('storage/uploads/items/'.$row->image) }}" />
+                    </div>
+                @endforeach
                 <!--<div class="col-3 owl-dot">
                     <img src="assets/images/products/zoom/product-2.jpg" />
                 </div>

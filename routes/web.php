@@ -147,6 +147,10 @@ if ($hostname) {
             Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
             Route::post('items/duplicate', 'Tenant\ItemController@duplicate');
             Route::get('items/disable/{item}', 'Tenant\ItemController@disable');
+            Route::get('items/images/{item}', 'Tenant\ItemController@images');
+            Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
+
+
 
 
 

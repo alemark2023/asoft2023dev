@@ -29,7 +29,7 @@
 <script>
 
     export default {
-          props: ['showDialog'],
+          props: ['showDialog', 'recordId'],
         data() {
             return {
                 titleDialog: 'Imagenes',
@@ -46,8 +46,19 @@
         methods: {
             handleRemove(file, fileList)
             {
-                let ind = this.source_images.findIndex( x => x.filename.includes(file.name))
-                this.source_images.splice(ind, 1);
+                if(file.id)
+                {
+
+                    this.$http.get(`/${this.resource}/images/delete/${file.id}`)
+                        .then(response => {
+                           console.log(response.data)
+                        })
+
+                }else{
+                    let ind = this.source_images.findIndex( x => x.filename.includes(file.name))
+                    this.source_images.splice(ind, 1);
+                }
+
             },
             onSuccessF(response)
             {
@@ -67,7 +78,12 @@
             },
             create()
             {
-
+                 if (this.recordId) {
+                    this.$http.get(`/${this.resource}/images/${this.recordId}`)
+                        .then(response => {
+                            this.fileList = response.data.data
+                        })
+                }
             },
             clear()
             {

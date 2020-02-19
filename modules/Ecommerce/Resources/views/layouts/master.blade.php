@@ -23,7 +23,7 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
-    
+
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/rating.css') }}">
 
     <!-- Fontawesome -->
@@ -46,7 +46,7 @@
 
                     @php
                         $tagid = request()->query('tagid');
-                      
+
                     @endphp
 
                         @if(!$tagid)
@@ -143,8 +143,8 @@
                        <!-- End .widget or  SlideShow-->
                 </div>
 
-       
-          
+
+
                         <!-- <div class="widget widget-newsletters">
                            <h3 class="widget-title">Newsletter</h3>
                             <p>Get all the latest information on Events, Sales and Offers. </p>
@@ -158,7 +158,7 @@
                         </div>-->
 
                         {{-- <div class="widget widget-testimonials">
-                            @include('ecommerce::layouts.partials_ecommerce.testimonials') 
+                            @include('ecommerce::layouts.partials_ecommerce.testimonials')
                         </div> --}}
                         <!-- End .widget -->
 
@@ -221,7 +221,7 @@
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
 
     <script src="{{ asset('porto-ecommerce/assets/js/vue.min.js') }}"></script>
-    
+
 
 
     @stack('scripts')

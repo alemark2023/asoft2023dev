@@ -34,7 +34,12 @@ class FeaturedProductsViewComposer
                 'image' =>  $row->image,
                 'image_medium' => $row->image_medium,
                 'image_small' => $row->image_small,
-                'tags' => $row->tags->pluck('tag_id')->toArray()
+                'tags' => $row->tags->pluck('tag_id')->toArray(),
+                /*'multi_images'  => $row->images->transform(function($r){
+                    return [
+                        $r->image
+                    ];
+                })*/
             ];
         });
     }

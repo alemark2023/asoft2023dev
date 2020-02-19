@@ -282,7 +282,7 @@
                                     <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                 </el-upload>
                                 <div class="sub-title text-danger"><small>Se recomienda resoluciones Full Hd 1024x720</small></div>
-                                 <el-button type="primary" @click="openImages" >Agregar más fotos</el-button>
+                                <el-button type="primary" @click="openImages" >Agregar más fotos</el-button>
 
                             </div>
                         </div>
@@ -363,7 +363,7 @@
                 :percentage_perception="percentage_perception">
         </percentage-perception> -->
 
-        <form-images ref="form_images" @saveImages="saveImages" :showDialog.sync="showDialogImages"></form-images>
+        <form-images ref="form_images"  @saveImages="saveImages" :showDialog.sync="showDialogImages" :recordId="recordId" ></form-images>
 
     </el-dialog>
 </template>
