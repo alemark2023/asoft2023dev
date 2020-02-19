@@ -55,7 +55,8 @@ class Dispatch extends ModelTenant
         'has_cdr',
 
         'reference_document_id',
-        'reference_quotation_id'
+        'reference_quotation_id',
+        'reference_order_note_id'
     ];
 
     protected $casts = [

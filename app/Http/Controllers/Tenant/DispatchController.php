@@ -26,6 +26,7 @@ use App\Models\Tenant\{
 use App\Models\Tenant\Document;
 use App\Http\Requests\Tenant\DispatchRequest;
 use Exception, Illuminate\Support\Facades\DB;
+use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\Quotation;
 
 
@@ -61,6 +62,8 @@ class DispatchController extends Controller
         if($type == 'q')
         {
             $document = Quotation::find($document_id);
+        }else if($type == 'on'){
+            $document = OrderNote::find($document_id);
         }
         else{
             $type = 'i';

@@ -437,6 +437,7 @@
                 this.form = {
                     reference_document_id: this.typeDocument == 'i' ?  this.document.id : null,
                     reference_quotation_id: this.typeDocument == 'q' ?  this.document.id : null,
+                    reference_order_note_id: this.typeDocument == 'on' ?  this.document.id : null,
                     establishment_id: null,
                     document_type_id: '09',
                     series_id: null,

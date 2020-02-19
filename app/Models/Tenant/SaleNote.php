@@ -51,6 +51,7 @@ class SaleNote extends ModelTenant
         'filename',
         'total_canceled',
         'quotation_id',
+        'order_note_id',
         'apply_concurrency',
         'type_period',
         'quantity_period',

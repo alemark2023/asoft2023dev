@@ -76,6 +76,7 @@ class Document extends ModelTenant
         'success_query_status',
         'plate_number',
         'total_canceled',
+        'order_note_id',
 
     ];
 
