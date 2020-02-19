@@ -58,7 +58,8 @@ class EcommerceController extends Controller
             'image_medium' => $row->image_medium,
             'image_small' => $row->image_small,
             'tags' => $row->tags->pluck('tag_id')->toArray(),
-            'images' => $row->images
+            'images' => $row->images,
+            'attributes' => $row->attributes ? $row->attributes : []
         ];
 
         return view('ecommerce::items.record', compact('record'));

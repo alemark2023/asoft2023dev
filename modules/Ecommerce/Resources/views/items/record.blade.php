@@ -62,6 +62,8 @@
             <div class="product-single-details">
                 <h1 class="product-title">{{$record->name}}</h1>
 
+
+
                 <div class="ratings-container">
                     <div class="product-ratings">
                         <span class="ratings" style="width:60%"></span><!-- End .ratings -->
@@ -79,6 +81,10 @@
                     <p>{{$record->description}}
                     </p>
                 </div><!-- End .product-desc -->
+
+                @foreach($record->attributes as $at)
+                   <small> {{$at->description}} : {{$at->value}} </small> <br>
+                @endforeach
 
                 <div class="product-filters-container">
 

@@ -72,7 +72,7 @@ class Item extends ModelTenant
 
     public function getAttributesAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value))?null:json_decode($value);
     }
 
     public function setAttributesAttribute($value)

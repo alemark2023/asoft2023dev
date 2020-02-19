@@ -87,7 +87,11 @@
             },
             clear()
             {
-                this.$refs.upload_images.clearFiles();
+                if(this.$refs.upload_images)
+                {
+                    this.$refs.upload_images.clearFiles();
+                }
+
                 this.source_images= []
             }
         }
