@@ -148,10 +148,10 @@
             </p>
         </td>
     </tr>
-    @if ($document->description)
+    @if ($document->observation)
         <tr>
-            <td class="align-top"><p class="desc">Descripción:</p></td>
-            <td><p class="desc">{{ $document->description }}</p></td>
+            <td class="align-top"><p class="desc">Observación:</p></td>
+            <td><p class="desc">{{ $document->observation }}</p></td>
         </tr>
     @endif
     @if ($document->purchase_order)

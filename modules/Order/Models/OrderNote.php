@@ -62,7 +62,7 @@ class OrderNote extends ModelTenant
         'legends',
         'filename',
         'shipping_address',
-        'description'
+        'observation'
 
     ];
 

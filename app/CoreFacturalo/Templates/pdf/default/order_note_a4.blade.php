@@ -120,10 +120,10 @@
 </table>
 
 <table class="full-width mt-3">
-    @if ($document->description)
+    @if ($document->observation)
         <tr>
-            <td width="15%" class="align-top">Descripción: </td>
-            <td width="85%">{{ $document->description }}</td>
+            <td width="15%" class="align-top">Observación: </td>
+            <td width="85%">{{ $document->observation }}</td>
         </tr>
     @endif
 </table>  
