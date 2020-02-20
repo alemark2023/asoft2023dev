@@ -476,7 +476,7 @@
             @endphp
             @foreach($payments as $row)
                 <tr>
-                    <td>- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+                    <td>&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
                 </tr>
             @endforeach
         </tr>
