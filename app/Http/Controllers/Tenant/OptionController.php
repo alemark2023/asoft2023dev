@@ -16,6 +16,7 @@ use App\Models\Tenant\Configuration;
 use Modules\Expense\Models\Expense;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\PurchaseQuotation;
+use Modules\Order\Models\OrderNote;
 
 class OptionController extends Controller
 {
@@ -47,6 +48,7 @@ class OptionController extends Controller
         SaleNote::where('soap_type_id', '01')->delete();
         Quotation::where('soap_type_id', '01')->delete();
         Expense::where('soap_type_id', '01')->delete();
+        OrderNote::where('soap_type_id', '01')->delete();
 
         return [
             'success' => true,

@@ -2,6 +2,7 @@
 
 namespace Modules\Inventory\Providers;
 
+use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\Document;  
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Traits\InventoryTrait;
@@ -17,6 +18,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->voided();
+        $this->voided_order_note();
     }
 
     private function voided()
@@ -63,4 +65,28 @@ class InventoryVoidedServiceProvider extends ServiceProvider
         }
         
     }
+
+    private function voided_order_note(){
+
+        OrderNote::updated(function ($order_note) {
+
+            if(in_array($order_note->state_type_id, [ '09', '11' ], true)){
+
+                $warehouse = $this->findWarehouse($order_note->establishment_id);
+
+                foreach ($order_note->items as $order_note_item) {
+
+                    $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
+
+                    $this->createInventoryKardex($order_note, $order_note_item->item_id, $order_note_item->quantity * $presentationQuantity, $warehouse->id);
+                    $this->updateStock($order_note_item->item_id, $order_note_item->quantity * $presentationQuantity, $warehouse->id);
+
+                }
+
+            }
+
+        });
+
+    }
+
 }

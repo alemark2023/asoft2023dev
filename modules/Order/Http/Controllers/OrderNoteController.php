@@ -295,8 +295,8 @@ class OrderNoteController extends Controller
         DB::connection('tenant')->transaction(function () use ($id) {
         
             $obj =  OrderNote::find($id);
-            $obj->state_type_id = 11;
-            $obj->save();
+            $obj->state_type_id = '11';
+            $obj->update();
 
         });
 
