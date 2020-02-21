@@ -318,8 +318,8 @@
         @endif
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="4" class="text-right font-bold desc">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold desc">{{ number_format($document->total_discount, 2) }}</td>
+                <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         @if($document->total_plastic_bag_taxes > 0)
