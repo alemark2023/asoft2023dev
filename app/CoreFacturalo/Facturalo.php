@@ -273,7 +273,7 @@ class Facturalo
         
         $base_pdf_template = $configuration;//config(['tenant.pdf_template'=> $configuration]);
         // dd($base_pdf_template);
-
+   
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
@@ -323,7 +323,7 @@ class Facturalo
             }
             $legends = $this->document->legends != '' ? '10' : '0';
 
-            $pdf = new Mpdf([
+           $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
@@ -349,7 +349,8 @@ class Facturalo
                     $was_deducted_prepayment +
                     $customer_department_id+
                     $detraction+
-                    $total_plastic_bag_taxes],
+                    $total_plastic_bag_taxes
+                ],
                 'margin_top' => 0,
                 'margin_right' => 1,
                 'margin_bottom' => 0,
