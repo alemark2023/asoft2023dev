@@ -11,6 +11,12 @@ if($hostname) {
                 Route::get('download', 'AccountController@download');
                 Route::get('format', 'FormatController@index')->name('tenant.account_format.index');
                 Route::get('format/download', 'FormatController@download');
+
+
+                Route::get('summary-report', 'SummaryReportController@index')->name('tenant.account_summary_report.index');
+                Route::get('summary-report/records', 'SummaryReportController@records');
+                Route::get('summary-report/format/download', 'SummaryReportController@download');
+
             });
 
             Route::prefix('company_accounts')->group(function () {
