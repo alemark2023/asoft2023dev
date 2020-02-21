@@ -226,7 +226,8 @@ class DocumentController extends Controller
                     'identity_document_type_id' => $row->identity_document_type_id,
                     'identity_document_type_code' => $row->identity_document_type->code,
                     'addresses' => $row->addresses,
-                    'address' =>  $row->address
+                    'address' =>  $row->address,
+
 
                 ];
             });
@@ -299,6 +300,7 @@ class DocumentController extends Controller
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];
                     }),
+                    'attributes' => $row->attributes ? $row->attributes : []
 
                 ];
             });
