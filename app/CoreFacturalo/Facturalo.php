@@ -323,7 +323,7 @@ class Facturalo
             }
             $legends = $this->document->legends != '' ? '10' : '0';
 
-           dd( $pdf = new Mpdf([
+           $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
@@ -355,7 +355,7 @@ class Facturalo
                 'margin_right' => 1,
                 'margin_bottom' => 0,
                 'margin_left' => 1
-            ]));
+            ]);
         }else if($format_pdf === 'a5'){
 
             $company_name      = (strlen($this->company->name) / 20) * 10;
