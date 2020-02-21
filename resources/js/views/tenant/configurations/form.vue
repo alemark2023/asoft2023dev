@@ -57,6 +57,14 @@
                                 <small class="form-control-feedback" v-if="errors.amount_plastic_bag_taxes" v-text="errors.amount_plastic_bag_taxes[0]"></small>
                             </div>
                         </div>
+
+                        <div class="col-md-4" v-if="typeUser != 'integrator'"> <br>
+                            <label class="control-label">Cantidad de columnas en productos</label>
+                            <div class="form-group" :class="{'has-danger': errors.amount_plastic_bag_taxes}">
+                                <el-slider  @change="submit" v-model="form.colums_grid_item" :min="2" :max="6"></el-slider>
+                                <small class="form-control-feedback" v-if="errors.amount_plastic_bag_taxes" v-text="errors.amount_plastic_bag_taxes[0]"></small>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -159,6 +167,7 @@
                     compact_sidebar:true,
                     decimal_quantity: null,
                     amount_plastic_bag_taxes: 0.1,
+                    colums_grid_item: 4
                 };
             },
             submit() {

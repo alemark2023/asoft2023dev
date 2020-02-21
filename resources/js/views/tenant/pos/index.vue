@@ -27,7 +27,7 @@
 
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
-      <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
+      <div  class="col-lg-8 col-md-6 px-4 pt-3 hyo">
         <el-input
             v-show="place  == 'prod' || place == 'cat2'"
             placeholder="Buscar productos"
@@ -66,7 +66,7 @@
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
-            <div class="col-lg-3 col-md-4 col-sm-6" :key="index" >
+            <div v-bind:class="classObjectCol"  :key="index" >
               <section class="card ">
                 <div class="card-body pointer px-2 pt-2" @click="clickAddItem(item,index)">
                   <p class="font-weight-semibold mb-0" v-if="item.description.length > 50" data-toggle="tooltip" data-placement="top" :title="item.description">
@@ -420,6 +420,7 @@
       import WarehousesDetail from '../items/partials/warehouses.vue'
 
       export default {
+        props: ['configuration'],
         components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
         mixins: [functions, exchangeRate],
 
@@ -469,6 +470,43 @@
            if(document.querySelector('.sidebar-toggle')){
                document.querySelector('.sidebar-toggle').click()
            }
+        },
+
+        computed:{
+
+            classObjectCol() {
+
+                let cols = this.configuration.colums_grid_item
+
+                let clase = 'c3'
+                switch(cols)
+                {
+                    case 2:
+                         clase = '6'
+
+                        break;
+                    case 3:
+                         clase = '4'
+
+                        break;
+                    case 4:
+                         clase = '3'
+
+                        break;
+                    case 5:
+                         clase = '2'
+
+                        break;
+                    case 6:
+                         clase = '2'
+                        break;
+                    default:
+
+                }
+                return {
+                    [`col-md-${clase}`] : true
+                }
+            }
         },
 
         methods: {

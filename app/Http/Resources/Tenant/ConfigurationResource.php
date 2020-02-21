@@ -24,6 +24,7 @@ class ConfigurationResource extends JsonResource
             'subtotal_account' => $this->subtotal_account,
             'decimal_quantity' => $this->decimal_quantity,
             'amount_plastic_bag_taxes' => $this->amount_plastic_bag_taxes,
+            'colums_grid_item' => $this->colums_grid_item
         ];
     }
 }
