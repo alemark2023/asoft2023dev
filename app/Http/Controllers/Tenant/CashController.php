@@ -20,6 +20,8 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\DocumentItem;
+use App\Models\Tenant\PaymentMethodType;
+
 
 
 
@@ -203,9 +205,17 @@ class CashController extends Controller
         $cash = Cash::findOrFail($cash);
         $company = Company::first();
 
+        $methods_payment = collect(PaymentMethodType::all())->transform(function($row){
+            return (object)[
+                'id' => $row->id,
+                'name' => $row->description,
+                'sum' => 0
+            ];
+        });
+
         set_time_limit(0);
 
-        $pdf = PDF::loadView('tenant.cash.report_pdf', compact("cash", "company"));
+        $pdf = PDF::loadView('tenant.cash.report_pdf', compact("cash", "company", "methods_payment"));
 
         $filename = "Reporte_POS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
 
@@ -242,7 +252,7 @@ class CashController extends Controller
                 'quantity' => $row->quantity,
             ];
         });
-        
+
 
         $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents"));
 
