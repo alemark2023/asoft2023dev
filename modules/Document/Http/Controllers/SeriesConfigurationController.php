@@ -55,9 +55,9 @@ class SeriesConfigurationController extends Controller
     {
         
         $establishmentId = auth()->user()->establishment_id;
-        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '08'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '08','09'])->get();
 
-        $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])
+        $series = Series::whereIn('document_type_id', ['01', '03','07', '08','09'])
                         ->where('establishment_id', $establishmentId)
                         ->doesntHave('series_configurations') 
                         // ->doesntHave('documents')
