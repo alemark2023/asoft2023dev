@@ -27,6 +27,9 @@ if($hostname) {
             Route::post('incentives', 'IncentiveController@store');
             Route::get('incentives/columns', 'IncentiveController@columns');
             Route::delete('incentives/{incentive}', 'IncentiveController@destroy');
+
+            Route::get('items/barcode/{item}', 'ItemController@generateBarcode');
+
         });
     });
 }
