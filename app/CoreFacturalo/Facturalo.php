@@ -731,4 +731,17 @@ class Facturalo
             }
         }
     }
+
+    public function updateResponse(){
+
+        if($this->response['sent']) {
+            
+            $this->document->update([
+                'soap_shipping_response' => $this->response
+            ]);
+            
+        }
+
+    }
+
 }

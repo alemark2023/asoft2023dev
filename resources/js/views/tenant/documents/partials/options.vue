@@ -50,7 +50,16 @@
                 </button>
             </div>
         </div> -->
-        <div class="row mt-4">
+        <div class="row mt-4" v-if="form.response_message">
+            <div class="col-md-12">
+                <el-alert
+                    :title="form.response_message"
+                    :type="form.response_type"
+                    show-icon>
+                </el-alert>
+            </div>
+        </div>
+        <div class="row mt-3">
             <div class="col-md-12">
                 <el-input v-model="form.customer_email">
                     <el-button slot="append" icon="el-icon-message" @click="clickSendEmail" :loading="loading">Enviar</el-button>
@@ -108,7 +117,9 @@
                     external_id: null,
                     number: null,
                     image_detraction: null,
-                    id: null
+                    id: null,
+                    response_message:null,
+                    response_type:null
                 };
                 this.locked_emission = {
                     success: true,

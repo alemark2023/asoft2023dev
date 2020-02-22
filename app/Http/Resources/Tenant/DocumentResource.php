@@ -14,6 +14,29 @@ class DocumentResource extends JsonResource
      */
     public function toArray($request)
     {
+
+        $response_message = null;
+        $response_type = null;
+
+        if($this->soap_shipping_response){
+            if($this->soap_shipping_response->sent){
+
+                $response_message = $this->soap_shipping_response->description;
+                $code =  (int) $this->soap_shipping_response->code;
+
+                if($code === 0) {
+                    $response_type = 'success';
+                }elseif($code < 2000) {
+                    $response_type = 'error';
+                }elseif ($code < 4000) {
+                    $response_type = 'error';
+                } else {
+                    $response_type = 'warning';
+                }
+            }
+
+        }
+
         return [
             'id' => $this->id,
             'external_id' => $this->external_id,
@@ -27,7 +50,9 @@ class DocumentResource extends JsonResource
             'print_a5' => url('')."/print/document/{$this->external_id}/a5",
             'image_detraction' => ($this->detraction) ? (($this->detraction->image_pay_constancy) ?
             asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->detraction->image_pay_constancy):false):false,
-            'detraction' => $this->detraction
+            'detraction' => $this->detraction,
+            'response_message' => $response_message,
+            'response_type' => $response_type,
         ];
     }
 }

@@ -34,6 +34,7 @@ class DocumentController extends Controller
             $facturalo->createPdf();
             $facturalo->sendEmail();
             $facturalo->senderXmlSignedBill();
+            $facturalo->updateResponse();
 
             return $facturalo;
         });
@@ -77,6 +78,7 @@ class DocumentController extends Controller
             $fact->setDocument($document);
             $fact->loadXmlSigned();
             $fact->onlySenderXmlSignedBill();
+            $fact->updateResponse();
             $response = $fact->getResponse();
             return [
                 'success' => true,
