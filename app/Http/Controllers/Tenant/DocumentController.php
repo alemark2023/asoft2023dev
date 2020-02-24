@@ -356,7 +356,6 @@ class DocumentController extends Controller
             $facturalo->updateQr();
             $facturalo->createPdf();
             $facturalo->senderXmlSignedBill();
-            $facturalo->updateResponse();
 
             return $facturalo;
         });
@@ -430,7 +429,6 @@ class DocumentController extends Controller
             $facturalo->setDocument($document);
             $facturalo->loadXmlSigned();
             $facturalo->onlySenderXmlSignedBill();
-            $facturalo->updateResponse();
             return $facturalo;
         });
 
