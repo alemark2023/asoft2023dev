@@ -204,9 +204,12 @@ class Facturalo
 
     public function updateState($state_type_id)
     {
+
         $this->document->update([
-            'state_type_id' => $state_type_id
+            'state_type_id' => $state_type_id,
+            'soap_shipping_response' => isset($this->response['sent']) ? $this->response:null
         ]);
+
     }
 
     public function updateSoap($soap_type_id, $type)
@@ -505,7 +508,6 @@ class Facturalo
 
             $code = $cdrResponse->getCode();
             $description = $cdrResponse->getDescription();
-            $this->validationCodeResponse($code, $description);
 
             $this->response = [
                 'sent' => true,
@@ -513,15 +515,20 @@ class Facturalo
                 'description' => $cdrResponse->getDescription(),
                 'notes' => $cdrResponse->getNotes()
             ];
+
+            $this->validationCodeResponse($code, $description);
+
         } else {
             $code = $res->getError()->getCode();
             $message = $res->getError()->getMessage();
-            $this->validationCodeResponse($code, $message);
             $this->response = [
                 'sent' => true,
                 'code' => $code,
                 'description' => $message
             ];
+            
+            $this->validationCodeResponse($code, $message);
+
         }
     }
 
@@ -731,4 +738,18 @@ class Facturalo
             }
         }
     }
+
+    public function updateResponse(){
+
+        // if($this->response['sent']) {
+        //     return 
+            
+        //     $this->document->update([
+        //         'soap_shipping_response' => $this->response
+        //     ]);
+            
+        // }
+
+    }
+
 }
