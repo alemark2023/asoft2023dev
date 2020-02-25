@@ -73,6 +73,15 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
+                            <label class="control-label">Opciones avanzadas en POS</label>
+                            <div class="form-group" :class="{'has-danger': errors.options_pos}">
+                                <el-switch v-model="form.options_pos" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.options_pos" v-text="errors.options_pos[0]"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <label>Plantillas PDF</label>
                             <el-select v-model="formato.formats" @change="changeFormat(formato.formats)">
                                 <el-option disabled value="">Seleccione Plantilla</el-option>
