@@ -90,7 +90,7 @@
                     </el-popover> -->
                   </p>
                 </div>
-                <div class="card-footer pointer text-center bg-primary" >
+                <div v-if="configuration.options_pos" class="card-footer pointer text-center bg-primary" >
                   <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <template v-if="!item.edit_unit_price">
@@ -107,7 +107,7 @@
                   </template>
 
                 </div>
-                <div class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
+                <div v-if="configuration.options_pos" class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
                   <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
                     <el-table  :data="item.warehouses">
                       <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
