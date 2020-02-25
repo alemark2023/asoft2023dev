@@ -17,7 +17,7 @@
     $document->load('reference_guides');
 
     $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment);
+    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
 @endphp
 <html>
