@@ -670,7 +670,7 @@
                 {
                     const contex = this
                     this.form.item.attributes.forEach((row)=>{
-                        
+
                         contex.form.attributes.push({
                             attribute_type_id: row.attribute_type_id,
                             description: row.description,
