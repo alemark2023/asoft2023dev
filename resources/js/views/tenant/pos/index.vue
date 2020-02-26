@@ -28,17 +28,34 @@
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
       <div  class="col-lg-8 col-md-6 px-4 pt-3 hyo">
-        <el-input
-            v-show="place  == 'prod' || place == 'cat2'"
-            placeholder="Buscar productos"
-            size="medium"
-            v-model="input_item"
-            @input="searchItems"
-            autofocus
-            class="m-bottom"
-          >
-          <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
-        </el-input>
+
+        <template v-if="!search_item_by_barcode">
+          <el-input
+              v-show="place  == 'prod' || place == 'cat2'"
+              placeholder="Buscar productos"
+              size="medium"
+              v-model="input_item"
+              @input="searchItems"
+              autofocus
+              class="m-bottom"
+            >
+            <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
+          </el-input>
+        </template>
+
+        <template v-else>
+            <el-input
+                v-show="place  == 'prod' || place == 'cat2'"
+                placeholder="Buscar productos"
+                size="medium"
+                v-model="input_item"
+                @change="searchItemsBarcode"
+                autofocus
+                class="m-bottom"
+              >
+              <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
+            </el-input>
+        </template>
 
         <div v-if="place == 'cat2'"  class="container testimonial-group">
             <div class="row text-center flex-nowrap">
@@ -1072,7 +1089,6 @@
                     })
           },
           searchItems() {
-
             if (this.input_item.length > 0) {
               this.loading = true;
               let parameters = `input_item=${this.input_item}`;
@@ -1083,8 +1099,6 @@
                   // console.log(response)
                   this.items = response.data.items;
 
-                  this.enabledSearchItemsBarcode()
-
                   this.loading = false;
                   if (this.items.length == 0) {
                     this.filterItems();
@@ -1093,6 +1107,35 @@
             } else {
               // this.customers = []
               this.filterItems();
+            }
+
+          },
+          async searchItemsBarcode() {
+
+            // console.log(query)
+            // console.log("in:" + this.input_item)
+
+            if (this.input_item.length > 1) {
+
+              this.loading = true;
+              let parameters = `input_item=${this.input_item}`;
+
+              await this.$http.get(`/${this.resource}/search_items?${parameters}`)
+                        .then(response => {
+
+                          this.items = response.data.items;
+                          this.enabledSearchItemsBarcode()
+                          this.loading = false;
+                          if (this.items.length == 0) {
+                            this.filterItems();
+                        }
+                  
+                  });
+
+            } else {
+
+              await this.filterItems();
+
             }
 
           },
@@ -1167,12 +1210,16 @@
             nameSets(id)
             {
                 let row  =  this.items.find( x=> x.item_id  == id)
-                if(row.sets.length > 0)
-                {
-                    return row.sets.join('-')
-                }
-                else{
-                    return ''
+                if(row){
+
+                  if(row.sets.length > 0)
+                  {
+                      return row.sets.join('-')
+                  }
+                  else{
+                      return ''
+                  }
+
                 }
             }
         }
