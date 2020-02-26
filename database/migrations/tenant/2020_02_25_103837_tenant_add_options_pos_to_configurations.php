@@ -14,7 +14,7 @@ class TenantAddOptionsPosToConfigurations extends Migration
     public function up()
     {
         Schema::table('configurations', function (Blueprint $table) {
-            $table->boolean('options_pos')->default(false)->after('colums_grid_item');
+            $table->boolean('options_pos')->default(true)->after('colums_grid_item');
         });
     }
 
