@@ -90,12 +90,12 @@
                     </el-popover> -->
                   </p>
                 </div>
-                <div v-if="configuration.options_pos" class="card-footer pointer text-center bg-primary" >
+                <div class="card-footer pointer text-center bg-primary" >
                   <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <template v-if="!item.edit_unit_price">
                     <h5   class="font-weight-semibold text-right text-white" >
-                      <button type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
+                      <button v-if="configuration.options_pos" type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
                       {{item.currency_type_symbol}} {{item.sale_unit_price}}
                     </h5>
                   </template>
