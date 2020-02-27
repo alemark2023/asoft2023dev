@@ -22,20 +22,20 @@
                         <div class="col-sm-4">
                             <el-checkbox v-model="is_contingency" @change="changeEstablishment">¿Es comprobante de contigencia?</el-checkbox>
                             <template v-if="!is_client">
-                                
+
                                 <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
-                                
+
                                 <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
-                                
+
                                 <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
-                                        @change="changeAffectationTypePrepayment" 
-                                        active-color="#409EFF" 
-                                        inactive-color="#409EFF" 
-                                        active-text="Exonerado" 
-                                        inactive-text="Gravado" 
-                                        :active-value="20" 
+                                        @change="changeAffectationTypePrepayment"
+                                        active-color="#409EFF"
+                                        inactive-color="#409EFF"
+                                        active-text="Exonerado"
+                                        inactive-text="Gravado"
+                                        :active-value="20"
                                         :inactive-value="10">
                                 </el-switch>
 
@@ -811,7 +811,7 @@
 
                 if(this.form.affectation_type_prepayment == 10){
 
-                    
+
                     let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
 
                     if(global_discount>0 && !discount){
@@ -844,7 +844,7 @@
                             this.form.total_igv =  _.round(this.form.total_value * 0.18,2)
                             this.form.total_taxes =  _.round(this.form.total_igv,2)
                             this.form.total =  _.round(this.form.total_value + this.form.total_taxes,2)
-                            
+
                             this.form.discounts[pos].base = base
                             this.form.discounts[pos].amount = amount
                             this.form.discounts[pos].factor = factor
@@ -878,7 +878,7 @@
 
                         let position = this.form.discounts.indexOf(exonerated_discount);
 
-                        if(position > -1){ 
+                        if(position > -1){
 
                             this.form.discounts[position].base = base
                             this.form.discounts[position].amount = amount
@@ -927,9 +927,9 @@
                 this.form.prepayments = []
                 this.form.total_prepayment = 0
                 await this.deletePrepaymentDiscount()
-                
+
                 if(this.prepayment_deduction){
-                    
+
                     await this.initialValueATPrepayment()
                     await this.changeTotalPrepayment()
                     await this.getDocumentsPrepayment()
@@ -960,14 +960,14 @@
             },
             async changeAffectationTypePrepayment(){
 
-                await this.initialValueATPrepayment()                
-                
+                await this.initialValueATPrepayment()
+
                 if(this.prepayment_deduction){
-                    
+
                     this.form.total_prepayment = 0
                     await this.deletePrepaymentDiscount()
                     await this.changePrepaymentDeduction()
-                } 
+                }
 
             },
             async deletePrepaymentDiscount(){
@@ -1438,7 +1438,7 @@
                 }
             },
             async validateAffectationTypePrepayment() {
-                
+
                 let not_equal_affectation_type = 0
 
                 await this.form.items.forEach(item => {
@@ -1459,7 +1459,7 @@
                     if(!error_prepayment.success)
                         return this.$message.error(error_prepayment.message);
                 }
-                
+
 
                 if(this.is_receivable){
                     this.form.payments = []

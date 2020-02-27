@@ -8,6 +8,8 @@ use App\Models\Tenant\ModelTenant;
 
 class ItemLotsGroup extends ModelTenant
 {
+    protected $table = 'item_lots_group';
+
 
     protected $fillable = [
         'code',

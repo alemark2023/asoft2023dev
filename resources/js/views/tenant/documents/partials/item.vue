@@ -103,6 +103,17 @@
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
+
+                     <div class="col-md-3 col-sm-3" v-if="form.lots_group.length > 0">
+                        <div class="form-group" >
+                             <label class="control-label">
+                                Seleccione el lote
+                            </label>
+                            <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotGroup"></el-button>
+                        </div>
+                    </div>
+
+
                     <div class="col-md-3 col-sm-6" v-show="form.item.calculate_quantity">
                         <div class="form-group"  :class="{'has-danger': errors.total_item}">
                             <label class="control-label">Total venta producto</label>
@@ -430,6 +441,12 @@
                 :isUpdateWarehouseId="isUpdateWarehouseId"
                 :warehouses="warehousesDetail">
             </warehouses-detail>
+
+         <lots-group
+            :showDialog.sync="showDialogLots"
+            :lots_group="form.lots_group"
+            @addRowLot="addRowLot">
+        </lots-group>
     </el-dialog>
 </template>
 <style>
@@ -442,12 +459,14 @@
 <script>
 
     import ItemForm from '../../items/form.vue'
+    import LotsGroup from './lots_group.vue'
+
     import {calculateRowItem} from '../../../../helpers/functions'
     import WarehousesDetail from './select_warehouses.vue'
 
     export default {
         props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
-        components: {ItemForm, WarehousesDetail},
+        components: {ItemForm, WarehousesDetail, LotsGroup},
         data() {
             return {
                 titleAction: '',
@@ -476,6 +495,7 @@
                 showListStock:false,
                 search_item_by_barcode:false,
                 isUpdateWarehouseId:null,
+                showDialogLots: false
                 //item_unit_type: {}
             }
         },
@@ -554,6 +574,8 @@
                     item_unit_types: [],
                     has_plastic_bag_taxes:false,
                     warehouse_id:null,
+                    lots_group: [],
+                    IdLoteSelected: null
                 };
 
                 this.activePanel = 0;
@@ -682,6 +704,8 @@
                     })
                 }
 
+                this.form.lots_group = this.form.item.lots_group
+
                 // console.log(this.recordItem)
                 // if (!this.recordItem) {
                 //     await this.form.item.warehouses.forEach(element => {
@@ -723,6 +747,8 @@
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
 
+                let IdLoteSelected = this.form.IdLoteSelected
+
                 // console.log(this.form)
                 // return
                 // console.log
@@ -735,6 +761,8 @@
                 {
                     this.row.indexi = this.recordItem.indexi
                 }
+
+                this.row.IdLoteSelected = IdLoteSelected
 
                 this.$emit('add', this.row);
 
@@ -805,6 +833,14 @@
                 this.form.item.unit_type_id = row.unit_type_id
                 this.calculateQuantity()
             },
+            addRowLot(id)
+            {
+                this.form.IdLoteSelected =  id
+            },
+            clickLotGroup()
+            {
+                this.showDialogLots = true
+            }
         }
     }
 

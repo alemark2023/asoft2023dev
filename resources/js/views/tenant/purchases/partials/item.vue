@@ -56,8 +56,27 @@
                                 Código lote
                             </label>
                             <el-input v-model="lot_code" >
-                                <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+                                <!--<el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button> -->
                             </el-input>
+                            <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3" v-show="form.item_id">
+                        <div class="form-group" :class="{'has-danger': errors.date_of_due}" v-if="form.item.lots_enabled">
+                            <label class="control-label">Fec. Vencimiento</label>
+                            <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                            <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-3" v-show="form.item_id">  <br>
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}" v-if="form.item.series_enabled">
+                            <label class="control-label">
+                                <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
+                                Ingrese series
+                            </label>
+
+                            <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
@@ -311,6 +330,7 @@
                     attributes: [],
                     item_unit_types: [],
                     lot_code:null,
+                    date_of_due: null
                 }
 
                 this.item_unit_type = {};
@@ -403,10 +423,25 @@
                     if(!this.lot_code)
                         return this.$message.error('Código de lote es requerido');
 
+                   /* if(!this.lot_code)
+                        return this.$message.error('Código de lote es requerido');
+
                     if(this.lots.length != this.form.quantity)
-                        return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');
+                        return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');*/
 
                 }
+
+                if(this.form.item.series_enabled)
+                {
+
+                    if(this.lots.length > this.form.quantity)
+                        return this.$message.error('La cantidad de series registradas es superior al stock');
+
+                    if(this.lots.length != this.form.quantity)
+                        return this.$message.error('La cantidad de series registradas son diferentes al stock');
+                }
+
+                let date_of_due = this.form.date_of_due
 
                 this.form.item.unit_price = this.form.unit_price
                 this.form.item.presentation = this.item_unit_type;
@@ -417,6 +452,8 @@
                 this.row.lots = await this.lots
 
                 this.row = this.changeWarehouse(this.row)
+
+                this.row.date_of_due = date_of_due
                 // console.log(this.row)
 
                 this.initForm()

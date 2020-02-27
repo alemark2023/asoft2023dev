@@ -33,6 +33,8 @@ use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
 use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\ItemWarehouse;
+use Modules\Item\Models\ItemLotsGroup;
+
 
 
 class PurchaseController extends Controller
@@ -182,6 +184,21 @@ class PurchaseController extends Controller
 
                 }
 
+                if(array_key_exists('item', $row))
+                {
+                    if( $row['item']['series_enabled'] == true)
+                    {
+
+                        ItemLotsGroup::create([
+                            'code'  => $row['lot_code'],
+                            'quantity'  => $row['quantity'],
+                            'date_of_due'  => $row['date_of_due'],
+                            'item_id' => $row['item_id']
+                        ]);
+
+                    }
+                }
+
             }
 
 
@@ -189,8 +206,14 @@ class PurchaseController extends Controller
                 $doc->purchase_payments()->create($payment);
             }
 
+
+
+
+
             return $doc;
         });
+
+
 
 
 
@@ -379,7 +402,9 @@ class PurchaseController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
-                        })
+                        }),
+                        'series_enabled' => (bool) $row->series_enabled,
+
                         // 'warehouses' => collect($row->warehouses)->transform(function($row) {
                         //     return [
                         //         'warehouse_id' => $row->warehouse->id,
