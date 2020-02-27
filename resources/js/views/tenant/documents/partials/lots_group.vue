@@ -27,6 +27,7 @@
                             <tr v-for="(row, index) in lots_group" :key="index">
                                 <th align="center">
                                     <el-checkbox
+                                        :disabled="row.quantity  < 1"
                                         v-model="row.checked"
                                         @change="changeSelect(index, row.id)"
                                     ></el-checkbox>

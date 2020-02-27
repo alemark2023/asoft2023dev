@@ -17,6 +17,9 @@ use Modules\Inventory\Http\Resources\ReportKardexCollection;
 use Modules\Inventory\Http\Resources\ReportKardexLotsCollection;
 
 use Modules\Inventory\Models\ItemWarehouse;
+use Modules\Item\Models\ItemLotsGroup;
+
+use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
 
 
 
@@ -243,6 +246,13 @@ class ReportKardexController extends Controller
             ->company($company)
             ->establishment($establishment)
             ->download('ReporteKar'.Carbon::now().'.xlsx');
+    }
+
+    public function records_lots_kardex()
+    {
+        $records  =  ItemLotsGroup::all();
+        return new ReportKardexLotsGroupCollection($records);
+
     }
 
 
