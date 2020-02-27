@@ -112,7 +112,7 @@
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <template v-if="!item.edit_unit_price">
                     <h5   class="font-weight-semibold text-right text-white" >
-                      <button type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
+                      <button v-if="configuration.options_pos" type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
                       {{item.currency_type_symbol}} {{item.sale_unit_price}}
                     </h5>
                   </template>
@@ -124,7 +124,7 @@
                   </template>
 
                 </div>
-                <div class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
+                <div v-if="configuration.options_pos" class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
                   <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
                     <el-table  :data="item.warehouses">
                       <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
