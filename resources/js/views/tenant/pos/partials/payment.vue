@@ -736,7 +736,7 @@
                     this.resource_options = this.resource_documents;
                 }
 
-                // this.loading_submit = true
+                this.loading_submit = true
                 await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
 
