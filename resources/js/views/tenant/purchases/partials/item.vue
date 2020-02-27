@@ -215,7 +215,7 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
-                   
+
         <lots-form
             :showDialog.sync="showDialogLots"
             :stock="form.quantity"
@@ -399,26 +399,26 @@
             async clickAddItem() {
 
                 if(this.form.item.lots_enabled){
- 
+
                     if(!this.lot_code)
                         return this.$message.error('Código de lote es requerido');
-                    
+
                     if(this.lots.length != this.form.quantity)
                         return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');
- 
+
                 }
 
                 this.form.item.unit_price = this.form.unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
- 
+
                 this.row.lot_code = await this.lot_code
                 this.row.lots = await this.lots
 
                 this.row = this.changeWarehouse(this.row)
                 // console.log(this.row)
-                
+
                 this.initForm()
                 // this.initializeFields()
                 this.$emit('add', this.row)
