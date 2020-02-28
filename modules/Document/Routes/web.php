@@ -20,6 +20,8 @@ if($current_hostname) {
                 Route::get('detraction/tables', 'DocumentController@detractionTables');
                 Route::get('data-table/customers', 'DocumentController@dataTableCustomers');
                 Route::get('prepayments/{type}', 'DocumentController@prepayments');
+                Route::get('search-items', 'DocumentController@searchItems');
+                Route::get('search/item/{item}', 'DocumentController@searchItemById');
             });
 
             Route::prefix('series-configurations')->group(function() {
