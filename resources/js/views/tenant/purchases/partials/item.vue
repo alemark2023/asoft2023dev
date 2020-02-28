@@ -423,6 +423,9 @@
                     if(!this.lot_code)
                         return this.$message.error('Código de lote es requerido');
 
+                    if(!this.form.date_of_due)
+                        return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
+
                    /* if(!this.lot_code)
                         return this.$message.error('Código de lote es requerido');
 
