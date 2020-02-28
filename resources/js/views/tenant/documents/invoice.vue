@@ -1367,6 +1367,15 @@
                 if(this.form.operation_type_id === '1001')
                     this.changeDetractionType()
 
+                this.setTotalDefaultPayment()
+
+            },
+            setTotalDefaultPayment(){
+                
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
             },
             changeTypeDiscount(){
                 this.calculateTotal()
