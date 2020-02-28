@@ -18,9 +18,10 @@ use Modules\Inventory\Http\Resources\ReportKardexLotsCollection;
 
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\ItemLot;
 
 use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
-
+use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 
 
 class ReportKardexController extends Controller
@@ -252,6 +253,13 @@ class ReportKardexController extends Controller
     {
         $records  =  ItemLotsGroup::all();
         return new ReportKardexLotsGroupCollection($records);
+
+    }
+
+    public function records_series_kardex()
+    {
+        $records  =  ItemLot::all();
+        return new ReportKardexItemLotCollection($records);
 
     }
 

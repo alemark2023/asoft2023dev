@@ -41,10 +41,10 @@
 </template>
 
 <script>
-import DataTable from "../../components/DataTableKardex.vue";
+//import DataTable from "../../components/DataTableKardex.vue";
 
 export default {
-    components: { DataTable },
+  //  components: { DataTable },
     data() {
         return {
             resource: "reports/kardex_lots",
