@@ -418,6 +418,8 @@
             },
             async clickAddItem() {
 
+                debugger
+
                 let unit_price = (this.form.has_igv)?this.form.unit_price:this.form.unit_price*1.18;
 
                 // this.form.item.unit_price = this.form.unit_price

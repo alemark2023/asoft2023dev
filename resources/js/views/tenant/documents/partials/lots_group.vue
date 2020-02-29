@@ -90,18 +90,18 @@ export default {
         create() {},
 
         async submit() {
-            await this.$emit("addRowLot", this.idSelected);
+            await this.$emit("addRowLotGroup", this.idSelected);
             await this.$emit("update:showDialog", false);
         },
 
         clickCancel(item) {
             //this.lots.splice(index, 1);
             item.deleted = true;
-            this.$emit("addRowLot", this.lots);
+            this.$emit("addRowLotGroup", this.lots);
         },
 
         async clickCancelSubmit() {
-            this.$emit("addRowLot", []);
+            this.$emit("addRowLotGroup", []);
             await this.$emit("update:showDialog", false);
         },
         close() {
