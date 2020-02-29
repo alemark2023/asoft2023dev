@@ -223,7 +223,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="form-group mb-2 mr-2" >
-             <!--form.total suplanto a row.payment -->   <el-input v-model="form.total"></el-input>
+             <!--form.total suplanto a row.payment -->   <el-input v-model="row.payment"></el-input>
                                                     </div>
                                                 </td>
                                                 <td class="series-table-actions text-center">
@@ -1367,6 +1367,15 @@
                 if(this.form.operation_type_id === '1001')
                     this.changeDetractionType()
 
+                this.setTotalDefaultPayment()
+
+            },
+            setTotalDefaultPayment(){
+                
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
             },
             changeTypeDiscount(){
                 this.calculateTotal()

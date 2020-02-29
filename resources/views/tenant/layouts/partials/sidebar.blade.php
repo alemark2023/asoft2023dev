@@ -195,7 +195,7 @@
                                         </ul>
                                     </li>
                                 @endif
-                                
+
                                 @if(in_array('quotations', $vc_module_levels))
 
                                     <li class="{{ ($path[0] === 'quotations')?'nav-active':'' }}">
@@ -224,7 +224,7 @@
 
                                 @endif
                             @endif
- 
+
                         </ul>
                     </li>
                     @endif

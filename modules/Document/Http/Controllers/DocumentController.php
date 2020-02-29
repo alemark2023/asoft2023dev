@@ -17,10 +17,13 @@ use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DetractionType;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Traits\OfflineTrait;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use App\Models\Tenant\Item;
+use Modules\Document\Traits\SearchTrait; 
 
 class DocumentController extends Controller
 {
-    use OfflineTrait;
+    use OfflineTrait, SearchTrait;
     
     public function index()
     {
@@ -236,4 +239,133 @@ class DocumentController extends Controller
         return $prepayment_documents;
 
     }
+
+    
+    public function searchItems(Request $request)
+    {
+
+        // dd($request->all());
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        $items_not_services = $this->getItemsNotServices($request);
+        $items_services = $this->getItemsServices($request);
+        $all_items = $items_not_services->merge($items_services);
+
+        $items = collect($all_items)->transform(function($row) use($warehouse){
+
+                $detail = $this->getFullDescription($row, $warehouse);
+
+                return [
+                    'id' => $row->id,
+                    'full_description' => $detail['full_description'],
+                    'brand' => $detail['brand'],
+                    'category' => $detail['category'],
+                    'stock' => $detail['stock'],
+                    'internal_id' => $row->internal_id,
+                    'description' => $row->description,
+                    'currency_type_id' => $row->currency_type_id,
+                    'currency_type_symbol' => $row->currency_type->symbol,
+                    'sale_unit_price' => round($row->sale_unit_price, 2),
+                    'purchase_unit_price' => $row->purchase_unit_price,
+                    'unit_type_id' => $row->unit_type_id,
+                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                    'calculate_quantity' => (bool) $row->calculate_quantity,
+                    'has_igv' => (bool) $row->has_igv,
+                    'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'description' => "{$row->description}",
+                            'item_id' => $row->item_id,
+                            'unit_type_id' => $row->unit_type_id,
+                            'quantity_unit' => $row->quantity_unit,
+                            'price1' => $row->price1,
+                            'price2' => $row->price2,
+                            'price3' => $row->price3,
+                            'price_default' => $row->price_default,
+                        ];
+                    }),
+                    'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                        return [
+                            'warehouse_description' => $row->warehouse->description,
+                            'stock' => $row->stock,
+                            'warehouse_id' => $row->warehouse_id,
+                            'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
+                        ];
+                    }),
+                    'attributes' => $row->attributes ? $row->attributes : []
+    
+                ];
+            });
+
+        return compact('items');
+
+    }
+
+
+    public function searchItemById($id)
+    {
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        $search_item = $this->getItemsNotServicesById($id);
+
+        if(count($search_item) == 0){
+            $search_item = $this->getItemsServicesById($id);
+        }
+
+        $items = collect($search_item)->transform(function($row) use($warehouse){
+
+            $detail = $this->getFullDescription($row, $warehouse);
+
+            return [
+                'id' => $row->id,
+                'full_description' => $detail['full_description'],
+                'brand' => $detail['brand'],
+                'category' => $detail['category'],
+                'stock' => $detail['stock'],
+                'internal_id' => $row->internal_id,
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => round($row->sale_unit_price, 2),
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'calculate_quantity' => (bool) $row->calculate_quantity,
+                'has_igv' => (bool) $row->has_igv,
+                'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'description' => "{$row->description}",
+                        'item_id' => $row->item_id,
+                        'unit_type_id' => $row->unit_type_id,
+                        'quantity_unit' => $row->quantity_unit,
+                        'price1' => $row->price1,
+                        'price2' => $row->price2,
+                        'price3' => $row->price3,
+                        'price_default' => $row->price_default,
+                    ];
+                }),
+                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                    return [
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                        'warehouse_id' => $row->warehouse_id,
+                        'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
+                    ];
+                }),
+                'attributes' => $row->attributes ? $row->attributes : []
+
+            ];
+        });
+
+        return compact('items');
+    }
+
 }
