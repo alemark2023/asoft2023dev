@@ -148,7 +148,7 @@
                         </div>
                     </div>-->
 
-                    <div style="padding-top: 1%;" class="col-md-2 col-sm-2" v-if="form.item.lots_enabled && form.lots_group.length > 0">
+                    <div style="padding-top: 1%;" class="col-md-2 col-sm-2" v-if="form.item_id && form.item.lots_enabled && form.lots_group.length > 0">
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004; Seleccionar lote]</a>
                     </div>
 
@@ -486,7 +486,7 @@
                 :warehouses="warehousesDetail">
             </warehouses-detail>
 
-         <lots-group
+        <lots-group
             :showDialog.sync="showDialogLots"
             :lots_group="form.lots_group"
             @addRowLotGroup="addRowLotGroup">

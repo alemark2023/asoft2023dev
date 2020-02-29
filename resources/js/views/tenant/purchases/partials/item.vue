@@ -61,7 +61,7 @@
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="form.item_id">
+                    <div style="padding-top: 1%;" class="col-md-3" v-show="form.item_id">
                         <div class="form-group" :class="{'has-danger': errors.date_of_due}" v-if="form.item.lots_enabled">
                             <label class="control-label">Fec. Vencimiento</label>
                             <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
