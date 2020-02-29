@@ -357,7 +357,8 @@
                     IdLoteSelected: null,
                     lots_group: []
                 }
-                 this.item_unit_type = {};
+                this.item_unit_type = {};
+                this.lots = []
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
