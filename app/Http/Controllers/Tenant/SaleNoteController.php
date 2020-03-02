@@ -43,6 +43,8 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use App\Models\Tenant\ItemWarehouse;
+use Modules\Item\Models\ItemLotsGroup;
+
 
 
 class SaleNoteController extends Controller
@@ -207,6 +209,13 @@ class SaleNoteController extends Controller
                         $record_lot->has_sale = true;
                         $record_lot->update();
                     }
+                }
+
+                if(isset($row['IdLoteSelected']))
+                {
+                    $lot = ItemLotsGroup::find($row['IdLoteSelected']);
+                    $lot->quantity = ($lot->quantity - $row['quantity']);
+                    $lot->save();
                 }
 
             }
@@ -595,6 +604,15 @@ class SaleNoteController extends Controller
                                 'warehouse_id' => $row->warehouse_id,
                                 'has_sale' => (bool)$row->has_sale,
                                 'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                            ];
+                        }),
+                        'lots_group' => collect($row->lots_group)->transform(function($row){
+                            return [
+                                'id'  => $row->id,
+                                'code' => $row->code,
+                                'quantity' => $row->quantity,
+                                'date_of_due' => $row->date_of_due,
+                                'checked'  => false
                             ];
                         }),
                         'lot_code' => $row->lot_code,

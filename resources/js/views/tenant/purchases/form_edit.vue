@@ -128,7 +128,7 @@
                                             </div>
                                         </td>
                                         <td class="series-table-actions text-center"> 
-                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" :disabled="index==0" @click.prevent="clickCancel(index)">
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </td> 
@@ -347,21 +347,37 @@
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)
             },
-            validate_payments(){
+            async validate_payments(){
  
                 let error_by_item = 0
                 let acum_total = 0
+                let q_affectation_free = 0
 
-                this.form.payments.forEach((item)=>{
+                await this.form.payments.forEach((item)=>{
                     acum_total += parseFloat(item.payment)
                     if(item.payment <= 0 || item.payment == null) error_by_item++;
                 })
 
-                return  {
-                    error_by_item : error_by_item,
-                    acum_total : acum_total
+                //determinate affectation igv
+                await this.form.items.forEach((item)=>{
+                    if(item.affectation_igv_type.free){
+                        q_affectation_free++
+                    }
+                })
+
+                let all_free = (q_affectation_free == this.form.items.length) ? true : false
+
+                if(!all_free && (acum_total > parseFloat(this.form.total) || error_by_item > 0)) {
+                    return  {
+                        success : false,
+                        message : 'Los montos ingresados superan al monto a pagar o son incorrectos'
+                    }
                 }
 
+                return  {
+                    success : true,
+                    message : null
+                }
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -674,8 +690,8 @@
 
                 
                 let validate = await this.validate_payments()
-                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
-                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                if(!validate.success) {
+                    return this.$message.error(validate.message);
                 }
 
                 this.loading_submit = true

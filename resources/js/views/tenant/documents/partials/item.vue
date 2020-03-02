@@ -11,7 +11,7 @@
                             </label>
 
                             <template v-if="!search_item_by_barcode" id="select-append">
-                                <el-input id="custom-input">
+                                <!-- <el-input id="custom-input">
                                     <el-select :disabled="recordItem != null"
                                             v-model="form.item_id" @change="changeItem"
                                             filterable
@@ -34,6 +34,38 @@
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
                                         <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
                                     </el-tooltip>
+                                </el-input> -->
+                                <el-input id="custom-input">
+                                    <el-select :disabled="recordItem != null"
+                                            v-model="form.item_id"
+                                            @change="changeItem"
+                                            filterable
+                                            remote
+                                            placeholder="Buscar"
+                                            popper-class="el-select-items"
+                                            @visible-change="focusTotalItem"
+                                            slot="prepend"
+                                            id="select-width"
+                                            :remote-method="searchRemoteItems"
+                                            :loading="loading_search">
+
+                                        <el-tooltip v-for="option in items"  :key="option.id" placement="top">
+
+                                            <div slot="content">
+                                                Marca: {{option.brand}} <br>
+                                                Categoria: {{option.category}} <br>
+                                                Stock: {{option.stock}} <br>
+                                                Precio: {{option.currency_type_symbol}} {{option.sale_unit_price}} <br>
+                                            </div>
+
+                                            <el-option  :value="option.id" :label="option.full_description"></el-option>
+
+                                        </el-tooltip>
+
+                                    </el-select>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
+                                        <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -42,12 +74,15 @@
                                             @change="changeItem"
                                             filterable
                                             placeholder="Buscar"
-                                            :filter-method="filterMethod"
                                             popper-class="el-select-items"
                                             dusk="item_id"
                                             @visible-change="focusTotalItem"
                                             slot="prepend"
-                                            id="select-width">
+                                            id="select-width"
+                                            remote
+                                            :remote-method="searchRemoteItems"
+                                            :loading="loading_search">
+
                                           <el-tooltip v-for="option in items"  :key="option.id" placement="top">
                                             <div slot="content">
                                                 Marca: {{option.brand}} <br>
@@ -104,13 +139,22 @@
                         </div>
                     </div>
 
-                     <div class="col-md-3 col-sm-3" v-if="form.lots_group.length > 0">
+                    <!--<div class="col-md-3 col-sm-3" v-if="form.item.lots_enabled && form.lots_group.length > 0">
                         <div class="form-group" >
                              <label class="control-label">
                                 Seleccione el lote
                             </label>
                             <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotGroup"></el-button>
                         </div>
+                    </div>-->
+
+                    <div style="padding-top: 1%;" class="col-md-2 col-sm-2" v-if="form.item_id && form.item.lots_enabled && form.lots_group.length > 0">
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004; Seleccionar lote]</a>
+                    </div>
+
+                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.item.series_enabled">
+                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
                     </div>
 
 
@@ -442,11 +486,19 @@
                 :warehouses="warehousesDetail">
             </warehouses-detail>
 
-         <lots-group
+        <lots-group
             :showDialog.sync="showDialogLots"
             :lots_group="form.lots_group"
-            @addRowLot="addRowLot">
+            @addRowLotGroup="addRowLotGroup">
         </lots-group>
+
+         <select-lots-form
+            :showDialog.sync="showDialogSelectLots"
+            :lots="lots"
+            @addRowSelectLot="addRowSelectLot">
+        </select-lots-form>
+
+
     </el-dialog>
 </template>
 <style>
@@ -463,12 +515,15 @@
 
     import {calculateRowItem} from '../../../../helpers/functions'
     import WarehousesDetail from './select_warehouses.vue'
+    import SelectLotsForm from './lots.vue'
+
 
     export default {
         props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
-        components: {ItemForm, WarehousesDetail, LotsGroup},
+        components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm},
         data() {
             return {
+                loading_search:false,
                 titleAction: '',
                 is_client:false,
                 titleDialog: '',
@@ -477,6 +532,7 @@
                 has_list_prices: false,
                 errors: {},
                 form: {},
+                all_items: [],
                 items: [],
                 operation_types: [],
                 all_affectation_igv_types: [],
@@ -495,7 +551,10 @@
                 showListStock:false,
                 search_item_by_barcode:false,
                 isUpdateWarehouseId:null,
-                showDialogLots: false
+                showDialogLots: false,
+                showDialogSelectLots: false,
+                lots:[]
+
                 //item_unit_type: {}
             }
         },
@@ -503,7 +562,8 @@
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                // console.log('tablas new edit')
-                this.items = response.data.items
+                // this.items = response.data.items
+                this.all_items = response.data.items
                 this.operation_types = response.data.operation_types
                 this.all_affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
@@ -511,7 +571,7 @@
                 this.charge_types = response.data.charge_types
                 this.attribute_types = response.data.attribute_types
                 this.is_client = response.data.is_client;
-                // this.filterItems()
+                this.filterItems()
 
             })
 
@@ -525,6 +585,46 @@
             })
         },
         methods: {
+            async searchRemoteItems(input) {
+                // console.log(input)
+
+                if (input.length > 2) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+
+                    await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+                            .then(response => {
+                                // console.log(response)
+                                this.items = response.data.items
+                                this.loading_search = false
+
+                                this.enabledSearchItemsBarcode()
+
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })
+                } else {
+                    await this.filterItems()
+                }
+
+            },
+            filterItems() {
+                this.items = this.all_items
+            },
+            enabledSearchItemsBarcode(){
+
+                if(this.search_item_by_barcode){
+
+                    if (this.items.length == 1){
+
+                        this.form.item_id = this.items[0].id
+                        this.changeItem()
+                    }
+                }
+            },
             filterMethod(query){
 
                 let item = _.find(this.items, {'internal_id': query});
@@ -546,9 +646,9 @@
                 this.warehousesDetail = item.warehouses
                 this.showWarehousesDetail = true
             },
-            filterItems(){
-                this.items = this.items.filter(item => item.warehouses.length >0)
-            },
+            // filterItems(){
+            //     this.items = this.items.filter(item => item.warehouses.length >0)
+            // },
             initForm() {
                 this.errors = {};
 
@@ -680,6 +780,7 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
                 this.form.unit_price_value = this.form.item.sale_unit_price;
+                this.lots = this.form.item.lots
 
                 this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
@@ -734,7 +835,16 @@
             cleanTotalItem(){
                 this.total_item = null
             },
-            clickAddItem() {
+            async clickAddItem() {
+
+
+                if(this.form.item.lots_enabled){
+                    if(!this.form.IdLoteSelected)
+                        return this.$message.error('Debe seleccionar un lote.');
+                }
+
+
+
 
                 if (this.validateTotalItem().total_item) return;
 
@@ -753,6 +863,16 @@
                 // return
                 // console.log
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+
+
+                let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
+                let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
+
+                if(this.form.item.series_enabled){
+                    if(select_lots.length != this.form.quantity)
+                        return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
+                }
+
                // this.row.edit = false;
                 this.initForm();
                 //this.initializeFields()
@@ -784,12 +904,27 @@
                 return this.errors
             },
             reloadDataItems(item_id) {
-                this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                    this.items = response.data
-                    this.form.item_id = item_id
-                    if(item_id) this.changeItem()
-                    // this.filterItems()
-                })
+
+                if(!item_id){
+
+                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                        this.items = response.data
+                        this.form.item_id = item_id
+                        // if(item_id) this.changeItem()
+                        // this.filterItems()
+                    })
+
+                }else{
+
+                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+
+                        this.items = response.data.items
+                        this.form.item_id = item_id
+                        this.changeItem()
+
+                    })
+                }
+
             },
             changePresentation() {
                 let price = 0;
@@ -833,14 +968,20 @@
                 this.form.item.unit_type_id = row.unit_type_id
                 this.calculateQuantity()
             },
-            addRowLot(id)
+            addRowLotGroup(id)
             {
                 this.form.IdLoteSelected =  id
             },
             clickLotGroup()
             {
                 this.showDialogLots = true
-            }
+            },
+            async clickSelectLots(){
+                this.showDialogSelectLots = true
+            },
+            addRowSelectLot(lots){
+                this.lots = lots
+            },
         }
     }
 

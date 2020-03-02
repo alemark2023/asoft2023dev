@@ -52,10 +52,19 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6 mt-4" v-if="form.item_id && form.item.series_enabled">
+                    <div style="padding-top: 1%;" class="col-md-2 col-sm-2" v-if="form.item_id && form.item.lots_enabled && form.lots_group.length > 0">
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004; Seleccionar lote]</a>
+                    </div>
+
+                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.item.series_enabled">
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
                     </div>
+
+                    <!--<div class="col-md-6 mt-4" v-if="form.item_id && form.item.series_enabled">
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
+                    </div> -->
+
                     <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                         <div style="margin:3px" class="table-responsive">
                             <h3>Lista de Precios</h3>
@@ -225,6 +234,12 @@
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
+         <lots-group
+            :showDialog.sync="showDialogLots"
+            :lots_group="form.lots_group"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
+
     </el-dialog>
 </template>
 <style>
@@ -238,10 +253,12 @@
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
     import SelectLotsForm from './lots.vue'
+    import LotsGroup from './lots_group.vue'
+
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser'],
-        components: {itemForm, SelectLotsForm},
+        components: {itemForm, SelectLotsForm, LotsGroup},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
@@ -258,7 +275,8 @@
                 attribute_types: [],
                 use_price: 1,
                 change_affectation_igv_type_id: false,
-                lots:[]
+                lots:[],
+                showDialogLots: false
             }
         },
         created() {
@@ -335,9 +353,12 @@
                     has_igv: null,
                     is_set: false,
                     item_unit_types: [],
-                    series_enabled: false
+                    series_enabled: false,
+                    IdLoteSelected: null,
+                    lots_group: []
                 }
-                 this.item_unit_type = {};
+                this.item_unit_type = {};
+                this.lots = []
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -415,8 +436,16 @@
                 this.form.has_igv = this.form.item.has_igv;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id
                 this.form.quantity = 1;
+                this.form.lots_group = this.form.item.lots_group
+
             },
             async clickAddItem() {
+
+
+                if(this.form.item.lots_enabled){
+                    if(!this.form.IdLoteSelected)
+                        return this.$message.error('Debe seleccionar un lote.');
+                }
 
                 let unit_price = (this.form.has_igv)?this.form.unit_price:this.form.unit_price*1.18;
 
@@ -426,6 +455,10 @@
 
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
                 this.form.item.presentation = this.item_unit_type;
+
+                let IdLoteSelected = this.form.IdLoteSelected
+
+
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
 
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
@@ -438,6 +471,8 @@
 
                 this.row.item.lots = un_select_lots
                 this.row.lots = select_lots
+
+                this.row.IdLoteSelected = IdLoteSelected
 
                 // console.log(un_select_lots)
                 // console.log(this.row.lots)
@@ -456,6 +491,14 @@
                     // this.filterItems()
 
                 })
+            },
+            addRowLotGroup(id)
+            {
+                this.form.IdLoteSelected =  id
+            },
+             clickLotGroup()
+            {
+                this.showDialogLots = true
             },
         }
     }

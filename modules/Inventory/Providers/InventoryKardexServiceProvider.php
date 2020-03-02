@@ -10,6 +10,8 @@ use App\Models\Tenant\SaleNoteItem;
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\ItemLot;
+
 
 
 class InventoryKardexServiceProvider extends ServiceProvider
@@ -85,6 +87,31 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     $lot->save();
                 }
             }
+
+            if(isset($document_item->item->lots) )
+            {
+                foreach ($document_item->item->lots as $it) {
+
+                    if($it->has_sale == true)
+                    {
+                        $r = ItemLot::find($it->id);
+                        $r->has_sale = true;
+                        $r->save();
+                    }
+
+                }
+                /*if($document_item->item->IdLoteSelected != null)
+                {
+                    $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
+                    $lot->quantity = ($lot->quantity - $document_item->quantity);
+                    $lot->save();
+                }*/
+            }
+
+
+
+
+
 
         });
     }

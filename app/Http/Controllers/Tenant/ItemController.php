@@ -222,9 +222,9 @@ class ItemController extends Controller
             }
 
 
-            $series_enabled = isset($request->series_enabled) ? $request->series_enabled:false;
+            $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
 
-            if($series_enabled)
+            if($lots_enabled)
             {
                 ItemLotsGroup::create([
                     'code'  => $request->lot_code,

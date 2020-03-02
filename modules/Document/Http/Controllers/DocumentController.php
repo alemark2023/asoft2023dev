@@ -17,11 +17,14 @@ use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DetractionType;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Traits\OfflineTrait;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use App\Models\Tenant\Item;
+use Modules\Document\Traits\SearchTrait;
 
 class DocumentController extends Controller
 {
-    use OfflineTrait;
-    
+    use OfflineTrait, SearchTrait;
+
     public function index()
     {
 
@@ -32,7 +35,7 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
-        
+
         $records = $this->getRecords($request);
 
         return new DocumentNotSentCollection($records->paginate(config('tenant.items_per_page')));
@@ -51,7 +54,7 @@ class DocumentController extends Controller
         $state_type_id = $request->state_type_id;
         $pending_payment = ($request->pending_payment == "true") ? true:false;
         $customer_id = $request->customer_id;
- 
+
 
         if($d_start && $d_end){
 
@@ -74,12 +77,12 @@ class DocumentController extends Controller
                             ->whereNotSent()
                             ->whereTypeUser()
                             ->latest();
-        }        
+        }
 
-        if($pending_payment){ 
+        if($pending_payment){
             $records = $records->where('total_canceled', false);
         }
-        
+
         if($customer_id){
             $records = $records->where('customer_id', $customer_id);
         }
@@ -90,7 +93,7 @@ class DocumentController extends Controller
 
     public function data_table()
     {
-        
+
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -103,15 +106,15 @@ class DocumentController extends Controller
 
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
-        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get(); 
+        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $state_types = StateType::get();
-                       
+
         return compact( 'customers', 'document_types','series','establishments', 'state_types');
 
     }
 
 
-    
+
     public function upload(Request $request)
     {
         if ($request->hasFile('file')) {
@@ -149,13 +152,13 @@ class DocumentController extends Controller
         ];
     }
 
-    
+
     public function detractionTables()
     {
-        
+
         $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         $detraction_types = DetractionType::whereActive()->get();
-                       
+
         return compact( 'detraction_types', 'cat_payment_method_types');
 
     }
@@ -182,7 +185,7 @@ class DocumentController extends Controller
     }
 
 
-    
+
     public function savePayConstancy(Request $request)
     {
         $document = Document::findOrFail($request->id);
@@ -217,7 +220,7 @@ class DocumentController extends Controller
         ];
     }
 
-    
+
     public function prepayments($type)
     {
 
@@ -236,4 +239,178 @@ class DocumentController extends Controller
         return $prepayment_documents;
 
     }
+
+
+    public function searchItems(Request $request)
+    {
+
+        // dd($request->all());
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        $items_not_services = $this->getItemsNotServices($request);
+        $items_services = $this->getItemsServices($request);
+        $all_items = $items_not_services->merge($items_services);
+
+        $items = collect($all_items)->transform(function($row) use($warehouse){
+
+                $detail = $this->getFullDescription($row, $warehouse);
+
+                return [
+                    'id' => $row->id,
+                    'full_description' => $detail['full_description'],
+                    'brand' => $detail['brand'],
+                    'category' => $detail['category'],
+                    'stock' => $detail['stock'],
+                    'internal_id' => $row->internal_id,
+                    'description' => $row->description,
+                    'currency_type_id' => $row->currency_type_id,
+                    'currency_type_symbol' => $row->currency_type->symbol,
+                    'sale_unit_price' => round($row->sale_unit_price, 2),
+                    'purchase_unit_price' => $row->purchase_unit_price,
+                    'unit_type_id' => $row->unit_type_id,
+                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                    'calculate_quantity' => (bool) $row->calculate_quantity,
+                    'has_igv' => (bool) $row->has_igv,
+                    'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'description' => "{$row->description}",
+                            'item_id' => $row->item_id,
+                            'unit_type_id' => $row->unit_type_id,
+                            'quantity_unit' => $row->quantity_unit,
+                            'price1' => $row->price1,
+                            'price2' => $row->price2,
+                            'price3' => $row->price3,
+                            'price_default' => $row->price_default,
+                        ];
+                    }),
+                    'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                        return [
+                            'warehouse_description' => $row->warehouse->description,
+                            'stock' => $row->stock,
+                            'warehouse_id' => $row->warehouse_id,
+                            'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
+                        ];
+                    }),
+                    'attributes' => $row->attributes ? $row->attributes : [],
+                    'lots_group' => collect($row->lots_group)->transform(function($row){
+                        return [
+                            'id'  => $row->id,
+                            'code' => $row->code,
+                            'quantity' => $row->quantity,
+                            'date_of_due' => $row->date_of_due,
+                            'checked'  => false
+                        ];
+                    }),
+                    'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'series' => $row->series,
+                            'date' => $row->date,
+                            'item_id' => $row->item_id,
+                            'warehouse_id' => $row->warehouse_id,
+                            'has_sale' => (bool)$row->has_sale,
+                            'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                        ];
+                    }),
+                    'lots_enabled' => (bool) $row->lots_enabled,
+                    'series_enabled' => (bool) $row->series_enabled,
+
+
+                ];
+            });
+
+        return compact('items');
+
+    }
+
+
+    public function searchItemById($id)
+    {
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        $search_item = $this->getItemsNotServicesById($id);
+
+        if(count($search_item) == 0){
+            $search_item = $this->getItemsServicesById($id);
+        }
+
+        $items = collect($search_item)->transform(function($row) use($warehouse){
+
+            $detail = $this->getFullDescription($row, $warehouse);
+
+            return [
+                'id' => $row->id,
+                'full_description' => $detail['full_description'],
+                'brand' => $detail['brand'],
+                'category' => $detail['category'],
+                'stock' => $detail['stock'],
+                'internal_id' => $row->internal_id,
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => round($row->sale_unit_price, 2),
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'calculate_quantity' => (bool) $row->calculate_quantity,
+                'has_igv' => (bool) $row->has_igv,
+                'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'description' => "{$row->description}",
+                        'item_id' => $row->item_id,
+                        'unit_type_id' => $row->unit_type_id,
+                        'quantity_unit' => $row->quantity_unit,
+                        'price1' => $row->price1,
+                        'price2' => $row->price2,
+                        'price3' => $row->price3,
+                        'price_default' => $row->price_default,
+                    ];
+                }),
+                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                    return [
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                        'warehouse_id' => $row->warehouse_id,
+                        'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
+                    ];
+                }),
+                'attributes' => $row->attributes ? $row->attributes : [],
+                'lots_group' => collect($row->lots_group)->transform(function($row){
+                    return [
+                        'id'  => $row->id,
+                        'code' => $row->code,
+                        'quantity' => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
+                        'checked'  => false
+                    ];
+                }),
+                'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'series' => $row->series,
+                        'date' => $row->date,
+                        'item_id' => $row->item_id,
+                        'warehouse_id' => $row->warehouse_id,
+                        'has_sale' => (bool)$row->has_sale,
+                        'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    ];
+                }),
+                'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
+
+            ];
+        });
+
+        return compact('items');
+    }
+
 }
