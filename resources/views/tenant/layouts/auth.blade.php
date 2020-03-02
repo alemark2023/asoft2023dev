@@ -21,13 +21,19 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
 
-    <style>
-         .app{
-           background: url('{{ asset('storage/background/bkg_store.jpeg') }}') center center / cover;
-        }
-
-    </style>
-
+    @if (file_exists(public_path('theme/background/bkg_store.jpeg')))
+        <style>
+            .app{
+                background: url('{{ asset('theme/background/bkg_store.jpeg') }}') center center / cover;
+            }
+        </style>
+    @else
+        <style>
+            .app{
+                background: url('{{ asset('porto-light/background/bkg_store.jpeg') }}') center center / cover;
+            }
+        </style>
+    @endif
 
 </head>
 
