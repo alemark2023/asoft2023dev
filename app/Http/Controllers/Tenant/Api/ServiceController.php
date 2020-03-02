@@ -32,7 +32,7 @@ class ServiceController extends Controller
 
     public function consultCdrStatus(ServiceRequest $request){
 
-        
+
         $document_type_id = $request->codigo_tipo_documento;
         $series = $request->serie_documento;
         $number = $request->numero_documento;
@@ -42,9 +42,9 @@ class ServiceController extends Controller
                                             ['series',$series],
                                             ['number',$number]
                                             ])->first();
-        
+
         if(!$this->document)  throw new Exception("Documento no encontrado");
-            
+
         $wsdl = 'consultCdrStatus';
         $company = Company::active();
         $username = $company->soap_username;
@@ -150,10 +150,13 @@ class ServiceController extends Controller
                     ]);
                     $sale = $ex_rate->sale;
                 }else{
-
                     $last_ex_rate = \App\Models\Tenant\ExchangeRate::orderBy('date', 'desc')->first();
-                    $sale = $last_ex_rate->sale;
-                    
+                    if ($last_ex_rate) {
+                        $sale = $last_ex_rate->sale;
+                    }
+                    else {
+                        $sale = 0;
+                    }
                 }
             }
         }
@@ -181,7 +184,7 @@ class ServiceController extends Controller
                             ->where('series', $serie)
                             ->first();
             }
-            
+
             if(!$document) {
                 throw new Exception("El documento con código externo {$external_id} o numero {$request_serie}, no se encuentra registrado.");
             }
@@ -204,5 +207,5 @@ class ServiceController extends Controller
             ];
         }
     }
-    
+
 }
