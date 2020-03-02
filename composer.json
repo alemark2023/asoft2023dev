@@ -19,7 +19,6 @@
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^5.4.0",
         "maatwebsite/excel": "^3.1",
-        "mpdf/mpdf": "^8.0.0",
         "mpdf/qrcode": "^1.0",
         "nwidart/laravel-modules": "^5.0",
         "picqer/php-barcode-generator": "^2.0",
