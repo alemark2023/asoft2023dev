@@ -196,7 +196,7 @@
                                         </ul>
                                     </li>
                                 @endif
-                                
+
                                 @if(in_array('quotations', $vc_module_levels))
 
                                     <li class="{{ ($path[0] === 'quotations')?'nav-active':'' }}">
@@ -232,7 +232,7 @@
                                 </li>
 
                             @endif
- 
+
                         </ul>
                     </li>
                     @endif
@@ -585,9 +585,15 @@
                                     Exportar formatos
                                 </a>
                             </li>
-                            <li class="{{(($path[0] === 'account') && ($path[1] !== 'format'))   ? 'nav-active' : ''}}">
+                            <li class="{{(($path[0] === 'account') && ($path[1] == ''))   ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account.index') }}">
-                                    Exportar SISCONT/CONCAR
+                                    <!-- Exportar SISCONT/CONCAR -->
+                                    Exportar formatos - Sis. Contable
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'account') && ($path[1] == 'summary-report'))   ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{ route('tenant.account_summary_report.index') }}">
+                                    Reporte resumido - Ventas
                                 </a>
                             </li>
                         </ul>

@@ -72,6 +72,7 @@
                                 <th>Método de pago</th>
                                 <th>Referencia</th>
                                 <th>Monto</th>
+                                <th>Total</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
@@ -85,6 +86,7 @@
                                     <td class="celda">{{ $item['payment_method_type_description'] }}</td>
                                     <td class="celda">{{ $item['reference'] }}</td>
                                     <td class="celda">{{ $item['payment'] }}</td>
+                                    <td class="celda">{{ $item['total'] }}</td>
                                     <td class="celda">{{ $item['date_of_payment'] }}</td>
                                 </tr>
                             @endforeach

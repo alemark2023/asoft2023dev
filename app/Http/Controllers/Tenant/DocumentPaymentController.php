@@ -119,10 +119,24 @@ class DocumentPaymentController extends Controller
                 'reference' => $row->reference,
                 'customer' => $row->document->customer->name,
                 'number'=>  $row->document->number_full,
+                'total' => $row->document->total,
             ];
         });
 
-        //return json_encode($records);
+
+        /*$methods = PaymentMethodType::all();
+
+        $methdos_sum = array();
+
+        foreach ($methods as $item) {
+
+            $row = [
+                'name' => $item->description,
+                'sum' => $documents->where('payment_method_type_id', $item->id)->sum('payment')
+            ];
+
+            array_push($methdos_sum, (object)$row);
+        }*/
 
 
         $pdf = PDF::loadView('tenant.document_payments.report', compact("records"));

@@ -77,6 +77,7 @@ class Document extends ModelTenant
         'plate_number',
         'total_canceled',
         'order_note_id',
+        'soap_shipping_response',
 
     ];
 
@@ -193,6 +194,18 @@ class Document extends ModelTenant
     {
         $this->attributes['data_json'] = (is_null($value))?null:json_encode($value);
     }
+
+
+    public function getSoapShippingResponseAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setSoapShippingResponseAttribute($value)
+    {
+        $this->attributes['soap_shipping_response'] = (is_null($value))?null:json_encode($value);
+    }
+
 
     public function getAdditionalInformationAttribute($value)
     {

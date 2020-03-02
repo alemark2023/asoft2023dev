@@ -5,7 +5,7 @@
 @endpush
 
 @section('content')
-    <tenant-pos-index></tenant-pos-index>
+    <tenant-pos-index  ></tenant-pos-index>
 @endsection
 
 @push('scripts')

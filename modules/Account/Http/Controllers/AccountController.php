@@ -2,6 +2,7 @@
 namespace Modules\Account\Http\Controllers;
 
 use Modules\Account\Exports\ReportAccountingConcarExport;
+use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
@@ -26,29 +27,48 @@ class AccountController extends Controller
         $d_end = Carbon::parse($month.'-01')->endOfMonth()->format('Y-m-d');
 
         $records = $this->getDocuments($d_start, $d_end);
+        $filename = 'Reporte_'.ucfirst($type).'_Ventas_'.date('YmdHis');
 
-        $filename = ($type === 'concar') ? 'Reporte_Concar_Ventas_'.date('YmdHis') :  'Reporte_Siscont_Ventas_'.date('YmdHis');
-        if($type === 'concar') {
-            $data = [
-                'records' => $this->getStructureConcar($records),
-            ];
-            return (new ReportAccountingConcarExport)
-                ->data($data)
-                ->download($filename.'.xlsx');
-        }
+        switch ($type) {
 
-        $records = $this->getStructureSiscont($records);
+            case 'concar':
 
-        $temp = tempnam(sys_get_temp_dir(), 'txt');
-        $file = fopen($temp, 'w+');
-        foreach ($records as $record)
-        {
-            $line = implode('', $record);
-            fwrite($file, $line."\r\n");
-        }
-        fclose($file);
-        
-        return response()->download($temp, $filename.'.txt');
+                $data = [
+                    'records' => $this->getStructureConcar($records),
+                ];
+
+                return (new ReportAccountingConcarExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
+
+            case 'siscont':
+                
+                $records = $this->getStructureSiscont($records);
+
+                $temp = tempnam(sys_get_temp_dir(), 'txt');
+                $file = fopen($temp, 'w+');
+                foreach ($records as $record)
+                {
+                    $line = implode('', $record);
+                    fwrite($file, $line."\r\n");
+                }
+                fclose($file);
+                
+                return response()->download($temp, $filename.'.txt');
+
+            case 'foxcont':
+                
+                $data = [
+                    'records' => $this->getStructureFoxcont($records),
+                ];
+
+                return (new ReportAccountingFoxcontExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
+
+
+        } 
+
     }
 
     private function getDocuments($d_start, $d_end)
@@ -62,6 +82,31 @@ class AccountController extends Controller
                                 ->get();
 
     }
+
+    private function getStructureFoxcont($documents)
+    {
+
+        return $documents->transform(function($row) {
+            return [
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'document_type_id' => $row->document_type_id,
+                'series' => $row->series,
+                'number' => str_pad($row->number, 7, '0', STR_PAD_LEFT),
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
+                'total_igv' => number_format($row->total_igv, 2, ".", ""),
+                'total_plastic_bag_taxes' => number_format($row->total_plastic_bag_taxes, 2, ".", ""),
+                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
+                'total_retention' => number_format(0, 2, ".", ""),
+                'total' => number_format($row->total, 2, ".", ""),
+            ];
+        });
+        
+    }
+
 
     private function getStructureConcar($documents)
     {

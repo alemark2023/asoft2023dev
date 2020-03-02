@@ -27,18 +27,35 @@
 
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
-      <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
-        <el-input
-            v-show="place  == 'prod' || place == 'cat2'"
-            placeholder="Buscar productos"
-            size="medium"
-            v-model="input_item"
-            @input="searchItems"
-            autofocus
-            class="m-bottom"
-          >
-          <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
-        </el-input>
+      <div  class="col-lg-8 col-md-6 px-4 pt-3 hyo">
+
+        <template v-if="!search_item_by_barcode">
+          <el-input
+              v-show="place  == 'prod' || place == 'cat2'"
+              placeholder="Buscar productos"
+              size="medium"
+              v-model="input_item"
+              @input="searchItems"
+              autofocus
+              class="m-bottom"
+            >
+            <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
+          </el-input>
+        </template>
+
+        <template v-else>
+            <el-input
+                v-show="place  == 'prod' || place == 'cat2'"
+                placeholder="Buscar productos"
+                size="medium"
+                v-model="input_item"
+                @change="searchItemsBarcode"
+                autofocus
+                class="m-bottom"
+              >
+              <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
+            </el-input>
+        </template>
 
         <div v-if="place == 'cat2'"  class="container testimonial-group">
             <div class="row text-center flex-nowrap">
@@ -66,7 +83,7 @@
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
-            <div class="col-lg-3 col-md-4 col-sm-6" :key="index" >
+            <div v-bind:class="classObjectCol"  :key="index" >
               <section class="card ">
                 <div class="card-body pointer px-2 pt-2" @click="clickAddItem(item,index)">
                   <p class="font-weight-semibold mb-0" v-if="item.description.length > 50" data-toggle="tooltip" data-placement="top" :title="item.description">
@@ -95,7 +112,7 @@
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <template v-if="!item.edit_unit_price">
                     <h5   class="font-weight-semibold text-right text-white" >
-                      <button type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
+                      <button v-if="configuration.options_pos" type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
                       {{item.currency_type_symbol}} {{item.sale_unit_price}}
                     </h5>
                   </template>
@@ -107,7 +124,7 @@
                   </template>
 
                 </div>
-                <div class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
+                <div v-if="configuration.options_pos" class=" card-footer  bg-primary btn-group flex-wrap" style="width:100% !important; padding:0 !important; ">
                   <!-- <el-popover v-if="item.warehouses" placement="right" width="280"  trigger="hover">
                     <el-table  :data="item.warehouses">
                       <el-table-column width="150" property="warehouse_description" label="Ubicación"></el-table-column>
@@ -420,6 +437,7 @@
       import WarehousesDetail from '../items/partials/warehouses.vue'
 
       export default {
+        props: ['configuration'],
         components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
         mixins: [functions, exchangeRate],
 
@@ -469,6 +487,43 @@
            if(document.querySelector('.sidebar-toggle')){
                document.querySelector('.sidebar-toggle').click()
            }
+        },
+
+        computed:{
+
+            classObjectCol() {
+
+                let cols = this.configuration.colums_grid_item
+
+                let clase = 'c3'
+                switch(cols)
+                {
+                    case 2:
+                         clase = '6'
+
+                        break;
+                    case 3:
+                         clase = '4'
+
+                        break;
+                    case 4:
+                         clase = '3'
+
+                        break;
+                    case 5:
+                         clase = '2'
+
+                        break;
+                    case 6:
+                         clase = '2'
+                        break;
+                    default:
+
+                }
+                return {
+                    [`col-md-${clase}`] : true
+                }
+            }
         },
 
         methods: {
@@ -1034,7 +1089,6 @@
                     })
           },
           searchItems() {
-
             if (this.input_item.length > 0) {
               this.loading = true;
               let parameters = `input_item=${this.input_item}`;
@@ -1045,8 +1099,6 @@
                   // console.log(response)
                   this.items = response.data.items;
 
-                  this.enabledSearchItemsBarcode()
-
                   this.loading = false;
                   if (this.items.length == 0) {
                     this.filterItems();
@@ -1055,6 +1107,35 @@
             } else {
               // this.customers = []
               this.filterItems();
+            }
+
+          },
+          async searchItemsBarcode() {
+
+            // console.log(query)
+            // console.log("in:" + this.input_item)
+
+            if (this.input_item.length > 1) {
+
+              this.loading = true;
+              let parameters = `input_item=${this.input_item}`;
+
+              await this.$http.get(`/${this.resource}/search_items?${parameters}`)
+                        .then(response => {
+
+                          this.items = response.data.items;
+                          this.enabledSearchItemsBarcode()
+                          this.loading = false;
+                          if (this.items.length == 0) {
+                            this.filterItems();
+                        }
+                  
+                  });
+
+            } else {
+
+              await this.filterItems();
+
             }
 
           },
@@ -1129,12 +1210,16 @@
             nameSets(id)
             {
                 let row  =  this.items.find( x=> x.item_id  == id)
-                if(row.sets.length > 0)
-                {
-                    return row.sets.join('-')
-                }
-                else{
-                    return ''
+                if(row){
+
+                  if(row.sets.length > 0)
+                  {
+                      return row.sets.join('-')
+                  }
+                  else{
+                      return ''
+                  }
+
                 }
             }
         }

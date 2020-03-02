@@ -35,9 +35,9 @@ ul.nav-main li .nav-children li.nav-active > a {
     color: #0088CC;
 }
 
-ul.nav-main li i {
+/*ul.nav-main li i {
     font-size: 2rem;
-}
+}*/
 
 .transition-box {
     -moz-transition: height .5s;
@@ -108,7 +108,7 @@ ul.nav-main li i {
 }
 
 
-.el-select-dropdown { 
+.el-select-dropdown {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
@@ -152,7 +152,7 @@ ul.nav-main li i {
   width: 100%;
   padding-left: 0px;
   padding-right: 0px;
-  background: #fff;  
+  background: #fff;
   color: #606266;
 }
 
@@ -213,7 +213,7 @@ ul.nav-main li i {
   z-index: 1030;
   position: fixed;
   top: -45px;
-  margin: 0 auto;  
+  margin: 0 auto;
   left: 50%;
   min-width: 780px;
   transform: translate(-50%);

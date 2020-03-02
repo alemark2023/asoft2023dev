@@ -204,9 +204,12 @@ class Facturalo
 
     public function updateState($state_type_id)
     {
+
         $this->document->update([
-            'state_type_id' => $state_type_id
+            'state_type_id' => $state_type_id,
+            'soap_shipping_response' => isset($this->response['sent']) ? $this->response:null
         ]);
+
     }
 
     public function updateSoap($soap_type_id, $type)
@@ -273,7 +276,7 @@ class Facturalo
         
         $base_pdf_template = $configuration;//config(['tenant.pdf_template'=> $configuration]);
         // dd($base_pdf_template);
-
+   
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
@@ -323,7 +326,7 @@ class Facturalo
             }
             $legends = $this->document->legends != '' ? '10' : '0';
 
-            $pdf = new Mpdf([
+           $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
@@ -349,7 +352,8 @@ class Facturalo
                     $was_deducted_prepayment +
                     $customer_department_id+
                     $detraction+
-                    $total_plastic_bag_taxes],
+                    $total_plastic_bag_taxes
+                ],
                 'margin_top' => 0,
                 'margin_right' => 1,
                 'margin_bottom' => 0,
@@ -504,7 +508,6 @@ class Facturalo
 
             $code = $cdrResponse->getCode();
             $description = $cdrResponse->getDescription();
-            $this->validationCodeResponse($code, $description);
 
             $this->response = [
                 'sent' => true,
@@ -512,15 +515,20 @@ class Facturalo
                 'description' => $cdrResponse->getDescription(),
                 'notes' => $cdrResponse->getNotes()
             ];
+
+            $this->validationCodeResponse($code, $description);
+
         } else {
             $code = $res->getError()->getCode();
             $message = $res->getError()->getMessage();
-            $this->validationCodeResponse($code, $message);
             $this->response = [
                 'sent' => true,
                 'code' => $code,
                 'description' => $message
             ];
+            
+            $this->validationCodeResponse($code, $message);
+
         }
     }
 
@@ -730,4 +738,18 @@ class Facturalo
             }
         }
     }
+
+    public function updateResponse(){
+
+        // if($this->response['sent']) {
+        //     return 
+            
+        //     $this->document->update([
+        //         'soap_shipping_response' => $this->response
+        //     ]);
+            
+        // }
+
+    }
+
 }
