@@ -186,7 +186,7 @@ class PurchaseController extends Controller
 
                 if(array_key_exists('item', $row))
                 {
-                    if( $row['item']['series_enabled'] == true)
+                    if( $row['item']['lots_enabled'] == true)
                     {
 
                         ItemLotsGroup::create([
