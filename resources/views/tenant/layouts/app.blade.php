@@ -122,7 +122,7 @@
     <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-browser-mobile/jquery.browser.mobile.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-cookie/jquery-cookie.js')}}"></script>
-        {{--<script src="{{asset('master/style-switcher/style.switcher.js')}}"></script>--}}
+    <script src="{{ asset('porto-light/master/style-switcher/style.switcher.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/popper/umd/popper.min.js')}}"></script>
     <!-- <script src="{{ asset('porto-light/vendor/bootstrap/js/bootstrap.js')}}"></script> -->
     {{-- <script src="{{ asset('porto-light/vendor/common/common.js')}}"></script> --}}
@@ -178,5 +178,7 @@
 
     </script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
+
+
 </body>
 </html>
