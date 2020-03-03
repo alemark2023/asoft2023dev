@@ -8,12 +8,13 @@
                      
                         <div class="col-md-3" >
                             <div class="form-group">
-                                <label class="control-label">Tipo de documento</label>
-                                <el-select v-model="form.document_type_id" clearable>
-                                    <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                <label class="control-label">Tipo</label>
+                                <el-select v-model="form.type" >
+                                    <el-option v-for="option in types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                             </div>
                         </div>
+                        
 
                         <div class="col-md-3">
                             <label class="control-label">Periodo</label>
@@ -57,6 +58,14 @@
                             </div>
                         </template>
                         
+                        <div class="col-md-3" >
+                            <div class="form-group">
+                                <label class="control-label">Tipo de documento</label>
+                                <el-select v-model="form.document_type_id" clearable>
+                                    <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
                         <!-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Establecimiento</label>
@@ -138,6 +147,7 @@
                 totals: {}, 
                 establishment: null,
                 establishments: [],       
+                types: [{id:'sale', description: 'Venta'},{id:'purchase', description: 'Compra'}],       
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -179,8 +189,7 @@
             initForm(){
  
                 this.form = {
-                    establishment_id: null,
-                    item_id: null,
+                    type: 'sale',
                     document_type_id:null,
                     period: 'month',
                     date_start: moment().format('YYYY-MM-DD'),

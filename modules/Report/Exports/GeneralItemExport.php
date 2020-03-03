@@ -17,10 +17,17 @@ class GeneralItemExport implements  FromView, ShouldAutoSize
         
         return $this;
     } 
+
+    public function type($type) {
+        $this->type = $type;
+        
+        return $this;
+    } 
     
     public function view(): View {
         return view('report::general_items.report_excel', [
             'records'=> $this->records,
+            'type'=> $this->type,
         ]);
     }
 }

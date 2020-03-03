@@ -483,12 +483,12 @@
                             </li>
                             <li class="{{(($path[0] === 'reports') && ($path[1] === 'items')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.items.index')}}">
-                                    Productos
+                                    Producto - busqueda individual
                                 </a>
                             </li>
                             <li class="{{(($path[0] === 'reports') && ($path[1] === 'general-items')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.general_items.index')}}">
-                                    Productos - general
+                                    Productos
                                 </a>
                             </li>
                              <li class="{{(($path[0] === 'reports') && ($path[1] == 'document-detractions')) ? 'nav-active' : ''}}">
