@@ -22,7 +22,7 @@
     $document->load('reference_guides');
 
     $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment);
+    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
 @endphp
 <html>
@@ -510,7 +510,7 @@
             @endphp
             @foreach($payments as $row)
                 <tr>
-                    <td>&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+                    <td>&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
                 </tr>
             @endforeach
         </tr>
