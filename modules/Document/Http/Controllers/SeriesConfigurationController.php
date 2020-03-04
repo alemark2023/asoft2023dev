@@ -12,11 +12,12 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
 use Modules\Document\Models\SeriesConfiguration;
 use Modules\Document\Http\Requests\SeriesConfigurationsRequest;
+use App\Models\Tenant\Dispatch;
 
 
 class SeriesConfigurationController extends Controller
 {
-    
+
     public function index()
     {
         return view('document::series_configurations.index');
@@ -39,30 +40,30 @@ class SeriesConfigurationController extends Controller
                 'series_id' => $row->series_id,
                 'document_type_description' => $row->document_type->description,
                 'series' => $row->series,
-                'number' => $row->number, 
+                'number' => $row->number,
                 'initialized_description' => ($quantity_documents > 0) ? 'SI':'NO',
-                'btn_delete' => ($quantity_documents > 0) ? false:true 
+                'btn_delete' => ($quantity_documents > 0) ? false:true
                 // 'initialized_description' => ($row->relationSeries->documents->count() > 0) ? 'SI':'NO',
-                // 'btn_delete' => ($row->relationSeries->documents->count() > 0) ? false:true 
+                // 'btn_delete' => ($row->relationSeries->documents->count() > 0) ? false:true
             ];
         });
- 
+
         return $records;
 
     }
 
     public function tables()
     {
-        
+
         $establishmentId = auth()->user()->establishment_id;
         $document_types = DocumentType::whereIn('id', ['01', '03', '07', '08','09'])->get();
 
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08','09'])
                         ->where('establishment_id', $establishmentId)
-                        ->doesntHave('series_configurations') 
+                        ->doesntHave('series_configurations')
                         // ->doesntHave('documents')
                         ->get();
-        
+
         return compact('series', 'document_types');
 
     }
@@ -75,6 +76,16 @@ class SeriesConfigurationController extends Controller
 
     public function store(SeriesConfigurationsRequest $request)
     {
+
+      if($request->document_type_id == '09'){
+        $number = Dispatch::max('number');
+        if($request->number <= $number){
+          return [
+              'success' => false,
+              'message' => 'Ya inicializó el número correlativo de la serie'
+          ];
+        }
+      }
 
         $quantity_document = $this->getQuantityDocuments($request->document_type_id, $request->series);
 
@@ -99,7 +110,7 @@ class SeriesConfigurationController extends Controller
     public function destroy($id)
     {
         try {
-            
+
             $record = SeriesConfiguration::findOrFail($id);
             $record->delete();
 
@@ -114,7 +125,7 @@ class SeriesConfigurationController extends Controller
 
         }
 
-        
+
     }
-    
+
 }
