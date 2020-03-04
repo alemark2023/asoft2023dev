@@ -30,7 +30,7 @@
 <body>
 @if($document->state_type->id == '11')
     <div class="company_logo_box" style="position: absolute; text-align: center; top:50%;">
-        <img src="data:{{mime_content_type(public_path("status_images/anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images/anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
+        <img src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
     </div>
 @endif
 <table class="full-width">
@@ -292,13 +292,13 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
+
                 @foreach($row->additional_information as $information)
-                    @if ($information) 
+                    @if ($information)
                         <br/><span style="font-size: 9px">{{ $information }}</span>
                     @endif
                 @endforeach
-                
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
