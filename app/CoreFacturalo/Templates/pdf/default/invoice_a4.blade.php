@@ -31,6 +31,11 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
+@if($document->state_type->id == '11')
+    <div class="company_logo_box" style="position: absolute; text-align: center; top:30%;">
+        <img src="data:{{mime_content_type(public_path("status_images\anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images\anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
+    </div>
+@endif
 <table class="full-width">
     <tr>
         @if($company->logo)
