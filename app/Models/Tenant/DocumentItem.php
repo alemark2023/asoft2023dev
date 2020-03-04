@@ -121,12 +121,12 @@ class DocumentItem extends ModelTenant
     
     public function getAdditionalInformationAttribute($value)
     {
-        if($value){
+        // if($value){
             $arr = explode('|', $value);
             return $arr;
-        }
+        // }
 
-        return null;
+        // return null;
 
     }
 
