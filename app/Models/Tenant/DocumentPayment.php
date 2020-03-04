@@ -14,6 +14,7 @@ class DocumentPayment extends ModelTenant
         'has_card',
         'card_brand_id',
         'reference',
+        'change',
         'payment',
     ];
 

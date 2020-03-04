@@ -59,6 +59,7 @@ class Facturalo
     protected $soapPassword;
     protected $endpoint;
     protected $response;
+    protected $apply_change;
 
     public function __construct()
     {
@@ -108,9 +109,7 @@ class Facturalo
                 break;
             case 'invoice':
                 $document = Document::create($inputs);
-                foreach ($inputs['payments'] as $row) {
-                    $document->payments()->create($row);
-                }
+                $this->savePayments($document, $inputs['payments']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
@@ -750,6 +749,58 @@ class Facturalo
             
         // }
 
+    }
+
+    private function savePayments($document, $payments){
+         
+        $total = $document->total;
+        $balance = $total - collect($payments)->sum('payment');
+        
+        $search_cash = ($balance < 0) ? collect($payments)->firstWhere('payment_method_type_id', '01') : null;
+
+        $this->apply_change = false;
+
+        if($balance < 0 && $search_cash){
+
+            $payments = collect($payments)->map(function($row) use($balance){
+    
+                $change = null;
+                $payment = $row['payment'];
+
+                if($row['payment_method_type_id'] == '01' && !$this->apply_change){
+        
+                    $change = abs($balance);
+                    $payment = $row['payment'] - abs($balance); 
+                    $this->apply_change = true; 
+    
+                }
+
+                return [
+                    "id" => null,
+                    "document_id" => null,
+                    "sale_note_id" => null,
+                    "date_of_payment" => $row['date_of_payment'],
+                    "payment_method_type_id" => $row['payment_method_type_id'],
+                    "reference" => $row['reference'],
+                    "change" => $change,
+                    "payment" => $payment
+                ];
+
+            });
+        }
+
+        // dd($payments, $balance, $this->apply_change);
+
+        foreach ($payments as $row) {
+
+            if($balance < 0 && !$this->apply_change){
+                $row['change'] = abs($balance);
+                $row['payment'] = $row['payment'] - abs($balance); 
+                $this->apply_change = true; 
+            }
+
+            $document->payments()->create($row);
+        }
     }
 
 }
