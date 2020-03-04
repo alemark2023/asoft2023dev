@@ -30,10 +30,14 @@ class SeriesConfigurationController extends Controller
     }
 
     public function getRecords(){
-        
+
         $records = SeriesConfiguration::get()->transform(function($row, $key) {
 
+          if($row->document_type_id == '09') {
+            $quantity_documents = Dispatch::where('number', $row->number)->count();
+          } else{
             $quantity_documents = $this->getQuantityDocuments($row->document_type_id, $row->series);
+          }
 
             return [
                 'id' => $row->id,
