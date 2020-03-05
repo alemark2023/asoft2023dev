@@ -22,22 +22,16 @@
     {{--<title>{{ $tittle }}</title>--}}
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
-<body style="height:100%">
-    <div style="padding: 25px; background-repeat: no-repeat;  background-size: auto; background-image: url('{{$miimage}}');">
+<body >
+<div class="" style="position: absolute; text-align: center; z-index: 0; margin-top: -60px;">
+    <img src="data:{{mime_content_type($miimage)}};base64, {{base64_encode(file_get_contents($miimage))}}" alt="anulado" class="">
+</div>
+    {{-- <div style="width: 100px;padding: 25px; background-repeat: no-repeat;  background-size: auto; background-image: url('{{$miimage}}');"> --}}
+
+<div style="z-index: 1; position: absolute;">
 
 <table class="full-width">
     <tr>
-        @if($company->logo)
-            <td width="20%">
-                <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
-                </div>
-            </td>
-        @else
-            <td width="20%">
-                {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
-            </td>
-        @endif
         <td width="50%" class="pl-3">
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
@@ -48,7 +42,7 @@
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                
+
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
                 @endisset
@@ -101,7 +95,7 @@
     <tr>
         <td class="align-top">Dir. Envío:</td>
         <td colspan="3">
-            {{ $document->shipping_address }} 
+            {{ $document->shipping_address }}
         </td>
     </tr>
     @endif
@@ -109,7 +103,7 @@
     <tr>
         <td class="align-top">Teléfono:</td>
         <td colspan="3">
-            {{ $customer->telephone }} 
+            {{ $customer->telephone }}
         </td>
     </tr>
     @endif
@@ -117,14 +111,14 @@
     <tr>
         <td class="align-top">T. Pago:</td>
         <td colspan="3">
-            {{ $document->payment_method_type->description }} 
+            {{ $document->payment_method_type->description }}
         </td>
     </tr>
     @endif
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
-            {{ $document->user->name }} 
+            {{ $document->user->name }}
         </td>
     </tr>
 </table>
@@ -136,7 +130,7 @@
             <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif
-</table>  
+</table>
 
 @if ($document->guides)
 <br/>
@@ -190,7 +184,7 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
-                
+
                 @if($row->item->is_set == 1)
                  <br>
                 @inject('itemSet', 'App\Services\ItemSetService')
@@ -266,18 +260,18 @@
 </table>
 <table class="full-width">
     <tr>
-        <td width="65%" style="text-align: top; vertical-align: top;"> 
+        <td width="65%" style="text-align: top; vertical-align: top;">
             <br>
             @foreach($accounts as $account)
                 <p>
-                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} 
-                <span class="font-bold">N°:</span> {{$account->number}} 
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                <span class="font-bold">N°:</span> {{$account->number}}
                 @if($account->cci)
                 - <span class="font-bold">CCI:</span> {{$account->cci}}
                 @endif
                 </p>
             @endforeach
-        </td> 
+        </td>
     </tr>
     <tr>
         {{-- <td width="65%">
