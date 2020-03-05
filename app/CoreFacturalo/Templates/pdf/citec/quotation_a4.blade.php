@@ -4,13 +4,27 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $accounts = \App\Models\Tenant\BankAccount::all();
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+
+    $config = \App\Models\Tenant\Configuration::first();
+
+    $miimage = null;
+
+    if($config->formats == "citec")
+    {
+        $miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'pape_membretado.jpg');
+    }
+
+
+
 @endphp
 <html>
 <head>
     {{--<title>{{ $tittle }}</title>--}}
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
-<body>
+<body style="height:100%">
+    <div style="padding: 25px; background-repeat: no-repeat;  background-size: auto; background-image: url('{{$miimage}}');">
+
 <table class="full-width">
     <tr>
         @if($company->logo)
@@ -278,5 +292,6 @@
         </td> --}}
     </tr>
 </table>
+    </div>
 </body>
 </html>

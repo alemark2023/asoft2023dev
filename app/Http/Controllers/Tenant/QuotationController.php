@@ -37,6 +37,8 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Configuration;
+
 
 
 
@@ -309,7 +311,7 @@ class QuotationController extends Controller
 
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                $items = Item::orderBy('description')->whereIsActive()->whereNotIsSet()
+                $items = Item::orderBy('description')->whereIsActive()
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
@@ -418,7 +420,9 @@ class QuotationController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->quotation->filename;
 
-        $base_template = config('tenant.pdf_template');
+        $configuration = Configuration::first();
+
+        $base_template = $configuration->formats; //config('tenant.pdf_template');
 
         $html = $template->pdf($base_template, "quotation", $company, $document, $format_pdf);
 
