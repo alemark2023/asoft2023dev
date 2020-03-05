@@ -13,6 +13,8 @@ use Modules\Dashboard\Helpers\DashboardView;
 use Modules\Dashboard\Helpers\DashboardStock;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Document;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 
 class DashboardController extends Controller
@@ -48,9 +50,9 @@ class DashboardController extends Controller
 
     public function unpaidall()
     {
-        
+
         return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
-         
+
     }
 
     public function data_aditional(Request $request)
@@ -71,6 +73,19 @@ class DashboardController extends Controller
         return [
             'data' => (new DashboardUtility())->data($request->all()),
         ];
+    }
+
+    public function df()
+    {
+        $path = app_path();
+        $process = new Process('df -h /');
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        echo $process->getOutput();
+
     }
 
 }
