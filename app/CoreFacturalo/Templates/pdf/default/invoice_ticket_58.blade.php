@@ -17,7 +17,7 @@
 
     $document->load('reference_guides');
     $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment);
+    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
 @endphp
 <html>
@@ -202,6 +202,13 @@
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left desc-9 align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                
+                @foreach($row->additional_information as $information)
+                    @if ($information) 
+                        <br/>{{ $information }}
+                    @endif
+                @endforeach
+                
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/>{!! $attr->description !!} : {{ $attr->value }}
@@ -250,9 +257,9 @@
                 <td class="text-right font-bold desc">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_discount > 0)
+         @if($document->total_discount > 0)
             <tr>
-                <td colspan="4" class="text-right font-bold">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
@@ -331,7 +338,7 @@
         </tr>
         @foreach($payments as $row)
             <tr>
-                <td class="desc">- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
+                <td class="desc">&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
             </tr>
         @endforeach
     @endif

@@ -11,7 +11,7 @@
     </div>
   </div>-->
 
-    <tenant-pos-index></tenant-pos-index>
+    <tenant-pos-index :configuration="{{ $configuration}}" ></tenant-pos-index>
 @endsection
 
 @push('scripts')

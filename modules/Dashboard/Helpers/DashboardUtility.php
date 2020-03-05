@@ -18,10 +18,10 @@ class DashboardUtility
 {
 
     // use TotalsTrait;
-    
+
     public function data($request)
-    { 
-        
+    {
+
         $establishment_id = $request['establishment_id'];
         $period = $request['period'];
         $date_start = $request['date_start'];
@@ -57,11 +57,11 @@ class DashboardUtility
         ];
 
     }
-  
 
-    
+
+
     private function utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense){
- 
+
 
         if($d_start && $d_end){
 
@@ -83,8 +83,8 @@ class DashboardUtility
                                             ->get();
 
             $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get():null;
-        
-        
+
+
         }else{
 
             $document_items = DocumentItem::whereHas('document', function($query) use($establishment_id){
@@ -92,7 +92,7 @@ class DashboardUtility
                                                 $query->where('establishment_id', $establishment_id)
                                                         ->whereIn('state_type_id', ['01','03','05','07','13']);
                                             })
-                                            ->get(); 
+                                            ->get();
 
 
             $sale_note_items = SaleNoteItem::whereHas('sale_note', function($query) use($establishment_id){
@@ -105,7 +105,7 @@ class DashboardUtility
 
             $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->get():null;
 
-        }          
+        }
 
         // dd($document_items);
         $getTotalDocumentItems = $this->getTotalDocumentItems($document_items);
@@ -117,8 +117,8 @@ class DashboardUtility
         $total_income = $getTotalDocumentItems['document_sale_total'] + $getTotalSaleNoteItems['sale_note_sale_total'];
         $total_egress = $getTotalDocumentItems['document_purchase_total'] + $getTotalSaleNoteItems['sale_note_purchase_total'] + $getTotalExpenses;
         $utility = $total_income - $total_egress;
- 
-        
+
+
         return [
             'totals' => [
                 'total_income' => number_format($total_income,2, ".", ""),
@@ -140,9 +140,9 @@ class DashboardUtility
             ]
         ];
 
-    } 
+    }
 
-    
+
     private function getTotalExpenses($expenses){
 
         if($expenses){
@@ -168,19 +168,19 @@ class DashboardUtility
             if($record->relation_item->purchase_unit_price > 0){
 
                 $purchase_unit_price = $record->relation_item->purchase_unit_price;
-    
+
             }else{
-    
+
                 $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $record->item_id)->latest('id')->first();
                 $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
-    
+
             }
-        
+
         }
 
         return $purchase_unit_price;
     }
- 
+
     private function getTotalSaleNoteItems($sale_note_items){
 
         $purchase_unit_price = 0;
@@ -202,23 +202,23 @@ class DashboardUtility
             $sln_total_purchase = $purchase_unit_price * $sln->quantity;
 
             if($sln->sale_note->currency_type_id === 'PEN'){
-    
+
                     $sale_note_purchase_total_pen += $sln_total_purchase;
                     $sale_note_sale_total_pen += $sln->total;
-    
+
             }else{
-                
+
                 $sale_note_purchase_total_usd += $sln_total_purchase;
                 $sale_note_sale_total_usd += $sln->total * $sln->sale_note->exchange_rate_sale;
-     
+
             }
-            
+
         }
 
         $sale_note_utility_total_pen = $sale_note_sale_total_pen - $sale_note_purchase_total_pen;
         $sale_note_utility_total_usd = $sale_note_sale_total_usd - $sale_note_purchase_total_usd;
 
- 
+
         return [
 
             // 'sale_note_sale_total_pen' => round($sale_note_sale_total_pen, 2),
@@ -226,7 +226,7 @@ class DashboardUtility
 
             // 'sale_note_purchase_total_usd' => round($sale_note_purchase_total_usd, 2),
             // 'sale_note_sale_total_usd' => round($sale_note_sale_total_usd, 2),
-            
+
             // 'sale_note_utility_total_pen' => round($sale_note_utility_total_pen, 2),
             // 'sale_note_utility_total_usd' => round($sale_note_utility_total_usd, 2),
 
@@ -277,43 +277,43 @@ class DashboardUtility
             if($doc_it->document->currency_type_id === 'PEN'){
 
                 // $doc_total_purchase_pen = ($purchase_currency_type == 'PEN') ? ($purchase_unit_price * $doc_it->quantity):($purchase_unit_price * $doc_it->quantity * $doc_it->document->exchange_rate_sale);
-                
+
                 if(in_array($doc_it->document->document_type_id,['01','03','08'])){
-    
+
                     $document_purchase_total_pen += $doc_total_purchase;
                     $document_sale_total_pen += $doc_it->total;
-    
+
                 }else{
 
                     $document_purchase_total_pen -= $doc_total_purchase;
                     $document_sale_total_pen -= $doc_it->total;
 
-                } 
+                }
 
             }else{
 
-                
+
                 if(in_array($doc_it->document->document_type_id,['01','03','08'])){
 
                     $document_purchase_total_usd += $doc_total_purchase;
                     $document_sale_total_usd += $doc_it->total * $doc_it->document->exchange_rate_sale;
-    
+
                 }else{
 
                     $document_purchase_total_usd -= $doc_total_purchase;
                     $document_sale_total_usd -= $doc_it->total * $doc_it->document->exchange_rate_sale;
-                }  
+                }
 
             }
 
 
-            
+
         }
 
         $document_utility_total_pen = $document_sale_total_pen - $document_purchase_total_pen;
         $document_utility_total_usd = $document_sale_total_usd - $document_purchase_total_usd;
 
- 
+
         return [
 
             'document_sale_total_pen' => round($document_sale_total_pen, 2),
@@ -321,7 +321,7 @@ class DashboardUtility
 
             'document_purchase_total_usd' => round($document_purchase_total_usd, 2),
             'document_sale_total_usd' => round($document_sale_total_usd, 2),
-            
+
             'document_utility_total_pen' => round($document_utility_total_pen, 2),
             'document_utility_total_usd' => round($document_utility_total_usd, 2),
 
@@ -330,6 +330,6 @@ class DashboardUtility
 
         ];
     }
- 
- 
+
+
 }

@@ -30,7 +30,9 @@ class PosController extends Controller
 
         if(!$cash) return redirect()->route('tenant.cash.index');
 
-        return view('tenant.pos.index');
+        $configuration = Configuration::first();
+
+        return view('tenant.pos.index', compact('configuration'));
     }
 
     public function index_full()

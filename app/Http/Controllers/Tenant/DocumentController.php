@@ -226,7 +226,8 @@ class DocumentController extends Controller
                     'identity_document_type_id' => $row->identity_document_type_id,
                     'identity_document_type_code' => $row->identity_document_type->code,
                     'addresses' => $row->addresses,
-                    'address' =>  $row->address
+                    'address' =>  $row->address,
+
 
                 ];
             });
@@ -254,8 +255,8 @@ class DocumentController extends Controller
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
-            $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->get();
-            $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->get();
+            $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->take(10)->get();
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
@@ -299,6 +300,7 @@ class DocumentController extends Controller
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];
                     }),
+                    'attributes' => $row->attributes ? $row->attributes : []
 
                 ];
             });

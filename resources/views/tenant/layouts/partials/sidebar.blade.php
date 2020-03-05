@@ -195,7 +195,7 @@
                                         </ul>
                                     </li>
                                 @endif
-                                
+
                                 @if(in_array('quotations', $vc_module_levels))
 
                                     <li class="{{ ($path[0] === 'quotations')?'nav-active':'' }}">
@@ -224,7 +224,7 @@
 
                                 @endif
                             @endif
- 
+
                         </ul>
                     </li>
                     @endif
@@ -460,7 +460,7 @@
                     </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis'])) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items','general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis'])) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
@@ -483,6 +483,11 @@
                             </li>
                             <li class="{{(($path[0] === 'reports') && ($path[1] === 'items')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.items.index')}}">
+                                    Producto - busqueda individual
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'reports') && ($path[1] === 'general-items')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.reports.general_items.index')}}">
                                     Productos
                                 </a>
                             </li>
@@ -560,9 +565,15 @@
                                     Exportar formatos
                                 </a>
                             </li>
-                            <li class="{{(($path[0] === 'account') && ($path[1] !== 'format'))   ? 'nav-active' : ''}}">
+                            <li class="{{(($path[0] === 'account') && ($path[1] == ''))   ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account.index') }}">
-                                    Exportar SISCONT/CONCAR
+                                    <!-- Exportar SISCONT/CONCAR -->
+                                    Exportar formatos - Sis. Contable
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'account') && ($path[1] == 'summary-report'))   ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{ route('tenant.account_summary_report.index') }}">
+                                    Reporte resumido - Ventas
                                 </a>
                             </li>
                         </ul>

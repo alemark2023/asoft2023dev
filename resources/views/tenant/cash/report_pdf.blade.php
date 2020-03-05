@@ -10,6 +10,8 @@ $cash_final_balance = 0;
 
 $cash_documents = $cash->cash_documents;
 
+
+
 foreach ($cash_documents as $cash_document) {
 
     //$final_balance += ($cash_document->document) ? $cash_document->document->total : $cash_document->sale_note->total;
@@ -41,6 +43,23 @@ foreach ($cash_documents as $cash_document) {
             $cash_income += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
             $final_balance += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
         }
+
+        if( count($cash_document->document->payments) > 0)
+        {
+            $pays = $cash_document->document->payments;
+
+            foreach ($methods_payment as $record) {
+
+                $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
+
+            }
+
+
+
+        }
+
+
+
 
     }
     else if($cash_document->expense_payment){
@@ -126,6 +145,8 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
             <p align="center" class="title"><strong>Reporte Punto de Venta</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
+
+
             <table>
                 <tr>
                     <td class="td-custom">
@@ -188,6 +209,32 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
         @if($cash_documents->count())
             <div class="">
                 <div class=" ">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Descripcion</th>
+                                <th>Suma</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($methods_payment as $item)
+
+                                <tr>
+                                    <td class="celda">{{ $loop->iteration }}</td>
+                                    <td class="celda">{{ $item->name }}</td>
+                                    <td class="celda">{{ number_format($item->sum, 2, ".", "")  }}</td>
+
+                                </tr>
+
+                            @endforeach
+                        </tbody>
+
+                    </table> <br>
+
                     <table class="">
                         <thead>
                             <tr>

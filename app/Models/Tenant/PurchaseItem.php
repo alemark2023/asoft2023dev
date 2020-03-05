@@ -6,10 +6,11 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use Modules\Item\Models\ItemLot;
+use Modules\Inventory\Models\Warehouse;
 
 class PurchaseItem extends ModelTenant
 {
-    protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type', 'lots'];
+    protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type', 'lots', 'warehouse'];
     public $timestamps = false;
 
     protected $fillable = [
@@ -116,5 +117,16 @@ class PurchaseItem extends ModelTenant
     public function lots()
     {
         return $this->morphMany(ItemLot::class, 'item_loteable');
+    }
+
+    
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
+    
+    public function relation_item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
     }
 }

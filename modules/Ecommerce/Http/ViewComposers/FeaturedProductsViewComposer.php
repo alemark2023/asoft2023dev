@@ -19,6 +19,10 @@ class FeaturedProductsViewComposer
 
             $sale_unit_price = ($row->has_igv)? $row->sale_unit_price:$row->sale_unit_price*1.18;
 
+            $carbon = new \Carbon\Carbon();
+            $date = $carbon->now();
+            $months = $date->diffInMonths($row->created_at);
+
             return (object)[
                 'id' => $row->id,
                 'internal_id' => $row->internal_id,
@@ -35,6 +39,7 @@ class FeaturedProductsViewComposer
                 'image_medium' => $row->image_medium,
                 'image_small' => $row->image_small,
                 'tags' => $row->tags->pluck('tag_id')->toArray(),
+                'is_new' => ($months > 1) ? 0 : 1,
                 /*'multi_images'  => $row->images->transform(function($r){
                     return [
                         $r->image

@@ -14,8 +14,10 @@
                             <img src="{{ asset('storage/uploads/items/'.$item->image) }}" alt="product">
                         </a>
                         <a href="{{route('item_partial', ['id' => $item->id])}}" class="btn-quickview">Vista Rápida</a>
-                        <span class="product-label label-sale">-20%</span>
-                        <span class="product-label label-hot">New</span>
+                        {{-- <span class="product-label label-sale">-20%</span> --}}
+                        @if(json_encode($item->is_new) == 1)
+                            <span class="product-label label-hot">New</span>
+                        @endif
                     </figure>
                     <div class="product-details">
                         <div class="ratings-container">
@@ -52,8 +54,10 @@
                             <img src="{{ asset('storage/uploads/items/'.$item->image) }}" alt="product">
                         </a>
                         <a href="{{route('item_partial', ['id' => $item->id])}}" class="btn-quickview">Vista Rápida</a>
-                        <span class="product-label label-sale">-20%</span>
-                        <span class="product-label label-hot">New</span>
+                        {{-- <span class="product-label label-sale">-20%</span> --}}
+                        @if(json_encode($item->is_new) == 1)
+                            <span class="product-label label-hot">New</span>
+                        @endif
                     </figure>
                     <div class="product-details">
                         <div class="ratings-container">
