@@ -53,10 +53,11 @@ use Modules\Item\Models\Brand;
 use Carbon\Carbon;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use Modules\Document\Traits\DocumentTrait; 
 
 class DocumentController extends Controller
 {
-    use StorageDocument, OfflineTrait;
+    use StorageDocument, OfflineTrait, DocumentTrait;
     private $max_count_payment = 0;
 
     public function __construct()
@@ -188,12 +189,13 @@ class DocumentController extends Controller
         //                'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
         //                'discount_types', 'charge_types', 'company', 'document_type_03_filter');
 
+        $payment_destinations = $this->getPaymentDestinations();
 
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
                         'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','is_client','select_first_document_type_03');
+                        'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
 
     }
 

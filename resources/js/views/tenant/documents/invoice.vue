@@ -202,6 +202,7 @@
                                         <thead>
                                             <tr width="100%">
                                                 <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Destino</th>
                                                 <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
                                                 <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                                 <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -211,8 +212,15 @@
                                             <tr v-for="(row, index) in form.payments" :key="index">
                                                 <td>
                                                     <div class="form-group mb-2 mr-2">
-                                                        <el-select v-model="row.payment_method_type_id">
+                                                        <el-select v-model="row.payment_method_type_id" @change="changePaymentDestination(index)">
                                                             <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_destination_id" filterable clearable>
+                                                            <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                         </el-select>
                                                     </div>
                                                 </td>
@@ -703,7 +711,8 @@
                 select_first_document_type_03:false,
                 detraction_types: [],
                 all_detraction_types: [],
-                customer_addresses:  []
+                customer_addresses:  [],
+                payment_destinations:  [],
 
             }
         },
@@ -736,6 +745,8 @@
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
+                    this.payment_destinations = response.data.payment_destinations
+
                     this.selectDocumentType()
 
                     this.changeEstablishment()
@@ -752,6 +763,13 @@
             })
         },
         methods: {
+            changePaymentDestination(index){
+                // if(this.form.payments[index].payment_method_type_id=='01'){
+                //     this.payment_destinations = this.cash
+                // }else{
+                //     this.payment_destinations = this.payment_destinations
+                // }
+            },
             selectDocumentType(){
                 this.form.document_type_id = (this.select_first_document_type_03) ? '03':'01'
             },
@@ -1024,6 +1042,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
+                    payment_destination_id:null,
                     payment: 0,
 
                 });
