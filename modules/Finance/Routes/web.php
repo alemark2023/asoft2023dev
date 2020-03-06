@@ -1,16 +1,19 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
-Route::prefix('finance')->group(function() {
-    Route::get('/', 'FinanceController@index');
-});
+if($hostname) {
+    Route::domain($hostname->fqdn)->group(function () {
+        Route::middleware(['auth'])->group(function() {
+
+ 
+            Route::prefix('finances')->group(function () {
+
+                Route::get('records', 'FinanceController@records'); 
+
+            });
+
+
+        });
+    });
+}

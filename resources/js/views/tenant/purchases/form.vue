@@ -103,6 +103,7 @@
                                 <thead>
                                     <tr width="100%">
                                         <th v-if="form.payments.length>0" class="pb-2">Forma de pago</th>
+                                        <th v-if="form.payments.length>0" class="pb-2">Destino</th>
                                         <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
                                         <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                         <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -114,6 +115,13 @@
                                             <div class="form-group mb-2 mr-2">
                                                 <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(true,index)">
                                                     <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                </el-select>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group mb-2 mr-2">
+                                                <el-select v-model="row.payment_destination_id" filterable clearable>
+                                                    <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                 </el-select>
                                             </div>
                                         </td>
@@ -299,6 +307,7 @@
                 establishment: {},
                 all_series: [],
                 series: [],
+                payment_destinations:  [],
                 currency_type: {},
                 purchaseNewId: null
             }
@@ -314,6 +323,7 @@
                     this.all_suppliers = response.data.suppliers
                     this.discount_types = response.data.discount_types
                     this.payment_method_types = response.data.payment_method_types
+                    this.payment_destinations = response.data.payment_destinations
 
                     this.charges_types = response.data.charges_types
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
@@ -425,6 +435,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
+                    payment_destination_id:null,
                     payment: 0,
                 });
             },   

@@ -2,6 +2,8 @@
 
 namespace App\Models\Tenant;
 
+use Modules\Finance\Models\GlobalPayment;
+
 class DocumentPayment extends ModelTenant
 {
     protected $with = ['payment_method_type', 'card_brand'];
@@ -35,5 +37,11 @@ class DocumentPayment extends ModelTenant
     public function document()
     {
         return $this->belongsTo(Document::class, 'document_id');
+    }
+
+    
+    public function global_payment()
+    {
+        return $this->morphOne(GlobalPayment::class, 'payment');
     }
 }

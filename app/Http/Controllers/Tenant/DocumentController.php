@@ -53,11 +53,11 @@ use Modules\Item\Models\Brand;
 use Carbon\Carbon;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
-use Modules\Document\Traits\DocumentTrait; 
+use Modules\Finance\Traits\FinanceTrait; 
 
 class DocumentController extends Controller
 {
-    use StorageDocument, OfflineTrait, DocumentTrait;
+    use StorageDocument, OfflineTrait, FinanceTrait;
     private $max_count_payment = 0;
 
     public function __construct()
