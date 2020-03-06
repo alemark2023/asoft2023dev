@@ -541,7 +541,7 @@ class QuotationController extends Controller
                 $defaultFontConfig = (new FontVariables())->getDefaults();
                 $fontData = $defaultFontConfig['fontdata'];
 
-                $pdf = new Mpdf([
+                $default = [
                     'fontDir' => array_merge($fontDirs, [
                         app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
                                                  DIRECTORY_SEPARATOR.'pdf'.
@@ -556,7 +556,35 @@ class QuotationController extends Controller
                             'R' => $pdf_font_regular.'.ttf',
                         ],
                     ]
-                ]);
+                    ];
+
+                    if($base_template == 'citec')
+                    {
+                        $default = [
+                            'mode' => 'utf-8',
+                            'margin_top' => 2,
+                            'margin_right' => 0,
+                            'margin_bottom' => 0,
+                            'margin_left' => 0,
+                            'fontDir' => array_merge($fontDirs, [
+                                app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                         DIRECTORY_SEPARATOR.'pdf'.
+                                                         DIRECTORY_SEPARATOR.$base_template.
+                                                         DIRECTORY_SEPARATOR.'font')
+                            ]),
+                            'fontdata' => $fontData + [
+                                'custom_bold' => [
+                                    'R' => $pdf_font_bold.'.ttf',
+                                ],
+                                'custom_regular' => [
+                                    'R' => $pdf_font_regular.'.ttf',
+                                ],
+                            ]
+                            ];
+
+                    }
+
+                $pdf = new Mpdf($default);
             }
         }
 
