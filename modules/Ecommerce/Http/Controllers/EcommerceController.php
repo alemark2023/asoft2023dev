@@ -18,7 +18,7 @@ use stdClass;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
 use App\Http\Controllers\Tenant\Api\ServiceController;
-use App\Http\Requests\Tenant\EcommerceCartDetailRequest;
+use Illuminate\Support\Facades\Validator;
 
 class EcommerceController extends Controller
 {
@@ -197,9 +197,17 @@ class EcommerceController extends Controller
 
     public function paymentCash(Request $request)
     {
-        try{
-            $user = auth()->user();
-            $order = Order::create([
+        $validator = Validator::make($request->all(), [
+            'telephone' => 'required',
+            'address' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        } else {
+            try {
+                $user = auth()->user();
+                $order = Order::create([
                 'external_id' => Str::uuid()->toString(),
                 'customer' =>  $request->customer,
                 'shipping_address' => 'direccion 1',
@@ -226,7 +234,7 @@ class EcommerceController extends Controller
                 'message' =>  $e->getMessage()
             ];
         }
-
+      }
     }
 
     public function ratingItem(Request $request)
@@ -278,7 +286,7 @@ class EcommerceController extends Controller
 
     }
 
-    public function saveDataUser(EcommerceCartDetailRequest $request)
+    public function saveDataUser(Request $request)
     {
         $user = auth()->user();
         if ($request->address) {
