@@ -133,15 +133,15 @@
             <h3>Datos de contacto y  envío</h3>
 
             <form autocomplete="off" action="#">
-                <div class="form-group">
+                <div class="form-group" :class="{'has-danger': errors.telephone}">
                     <label for="email">Telefono:</label>
-                    <input v-model="form_contact.telephone" type="text" required autocomplete="off" class="form-control"
-                        placeholder="Ingrese número de teléfono" name="name">
+                    <input v-model="form_contact.telephone" type="text" required autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="name">
+                    <small class="form-control-feedback" v-if="errors.telephone" v-text="errors.telephone[0]"></small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" :class="{'has-danger': errors.address}">
                     <label for="email">Dirección:</label>
-                        <textarea v-model="form_contact.address" class="form-control" placeholder="Ingrese dirección de  envío" rows="2" cols="10">
-                        </textarea>
+                    <textarea v-model="form_contact.address" class="form-control" placeholder="Ingrese dirección de  envío" rows="2" cols="10"></textarea>
+                    <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
                 </div>
             </form>
         </div>
@@ -279,7 +279,8 @@
             form_document: {},
             user: {},
             typeDocumentSelected: '',
-            response_order_total:0
+            response_order_total:0,
+            errors: {}
         },
         computed: {
             maxLength: function () {
@@ -626,6 +627,7 @@
                 return rec
             },
             initForm() {
+              this.errors = {}
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
                 if(!this.user){
                     return false
@@ -768,9 +770,12 @@
                 axios.post(url_finally, this.form_contact, this.getHeaderConfig())
                     .then(response => {
                        conssole.log(ressponse.data)
-                    })
-                    .catch(error => {
-
+                    }).catch(error => {
+                      if (error.response.status === 422) {
+                        this.errors = error.response.data;
+                      } else {
+                        console.log(error);
+                      }
                     });
             }
         }

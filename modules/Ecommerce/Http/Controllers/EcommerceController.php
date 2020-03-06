@@ -18,6 +18,7 @@ use stdClass;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
 use App\Http\Controllers\Tenant\Api\ServiceController;
+use App\Http\Requests\Tenant\EcommerceCartDetailRequest;
 
 class EcommerceController extends Controller
 {
@@ -277,15 +278,13 @@ class EcommerceController extends Controller
 
     }
 
-    public function saveDataUser(Request $request)
+    public function saveDataUser(EcommerceCartDetailRequest $request)
     {
         $user = auth()->user();
-        if($request->address)
-        {
+        if ($request->address) {
             $user->address = $request->address;
         }
-        if($user->telephone = $request->telephone)
-        {
+        if ($user->telephone = $request->telephone) {
             $user->telephone = $request->telephone;
         }
 
