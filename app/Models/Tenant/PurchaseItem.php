@@ -124,4 +124,9 @@ class PurchaseItem extends ModelTenant
     {
         return $this->belongsTo(Warehouse::class);
     }
+    
+    public function relation_item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
 }

@@ -155,7 +155,7 @@
             filterDocumentType(row){
 
                 if(row.contingency){
-                    this.document_types = _.filter(this.all_document_types, item => (item.id == '01' || item.id =='03' || item.id =='07' || item.id =='08'))
+                    this.document_types = _.filter(this.all_document_types, item => (item.id == '01' || item.id =='03' || item.id =='07' || item.id =='08' || item.id == '09'))
                     row.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 }else{
                     row.document_type_id = null
