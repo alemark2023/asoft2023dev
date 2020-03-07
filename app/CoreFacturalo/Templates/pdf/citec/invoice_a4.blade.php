@@ -24,36 +24,53 @@
 <body>
 <table class="full-width">
     <tr>
-        @if($company->logo)
-            <td width="20%">
-                <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
-                </div>
-            </td>
-        @else
-            <td width="20%">
-                {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
-            </td>
-        @endif
         <td width="50%" class="pl-3">
+
+            @if($company->logo)
+
+                    <div class="company_logo_box">
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+                    </div>
+            @else
+
+                    {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
+
+            @endif
+
             <div class="text-left">
-                <h4 class="">{{ $company->name }}</h4>
-                <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h4 class="">Domicilio Fiscal: Jr. Diego de Almagro N 256 - Int. 101 <br> Centro Trujillo - La Libertad - Trujillo Trujillo <br> Telf: 044-693614 - 948836100 </h4>
+                <h4>Sucursal: {{ $establishment->address}} <br> 076-283327 - 9769824444  </h4>
+                {{-- <h6>
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
                 <h6>{{ ($establishment->email !== '-')? $establishment->email : '' }}</h6>
-                <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6>
+                <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6> --}}
             </div>
         </td>
-        <td width="30%" class="border-box py-4 px-2 text-center" >
-            <h5 class="text-center">{{ $document->document_type->description }}</h5>
-            <h3 class="text-center">{{ $document_number }}</h3>
+        <td width="50%" class="border-box py-4 px-2 text-center" style="background-color: #5DA8EB;" >
+
+            <h5 style="color:white;font-weight:bold" class="text-center">R.U.C. {{$company->number }}</h5>
+            <h5  style="color:white;font-weight:bold" class="text-center">{{ $document->document_type->description }}</h5>
+            <h5  style="color:white;font-weight:bold" class="text-center">{{ $document_number }}</h5>
+
         </td>
     </tr>
+
+</table>
+<br>
+
+<table class="full-width">
+
+    <tr>
+
+        <td width="100%" class="border-box text-center"> <span class="" style="color:#0483F3"> Ventas de equipo de computo, equipos de  impresion, Ingenieria, Comunicaciones, Redes, Seguridad <br>
+        Partes, Accesorios, suministros, Originales y compatibles - Servicios Informaticos </span></td>
+        </td>
+    </tr>
+
 </table>
 <table class="full-width mt-5">
     <tr>
@@ -285,14 +302,14 @@
         <td width="65%" style="text-align: top; vertical-align: top;">
             @foreach(array_reverse( (array) $document->legends) as $row)
                 @if ($row->code == "1000")
-                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>                      
+                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
                     @if (count((array) $document->legends)>1)
                         <p><span class="font-bold">Leyendas</span></p>
-                    @endif                  
+                    @endif
                 @else
-                    <p> {{$row->code}}: {{ $row->value }} </p>                                    
+                    <p> {{$row->code}}: {{ $row->value }} </p>
                 @endif
-            
+
             @endforeach
             <br/>
             @foreach($document->additional_information as $information)

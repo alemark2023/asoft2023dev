@@ -87,8 +87,9 @@ table {
 }
 
 .border-box {
-    border: thin solid blue;
-    border-radius: 25px;
+    border: thin solid #5DA8EB;
+    
+
 }
 .border-top {
     border-top: thin solid #333;
