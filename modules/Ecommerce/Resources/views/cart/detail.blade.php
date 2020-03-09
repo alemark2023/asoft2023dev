@@ -130,18 +130,18 @@
 
 
         <div class="cart-summary">
-            <h3>Datos de contacto y  envío</h3>
+            <h3>Datos de contacto y envío</h3>
 
             <form autocomplete="off" action="#">
-                <div class="form-group">
+                <div class="form-group" :class="{'text-danger': errors.telephone}">
                     <label for="email">Telefono:</label>
-                    <input v-model="form_contact.telephone" type="text" required autocomplete="off" class="form-control"
-                        placeholder="Ingrese número de teléfono" name="name">
+                    <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono">
+                    <small class="form-control-feedback" v-if="errors.telephone" v-text="errors.telephone[0]"></small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" :class="{'text-danger': errors.address}">
                     <label for="email">Dirección:</label>
-                        <textarea v-model="form_contact.address" class="form-control" placeholder="Ingrese dirección de  envío" rows="2" cols="10">
-                        </textarea>
+                    <textarea v-model="form_contact.address" class="form-control" placeholder="Ingrese dirección de envío" rows="2" cols="10"></textarea>
+                    <small class="form-control-feedback" v-if="errors.address" v-text="errors.address[0]"></small>
                 </div>
             </form>
         </div>
@@ -279,7 +279,8 @@
             form_document: {},
             user: {},
             typeDocumentSelected: '',
-            response_order_total:0
+            response_order_total:0,
+            errors: {}
         },
         computed: {
             maxLength: function () {
@@ -328,7 +329,9 @@
                     precio: precio,
                     precio_culqi: precio_culqi,
                     customer: this.form_document.datos_del_cliente_o_receptor,
-                    items: this.records
+                    items: this.records,
+                    telephone: this.form_contact.telephone,
+                    address: this.form_contact.address
                 }
             },
             async paymentCash() {
@@ -343,7 +346,7 @@
                 });
 
                 let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
-                let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig())
+                let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig()).then(response => {
                 if (response.data.success) {
                     this.saveContactDataUser()
                     this.clearShoppingCart()
@@ -355,9 +358,15 @@
                     }).then((x) => {
                         askedDocument(response.data.order);
                     })
-                } else {
-                    swal("Pago No realizado", 'Sucedio algo inesperado.', "error");
                 }
+              }).catch(error => {
+                swal("Pago No realizado", 'Sucedio algo inesperado.', "error");
+                if (error.response.status === 422) {
+                  this.errors = error.response.data;
+                } else {
+                  console.log(error);
+                }
+              });
 
             },
             redirectHome() {
@@ -626,6 +635,7 @@
                 return rec
             },
             initForm() {
+              this.errors = {}
                 this.user = JSON.parse('{!! json_encode( Auth::user() ) !!}')
                 if(!this.user){
                     return false
@@ -683,7 +693,7 @@
 
             },
             clearShoppingCart() {
-
+              this.errors = {}
                 this.records_old = this.records
                 this.records = []
                 localStorage.setItem('products_cart', JSON.stringify([]))
@@ -767,7 +777,7 @@
                 let url_finally = '{{ route("tenant_ecommerce_user_data")}}';
                 axios.post(url_finally, this.form_contact, this.getHeaderConfig())
                     .then(response => {
-                       conssole.log(ressponse.data)
+                       console.log(response.data)
                     })
                     .catch(error => {
 
