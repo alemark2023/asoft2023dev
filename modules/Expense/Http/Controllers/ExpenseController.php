@@ -21,9 +21,12 @@ use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Company;
+use Modules\Finance\Traits\FinanceTrait; 
 
 class ExpenseController extends Controller
 {
+
+    use FinanceTrait;
 
     public function index()
     {
@@ -62,8 +65,9 @@ class ExpenseController extends Controller
         $expense_types = ExpenseType::get();
         $expense_method_types = ExpenseMethodType::all();
         $expense_reasons = ExpenseReason::all();
+        $payment_destinations = $this->getBankAccounts();
 
-        return compact('suppliers', 'establishment','currency_types', 'expense_types', 'expense_method_types', 'expense_reasons');
+        return compact('suppliers', 'establishment','currency_types', 'expense_types', 'expense_method_types', 'expense_reasons', 'payment_destinations');
     }
 
 
@@ -89,7 +93,11 @@ class ExpenseController extends Controller
 
             foreach ($data['payments'] as $row)
             {
-                $doc->payments()->create($row);
+                $record_payment = $doc->payments()->create($row);
+                
+                if($row['expense_method_type_id'] != 1){
+                    $this->createGlobalPayment($record_payment, $row);
+                }
             }
 
             return $doc;

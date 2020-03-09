@@ -40,4 +40,9 @@ class BankAccount extends ModelTenant
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
+
+    // public function global_destination()
+    // {
+    //     return $this->morphMany(GlobalPayment::class, 'destination');
+    // }
 }

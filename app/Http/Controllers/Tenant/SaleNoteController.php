@@ -43,12 +43,13 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use App\Models\Tenant\ItemWarehouse;
+use Modules\Finance\Traits\FinanceTrait; 
 
 
 class SaleNoteController extends Controller
 {
 
-    use StorageDocument;
+    use StorageDocument, FinanceTrait;
 
     protected $sale_note;
     protected $company;
@@ -131,9 +132,10 @@ class SaleNoteController extends Controller
                 'number' => $row->number
             ];
         });
+        $payment_destinations = $this->getPaymentDestinations();
 
         return compact('customers', 'establishments','currency_types', 'discount_types',
-                         'charge_types','company','payment_method_types', 'series');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations');
     }
 
     public function changed($id)
@@ -185,7 +187,8 @@ class SaleNoteController extends Controller
                 $data);
 
 
-            $this->sale_note->payments()->delete();
+            // $this->sale_note->payments()->delete();
+            $this->deleteAllPayments($this->sale_note->payments);
 
 
             foreach($data['items'] as $row) {
@@ -818,6 +821,7 @@ class SaleNoteController extends Controller
                     "date_of_payment" => $row['date_of_payment'],
                     "payment_method_type_id" => $row['payment_method_type_id'],
                     "reference" => $row['reference'],
+                    "payment_destination_id" => isset($row['payment_destination_id']) ? $row['payment_destination_id'] : null,
                     "change" => $change,
                     "payment" => $payment
                 ];
@@ -835,7 +839,11 @@ class SaleNoteController extends Controller
                 $this->apply_change = true; 
             }
 
-            $sale_note->payments()->create($row);
+            $record_payment = $sale_note->payments()->create($row);
+            
+            if(isset($row['payment_destination_id'])){
+                $this->createGlobalPayment($record_payment, $row);
+            }
         }
     }
 

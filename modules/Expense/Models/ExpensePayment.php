@@ -1,8 +1,10 @@
 <?php
 
 namespace Modules\Expense\Models;
+
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\CardBrand;
+use Modules\Finance\Models\GlobalPayment;
 
 class ExpensePayment extends ModelTenant
 {
@@ -36,5 +38,10 @@ class ExpensePayment extends ModelTenant
     public function card_brand()
     {
         return $this->belongsTo(CardBrand::class);
+    }
+
+    public function global_payment()
+    {
+        return $this->morphOne(GlobalPayment::class, 'payment');
     }
 }

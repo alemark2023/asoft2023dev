@@ -10,10 +10,14 @@ use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PaymentMethodType;
 use Exception, Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
+use Modules\Finance\Traits\FinanceTrait; 
 
 
 class DocumentPaymentController extends Controller
 {
+
+    use FinanceTrait;
+
     public function records($document_id)
     {
         $records = DocumentPayment::where('document_id', $document_id)->get();
@@ -24,7 +28,8 @@ class DocumentPaymentController extends Controller
     public function tables()
     {
         return [
-            'payment_method_types' => PaymentMethodType::all()
+            'payment_method_types' => PaymentMethodType::all(),
+            'payment_destinations' => $this->getPaymentDestinations()
         ];
     }
 
@@ -51,6 +56,7 @@ class DocumentPaymentController extends Controller
         $record = DocumentPayment::firstOrNew(['id' => $id]);
         $record->fill($request->all());
         $record->save();
+        $this->createGlobalPayment($record, $request->all());
 
         return [
             'success' => true,

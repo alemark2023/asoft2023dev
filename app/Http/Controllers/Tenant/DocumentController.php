@@ -836,6 +836,7 @@ class DocumentController extends Controller
         try {
 
             $record = Document::findOrFail($document_id);
+            $this->deleteAllPayments($record->payments);
             $record->delete();
 
             return [

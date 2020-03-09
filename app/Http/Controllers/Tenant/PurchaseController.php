@@ -420,7 +420,11 @@ class PurchaseController extends Controller
         try {
 
             $row = Purchase::findOrFail($id);
+
+            $this->deleteAllPayments($row->purchase_payments);
+
             $row->delete();
+
             return [
                 'success' => true,
                 'message' => 'Compra eliminada con éxito'

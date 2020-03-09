@@ -37,14 +37,13 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\PaymentMethodType;
-
-
+use Modules\Finance\Traits\FinanceTrait; 
 
 
 class QuotationController extends Controller
 {
 
-    use StorageDocument;
+    use StorageDocument, FinanceTrait;
 
     protected $quotation;
     protected $company;
@@ -122,8 +121,9 @@ class QuotationController extends Controller
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
 
-        return compact('series', 'document_types_invoice', 'payment_method_types');
+        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
     }
 
     public function item_tables() {

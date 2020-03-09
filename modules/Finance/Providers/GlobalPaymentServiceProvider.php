@@ -3,6 +3,7 @@
 namespace Modules\Finance\Providers;
 
 use App\Models\Tenant\{
+    SaleNotePayment,
     DocumentPayment,
     PurchasePayment,
 };  
@@ -18,24 +19,25 @@ class GlobalPaymentServiceProvider extends ServiceProvider
     
     public function boot()
     {
-        $this->deleting_document_payment();
-        $this->deleting_purchase_payment();
+
+        $this->deletingPayment(SaleNotePayment::class);
+        $this->deletingPayment(DocumentPayment::class);
+        $this->deletingPayment(PurchasePayment::class);
+
     }
 
-    private function deleting_document_payment(){
-
-    }
-
-    private function deleting_purchase_payment()
+    private function deletingPayment($model)
     {
 
-        PurchasePayment::deleting(function ($purchase_payment) {
+        $model::deleting(function ($record) {
             
-            if($purchase_payment->global_payment){
-                $purchase_payment->global_payment()->delete();
+            if($record->global_payment){
+                $record->global_payment()->delete();
             }
 
         });
+
     }
+ 
  
 }

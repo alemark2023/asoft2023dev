@@ -233,5 +233,7 @@ return [
         'destinatation_address' => 'dirección destino',
         'date_start' => 'fecha inicial',
         'date_end' => 'fecha final',
+        'payment_method_type_id' => 'm. pago',
+        'payment_destination_id' => 'destino',
     ],
 ];
