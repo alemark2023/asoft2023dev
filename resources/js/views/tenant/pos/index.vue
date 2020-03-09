@@ -429,16 +429,16 @@
 <script>
       import { calculateRowItem } from "../../../helpers/functions";
       import PaymentForm from "./partials/payment.vue";
-      import PersonForm from "../persons/form.vue";
       import ItemForm from "./partials/form.vue";
       import { functions, exchangeRate } from "../../../mixins/functions";
       import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
       import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
+      import PersonForm from "../persons/form.vue";
       import WarehousesDetail from '../items/partials/warehouses.vue'
 
       export default {
         props: ['configuration'],
-        components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
+        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail},
         mixins: [functions, exchangeRate],
 
         data() {
@@ -1129,7 +1129,7 @@
                           if (this.items.length == 0) {
                             this.filterItems();
                         }
-                  
+
                   });
 
             } else {

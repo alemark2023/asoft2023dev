@@ -4,8 +4,9 @@
     <section class="body-sign">
         <div class="center-sign">
             <div class="card">
-                <div class="card card-header card-primary" style="background:#0088CC">
+                <div class="card card-header card-primary pb-0" style="background:#0088CC">
                     <p class="card-title text-center">Acceso al Sistema</p>
+                    <p class="text-center text-light py-0 my-0"><small>Facturador versión PRO 3</small></p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
