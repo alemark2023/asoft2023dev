@@ -22,7 +22,8 @@ class OrderNoteRequest extends FormRequest
             ],
             'exchange_rate_sale' => [
                 'required',
-                'numeric'
+                'numeric',
+                'min:0.01'
             ],
             'currency_type_id' => [
                 'required',
