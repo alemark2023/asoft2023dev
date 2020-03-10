@@ -160,6 +160,9 @@ Vue.component('tenant-report-kardex-master', require('../../modules/Inventory/Re
 Vue.component('tenant-report-kardex-lots', require('../../modules/Inventory/Resources/assets/js/kardex/lots.vue'));
 Vue.component('tenant-report-kardex-series', require('../../modules/Inventory/Resources/assets/js/kardex/series.vue'));
 
+//Finance
+Vue.component('tenant-finance-global-payments-index', require('../../modules/Finance/Resources/assets/js/views/global_payments/index.vue'));
+
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
