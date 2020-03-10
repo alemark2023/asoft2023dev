@@ -9,6 +9,7 @@
                     <thead>
                         <tr width="100%">
                             <th v-if="payments.length>0">Método de pago</th>
+                            <th v-if="payments.length>0">Destino</th>
                             <th v-if="payments.length>0">Referencia</th>
                             <th v-if="payments.length>0">Monto</th>
                             <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -20,6 +21,13 @@
                                 <div class="form-group mb-2 mr-2">
                                     <el-select v-model="row.payment_method_type_id">
                                         <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group mb-2 mr-2">
+                                    <el-select v-model="row.payment_destination_id" filterable :disabled="row.payment_destination_disabled">
+                                        <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
                                 </div>
                             </td>
@@ -68,6 +76,7 @@
                 configuration: {},
                 activeName: 'first',
                 payment_method_types:[],
+                payment_destinations: [],
                 cards_brand:[],
 
             }
@@ -78,6 +87,7 @@
                 .then(response => { 
                     this.payment_method_types = response.data.payment_method_types  
                     this.cards_brand = response.data.cards_brand  
+                    this.payment_destinations = response.data.payment_destinations
                     // this.clickAddPayment()
                     this.getFormPosLocalStorage()
                 })  
@@ -111,6 +121,7 @@
                     sale_note_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
+                    payment_destination_id: 'cash',
                     reference: null,
                     payment: 0,
                 });

@@ -417,13 +417,16 @@ class PurchaseController extends Controller
 
     public function delete($id)
     {
+
         try {
 
-            $row = Purchase::findOrFail($id);
+            DB::connection('tenant')->transaction(function () use ($id) {
 
-            $this->deleteAllPayments($row->purchase_payments);
-
-            $row->delete();
+                $row = Purchase::findOrFail($id);
+                $this->deleteAllPayments($row->purchase_payments);
+                $row->delete();
+                
+            });
 
             return [
                 'success' => true,

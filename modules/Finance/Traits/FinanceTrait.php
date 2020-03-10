@@ -43,7 +43,7 @@ trait FinanceTrait
             return [
                 'id' => 'cash',
                 'cash_id' => $cash->id,
-                'description' => ($cash->reference_number) ? "Caja chica - {$cash->reference_number}" : "Caja chica",
+                'description' => ($cash->reference_number) ? "CAJA CHICA - {$cash->reference_number}" : "CAJA CHICA",
             ];
 
         }

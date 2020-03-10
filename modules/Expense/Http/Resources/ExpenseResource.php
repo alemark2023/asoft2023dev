@@ -24,6 +24,7 @@ class ExpenseResource extends JsonResource
                 return [
                     'id' => $row->id,
                     'expense_method_type_description' => $row->expense_method_type->description,
+                    'destination_description' => ($row->global_payment) ? $row->global_payment->destination_description:null,
                     'reference' => $row->reference,
                     'payment' => $row->payment,
                 ];

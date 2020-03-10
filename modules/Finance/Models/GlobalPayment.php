@@ -37,7 +37,7 @@ class GlobalPayment extends ModelTenant
 
     public function getDestinationDescriptionAttribute()
     {
-        return $this->destination_type === Cash::class ? 'Caja chica': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
+        return $this->destination_type === Cash::class ? 'CAJA CHICA': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
     }
      
     public function getTypeRecordAttribute()

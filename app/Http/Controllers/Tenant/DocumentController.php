@@ -835,9 +835,13 @@ class DocumentController extends Controller
     {
         try {
 
-            $record = Document::findOrFail($document_id);
-            $this->deleteAllPayments($record->payments);
-            $record->delete();
+            DB::connection('tenant')->transaction(function () use ($document_id) {
+
+                $record = Document::findOrFail($document_id);
+                $this->deleteAllPayments($record->payments);
+                $record->delete();
+
+            });
 
             return [
                 'success' => true,

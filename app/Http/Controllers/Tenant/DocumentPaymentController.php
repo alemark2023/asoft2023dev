@@ -52,11 +52,17 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
+
         $id = $request->input('id');
-        $record = DocumentPayment::firstOrNew(['id' => $id]);
-        $record->fill($request->all());
-        $record->save();
-        $this->createGlobalPayment($record, $request->all());
+
+        DB::connection('tenant')->transaction(function () use ($id, $request) {
+
+            $record = DocumentPayment::firstOrNew(['id' => $id]);
+            $record->fill($request->all());
+            $record->save();
+            $this->createGlobalPayment($record, $request->all());
+
+        });
 
         return [
             'success' => true,
@@ -121,6 +127,7 @@ class DocumentPaymentController extends Controller
                 'id' => $row->id,
                 'date_of_payment' => $row->date_of_payment->format('d/m/Y'),
                 'payment_method_type_description' => $row->payment_method_type->description,
+                'destination_description' => ($row->global_payment) ? $row->global_payment->destination_description:null,
                 'payment' => $row->payment,
                 'reference' => $row->reference,
                 'customer' => $row->document->customer->name,

@@ -95,9 +95,11 @@ class ExpenseController extends Controller
             {
                 $record_payment = $doc->payments()->create($row);
                 
-                if($row['expense_method_type_id'] != 1){
-                    $this->createGlobalPayment($record_payment, $row);
+                if($row['expense_method_type_id'] == 1){
+                    $row['payment_destination_id'] = 'cash';
                 }
+
+                $this->createGlobalPayment($record_payment, $row);
             }
 
             return $doc;
@@ -166,7 +168,7 @@ class ExpenseController extends Controller
                 'data' => [
                     'id' => $expense->id,
                 ],
-                'message' => 'Giro anulado exitosamente',
+                'message' => 'Gasto anulado exitosamente',
             ];
         } catch (Exception $e) {
             return [
