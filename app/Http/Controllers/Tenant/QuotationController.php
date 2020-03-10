@@ -37,6 +37,8 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Configuration;
+
 
 
 
@@ -309,7 +311,7 @@ class QuotationController extends Controller
 
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                $items = Item::orderBy('description')->whereIsActive()->whereNotIsSet()
+                $items = Item::orderBy('description')->whereIsActive()
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
@@ -418,7 +420,9 @@ class QuotationController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->quotation->filename;
 
-        $base_template = config('tenant.pdf_template');
+        $configuration = Configuration::first();
+
+        $base_template = $configuration->formats; //config('tenant.pdf_template');
 
         $html = $template->pdf($base_template, "quotation", $company, $document, $format_pdf);
 
@@ -527,6 +531,8 @@ class QuotationController extends Controller
 
         }  else {
 
+            
+
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
 
@@ -537,7 +543,7 @@ class QuotationController extends Controller
                 $defaultFontConfig = (new FontVariables())->getDefaults();
                 $fontData = $defaultFontConfig['fontdata'];
 
-                $pdf = new Mpdf([
+                $default = [
                     'fontDir' => array_merge($fontDirs, [
                         app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
                                                  DIRECTORY_SEPARATOR.'pdf'.
@@ -552,7 +558,35 @@ class QuotationController extends Controller
                             'R' => $pdf_font_regular.'.ttf',
                         ],
                     ]
-                ]);
+                    ];
+
+                    if($base_template == 'citec')
+                    {
+                        $default = [
+                            'mode' => 'utf-8',
+                            'margin_top' => 2,
+                            'margin_right' => 0,
+                            'margin_bottom' => 0,
+                            'margin_left' => 0,
+                            'fontDir' => array_merge($fontDirs, [
+                                app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                         DIRECTORY_SEPARATOR.'pdf'.
+                                                         DIRECTORY_SEPARATOR.$base_template.
+                                                         DIRECTORY_SEPARATOR.'font')
+                            ]),
+                            'fontdata' => $fontData + [
+                                'custom_bold' => [
+                                    'R' => $pdf_font_bold.'.ttf',
+                                ],
+                                'custom_regular' => [
+                                    'R' => $pdf_font_regular.'.ttf',
+                                ],
+                            ]
+                            ];
+
+                    }
+
+                $pdf = new Mpdf($default);
             }
         }
 
