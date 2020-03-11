@@ -56,7 +56,7 @@ export default {
     return {
       resource: "reports/kardex_lots",
       form: {},
-      item_id: null,
+      item_id: '',
       records: [],
       items: []
     };
