@@ -77,7 +77,7 @@ trait SearchTrait
             $warehouse_stock = 0;
             if($row->warehouses && $warehouse)
             {
-                $wr = row->warehouses->where('warehouse_id', $warehouse->id)->first();
+                $wr = $row->warehouses->where('warehouse_id', $warehouse->id)->first();
                 if($wr)
                 {
                     $warehouse_stock = number_format($wr->stock, 2);
