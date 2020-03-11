@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Compras</title>
+        <title>Pagos</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -53,7 +53,7 @@
     </head>
     <body>
         <div>
-            <p align="center" class="title"><strong>Reporte Compras</strong></p>
+            <p align="center" class="title"><strong>Reporte pagos</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
             <table>
@@ -77,121 +77,42 @@
         </div>
         @if(!empty($records))
             <div class="">
-                <div class=" ">
-                    @php
-                        $acum_total_taxed=0;
-                        $acum_total_igv=0;
-                        $acum_total=0;
-                     
-                        $acum_total_taxed_usd=0;
-                        $acum_total_igv_usd=0;
-                        $acum_total_usd=0;
-                    @endphp
+                <div class=" "> 
                     <table class="">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Tipo Doc</th>
-                                <th>Número</th>
-                                <th>F. Emisión</th>
-                                <th class="">F. Vencimiento</th>
-                                <th>Cliente</th>
-                                <th>RUC</th>
+                                <th class="">#</th>
+                                <th class="">Adquiriente</th>
+                                <th class="">N° Doc. Identidad</th>
+                                <th class="">Documento</th>
+                                <th class="">Tipo</th>
+                                <th class="">Destino</th>
                                 <th class="">F. Pago</th>
-                                <!-- <th class="" >T.Exonerado</th>
-                                <th class="" >T.Inafecta</th>
-                                <th class="" >T.Gratuito</th> -->
-                                <th>Moneda</th>
-                                <th>Total Gravado</th>
-                                <th>Total IGV</th>
-                                <th>Total</th>
+                                <th class="">Método</th>
+                                <th class="">Referencia</th>
+                                <th class="">Pago</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
                                 <tr>
-
-                                
-                                    <td class="celda">{{$loop->iteration}}</td>
-                                    <td class="celda">{{$value->document_type->id}}</td>
-                                    <td class="celda">{{$value->series}}-{{$value->number}}</td>
-                                    <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
-                                    <td class="celda">{{$value->date_of_due->format('Y-m-d')}}</td>
-                                    <td class="celda">{{$value->supplier->name}}</td>
-                                    <td class="celda">{{$value->supplier->number}}</td>
-                                    <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
-
-                                    <!-- <td class="celda">{{$value->total_exonerated}}</td>
-                                    <td class="celda">{{$value->total_unaffected}}</td>
-                                    <td class="celda">{{$value->total_free}}</td> -->
-
-                                    <td class="celda">{{$value->currency_type_id}}</td> 
-                                    <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
-                                    <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
-                                    <td class="celda">{{ $value->state_type_id == '11' ? 0 : $value->total}}</td>
-
-
-                                    @php
-                                        $value->total_taxed = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
-                                        $value->total_igv = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
-                                        $value->total = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total;
-                                        $state = $value->state_type_id;
+                                    @php 
+                                        $data_person = $value->data_person;
                                     @endphp
+                                    <td class="celda">{{$loop->iteration}}</td>
+                                    <td class="celda">{{$data_person->name}}</td>
+                                    <td class="celda">{{$data_person->number}}</td>
+                                    <td class="celda">{{$value->payment->associated_record_payment->number_full}}</td>
+                                    <td class="celda">{{$value->instance_type_description}}</td>
+                                    <td class="celda">{{$value->destination_description}}</td>
+                                    <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
+                                    <td class="celda">{{(($value->payment->payment_method_type) ? $value->payment->payment_method_type->description:$value->payment->expense_method_type->description)}}</td>  
+                                    <td class="celda">{{$value->payment->reference}}</td>
+                                    <td class="celda">{{$value->payment->payment}}</td>
                                 </tr>
 
-                                
-                                @php
-                                
-                                    if($value->currency_type_id == 'PEN'){
- 
-                                        if($state == '11'){
-
-                                            $acum_total += 0;
-                                            $acum_total_taxed += 0;
-                                            $acum_total_igv += 0;
- 
-
-                                        }else{
-
-                                            $acum_total += $value->total;
-                                            $acum_total_taxed += $value->total_taxed;
-                                            $acum_total_igv += $value->total_igv; 
-                                        }
-
-                                    }else if($value->currency_type_id == 'USD'){
-
-                                        if($state == '11'){
-
-                                            $acum_total_usd += 0;
-                                            $acum_total_taxed_usd += 0;
-                                            $acum_total_igv_usd += 0;
-
-                                        }else{
-
-                                            $acum_total_usd += $value->total;
-                                            $acum_total_taxed_usd += $value->total_taxed;
-                                            $acum_total_igv_usd += $value->total_igv;
-
-                                        }
-
-                                    }
-                                @endphp
-
-                            @endforeach
-                            <tr>
-                                <td class="celda" colspan="8"></td>
-                                <td class="celda" >Totales PEN</td>
-                                <td class="celda">{{$acum_total_taxed}}</td>
-                                <td class="celda">{{$acum_total_igv}}</td>
-                                <td class="celda">{{$acum_total}}</td>
-                            </tr>
-                            <tr>
-                                <td class="celda" colspan="8"></td>
-                                <td class="celda" >Totales USD</td>
-                                <td class="celda">{{$acum_total_taxed_usd}}</td>
-                                <td class="celda">{{$acum_total_igv_usd}}</td>
-                                <td class="celda">{{$acum_total_usd}}</td>
-                            </tr>
+                                 
+                            @endforeach 
                         </tbody>
                     </table>
                 </div>

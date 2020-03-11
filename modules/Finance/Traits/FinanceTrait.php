@@ -5,6 +5,14 @@ namespace Modules\Finance\Traits;
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Company;
+use Carbon\Carbon;
+use Modules\Expense\Models\ExpensePayment;
+use App\Models\Tenant\{
+    DocumentPayment,
+    SaleNotePayment,
+    PurchasePayment
+};
+
 
 trait FinanceTrait
 { 
@@ -93,4 +101,57 @@ trait FinanceTrait
 
     }
 
+    public function getCollectionPaymentTypes(){
+
+        return [
+            ['id'=> DocumentPayment::class, 'description' => 'COMPROBANTES (CPE)'],
+            ['id'=> SaleNotePayment::class, 'description' => 'NOTAS DE VENTA'],
+            ['id'=> PurchasePayment::class, 'description' => 'COMPRAS'],
+            ['id'=> ExpensePayment::class, 'description' => 'GASTOS'],
+        ];
+    }
+
+    public function getCollectionDestinationTypes(){
+
+        return [
+            ['id'=> Cash::class, 'description' => 'CAJA CHICA'],
+            ['id'=> BankAccount::class, 'description' => 'CUENTA BANCARIA'],
+        ];
+    }
+
+    public function getDatesOfPeriod($request){
+
+        $period = $request['period'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        $month_start = $request['month_start'];
+        $month_end = $request['month_end'];
+        
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        return [
+            'd_start' => $d_start,
+            'd_end' => $d_end
+        ];
+    }
 }

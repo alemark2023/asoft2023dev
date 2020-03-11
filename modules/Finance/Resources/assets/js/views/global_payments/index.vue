@@ -1,31 +1,36 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
-            <h3 class="my-0">Pagos globales</h3>
+            <h3 class="my-0">Pagos</h3>
         </div>
         <div class="card mb-0">
                 <div class="card-body">
                     <data-table :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
+                            <th class="">Adquiriente</th>
+                            <th class="">Documento</th>
+                            <th class="">Tipo</th>
                             <th class="">Destino</th>
-                            <th class="">F. Vencimiento</th>
-                            <th class="">Proveedor</th>
-                            <th class="">Estado</th>
-                            <th class="">Número</th>
+                            <th class="">F. Pago</th>
+                            <th class="">Método</th>
+                            <th class="">Referencia</th>
+                            <th class="">Pago</th>
  
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
+                            <td>{{ row.person_name }}<br/><small v-text="row.person_number"></small></td>
+                            <td>
+                                {{row.number_full}}<br/>
+                                <small v-text="row.document_type_description"></small>
+                            </td>
+                            <td>{{row.instance_type_description}}</td>
                             <td>{{row.destination_description}}</td>
-                            <td>{{row.date_of_due}}</td>
-                            <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
-                            <td>{{row.state_type_description}}</td>
-                            <td>{{row.number}}
-                                <small v-text="row.document_type_description"></small><br/>
-
-                            </td> 
-
+                            <td>{{row.date_of_payment}}</td>
+                            <td>{{row.payment_method_type_description}}</td>
+                            <td>{{row.reference}}</td>
+                            <td>{{row.total}}</td> 
                         </tr>
                     </data-table>
 

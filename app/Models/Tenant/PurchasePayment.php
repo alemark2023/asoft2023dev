@@ -37,4 +37,9 @@ class PurchasePayment extends ModelTenant
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
     }
+
+    public function associated_record_payment()
+    {
+        return $this->belongsTo(Purchase::class, 'purchase_id');
+    }
 }

@@ -47,6 +47,24 @@
                             </div>
                         </template> 
 
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Tipo</label>
+                                <el-select v-model="form.payment_type" clearable>
+                                    <el-option v-for="option in payment_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Destino</label>
+                                <el-select v-model="form.destination_type" clearable>
+                                    <el-option v-for="option in destination_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
 
@@ -110,18 +128,14 @@
         data () {
             return {
                 loading_submit:false,
-                persons: [],
-                all_persons: [],
                 loading_search:false,
                 columns: [],
                 records: [],
                 headers: headers_token,
-                document_types: [],
                 pagination: {},
                 search: {},
-                totals: {},
-                establishment: null,
-                establishments: [],
+                payment_types: [],
+                destination_types: [],
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -148,13 +162,11 @@
         },
         async mounted () {
 
-            // await this.$http.get(`/${this.resource}/filter`)
-            //     .then(response => {
-            //         this.establishments = response.data.establishments;
-            //         this.all_persons = response.data.persons
-            //         this.document_types = response.data.document_types;
-            //         this.sellers = response.data.sellers
-            //     });
+            await this.$http.get(`/${this.resource}/filter`)
+                .then(response => {
+                    this.payment_types = response.data.payment_types; 
+                    this.destination_types = response.data.destination_types; 
+                });
 
 
             await this.getRecords()
@@ -170,6 +182,8 @@
             initForm(){
 
                 this.form = {
+                    payment_type: null,
+                    destination_type: null,
                     period: 'month',
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
@@ -183,7 +197,7 @@
             },
             async getRecordsByFilter(){
 
-                this.loading_submit = await true
+                // this.loading_submit = await true
                 await this.getRecords()
                 this.loading_submit = await false
 

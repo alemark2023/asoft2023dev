@@ -44,4 +44,9 @@ class DocumentPayment extends ModelTenant
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
     }
+
+    public function associated_record_payment()
+    {
+        return $this->belongsTo(Document::class, 'document_id');
+    }
 }

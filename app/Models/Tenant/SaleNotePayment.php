@@ -39,4 +39,8 @@ class SaleNotePayment extends ModelTenant
         return $this->morphOne(GlobalPayment::class, 'payment');
     }
  
+    public function associated_record_payment()
+    {
+        return $this->belongsTo(SaleNote::class, 'sale_note_id');
+    }
 }
