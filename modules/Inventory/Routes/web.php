@@ -53,8 +53,8 @@ if($hostname) {
                 Route::get('kardex/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
                 Route::get('kardex/records', 'ReportKardexController@records')->name('reports.kardex.records');
                 Route::get('kardex/lots/filter', 'ReportKardexController@records_lots');
-                Route::get('kardex_lots/records', 'ReportKardexController@records_lots_kardex')->name('reports.kardex_lots.records');
-                Route::get('kardex_series/records', 'ReportKardexController@records_series_kardex')->name('reports.kardex_series.records');
+                Route::get('kardex_lots/records/{item?}', 'ReportKardexController@records_lots_kardex')->name('reports.kardex_lots.records');
+                Route::get('kardex_series/records/{item?}', 'ReportKardexController@records_series_kardex')->name('reports.kardex_series.records');
 
 
 

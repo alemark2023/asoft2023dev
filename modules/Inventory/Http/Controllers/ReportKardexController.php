@@ -249,16 +249,38 @@ class ReportKardexController extends Controller
             ->download('ReporteKar'.Carbon::now().'.xlsx');
     }
 
-    public function records_lots_kardex()
+    public function records_lots_kardex($item = null)
     {
-        $records  =  ItemLotsGroup::all();
+        $records = [];
+
+        if($item)
+        {
+            $records  =  ItemLotsGroup::where('item_id', $item)->get();
+
+        }
+        else{
+            $records  =  ItemLotsGroup::all();
+        }
+
         return new ReportKardexLotsGroupCollection($records);
 
     }
 
-    public function records_series_kardex()
+    public function records_series_kardex($item = null)
     {
-        $records  =  ItemLot::all();
+
+        $records = [];
+
+        if($item)
+        {
+            $records  =  ItemLot::where('item_id', $item)->get();
+
+        }
+        else{
+            $records  = ItemLot::all();
+        }
+
+       // $records  =  ItemLot::all();
         return new ReportKardexItemLotCollection($records);
 
     }
