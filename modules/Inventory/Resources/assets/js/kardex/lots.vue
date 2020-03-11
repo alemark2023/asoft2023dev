@@ -5,7 +5,7 @@
         <div class="row mt-2">
           <div class="col-md-6">
             <label class="control-label">Producto</label>
-            <el-select v-model="item_id" filterable clearable>
+            <el-select @change="getRecords" v-model="item_id" filterable clearable>
               <el-option
                 v-for="option in items"
                 :key="option.id"
@@ -75,7 +75,7 @@ export default {
         },
   methods: {
     getRecords() {
-      return this.$http.get(`/${this.resource}/records`).then(response => {
+      return this.$http.get(`/${this.resource}/records/${this.item_id}`).then(response => {
         this.records = response.data.data;
         /* this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
