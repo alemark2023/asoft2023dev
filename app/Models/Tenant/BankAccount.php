@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
+use Modules\Finance\Models\GlobalPayment;
 
 class BankAccount extends ModelTenant
 {
@@ -41,8 +42,13 @@ class BankAccount extends ModelTenant
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
 
-    // public function global_destination()
-    // {
-    //     return $this->morphMany(GlobalPayment::class, 'destination');
-    // }
+    public function global_destination()
+    {
+        return $this->morphMany(GlobalPayment::class, 'destination')->with(['payment']);
+    }
+ 
+    public function global_payment()
+    {
+        return $this->morphMany(GlobalPayment::class, 'payment');
+    }
 }

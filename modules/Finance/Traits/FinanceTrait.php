@@ -154,4 +154,76 @@ trait FinanceTrait
             'd_end' => $d_end
         ];
     }
+
+    
+    public function getBalanceByCash($cash){
+ 
+        $document_payment = $this->getSumPayment($cash, DocumentPayment::class);
+        $expense_payment = $this->getSumPayment($cash, ExpensePayment::class); 
+        $sale_note_payment = $this->getSumPayment($cash, SaleNotePayment::class);
+        $purchase_payment = $this->getSumPayment($cash, PurchasePayment::class); 
+
+        $entry = $document_payment + $sale_note_payment;
+        $egress = $expense_payment + $purchase_payment;
+        
+        $balance = $entry - $egress;
+
+        return [
+
+            'id' => 'cash',
+            'description' => "CAJA CHICA",
+            'expense_payment' => number_format($expense_payment,2, ".", ""),
+            'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
+            'document_payment' => number_format($document_payment,2, ".", ""),
+            'purchase_payment' => number_format($purchase_payment,2, ".", ""),
+            'balance' => number_format($balance,2, ".", "")
+            
+        ];
+
+    }
+
+    
+    
+    public function getBalanceByBankAcounts($bank_accounts){
+
+        $records = $bank_accounts->map(function($row){
+
+            $document_payment = $this->getSumPayment($row->global_destination, DocumentPayment::class);
+            $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class); 
+            $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class);
+            $purchase_payment = $this->getSumPayment($row->global_destination, PurchasePayment::class); 
+
+            $entry = $document_payment + $sale_note_payment;
+            $egress = $expense_payment + $purchase_payment;
+            $balance = $entry - $egress;
+
+            return [
+
+                'id' => $row->id,
+                'description' => "{$row->bank->description} - {$row->currency_type_id} - {$row->description}", 
+                'expense_payment' => number_format($expense_payment,2, ".", ""),
+                'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
+                'document_payment' => number_format($document_payment,2, ".", ""),
+                'purchase_payment' => number_format($purchase_payment,2, ".", ""),
+                'balance' => number_format($balance,2, ".", "")
+                
+            ];
+
+        }); 
+
+        return $records;
+        
+    }
+
+    public function getSumPayment($record, $model)
+    {
+        return $record->where('payment_type', $model)->sum(function($row){
+            return $this->calculateTotalCurrencyType($row->payment->associated_record_payment);
+        });
+    }
+    
+    public function calculateTotalCurrencyType($record)
+    {
+        return ($record->currency_type_id == 'USD') ? $record->total * $record->exchange_rate_sale : $record->total;
+    }
 }

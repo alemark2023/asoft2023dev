@@ -6,7 +6,11 @@
 
                 <div class="row mt-2">
                         <div class="col-md-3">
-                            <label class="control-label">Periodo</label>
+                            <label class="control-label">Periodo
+                                <el-tooltip class="item" effect="dark" content="Filtra por fecha de pago" placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
                             <el-select v-model="form.period" @change="changePeriod">
                                 <el-option key="month" value="month" label="Por mes"></el-option>
                                 <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
@@ -46,7 +50,7 @@
                                                 value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                             </div>
                         </template> 
-
+                    
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Tipo</label>
@@ -197,7 +201,7 @@
             },
             async getRecordsByFilter(){
 
-                // this.loading_submit = await true
+                this.loading_submit = await true
                 await this.getRecords()
                 this.loading_submit = await false
 

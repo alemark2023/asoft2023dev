@@ -237,7 +237,7 @@ class SaleNote extends ModelTenant
 
     public function getNumberFullAttribute()
     {
-        $number_full = ($this->prefix && $this->id) ? $this->prefix.'-'.$this->id : $this->series.'-'.$this->number;
+        $number_full = ($this->series && $this->number) ? $this->series.'-'.$this->number : $this->prefix.'-'.$this->id;
 
         return $number_full;
     }

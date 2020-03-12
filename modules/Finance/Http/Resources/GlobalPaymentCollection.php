@@ -26,7 +26,7 @@ class GlobalPaymentCollection extends ResourceCollection
                 'reference' => $row->payment->reference, 
                 'total' => $row->payment->payment, 
                 'number_full' => $row->payment->associated_record_payment->number_full, 
-                'document_type_description' => ($row->payment->associated_record_payment->document_type) ? $row->payment->associated_record_payment->document_type->description:'NOTA DE VENTA',
+                'document_type_description' => ($row->payment->associated_record_payment->document_type) ? $row->payment->associated_record_payment->document_type->description:'NV',
                 'person_name' => $data_person->name, 
                 'person_number' => $data_person->number, 
                 // 'payment' => $row->payment, 
