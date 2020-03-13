@@ -20,19 +20,20 @@ class PaymentMethodType extends ModelTenant
         'number_days',
     ];
 
-    public function payments()
+
+    public function document_payments()
     {
-        return $this->hasManyThrough(
-            DocumentPayment::class, 
-            SaleNotePayment::class,
-            PurchasePayment::class,
-            'payment_method_type_id',
-            'payment_method_type_id',
-            'payment_method_type_id',
-            'id', 
-            'id', 
-            'id'
-        );
+        return $this->hasMany(DocumentPayment::class,  'payment_method_type_id');
+    }
+    
+    public function sale_note_payments()
+    {
+        return $this->hasMany(SaleNotePayment::class,  'payment_method_type_id');
+    }
+    
+    public function purchase_payments()
+    {
+        return $this->hasMany(PurchasePayment::class,  'payment_method_type_id');
     }
 
 }

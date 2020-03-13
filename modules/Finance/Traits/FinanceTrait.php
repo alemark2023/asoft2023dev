@@ -226,4 +226,63 @@ trait FinanceTrait
     {
         return ($record->currency_type_id == 'USD') ? $record->total * $record->exchange_rate_sale : $record->total;
     }
+
+    
+    public function getRecordsByPaymentMethodTypes($payment_method_types)
+    {
+        
+        $records = $payment_method_types->map(function($row){
+
+            $document_payment = $this->getSumByPMT($row->document_payments);
+            $sale_note_payment = $this->getSumByPMT($row->sale_note_payments);
+            $purchase_payment = $this->getSumByPMT($row->purchase_payments); 
+
+            return [
+
+                'id' => $row->id,
+                'description' => $row->description, 
+                'expense_payment' => '-',
+                'sale_note_payment' => 'S/ '.number_format($sale_note_payment,2, ".", ""),
+                'document_payment' => 'S/ '.number_format($document_payment,2, ".", ""),
+                'purchase_payment' => 'S/ '.number_format($purchase_payment,2, ".", "")
+                
+            ];
+
+        }); 
+
+        return $records;
+    }
+
+    
+    public function getRecordsByExpenseMethodTypes($expense_method_types)
+    {
+        
+        $records = $expense_method_types->map(function($row){
+
+            // dd($row->expense_payments);
+            $expense_payment = $this->getSumByPMT($row->expense_payments); 
+
+            return [
+
+                'id' => $row->id,
+                'description' => $row->description, 
+                'expense_payment' => 'S/ '.number_format($expense_payment,2, ".", ""),
+                'sale_note_payment' => '-',
+                'document_payment' => '-',
+                'purchase_payment' => '-'
+                
+            ];
+
+        }); 
+
+        return $records;
+    }
+
+    public function getSumByPMT($records)
+    {
+        return $records->sum(function($row){
+            return $this->calculateTotalCurrencyType($row->associated_record_payment);
+        });
+    }
+
 }

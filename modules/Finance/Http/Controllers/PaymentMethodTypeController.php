@@ -16,6 +16,8 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Establishment;
 use Carbon\Carbon;
+use Modules\Expense\Models\ExpenseMethodType;
+
 
 class PaymentMethodTypeController extends Controller
 { 
@@ -57,9 +59,10 @@ class PaymentMethodTypeController extends Controller
         ];
 
         
-        $payment_method_types = PaymentMethodType::with(['payments'])->get();
+        $payment_method_types = PaymentMethodType::get();
+        $expense_method_types = ExpenseMethodType::get();
 
-        dd($payment_method_types);
+        // dd($payment_method_types[0]->document_payments);
 
 
         
@@ -74,10 +77,13 @@ class PaymentMethodTypeController extends Controller
         //                             ->get();
 
 
-        $balance_by_bank_acounts = $this->getBalanceByBankAcounts($bank_accounts, $params);
-        $balance_by_cash = $this->getBalanceByCash($all_cash);
+        $records_by_pmt = $this->getRecordsByPaymentMethodTypes($payment_method_types);
+        $records_by_emt = $this->getRecordsByExpenseMethodTypes($expense_method_types);
 
-        return $balance_by_bank_acounts->push($balance_by_cash);
+        // dd($records_by_pmt, $records_by_emt);
+
+
+        return $records_by_pmt->merge($records_by_emt);
         
     }
 

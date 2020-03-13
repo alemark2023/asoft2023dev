@@ -11,4 +11,9 @@ class ExpenseMethodType extends ModelTenant
         'description',
         'has_card', 
     ];
+
+    public function expense_payments()
+    {
+        return $this->hasMany(ExpensePayment::class,  'expense_method_type_id');
+    }
 }
