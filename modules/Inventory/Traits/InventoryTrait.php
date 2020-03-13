@@ -105,6 +105,7 @@ trait InventoryTrait
                 'id' => $row->id,
                 'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
                 'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
                 'lots' => $row->item_lots->where('has_sale', false)->transform(function($row) {
                     return [
                         'id' => $row->id,

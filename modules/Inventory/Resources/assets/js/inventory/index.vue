@@ -39,7 +39,7 @@
                 </data-table>
             </div>
 
-            <inventories-form 
+            <inventories-form
                             :showDialog.sync="showDialog"
                             :type="typeTransaction"
                                 ></inventories-form>
