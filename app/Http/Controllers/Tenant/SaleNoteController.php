@@ -225,7 +225,7 @@ class SaleNoteController extends Controller
             // foreach ($data['payments'] as $row) {
             //     $this->sale_note->payments()->create($row);
             // }
-            
+
             $this->savePayments($this->sale_note, $data['payments']);
 
             $this->setFilename();
@@ -364,8 +364,9 @@ class SaleNoteController extends Controller
         $this->company = ($this->company != null) ? $this->company : Company::active();
         $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
 
-
-        $base_template = config('tenant.pdf_template');
+        $this->configuration = Configuration::first();
+        $configuration = $this->configuration->formats;
+        $base_template = $configuration;
 
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
 
@@ -804,12 +805,12 @@ class SaleNoteController extends Controller
 
     }
 
-    
+
     private function savePayments($sale_note, $payments){
-         
+
         $total = $sale_note->total;
         $balance = $total - collect($payments)->sum('payment');
-        
+
         $search_cash = ($balance < 0) ? collect($payments)->firstWhere('payment_method_type_id', '01') : null;
 
         $this->apply_change = false;
@@ -817,16 +818,16 @@ class SaleNoteController extends Controller
         if($balance < 0 && $search_cash){
 
             $payments = collect($payments)->map(function($row) use($balance){
-    
+
                 $change = null;
                 $payment = $row['payment'];
 
                 if($row['payment_method_type_id'] == '01' && !$this->apply_change){
-        
+
                     $change = abs($balance);
-                    $payment = $row['payment'] - abs($balance); 
-                    $this->apply_change = true; 
-    
+                    $payment = $row['payment'] - abs($balance);
+                    $this->apply_change = true;
+
                 }
 
                 return [
@@ -849,8 +850,8 @@ class SaleNoteController extends Controller
 
             if($balance < 0 && !$this->apply_change){
                 $row['change'] = abs($balance);
-                $row['payment'] = $row['payment'] - abs($balance); 
-                $this->apply_change = true; 
+                $row['payment'] = $row['payment'] - abs($balance);
+                $this->apply_change = true;
             }
 
             $sale_note->payments()->create($row);

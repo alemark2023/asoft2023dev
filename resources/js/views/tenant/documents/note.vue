@@ -294,6 +294,7 @@
 
                 await this.form.items.forEach((item)=>{
                     item.input_unit_price_value = item.unit_price
+                    item.additional_information = null
                 })
 
             },

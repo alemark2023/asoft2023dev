@@ -265,9 +265,9 @@
                 identity_document_types: []
             }
         },
-        created() {
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
+        async created() {
+            await this.initForm()
+            await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.api_service_token = response.data.api_service_token
                     // console.log(this.api_service_token)

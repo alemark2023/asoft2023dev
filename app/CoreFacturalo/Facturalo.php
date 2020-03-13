@@ -313,6 +313,7 @@ class Facturalo
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
 
+            $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
             $discount_global = 0;
             foreach ($this->document->items as $it) {
@@ -321,6 +322,9 @@ class Facturalo
                 }
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
+                }
+                if($it->additional_information){
+                    $extra_by_item_additional_information += count($it->additional_information) * 5;
                 }
             }
             $legends = $this->document->legends != '' ? '10' : '0';
@@ -351,7 +355,8 @@ class Facturalo
                     $was_deducted_prepayment +
                     $customer_department_id+
                     $detraction+
-                    $total_plastic_bag_taxes
+                    $total_plastic_bag_taxes+
+                    $extra_by_item_additional_information
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,

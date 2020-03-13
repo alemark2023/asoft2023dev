@@ -117,6 +117,8 @@ class DocumentTransform
                     'attributes' => self::attributes($row),
                     'discounts' => self::discounts($row),
                     'charges' => self::charges($row),
+                    'additional_information' => Functions::valueKeyInArray($row, 'informacion_adicional'),
+
                 ];
             }
 

@@ -74,7 +74,16 @@ trait SearchTrait
 
         if($row->unit_type_id != 'ZZ')
         {
-            $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
+            $warehouse_stock = 0;
+            if($row->warehouses && $warehouse)
+            {
+                $wr = $row->warehouses->where('warehouse_id', $warehouse->id)->first();
+                if($wr)
+                {
+                    $warehouse_stock = number_format($wr->stock, 2);
+                }
+            }
+              
             $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
         }
         else{
