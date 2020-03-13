@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Document;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-
+use Illuminate\Support\Arr;
 
 class DashboardController extends Controller
 {
@@ -78,13 +78,36 @@ class DashboardController extends Controller
     public function df()
     {
         $path = app_path();
-        $process = new Process('df -h /');
-        $process->run();
+        //df -m -h --output=used,avail,pcent /
+        $used = new Process('df -m -h --output=used /');
+        $used->run();
 
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+        if (!$used->isSuccessful()) {
+            throw new ProcessFailedException($used);
         }
-        echo $process->getOutput();
+	$disc_used = $used->getOutput();
+        $array[] = str_replace("\n","",$disc_used);
+
+	$avail = new Process('df -m -h --output=avail /');
+        $avail->run();
+
+        if (!$avail->isSuccessful()) {
+            throw new ProcessFailedException($avail);
+        }
+        $disc_avail = $avail->getOutput();
+        $array[] = str_replace("\n","",$disc_avail);
+
+	$pcent = new Process('df -m -h --output=pcent /');
+        $pcent->run();
+
+        if (!$pcent->isSuccessful()) {
+            throw new ProcessFailedException($pcent);
+        }
+	$disc_pcent = $pcent->getOutput();
+        $array[] = str_replace("\n","",$disc_pcent);
+
+	return $array;
+
 
     }
 
