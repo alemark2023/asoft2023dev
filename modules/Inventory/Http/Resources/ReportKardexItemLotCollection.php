@@ -24,7 +24,8 @@ class ReportKardexItemLotCollection extends ResourceCollection
                 'name_item' => $row->item->description,
                 'und_item' => $row->item->unit_type_id,
                 'code_item' => $row->item->internal_id,
-                'status' => ($row->has_sale == 1 ? 'VENDIDO' : 'NO DISPONIBLE')
+                'status' => ($row->has_sale == 1 ? 'VENDIDO' : 'NO DISPONIBLE'),
+                 'date' => $row->date
             ];
         });
     }
