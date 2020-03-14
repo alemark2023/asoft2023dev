@@ -344,7 +344,7 @@
                                                         </el-select>
                                                     </td>
                                                     <td>
-                                                        <el-input v-model="row.value"></el-input>
+                                                        <el-input v-model="row.value" @input="inputAttribute(index)"></el-input>
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-danger" @click.prevent="clickRemoveAttribute(index)">x</button>
@@ -771,6 +771,15 @@
                 let attribute_type_id = this.form.attributes[index].attribute_type_id
                 let attribute_type = _.find(this.attribute_types, {id: attribute_type_id})
                 this.form.attributes[index].description = attribute_type.description
+                this.inputAttribute(index)
+            },
+            inputAttribute(index){
+
+                let value = this.form.attributes[index].value
+                let hotelAttributes = ['4003', '4004']
+ 
+                this.form.attributes[index].start_date = (hotelAttributes.includes(this.form.attributes[index].attribute_type_id)) ? value:null 
+
             },
             close() {
                 this.initForm()
