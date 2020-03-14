@@ -493,7 +493,7 @@
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
 
-         <select-lots-form
+        <select-lots-form
             :showDialog.sync="showDialogSelectLots"
             :lots="lots"
             @addRowSelectLot="addRowSelectLot">

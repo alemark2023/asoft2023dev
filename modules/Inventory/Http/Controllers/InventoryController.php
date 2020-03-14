@@ -206,10 +206,17 @@ class InventoryController extends Controller
 
                         $item_lot = ItemLot::findOrFail($lot['id']);
                         $item_lot->delete();
-
                     }
 
                 }
+
+                if(isset($request->IdLoteSelected))
+                {
+                    $lot = ItemLotsGroup::find($request->IdLoteSelected);
+                    $lot->quantity = ($lot->quantity - $quantity);
+                    $lot->save();
+                }
+
 
             }
 

@@ -122,8 +122,10 @@
                     let item = await _.find(this.items,{'id':this.form.item_id})
                     this.form.lots_enabled = item.lots_enabled
                     let lots = await _.filter(item.lots,{'warehouse_id':this.form.warehouse_id})
-                    // console.log(item)
+                   // console.log(item)
                     this.form.lots = lots
+                    this.form.lots_enabled = item.lots_enabled
+                    this.form.series_enabled = item.series_enabled
 
                 }else{
                     let item = await _.find(this.items,{'id':this.form.item_id})
