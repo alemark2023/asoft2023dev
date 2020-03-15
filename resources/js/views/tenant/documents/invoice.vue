@@ -130,7 +130,7 @@
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <!--<label class="control-label">Fecha de emisión</label>-->
                                     <label class="control-label">Fec. Emisión</label>
-                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue" :picker-options="datEmision"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div>
@@ -576,7 +576,7 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">Generar</el-button>
                     </div>
                 </form>
             </div>
@@ -654,6 +654,17 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                datEmision: {
+                  disabledDate(time) {
+                    return time.getTime() > moment();
+                  }
+                },
+                dateVencimiento: {
+                  disabledDate(time) {
+                    return time.getTime() < moment().day(-6);
+                  }
+                },
+                dateValid:false,
                 input_person:{},
                 showDialogDocumentDetraction:false,
                 has_data_detraction:false,
@@ -1229,6 +1240,10 @@
                 // this.customers = []
             },
             changeDateOfIssue() {
+              if(moment(this.form.date_of_issue) < moment().day(-6)) {
+                this.$message.error('No puede seleccionar una fecha menor a 6 días.');
+                this.dateValid=false
+              } else { this.dateValid = true }
                 this.form.date_of_due = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
