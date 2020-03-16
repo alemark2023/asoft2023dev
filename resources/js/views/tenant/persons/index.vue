@@ -27,10 +27,18 @@
                         <td>{{ row.name }}</td>
                         <td class="text-right">{{ row.number }}</td>
                         <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                             <template v-if="typeUser === 'admin'">
-                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
-                             </template>
+                            
+                            <template v-if="row.enabled">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)" >Editar</button>
+                            </template>
+                            
+                            <template v-if="typeUser === 'admin'">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDisable(row.id)" v-if="row.enabled">Inhabilitar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickEnable(row.id)" v-else>Habilitar</button>
+
+                            </template>
                         </td>
                     </tr>
                 </data-table>
@@ -82,7 +90,17 @@
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
-            }
+            },
+            clickDisable(id){
+                this.disable(`/${this.resource}/enabled/${0}/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            },
+            clickEnable(id){
+                this.enable(`/${this.resource}/enabled/${1}/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            },
         }
     }
 </script>

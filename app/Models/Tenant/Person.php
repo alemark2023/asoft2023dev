@@ -33,6 +33,7 @@ class Person extends ModelTenant
         'percentage_perception',
         'person_type_id',
         'comment',
+        'enabled',
 
     ];
 
@@ -103,4 +104,10 @@ class Person extends ModelTenant
     {
         return $this->belongsTo(PersonType::class);
     }
+    
+    public function scopeWhereIsEnabled($query)
+    {
+        return $query->where('enabled', true);
+    }
+
 }
