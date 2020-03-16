@@ -14,10 +14,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(row, index) in lots" :key="index" width="100%" v-show="row.deleted == false">
+                            <tr v-for="(row, index) in lots" :key="index" width="100%" >
                                 <td>
                                     <div class="form-group mb-2 mr-2"  >
-                                        <el-input v-model="row.series"></el-input>
+                                        <el-input @blur="duplicateSerie(row.series, index)" v-model="row.series"></el-input>
                                     </div>
                                 </td>
                                  <td>
@@ -38,7 +38,7 @@
                                     </div>
                                 </td>
                                 <td class="series-table-actions text-center">
-                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(row)">
+                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
@@ -83,6 +83,15 @@
             //     })
         },
         methods: {
+            async duplicateSerie(data, index)
+            {
+
+                let duplicates = await _.filter(this.lots, {'series':data})
+                if(duplicates.length > 1)
+                {
+                    this.lots[index].series = ''
+                }
+            },
             create(){
 
                 if(!this.recordId){
@@ -153,13 +162,14 @@
                         return this.$message.error('La cantidad de registros es superior al stock o cantidad');
                 }
 
+
                 this.lots.push({
                     id: null,
                     item_id: null,
                     series: null,
                     date:  moment().format('YYYY-MM-DD'),
-                    state: 'Activo',
-                    deleted: false,
+                    state: 'Activo'
+
                 });
 
                 this.$emit('addRowLot', this.lots);
@@ -169,9 +179,9 @@
                 this.$emit('update:showDialog', false)
                 this.$emit('addRowLot', this.lots);
             },
-            clickCancel(item) {
-                //this.lots.splice(index, 1);
-                item.deleted = true
+            clickCancel(index) {
+                this.lots.splice(index, 1);
+               // item.deleted = true
                 this.$emit('addRowLot', this.lots);
             },
 
