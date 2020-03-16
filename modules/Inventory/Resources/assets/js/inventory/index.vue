@@ -5,7 +5,7 @@
             <ol class="breadcrumbs">
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
-            <div class="right-wrapper pull-right">
+            <div v-if="typeUser == 'admin'" class="right-wrapper pull-right">
                 <!--<button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>-->
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate('input')"><i class="fa fa-plus-circle"></i> Ingreso</button>
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickOutput()"><i class="fa fa-minus-circle"></i> Salida</button>
@@ -32,7 +32,7 @@
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickMove(row.id)">Trasladar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                            <button v-if="typeUser == 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                     @click.prevent="clickRemove(row.id)">Remover</button>
                         </td>
                     </tr>
@@ -66,7 +66,7 @@
     import DataTable from '../../../../../../resources/js/components/DataTable.vue'
 
     export default {
-        props: ['type'],
+        props: ['type', 'typeUser'],
         components: {DataTable, InventoriesForm, InventoriesMove, InventoriesRemove, InventoriesFormOutput},
         data() {
             return {
