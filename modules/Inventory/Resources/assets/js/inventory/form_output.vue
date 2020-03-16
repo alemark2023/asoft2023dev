@@ -163,7 +163,7 @@
             },
             async create() {
 
-                this.titleDialog = 'Salida de ssproducto del almacén'
+                this.titleDialog = 'Salida de producto del almacén'
 
                 await this.$http.get(`/${this.resource}/tables/transaction/output`)
                     .then(response => {
