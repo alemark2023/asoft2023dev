@@ -11,7 +11,7 @@
                             </label>
 
                             <template v-if="!search_item_by_barcode" id="select-append">
-                                <el-input id="custom-input">
+                                <!-- <el-input id="custom-input">
                                     <el-select :disabled="recordItem != null"
                                             v-model="form.item_id" @change="changeItem"
                                             filterable
@@ -34,6 +34,38 @@
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
                                         <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
                                     </el-tooltip>
+                                </el-input> -->
+                                <el-input id="custom-input">
+                                    <el-select :disabled="recordItem != null"
+                                            v-model="form.item_id" 
+                                            @change="changeItem"
+                                            filterable
+                                            remote
+                                            placeholder="Buscar"
+                                            popper-class="el-select-items"
+                                            @visible-change="focusTotalItem"
+                                            slot="prepend"
+                                            id="select-width"
+                                            :remote-method="searchRemoteItems"
+                                            :loading="loading_search">
+
+                                        <el-tooltip v-for="option in items"  :key="option.id" placement="top">
+
+                                            <div slot="content">
+                                                Marca: {{option.brand}} <br>
+                                                Categoria: {{option.category}} <br>
+                                                Stock: {{option.stock}} <br>
+                                                Precio: {{option.currency_type_symbol}} {{option.sale_unit_price}} <br>
+                                            </div>
+
+                                            <el-option  :value="option.id" :label="option.full_description"></el-option>
+                                            
+                                        </el-tooltip>
+
+                                    </el-select>
+                                    <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" :disabled="recordItem != null">
+                                        <el-button :disabled="isEditItemNote"  @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i></el-button>
+                                    </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
@@ -42,12 +74,15 @@
                                             @change="changeItem"
                                             filterable
                                             placeholder="Buscar"
-                                            :filter-method="filterMethod"
                                             popper-class="el-select-items"
                                             dusk="item_id"
                                             @visible-change="focusTotalItem"
                                             slot="prepend"
-                                            id="select-width">
+                                            id="select-width"
+                                            remote
+                                            :remote-method="searchRemoteItems"
+                                            :loading="loading_search">
+
                                           <el-tooltip v-for="option in items"  :key="option.id" placement="top">
                                             <div slot="content">
                                                 Marca: {{option.brand}} <br>
@@ -97,7 +132,7 @@
                     <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="typeUser === 'seller'">
+                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="typeUser === ''">
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
@@ -289,7 +324,7 @@
                                                         </el-select>
                                                     </td>
                                                     <td>
-                                                        <el-input v-model="row.value"></el-input>
+                                                        <el-input v-model="row.value" @input="inputAttribute(index)"></el-input>
                                                     </td>
                                                     <td>
                                                         <button type="button" class="btn btn-danger" @click.prevent="clickRemoveAttribute(index)">x</button>
@@ -450,6 +485,7 @@
         components: {ItemForm, WarehousesDetail},
         data() {
             return {
+                loading_search:false,
                 titleAction: '',
                 is_client:false,
                 titleDialog: '',
@@ -458,6 +494,7 @@
                 has_list_prices: false,
                 errors: {},
                 form: {},
+                all_items: [],
                 items: [],
                 operation_types: [],
                 all_affectation_igv_types: [],
@@ -483,7 +520,8 @@
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                // console.log('tablas new edit')
-                this.items = response.data.items
+                // this.items = response.data.items
+                this.all_items = response.data.items
                 this.operation_types = response.data.operation_types
                 this.all_affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
@@ -491,7 +529,7 @@
                 this.charge_types = response.data.charge_types
                 this.attribute_types = response.data.attribute_types
                 this.is_client = response.data.is_client;
-                // this.filterItems()
+                this.filterItems()
 
             })
 
@@ -505,6 +543,46 @@
             })
         },
         methods: {
+            async searchRemoteItems(input) {  
+                // console.log(input)
+                
+                if (input.length > 2) { 
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+                    
+
+                    await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+                            .then(response => { 
+                                // console.log(response)
+                                this.items = response.data.items
+                                this.loading_search = false
+                                
+                                this.enabledSearchItemsBarcode()
+
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })  
+                } else {
+                    await this.filterItems()
+                }
+
+            },
+            filterItems() { 
+                this.items = this.all_items
+            }, 
+            enabledSearchItemsBarcode(){
+                
+                if(this.search_item_by_barcode){
+
+                    if (this.items.length == 1){
+                        
+                        this.form.item_id = this.items[0].id
+                        this.changeItem()
+                    }
+                }
+            },
             filterMethod(query){
 
                 let item = _.find(this.items, {'internal_id': query});
@@ -526,9 +604,9 @@
                 this.warehousesDetail = item.warehouses
                 this.showWarehousesDetail = true
             },
-            filterItems(){
-                this.items = this.items.filter(item => item.warehouses.length >0)
-            },
+            // filterItems(){
+            //     this.items = this.items.filter(item => item.warehouses.length >0)
+            // },
             initForm() {
                 this.errors = {};
 
@@ -648,6 +726,15 @@
                 let attribute_type_id = this.form.attributes[index].attribute_type_id
                 let attribute_type = _.find(this.attribute_types, {id: attribute_type_id})
                 this.form.attributes[index].description = attribute_type.description
+                this.inputAttribute(index)
+            },
+            inputAttribute(index){
+
+                let value = this.form.attributes[index].value
+                let hotelAttributes = ['4003', '4004']
+ 
+                this.form.attributes[index].start_date = (hotelAttributes.includes(this.form.attributes[index].attribute_type_id)) ? value:null 
+
             },
             close() {
                 this.initForm()
@@ -756,12 +843,27 @@
                 return this.errors
             },
             reloadDataItems(item_id) {
-                this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                    this.items = response.data
-                    this.form.item_id = item_id
-                    if(item_id) this.changeItem()
-                    // this.filterItems()
-                })
+
+                if(!item_id){
+
+                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                        this.items = response.data
+                        this.form.item_id = item_id
+                        // if(item_id) this.changeItem()
+                        // this.filterItems()
+                    })
+
+                }else{
+
+                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+    
+                        this.items = response.data.items
+                        this.form.item_id = item_id
+                        this.changeItem()
+    
+                    })
+                }
+
             },
             changePresentation() {
                 let price = 0;

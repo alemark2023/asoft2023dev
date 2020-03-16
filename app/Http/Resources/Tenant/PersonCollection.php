@@ -19,6 +19,7 @@ class PersonCollection extends ResourceCollection
                 'id' => $row->id,
                 'number' => $row->number,
                 'name' => $row->name,
+                'enabled' => (bool) $row->enabled,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

@@ -95,7 +95,7 @@ class DashboardSalePurchase
 
             $transaction_quantity_sale = $customers->whereIn('document_type_id', ['01','03','08'])->count() + $customers->where('prefix', 'NV')->count();
             $transaction_quantity_credit_note =$customers->where('document_type_id', '07')->count();
-            
+
             $transaction_quantity = $transaction_quantity_sale - $transaction_quantity_credit_note;
 
             $customer = Person::where('type','customers')->find($customers[0]->customer_id);
@@ -108,7 +108,7 @@ class DashboardSalePurchase
             //totales en documents
             $totals_sale_note = $customers->where('prefix', 'NV')->sum(function ($row) {
                 return $this->calculateTotalCurrency($row->currency_type_id, $row->exchange_rate_sale, $row->total);//count($product['colors']);
-            });  
+            });
 
 
             $total_credit_note = $customers->where('document_type_id','07')->sum('total');
@@ -243,7 +243,7 @@ class DashboardSalePurchase
 
         $all_items = $document_items;
         $group_items = $all_items->groupBy('item_id');
-        
+
         $items_by_sales = collect([]);
 
         foreach ($group_items as $items) {
@@ -270,7 +270,7 @@ class DashboardSalePurchase
 
                         $total_credit_note += $this->calculateTotalCurrency($it->document->currency_type_id, $it->document->exchange_rate_sale, $it->document->total);
                         $move_quantity -= $it->quantity;
-                        
+
                     }
 
                 }else{

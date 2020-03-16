@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use App\Models\Tenant\ItemWarehouse;
+use App\Models\Tenant\Configuration;
 
 
 class SaleNoteController extends Controller
@@ -52,6 +53,7 @@ class SaleNoteController extends Controller
 
     protected $sale_note;
     protected $company;
+    protected $apply_change;
 
     public function index()
     {
@@ -98,6 +100,7 @@ class SaleNoteController extends Controller
         $customers = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
+                            ->whereIsEnabled()
                             ->get()->transform(function($row) {
                                 return [
                                     'id' => $row->id,
@@ -212,9 +215,11 @@ class SaleNoteController extends Controller
             }
 
             //pagos
-            foreach ($data['payments'] as $row) {
-                $this->sale_note->payments()->create($row);
-            }
+            // foreach ($data['payments'] as $row) {
+            //     $this->sale_note->payments()->create($row);
+            // }
+
+            $this->savePayments($this->sale_note, $data['payments']);
 
             $this->setFilename();
             $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
@@ -352,8 +357,9 @@ class SaleNoteController extends Controller
         $this->company = ($this->company != null) ? $this->company : Company::active();
         $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
 
-
-        $base_template = config('tenant.pdf_template');
+        $this->configuration = Configuration::first();
+        $configuration = $this->configuration->formats;
+        $base_template = $configuration;
 
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
 
@@ -532,7 +538,7 @@ class SaleNoteController extends Controller
         switch ($table) {
             case 'customers':
 
-                $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+                $customers = Person::whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,
@@ -781,6 +787,59 @@ class SaleNoteController extends Controller
         $this->reloadPDF($document, 'a4', null);
         return $this->downloadStorage($document->filename, 'sale_note');
 
+    }
+
+
+    private function savePayments($sale_note, $payments){
+
+        $total = $sale_note->total;
+        $balance = $total - collect($payments)->sum('payment');
+
+        $search_cash = ($balance < 0) ? collect($payments)->firstWhere('payment_method_type_id', '01') : null;
+
+        $this->apply_change = false;
+
+        if($balance < 0 && $search_cash){
+
+            $payments = collect($payments)->map(function($row) use($balance){
+
+                $change = null;
+                $payment = $row['payment'];
+
+                if($row['payment_method_type_id'] == '01' && !$this->apply_change){
+
+                    $change = abs($balance);
+                    $payment = $row['payment'] - abs($balance);
+                    $this->apply_change = true;
+
+                }
+
+                return [
+                    "id" => null,
+                    "document_id" => null,
+                    "sale_note_id" => null,
+                    "date_of_payment" => $row['date_of_payment'],
+                    "payment_method_type_id" => $row['payment_method_type_id'],
+                    "reference" => $row['reference'],
+                    "change" => $change,
+                    "payment" => $payment
+                ];
+
+            });
+        }
+
+        // dd($payments, $balance, $this->apply_change);
+
+        foreach ($payments as $row) {
+
+            if($balance < 0 && !$this->apply_change){
+                $row['change'] = abs($balance);
+                $row['payment'] = $row['payment'] - abs($balance);
+                $this->apply_change = true;
+            }
+
+            $sale_note->payments()->create($row);
+        }
     }
 
 }
