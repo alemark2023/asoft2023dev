@@ -365,4 +365,9 @@ class Document extends ModelTenant
     {
         return $query->where('affectation_type_prepayment', $type);
     }
+    
+    public function scopeWhereStateTypeAccepted($query)
+    {
+        return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+    }
 }

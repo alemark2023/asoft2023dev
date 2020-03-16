@@ -218,13 +218,14 @@ trait FinanceTrait
     public function getSumPayment($record, $model)
     {
         return $record->where('payment_type', $model)->sum(function($row){
-            return $this->calculateTotalCurrencyType($row->payment->associated_record_payment);
+            return $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
         });
     }
     
-    public function calculateTotalCurrencyType($record)
+
+    public function calculateTotalCurrencyType($record, $payment)
     {
-        return ($record->currency_type_id == 'USD') ? $record->total * $record->exchange_rate_sale : $record->total;
+        return ($record->currency_type_id === 'USD') ? $payment * $record->exchange_rate_sale : $payment;
     }
 
     
@@ -281,7 +282,7 @@ trait FinanceTrait
     public function getSumByPMT($records)
     {
         return $records->sum(function($row){
-            return $this->calculateTotalCurrencyType($row->associated_record_payment);
+            return $this->calculateTotalCurrencyType($row->associated_record_payment, $row->payment);
         });
     }
 

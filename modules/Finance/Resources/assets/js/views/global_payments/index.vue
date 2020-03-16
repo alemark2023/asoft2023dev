@@ -10,6 +10,7 @@
                             <th class="">#</th>
                             <th class="">Adquiriente</th>
                             <th class="">Documento</th>
+                            <th class="">Moneda</th>
                             <th class="">Tipo</th>
                             <th class="">Destino</th>
                             <th class="">F. Pago</th>
@@ -25,6 +26,7 @@
                                 {{row.number_full}}<br/>
                                 <small v-text="row.document_type_description"></small>
                             </td>
+                            <td>{{row.currency_type_id}}</td>
                             <td>{{row.instance_type_description}}</td>
                             <td>{{row.destination_description}}</td>
                             <td>{{row.date_of_payment}}</td>

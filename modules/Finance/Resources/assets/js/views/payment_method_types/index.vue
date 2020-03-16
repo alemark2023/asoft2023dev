@@ -9,10 +9,10 @@
                         <tr slot="heading">
                             <th class="">#</th>
                             <th class="">Método de pago</th>
-                            <th class="text-center">Total CPE</th>
-                            <th class="text-center">Total NV</th>
-                            <th class="text-center">Total Compras</th>
-                            <th class="text-center">Total Gastos</th>
+                            <th class="text-center">T. Pagos CPE</th>
+                            <th class="text-center">T. Pagos NV</th>
+                            <th class="text-center">T. Pagos Compras</th>
+                            <th class="text-center">T. Pagos Gastos</th>
                             <!-- <th class="text-center">Saldo</th> -->
                         <tr>
                         <tr slot-scope="{ index, row }">

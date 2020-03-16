@@ -11,7 +11,7 @@ use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Company;
 use Modules\Finance\Traits\FinanceTrait; 
 use Modules\Finance\Http\Resources\GlobalPaymentCollection;
-use Modules\Finance\Exports\BalanceExport;
+use Modules\Finance\Exports\PaymentMethodTypeExport;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Establishment;
@@ -57,31 +57,12 @@ class PaymentMethodTypeController extends Controller
             'date_start' => $data_of_period['d_start'],
             'date_end' => $data_of_period['d_end'],
         ];
-
         
-        $payment_method_types = PaymentMethodType::get();
-        $expense_method_types = ExpenseMethodType::get();
-
-        // dd($payment_method_types[0]->document_payments);
-
-
-        
-        // $bank_accounts = BankAccount::with(['global_destination' => function($query) use($params){
-        //                                 $query->whereFilterPaymentType($params);
-        //                             }])
-        //                             ->get();
-                                    
-        // $all_cash = GlobalPayment::whereFilterPaymentType($params)
-        //                             ->with(['payment'])
-        //                             ->whereDestinationType(Cash::class)
-        //                             ->get();
-
+        $payment_method_types = PaymentMethodType::whereFilterPayments($params)->get();
+        $expense_method_types = ExpenseMethodType::whereFilterPayments($params)->get();
 
         $records_by_pmt = $this->getRecordsByPaymentMethodTypes($payment_method_types);
         $records_by_emt = $this->getRecordsByExpenseMethodTypes($expense_method_types);
-
-        // dd($records_by_pmt, $records_by_emt);
-
 
         return $records_by_pmt->merge($records_by_emt);
         
@@ -96,7 +77,7 @@ class PaymentMethodTypeController extends Controller
 
         $pdf = PDF::loadView('finance::payment_method_types.report_pdf', compact("records", "company", "establishment"));
 
-        $filename = 'Balance_'.date('YmdHis');
+        $filename = 'Metodos_de_pago_'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
     }
@@ -108,11 +89,11 @@ class PaymentMethodTypeController extends Controller
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all());
 
-        return (new BalanceExport)
+        return (new PaymentMethodTypeExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->download('Balance_'.Carbon::now().'.xlsx');
+                ->download('Metodos_de_pago_'.Carbon::now().'.xlsx');
 
     }
 

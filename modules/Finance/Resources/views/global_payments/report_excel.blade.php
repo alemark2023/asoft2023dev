@@ -52,6 +52,7 @@
                                 <th class="">N° Doc. Identidad</th>
                                 <th class="">Tipo documento</th>
                                 <th class="">Documento</th>
+                                <th class="">Moneda</th>
                                 <th class="">Tipo</th>
                                 <th class="">Destino</th>
                                 <th class="">F. Pago</th>
@@ -71,6 +72,7 @@
                                     <td class="celda">{{$data_person->number}}</td>
                                     <td class="celda">{{ ($value->payment->associated_record_payment->document_type) ? $value->payment->associated_record_payment->document_type->description:'NV' }}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->number_full}}</td>
+                                    <td class="celda">{{$value->payment->associated_record_payment->currency_type_id}}</td>
                                     <td class="celda">{{$value->instance_type_description}}</td>
                                     <td class="celda">{{$value->destination_description}}</td>
                                     <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 

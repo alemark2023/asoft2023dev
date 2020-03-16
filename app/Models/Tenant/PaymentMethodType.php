@@ -36,4 +36,29 @@ class PaymentMethodType extends ModelTenant
         return $this->hasMany(PurchasePayment::class,  'payment_method_type_id');
     }
 
+    public function scopeWhereFilterPayments($query, $params)
+    {
+
+        return $query->with(['document_payments' => function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereStateTypeAccepted();
+                        });
+                },
+                'sale_note_payments' => function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereStateTypeAccepted()
+                                ->whereNotChanged();
+                        });
+                },
+                'purchase_payments' => function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereStateTypeAccepted();
+                        });
+                }
+                ]);
+
+    }
 }

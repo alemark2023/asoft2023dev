@@ -49,4 +49,5 @@ class ExpensePayment extends ModelTenant
     {
         return $this->belongsTo(Expense::class, 'expense_id');
     }
+
 }
