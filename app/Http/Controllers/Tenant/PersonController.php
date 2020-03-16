@@ -178,4 +178,22 @@ class PersonController extends Controller
 
         return $locations;
     }
+
+    
+    public function enabled($type, $id)
+    {
+
+        $person = Person::findOrFail($id);
+        $person->enabled = $type;
+        $person->save();
+
+        $type_message = ($type) ? 'habilitado':'inhabilitado';
+
+        return [
+            'success' => true,
+            'message' => "Cliente {$type_message} con éxito"
+        ];
+
+    }
+
 }
