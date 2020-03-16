@@ -123,8 +123,9 @@ class DocumentController extends Controller
         if(auth()->user()->type == 'integrator')
             return redirect('/documents');
 
+        $configuration = Configuration::first();
         $is_contingency = 0;
-        return view('tenant.documents.form', compact('is_contingency'));
+        return view('tenant.documents.form', compact('is_contingency', 'configuration'));
     }
 
     public function create_tensu()
