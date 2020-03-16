@@ -78,6 +78,7 @@ class DashboardController extends Controller
     public function df()
     {
         $path = app_path();
+        //df -m -h --output=used,avail,pcent /
         $process = new Process('df -h /');
         $process->run();
 
