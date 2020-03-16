@@ -588,6 +588,7 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :typeUser="typeUser"
+                           :configuration="configuration"
                            :editNameProduct="configuration.edit_name_product"
                            @add="addRow"></document-form-item>
 
