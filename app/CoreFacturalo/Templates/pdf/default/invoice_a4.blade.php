@@ -318,14 +318,14 @@
             </td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item_id) }}
+                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
 
             </td>
             <td class="text-center align-top">
 
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
-                        @if( isset($row->item->IdLoteSelected) && $lot->id == $row->item->IdLoteSelected)
+                        @if( isset($lot->has_sale) && $lot->has_sale)
                             <span style="font-size: 9px">{{ $lot->series }}</span>
                         @endif
                     @endforeach

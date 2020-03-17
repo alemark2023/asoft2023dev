@@ -6,10 +6,10 @@ use Modules\Item\Models\ItemLotsGroup;
 class ItemLotsGroupService
 {
 
-    public function getLote($item)
+    public function getLote($id)
     {
         $result = '';
-        $record = ItemLotsGroup::where('item_id', $item)->first();
+        $record = ItemLotsGroup::where('id', $id)->first();
 
         if($record)
         {

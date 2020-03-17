@@ -44,6 +44,8 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use App\Models\Tenant\ItemWarehouse;
 use Modules\Item\Models\ItemLotsGroup;
+use App\Models\Tenant\Configuration;
+
 
 
 
