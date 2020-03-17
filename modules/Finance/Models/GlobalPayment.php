@@ -139,21 +139,21 @@ class GlobalPayment extends ModelTenant
         return $query->whereHas('doc_payments', function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted();
+                            $p->whereStateTypeAccepted()->whereTypeUser();
                         });
                     
                 })
                 ->OrWhereHas('exp_payment', function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted();
+                            $p->whereStateTypeAccepted()->whereTypeUser();
                         });
 
                 })
                 ->OrWhereHas('sln_payments', function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()
+                            $p->whereStateTypeAccepted()->whereTypeUser()
                                 ->whereNotChanged();
                         });
                     
@@ -161,7 +161,7 @@ class GlobalPayment extends ModelTenant
                 ->OrWhereHas('pur_payment', function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted();
+                            $p->whereStateTypeAccepted()->whereTypeUser();
                         });
 
                 });

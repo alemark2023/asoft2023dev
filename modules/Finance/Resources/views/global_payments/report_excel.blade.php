@@ -9,7 +9,7 @@
     </head>
     <body>
         <div>
-            <h3 align="center" class="title"><strong>Reporte Compras</strong></h3>
+            <h3 align="center" class="title"><strong>Reporte pagos</strong></h3>
         </div>
         <br>
         <div style="margin-top:20px; margin-bottom:15px;">

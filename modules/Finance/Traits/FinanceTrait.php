@@ -24,7 +24,7 @@ trait FinanceTrait
 
         // dd($cash);
 
-        return $cash ? collect($bank_accounts)->push($cash) :  $bank_accounts;
+        return collect($bank_accounts)->push($cash);
 
     }
 
@@ -54,9 +54,29 @@ trait FinanceTrait
                 'description' => ($cash->reference_number) ? "CAJA CHICA - {$cash->reference_number}" : "CAJA CHICA",
             ];
 
+        }else{
+            
+            $cash_create = Cash::create([
+                                    'user_id' => auth()->user()->id,
+                                    'date_opening' => date('Y-m-d'),
+                                    'time_opening' => date('H:i:s'),
+                                    'date_closed' => null,
+                                    'time_closed' => null,
+                                    'beginning_balance' => 0,
+                                    'final_balance' => 0,
+                                    'income' => 0,
+                                    'state' => true,
+                                    'reference_number' => null
+                                ]);
+
+            return [
+                'id' => 'cash',
+                'cash_id' => $cash_create->id,
+                'description' => "CAJA CHICA"
+            ];
+
         }
 
-        return null;
     }
 
     public function createGlobalPayment($model, $row){

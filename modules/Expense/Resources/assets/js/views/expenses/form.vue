@@ -250,7 +250,7 @@
         methods: {
             changeExpenseMethodType(index = 0){
 
-                this.form.payments[index].payment_destination_id = null
+                this.form.payments[index].payment_destination_id = (this.payment_destinations.length>0 && this.form.payments[index].expense_method_type_id != 1) ? this.payment_destinations[0].id:null
                 this.form.payments[index].payment_destination_disabled = (this.form.payments[index].expense_method_type_id == 1) ? true:false
 
             },
@@ -366,6 +366,10 @@
                     return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
                 }
 
+                if(validate.empty_payment_destination > 0) {
+                    return this.$message.error('El destino del pago es requerido');
+                }
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -393,14 +397,17 @@
 
                 let error_by_item = 0
                 let acum_total = 0
+                let empty_payment_destination = 0
 
                 this.form.payments.forEach((item)=>{
                     acum_total += parseFloat(item.payment)
                     if(item.payment <= 0 || item.payment == null) error_by_item++;
+                    if(item.expense_method_type_id != 1 && item.payment_destination_id == null) empty_payment_destination++;
                 })
 
                 return  {
                     error_by_item : error_by_item,
+                    empty_payment_destination : empty_payment_destination,
                     acum_total : acum_total
                 }
 

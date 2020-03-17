@@ -98,7 +98,7 @@
                                             </td>
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_destination_id" filterable clearable>
+                                                    <el-select v-model="row.payment_destination_id" filterable >
                                                         <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                     </el-select>
                                                 </div>
@@ -411,7 +411,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:null,
+                    payment_destination_id:'cash',
                     payment: 0,
                 });
             },

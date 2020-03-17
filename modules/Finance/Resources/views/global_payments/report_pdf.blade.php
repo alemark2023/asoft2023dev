@@ -84,14 +84,14 @@
                                 <th class="">#</th>
                                 <th class="">Adquiriente</th>
                                 <th class="">N° Doc. Identidad</th>
-                                <!-- <th class="">Tipo documento</th> -->
+                                <th class="">Tipo documento</th>
                                 <th class="">Documento</th>
                                 <th class="">Moneda</th>
                                 <th class="">Tipo</th>
                                 <th class="">Destino</th>
                                 <th class="">F. Pago</th>
                                 <th class="">Método</th>
-                                <!-- <th class="">Referencia</th> -->
+                                <th class="">Referencia</th>
                                 <th class="">Pago</th>
                             </tr>
                         </thead>
@@ -104,14 +104,14 @@
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$data_person->name}}</td>
                                     <td class="celda">{{$data_person->number}}</td>
-                                    <!-- <td class="celda">{{ ($value->payment->associated_record_payment->document_type) ? $value->payment->associated_record_payment->document_type->description:'NV' }}</td> -->
+                                    <td class="celda">{{ ($value->payment->associated_record_payment->document_type) ? $value->payment->associated_record_payment->document_type->description:'NV' }}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->number_full}}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->currency_type_id}}</td>
                                     <td class="celda">{{$value->instance_type_description}}</td>
                                     <td class="celda">{{$value->destination_description}}</td>
                                     <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
                                     <td class="celda">{{(($value->payment->payment_method_type) ? $value->payment->payment_method_type->description:$value->payment->expense_method_type->description)}}</td>  
-                                    <!-- <td class="celda">{{$value->payment->reference}}</td> -->
+                                    <td class="celda">{{$value->payment->reference}}</td>
                                     <td class="celda">{{$value->payment->payment}}</td>
                                 </tr>
 

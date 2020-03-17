@@ -47,8 +47,4 @@ class BankAccount extends ModelTenant
         return $this->morphMany(GlobalPayment::class, 'destination')->with(['payment']);
     }
  
-    public function global_payment()
-    {
-        return $this->morphMany(GlobalPayment::class, 'payment');
-    }
 }

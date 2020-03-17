@@ -343,7 +343,7 @@ export default {
         document_id: null,
         date_of_payment: moment().format("YYYY-MM-DD"),
         payment_method_type_id: "01",
-        payment_destination_id:null,
+        payment_destination_id:'cash',
         reference: null,
         payment: 0
       });

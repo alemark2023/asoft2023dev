@@ -42,20 +42,20 @@ class PaymentMethodType extends ModelTenant
         return $query->with(['document_payments' => function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted();
+                            $p->whereStateTypeAccepted()->whereTypeUser();
                         });
                 },
                 'sale_note_payments' => function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()
+                            $p->whereStateTypeAccepted()->whereTypeUser()
                                 ->whereNotChanged();
                         });
                 },
                 'purchase_payments' => function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted();
+                            $p->whereStateTypeAccepted()->whereTypeUser();
                         });
                 }
                 ]);
