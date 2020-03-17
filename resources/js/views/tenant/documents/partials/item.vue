@@ -147,6 +147,12 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
+                    <div v-if="configuration.edit_name_product" class="col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">Nombre producto en PDF</label>
+                            <el-input v-model="form.name_product_pdf"></el-input>
+                        </div>
+                    </div>
                     <template v-if="!is_client">
 
                         <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
@@ -481,7 +487,7 @@
     import WarehousesDetail from './select_warehouses.vue'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote', 'configuration'],
         components: {ItemForm, WarehousesDetail},
         data() {
             return {
