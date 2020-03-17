@@ -177,7 +177,8 @@ class PurchaseController extends Controller
                             'series' => $lot['series'],
                             'item_id' => $row['item_id'],
                             'warehouse_id' => $row['warehouse_id'],
-                            'has_sale' => false
+                            'has_sale' => false,
+                            'state' => $lot['state']
                         ]);
 
                     }
