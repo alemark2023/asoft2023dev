@@ -27,7 +27,7 @@ class VoidedController extends Controller
     public function columns()
     {
         return [
-            'date_of_issue' => 'Fecha de emisión'            
+            'date_of_issue' => 'Fecha de emisión'
         ];
     }
 
@@ -44,7 +44,7 @@ class VoidedController extends Controller
                         ->where($request->column, 'like', "%{$request->value}%")
                         ->where('summary_status_type_id', '3');
 
-        return new VoidedCollection($voided->union($summaries)->paginate(config('tenant.items_per_page')));
+        return new VoidedCollection($voided->paginate(config('tenant.items_per_page')));
     }
 
     public function store(Request $request)
@@ -85,6 +85,28 @@ class VoidedController extends Controller
         return [
             'success' => true,
             'message' => $response['description'],
+        ];
+    }
+
+    public function status_masive()
+    {
+
+        $records = Voided::where('state_type_id', '03')->get();
+
+        $fact = DB::connection('tenant')->transaction(function () use($records) {
+
+            foreach ($records as $document) {
+
+                $facturalo = new Facturalo();
+                $facturalo->setDocument($document);
+                $facturalo->setType('voided');
+                $facturalo->statusSummary($document->ticket);
+            }
+        });
+
+        return [
+            'success' => true,
+            'message' => "Consulta masiva ejecutada.",
         ];
     }
 

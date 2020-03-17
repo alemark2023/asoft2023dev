@@ -12,6 +12,15 @@
                         </div>
                     </div>
                 </div>
+            </form> <br/>
+            <form autocomplete="off" @submit.prevent="consultVoided">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <el-button type="primary" native-type="submit" :loading="loading_submit_voided">Consultar documentos anulados</el-button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -26,6 +35,7 @@
                 resource: 'options',
                 errors: {},
                 form: {},
+                loading_submit_voided: false
             }
         },
         methods: {
@@ -54,6 +64,28 @@
                         this.loading_submit = false
                     })
             },
+            consultVoided()
+            {
+                this.loading_submit_voided = true
+                this.$http.get(`/voided/status_masive`)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                        } else {
+                            this.$message.error('Sucedio un error')
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors
+                        } else {
+                            console.log(error)
+                        }
+                    })
+                    .then(() => {
+                        this.loading_submit_voided = false
+                    })
+            }
         }
     }
 </script>
