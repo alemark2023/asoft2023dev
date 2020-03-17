@@ -605,7 +605,7 @@
                             </li>
                             <li class="{{(($path[0] === 'finances') && ($path[1] == 'payment-method-types')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.finances.payment_method_types.index')}}">
-                                    Métodos de pago
+                                    Ingresos y Egresos - M. Pago
                                 </a>
                             </li>
                         </ul>
