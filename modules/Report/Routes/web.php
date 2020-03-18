@@ -84,11 +84,11 @@ if($current_hostname) {
                 Route::get('items/filter', 'ReportItemController@filter')->name('tenant.reports.items.filter');
                 Route::get('items/records', 'ReportItemController@records')->name('tenant.reports.items.records');
 
-                Route::get('order-notes', 'ReportOrderNoteController@index')->name('tenant.reports.order_notes.index');
-                Route::get('order-notes/pdf', 'ReportOrderNoteController@pdf');
-                // Route::get('order-notes/excel', 'ReportOrderNoteController@excel');
-                Route::get('order-notes/filter', 'ReportOrderNoteController@filter');
-                Route::get('order-notes/records', 'ReportOrderNoteController@records');
+                Route::get('order-notes-consolidated', 'ReportOrderNoteConsolidatedController@index')->name('tenant.reports.order_notes_consolidated.index');
+                Route::get('order-notes-consolidated/pdf', 'ReportOrderNoteConsolidatedController@pdf');
+                // Route::get('order-notes-consolidated/excel', 'ReportOrderNoteConsolidatedController@excel');
+                Route::get('order-notes-consolidated/filter', 'ReportOrderNoteConsolidatedController@filter');
+                Route::get('order-notes-consolidated/records', 'ReportOrderNoteConsolidatedController@records');
 
                 Route::get('general-items', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
                 Route::get('general-items/excel', 'ReportGeneralItemController@excel');

@@ -263,4 +263,23 @@ trait ReportTrait
         ];
     }
 
+    public function getDateRangeTypes(){
+ 
+        return [
+            ['id' => 'date_of_issue', 'description' => 'Fecha emisión'],
+            ['id' => 'delivery_date', 'description' => 'Fecha entrega']
+        ]; 
+
+    }
+
+    public function getOrderStateTypes(){
+ 
+        return [
+            ['id' => 'all_states', 'description' => 'Todos'],
+            ['id' => 'pending', 'description' => 'Pendiente'],
+            ['id' => 'processed', 'description' => 'Procesado'],
+        ]; 
+
+    }
+
 }

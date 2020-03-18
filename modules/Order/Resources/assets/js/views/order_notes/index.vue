@@ -33,14 +33,14 @@
                         <th>Estado</th>
                         <th>Pedido</th>
                         <th>Comprobantes</th>
-                        <th>Notas de venta</th>
+                        <th v-if="columns.sale_notes.visible">Notas de venta</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
-                        <th class="text-right">T.Gravado</th>
-                        <th class="text-right">T.Igv</th>
+                        <th class="text-right" v-if="columns.total_taxed.visible">T.Gravado</th>
+                        <th class="text-right" v-if="columns.total_igv.visible">T.Igv</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">PDF</th>
                         <th class="text-right">Acciones</th>
@@ -59,7 +59,7 @@
                                 <label :key="i" v-text="document.number_full" class="d-block"></label>
                             </template>
                         </td>
-                        <td>
+                        <td v-if="columns.sale_notes.visible">
                             <template v-for="(sale_note,i) in row.sale_notes">
                                 <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
                             </template>
@@ -69,8 +69,8 @@
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
-                        <td class="text-right">{{ row.total_taxed }}</td>
-                        <td class="text-right">{{ row.total_igv }}</td>
+                        <td class="text-right" v-if="columns.total_taxed.visible">{{ row.total_taxed }}</td>
+                        <td class="text-right" v-if="columns.total_igv.visible">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
                         <td class="text-right">
 
@@ -141,10 +141,22 @@
                         title: 'T.Exonerado',
                         visible: false
                     },
+                    total_taxed: {
+                        title: 'T.Gravado',
+                        visible: true
+                    },
+                    total_igv: {
+                        title: 'T.IGV',
+                        visible: true
+                    },
                     delivery_date: {
                         title: 'F.Entrega',
-                        visible: false
-                    }
+                        visible: true
+                    },
+                    sale_notes: {
+                        title: 'Notas de venta',
+                        visible: true
+                    },
                 }
             }
         },

@@ -468,7 +468,10 @@
                     </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items','general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes'])) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
+                                        'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 
+                                        'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+                                        
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
@@ -481,7 +484,7 @@
                             </li>
 
                             <li class="nav-parent {{  ($path[0] === 'reports' && 
-                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'order-notes',  'general-items'])) ? 'nav-active nav-expanded' : ''}}">
+                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'general-items'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Ventas
@@ -529,9 +532,20 @@
                                         </a>
                                     </li>
                                     
-                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes')) ? 'nav-active' : ''}}">
-                                        <a class="nav-link" href="{{route('tenant.reports.order_notes.index')}}">
-                                            Pedidos
+                                </ul>
+                            </li>
+
+                            <li class="nav-parent {{  ($path[0] === 'reports' && 
+                                    in_array($path[1], ['order-notes-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+
+                                <a class="nav-link" href="#">
+                                    Pedidos
+                                </a>
+                                <ul class="nav nav-children">
+                                     
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes-consolidated')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.order_notes_consolidated.index')}}">
+                                            Consolidado de items
                                         </a>
                                     </li>
                                 </ul>
