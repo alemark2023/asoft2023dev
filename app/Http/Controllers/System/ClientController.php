@@ -40,10 +40,16 @@ class ClientController extends Controller
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
         $modules = Module::orderBy('description')->get();
-        $certificate_admin = Configuration::first()->certificate;
+
+        $config = Configuration::first();
+
+        $certificate_admin = $config->certificate;
+        $soap_username =  $config->soap_username;
+        $soap_password =  $config->soap_password;
 
 
-        return compact('url_base','plans','types', 'modules', 'certificate_admin');
+
+        return compact('url_base','plans','types', 'modules', 'certificate_admin', 'soap_username', 'soap_password');
     }
 
     public function records()
