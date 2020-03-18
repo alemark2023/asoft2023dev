@@ -60,7 +60,7 @@
 
         <div class="col-lg-5 col-md-6">
             <div class="product-single-details">
-                <h1 class="product-title">{{$record->name}}</h1>
+                <h1 class="product-title">{{$record->description}}</h1>
 
 
 
@@ -78,8 +78,7 @@
                 </div><!-- End .price-box -->
 
                 <div class="product-desc">
-                    <p>{{$record->description}}
-                    </p>
+                    <p>{{$record->name}}</p>
                 </div><!-- End .product-desc -->
 
                 @foreach($record->attributes as $at)
@@ -137,8 +136,8 @@
         <div class="tab-pane fade show active" id="product-desc-content" role="tabpanel"
             aria-labelledby="product-tab-desc">
             <div class="product-desc-content">
-                <p> {{ $record->name}} </p>
                 <p> {{ $record->description}} </p>
+                <p> {{ $record->name}} </p>
                 {{-- <ul>
                     <li><i class="icon-ok"></i>Any Product types that You want - Simple,
                         Configurable</li>

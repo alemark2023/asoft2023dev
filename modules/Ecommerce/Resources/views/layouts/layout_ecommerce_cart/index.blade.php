@@ -152,19 +152,23 @@
         </div><!-- End .mobile-menu-wrapper -->
     </div><!-- End .mobile-menu-container -->
 
-    
+
 
     <a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
 
      <!-- Plugins JS File -->
     <script src="{{ asset('porto-ecommerce/assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset( 'porto-ecommerce/assets/js/plugins.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/plugins.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/culqi_v3.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('porto-ecommerce/assets/js/moment.min.js') }}"></script>
 
     <!-- Main JS File -->
     <script src="{{ asset('porto-ecommerce/assets/js/main.min.js') }}"></script>
     <script src="{{ asset('porto-ecommerce/assets/js/vue.js') }}"></script>
-    
+    <script src="{{ asset('porto-ecommerce/assets/js/axios.min.js') }}"></script>
+
     @stack('scripts')
 </body>
 
