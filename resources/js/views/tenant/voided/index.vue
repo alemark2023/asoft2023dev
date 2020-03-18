@@ -6,9 +6,20 @@
                 <li class="active"><span>Anulaciones</span></li>
             </ol>
         </header>
-        <div class="card">
+        <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de anulaciones</h3>
+                <h3 class="my-0">Listado de anulacisssones</h3>
+            </div>
+            <div class="data-table-visible-columns">
+                <form autocomplete="off" @submit.prevent="consultVoided">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <el-button type="primary" native-type="submit" :loading="loading_submit_voided">Consultar documentos</el-button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -32,7 +43,7 @@
                         <td class="text-center">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_xml)"
-                                    v-if="row.has_xml">XML</button> 
+                                    v-if="row.has_xml">XML</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_cdr)"
                                     v-if="row.has_cdr">CDR</button>
@@ -67,6 +78,7 @@
                 resource: 'voided',
                 showDialog: false,
                 records: [],
+                loading_submit_voided: false,
             }
         },
         created() {
@@ -94,6 +106,29 @@
             clickDownload(download) {
                 window.open(download, '_blank');
             },
+            consultVoided()
+            {
+                this.loading_submit_voided = true
+                this.$http.get(`/voided/status_masive`)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error('Sucedio un error')
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors
+                        } else {
+                            console.log(error)
+                        }
+                    })
+                    .then(() => {
+                        this.loading_submit_voided = false
+                    })
+            }
         }
     }
 </script>

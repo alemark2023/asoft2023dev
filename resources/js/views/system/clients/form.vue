@@ -255,7 +255,9 @@
                 soap_sends: [ { value: '01', text: 'Sunat' }, { value: '02', text: 'Ose' }],
                 soap_types: [{id: "01", description: "Demo"}, {id: "02", description: "Producción"}],
                 toggle: false,
-                certificate_admin: ''
+                certificate_admin: '',
+                soap_username:  null,
+                soap_password:  null
 
             }
         },
@@ -267,10 +269,15 @@
                     this.modules = response.data.modules
                     this.types = response.data.types
                     this.certificate_admin = response.data.certificate_admin
-
+                    this.soap_username = response.data.soap_username
+                    this.soap_password = response.data.soap_password
                 })
 
             await this.initForm()
+
+            this.form.soap_username = this.soap_username
+            this.form.soap_password = this.soap_password
+
 
         },
         methods: {

@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </form> <br/>
-            <form autocomplete="off" @submit.prevent="consultVoided">
+            <!--<form autocomplete="off" @submit.prevent="consultVoided">
                 <div class="form-body">
                     <div class="row">
                         <div class="col-md-12">
@@ -21,7 +21,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </form> -->
         </div>
     </div>
 </template>

@@ -661,6 +661,7 @@ if ($hostname) {
 
             Route::get('certificates/record', 'System\CertificateController@record');
             Route::post('certificates/uploads', 'System\CertificateController@uploadFile');
+            Route::post('certificates/saveSoapUser', 'System\CertificateController@saveSoapUser');
             Route::delete('certificates', 'System\CertificateController@destroy');
             Route::get('configurations', 'System\ConfigurationController@index')->name('system.configuration.index');
 
