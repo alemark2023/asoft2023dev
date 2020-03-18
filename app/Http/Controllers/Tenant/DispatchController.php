@@ -140,6 +140,7 @@ class DispatchController extends Controller
             ->whereIn('identity_document_type_id', $identities)
             ->whereType('customers')
             ->orderBy('name')
+            ->whereIsEnabled()
             ->get()
             ->transform(function($row) {
                 return [

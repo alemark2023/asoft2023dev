@@ -46,6 +46,8 @@ class DocumentItem extends ModelTenant
         'discounts',
         'total_plastic_bag_taxes',
         'warehouse_id',
+        'name_product_pdf',
+        'additional_information'
     ];
 
     public function getItemAttribute($value)
@@ -117,4 +119,16 @@ class DocumentItem extends ModelTenant
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
+    
+    public function getAdditionalInformationAttribute($value)
+    {
+        // if($value){
+            $arr = explode('|', $value);
+            return $arr;
+        // }
+
+        // return null;
+
+    }
+
 }

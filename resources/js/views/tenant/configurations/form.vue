@@ -105,6 +105,13 @@
                                 <small class="form-control-feedback" v-if="errors.options_pos" v-text="errors.options_pos[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-6 mt-4">
+                            <label class="control-label">Editar nombre de productos</label>
+                            <div class="form-group" :class="{'has-danger': errors.edit_name_product}">
+                                <el-switch v-model="form.edit_name_product" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.edit_name_product" v-text="errors.edit_name_product[0]"></small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

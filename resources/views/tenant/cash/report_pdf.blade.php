@@ -30,6 +30,17 @@ foreach ($cash_documents as $cash_document) {
 
         }
 
+        if( count($cash_document->sale_note->payments) > 0)
+        {
+            $pays = $cash_document->sale_note->payments;
+
+            foreach ($methods_payment as $record) {
+
+                $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
+            }
+
+        }
+
     }
     else if($cash_document->document){
 

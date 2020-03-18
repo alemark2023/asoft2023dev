@@ -468,7 +468,7 @@
                     </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes'])) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items','general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis', 'order-notes'])) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
@@ -481,7 +481,7 @@
                             </li>
 
                             <li class="nav-parent {{  ($path[0] === 'reports' && 
-                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'order-notes'])) ? 'nav-active nav-expanded' : ''}}">
+                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'order-notes',  'general-items'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Ventas
@@ -500,6 +500,11 @@
                                     </li>
                                     <li class="{{(($path[0] === 'reports') && ($path[1] === 'items')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.items.index')}}">
+                                            Producto - busqueda individual
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'general-items')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.general_items.index')}}">
                                             Productos
                                         </a>
                                     </li>

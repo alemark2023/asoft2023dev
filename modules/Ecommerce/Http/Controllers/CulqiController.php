@@ -74,6 +74,8 @@ class CulqiController extends Controller
         $document->client = $user->name;
         $document->product = $request->producto;
         $document->total = $request->precio_culqi;
+        $document->items = json_decode($request->items, true);
+
         Mail::to($customer_email)->send(new CulqiEmail($document));
 
         return [

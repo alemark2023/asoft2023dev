@@ -239,7 +239,7 @@
                     <div v-show="form.unit_type_id !='ZZ'" class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios
-                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
+                            <el-tooltip class="item" effect="dark" content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades" placement="top">
                                 <i class="fa fa-info-circle"></i>
                             </el-tooltip>
                              <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
@@ -272,9 +272,9 @@
                                         <td class="text-center">{{row.unit_type_id}}</td>
                                         <td class="text-center">{{row.description}}</td>
                                         <td class="text-center">{{row.quantity_unit}}</td>
-                                        <td class="text-center">{{row.price1}}</td>
-                                        <td class="text-center">{{row.price2}}</td>
-                                        <td class="text-center">{{row.price3}}</td>
+                                        <td class="text-center"><el-input v-model="row.price1"></el-input></td>
+                                        <td class="text-center"><el-input v-model="row.price2"></el-input></td>
+                                        <td class="text-center"><el-input v-model="row.price3"></el-input></td>
                                         <td class="text-center">Precio {{row.price_default}}</td>
                                         <td class="series-table-actions text-right">
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">
