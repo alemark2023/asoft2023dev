@@ -62,7 +62,7 @@
                                     <td class="celda">{{$value->item->description}}</td>
                                     <td class="celda">{{$value->quantity}}</td>
 
-                                    <td class="celda">{{$value->relation_item->purchase_unit_price}}</td>
+                                    <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
 
                                     <td class="celda">{{$value->unit_value}}</td>
                                     <td class="celda">{{$value->unit_price}}</td>
