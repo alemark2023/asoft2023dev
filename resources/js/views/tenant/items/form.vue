@@ -239,7 +239,7 @@
                     <div v-show="form.unit_type_id !='ZZ'" class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios
-                            <el-tooltip class="item" effect="dark" content="Diferentes presentaciones para la venta del producto" placement="top">
+                            <el-tooltip class="item" effect="dark" content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades" placement="top">
                                 <i class="fa fa-info-circle"></i>
                             </el-tooltip>
                              <a href="#" class="control-label font-weight-bold text-info" @click="clickAddRow"> [ + Nuevo]</a>
