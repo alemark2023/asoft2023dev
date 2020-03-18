@@ -8,7 +8,7 @@
         </header>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de anulacisssones</h3>
+                <h3 class="my-0">Listado de anulaciones</h3>
             </div>
             <div class="data-table-visible-columns">
                 <form autocomplete="off" @submit.prevent="consultVoided">
