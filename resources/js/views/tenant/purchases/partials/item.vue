@@ -82,7 +82,12 @@
                     </div>
                     <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                         <div style="margin:3px" class="table-responsive">
-                            <h3>Lista de Precios</h3>
+                            <h5 class="separator-title">
+                                Listado de Precios
+                                <el-tooltip class="item" effect="dark" content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades" placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </h5>
                             <table class="table">
                             <thead>
                             <tr>
@@ -425,12 +430,6 @@
 
                     if(!this.form.date_of_due)
                         return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
-
-                   /* if(!this.lot_code)
-                        return this.$message.error('Código de lote es requerido');
-
-                    if(this.lots.length != this.form.quantity)
-                        return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');*/
 
                 }
 

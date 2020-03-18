@@ -167,11 +167,22 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
+                    <div v-if="configuration.edit_name_product" class="col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">Nombre producto en PDF</label>
+                            <el-input v-model="form.name_product_pdf"></el-input>
+                        </div>
+                    </div>
                     <template v-if="!is_client">
 
                         <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                             <div style="margin:3px" class="table-responsive">
-                                <h3>Lista de Precios</h3>
+                                <h5 class="separator-title">
+                                    Lista de Precios
+                                    <el-tooltip class="item" effect="dark" content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades" placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h5>
                                 <table class="table">
                                 <thead>
                                 <tr>
@@ -520,8 +531,8 @@
 
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
-        components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm},
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote', 'configuration'],
+        components: {ItemForm, WarehousesDetail},
         data() {
             return {
                 loading_search:false,
@@ -777,8 +788,8 @@
 
                 let value = this.form.attributes[index].value
                 let hotelAttributes = ['4003', '4004']
- 
-                this.form.attributes[index].start_date = (hotelAttributes.includes(this.form.attributes[index].attribute_type_id)) ? value:null 
+
+                this.form.attributes[index].start_date = (hotelAttributes.includes(this.form.attributes[index].attribute_type_id)) ? value:null
 
             },
             close() {

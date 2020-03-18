@@ -268,6 +268,8 @@ if ($hostname) {
             Route::post('voided', 'Tenant\VoidedController@store');
 //            Route::get('voided/download/{type}/{voided}', 'Tenant\VoidedController@download')->name('tenant.voided.download');
             Route::get('voided/status/{voided}', 'Tenant\VoidedController@status');
+            Route::get('voided/status_masive', 'Tenant\VoidedController@status_masive');
+
             Route::delete('voided/{voided}', 'Tenant\VoidedController@destroy');
 //            Route::get('voided/ticket/{voided_id}/{group_id}', 'Tenant\VoidedController@ticket');
 
@@ -659,6 +661,7 @@ if ($hostname) {
 
             Route::get('certificates/record', 'System\CertificateController@record');
             Route::post('certificates/uploads', 'System\CertificateController@uploadFile');
+            Route::post('certificates/saveSoapUser', 'System\CertificateController@saveSoapUser');
             Route::delete('certificates', 'System\CertificateController@destroy');
             Route::get('configurations', 'System\ConfigurationController@index')->name('system.configuration.index');
 
