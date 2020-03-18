@@ -40,7 +40,37 @@
                                 <td
                                     style="margin: 40px 0;line-height: 22px; font-family: &#39;Montserrat&#39;, Arial, sans serif; font-size: 12px;font-weight:100; word-break: break-word; color:#333;">
 
-                                    Detalle de la compra: <b> {{ $document->product }} </b><br>
+                                    Detalle de la compra: <b> {{ $document->product }} </b><br><br>
+
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style="color:#846add;" align="center">#</th>
+                                                <th style="color:#846add; padding-left:30px !important;" align="center">Producto</th>
+                                                <th style="color:#846add; padding-left:30px !important;" align="center">Cantidad</th>
+                                                <th style="color:#846add; padding-left:30px !important;" align="center">Tipo Unidad</th>
+                                            </tr> 
+                                        </thead>
+                                        <tbody>
+                                            @foreach($document->items as $item)
+                                            <tr>
+                                                <td align="center">
+                                                    {{$loop->iteration}}
+                                                </td>
+                                                <td style="padding-left:30px !important;" align="center">
+                                                    {{$item['description']}}
+                                                </td>
+                                                <td style="padding-left:30px !important;" align="center">
+                                                    {{$item['cantidad']}}
+                                                </td>
+                                                <td style="padding-left:30px !important;" align="center">
+                                                    {{$item['unit_type_id']}}
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                    <br>
                                     Monto: <b>S/ {{ $document->total }}</b><br>
 
                                     <br><br>
