@@ -79,9 +79,9 @@ class DashboardController extends Controller
     {
         $path = app_path();
         //df -m -h --output=used,avail,pcent /
+
         $used = new Process('df -m -h --output=used /');
         $used->run();
-
         if (!$used->isSuccessful()) {
             throw new ProcessFailedException($used);
         }
@@ -90,7 +90,6 @@ class DashboardController extends Controller
 
 	$avail = new Process('df -m -h --output=avail /');
         $avail->run();
-
         if (!$avail->isSuccessful()) {
             throw new ProcessFailedException($avail);
         }
@@ -99,7 +98,6 @@ class DashboardController extends Controller
 
 	$pcent = new Process('df -m -h --output=pcent /');
         $pcent->run();
-
         if (!$pcent->isSuccessful()) {
             throw new ProcessFailedException($pcent);
         }
