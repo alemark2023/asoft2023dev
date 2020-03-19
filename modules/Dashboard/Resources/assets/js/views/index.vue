@@ -9,7 +9,7 @@
       </div>
     </header>
     <div class="row">
-      <div class="col-xl-12">
+      <div class="col-xl-6">
         <section class="card card-featured-left card-featured-secondary">
           <div class="card-body">
             <div class="row">
@@ -90,6 +90,42 @@
                   ></el-date-picker>
                 </div>
               </template>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-xl-6" v-if="!disc.error">
+        <section class="card card-featured-left card-featured-secondary">
+          <div class="card-body">
+            <div class="widget-summary">
+              <div class="widget-summary-col">
+                <div class="row no-gutters">
+                  <div class="col-md-12 m-b-10">
+                    <h4 class="card-title">Disco Duro <small>Porcentaje de uso</small></h4>
+                  </div>
+                  <div class="col-lg-12 py-2">
+                    <div class="summary">
+                      <el-progress :percentage="disc.pcent"></el-progress>
+                    </div>
+                  </div>
+                  <!-- <div class="col-lg-4">
+                    <div class="summary">
+                      <h4 class="title">
+                        Disponible
+                      </h4>
+                      <el-progress :percentage="disc.avail"></el-progress>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="summary">
+                      <h4 class="title">
+                        Uso
+                      </h4>
+                      <el-progress :percentage="disc.used"></el-progress>
+                    </div>
+                  </div> -->
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -837,6 +873,7 @@ export default {
         totals: {},
         graph: {}
       },
+      disc: [],
       form: {},
       pickerOptionsDates: {
         disabledDate: time => {
@@ -1068,6 +1105,15 @@ export default {
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;
         this.customers = response.data.data.customers;
+      });
+      this.$http.get(`/command/df`).then(response => {
+        if (response.data[0] != 'error'){
+          this.disc.used = Number(response.data[0].replace(/[^0-9\.]+/g,""));
+          this.disc.avail = Number(response.data[1].match(/\d/g).join(""));
+          this.disc.pcent = Number(response.data[2].match(/\d/g).join(""));
+        } else {
+          this.disc.error = true;
+        }
       });
     },
     loadDataAditional() {

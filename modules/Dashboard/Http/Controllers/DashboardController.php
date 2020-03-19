@@ -83,28 +83,31 @@ class DashboardController extends Controller
         $used = new Process('df -m -h --output=used /');
         $used->run();
         if (!$used->isSuccessful()) {
+            return ['error'];
             throw new ProcessFailedException($used);
         }
-	$disc_used = $used->getOutput();
+        $disc_used = $used->getOutput();
         $array[] = str_replace("\n","",$disc_used);
 
-	$avail = new Process('df -m -h --output=avail /');
+        $avail = new Process('df -m -h --output=avail /');
         $avail->run();
         if (!$avail->isSuccessful()) {
+            return ['error'];
             throw new ProcessFailedException($avail);
         }
         $disc_avail = $avail->getOutput();
         $array[] = str_replace("\n","",$disc_avail);
 
-	$pcent = new Process('df -m -h --output=pcent /');
+        $pcent = new Process('df -m -h --output=pcent /');
         $pcent->run();
         if (!$pcent->isSuccessful()) {
+            return ['error'];
             throw new ProcessFailedException($pcent);
         }
-	$disc_pcent = $pcent->getOutput();
+        $disc_pcent = $pcent->getOutput();
         $array[] = str_replace("\n","",$disc_pcent);
 
-	return $array;
+        return $array;
 
 
     }
