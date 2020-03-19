@@ -101,6 +101,10 @@ if($current_hostname) {
                 Route::get('order-notes-general/filter', 'ReportOrderNoteGeneralController@filter');
                 Route::get('order-notes-general/records', 'ReportOrderNoteGeneralController@records');
 
+                Route::get('sales-consolidated', 'ReportSaleConsolidatedController@index')->name('tenant.reports.sales_consolidated.index');
+                Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
+                Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
+                Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
             });
 
             Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')->name('tenant.reports.income_summary.pdf');

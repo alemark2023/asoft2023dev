@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use Illuminate\Support\Facades\DB;
 
 class SaleNoteItem extends ModelTenant
 {
@@ -112,4 +113,37 @@ class SaleNoteItem extends ModelTenant
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
+
+    
+    public function scopeWhereDefaultDocumentType($query, $params)
+    {
+        
+        $db_raw =  DB::raw("sale_note_items.id as id, sale_notes.series as series, sale_notes.number as number,
+                            sale_note_items.item as item, sale_note_items.quantity as quantity, sale_notes.date_of_issue as date_of_issue");
+
+        if($params['person_id']){
+
+            return $query->whereHas('sale_note', function($q) use($params){
+                            $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                                ->where('customer_id', $params['person_id'])
+                                ->whereTypeUser();
+                        })
+                        ->join('sale_notes', 'sale_note_items.sale_note_id', '=', 'sale_notes.id')
+                        ->select($db_raw)
+                        ->latest('id');
+                        
+        }
+
+        
+        return $query->whereHas('sale_note', function($q) use($params){
+                    $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                        ->where('user_id', $params['seller_id'])
+                        ->whereTypeUser();
+                })
+                ->join('sale_notes', 'sale_note_items.sale_note_id', '=', 'sale_notes.id')
+                ->select($db_raw)
+                ->latest('id');
+
+    }
+
 }

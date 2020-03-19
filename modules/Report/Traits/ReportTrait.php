@@ -263,8 +263,16 @@ trait ReportTrait
         ];
     }
 
-    public function getDateRangeTypes(){
+    public function getDateRangeTypes($is_sale = false){
  
+        if($is_sale){
+
+            return [
+                ['id' => 'date_of_issue', 'description' => 'Fecha emisión'],
+            ]; 
+
+        }
+
         return [
             ['id' => 'date_of_issue', 'description' => 'Fecha emisión'],
             ['id' => 'delivery_date', 'description' => 'Fecha entrega']
@@ -279,6 +287,17 @@ trait ReportTrait
             ['id' => 'pending', 'description' => 'Pendiente'],
             ['id' => 'processed', 'description' => 'Procesado'],
         ]; 
+
+    }
+
+    public function getCIDocumentTypes(){
+ 
+        return DocumentType::whereIn('id', ['01', '03', '80'])->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->description
+            ];
+        });
 
     }
 

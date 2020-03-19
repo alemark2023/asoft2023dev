@@ -32,17 +32,31 @@
                                             value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                         </div>
                         
-                        <div class="col-lg-3 col-md-3" >
-                            <div class="form-group"> 
-                                <label class="control-label">Estado
-                                </label>
-                                
-                                <el-select v-model="form.order_state_type_id" filterable >
-                                    <el-option v-for="option in order_state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                </el-select>
- 
-                            </div>
-                        </div> 
+                        <template v-if="resource != 'reports/sales-consolidated'">
+                            <div class="col-lg-3 col-md-3" >
+                                <div class="form-group"> 
+                                    <label class="control-label">Estado
+                                    </label>
+                                    
+                                    <el-select v-model="form.order_state_type_id" filterable >
+                                        <el-option v-for="option in order_state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+    
+                                </div>
+                            </div> 
+                        </template>
+                        <template v-else>
+                            <div class="col-lg-3 col-md-3" >
+                                <div class="form-group"> 
+                                    <label class="control-label">Tipo documento
+                                    </label>
+                                    <el-select v-model="form.document_type_id" filterable clearable>
+                                        <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+    
+                                </div>
+                            </div> 
+                        </template>
 
                         <div class="col-lg-6 col-md-6" >
                             <div class="form-group"> 
@@ -103,7 +117,7 @@
                         <tbody> 
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody> 
-                        <tfoot v-if="resource == 'reports/order-notes-consolidated'">
+                        <tfoot v-if="resource == 'reports/order-notes-consolidated' || resource == 'reports/sales-consolidated'">
                             <tr>
                                 <td></td>
                                 <td ><strong>Total</strong></td>
@@ -149,6 +163,7 @@
                 columns: [],
                 records: [],
                 date_range_types: [],
+                document_types: [],
                 order_state_types: [],
                 sellers: [],
                 pagination: {}, 
@@ -181,6 +196,7 @@
                     this.order_state_types = response.data.order_state_types
                     this.date_range_types = response.data.date_range_types
                     this.sellers = response.data.sellers
+                    this.document_types = response.data.document_types
                 });
 
 
@@ -243,7 +259,8 @@
  
                 this.form = {
                     person_id: null,
-                    date_range_type_id: 'delivery_date',
+                    document_type_id: null,
+                    date_range_type_id: 'date_of_issue',
                     order_state_type_id: 'all_states',
                     type_person:null,
                     seller_id:null,

@@ -471,7 +471,7 @@
                     <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
                                         'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 
                                         'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
-                                        'order-notes-general'])) ? 'nav-active nav-expanded' : ''}}">
+                                        'order-notes-general', 'sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
                                         
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
@@ -485,7 +485,7 @@
                             </li>
 
                             <li class="nav-parent {{  ($path[0] === 'reports' && 
-                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'general-items'])) ? 'nav-active nav-expanded' : ''}}">
+                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'general-items','sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Ventas
@@ -533,6 +533,11 @@
                                         </a>
                                     </li>
                                     
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'sales-consolidated')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.sales_consolidated.index')}}">
+                                            Consolidado de items
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
 
