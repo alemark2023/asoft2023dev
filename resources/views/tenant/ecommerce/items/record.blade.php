@@ -28,12 +28,12 @@
                     <i class="icon-plus"></i>
                 </span>
             </div>
-           
+
         </div><!-- End .col-lg-7 -->
 
         <div class="col-lg-5 col-md-6">
             <div class="product-single-details">
-                <h1 class="product-title">{{$record->name}}</h1>
+                <h1 class="product-title">{{$record->description}}</h1>
 
                 <div class="ratings-container">
                     <div class="product-ratings">
@@ -49,8 +49,7 @@
                 </div><!-- End .price-box -->
 
                 <div class="product-desc">
-                    <p>{{$record->description}}
-                    </p>
+                    <p>{{$record->name}}</p>
                 </div><!-- End .product-desc -->
 
                 <div class="product-filters-container">
