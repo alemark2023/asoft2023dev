@@ -103,7 +103,7 @@
                         <tbody> 
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody> 
-                        <tfoot>
+                        <tfoot v-if="resource == 'reports/order-notes-consolidated'">
                             <tr>
                                 <td></td>
                                 <td ><strong>Total</strong></td>
@@ -199,9 +199,13 @@
             },
             changePersons(){
                 this.form.seller_id = null
+                this.$eventHub.$emit('changeFilterColumn', 'person')
+                // this.records = []
             },
             changeSellers(){
                 this.form.person_id = null
+                this.$eventHub.$emit('changeFilterColumn', 'seller')
+                // this.records = []
             },
             searchRemotePersons(input) {  
                 
@@ -257,7 +261,7 @@
                     return this.$message.error('Debe seleccionar un cliente o vendedor')
                 }
 
-                // this.loading_submit = await true
+                this.loading_submit = await true
                 await this.getRecords()
                 await this.getTotals()
                 this.loading_submit = await false

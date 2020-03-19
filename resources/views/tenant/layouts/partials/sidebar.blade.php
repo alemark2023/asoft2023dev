@@ -470,7 +470,8 @@
                     @if(in_array('reports', $vc_modules))
                     <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
                                         'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 
-                                        'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+                                        'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
+                                        'order-notes-general'])) ? 'nav-active nav-expanded' : ''}}">
                                         
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
@@ -536,13 +537,19 @@
                             </li>
 
                             <li class="nav-parent {{  ($path[0] === 'reports' && 
-                                    in_array($path[1], ['order-notes-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+                                    in_array($path[1], ['order-notes-consolidated', 'order-notes-general'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Pedidos
                                 </a>
                                 <ul class="nav nav-children">
                                      
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes-general')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.order_notes_general.index')}}">
+                                            General
+                                        </a>
+                                    </li>
+
                                     <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes-consolidated')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.order_notes_consolidated.index')}}">
                                             Consolidado de items

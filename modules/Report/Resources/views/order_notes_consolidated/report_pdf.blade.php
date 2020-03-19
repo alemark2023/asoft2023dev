@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Document</title>
+        <title>Consolidado de items</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -62,15 +62,19 @@
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
                     </td>
                     <td>
-                        <p><strong>Fecha entrega: </strong>{{ (!empty($records)) ? $records->first()->order_note->delivery_date->format('m-d-Y'):'' }}</p>
+                        <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p><strong>Ruc: </strong>{{$company->number}}</p>
+                        <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                     <td>
-                        <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
+                        @if($params['person_id'])
+                            <p><strong>Cliente: </strong>{{ (!empty($records)) ? $records->first()->order_note->customer->name:'' }} - {{ (!empty($records)) ? $records->first()->order_note->customer->number:'' }}</p>
+                        @else
+                            <p><strong>Vendedor: </strong>{{ (!empty($records)) ? $records->first()->order_note->user->name:'' }}</p>
+                        @endif
                     </td>
                 </tr>
             </table>

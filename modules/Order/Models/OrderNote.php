@@ -177,6 +177,11 @@ class OrderNote extends ModelTenant
         return $this->prefix.'-'.$this->id;
     }
 
+    public function getNumberFullAttribute()
+    {
+        return $this->prefix.'-'.$this->id;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -240,6 +245,59 @@ class OrderNote extends ModelTenant
     public function inventory_kardex()
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
+    }
+
+    
+    public function scopeWherePendingState($query, $params)
+    {
+
+        if($params['person_id']){
+
+            return $query->doesntHave('documents')
+                            ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                            ->where('customer_id', $params['person_id']);
+        }
+
+        
+        return $query->doesntHave('documents')
+                        ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                        ->where('user_id', $params['seller_id']);
+
+    }
+
+
+    public function scopeWhereProcessedState($query, $params)
+    {
+
+        if($params['person_id']){
+
+            return $query->whereHas('documents')
+                            ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                            ->where('customer_id', $params['person_id']);
+                            
+        }
+
+        
+        return $query->whereHas('documents')
+                        ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                        ->where('user_id', $params['seller_id']);
+
+    }
+
+
+    public function scopeWhereDefaultState($query, $params)
+    {
+
+        if($params['person_id']){
+
+            return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                            ->where('customer_id', $params['person_id']);
+                        
+        }
+
+        return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                        ->where('user_id', $params['seller_id']);
+
     }
 
 }
