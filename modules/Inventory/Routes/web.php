@@ -55,6 +55,11 @@ if($hostname) {
                 Route::get('kardex/lots/filter', 'ReportKardexController@records_lots');
 
 
+                Route::get('valued-kardex', 'ReportValuedKardexController@index')->name('reports.valued_kardex.index');
+                Route::get('valued-kardex/excel', 'ReportValuedKardexController@excel');
+                Route::get('valued-kardex/filter', 'ReportValuedKardexController@filter');
+                Route::get('valued-kardex/records', 'ReportValuedKardexController@records');
+
             });
 
 
