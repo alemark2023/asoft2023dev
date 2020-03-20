@@ -113,9 +113,10 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration = Configuration::select('affectation_igv_type_id')->firstOrFail();
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands');
+                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
     }
 
     public function record($id)

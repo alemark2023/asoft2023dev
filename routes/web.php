@@ -83,6 +83,7 @@ if ($hostname) {
             Route::post('configurations', 'Tenant\ConfigurationController@store');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
             Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
+            Route::get('configurations/tables', 'Tenant\ConfigurationController@tables');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');

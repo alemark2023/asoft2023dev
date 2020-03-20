@@ -521,6 +521,7 @@
                 errors: {},
                 headers: headers_token,
                 form: {},
+                configuration: {},
                 unit_types: [],
                 currency_types: [],
                 system_isc_types: [],
@@ -543,9 +544,9 @@
                 attribute_types:  []
             }
         },
-        created() {
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
+        async created() {
+            await this.initForm()
+            await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
                     this.accounts = response.data.accounts
@@ -556,6 +557,7 @@
                     this.categories = response.data.categories
                     this.brands = response.data.brands
                     this.attribute_types = response.data.attribute_types
+                    this.configuration = response.data.configuration
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -569,9 +571,14 @@
             this.$eventHub.$on('reloadTables', ()=>{
                 this.reloadTables()
             })
+
+            await this.setDefaultConfiguration()
         },
 
         methods: {
+            setDefaultConfiguration(){
+                this.form.sale_affectation_igv_type_id = (this.configuration) ? this.configuration.affectation_igv_type_id : '10'
+            },
             clickAddAttribute() {
                 this.form.attributes.push({
                     attribute_type_id: null,
@@ -736,6 +743,7 @@
                 this.initForm()
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
+                this.setDefaultConfiguration()
             },
             create() {
 
