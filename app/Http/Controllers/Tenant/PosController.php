@@ -186,6 +186,7 @@ class PosController extends Controller
                                             $r->individual_item->description
                                         ];
                                     }),
+                                    'unit_type' => $row->item_unit_types
                                 ];
                             });
             return $items;
