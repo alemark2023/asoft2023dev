@@ -101,6 +101,7 @@ class DocumentController extends Controller
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
                             ->whereIn('identity_document_type_id',$identity_document_type_id)
+                            ->whereIsEnabled()
                             ->get()->transform(function($row) {
                                 return [
                                     'id' => $row->id,
@@ -123,8 +124,9 @@ class DocumentController extends Controller
         if(auth()->user()->type == 'integrator')
             return redirect('/documents');
 
+        $configuration = Configuration::first();
         $is_contingency = 0;
-        return view('tenant.documents.form', compact('is_contingency'));
+        return view('tenant.documents.form', compact('is_contingency', 'configuration'));
     }
 
     public function create_tensu()
@@ -217,7 +219,7 @@ class DocumentController extends Controller
     public function table($table)
     {
         if ($table === 'customers') {
-            $customers = Person::with('addresses')->whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+            $customers = Person::with('addresses')->whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
                 return [
                     'id' => $row->id,
                     'description' => $row->number.' - '.$row->name,

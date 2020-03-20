@@ -171,6 +171,7 @@ class DocumentInput
                     'charges' => self::charges($row),
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
                 ];
             }
             return $items;
@@ -188,7 +189,7 @@ class DocumentInput
                     $description = $row['description'];
                     $value = array_key_exists('value', $row)?$row['value']:null;
                     $start_date = array_key_exists('start_date', $row)?$row['start_date']:null;
-                    $end_date = array_key_exists('start_date', $row)?$row['start_date']:null;
+                    $end_date = array_key_exists('end_date', $row)?$row['end_date']:null;
                     $duration = array_key_exists('duration', $row)?$row['duration']:null;
 
                     $attributes[] = [

@@ -221,6 +221,8 @@ class EcommerceController extends Controller
             $document->client = $user->name;
             $document->product = $request->producto;
             $document->total = $request->precio_culqi;
+            $document->items = $request->items;
+
             Mail::to($customer_email)->send(new CulqiEmail($document));
             return [
                 'success' => true,

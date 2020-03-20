@@ -110,6 +110,35 @@ export const deletable = {
                 });
             })
         },
+        enable(url) {
+            return new Promise((resolve) => {
+                this.$confirm('¿Desea habilitar el registro?', 'Habilitar', {
+                    confirmButtonText: 'Habilitar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(url)
+                        .then(res => {
+                            if(res.data.success) {
+                                this.$message.success(res.data.message)
+                                resolve()
+                            }else{
+                                this.$message.error(res.data.message)
+                                resolve()
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar habilitar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            })
+        },
 
     }
 }

@@ -588,6 +588,8 @@
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
                            :typeUser="typeUser"
+                           :configuration="configuration"
+                           :editNameProduct="configuration.edit_name_product"
                            @add="addRow"></document-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -649,7 +651,7 @@
     import DocumentDetraction from './partials/detraction.vue'
 
     export default {
-        props: ['typeUser'],
+        props: ['typeUser', 'configuration'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
