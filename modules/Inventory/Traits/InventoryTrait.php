@@ -105,6 +105,7 @@ trait InventoryTrait
                 'id' => $row->id,
                 'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
                 'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
                 'lots' => $row->item_lots->where('has_sale', false)->transform(function($row) {
                     return [
                         'id' => $row->id,
@@ -116,6 +117,15 @@ trait InventoryTrait
                         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                     ];
                 }),
+                'lots_group' => collect($row->lots_group)->transform(function($row){
+                    return [
+                        'id'  => $row->id,
+                        'code' => $row->code,
+                        'quantity' => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
+                        'checked'  => false
+                    ];
+                })
             ];
         });
     }

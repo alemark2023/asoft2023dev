@@ -43,7 +43,8 @@ use Illuminate\Support\Facades\Mail;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
 use App\Models\Tenant\ItemWarehouse;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Item\Models\ItemLotsGroup;
 use App\Models\Tenant\Configuration;
 
 
@@ -215,6 +216,13 @@ class SaleNoteController extends Controller
                     }
                 }
 
+                if(isset($row['IdLoteSelected']))
+                {
+                    $lot = ItemLotsGroup::find($row['IdLoteSelected']);
+                    $lot->quantity = ($lot->quantity - $row['quantity']);
+                    $lot->save();
+                }
+
             }
 
             //pagos
@@ -237,7 +245,6 @@ class SaleNoteController extends Controller
         ];
 
     }
-
 
 
     public function destroy_sale_note_item($id)
@@ -606,6 +613,15 @@ class SaleNoteController extends Controller
                                 'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                             ];
                         }),
+                        'lots_group' => collect($row->lots_group)->transform(function($row){
+                            return [
+                                'id'  => $row->id,
+                                'code' => $row->code,
+                                'quantity' => $row->quantity,
+                                'date_of_due' => $row->date_of_due,
+                                'checked'  => false
+                            ];
+                        }),
                         'lot_code' => $row->lot_code,
                         'date_of_due' => $row->date_of_due
                     ];
@@ -843,7 +859,7 @@ class SaleNoteController extends Controller
             }
 
             $record_payment = $sale_note->payments()->create($row);
-            
+
             if(isset($row['payment_destination_id'])){
                 $this->createGlobalPayment($record_payment, $row);
             }
