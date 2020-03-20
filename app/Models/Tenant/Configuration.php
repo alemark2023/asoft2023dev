@@ -23,7 +23,8 @@ class Configuration extends ModelTenant
         'amount_plastic_bag_taxes',
         'colums_grid_item',
         'options_pos',
-        'edit_name_product'
+        'edit_name_product',
+        'restrict_receipt_date'
     ];
 
     public function setPlanAttribute($value)

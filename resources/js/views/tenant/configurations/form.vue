@@ -112,6 +112,13 @@
                                 <small class="form-control-feedback" v-if="errors.edit_name_product" v-text="errors.edit_name_product[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-6 mt-4">
+                            <label class="control-label">Restringir fecha de comprobante</label>
+                            <div class="form-group" :class="{'has-danger': errors.restrict_receipt_date}">
+                                <el-switch v-model="form.restrict_receipt_date" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.restrict_receipt_date" v-text="errors.restrict_receipt_date[0]"></small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

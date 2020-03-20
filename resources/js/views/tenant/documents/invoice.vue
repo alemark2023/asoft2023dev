@@ -661,11 +661,6 @@
                     return time.getTime() > moment();
                   }
                 },
-                dateVencimiento: {
-                  disabledDate(time) {
-                    return time.getTime() < moment().day(-6);
-                  }
-                },
                 dateValid:false,
                 input_person:{},
                 showDialogDocumentDetraction:false,
@@ -721,7 +716,6 @@
             }
         },
         async created() {
-            // console.log(this.typeUser )
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -1142,6 +1136,10 @@
                 this.$eventHub.$emit('eventInitForm')
 
                 this.initInputPerson()
+
+                if(!this.configuration.restrict_receipt_date){
+                  this.datEmision = {}
+                }
             },
             initInputPerson(){
                 this.input_person = {
@@ -1242,7 +1240,7 @@
                 // this.customers = []
             },
             changeDateOfIssue() {
-              if(moment(this.form.date_of_issue) < moment().day(-6)) {
+              if(moment(this.form.date_of_issue) < moment().day(-1) && this.configuration.restrict_receipt_date) {
                 this.$message.error('No puede seleccionar una fecha menor a 6 días.');
                 this.dateValid=false
               } else { this.dateValid = true }
@@ -1388,7 +1386,7 @@
 
             },
             setTotalDefaultPayment(){
-                
+
                 if(this.form.payments.length > 0){
 
                     this.form.payments[0].payment = this.form.total
