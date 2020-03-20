@@ -79,7 +79,7 @@
         methods: {
             filter()
             {
-                debugger
+
                 if(this.search)
                 {
                     this.lots_ = this.lots.filter( x => x.series.toUpperCase().includes(this.search.toUpperCase()))

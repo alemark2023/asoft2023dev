@@ -41,6 +41,10 @@ foreach ($cash_documents as $cash_document) {
 
         }
 
+
+
+
+
     }
     else if($cash_document->document){
 
@@ -64,8 +68,6 @@ foreach ($cash_documents as $cash_document) {
                 $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
 
             }
-
-
 
         }
 

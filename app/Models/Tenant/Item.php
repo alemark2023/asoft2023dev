@@ -10,6 +10,8 @@ use Modules\Account\Models\Account;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\ItemLot;
+use Modules\Item\Models\ItemLotsGroup;
+
 
 class Item extends ModelTenant
 {
@@ -58,7 +60,8 @@ class Item extends ModelTenant
         'category_id',
         'lot_code',
         'lots_enabled',
-        'active'
+        'active',
+        'series_enabled'
         // 'warehouse_id'
     ];
 
@@ -222,6 +225,11 @@ class Item extends ModelTenant
     public  function images()
     {
         return $this->hasMany(ItemImage::class, 'item_id');
+    }
+
+    public function lots_group()
+    {
+        return $this->hasMany(ItemLotsGroup::class, 'item_id');
     }
 
 

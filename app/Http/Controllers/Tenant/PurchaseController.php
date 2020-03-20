@@ -33,7 +33,8 @@ use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
 use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\ItemWarehouse;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Item\Models\ItemLotsGroup;
 
 
 class PurchaseController extends Controller
@@ -179,11 +180,27 @@ class PurchaseController extends Controller
                             'series' => $lot['series'],
                             'item_id' => $row['item_id'],
                             'warehouse_id' => $row['warehouse_id'],
-                            'has_sale' => false
+                            'has_sale' => false,
+                            'state' => $lot['state']
                         ]);
 
                     }
 
+                }
+
+                if(array_key_exists('item', $row))
+                {
+                    if( $row['item']['lots_enabled'] == true)
+                    {
+
+                        ItemLotsGroup::create([
+                            'code'  => $row['lot_code'],
+                            'quantity'  => $row['quantity'],
+                            'date_of_due'  => $row['date_of_due'],
+                            'item_id' => $row['item_id']
+                        ]);
+
+                    }
                 }
 
             }
@@ -192,7 +209,7 @@ class PurchaseController extends Controller
             foreach ($data['payments'] as $payment) {
 
                 $record_payment = $doc->purchase_payments()->create($payment);
-                
+
                 if(isset($payment['payment_destination_id'])){
                     $this->createGlobalPayment($record_payment, $payment);
                 }
@@ -269,7 +286,6 @@ class PurchaseController extends Controller
                     }
                 }
             }
-
 
             // $doc->purchase_payments()->delete();
             $this->deleteAllPayments($doc->purchase_payments);
@@ -394,7 +410,9 @@ class PurchaseController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
-                        })
+                        }),
+                        'series_enabled' => (bool) $row->series_enabled,
+
                         // 'warehouses' => collect($row->warehouses)->transform(function($row) {
                         //     return [
                         //         'warehouse_id' => $row->warehouse->id,
@@ -425,7 +443,7 @@ class PurchaseController extends Controller
                 $row = Purchase::findOrFail($id);
                 $this->deleteAllPayments($row->purchase_payments);
                 $row->delete();
-                
+
             });
 
             return [

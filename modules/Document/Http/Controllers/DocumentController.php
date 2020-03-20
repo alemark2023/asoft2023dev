@@ -19,12 +19,12 @@ use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Item;
-use Modules\Document\Traits\SearchTrait; 
+use Modules\Document\Traits\SearchTrait;
 
 class DocumentController extends Controller
 {
     use OfflineTrait, SearchTrait;
-    
+
     public function index()
     {
 
@@ -35,7 +35,7 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
-        
+
         $records = $this->getRecords($request);
 
         return new DocumentNotSentCollection($records->paginate(config('tenant.items_per_page')));
@@ -54,7 +54,7 @@ class DocumentController extends Controller
         $state_type_id = $request->state_type_id;
         $pending_payment = ($request->pending_payment == "true") ? true:false;
         $customer_id = $request->customer_id;
- 
+
 
         if($d_start && $d_end){
 
@@ -77,12 +77,12 @@ class DocumentController extends Controller
                             ->whereNotSent()
                             ->whereTypeUser()
                             ->latest();
-        }        
+        }
 
-        if($pending_payment){ 
+        if($pending_payment){
             $records = $records->where('total_canceled', false);
         }
-        
+
         if($customer_id){
             $records = $records->where('customer_id', $customer_id);
         }
@@ -93,7 +93,7 @@ class DocumentController extends Controller
 
     public function data_table()
     {
-        
+
         $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
@@ -106,15 +106,15 @@ class DocumentController extends Controller
 
         $document_types = DocumentType::whereIn('id', ['01', '03','07', '08'])->get();
         $series = Series::whereIn('document_type_id', ['01', '03','07', '08'])->get();
-        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get(); 
+        $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $state_types = StateType::get();
-                       
+
         return compact( 'customers', 'document_types','series','establishments', 'state_types');
 
     }
 
 
-    
+
     public function upload(Request $request)
     {
         if ($request->hasFile('file')) {
@@ -152,13 +152,13 @@ class DocumentController extends Controller
         ];
     }
 
-    
+
     public function detractionTables()
     {
-        
+
         $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         $detraction_types = DetractionType::whereActive()->get();
-                       
+
         return compact( 'detraction_types', 'cat_payment_method_types');
 
     }
@@ -185,7 +185,7 @@ class DocumentController extends Controller
     }
 
 
-    
+
     public function savePayConstancy(Request $request)
     {
         $document = Document::findOrFail($request->id);
@@ -220,7 +220,7 @@ class DocumentController extends Controller
         ];
     }
 
-    
+
     public function prepayments($type)
     {
 
@@ -240,7 +240,7 @@ class DocumentController extends Controller
 
     }
 
-    
+
     public function searchItems(Request $request)
     {
 
@@ -295,8 +295,31 @@ class DocumentController extends Controller
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];
                     }),
-                    'attributes' => $row->attributes ? $row->attributes : []
-    
+                    'attributes' => $row->attributes ? $row->attributes : [],
+                    'lots_group' => collect($row->lots_group)->transform(function($row){
+                        return [
+                            'id'  => $row->id,
+                            'code' => $row->code,
+                            'quantity' => $row->quantity,
+                            'date_of_due' => $row->date_of_due,
+                            'checked'  => false
+                        ];
+                    }),
+                    'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'series' => $row->series,
+                            'date' => $row->date,
+                            'item_id' => $row->item_id,
+                            'warehouse_id' => $row->warehouse_id,
+                            'has_sale' => (bool)$row->has_sale,
+                            'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                        ];
+                    }),
+                    'lots_enabled' => (bool) $row->lots_enabled,
+                    'series_enabled' => (bool) $row->series_enabled,
+
+
                 ];
             });
 
@@ -360,7 +383,29 @@ class DocumentController extends Controller
                         'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                     ];
                 }),
-                'attributes' => $row->attributes ? $row->attributes : []
+                'attributes' => $row->attributes ? $row->attributes : [],
+                'lots_group' => collect($row->lots_group)->transform(function($row){
+                    return [
+                        'id'  => $row->id,
+                        'code' => $row->code,
+                        'quantity' => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
+                        'checked'  => false
+                    ];
+                }),
+                'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'series' => $row->series,
+                        'date' => $row->date,
+                        'item_id' => $row->item_id,
+                        'warehouse_id' => $row->warehouse_id,
+                        'has_sale' => (bool)$row->has_sale,
+                        'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                    ];
+                }),
+                'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
 
             ];
         });
