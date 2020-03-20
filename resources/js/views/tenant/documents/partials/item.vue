@@ -37,7 +37,7 @@
                                 </el-input> -->
                                 <el-input id="custom-input">
                                     <el-select :disabled="recordItem != null"
-                                            v-model="form.item_id" 
+                                            v-model="form.item_id"
                                             @change="changeItem"
                                             filterable
                                             remote
@@ -59,7 +59,7 @@
                                             </div>
 
                                             <el-option  :value="option.id" :label="option.full_description"></el-option>
-                                            
+
                                         </el-tooltip>
 
                                     </el-select>
@@ -147,11 +147,22 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
+                    <div v-if="configuration.edit_name_product" class="col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label">Nombre producto en PDF</label>
+                            <el-input v-model="form.name_product_pdf"></el-input>
+                        </div>
+                    </div>
                     <template v-if="!is_client">
 
                         <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                             <div style="margin:3px" class="table-responsive">
-                                <h3>Lista de Precios</h3>
+                                <h5 class="separator-title">
+                                    Lista de Precios
+                                    <el-tooltip class="item" effect="dark" content="Aplica para realizar compra/venta en presentacion de diferentes precios y/o cantidades" placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </h5>
                                 <table class="table">
                                 <thead>
                                 <tr>
@@ -481,7 +492,7 @@
     import WarehousesDetail from './select_warehouses.vue'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote', 'configuration'],
         components: {ItemForm, WarehousesDetail},
         data() {
             return {
@@ -543,41 +554,41 @@
             })
         },
         methods: {
-            async searchRemoteItems(input) {  
+            async searchRemoteItems(input) {
                 // console.log(input)
-                
-                if (input.length > 2) { 
+
+                if (input.length > 2) {
 
                     this.loading_search = true
                     let parameters = `input=${input}`
-                    
+
 
                     await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
-                            .then(response => { 
+                            .then(response => {
                                 // console.log(response)
                                 this.items = response.data.items
                                 this.loading_search = false
-                                
+
                                 this.enabledSearchItemsBarcode()
 
                                 if(this.items.length == 0){
                                     this.filterItems()
                                 }
-                            })  
+                            })
                 } else {
                     await this.filterItems()
                 }
 
             },
-            filterItems() { 
+            filterItems() {
                 this.items = this.all_items
-            }, 
+            },
             enabledSearchItemsBarcode(){
-                
+
                 if(this.search_item_by_barcode){
 
                     if (this.items.length == 1){
-                        
+
                         this.form.item_id = this.items[0].id
                         this.changeItem()
                     }
@@ -732,8 +743,8 @@
 
                 let value = this.form.attributes[index].value
                 let hotelAttributes = ['4003', '4004']
- 
-                this.form.attributes[index].start_date = (hotelAttributes.includes(this.form.attributes[index].attribute_type_id)) ? value:null 
+
+                this.form.attributes[index].start_date = (hotelAttributes.includes(this.form.attributes[index].attribute_type_id)) ? value:null
 
             },
             close() {
@@ -757,7 +768,7 @@
                 {
                     const contex = this
                     this.form.item.attributes.forEach((row)=>{
-                        
+
                         contex.form.attributes.push({
                             attribute_type_id: row.attribute_type_id,
                             description: row.description,
@@ -856,11 +867,11 @@
                 }else{
 
                     this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
-    
+
                         this.items = response.data.items
                         this.form.item_id = item_id
                         this.changeItem()
-    
+
                     })
                 }
 

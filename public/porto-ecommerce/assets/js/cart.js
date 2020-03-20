@@ -19,30 +19,30 @@
             calculateTotalCart();
 
             $('#product_added').html(`
-                            <h1 class="product-title">${item.name}</h1>
+                            <h1 class="product-title">${item.description}</h1>
                             <div class="price-box">
                                 <span class="product-price">S/ ${ Number(item.sale_unit_price).toFixed(2) }</span>
                             </div>
                             <div class="product-desc">
-                                <p> ${item.description}  </p>
+                                <p>${item.name}</p>
                             </div>	`);
 
             $('#product_added_image').html(`<img src="/storage/uploads/items/${item.image_medium}" class="img" alt="product">`)
-        } 
+        }
         else {
             jQuery('#modal-already-product').modal('show');
         }
-        
+
     } catch ({error}) {
         console.log(error)
     }
-    
-    
+
+
 }
 
 function productsCartDropDown()
 {
-			
+
 	jQuery(".dropdown-cart-products").empty();
 	jQuery(".cart-count").empty();
 	let count = 0;
@@ -50,9 +50,9 @@ function productsCartDropDown()
 	let array = localStorage.getItem('products_cart');
 	array = JSON.parse(array)
 	count = array.length;
-		
+
 	array.forEach(element => {
-		
+
 		jQuery(".dropdown-cart-products").append( `
 				<div class="product">
 					<div class="product-details">
@@ -71,14 +71,14 @@ function productsCartDropDown()
 							<i class="icon-cancel"></i>
 						</a>
 					</figure>
-				</div>` 
+				</div>`
 			);
 	});
-	
+
     jQuery(".cart-count").append(count);
 
 }
-        
+
 
 function calculateTotalCart()
 {
@@ -89,11 +89,11 @@ function calculateTotalCart()
 	array.forEach(element => {
 		total += parseFloat(element.sale_unit_price)
 	});
-	
+
 	$(".cart-total-price").empty();
     $(".cart-total-price").append(total.toFixed(2));
-    
-   
+
+
 }
 
 function logout()
@@ -108,7 +108,7 @@ function logout()
 			location.reload()
 		},
 		error: function (error_data) {
-			
+
 		}
 	});
 }

@@ -117,7 +117,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" :class="{'has-danger': errors.soap_username}">
                                     <label class="control-label">SOAP Usuario <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.soap_username"></el-input>
+                                    <el-input :disabled="!form.config_system_env" v-model="form.soap_username"></el-input>
                                     <div class="sub-title text-muted"><small>RUC + Usuario. Ejemplo: 01234567890ELUSUARIO</small></div>
                                     <small class="form-control-feedback" v-if="errors.soap_username" v-text="errors.soap_username[0]"></small>
                                 </div>
@@ -125,7 +125,7 @@
                             <div class="col-md-6">
                                 <div class="form-group" :class="{'has-danger': errors.soap_password}">
                                     <label class="control-label">SOAP Password <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.soap_password"></el-input>
+                                    <el-input :disabled="!form.config_system_env" v-model="form.soap_password"></el-input>
                                     <small class="form-control-feedback" v-if="errors.soap_password" v-text="errors.soap_password[0]"></small>
                                 </div>
                             </div>

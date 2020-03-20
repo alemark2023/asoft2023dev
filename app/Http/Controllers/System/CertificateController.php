@@ -18,6 +18,8 @@ class CertificateController extends Controller
 
         return [
             'certificate' => $configuration->certificate,
+            'soap_username' => $configuration->soap_username,
+            'soap_password' => $configuration->soap_password,
         ];
     }
 
@@ -67,5 +69,20 @@ class CertificateController extends Controller
             'success' => true,
             'message' => 'Certificado eliminado con éxito'
         ];
+    }
+
+    public function saveSoapUser(Request $request)
+    {
+        $configuration = Configuration::first();
+        $configuration->soap_username = $request->soap_username;
+        $configuration->soap_password = $request->soap_password;
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'message' => 'Cambios guardados.'
+        ];
+
+
     }
 }
