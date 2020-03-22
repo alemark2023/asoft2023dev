@@ -90,7 +90,13 @@ class PosController extends Controller
                                             $r->individual_item->description
                                         ];
                                     }),
-
+                                    'warehouses' => collect($row->warehouses)->transform(function ($row) {
+                                        return [
+                                            'warehouse_description' => $row->warehouse->description,
+                                            'stock' => $row->stock,
+                                        ];
+                                    }),
+                                    'unit_type' => $row->item_unit_types
                                 ];
                             });
 
