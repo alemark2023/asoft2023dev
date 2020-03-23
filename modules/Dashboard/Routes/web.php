@@ -19,6 +19,9 @@ if($current_hostname) {
                 Route::post('utilities', 'DashboardController@utilities');
             });
 
+            //Commands
+            Route::get('command/df', 'DashboardController@df')->name('command.df');
+
         });
     });
 }

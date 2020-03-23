@@ -130,7 +130,7 @@
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                     <!--<label class="control-label">Fecha de emisión</label>-->
                                     <label class="control-label">Fec. Emisión</label>
-                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue" :picker-options="datEmision"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
                                 </div>
                             </div>
@@ -202,6 +202,7 @@
                                         <thead>
                                             <tr width="100%">
                                                 <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
+                                                <th v-if="form.payments.length>0" class="pb-2">Destino</th>
                                                 <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
                                                 <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                                 <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -211,8 +212,15 @@
                                             <tr v-for="(row, index) in form.payments" :key="index">
                                                 <td>
                                                     <div class="form-group mb-2 mr-2">
-                                                        <el-select v-model="row.payment_method_type_id">
+                                                        <el-select v-model="row.payment_method_type_id" @change="changePaymentDestination(index)">
                                                             <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_destination_id" filterable >
+                                                            <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                         </el-select>
                                                     </div>
                                                 </td>
@@ -576,7 +584,7 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">Generar</el-button>
                     </div>
                 </form>
             </div>
@@ -656,6 +664,12 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                datEmision: {
+                  disabledDate(time) {
+                    return time.getTime() > moment();
+                  }
+                },
+                dateValid:false,
                 input_person:{},
                 showDialogDocumentDetraction:false,
                 has_data_detraction:false,
@@ -705,12 +719,12 @@
                 select_first_document_type_03:false,
                 detraction_types: [],
                 all_detraction_types: [],
-                customer_addresses:  []
+                customer_addresses:  [],
+                payment_destinations:  [],
 
             }
         },
         async created() {
-            // console.log(this.typeUser )
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -738,6 +752,8 @@
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
+                    this.payment_destinations = response.data.payment_destinations
+
                     this.selectDocumentType()
 
                     this.changeEstablishment()
@@ -754,6 +770,13 @@
             })
         },
         methods: {
+            changePaymentDestination(index){
+                // if(this.form.payments[index].payment_method_type_id=='01'){
+                //     this.payment_destinations = this.cash
+                // }else{
+                //     this.payment_destinations = this.payment_destinations
+                // }
+            },
             selectDocumentType(){
                 this.form.document_type_id = (this.select_first_document_type_03) ? '03':'01'
             },
@@ -1026,6 +1049,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
+                    payment_destination_id:'cash',
                     payment: 0,
 
                 });
@@ -1131,6 +1155,10 @@
                 this.$eventHub.$emit('eventInitForm')
 
                 this.initInputPerson()
+
+                if(!this.configuration.restrict_receipt_date){
+                  this.datEmision = {}
+                }
             },
             initInputPerson(){
                 this.input_person = {
@@ -1231,6 +1259,10 @@
                 // this.customers = []
             },
             changeDateOfIssue() {
+              if(moment(this.form.date_of_issue) < moment().day(-1) && this.configuration.restrict_receipt_date) {
+                this.$message.error('No puede seleccionar una fecha menor a 6 días.');
+                this.dateValid=false
+              } else { this.dateValid = true }
                 this.form.date_of_due = this.form.date_of_issue
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
@@ -1373,7 +1405,7 @@
 
             },
             setTotalDefaultPayment(){
-                
+
                 if(this.form.payments.length > 0){
 
                     this.form.payments[0].payment = this.form.total

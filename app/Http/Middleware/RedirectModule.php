@@ -71,6 +71,9 @@ class RedirectModule
             case 'accounting':
                 return redirect()->route('tenant.account.index');
 
+            case 'finance':
+                return redirect()->route('tenant.finances.global_payments.index');
+                
             /*case 'ecommerce':
                 return redirect()->route('tenant.ecommerce.index');*/
 
@@ -225,6 +228,12 @@ class RedirectModule
         elseif($path[0] == "account"){
             $group = "accounting";
         }
+
+        ///* Module finance */
+        elseif($path[0] == "finances"){
+            $group = "finance";
+        }
+
         // elseif($path[0] == "cash"){
         //     $group = "pos";
 

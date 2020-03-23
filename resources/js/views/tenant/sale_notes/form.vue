@@ -81,6 +81,7 @@
                                     <thead>
                                         <tr width="100%">
                                             <th v-if="form.payments.length>0">Método de pago</th>
+                                            <th v-if="form.payments.length>0">Destino</th>
                                             <th v-if="form.payments.length>0">Referencia</th>
                                             <th v-if="form.payments.length>0">Monto</th>
                                             <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -92,6 +93,13 @@
                                                 <div class="form-group mb-2 mr-2">
                                                     <el-select v-model="row.payment_method_type_id">
                                                         <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+                                                    <el-select v-model="row.payment_destination_id" filterable >
+                                                        <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                     </el-select>
                                                 </div>
                                             </td>
@@ -304,6 +312,7 @@
                 series: [],
                 all_series: [],
                 is_contingency: false,
+                payment_destinations:  [],
 
             }
         },
@@ -324,6 +333,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                     this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
                     this.all_series = response.data.series
+                    this.payment_destinations = response.data.payment_destinations
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
@@ -401,6 +411,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
+                    payment_destination_id:'cash',
                     payment: 0,
                 });
             },

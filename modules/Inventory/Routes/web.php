@@ -51,9 +51,22 @@ if($hostname) {
                 Route::get('kardex/pdf', 'ReportKardexController@pdf')->name('reports.kardex.pdf');
                 Route::get('kardex/excel', 'ReportKardexController@excel')->name('reports.kardex.excel');
                 Route::get('kardex/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
+                Route::get('kardex_lots/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
+                Route::get('kardex_series/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
+
                 Route::get('kardex/records', 'ReportKardexController@records')->name('reports.kardex.records');
                 Route::get('kardex/lots/filter', 'ReportKardexController@records_lots');
+                Route::get('kardex_lots/records', 'ReportKardexController@records_lots_kardex')->name('reports.kardex_lots.records');
+                Route::get('kardex_series/records', 'ReportKardexController@records_series_kardex')->name('reports.kardex_series.records');
 
+
+
+
+
+                Route::get('valued-kardex', 'ReportValuedKardexController@index')->name('reports.valued_kardex.index');
+                Route::get('valued-kardex/excel', 'ReportValuedKardexController@excel');
+                Route::get('valued-kardex/filter', 'ReportValuedKardexController@filter');
+                Route::get('valued-kardex/records', 'ReportValuedKardexController@records');
 
             });
 

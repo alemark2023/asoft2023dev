@@ -10,6 +10,8 @@ use Modules\Account\Models\Account;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\ItemLot;
+use Modules\Item\Models\ItemLotsGroup;
+
 
 class Item extends ModelTenant
 {
@@ -58,7 +60,8 @@ class Item extends ModelTenant
         'category_id',
         'lot_code',
         'lots_enabled',
-        'active'
+        'active',
+        'series_enabled'
         // 'warehouse_id'
     ];
 
@@ -224,5 +227,66 @@ class Item extends ModelTenant
         return $this->hasMany(ItemImage::class, 'item_id');
     }
 
+    public function lots_group()
+    {
+        return $this->hasMany(ItemLotsGroup::class, 'item_id');
+    }
 
+
+    public function scopeWhereNotService($query)
+    {
+        return $query->where('unit_type_id','!=', 'ZZ');
+    }
+
+    public  function document_items()
+    {
+        return $this->hasMany(DocumentItem::class, 'item_id');
+    }
+
+    public  function sale_note_items()
+    {
+        return $this->hasMany(SaleNoteItem::class, 'item_id');
+    }
+    
+    public function scopeWhereFilterValuedKardex($query, $params)
+    {
+
+        if($params->establishment_id){
+
+            return $query->with(['document_items'=> function($q) use($params){
+                        $q->whereHas('document', function($q) use($params){
+                            $q->whereStateTypeAccepted()
+                                ->whereTypeUser()
+                                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+                                ->where('establishment_id', $params->establishment_id);
+                        });
+                    },
+                    'sale_note_items' => function($q) use($params){
+                        $q->whereHas('sale_note', function($q) use($params){
+                            $q->whereStateTypeAccepted()
+                                ->whereNotChanged()
+                                ->whereTypeUser()
+                                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+                                ->where('establishment_id', $params->establishment_id);
+                        });
+                    }]);
+
+        }
+
+        return $query->with(['document_items'=> function($q) use($params){
+                    $q->whereHas('document', function($q) use($params){
+                        $q->whereStateTypeAccepted()
+                            ->whereTypeUser()
+                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                    });
+                },
+                'sale_note_items' => function($q) use($params){
+                    $q->whereHas('sale_note', function($q) use($params){
+                        $q->whereStateTypeAccepted()
+                            ->whereNotChanged()
+                            ->whereTypeUser()
+                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                    });
+                }]);
+    }
 }

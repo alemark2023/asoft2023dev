@@ -16,10 +16,12 @@ use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
+use Modules\Finance\Traits\FinanceTrait; 
+use Illuminate\Support\Facades\DB;
 
 class SaleNotePaymentController extends Controller
 {
-    use StorageDocument;
+    use StorageDocument, FinanceTrait;
 
     public function records($sale_note_id)
     {
@@ -31,7 +33,8 @@ class SaleNotePaymentController extends Controller
     public function tables()
     {
         return [
-            'payment_method_types' => PaymentMethodType::all()
+            'payment_method_types' => PaymentMethodType::all(),
+            'payment_destinations' => $this->getPaymentDestinations()
         ];
     }
 
@@ -61,9 +64,15 @@ class SaleNotePaymentController extends Controller
     public function store(SaleNotePaymentRequest $request)
     {
         $id = $request->input('id');
-        $record = SaleNotePayment::firstOrNew(['id' => $id]);
-        $record->fill($request->all());
-        $record->save();
+
+        DB::connection('tenant')->transaction(function () use ($id, $request) {
+
+            $record = SaleNotePayment::firstOrNew(['id' => $id]);
+            $record->fill($request->all());
+            $record->save();
+            $this->createGlobalPayment($record, $request->all());
+
+        });
 
         if($request->paid == true)
         {

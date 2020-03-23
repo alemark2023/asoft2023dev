@@ -192,15 +192,17 @@
           <table>
             <thead>
               <tr width="100%">
-                <th v-if="document.payments.length>0">Método de pago</th>
+                <th v-if="document.payments.length>0">M.Pago</th>
+                <th v-if="document.payments.length>0">Destino</th>
                 <th v-if="document.payments.length>0">Referencia</th>
                 <th v-if="document.payments.length>0">Monto</th>
-                <th width="15%">
+                <th width="5%">
                   <a
+                    style="font-size:18px"
                     href="#"
                     @click.prevent="clickAddPayment"
-                    class="text-center font-weight-bold text-info"
-                  >[+ Agregar]</a>
+                    class="text-center font-weight-bold text-center text-info"
+                  >[+]</a>
                 </th>
               </tr>
             </thead>
@@ -217,6 +219,13 @@
                       ></el-option>
                     </el-select>
                   </div>
+                </td>
+                <td>
+                    <div class="form-group mb-2 mr-2">
+                        <el-select v-model="row.payment_destination_id" filterable :disabled="row.payment_destination_disabled">
+                            <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                        </el-select>
+                    </div>
                 </td>
                 <td>
                   <div class="form-group mb-2 mr-2">
@@ -314,6 +323,7 @@ export default {
       showDialogSaleNoteOptions: false,
       documentNewId: null,
       is_document_type_invoice: true,
+      payment_destinations:  [],
       loading_search: false,
       payment_method_types: []
     };
@@ -333,6 +343,7 @@ export default {
         document_id: null,
         date_of_payment: moment().format("YYYY-MM-DD"),
         payment_method_type_id: "01",
+        payment_destination_id:'cash',
         reference: null,
         payment: 0
       });
@@ -517,6 +528,7 @@ export default {
       await this.$http.get(`/${this.resource}/option/tables`).then(response => {
         this.all_document_types = response.data.document_types_invoice;
         this.all_series = response.data.series;
+        this.payment_destinations = response.data.payment_destinations
         this.payment_method_types = response.data.payment_method_types;
         // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
         // this.changeDocumentType()

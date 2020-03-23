@@ -32,12 +32,14 @@ use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Inventory\Models\Warehouse as WarehouseModule;
 use App\Models\Tenant\Establishment;
+use Modules\Item\Models\ItemLotsGroup;
 
 
 class ItemController extends Controller
 {
     public function index()
     {
+
         return view('tenant.items.index');
     }
 
@@ -111,9 +113,10 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration = Configuration::select('affectation_igv_type_id')->firstOrFail();
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands');
+                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
     }
 
     public function record($id)
@@ -216,6 +219,19 @@ class ItemController extends Controller
                     'warehouse_id' => $warehouse ? $warehouse->id:null,
                     'has_sale' => false,
                     'state' => $lot['state'],
+                ]);
+            }
+
+
+            $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
+
+            if($lots_enabled)
+            {
+                ItemLotsGroup::create([
+                    'code'  => $request->lot_code,
+                    'quantity'  => $request->stock,
+                    'date_of_due'  => $request->date_of_due,
+                    'item_id' => $item->id
                 ]);
             }
 

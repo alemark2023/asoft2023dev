@@ -145,6 +145,7 @@ class DocumentInput
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                         'is_set' => $item->is_set,
                         'lots' => (isset($row['item']['lots'])) ? $row['item']['lots']:[],
+                        'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null )
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],

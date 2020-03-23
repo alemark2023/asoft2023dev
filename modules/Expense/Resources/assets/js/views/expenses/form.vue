@@ -87,6 +87,7 @@
                             <thead>
                                 <tr width="100%">
                                     <th v-if="form.payments.length>0">Método de gasto</th>
+                                    <th v-if="form.payments.length>0" >Destino</th>
                                     <th v-if="form.payments.length>0">Referencia</th>
                                     <th v-if="form.payments.length>0">Monto</th>
                                     <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -96,8 +97,15 @@
                                 <tr v-for="(row, index) in form.payments" :key="index">
                                     <td>
                                         <div class="form-group mb-2 mr-2">
-                                            <el-select v-model="row.expense_method_type_id">
+                                            <el-select v-model="row.expense_method_type_id" @change="changeExpenseMethodType(index)">
                                                 <el-option v-for="option in expense_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                            </el-select>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group mb-2 mr-2">
+                                            <el-select v-model="row.payment_destination_id" filterable :disabled="row.payment_destination_disabled">
+                                                <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                             </el-select>
                                         </div>
                                     </td>
@@ -208,6 +216,7 @@
                 establishment: {},
                 currency_type: {},
                 expense_method_types: [],
+                payment_destinations:  [],
                 expense_reasons: [],
                 expenseNewId: null
             }
@@ -227,6 +236,7 @@
                     this.form.establishment_id = (this.establishment.id) ? this.establishment.id : null
                     this.form.expense_type_id = (this.expense_types.length > 0) ? this.expense_types[0].id : null
                     this.form.expense_reason_id = (this.expense_reasons.length > 0)?this.expense_reasons[0].id:null
+                    this.payment_destinations = response.data.payment_destinations
 
                     this.changeDateOfIssue()
 
@@ -238,7 +248,12 @@
            })
         },
         methods: {
+            changeExpenseMethodType(index = 0){
 
+                this.form.payments[index].payment_destination_id = (this.payment_destinations.length>0 && this.form.payments[index].expense_method_type_id != 1) ? this.payment_destinations[0].id:null
+                this.form.payments[index].payment_destination_disabled = (this.form.payments[index].expense_method_type_id == 1) ? true:false
+
+            },
             selectSupplier(){
 
                 let supplier = _.find(this.suppliers, {'id': this.aux_supplier_id})
@@ -264,6 +279,7 @@
                 }
 
                 this.clickAddPayment()
+                // this.changeExpenseMethodType()
             },
             resetForm() {
                 this.initForm()
@@ -290,7 +306,9 @@
                     expense_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     expense_method_type_id: 1,
+                    payment_destination_id:null,
                     reference: null,
+                    payment_destination_disabled:true,
                     payment: 0,
                 });
             },
@@ -348,6 +366,10 @@
                     return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
                 }
 
+                if(validate.empty_payment_destination > 0) {
+                    return this.$message.error('El destino del pago es requerido');
+                }
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
@@ -375,14 +397,17 @@
 
                 let error_by_item = 0
                 let acum_total = 0
+                let empty_payment_destination = 0
 
                 this.form.payments.forEach((item)=>{
                     acum_total += parseFloat(item.payment)
                     if(item.payment <= 0 || item.payment == null) error_by_item++;
+                    if(item.expense_method_type_id != 1 && item.payment_destination_id == null) empty_payment_destination++;
                 })
 
                 return  {
                     error_by_item : error_by_item,
+                    empty_payment_destination : empty_payment_destination,
                     acum_total : acum_total
                 }
 

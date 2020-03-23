@@ -171,7 +171,7 @@
 
                     <div  v-show="form.unit_type_id !='ZZ'" class="col-md-3 center-el-checkbox" >
                         <div class="form-group"  >
-                            <el-checkbox v-model="form.lots_enabled" @change="changeLotsEnabled">¿Maneja series o lotes?</el-checkbox><br>
+                            <el-checkbox v-model="form.lots_enabled" @change="changeLotsEnabled">¿Maneja lotes?</el-checkbox><br>
                         </div>
                     </div>
                     <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.lots_enabled">
@@ -181,8 +181,26 @@
                                 Código lote
                             </label>
                             <el-input v-model="form.lot_code" >
-                                <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+                                <!--<el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button> -->
                             </el-input>
+                            <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
+                        </div>
+                    </div>
+
+                     <div  v-show="form.unit_type_id !='ZZ'" class="col-md-3 center-el-checkbox" >
+                        <div class="form-group"  >
+                            <el-checkbox v-model="form.series_enabled" @change="changeLotsEnabled">¿Maneja series?</el-checkbox><br>
+                        </div>
+                    </div>
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.series_enabled">
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}">
+                            <label class="control-label">
+                                <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
+                                Ingrese series
+                            </label>
+
+                            <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
@@ -503,6 +521,7 @@
                 errors: {},
                 headers: headers_token,
                 form: {},
+                configuration: {},
                 unit_types: [],
                 currency_types: [],
                 system_isc_types: [],
@@ -525,9 +544,9 @@
                 attribute_types:  []
             }
         },
-        created() {
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
+        async created() {
+            await this.initForm()
+            await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
                     this.accounts = response.data.accounts
@@ -538,6 +557,7 @@
                     this.categories = response.data.categories
                     this.brands = response.data.brands
                     this.attribute_types = response.data.attribute_types
+                    this.configuration = response.data.configuration
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -551,9 +571,14 @@
             this.$eventHub.$on('reloadTables', ()=>{
                 this.reloadTables()
             })
+
+            await this.setDefaultConfiguration()
         },
 
         methods: {
+            setDefaultConfiguration(){
+                this.form.sale_affectation_igv_type_id = (this.configuration) ? this.configuration.affectation_igv_type_id : '10'
+            },
             clickAddAttribute() {
                 this.form.attributes.push({
                     attribute_type_id: null,
@@ -686,7 +711,8 @@
                     lot_code:null,
                     lots_enabled:false,
                     lots:[],
-                    attributes: []
+                    attributes: [],
+                    series_enabled: false,
                 }
                 this.show_has_igv = true
                 this.enabled_percentage_of_profit = false
@@ -717,6 +743,7 @@
                 this.initForm()
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
+                this.setDefaultConfiguration()
             },
             create() {
 
@@ -769,7 +796,7 @@
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 // if(!this.has_percentage_perception) this.form.percentage_perception = null
 
-                if(!this.recordId && this.form.lots_enabled){
+                /*if(!this.recordId && this.form.lots_enabled){
 
                     if(this.form.lots.length > this.form.stock)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
@@ -780,6 +807,25 @@
                     if(this.form.lots.length != this.form.stock)
                         return this.$message.error('La cantidad de series registradas son diferentes al stock');
 
+                }*/
+
+                if(!this.recordId && this.form.lots_enabled){
+
+                    if(!this.form.lot_code)
+                        return this.$message.error('Código de lote es requerido');
+
+                    if(!this.form.date_of_due)
+                        return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
+                }
+
+                if(!this.recordId && this.form.series_enabled)
+                {
+
+                    if(this.form.lots.length > this.form.stock)
+                        return this.$message.error('La cantidad de series registradas es superior al stock');
+
+                    if(this.form.lots.length != this.form.stock)
+                        return this.$message.error('La cantidad de series registradas son diferentes al stock');
                 }
 
                 this.loading_submit = true

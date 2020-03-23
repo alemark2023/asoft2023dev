@@ -372,7 +372,8 @@
 
       <warehouses-detail
               :showDialog.sync="showWarehousesDetail"
-              :warehouses="warehousesDetail">
+              :warehouses="warehousesDetail"
+              :unit_type="unittypeDetail">
           </warehouses-detail>
   </div>
 </template>
@@ -447,6 +448,7 @@
             history_item_id:null,
             search_item_by_barcode:false,
             warehousesDetail:[],
+            unittypeDetail:[],
             input_person:{},
             showDialogHistoryPurchases: false,
             showDialogHistorySales: false,
@@ -600,7 +602,7 @@
 
           },
           clickWarehouseDetail(item){
-
+            this.unittypeDetail = item.unit_type
               this.warehousesDetail = item.warehouses
               this.showWarehousesDetail = true
           },

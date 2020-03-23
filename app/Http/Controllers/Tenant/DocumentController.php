@@ -53,10 +53,11 @@ use Modules\Item\Models\Brand;
 use Carbon\Carbon;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use Modules\Finance\Traits\FinanceTrait; 
 
 class DocumentController extends Controller
 {
-    use StorageDocument, OfflineTrait;
+    use StorageDocument, OfflineTrait, FinanceTrait;
     private $max_count_payment = 0;
 
     public function __construct()
@@ -190,12 +191,13 @@ class DocumentController extends Controller
         //                'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
         //                'discount_types', 'charge_types', 'company', 'document_type_03_filter');
 
+        $payment_destinations = $this->getPaymentDestinations();
 
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
                         'document_types_guide', 'user','payment_method_types','enabled_discount_global',
-                        'business_turns','is_client','select_first_document_type_03');
+                        'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
 
     }
 
@@ -302,7 +304,29 @@ class DocumentController extends Controller
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];
                     }),
-                    'attributes' => $row->attributes ? $row->attributes : []
+                    'attributes' => $row->attributes ? $row->attributes : [],
+                    'lots_group' => collect($row->lots_group)->transform(function($row){
+                        return [
+                            'id'  => $row->id,
+                            'code' => $row->code,
+                            'quantity' => $row->quantity,
+                            'date_of_due' => $row->date_of_due,
+                            'checked'  => false
+                        ];
+                    }),
+                    'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'series' => $row->series,
+                            'date' => $row->date,
+                            'item_id' => $row->item_id,
+                            'warehouse_id' => $row->warehouse_id,
+                            'has_sale' => (bool)$row->has_sale,
+                            'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                        ];
+                    }),
+                    'lots_enabled' => (bool) $row->lots_enabled,
+                    'series_enabled' => (bool) $row->series_enabled,
 
                 ];
             });
@@ -835,8 +859,13 @@ class DocumentController extends Controller
     {
         try {
 
-            $record = Document::findOrFail($document_id);
-            $record->delete();
+            DB::connection('tenant')->transaction(function () use ($document_id) {
+
+                $record = Document::findOrFail($document_id);
+                $this->deleteAllPayments($record->payments);
+                $record->delete();
+
+            });
 
             return [
                 'success' => true,

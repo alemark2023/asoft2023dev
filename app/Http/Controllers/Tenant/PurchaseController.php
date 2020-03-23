@@ -33,10 +33,14 @@ use Carbon\Carbon;
 use Modules\Inventory\Models\Warehouse;
 use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\ItemWarehouse;
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Item\Models\ItemLotsGroup;
 
 
 class PurchaseController extends Controller
 {
+
+    use FinanceTrait;
 
     public function index()
     {
@@ -114,9 +118,10 @@ class PurchaseController extends Controller
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
 
         return compact('suppliers', 'establishment','currency_types', 'discount_types',
-                    'charge_types', 'document_types_invoice','company','payment_method_types');
+                    'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations');
     }
 
     public function item_tables()
@@ -175,18 +180,39 @@ class PurchaseController extends Controller
                             'series' => $lot['series'],
                             'item_id' => $row['item_id'],
                             'warehouse_id' => $row['warehouse_id'],
-                            'has_sale' => false
+                            'has_sale' => false,
+                            'state' => $lot['state']
                         ]);
 
                     }
 
                 }
 
+                if(array_key_exists('item', $row))
+                {
+                    if( $row['item']['lots_enabled'] == true)
+                    {
+
+                        ItemLotsGroup::create([
+                            'code'  => $row['lot_code'],
+                            'quantity'  => $row['quantity'],
+                            'date_of_due'  => $row['date_of_due'],
+                            'item_id' => $row['item_id']
+                        ]);
+
+                    }
+                }
+
             }
 
 
             foreach ($data['payments'] as $payment) {
-                $doc->purchase_payments()->create($payment);
+
+                $record_payment = $doc->purchase_payments()->create($payment);
+
+                if(isset($payment['payment_destination_id'])){
+                    $this->createGlobalPayment($record_payment, $payment);
+                }
             }
 
             return $doc;
@@ -261,11 +287,16 @@ class PurchaseController extends Controller
                 }
             }
 
-
-            $doc->purchase_payments()->delete();
+            // $doc->purchase_payments()->delete();
+            $this->deleteAllPayments($doc->purchase_payments);
 
             foreach ($request['payments'] as $payment) {
-                $doc->purchase_payments()->create($payment);
+
+                $record_payment = $doc->purchase_payments()->create($payment);
+
+                if(isset($payment['payment_destination_id'])){
+                    $this->createGlobalPayment($record_payment, $payment);
+                }
             }
 
             return $doc;
@@ -379,7 +410,9 @@ class PurchaseController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
-                        })
+                        }),
+                        'series_enabled' => (bool) $row->series_enabled,
+
                         // 'warehouses' => collect($row->warehouses)->transform(function($row) {
                         //     return [
                         //         'warehouse_id' => $row->warehouse->id,
@@ -402,10 +435,17 @@ class PurchaseController extends Controller
 
     public function delete($id)
     {
+
         try {
 
-            $row = Purchase::findOrFail($id);
-            $row->delete();
+            DB::connection('tenant')->transaction(function () use ($id) {
+
+                $row = Purchase::findOrFail($id);
+                $this->deleteAllPayments($row->purchase_payments);
+                $row->delete();
+
+            });
+
             return [
                 'success' => true,
                 'message' => 'Compra eliminada con éxito'

@@ -1,10 +1,13 @@
 <template>
     <div class="card">
         <div class="card-header bg-info">
-            <h3 class="my-0">Certificado</h3>
+            <h3 class="my-0">Datos Sunat</h3>
         </div>
         <div class="card-body">
-            <div class="table-responsive" v-if="record">
+            <div class="title border-bottom pt-0">
+                <h4>Certificado</h4>
+            </div>
+            <div class="table-responsive pt-2" v-if="record">
                 <table class="table">
                     <thead>
                     <tr>
@@ -23,31 +26,33 @@
                     </tbody>
                 </table>
             </div>
-            <div class="row" v-else>
-                <div class="col-md-12 text-center">
-                    <el-button  type="primary" icon="el-icon-plus" @click="clickCreate">Subir</el-button>
+            <div class="row pt-2" v-else>
+                <div class="col-md-12">
+                    <el-button  type="primary" @click="clickCreate">Subir Certificado .pfx</el-button>
                 </div>
             </div>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Usuario SOAP</th>
-                        <th>Password SOAP</th>
-                        <th class="text-right">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td> <el-input v-model="soap_username"></el-input> </td>
-                        <td> <el-input v-model="soap_password"></el-input> </td>
-                        <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickSaveSoapUser">Guardar</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="title border-bottom">
+                <h4>Usuario Secundario SUNAT</h4>
+            </div>
+            <div class="row">
+                <div class="col-md-6 py-2">
+                    <div class="form-group">
+                        <label class="control-label">Usuario</label>
+                        <el-input v-model="soap_username"></el-input>
+                        <div class="sub-title text-muted"><small>RUC + Usuario. Ejemplo: 01234567890ELUSUARIO</small></div>
+                    </div>
+                </div>
+                <div class="col-md-6 py-2">
+                    <div class="form-group">
+                        <label class="control-label">Contraseña</label>
+                        <el-input v-model="soap_password"></el-input>
+                    </div>
+                </div>
+                <div class="col-md-12 py-2">
+                    <div class="form-group">
+                        <el-button type="primary" native-type="submit" @click.prevent="clickSaveSoapUser">Guardar</el-button>
+                    </div>
+                </div>
             </div>
         </div>
         <certificates-form :showDialog.sync="showDialog"
@@ -93,7 +98,7 @@
                              this.$message.success(response.data.message)
 
                         } else {
-                            
+
                             this.$message.error(response.data.message)
                         }
                     })
