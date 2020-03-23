@@ -326,7 +326,7 @@
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
                         @if( isset($lot->has_sale) && $lot->has_sale)
-                            <span style="font-size: 9px">{{ $lot->series }}</span>
+                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
                         @endif
                     @endforeach
                 @endisset

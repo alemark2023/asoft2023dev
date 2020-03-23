@@ -146,7 +146,12 @@
             </td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item_id) }}
+                @php
+                    $lot_code = isset($row->item->lots_group) ? collect($row->item->lots_group)->first(function($row){ return $row->checked == true;}):null;
+                @endphp
+                {{ 
+                    $itemLotGroup->getLote($lot_code ? $lot_code->id : null)
+                }}
 
             </td>
             <td class="text-center align-top">
@@ -154,7 +159,7 @@
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
 
-                        <span style="font-size: 9px">{{ $lot->series }}</span>
+                        <span style="font-size: 9px">{{ $lot->series }}</span><br>
 
                     @endforeach
                 @endisset
