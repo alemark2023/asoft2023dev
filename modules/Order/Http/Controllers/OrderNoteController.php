@@ -38,12 +38,13 @@ use Modules\Order\Http\Resources\OrderNoteResource;
 use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
+use Modules\Finance\Traits\FinanceTrait; 
 
 
 class OrderNoteController extends Controller
 {
 
-    use StorageDocument;
+    use StorageDocument, FinanceTrait;
 
     protected $order_note;
     protected $company;
@@ -143,8 +144,9 @@ class OrderNoteController extends Controller
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
         $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
 
-        return compact('series', 'document_types_invoice', 'payment_method_types');
+        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
     }
 
     public function item_tables() {
