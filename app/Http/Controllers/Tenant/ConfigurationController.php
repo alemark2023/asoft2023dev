@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\FormatTemplate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
 
 class ConfigurationController extends Controller
 {
@@ -108,4 +109,15 @@ class ConfigurationController extends Controller
             'message' => 'Configuración actualizada'
         ];
     }
+
+    
+    public function tables()
+    {
+        
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
+
+        return compact('affectation_igv_types');
+        
+    }
+
 }
