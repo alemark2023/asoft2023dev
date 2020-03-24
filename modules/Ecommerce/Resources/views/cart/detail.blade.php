@@ -95,7 +95,7 @@
                     con EFECTIVO</a>
                 <a style="margin-left:15%" href="{{route('tenant_ecommerce_login')}}"
                     class="btn btn-block btn-sm login-link">
-                    <img src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" alt="">
+                    <img src="{{ asset('porto-ecommerce/assets/images/btn_buynowCC_LG.gif') }}" alt="">
                 </a>
 
                 @else
@@ -236,10 +236,10 @@
 @endsection
 
 @push('scripts')
-<script src="https://checkout.culqi.com/js/v3"></script>
+<!-- script src="https://checkout.culqi.com/js/v3"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.31.1/dist/sweetalert2.all.min.js"></script>
 <script src="https://momentjs.com/downloads/moment.min.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script -->
 
 
 <script type="text/javascript">

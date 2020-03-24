@@ -30,11 +30,12 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Perception;
 use App\Models\Tenant\Configuration;
+use Modules\Finance\Traits\FinanceTrait; 
 
 
 class Facturalo
 {
-    use StorageDocument;
+    use StorageDocument, FinanceTrait;
 
     const SENT = '03';
     const ACCEPTED = '05';
@@ -787,6 +788,7 @@ class Facturalo
                     "date_of_payment" => $row['date_of_payment'],
                     "payment_method_type_id" => $row['payment_method_type_id'],
                     "reference" => $row['reference'],
+                    "payment_destination_id" => isset($row['payment_destination_id']) ? $row['payment_destination_id'] : null,
                     "change" => $change,
                     "payment" => $payment
                 ];
@@ -804,7 +806,13 @@ class Facturalo
                 $this->apply_change = true; 
             }
 
-            $document->payments()->create($row);
+            $record = $document->payments()->create($row);
+            
+            //considerar la creacion de una caja chica cuando recien se crea el cliente
+            if(isset($row['payment_destination_id'])){
+                $this->createGlobalPayment($record, $row);
+            }
+
         }
     }
 

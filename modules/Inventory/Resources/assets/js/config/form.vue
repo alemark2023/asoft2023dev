@@ -34,7 +34,7 @@
         },
         async created() {
             await this.initForm();
-            
+
             await this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== '') this.form = response.data.data;
             });
@@ -42,7 +42,7 @@
         methods: {
             initForm() {
                 this.errors = {};
-                
+
                 this.form = {
                     id: null,
                     stock_control: false,
@@ -50,7 +50,7 @@
             },
             submit() {
                 this.loading_submit = true;
-                
+
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);

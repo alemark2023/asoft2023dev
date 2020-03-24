@@ -102,4 +102,18 @@ class Expense extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
+    public function getNumberFullAttribute()
+    {
+        return $this->number;
+    }
+
+    public function document_type()
+    {
+        return $this->belongsTo(ExpenseType::class, 'expense_type_id');
+    }
+
+    public function scopeWhereStateTypeAccepted($query)
+    {
+        return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+    }
 }

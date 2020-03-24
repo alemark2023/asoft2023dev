@@ -377,7 +377,7 @@
 
                         @if(in_array('inventory', $vc_modules))
                         <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses', 'moves', 'transfers']) ||
-                                                ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory'])))?'nav-active nav-expanded':'' }}">
+                                                ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-warehouse" aria-hidden="true"></i>
                                 <span>Inventario</span>
@@ -400,6 +400,11 @@
                                 <li class="{{(($path[0] === 'reports') && ($path[1] == 'inventory')) ? 'nav-active' : ''}}">
                                     <a class="nav-link" href="{{route('reports.inventory.index')}}">
                                         Reporte Inventario
+                                    </a>
+                                </li>
+                                <li class="{{(($path[0] === 'reports') && ($path[1] === 'valued-kardex')) ? 'nav-active' : ''}}">
+                                    <a class="nav-link" href="{{route('reports.valued_kardex.index')}}">
+                                        Kardex valorizado
                                     </a>
                                 </li>
                             </ul>
@@ -574,6 +579,38 @@
                             <li class="{{(($path[0] === 'account') && ($path[1] == 'summary-report'))   ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account_summary_report.index') }}">
                                     Reporte resumido - Ventas
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(in_array('finance', $vc_modules))
+
+                    <li class="nav-parent {{$path[0] === 'finances' && in_array($path[1], [
+                                                'global-payments', 'balance','payment-method-types'
+                                            ]) 
+                                            ? 'nav-active nav-expanded' : ''}}">
+
+                        <a class="nav-link" href="#">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                            <i class="fas fa-hand-holding-usd" aria-hidden="true"></i>
+                            <span>Finanzas</span>
+                        </a>
+                        <ul class="nav nav-children" style="">
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'global-payments')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.global_payments.index')}}">
+                                    Pagos
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'balance')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.balance.index')}}">
+                                    Balance
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'payment-method-types')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.payment_method_types.index')}}">
+                                    Ingresos y Egresos - M. Pago
                                 </a>
                             </li>
                         </ul>
