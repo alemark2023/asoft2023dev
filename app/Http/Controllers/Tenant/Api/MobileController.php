@@ -48,7 +48,7 @@ class MobileController extends Controller
 
     public function customers()
     {
-        $customers = Person::whereType('customers')->orderBy('name')->take(100)->get()->transform(function($row) {
+        $customers = Person::whereType('customers')->orderBy('name')->take(50)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -83,7 +83,7 @@ class MobileController extends Controller
             ];
         });*/
 
-        $items = Item::whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->get()->transform(function($row){
+        $items = Item::whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->take(50)->get()->transform(function($row){
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
             return [
