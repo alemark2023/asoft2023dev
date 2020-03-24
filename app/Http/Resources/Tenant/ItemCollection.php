@@ -47,6 +47,7 @@ class ItemCollection extends ResourceCollection
                 'amount_sale_unit_price' => $row->sale_unit_price,
                 'calculate_quantity' => (bool) $row->calculate_quantity,
                 'has_igv' => (bool) $row->has_igv,
+                'active' => (bool) $row->active,
                 'has_igv_description' => $has_igv_description,
                 'sale_unit_price' => "{$row->currency_type->symbol} {$row->sale_unit_price}",
                 'purchase_unit_price' => "{$row->currency_type->symbol} {$row->purchase_unit_price}",

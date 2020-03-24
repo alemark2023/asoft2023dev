@@ -289,4 +289,10 @@ class Item extends ModelTenant
                     });
                 }]);
     }
+
+    public function scopeWhereIsNotActive($query)
+    {
+        return $query->where('active', false);
+    }
+    
 }

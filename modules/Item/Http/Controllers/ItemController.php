@@ -28,7 +28,7 @@ class ItemController extends Controller
             'Content-Type' => 'application/png',
         ];
 
-        return response()->download($temp, "{$item->internal_id}-{$item->description}.png", $headers);
+        return response()->download($temp, "{$item->internal_id}.png", $headers);
 
     }
  
