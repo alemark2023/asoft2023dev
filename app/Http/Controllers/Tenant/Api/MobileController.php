@@ -228,6 +228,29 @@ class MobileController extends Controller
         ];
     }
 
+    public function searchCustomers(Request $request)
+    {
+
+        $customers = Person::whereType('customers')->where('name', 'like', "%{$request->input}%" )->orderBy('name')->take(50)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+                'identity_document_type_code' => $row->identity_document_type->code,
+                'address' => $row->address,
+                'email' => $row->email,
+                'selected' => false
+            ];
+        });
+
+        return [
+            'success' => true,
+            'data' => array('customers' => $customers)
+        ];
+    }
+
 
 
 
