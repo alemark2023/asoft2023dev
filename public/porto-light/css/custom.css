@@ -277,3 +277,7 @@ ul.nav-main li .nav-children li.nav-active > a {
 .widget-summary .summary {
     word-break: break-word;
 }
+
+.disable_color{
+  color: red;
+}

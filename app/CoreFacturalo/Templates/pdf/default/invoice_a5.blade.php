@@ -295,8 +295,10 @@
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                    {!!$row->item->description!!} 
                 @endif
+                
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @foreach($row->additional_information as $information)
                     @if ($information)
@@ -493,7 +495,7 @@
             @endphp
             @foreach($payments as $row)
                 <tr>
-                    <td>&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                    <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
                 </tr>
             @endforeach
         </tr>

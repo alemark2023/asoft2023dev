@@ -22,7 +22,7 @@
                         <th class="text-right">Número</th>
                         <th class="text-right">Acciones</th>
                     <tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{ disable_color : !row.enabled}">
                         <td>{{ index }}</td>
                         <td>{{ row.name }}</td>
                         <td class="text-right">{{ row.number }}</td>
