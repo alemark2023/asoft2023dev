@@ -114,6 +114,8 @@ $cash_documents = $cash->cash_documents;
                                 <th>Documento</th>
                                 <th>Método de pago</th> 
                                 <th>Moneda</th>
+                                <th>Importe</th>
+                                <th>Vuelto</th>
                                 <th>Monto</th>
                             </tr>
                         </thead>
@@ -154,6 +156,8 @@ $cash_documents = $cash->cash_documents;
                                         <td class="celda">{{ $number }}</td>
                                         <td class="celda">{{$payment_method_description }}</td>  
                                         <td class="celda">{{$currency_type_id }}</td>  
+                                        <td class="celda">{{ number_format($value->sale_note->total,2) }}</td>
+                                        <td class="celda">{{ number_format($payment->change,2) }}</td>
                                         <td class="celda">{{ number_format($total,2) }}</td>
 
                                     </tr>
@@ -181,6 +185,8 @@ $cash_documents = $cash->cash_documents;
                                         <td class="celda">{{ $number }}</td>
                                         <td class="celda">{{$payment_method_description }}</td>  
                                         <td class="celda">{{$currency_type_id }}</td>  
+                                        <td class="celda">{{ number_format($value->document->total,2) }}</td>
+                                        <td class="celda">{{ number_format($payment->change,2) }}</td>
                                         <td class="celda">{{ number_format($total,2) }}</td>
 
                                     </tr>
