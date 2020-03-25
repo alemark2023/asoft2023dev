@@ -444,7 +444,7 @@
         </tr>
         @foreach($payments as $row)
             <tr>
-                <td class="desc">&#8226; {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                <td class="desc">&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
             </tr>
         @endforeach
     @endif
