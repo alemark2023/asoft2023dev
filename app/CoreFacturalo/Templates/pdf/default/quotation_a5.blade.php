@@ -88,6 +88,19 @@
     </tr>
     @endif
     
+    @if ($document->payment_method_type)
+    <tr>
+        <td class="align-top">T. Pago:</td>
+        <td colspan="">
+            {{ $document->payment_method_type->description }} 
+        </td>
+        @if($document->sale_opportunity)
+            <td width="25%">O. Venta:</td>
+            <td width="15%">{{ $document->sale_opportunity->number_full }}</td>
+        @endif
+    </tr>
+    @endif
+
     @if ($document->shipping_address)
     <tr>
         <td class="align-top">Dir. Envío:</td>
@@ -105,14 +118,6 @@
     </tr>
     @endif
     
-    @if ($document->payment_method_type)
-    <tr>
-        <td class="align-top">T. Pago:</td>
-        <td colspan="3">
-            {{ $document->payment_method_type->description }} 
-        </td>
-    </tr>
-    @endif
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">

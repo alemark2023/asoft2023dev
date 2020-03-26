@@ -419,7 +419,7 @@ if ($hostname) {
             Route::get('quotations', 'Tenant\QuotationController@index')->name('tenant.quotations.index')->middleware('redirect.level');
             Route::get('quotations/columns', 'Tenant\QuotationController@columns');
             Route::get('quotations/records', 'Tenant\QuotationController@records');
-            Route::get('quotations/create', 'Tenant\QuotationController@create')->name('tenant.quotations.create')->middleware('redirect.level');
+            Route::get('quotations/create/{saleOpportunityId?}', 'Tenant\QuotationController@create')->name('tenant.quotations.create')->middleware('redirect.level');
             Route::get('quotations/edit/{id}', 'Tenant\QuotationController@edit')->middleware('redirect.level');
 
             Route::get('quotations/tables', 'Tenant\QuotationController@tables');

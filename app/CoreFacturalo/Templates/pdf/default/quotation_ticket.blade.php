@@ -139,6 +139,16 @@
         </td>
     </tr>
     @endif
+    @if ($document->sale_opportunity)
+    <tr>
+        <td class="align-top"><p class="desc">O. Venta:</p></td>
+        <td >
+            <p class="desc">            
+                {{ $document->sale_opportunity->number_full }} 
+            </p>
+        </td>
+    </tr>
+    @endif
     <tr> 
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>

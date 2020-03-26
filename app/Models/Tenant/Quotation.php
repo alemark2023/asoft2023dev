@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use Modules\Sale\Models\SaleOpportunity;
 
 class Quotation extends ModelTenant
 {
@@ -54,7 +55,8 @@ class Quotation extends ModelTenant
         'legends',
         'filename',
         'shipping_address',
-        'description'
+        'description',
+        'sale_opportunity_id',
 
     ];
 
@@ -228,4 +230,13 @@ class Quotation extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
+    public function sale_opportunity()
+    {
+        return $this->belongsTo(SaleOpportunity::class);
+    }
+
+    public function getNumberFullAttribute()
+    {
+        return $this->prefix.'-'.$this->id;
+    }
 }

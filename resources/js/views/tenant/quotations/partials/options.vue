@@ -541,7 +541,7 @@ export default {
           // this.validateIdentityDocumentType()
           this.getCustomer();
           let type = this.type == "edit" ? "editada" : "registrada";
-          this.titleDialog = `Cotización ${type}: '` + this.form.identifier;
+          this.titleDialog = `Cotización ${type}: ` + this.form.identifier;
         });
     },
     changeDocumentType() {

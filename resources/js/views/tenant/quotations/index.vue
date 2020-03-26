@@ -34,6 +34,7 @@
                         <th>Cotización</th>
                         <th>Comprobantes</th>
                         <th>Notas de venta</th>
+                        <th>Oportunidad Venta</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -65,6 +66,7 @@
                                 <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
                             </template>
                         </td>
+                        <td>{{ row.sale_opportunity_number_full }}</td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>

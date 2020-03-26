@@ -215,7 +215,7 @@
     import Logo from '../companies/logo.vue'
 
     export default {
-        props:['typeUser'],
+        props:['typeUser', 'saleOpportunityId'],
         components: {QuotationFormItem, PersonForm, QuotationOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
@@ -266,9 +266,47 @@
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
                 this.reloadDataCustomers(customer_id)
             })
+
+            await this.createQuotationFromSO()
         },
         methods: {
+            async createQuotationFromSO(){
 
+                if(this.saleOpportunityId) {
+
+                    let sale_opportunity = {}
+                    
+                    await this.$http.get(`/sale-opportunities/record/${this.saleOpportunityId}`)
+                        .then(response => {
+                            
+                            sale_opportunity = response.data.data.sale_opportunity;
+                            this.reloadDataCustomers(sale_opportunity.customer_id)
+
+                        })
+
+                    await this.assignDataSaleOpportunity(sale_opportunity)
+                }
+
+            },
+            assignDataSaleOpportunity(sale_opportunity){
+
+                this.form.establishment_id = sale_opportunity.establishment_id
+                this.form.time_of_issue = moment().format("HH:mm:ss")
+                this.form.customer_id = sale_opportunity.customer_id
+                this.form.currency_type_id = sale_opportunity.currency_type_id
+                this.form.total_exportation = sale_opportunity.total_exportation
+                this.form.total_free = sale_opportunity.total_free
+                this.form.total_taxed = sale_opportunity.total_taxed
+                this.form.total_unaffected = sale_opportunity.total_unaffected
+                this.form.total_exonerated = sale_opportunity.total_exonerated
+                this.form.total_igv = sale_opportunity.total_igv
+                this.form.total_taxes = sale_opportunity.total_taxes
+                this.form.total_value = sale_opportunity.total_value
+                this.form.total = sale_opportunity.total
+                this.form.items = sale_opportunity.items
+                this.form.sale_opportunity_id = sale_opportunity.id;
+
+            },
             getFormatUnitPriceRow(unit_price){
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)
@@ -347,7 +385,8 @@
                     shipping_address:null,
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    sale_opportunity_id:null,
                 }
             },
             resetForm() {
@@ -455,7 +494,13 @@
                     if (response.data.success) {
                         this.resetForm();
                         this.quotationNewId = response.data.data.id;
-                        this.showDialogOptions = true;
+
+                        if(this.saleOpportunityId){
+                            this.$message.success(`La cotización ${response.data.data.number_full} fue generada`)
+                            this.close()
+                        }else{
+                            this.showDialogOptions = true;
+                        }
                     }
                     else {
                         this.$message.error(response.data.message);

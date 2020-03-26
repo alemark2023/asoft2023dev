@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Order\Models;
+namespace Modules\Sale\Models;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\User;
@@ -15,7 +15,7 @@ use Modules\Inventory\Models\InventoryKardex;
 
 class SaleOpportunity extends ModelTenant
 {
-    protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items'];
+    protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'files'];
 
     protected $fillable = [
         'id',
@@ -106,6 +106,10 @@ class SaleOpportunity extends ModelTenant
         return $this->hasMany(SaleOpportunityItem::class);
     }
 
+    public function files()
+    {
+        return $this->hasMany(SaleOpportunityFile::class);
+    }
 
     public function quotation()
     {

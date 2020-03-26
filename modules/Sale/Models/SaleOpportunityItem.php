@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Order\Models;
+namespace Modules\Sale\Models;
 
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;

@@ -58,9 +58,9 @@ class QuotationController extends Controller
     }
 
 
-    public function create()
+    public function create($saleOpportunityId = null)
     {
-        return view('tenant.quotations.form');
+        return view('tenant.quotations.form', compact('saleOpportunityId'));
     }
 
     public function edit($id)
@@ -211,6 +211,7 @@ class QuotationController extends Controller
             'success' => true,
             'data' => [
                 'id' => $this->quotation->id,
+                'number_full' => $this->quotation->number_full,
             ],
         ];
     }
