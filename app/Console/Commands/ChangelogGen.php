@@ -55,7 +55,7 @@ class ChangelogGen extends Command
             $gitlog = new Process('git log '.$option_from.'..'.$option_to.' --no-merges --date=short --pretty=format:"%ad : %s" | grep -e '.$key);
             $gitlog->run();
             if (!$gitlog->isSuccessful()) {
-                $this->error('no se pudo actualizar');
+                $this->error('no hay datos para '.$key);
             } else {
                 $res_gitlog = $gitlog->getOutput();
 
