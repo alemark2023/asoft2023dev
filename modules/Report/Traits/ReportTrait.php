@@ -215,7 +215,7 @@ trait ReportTrait
 
     public function getSellers(){
 
-        $persons = User::whereType('seller')->orderBy('name')->get()->transform(function($row) {
+        $persons = User::whereIn('type', ['seller', 'admin'])->orderBy('name')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'name' => $row->name,
@@ -226,4 +226,79 @@ trait ReportTrait
         return $persons;
 
     }
+
+    public function getDataOfPeriod($request){
+
+        $period = $request['period'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+        $month_start = $request['month_start'];
+        $month_end = $request['month_end'];
+        
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        return [
+            'd_start' => $d_start,
+            'd_end' => $d_end
+        ];
+    }
+
+    public function getDateRangeTypes($is_sale = false){
+ 
+        if($is_sale){
+
+            return [
+                ['id' => 'date_of_issue', 'description' => 'Fecha emisión'],
+            ]; 
+
+        }
+
+        return [
+            ['id' => 'date_of_issue', 'description' => 'Fecha emisión'],
+            ['id' => 'delivery_date', 'description' => 'Fecha entrega']
+        ]; 
+
+    }
+
+    public function getOrderStateTypes(){
+ 
+        return [
+            ['id' => 'all_states', 'description' => 'Todos'],
+            ['id' => 'pending', 'description' => 'Pendiente'],
+            ['id' => 'processed', 'description' => 'Procesado'],
+        ]; 
+
+    }
+
+    public function getCIDocumentTypes(){
+ 
+        return DocumentType::whereIn('id', ['01', '03', '80'])->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->description
+            ];
+        });
+
+    }
+
 }

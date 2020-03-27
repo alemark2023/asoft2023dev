@@ -54,6 +54,7 @@
                         {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'order-notes')?'nav-active nav-expanded':'' }}
 
                         ">
                         <a class="nav-link" href="#">
@@ -223,6 +224,13 @@
                                     </li>
 
                                 @endif
+                                
+                                <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.order_notes.index')}}">
+                                        Pedidos
+                                    </a>
+                                </li>
+
                             @endif
 
                         </ul>
@@ -377,7 +385,7 @@
 
                         @if(in_array('inventory', $vc_modules))
                         <li class="nav-parent {{ (in_array($path[0], ['inventory', 'warehouses', 'moves', 'transfers']) ||
-                                                ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory'])))?'nav-active nav-expanded':'' }}">
+                                                ($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-warehouse" aria-hidden="true"></i>
                                 <span>Inventario</span>
@@ -400,6 +408,11 @@
                                 <li class="{{(($path[0] === 'reports') && ($path[1] == 'inventory')) ? 'nav-active' : ''}}">
                                     <a class="nav-link" href="{{route('reports.inventory.index')}}">
                                         Reporte Inventario
+                                    </a>
+                                </li>
+                                <li class="{{(($path[0] === 'reports') && ($path[1] === 'valued-kardex')) ? 'nav-active' : ''}}">
+                                    <a class="nav-link" href="{{route('reports.valued_kardex.index')}}">
+                                        Kardex valorizado
                                     </a>
                                 </li>
                             </ul>
@@ -460,7 +473,11 @@
                     </li>
                     @endif
                     @if(in_array('reports', $vc_modules))
-                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 'validate-documents', 'document-detractions','commercial-analysis'])) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
+                                        'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 
+                                        'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
+                                        'order-notes-general', 'sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+                                        
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
@@ -471,49 +488,93 @@
                                     Compras
                                 </a>
                             </li>
-                            <li class="{{(($path[0] === 'reports') && ($path[1] === 'sales')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.sales.index')}}">
+
+                            <li class="nav-parent {{  ($path[0] === 'reports' && 
+                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'general-items','sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+
+                                <a class="nav-link" href="#">
                                     Ventas
                                 </a>
+                                <ul class="nav nav-children">
+                                    
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'sales')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.sales.index')}}">
+                                            Documentos
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'customers')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.customers.index')}}">
+                                            Clientes
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'items')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.items.index')}}">
+                                            Producto - busqueda individual
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'general-items')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.general_items.index')}}">
+                                            Productos
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'quotations')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.quotations.index')}}">
+                                            Cotizaciones
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'sale-notes')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.sale_notes.index')}}">
+                                            Notas de Venta
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'document-detractions')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.document_detractions.index')}}">
+                                            Detracciones
+                                        </a>
+                                    </li>
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'commissions')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.commissions.index')}}">
+                                            Comisiones vendedor
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'sales-consolidated')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.sales_consolidated.index')}}">
+                                            Consolidado de items
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="{{(($path[0] === 'reports') && ($path[1] === 'customers')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.customers.index')}}">
-                                    Clientes
+
+                            <li class="nav-parent {{  ($path[0] === 'reports' && 
+                                    in_array($path[1], ['order-notes-consolidated', 'order-notes-general'])) ? 'nav-active nav-expanded' : ''}}">
+
+                                <a class="nav-link" href="#">
+                                    Pedidos
                                 </a>
-                            </li>
-                            <li class="{{(($path[0] === 'reports') && ($path[1] === 'items')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.items.index')}}">
-                                    Productos
-                                </a>
-                            </li>
-                             <li class="{{(($path[0] === 'reports') && ($path[1] == 'document-detractions')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.document_detractions.index')}}">
-                                    Detracciones
-                                </a>
+                                <ul class="nav nav-children">
+                                     
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes-general')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.order_notes_general.index')}}">
+                                            General
+                                        </a>
+                                    </li>
+
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes-consolidated')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.order_notes_consolidated.index')}}">
+                                            Consolidado de items
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
 
                             <li class="{{(($path[0] === 'reports') && ($path[1] == 'consistency-documents')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.consistency-documents.index')}}">Consistencia documentos</a>
                             </li>
 
-                            <li class="{{(($path[0] === 'reports') && ($path[1] == 'quotations')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.quotations.index')}}">
-                                    Cotizaciones
-                                </a>
-                            </li>
-                             <li class="{{(($path[0] === 'reports') && ($path[1] == 'sale-notes')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.sale_notes.index')}}">
-                                    Notas de Venta
-                                </a>
-                            </li>
                              <li class="{{(($path[0] === 'reports') && ($path[1] == 'validate-documents')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.validate_documents.index')}}">
                                     Validador de documentos
-                                </a>
-                            </li>
-                             <li class="{{(($path[0] === 'reports') && ($path[1] == 'commissions')) ? 'nav-active' : ''}}">
-                                <a class="nav-link" href="{{route('tenant.reports.commissions.index')}}">
-                                    Comisiones vendedor
                                 </a>
                             </li>
                             @if(in_array('hotel', $vc_business_turns))
@@ -569,6 +630,38 @@
                             <li class="{{(($path[0] === 'account') && ($path[1] == 'summary-report'))   ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{ route('tenant.account_summary_report.index') }}">
                                     Reporte resumido - Ventas
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(in_array('finance', $vc_modules))
+
+                    <li class="nav-parent {{$path[0] === 'finances' && in_array($path[1], [
+                                                'global-payments', 'balance','payment-method-types'
+                                            ]) 
+                                            ? 'nav-active nav-expanded' : ''}}">
+
+                        <a class="nav-link" href="#">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                            <i class="fas fa-hand-holding-usd" aria-hidden="true"></i>
+                            <span>Finanzas</span>
+                        </a>
+                        <ul class="nav nav-children" style="">
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'global-payments')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.global_payments.index')}}">
+                                    Pagos
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'balance')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.balance.index')}}">
+                                    Balance
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'payment-method-types')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.payment_method_types.index')}}">
+                                    Ingresos y Egresos - M. Pago
                                 </a>
                             </li>
                         </ul>

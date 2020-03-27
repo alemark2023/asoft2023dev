@@ -33,7 +33,7 @@ class SaleNoteCollection extends ResourceCollection
                 'customer_number' => $row->customer->number,
                 'currency_type_id' => $row->currency_type_id,
                 'total_exportation' => number_format($row->total_exportation,2),
-                // 'total_free' => number_format($row->total_free,2),
+                'total_free' => number_format($row->total_free,2),
                 'total_unaffected' => number_format($row->total_unaffected,2),
                 'total_exonerated' => number_format($row->total_exonerated,2),
                 'total_taxed' => number_format($row->total_taxed,2),

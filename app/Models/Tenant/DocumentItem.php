@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use Illuminate\Support\Facades\DB;
 
 class DocumentItem extends ModelTenant
 {
@@ -46,6 +47,8 @@ class DocumentItem extends ModelTenant
         'discounts',
         'total_plastic_bag_taxes',
         'warehouse_id',
+        'name_product_pdf',
+        'additional_information'
     ];
 
     public function getItemAttribute($value)
@@ -117,4 +120,49 @@ class DocumentItem extends ModelTenant
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
+    
+    public function getAdditionalInformationAttribute($value)
+    {
+        // if($value){
+            $arr = explode('|', $value);
+            return $arr;
+        // }
+
+        // return null;
+
+    }
+
+
+    public function scopeWhereDefaultDocumentType($query, $params)
+    {
+
+        $db_raw = DB::raw("document_items.id as id, documents.series as series, documents.number as number,
+                            document_items.item as item, document_items.quantity as quantity,  
+                            documents.date_of_issue as date_of_issue");
+
+        if($params['person_id']){
+
+            return $query->whereHas('document', function($q) use($params){
+                            $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                                ->where('customer_id', $params['person_id'])
+                                ->whereTypeUser();
+                        })
+                        ->join('documents', 'document_items.document_id', '=', 'documents.id')
+                        ->select($db_raw)
+                        ->latest('id');
+                        
+        }
+
+        
+        return $query->whereHas('document', function($q) use($params){
+                    $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
+                        ->where('user_id', $params['seller_id'])
+                        ->whereTypeUser();
+                })
+                ->join('documents', 'document_items.document_id', '=', 'documents.id')
+                ->select($db_raw)
+                ->latest('id');
+
+    }
+
 }

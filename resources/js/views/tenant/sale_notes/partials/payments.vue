@@ -9,16 +9,18 @@
                             <tr>
                                 <th>Fecha de pago</th>
                                 <th>Método de pago</th>
+                                <th>Destino</th>
                                 <th>Referencia</th>
                                 <th class="text-right">Monto</th>
                                 <th></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in records">
+                            <tr v-for="(row, index) in records" :key="index">
                                 <template v-if="row.id">
                                     <td>{{ row.date_of_payment }}</td>
                                     <td>{{ row.payment_method_type_description }}</td>
+                                    <td>{{ row.destination_description }}</td>
                                     <td>{{ row.reference }}</td>
                                     <td class="text-right">{{ row.payment }}</td>
                                     <td class="series-table-actions text-right">
@@ -46,6 +48,14 @@
                                         </div>
                                     </td>
                                     <td>
+                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.payment_destination_id}">
+                                            <el-select v-model="row.payment_destination_id" filterable :disabled="row.payment_destination_disabled">
+                                                <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                            </el-select>
+                                            <small class="form-control-feedback" v-if="row.errors.payment_destination_id" v-text="row.errors.payment_destination_id[0]"></small>
+                                        </div>
+                                    </td>
+                                    <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}">
                                             <el-input v-model="row.reference"></el-input>
                                             <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
@@ -70,17 +80,17 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <td colspan="3" class="text-right">TOTAL PAGADO</td>
+                                <td colspan="4" class="text-right">TOTAL PAGADO</td>
                                 <td class="text-right">{{ document.total_paid }}</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right">TOTAL A PAGAR</td>
+                                <td colspan="4" class="text-right">TOTAL A PAGAR</td>
                                 <td class="text-right">{{ document.total }}</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right">PENDIENTE DE PAGO</td>
+                                <td colspan="4" class="text-right">PENDIENTE DE PAGO</td>
                                 <td class="text-right">{{ document.total_difference }}</td>
                                 <td></td>
                             </tr>
@@ -109,6 +119,7 @@
                 title: null,
                 resource: 'sale_note_payments',
                 records: [],
+                payment_destinations: [],
                 payment_method_types: [],
                 showAddButton: true,
                 document: {}
@@ -118,6 +129,7 @@
             await this.initForm();
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
+                    this.payment_destinations = response.data.payment_destinations
                     this.payment_method_types = response.data.payment_method_types;
                     //this.initDocumentTypes()
                 })
@@ -146,6 +158,7 @@
                     id: null,
                     date_of_payment: moment().format('YYYY-MM-DD'),
                     payment_method_type_id: null,
+                    payment_destination_id:null,
                     reference: null,
                     payment: 0,
                     errors: {},
@@ -175,6 +188,7 @@
                     sale_note_id: this.documentId,
                     date_of_payment: this.records[index].date_of_payment,
                     payment_method_type_id: this.records[index].payment_method_type_id,
+                    payment_destination_id: this.records[index].payment_destination_id,
                     reference: this.records[index].reference,
                     payment: this.records[index].payment,
                     paid: paid

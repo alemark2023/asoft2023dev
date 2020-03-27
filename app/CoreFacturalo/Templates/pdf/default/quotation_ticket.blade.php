@@ -80,6 +80,13 @@
     </tr>
     @endif
 
+    @if($document->delivery_date) 
+    <tr>
+        <td width="" class=""><p class="desc">F. Entrega:</p></td>
+        <td width="" class=""><p class="desc">{{ $document->delivery_date->format('Y-m-d') }}</p></td>
+    </tr>
+    @endif
+
     <tr>
         <td class="align-top"><p class="desc">Cliente:</p></td>
         <td><p class="desc">{{ $customer->name }}</p></td>

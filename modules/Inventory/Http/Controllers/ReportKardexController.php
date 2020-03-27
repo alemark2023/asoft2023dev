@@ -17,7 +17,11 @@ use Modules\Inventory\Http\Resources\ReportKardexCollection;
 use Modules\Inventory\Http\Resources\ReportKardexLotsCollection;
 
 use Modules\Inventory\Models\ItemWarehouse;
+use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\ItemLot;
 
+use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
+use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 
 
 class ReportKardexController extends Controller
@@ -32,7 +36,8 @@ class ReportKardexController extends Controller
         "App\Models\Tenant\Document",
         "App\Models\Tenant\Purchase",
         "App\Models\Tenant\SaleNote",
-        "Modules\Inventory\Models\Inventory"
+        "Modules\Inventory\Models\Inventory",
+        "Modules\Order\Models\OrderNote"
     ];
 
     public function index() {
@@ -243,6 +248,113 @@ class ReportKardexController extends Controller
             ->company($company)
             ->establishment($establishment)
             ->download('ReporteKar'.Carbon::now().'.xlsx');
+    }
+
+    public function getRecords2($request){
+
+        $item_id = $request['item_id'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+
+        $records = $this->data2($item_id, $date_start, $date_end);
+
+        return $records;
+
+    }
+
+
+    private function data2($item_id, $date_start, $date_end)
+    {
+
+       // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
+        if($date_start && $date_end){
+
+            $data = ItemLotsGroup::whereBetween('date_of_due', [$date_start, $date_end])
+                        ->orderBy('item_id')->orderBy('id');
+
+        }else{
+
+            $data = ItemLotsGroup::orderBy('item_id')->orderBy('id');
+        }
+
+        if($item_id){
+            $data = $data->where('item_id', $item_id);
+        }
+
+
+        return $data;
+
+    }
+
+    public function records_lots_kardex(Request $request)
+    {
+        $records = $this->getRecords2($request->all());
+
+        return new ReportKardexLotsGroupCollection($records->paginate(config('tenant.items_per_page')));
+
+
+    }
+
+
+    public function getRecords3($request){
+
+        $item_id = $request['item_id'];
+        $date_start = $request['date_start'];
+        $date_end = $request['date_end'];
+
+        $records = $this->data3($item_id, $date_start, $date_end);
+
+        return $records;
+
+    }
+
+
+    private function data3($item_id, $date_start, $date_end)
+    {
+
+       // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
+        if($date_start && $date_end){
+
+            $data = ItemLot::whereBetween('date', [$date_start, $date_end])
+                        ->orderBy('item_id')->orderBy('id');
+
+        }else{
+
+            $data = ItemLot::orderBy('item_id')->orderBy('id');
+        }
+
+        if($item_id){
+            $data = $data->where('item_id', $item_id);
+        }
+
+
+        return $data;
+
+    }
+
+    public function records_series_kardex(Request $request)
+    {
+
+        $records = $this->getRecords3($request->all());
+
+        return new ReportKardexItemLotCollection($records->paginate(config('tenant.items_per_page')));
+
+        /*$records = [];
+
+        if($item)
+        {
+            $records  =  ItemLot::where('item_id', $item)->get();
+
+        }
+        else{
+            $records  = ItemLot::all();
+        }
+
+       // $records  =  ItemLot::all();
+        return new ReportKardexItemLotCollection($records);*/
+
     }
 
 

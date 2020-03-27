@@ -5,7 +5,7 @@
         </div>
         <div class="card mb-0">
                 <div class="card-body">
-                    <data-table :resource="resource">
+                    <data-table :resource="resource" :applyCustomer="true">
                         <tr slot="heading">
                             <th>#</th>
                             <th class="text-center">Fecha Emisión</th>

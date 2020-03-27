@@ -25,7 +25,8 @@ class ReportKardexCollection extends ResourceCollection
             "App\Models\Tenant\Document", 
             "App\Models\Tenant\Purchase", 
             "App\Models\Tenant\SaleNote", 
-            "Modules\Inventory\Models\Inventory"
+            "Modules\Inventory\Models\Inventory",
+            "Modules\Order\Models\OrderNote"
         ];
 
         switch ($row->inventory_kardexable_type) {
@@ -109,6 +110,21 @@ class ReportKardexCollection extends ResourceCollection
                     'sale_note_asoc' => '-',
                 ]; 
             } 
+
+            
+            case $models[4]: 
+                return [
+                    'id' => $row->id,
+                    'item_name' => $row->item->description,
+                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+                    'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
+                    'type_transaction' => ($row->quantity < 0) ? "Pedido":"Anulación Pedido",
+                    'number' => optional($row->inventory_kardexable)->prefix.'-'.optional($row->inventory_kardexable)->id,
+                    'input' => ($row->quantity > 0) ?  $row->quantity:"-",
+                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
+                    'balance' => self::$balance+= $row->quantity,
+                    'sale_note_asoc' => '-',
+                ];
 
         }
         

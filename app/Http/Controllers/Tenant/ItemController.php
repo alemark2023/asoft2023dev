@@ -32,12 +32,14 @@ use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Inventory\Models\Warehouse as WarehouseModule;
 use App\Models\Tenant\Establishment;
+use Modules\Item\Models\ItemLotsGroup;
 
 
 class ItemController extends Controller
 {
     public function index()
     {
+
         return view('tenant.items.index');
     }
 
@@ -54,6 +56,8 @@ class ItemController extends Controller
             'brand' => 'Marca',
             'date_of_due' => 'Fecha vencimiento',
             'lot_code' => 'Código lote',
+            'active' => 'Habilitados',
+            'inactive' => 'Inhabilitados',
             // 'description' => 'Descripción'
         ];
     }
@@ -75,21 +79,30 @@ class ItemController extends Controller
                                     $q->where('name', 'like', "%{$request->value}%");
                                 })
                                 ->whereTypeUser()
+                                ->whereNotIsSet();
+                break;
+
+            case 'active':
+                $records = Item::whereTypeUser()
                                 ->whereNotIsSet()
-                                ->whereIsActive()
-                                ->orderBy('description');
+                                ->whereIsActive();
+                break;
+
+            case 'inactive':
+                $records = Item::whereTypeUser()
+                                ->whereNotIsSet()
+                                ->whereIsNotActive();
                 break;
 
             default:
                 $records = Item::whereTypeUser()
                                 ->whereNotIsSet()
-                                ->whereIsActive()
-                                ->where($request->column, 'like', "%{$request->value}%")
-                                ->orderBy('description');
+                                ->where($request->column, 'like', "%{$request->value}%");
                 break;
+
         }
 
-        return $records;
+        return $records->orderBy('description');
 
     }
 
@@ -111,9 +124,10 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration = Configuration::select('affectation_igv_type_id')->firstOrFail();
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands');
+                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
     }
 
     public function record($id)
@@ -216,6 +230,19 @@ class ItemController extends Controller
                     'warehouse_id' => $warehouse ? $warehouse->id:null,
                     'has_sale' => false,
                     'state' => $lot['state'],
+                ]);
+            }
+
+
+            $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
+
+            if($lots_enabled)
+            {
+                ItemLotsGroup::create([
+                    'code'  => $request->lot_code,
+                    'quantity'  => $request->stock,
+                    'date_of_due'  => $request->date_of_due,
+                    'item_id' => $item->id
                 ]);
             }
 
@@ -482,7 +509,25 @@ class ItemController extends Controller
     }
 
 
+    public function enable($id)
+    {
+        try {
 
+            $item = Item::findOrFail($id);
+            $item->active = 1;
+            $item->save();
+
+            return [
+                'success' => true,
+                'message' => 'Producto habilitado con éxito'
+            ];
+
+        } catch (Exception $e) {
+
+            return  ['success' => false, 'message' => 'Error inesperado, no se pudo habilitar el producto'];
+
+        }
+    }
 
 
 }

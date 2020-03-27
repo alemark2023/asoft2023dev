@@ -71,7 +71,7 @@ class ReportInventoryController extends Controller
 
         $company = Company::first();
         $establishment = Establishment::first();
-
+        ini_set('max_execution_time', 0);
 
         if($request->warehouse_id && $request->warehouse_id != 'all')
         {

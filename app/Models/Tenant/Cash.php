@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
  
+use Modules\Finance\Models\GlobalPayment;
 
 class Cash extends ModelTenant
 {
@@ -40,6 +41,11 @@ class Cash extends ModelTenant
     {
         $user = auth()->user();         
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+    }
+ 
+    public function global_destination()
+    {
+        return $this->morphMany(GlobalPayment::class, 'destination');
     }
  
 }

@@ -199,7 +199,7 @@
         $payment = 0;
     @endphp
     @foreach($payments as $row)
-        <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+        <tr><td>- {{ $row->date_of_payment->format('d/m/Y') }} - {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
         @php
             $payment += (float) $row->payment;
         @endphp

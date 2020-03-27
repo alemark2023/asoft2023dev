@@ -15,7 +15,9 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Configuration;
 use Modules\Expense\Models\Expense;
 use Modules\Purchase\Models\PurchaseOrder;
+use Modules\Finance\Models\GlobalPayment; 
 use Modules\Purchase\Models\PurchaseQuotation;
+use Modules\Order\Models\OrderNote;
 use Modules\Inventory\Models\{
     ItemWarehouse,
     InventoryKardex
@@ -68,6 +70,9 @@ class OptionController extends Controller
 
         Quotation::where('soap_type_id', '01')->delete();
         Expense::where('soap_type_id', '01')->delete();
+        OrderNote::where('soap_type_id', '01')->delete();
+        
+        GlobalPayment::where('soap_type_id', '01')->delete();
 
         $this->updateStockAfterDelete();
 

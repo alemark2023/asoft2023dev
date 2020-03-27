@@ -76,6 +76,7 @@ class Document extends ModelTenant
         'success_query_status',
         'plate_number',
         'total_canceled',
+        'order_note_id',
         'soap_shipping_response',
 
     ];
@@ -364,5 +365,10 @@ class Document extends ModelTenant
     public function scopeWhereAffectationTypePrepayment($query, $type)
     {
         return $query->where('affectation_type_prepayment', $type);
+    }
+    
+    public function scopeWhereStateTypeAccepted($query)
+    {
+        return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
 }

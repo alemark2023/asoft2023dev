@@ -75,12 +75,16 @@
     @if ($customer->address !== '')
     <tr>
         <td class="align-top">Dirección:</td>
-        <td colspan="3">
+        <td colspan="">
             {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
+        @if($document->delivery_date)
+            <td width="25%">Fecha de entrega:</td>
+            <td width="15%">{{ $document->delivery_date->format('Y-m-d') }}</td>
+        @endif
     </tr>
     @endif
     @if ($document->shipping_address)
@@ -176,6 +180,13 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
+                
+                @if($row->item->is_set == 1)
+                 <br>
+                @inject('itemSet', 'App\Services\ItemSetService')
+                    {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
+                @endif
+
             </td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">

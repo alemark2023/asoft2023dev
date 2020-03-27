@@ -50,15 +50,19 @@
                                 <th>#</th>
                                 <th>Descripción</th>
                                 <th>Inventario actual</th>
+                                <th>Costo</th>
+                                <th>Precio de venta</th>
                                 <th>Almacén</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
-                            <tr> 
+                            <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$value->item->description ?? ''}}</td>
                                 <td>{{$value->stock}}</td>
+                                <td>{{$value->item->sale_unit_price}}</td>
+                                <td>{{$value->item->purchase_unit_price}}</td>
                                 <td>{{$value->warehouse->description}}</td>
 
                             </tr>

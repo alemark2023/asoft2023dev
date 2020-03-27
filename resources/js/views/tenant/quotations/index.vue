@@ -27,6 +27,8 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center" v-if="columns.delivery_date.visible">Fecha Entrega</th>
+                        <th>Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
                         <th>Cotización</th>
@@ -35,6 +37,7 @@
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
+                        <th class="text-right" v-if="columns.total_free.visible">T.Gratuito</th>
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-right">T.Gravado</th>
@@ -46,6 +49,8 @@
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
+                        <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{row.state_type_description}}</td>
                         <td>{{ row.identifier }}
@@ -63,6 +68,7 @@
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
+                        <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right">{{ row.total_taxed }}</td>
@@ -75,7 +81,7 @@
                         </td>
 
                         <td class="text-right">
-                            <button v-if="row.state_type_id != '11' && row.btn_generate"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                            <button v-if="row.state_type_id != '11' && row.btn_generate && typeUser == 'admin'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
 
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
@@ -115,6 +121,7 @@
     import {deletable} from '../../../mixins/deletable'
 
     export default {
+        props:['typeUser'],
         mixins: [deletable],
         components: {DataTable,QuotationOptions, QuotationOptionsPdf},
         data() {
@@ -134,6 +141,14 @@
                     },
                     total_exonerated: {
                         title: 'T.Exonerado',
+                        visible: false
+                    },
+                    total_free: {
+                        title: 'T.Gratuito',
+                        visible: false
+                    },
+                    delivery_date: {
+                        title: 'F.Entrega',
                         visible: false
                     }
                 }

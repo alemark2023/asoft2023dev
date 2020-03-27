@@ -83,6 +83,7 @@ if ($hostname) {
             Route::post('configurations', 'Tenant\ConfigurationController@store');
             Route::post('configurations/icbper', 'Tenant\ConfigurationController@icbper');
             Route::post('configurations/changeFormat', 'Tenant\ConfigurationController@changeFormat');
+            Route::get('configurations/tables', 'Tenant\ConfigurationController@tables');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -150,6 +151,7 @@ if ($hostname) {
             Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
             Route::post('items/duplicate', 'Tenant\ItemController@duplicate');
             Route::get('items/disable/{item}', 'Tenant\ItemController@disable');
+            Route::get('items/enable/{item}', 'Tenant\ItemController@enable');
             Route::get('items/images/{item}', 'Tenant\ItemController@images');
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
 
@@ -186,6 +188,7 @@ if ($hostname) {
             Route::post('persons', 'Tenant\PersonController@store');
             Route::delete('persons/{person}', 'Tenant\PersonController@destroy');
             Route::post('persons/import', 'Tenant\PersonController@import');
+            Route::get('persons/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
 
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
@@ -267,6 +270,8 @@ if ($hostname) {
             Route::post('voided', 'Tenant\VoidedController@store');
 //            Route::get('voided/download/{type}/{voided}', 'Tenant\VoidedController@download')->name('tenant.voided.download');
             Route::get('voided/status/{voided}', 'Tenant\VoidedController@status');
+            Route::get('voided/status_masive', 'Tenant\VoidedController@status_masive');
+
             Route::delete('voided/{voided}', 'Tenant\VoidedController@destroy');
 //            Route::get('voided/ticket/{voided_id}/{group_id}', 'Tenant\VoidedController@ticket');
 
@@ -658,6 +663,7 @@ if ($hostname) {
 
             Route::get('certificates/record', 'System\CertificateController@record');
             Route::post('certificates/uploads', 'System\CertificateController@uploadFile');
+            Route::post('certificates/saveSoapUser', 'System\CertificateController@saveSoapUser');
             Route::delete('certificates', 'System\CertificateController@destroy');
             Route::get('configurations', 'System\ConfigurationController@index')->name('system.configuration.index');
 

@@ -31,7 +31,7 @@
                         <th class="text-center">Tiene Igv</th>
                         <th class="text-right">Acciones</th>
                     <tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{ disable_color : !row.active}">
                         <td>{{ index }}</td>
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
@@ -58,8 +58,11 @@
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="duplicate(row.id)">Clonar</button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDisable(row.id)">Inhabilitar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="duplicate(row.id)">Duplicar</button>
+
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDisable(row.id)" v-if="row.active">Inhabilitar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickEnable(row.id)" v-else>Habilitar</button>
+
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickBarcode(row)">Cod. Barras</button>
 
                             </template>
@@ -141,6 +144,11 @@
             clickDisable(id)
             {
                 this.disable(`/${this.resource}/disable/${id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                )
+            },
+            clickEnable(id){
+                this.enable(`/${this.resource}/enable/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
             },

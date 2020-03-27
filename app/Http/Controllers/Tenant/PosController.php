@@ -20,10 +20,14 @@ use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Inventory\Models\ItemWarehouse;
 use Exception;
 use Modules\Item\Models\Category;
+use Modules\Finance\Traits\FinanceTrait; 
 
 
 class PosController extends Controller
 {
+    
+    use FinanceTrait;
+
     public function index()
     {
         $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
@@ -86,7 +90,13 @@ class PosController extends Controller
                                             $r->individual_item->description
                                         ];
                                     }),
-
+                                    'warehouses' => collect($row->warehouses)->transform(function ($row) {
+                                        return [
+                                            'warehouse_description' => $row->warehouse->description,
+                                            'stock' => $row->stock,
+                                        ];
+                                    }),
+                                    'unit_type' => $row->item_unit_types
                                 ];
                             });
 
@@ -119,16 +129,17 @@ class PosController extends Controller
 
         $payment_method_types = PaymentMethodType::all();
         $cards_brand = CardBrand::all();
+        $payment_destinations = $this->getPaymentDestinations();
 
 
-        return compact('series','payment_method_types','cards_brand');
+        return compact('series','payment_method_types','cards_brand', 'payment_destinations');
 
     }
 
     public function table($table)
     {
         if ($table === 'customers') {
-            $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
+            $customers = Person::whereType('customers')->whereIsEnabled()->orderBy('name')->get()->transform(function($row) {
                 return [
                     'id' => $row->id,
                     'description' => $row->number.' - '.$row->name,
@@ -181,6 +192,7 @@ class PosController extends Controller
                                             $r->individual_item->description
                                         ];
                                     }),
+                                    'unit_type' => $row->item_unit_types
                                 ];
                             });
             return $items;

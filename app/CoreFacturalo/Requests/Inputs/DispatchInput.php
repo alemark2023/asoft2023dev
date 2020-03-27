@@ -69,6 +69,7 @@ class DispatchInput
             'actions' => ActionInput::set($inputs),
             'reference_document_id' => Functions::valueKeyInArray($inputs, 'reference_document_id'),
             'reference_quotation_id' => Functions::valueKeyInArray($inputs, 'reference_quotation_id'),
+            'reference_order_note_id' => Functions::valueKeyInArray($inputs, 'reference_order_note_id'),
         ];
     }
 

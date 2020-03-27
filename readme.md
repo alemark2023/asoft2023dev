@@ -65,6 +65,7 @@ Contraseña: 123456
 Conexión remota al servidor: [Guía](https://docs.google.com/document/d/1m7xmQ_yLBO2MQVew6ZrlCdvIMLNg2_EzEJmntDM_Jms/edit?usp=sharing "Clic")<br>
 Guía acceso SSH - Putty: [Guía](https://docs.google.com/document/d/1PmQejvNd_dkXVm8DPUYlQTag0wvES46tMpxX3MPhkNY/edit# "Clic")<br>
 Conexión servidor Winscp: [Guía](https://docs.google.com/document/d/1Xpri2102N4b5C-dG-FVPXW5ZWjEz5S4iDjpvl7Zwq2E/edit# "Clic")<br>
+Montar proyecto en /home: [Guía](https://docs.google.com/document/d/12o5dp0eccGgraKj3P-ly_wWmIcl2G0gUTZEgVi-AFtk/edit?usp=sharing "Clic")<br>
 
 ### Manipulación de archivos dentro del servidor
 Documentación del archivo .ENV: [Guía](https://docs.google.com/document/d/1XpNPg32CrihM1wYWjttwON-2R6nln7-70vBLZnD1UjE/edit?usp=sharing "Clic")<br>
@@ -102,6 +103,8 @@ Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/
 Recreación de documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_IyvEiQ2NSaiW_rsBhVNbK7YD-_l1kbrEGwQ "Clic")<br>
 Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
 Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
+Proyecto Espejo (Mirror/Fork): [Guía](https://docs.google.com/document/d/1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98/edit "Clic")<br>
+Migracion Jira-Issues(Gitlab): [Guía](https://docs.google.com/document/d/156wEGBlBiM35aFWbbnEi6HTWhag2TWtUMHkz_aoP7Lg/edit?usp=sharing "Clic")<br>
 
 ## Soporte
 

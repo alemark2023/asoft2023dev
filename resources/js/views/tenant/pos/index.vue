@@ -372,7 +372,8 @@
 
       <warehouses-detail
               :showDialog.sync="showWarehousesDetail"
-              :warehouses="warehousesDetail">
+              :warehouses="warehousesDetail"
+              :unit_type="unittypeDetail">
           </warehouses-detail>
   </div>
 </template>
@@ -429,16 +430,16 @@
 <script>
       import { calculateRowItem } from "../../../helpers/functions";
       import PaymentForm from "./partials/payment.vue";
-      import PersonForm from "../persons/form.vue";
       import ItemForm from "./partials/form.vue";
       import { functions, exchangeRate } from "../../../mixins/functions";
       import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
       import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
+      import PersonForm from "../persons/form.vue";
       import WarehousesDetail from '../items/partials/warehouses.vue'
 
       export default {
         props: ['configuration'],
-        components: { PaymentForm, PersonForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, WarehousesDetail},
+        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail},
         mixins: [functions, exchangeRate],
 
         data() {
@@ -447,6 +448,7 @@
             history_item_id:null,
             search_item_by_barcode:false,
             warehousesDetail:[],
+            unittypeDetail:[],
             input_person:{},
             showDialogHistoryPurchases: false,
             showDialogHistorySales: false,
@@ -600,7 +602,7 @@
 
           },
           clickWarehouseDetail(item){
-
+            this.unittypeDetail = item.unit_type
               this.warehousesDetail = item.warehouses
               this.showWarehousesDetail = true
           },
@@ -1129,7 +1131,7 @@
                           if (this.items.length == 0) {
                             this.filterItems();
                         }
-                  
+
                   });
 
             } else {

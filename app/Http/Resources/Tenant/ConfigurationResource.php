@@ -25,7 +25,10 @@ class ConfigurationResource extends JsonResource
             'decimal_quantity' => $this->decimal_quantity,
             'amount_plastic_bag_taxes' => $this->amount_plastic_bag_taxes,
             'colums_grid_item' => $this->colums_grid_item,
-            'options_pos' => (bool) $this->options_pos
+            'options_pos' => (bool) $this->options_pos,
+            'edit_name_product' => (bool) $this->edit_name_product,
+            'restrict_receipt_date' => (bool) $this->restrict_receipt_date,
+            'affectation_igv_type_id' => $this->affectation_igv_type_id
         ];
     }
 }

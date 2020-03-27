@@ -84,6 +84,27 @@ if($current_hostname) {
                 Route::get('items/filter', 'ReportItemController@filter')->name('tenant.reports.items.filter');
                 Route::get('items/records', 'ReportItemController@records')->name('tenant.reports.items.records');
 
+                Route::get('order-notes-consolidated', 'ReportOrderNoteConsolidatedController@index')->name('tenant.reports.order_notes_consolidated.index');
+                Route::get('order-notes-consolidated/pdf', 'ReportOrderNoteConsolidatedController@pdf');
+                // Route::get('order-notes-consolidated/excel', 'ReportOrderNoteConsolidatedController@excel');
+                Route::get('order-notes-consolidated/filter', 'ReportOrderNoteConsolidatedController@filter');
+                Route::get('order-notes-consolidated/records', 'ReportOrderNoteConsolidatedController@records');
+
+                Route::get('general-items', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
+                Route::get('general-items/excel', 'ReportGeneralItemController@excel');
+                Route::get('general-items/filter', 'ReportGeneralItemController@filter');
+                Route::get('general-items/records', 'ReportGeneralItemController@records');
+
+                
+                Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')->name('tenant.reports.order_notes_general.index');
+                Route::get('order-notes-general/pdf', 'ReportOrderNoteGeneralController@pdf');
+                Route::get('order-notes-general/filter', 'ReportOrderNoteGeneralController@filter');
+                Route::get('order-notes-general/records', 'ReportOrderNoteGeneralController@records');
+
+                Route::get('sales-consolidated', 'ReportSaleConsolidatedController@index')->name('tenant.reports.sales_consolidated.index');
+                Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
+                Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
+                Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
             });
 
             Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')->name('tenant.reports.income_summary.pdf');

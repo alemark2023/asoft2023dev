@@ -29,7 +29,9 @@ class ReportQuotationController extends Controller
             ];
         });
 
-        return compact('document_types','establishments');
+        $sellers = $this->getSellers();
+
+        return compact('document_types','establishments', 'sellers');
     }
 
 

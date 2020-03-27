@@ -37,6 +37,9 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\PaymentMethodType;
+use Modules\Finance\Traits\FinanceTrait; 
+use App\Models\Tenant\Configuration;
+
 
 
 
@@ -44,7 +47,7 @@ use App\Models\Tenant\PaymentMethodType;
 class QuotationController extends Controller
 {
 
-    use StorageDocument;
+    use StorageDocument, FinanceTrait;
 
     protected $quotation;
     protected $company;
@@ -69,17 +72,38 @@ class QuotationController extends Controller
     public function columns()
     {
         return [
-            'date_of_issue' => 'Fecha de emisión'
+            'date_of_issue' => 'Fecha de emisión',
+            'delivery_date' => 'Fecha de entrega',
+            'user_name' => 'Vendedor'
         ];
     }
 
     public function records(Request $request)
     {
-        $records = Quotation::where($request->column, 'like', "%{$request->value}%")
-                            ->whereTypeUser()
-                            ->latest();
+        $records = $this->getRecords($request);
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+    private function getRecords($request){
+
+        if($request->column == 'user_name'){
+            
+            $records = Quotation::whereHas('user', function($query) use($request){
+                            $query->where('name', 'like', "%{$request->value}%");
+                        })
+                        ->whereTypeUser()
+                        ->latest();
+
+        }else{
+
+            $records = Quotation::where($request->column, 'like', "%{$request->value}%")
+                                ->whereTypeUser()
+                                ->latest();
+        
+        }
+        
+        return $records;
     }
 
     public function searchCustomers(Request $request)
@@ -88,6 +112,7 @@ class QuotationController extends Controller
         $customers = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('customers')->orderBy('name')
+                            ->whereIsEnabled()
                             ->get()->transform(function($row) {
                                 return [
                                     'id' => $row->id,
@@ -122,8 +147,9 @@ class QuotationController extends Controller
         $series = Series::where('establishment_id',$establishment->id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
 
-        return compact('series', 'document_types_invoice', 'payment_method_types');
+        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
     }
 
     public function item_tables() {
@@ -291,7 +317,7 @@ class QuotationController extends Controller
         switch ($table) {
             case 'customers':
 
-                $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+                $customers = Person::whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,
@@ -309,7 +335,7 @@ class QuotationController extends Controller
 
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                $items = Item::orderBy('description')->whereIsActive()->whereNotIsSet()
+                $items = Item::orderBy('description')->whereIsActive()
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
@@ -342,15 +368,14 @@ class QuotationController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
+                        }),
+                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                            return [
+                                'warehouse_id' => $row->warehouse->id,
+                                'warehouse_description' => $row->warehouse->description,
+                                'stock' => $row->stock,
+                            ];
                         })
-
-                        // 'warehouses' => collect($row->warehouses)->transform(function($row) {
-                        //     return [
-                        //         'warehouse_id' => $row->warehouse->id,
-                        //         'warehouse_description' => $row->warehouse->description,
-                        //         'stock' => $row->stock,
-                        //     ];
-                        // })
                     ];
                 });
                 return $items;
@@ -418,7 +443,9 @@ class QuotationController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->quotation->filename;
 
-        $base_template = config('tenant.pdf_template');
+        $configuration = Configuration::first();
+
+        $base_template = $configuration->formats; //config('tenant.pdf_template');
 
         $html = $template->pdf($base_template, "quotation", $company, $document, $format_pdf);
 
@@ -527,6 +554,8 @@ class QuotationController extends Controller
 
         }  else {
 
+            
+
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
 
@@ -537,7 +566,7 @@ class QuotationController extends Controller
                 $defaultFontConfig = (new FontVariables())->getDefaults();
                 $fontData = $defaultFontConfig['fontdata'];
 
-                $pdf = new Mpdf([
+                $default = [
                     'fontDir' => array_merge($fontDirs, [
                         app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
                                                  DIRECTORY_SEPARATOR.'pdf'.
@@ -552,7 +581,35 @@ class QuotationController extends Controller
                             'R' => $pdf_font_regular.'.ttf',
                         ],
                     ]
-                ]);
+                    ];
+
+                    if($base_template == 'citec')
+                    {
+                        $default = [
+                            'mode' => 'utf-8',
+                            'margin_top' => 2,
+                            'margin_right' => 0,
+                            'margin_bottom' => 0,
+                            'margin_left' => 0,
+                            'fontDir' => array_merge($fontDirs, [
+                                app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                         DIRECTORY_SEPARATOR.'pdf'.
+                                                         DIRECTORY_SEPARATOR.$base_template.
+                                                         DIRECTORY_SEPARATOR.'font')
+                            ]),
+                            'fontdata' => $fontData + [
+                                'custom_bold' => [
+                                    'R' => $pdf_font_bold.'.ttf',
+                                ],
+                                'custom_regular' => [
+                                    'R' => $pdf_font_regular.'.ttf',
+                                ],
+                            ]
+                            ];
+
+                    }
+
+                $pdf = new Mpdf($default);
             }
         }
 

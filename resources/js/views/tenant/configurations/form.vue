@@ -65,6 +65,23 @@
                                 <small class="form-control-feedback" v-if="errors.amount_plastic_bag_taxes" v-text="errors.amount_plastic_bag_taxes[0]"></small>
                             </div>
                         </div>
+
+                        <div class="col-md-2"></div>
+                        
+                        <div class="col-md-6 mt-4">
+                            <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
+                                <label class="control-label">Tipo de afectación
+                                    <el-tooltip class="item" effect="dark" content="Tipo de afectación predeterminada al registrar nuevo producto" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-select v-model="form.affectation_igv_type_id" @change="submit" filterable>
+                                    <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                                <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -105,6 +122,20 @@
                                 <small class="form-control-feedback" v-if="errors.options_pos" v-text="errors.options_pos[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-6 mt-4">
+                            <label class="control-label">Editar nombre de productos</label>
+                            <div class="form-group" :class="{'has-danger': errors.edit_name_product}">
+                                <el-switch v-model="form.edit_name_product" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.edit_name_product" v-text="errors.edit_name_product[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-4">
+                            <label class="control-label">Restringir fecha de comprobante</label>
+                            <div class="form-group" :class="{'has-danger': errors.restrict_receipt_date}">
+                                <el-switch v-model="form.restrict_receipt_date" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                <small class="form-control-feedback" v-if="errors.restrict_receipt_date" v-text="errors.restrict_receipt_date[0]"></small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -123,6 +154,7 @@
                 errors: {},
                 form: {},
                 formatos: [],
+                affectation_igv_types: [],
                 formato: {
                     formats: ''
                 },
@@ -131,6 +163,7 @@
             }
         },
         async created() {
+            await this.loadTables()
             await this.initForm();
 
             await this.$http.get(`/${this.resource}/record`) .then(response => {
@@ -140,10 +173,12 @@
                 }
                 console.log(this.placeholder)
             });
-             await this.$http.get(`/${this.resource}/getFormats`) .then(response => {
+
+            await this.$http.get(`/${this.resource}/getFormats`) .then(response => {
                 if (response.data !== '') this.formatos = response.data
                 console.log(this.formatos)
             });
+
         },
         methods: {
            addSeeder(){
@@ -161,6 +196,13 @@
                })
 
             },
+            async loadTables(){
+                
+                await this.$http.get(`/${this.resource}/tables`) .then(response => {
+                        this.affectation_igv_types = response.data.affectation_igv_types
+                    })
+
+            },
             initForm() {
                 this.errors = {};
                 this.form = {
@@ -174,7 +216,8 @@
                     compact_sidebar:true,
                     decimal_quantity: null,
                     amount_plastic_bag_taxes: 0.1,
-                    colums_grid_item: 4
+                    colums_grid_item: 4,
+                    affectation_igv_type_id:'10'
                 };
             },
             submit() {

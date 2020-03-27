@@ -82,6 +82,7 @@ class DocumentInput
             'purchase_order' => $inputs['purchase_order'],
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
+            'order_note_id' => Functions::valueKeyInArray($inputs, 'order_note_id'),
             'exchange_rate_sale' => $inputs['exchange_rate_sale'],
             'total_prepayment' => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
             'total_discount' => Functions::valueKeyInArray($inputs, 'total_discount', 0),
@@ -144,6 +145,7 @@ class DocumentInput
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                         'is_set' => $item->is_set,
                         'lots' => (isset($row['item']['lots'])) ? $row['item']['lots']:[],
+                        'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null )
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
@@ -170,6 +172,8 @@ class DocumentInput
                     'discounts' => self::discounts($row),
                     'charges' => self::charges($row),
                     'warehouse_id' => Functions::valueKeyInArray($row, 'warehouse_id'),
+                    'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
+                    'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
                 ];
             }
             return $items;
@@ -187,7 +191,7 @@ class DocumentInput
                     $description = $row['description'];
                     $value = array_key_exists('value', $row)?$row['value']:null;
                     $start_date = array_key_exists('start_date', $row)?$row['start_date']:null;
-                    $end_date = array_key_exists('start_date', $row)?$row['start_date']:null;
+                    $end_date = array_key_exists('end_date', $row)?$row['end_date']:null;
                     $duration = array_key_exists('duration', $row)?$row['duration']:null;
 
                     $attributes[] = [

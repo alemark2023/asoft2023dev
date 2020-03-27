@@ -191,6 +191,14 @@ class CashController extends Controller
     public function destroy($id)
     {
         $cash = Cash::findOrFail($id);
+
+        if($cash->global_destination->count() > 0){
+            return [
+                'success' => false,
+                'message' => 'No puede eliminar la caja, tiene transacciones relacionadas'
+            ];
+        }
+
         $cash->delete();
 
         return [
