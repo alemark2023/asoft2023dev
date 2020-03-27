@@ -59,6 +59,8 @@ class Quotation extends ModelTenant
         'description',
         'sale_opportunity_id',
         'changed',
+        'account_number',
+        'terms_condition',
 
     ];
 
@@ -251,7 +253,7 @@ class Quotation extends ModelTenant
     {
         return $this->hasMany(QuotationPayment::class);
     }
-    
+
     public function scopeWhereNotChanged($query)
     {
         return $query->where('changed', false);

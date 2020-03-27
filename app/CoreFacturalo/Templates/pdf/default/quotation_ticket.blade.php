@@ -139,6 +139,17 @@
         </td>
     </tr>
     @endif
+    
+    @if ($document->account_number)
+    <tr>
+        <td class="align-top"><p class="desc">N° Cuenta:</p></td>
+        <td colspan="">
+            <p class="desc">            
+                {{ $document->account_number }} 
+            </p>
+        </td> 
+    </tr>
+    @endif
     @if ($document->sale_opportunity)
     <tr>
         <td class="align-top"><p class="desc">O. Venta:</p></td>
@@ -316,6 +327,11 @@
         <tr><td class="desc pt-3"><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
     </tr>
 
+    @if($document->terms_condition)
+    <tr>
+        <td class="text-center desc pt-5 font-bold">{{$document->terms_condition}}</td>
+    </tr>
+    @endif
 </table>
 </body>
 </html>

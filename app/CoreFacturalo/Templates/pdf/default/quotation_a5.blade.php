@@ -101,6 +101,14 @@
     </tr>
     @endif
 
+    @if ($document->account_number)
+    <tr>
+        <td class="align-top">N° Cuenta:</td>
+        <td colspan="3">
+            {{ $document->account_number }} 
+        </td> 
+    </tr>
+    @endif
     @if ($document->shipping_address)
     <tr>
         <td class="align-top">Dir. Envío:</td>

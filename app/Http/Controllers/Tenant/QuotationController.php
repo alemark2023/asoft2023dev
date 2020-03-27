@@ -475,6 +475,7 @@ class QuotationController extends Controller
             $quantity_rows     = count($document->items);
             $payments     = $document->payments()->count() * 5;
             $discount_global = 0;
+            $terms_condition = $document->terms_condition ? 15 : 0;
 
             foreach ($document->items as $it) {
                 if ($it->discounts) {
@@ -502,6 +503,7 @@ class QuotationController extends Controller
                     $total_unaffected +
                     $payments +
                     $total_exonerated +
+                    $terms_condition +
                     $total_taxed],
                 'margin_top' => 2,
                 'margin_right' => 5,
@@ -634,8 +636,11 @@ class QuotationController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
+                
                 $html_footer = $template->pdfFooter($base_template);
-                $pdf->SetHTMLFooter($html_footer);
+                $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document):"";
+
+                $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer);
             }
             //$html_footer = $template->pdfFooter();
             //$pdf->SetHTMLFooter($html_footer);

@@ -10,7 +10,7 @@
                         <div class="col-sm-2 text-center mt-3 mb-0">
                             <logo url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''" ></logo>
                         </div>
-                        <div class="col-sm-10 text-left mt-3 mb-0">
+                        <div class="col-sm-6 text-left mt-3 mb-0">
                             <address class="ib mr-2" >
                                 <span class="font-weight-bold d-block">COTIZACIÓN</span>
                                 <span class="font-weight-bold d-block">COT-XXX</span>
@@ -20,6 +20,11 @@
                                 <br>
                                 {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
                             </address>
+                        </div>
+                        <div class="col-sm-4">
+                        
+                            <el-checkbox class="mt-3" v-model="form.active_terms_condition" @change="changeTermsCondition">Términos y condiciones del contrato</el-checkbox>
+                               
                         </div>
                     </div>
                 </header>
@@ -67,7 +72,7 @@
                                 </div>
                             </div>
                             
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="form-group" >
                                     <label class="control-label">Dirección de envío 
                                     </label>
@@ -75,6 +80,7 @@
                                     <small class="form-control-feedback" v-if="errors.shipping_address" v-text="errors.shipping_address[0]"></small>
                                 </div>
                             </div>
+                            
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.payment_method_type_id}">
                                     <label class="control-label">
@@ -84,6 +90,14 @@
                                         <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.payment_method_type_id" v-text="errors.payment_method_type_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" >
+                                    <label class="control-label">Número de cuenta 
+                                    </label>
+                                    <el-input v-model="form.account_number"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.account_number" v-text="errors.account_number[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2">
@@ -158,7 +172,7 @@
 
                             </div>
                             
-                            <div class="col-lg-4  mt-2">
+                            <div class="col-lg-4">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Descripcion
                                     </label>
@@ -254,10 +268,15 @@
                           :typeUser="typeUser"
                           :showGenerate="false"
                           :showClose="false"></quotation-options>
+
+        <terms-condition :showDialog.sync="showDialogTermsCondition"
+                          :form="form"
+                          :showClose="false"></terms-condition>
     </div>
 </template>
 
 <script>
+    import TermsCondition from './partials/terms_condition.vue'
     import QuotationFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
     import QuotationOptions from '../quotations/partials/options.vue'
@@ -267,11 +286,12 @@
 
     export default {
         props:['typeUser', 'saleOpportunityId'],
-        components: {QuotationFormItem, PersonForm, QuotationOptions, Logo},
+        components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
         mixins: [functions, exchangeRate],
         data() {
             return {
                 resource: 'quotations',
+                showDialogTermsCondition: false,
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
                 showDialogOptions: false,
@@ -323,6 +343,16 @@
             await this.createQuotationFromSO()
         },
         methods: {
+            changeTermsCondition(){
+
+                if(this.form.active_terms_condition){
+
+                    this.showDialogTermsCondition = true
+                
+                }else{
+                    this.form.terms_condition = null
+                }
+            },
             clickAddPayment() {
                 this.form.payments.push({
                     id: null,
@@ -451,6 +481,9 @@
                     payment_method_type_id:'10',
                     additional_information:null,
                     shipping_address:null,
+                    account_number:null,
+                    terms_condition:null,
+                    active_terms_condition:false,
                     actions: {
                         format_pdf:'a4',
                     },
