@@ -139,6 +139,27 @@
         </td>
     </tr>
     @endif
+    
+    @if ($document->account_number)
+    <tr>
+        <td class="align-top"><p class="desc">N° Cuenta:</p></td>
+        <td colspan="">
+            <p class="desc">            
+                {{ $document->account_number }} 
+            </p>
+        </td> 
+    </tr>
+    @endif
+    @if ($document->sale_opportunity)
+    <tr>
+        <td class="align-top"><p class="desc">O. Venta:</p></td>
+        <td >
+            <p class="desc">            
+                {{ $document->sale_opportunity->number_full }} 
+            </p>
+        </td>
+    </tr>
+    @endif
     <tr> 
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>
@@ -288,6 +309,29 @@
         </td>
     </tr>
  
+</table>
+<br>
+<table class="full-width">
+<tr>
+    <td class="desc pt-3">
+    <strong>PAGOS:</strong> </td></tr>
+        @php
+            $payment = 0;
+        @endphp
+        @foreach($document->payments as $row)
+            <tr><td class="desc ">- {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+            @php
+                $payment += (float) $row->payment;
+            @endphp
+        @endforeach
+        <tr><td class="desc pt-3"><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
+    </tr>
+
+    @if($document->terms_condition)
+    <tr>
+        <td class="text-center desc pt-5 font-bold">{{$document->terms_condition}}</td>
+    </tr>
+    @endif
 </table>
 </body>
 </html>

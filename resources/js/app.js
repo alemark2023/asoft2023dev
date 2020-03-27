@@ -174,6 +174,11 @@ Vue.component('tenant-finance-balance-index', require('../../modules/Finance/Res
 Vue.component('tenant-finance-payment-method-types-index', require('../../modules/Finance/Resources/assets/js/views/payment_method_types/index.vue'));
 
 
+//Sale Opportunity
+Vue.component('tenant-sale-opportunities-index', require('@viewsModuleSale/sale_opportunities/index.vue'));
+Vue.component('tenant-sale-opportunities-form', require('@viewsModuleSale/sale_opportunities/form.vue'));
+
+
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
 Vue.component('system-clients-form', require('./views/system/clients/form.vue'));

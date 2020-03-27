@@ -180,6 +180,18 @@
             <td><p class="desc">{{ $document->quotation->identifier }}</p></td>
         </tr>
     @endif
+    @isset($document->quotation->delivery_date)
+        <tr>
+            <td><p class="desc">F. Entrega</p></td>
+            <td><p class="desc">{{ $document->quotation->delivery_date->format('Y-m-d')}}</p></td>
+        </tr>
+    @endisset
+    @isset($document->quotation->sale_opportunity)
+        <tr>
+            <td><p class="desc">O. Venta</p></td>
+            <td><p class="desc">{{ $document->quotation->sale_opportunity->number_full}}</p></td>
+        </tr>
+    @endisset
 </table>
 
 @if ($document->guides)

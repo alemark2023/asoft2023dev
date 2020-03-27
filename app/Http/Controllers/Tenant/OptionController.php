@@ -22,6 +22,7 @@ use Modules\Inventory\Models\{
     ItemWarehouse,
     InventoryKardex
 };
+use Modules\Sale\Models\SaleOpportunity; 
 
 class OptionController extends Controller
 {
@@ -73,6 +74,8 @@ class OptionController extends Controller
         OrderNote::where('soap_type_id', '01')->delete();
         
         GlobalPayment::where('soap_type_id', '01')->delete();
+
+        SaleOpportunity::where('soap_type_id', '01')->delete();
 
         $this->updateStockAfterDelete();
 

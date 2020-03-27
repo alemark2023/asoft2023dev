@@ -85,6 +85,7 @@
                                 <th class="">Nombre de la cuenta</th>
                                 <th class="">T. Pagos - CPE</th>
                                 <th class="">T. Pagos - NV</th>
+                                <th class="">T. Pagos - COT</th>
                                 <th class="">T. Pagos - Compras</th>
                                 <th class="">T. Pagos - Gastos</th>
                                 <th class="">Saldo</th>
@@ -97,6 +98,7 @@
                                     <td class="celda">{{$value['description']}}</td>
                                     <td class="celda">S/ {{$value['document_payment']}}</td>
                                     <td class="celda">S/ {{$value['sale_note_payment']}}</td>
+                                    <td class="celda">S/ {{$value['quotation_payment']}}</td>
                                     <td class="celda">S/  {{$value['purchase_payment']}}</td>
                                     <td class="celda">S/ {{$value['expense_payment']}}</td>
                                     <td class="celda">S/ {{$value['balance']}}</td> 

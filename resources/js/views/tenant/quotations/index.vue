@@ -34,6 +34,7 @@
                         <th>Cotización</th>
                         <th>Comprobantes</th>
                         <th>Notas de venta</th>
+                        <th>Oportunidad Venta</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -52,7 +53,12 @@
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td>{{row.state_type_description}}</td>
+                        <td>
+                            <!-- {{row.state_type_description}} -->
+                            <el-select v-model="row.state_type_id" @change="changeStateType(row)" style="width:120px !important">
+                                <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                        </td>
                         <td>{{ row.identifier }}
                         </td>
                         <td>
@@ -64,6 +70,50 @@
                             <template v-for="(sale_note,i) in row.sale_notes">
                                 <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
                             </template>
+                        </td>
+                        <td>
+                            <!-- {{ row.sale_opportunity_number_full }} -->
+                            
+                            <el-popover
+                                placement="right"
+                                v-if="row.sale_opportunity"
+                                width="400"
+                                trigger="click">
+
+                                <div class="col-md-12 mt-4">
+                                    <table>
+                                        <tr>
+                                            <td><strong>O. Venta: </strong></td>
+                                            <td><strong>{{row.sale_opportunity_number_full}}</strong></td>
+                                        </tr>
+                                        <tr  class="mt-4 mb-4">
+                                            <td><strong>F. Emisión:</strong></td>
+                                            <td><strong>{{row.date_of_issue}}</strong></td>
+                                        </tr>
+                                    </table>
+                                    <div class="table-responsive mt-4">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Descripción</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(row, index) in row.sale_opportunity.items" :key="index">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{row.item.description}}</td> 
+                                                    <td>{{row.quantity}}</td> 
+                                                    <td>{{row.total}}</td> 
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div> 
+                                <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
+                            </el-popover>
                         </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
@@ -130,6 +180,7 @@
                 recordId: null,
                 showDialogOptions: false,
                 showDialogOptionsPdf: false,
+                state_types: [],
                 columns: {
                     total_exportation: {
                         title: 'T.Exportación',
@@ -154,9 +205,23 @@
                 }
             }
         },
-        created() {
+        async created() {
+            await this.filter()
         },
         methods: {
+            async changeStateType(row){
+
+                await this.updateStateType(`/${this.resource}/state-type/${row.state_type_id}/${row.id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                ) 
+
+            },
+            filter(){
+                this.$http.get(`/${this.resource}/filter`)
+                            .then(response => { 
+                                this.state_types = response.data.state_types 
+                            })
+            },
             clickEdit(id)
             {
                 this.recordId = id

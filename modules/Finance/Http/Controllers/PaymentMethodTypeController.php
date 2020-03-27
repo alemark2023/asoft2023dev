@@ -63,8 +63,12 @@ class PaymentMethodTypeController extends Controller
 
         $records_by_pmt = $this->getRecordsByPaymentMethodTypes($payment_method_types);
         $records_by_emt = $this->getRecordsByExpenseMethodTypes($expense_method_types);
+        $totals = $this->getTotalsPaymentMethodType($records_by_pmt, $records_by_emt);
 
-        return $records_by_pmt->merge($records_by_emt);
+        return [
+            'records' => $records_by_pmt->merge($records_by_emt),
+            'totals' => $totals
+        ];
         
     }
 
@@ -75,6 +79,7 @@ class PaymentMethodTypeController extends Controller
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all());
 
+        
         $pdf = PDF::loadView('finance::payment_method_types.report_pdf', compact("records", "company", "establishment"));
 
         $filename = 'Metodos_de_pago_'.date('YmdHis');

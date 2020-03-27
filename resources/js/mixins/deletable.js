@@ -165,6 +165,33 @@ export const deletable = {
                 });
             })
         },
+        updateStateType(url) {
+            return new Promise((resolve) => {
+                this.$confirm('¿Desea modificar el estado del registro?', 'Modificar', {
+                    confirmButtonText: 'Modificar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(url)
+                        .then(res => {
+                            if (res.data.success) {
+                                this.$message.success(res.data.message)
+                                resolve()
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar modificar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                    this.$eventHub.$emit('reloadData')
+                });
+            })
+        },
 
     }
 }

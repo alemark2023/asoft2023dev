@@ -335,8 +335,8 @@ export default {
   },
   methods: {
      clickCancel(index) {
-                this.document.payments.splice(index, 1);
-      },
+        this.document.payments.splice(index, 1);
+    },
     clickAddPayment() {
       this.document.payments.push({
         id: null,
@@ -458,12 +458,17 @@ export default {
         .then(response => {
           if (response.data.success) {
             this.documentNewId = response.data.data.id;
+
+            this.$http.get(`/${this.resource}/changed/${this.form.id}`).then(() => {
+                this.$eventHub.$emit('reloadData');
+            });
             // console.log(this.document.document_type_id)
             if (this.document.document_type_id === "nv") {
               this.showDialogSaleNoteOptions = true;
             } else {
               this.showDialogDocumentOptions = true;
             }
+
 
             this.$eventHub.$emit("reloadData");
             this.resetDocument();
@@ -516,7 +521,7 @@ export default {
       this.document.charges = q.charges;
       this.document.discounts = q.discounts;
       this.document.attributes = [];
-      //this.document.payments = [];
+      // this.document.payments = q.payments;
       this.document.guides = q.guides;
       this.document.additional_information = null;
       this.document.actions = {
@@ -538,10 +543,12 @@ export default {
         .get(`/${this.resource}/record2/${this.recordId}`)
         .then(response => {
           this.form = response.data.data;
+          this.document.payments = response.data.data.quotation.payments;
+          // console.log(this.form)
           // this.validateIdentityDocumentType()
           this.getCustomer();
           let type = this.type == "edit" ? "editada" : "registrada";
-          this.titleDialog = `Cotización ${type}: '` + this.form.identifier;
+          this.titleDialog = `Cotización ${type}: ` + this.form.identifier;
         });
     },
     changeDocumentType() {

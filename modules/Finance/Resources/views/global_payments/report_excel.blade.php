@@ -66,11 +66,22 @@
                                 <tr>
                                     @php 
                                         $data_person = $value->data_person;
+                                        $document_type = '';
+
+                                        if($value->payment->associated_record_payment->document_type){
+
+                                            $document_type = $value->payment->associated_record_payment->document_type->description;
+                                        
+                                        }elseif(isset($value->payment->associated_record_payment->prefix)){
+                                            
+                                            $document_type = ($value->payment->associated_record_payment->prefix == 'NV') ? 'NV':'COT';
+
+                                        }
                                     @endphp
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$data_person->name}}</td>
                                     <td class="celda">{{$data_person->number}}</td>
-                                    <td class="celda">{{ ($value->payment->associated_record_payment->document_type) ? $value->payment->associated_record_payment->document_type->description:'NV' }}</td>
+                                    <td class="celda">{{ $document_type }}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->number_full}}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->currency_type_id}}</td>
                                     <td class="celda">{{$value->instance_type_description}}</td>

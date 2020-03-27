@@ -55,7 +55,8 @@
                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'order-notes')?'nav-active nav-expanded':'' }}
-
+                        {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
+                        
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -197,6 +198,12 @@
                                     </li>
                                 @endif
 
+                                <li class="{{ ($path[0] === 'sale-opportunities')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.sale_opportunities.index')}}">
+                                        Oportunidad de venta
+                                    </a>
+                                </li>
+
                                 @if(in_array('quotations', $vc_module_levels))
 
                                     <li class="{{ ($path[0] === 'quotations')?'nav-active':'' }}">
@@ -205,6 +212,12 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.order_notes.index')}}">
+                                        Pedidos
+                                    </a>
+                                </li>
 
                                 @if(in_array('sale_notes', $vc_module_levels))
 
@@ -225,12 +238,6 @@
 
                                 @endif
                                 
-                                <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.order_notes.index')}}">
-                                        Pedidos
-                                    </a>
-                                </li>
-
                             @endif
 
                         </ul>

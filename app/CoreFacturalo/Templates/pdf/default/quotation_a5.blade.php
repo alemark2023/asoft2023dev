@@ -88,6 +88,27 @@
     </tr>
     @endif
     
+    @if ($document->payment_method_type)
+    <tr>
+        <td class="align-top">T. Pago:</td>
+        <td colspan="">
+            {{ $document->payment_method_type->description }} 
+        </td>
+        @if($document->sale_opportunity)
+            <td width="25%">O. Venta:</td>
+            <td width="15%">{{ $document->sale_opportunity->number_full }}</td>
+        @endif
+    </tr>
+    @endif
+
+    @if ($document->account_number)
+    <tr>
+        <td class="align-top">N° Cuenta:</td>
+        <td colspan="3">
+            {{ $document->account_number }} 
+        </td> 
+    </tr>
+    @endif
     @if ($document->shipping_address)
     <tr>
         <td class="align-top">Dir. Envío:</td>
@@ -105,14 +126,6 @@
     </tr>
     @endif
     
-    @if ($document->payment_method_type)
-    <tr>
-        <td class="align-top">T. Pago:</td>
-        <td colspan="3">
-            {{ $document->payment_method_type->description }} 
-        </td>
-    </tr>
-    @endif
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
@@ -286,6 +299,24 @@
             @endforeach
         </td> --}}
     </tr>
+</table>
+<br>
+<table class="full-width">
+<tr>
+    <td>
+    <strong>PAGOS:</strong> </td></tr>
+        @php
+            $payment = 0;
+        @endphp
+        @foreach($document->payments as $row)
+            <tr><td>- {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+            @php
+                $payment += (float) $row->payment;
+            @endphp
+        @endforeach
+        <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
+    </tr>
+
 </table>
 </body>
 </html>

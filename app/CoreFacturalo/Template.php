@@ -48,4 +48,12 @@ class Template
 
         return str_replace(DIRECTORY_SEPARATOR, '.', $path_template_default);
     }
+
+    
+    public function pdfFooterTermCondition($base_template, $document)
+    {
+        view()->addLocation(__DIR__.'/Templates');
+
+        return view('pdf.'.$base_template.'.partials.footer_term_condition', compact('document'))->render();
+    }
 }

@@ -419,9 +419,11 @@ if ($hostname) {
             Route::get('quotations', 'Tenant\QuotationController@index')->name('tenant.quotations.index')->middleware('redirect.level');
             Route::get('quotations/columns', 'Tenant\QuotationController@columns');
             Route::get('quotations/records', 'Tenant\QuotationController@records');
-            Route::get('quotations/create', 'Tenant\QuotationController@create')->name('tenant.quotations.create')->middleware('redirect.level');
+            Route::get('quotations/create/{saleOpportunityId?}', 'Tenant\QuotationController@create')->name('tenant.quotations.create')->middleware('redirect.level');
             Route::get('quotations/edit/{id}', 'Tenant\QuotationController@edit')->middleware('redirect.level');
 
+            Route::get('quotations/state-type/{state_type_id}/{id}', 'Tenant\QuotationController@updateStateType');
+            Route::get('quotations/filter', 'Tenant\QuotationController@filter');
             Route::get('quotations/tables', 'Tenant\QuotationController@tables');
             Route::get('quotations/table/{table}', 'Tenant\QuotationController@table');
             Route::post('quotations', 'Tenant\QuotationController@store');
@@ -437,6 +439,7 @@ if ($hostname) {
             Route::post('quotations/email', 'Tenant\QuotationController@email');
             Route::post('quotations/duplicate', 'Tenant\QuotationController@duplicate');
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
+            Route::get('quotations/changed/{quotation}', 'Tenant\QuotationController@changed');
 
             // Route::get('reports/quotations', 'Tenant\ReportQuotationController@index')->name('tenant.reports.quotations.index');
             // Route::get('reports/quotations/search', 'Tenant\ReportQuotationController@search')->name('tenant.reports.quotations.search');

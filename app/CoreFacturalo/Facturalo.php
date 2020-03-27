@@ -330,7 +330,9 @@ class Facturalo
             }
             $legends = $this->document->legends != '' ? '10' : '0';
 
-           $pdf = new Mpdf([
+            $quotation_id = ($this->document->quotation_id) ? 15:0;
+
+            $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
@@ -357,6 +359,7 @@ class Facturalo
                     $customer_department_id+
                     $detraction+
                     $total_plastic_bag_taxes+
+                    $quotation_id+
                     $extra_by_item_additional_information
                 ],
                 'margin_top' => 0,

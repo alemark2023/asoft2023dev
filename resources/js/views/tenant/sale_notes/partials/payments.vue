@@ -7,6 +7,7 @@
                         <table class="table">
                             <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Fecha de pago</th>
                                 <th>Método de pago</th>
                                 <th>Destino</th>
@@ -18,6 +19,7 @@
                             <tbody>
                             <tr v-for="(row, index) in records" :key="index">
                                 <template v-if="row.id">
+                                    <td>PAGO-{{ row.id }}</td>
                                     <td>{{ row.date_of_payment }}</td>
                                     <td>{{ row.payment_method_type_description }}</td>
                                     <td>{{ row.destination_description }}</td>
@@ -29,6 +31,7 @@
                                     </td>
                                 </template>
                                 <template v-else>
+                                    <td></td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.date_of_payment}">
                                             <el-date-picker v-model="row.date_of_payment"
@@ -80,17 +83,17 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <td colspan="4" class="text-right">TOTAL PAGADO</td>
+                                <td colspan="5" class="text-right">TOTAL PAGADO</td>
                                 <td class="text-right">{{ document.total_paid }}</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="4" class="text-right">TOTAL A PAGAR</td>
+                                <td colspan="5" class="text-right">TOTAL A PAGAR</td>
                                 <td class="text-right">{{ document.total }}</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="4" class="text-right">PENDIENTE DE PAGO</td>
+                                <td colspan="5" class="text-right">PENDIENTE DE PAGO</td>
                                 <td class="text-right">{{ document.total_difference }}</td>
                                 <td></td>
                             </tr>

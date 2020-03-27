@@ -12,6 +12,7 @@ use App\Models\Tenant\{
     SaleNotePayment,
     PurchasePayment
 };
+use Modules\Sale\Models\QuotationPayment;
 
 
 trait FinanceTrait
@@ -128,6 +129,7 @@ trait FinanceTrait
             ['id'=> SaleNotePayment::class, 'description' => 'NOTAS DE VENTA'],
             ['id'=> PurchasePayment::class, 'description' => 'COMPRAS'],
             ['id'=> ExpensePayment::class, 'description' => 'GASTOS'],
+            ['id'=> QuotationPayment::class, 'description' => 'COTIZACIÓN'],
         ];
     }
 
@@ -182,8 +184,9 @@ trait FinanceTrait
         $expense_payment = $this->getSumPayment($cash, ExpensePayment::class); 
         $sale_note_payment = $this->getSumPayment($cash, SaleNotePayment::class);
         $purchase_payment = $this->getSumPayment($cash, PurchasePayment::class); 
+        $quotation_payment = $this->getSumPayment($cash, QuotationPayment::class); 
 
-        $entry = $document_payment + $sale_note_payment;
+        $entry = $document_payment + $sale_note_payment + $quotation_payment;
         $egress = $expense_payment + $purchase_payment;
         
         $balance = $entry - $egress;
@@ -194,6 +197,7 @@ trait FinanceTrait
             'description' => "CAJA CHICA",
             'expense_payment' => number_format($expense_payment,2, ".", ""),
             'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
+            'quotation_payment' => number_format($quotation_payment,2, ".", ""),
             'document_payment' => number_format($document_payment,2, ".", ""),
             'purchase_payment' => number_format($purchase_payment,2, ".", ""),
             'balance' => number_format($balance,2, ".", "")
@@ -212,8 +216,9 @@ trait FinanceTrait
             $expense_payment = $this->getSumPayment($row->global_destination, ExpensePayment::class); 
             $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class);
             $purchase_payment = $this->getSumPayment($row->global_destination, PurchasePayment::class); 
+            $quotation_payment = $this->getSumPayment($row->global_destination, QuotationPayment::class); 
 
-            $entry = $document_payment + $sale_note_payment;
+            $entry = $document_payment + $sale_note_payment + $quotation_payment;
             $egress = $expense_payment + $purchase_payment;
             $balance = $entry - $egress;
 
@@ -223,6 +228,7 @@ trait FinanceTrait
                 'description' => "{$row->bank->description} - {$row->currency_type_id} - {$row->description}", 
                 'expense_payment' => number_format($expense_payment,2, ".", ""),
                 'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
+                'quotation_payment' => number_format($quotation_payment,2, ".", ""),
                 'document_payment' => number_format($document_payment,2, ".", ""),
                 'purchase_payment' => number_format($purchase_payment,2, ".", ""),
                 'balance' => number_format($balance,2, ".", "")
@@ -257,15 +263,17 @@ trait FinanceTrait
             $document_payment = $this->getSumByPMT($row->document_payments);
             $sale_note_payment = $this->getSumByPMT($row->sale_note_payments);
             $purchase_payment = $this->getSumByPMT($row->purchase_payments); 
+            $quotation_payment = $this->getSumByPMT($row->quotation_payments); 
 
             return [
 
                 'id' => $row->id,
                 'description' => $row->description, 
                 'expense_payment' => '-',
-                'sale_note_payment' => 'S/ '.number_format($sale_note_payment,2, ".", ""),
-                'document_payment' => 'S/ '.number_format($document_payment,2, ".", ""),
-                'purchase_payment' => 'S/ '.number_format($purchase_payment,2, ".", "")
+                'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
+                'document_payment' => number_format($document_payment,2, ".", ""),
+                'purchase_payment' => number_format($purchase_payment,2, ".", ""),
+                'quotation_payment' => number_format($quotation_payment,2, ".", "")
                 
             ];
 
@@ -287,9 +295,10 @@ trait FinanceTrait
 
                 'id' => $row->id,
                 'description' => $row->description, 
-                'expense_payment' => 'S/ '.number_format($expense_payment,2, ".", ""),
+                'expense_payment' => number_format($expense_payment,2, ".", ""),
                 'sale_note_payment' => '-',
                 'document_payment' => '-',
+                'quotation_payment' => '-',
                 'purchase_payment' => '-'
                 
             ];
@@ -306,4 +315,37 @@ trait FinanceTrait
         });
     }
 
+    public function getTotalsPaymentMethodType($records_by_pmt, $records_by_emt)
+    {
+        
+        $t_documents = 0;
+        $t_sale_notes = 0;
+        $t_quotations = 0;
+        $t_purchases = 0;
+        $t_expenses = 0;
+
+        foreach ($records_by_pmt as $value) {
+
+            $t_documents += $value['document_payment'];
+            $t_sale_notes += $value['sale_note_payment'];
+            $t_quotations += $value['quotation_payment'];
+            $t_purchases += $value['purchase_payment'];
+
+        }
+
+        foreach ($records_by_emt as $value) {
+
+            $t_expenses += $value['expense_payment'];
+            
+        }
+
+        return [
+            't_documents' => number_format($t_documents,2, ".", ""),
+            't_sale_notes' => number_format($t_sale_notes,2, ".", ""),
+            't_quotations' => number_format($t_quotations,2, ".", ""),
+            't_purchases' => number_format($t_purchases,2, ".", ""),
+            't_expenses' => number_format($t_expenses,2, ".", ""),
+        ];
+
+    }
 }
