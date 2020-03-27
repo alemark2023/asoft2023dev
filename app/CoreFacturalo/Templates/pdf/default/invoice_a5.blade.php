@@ -235,8 +235,20 @@
             <td width="120px">COTIZACIÓN</td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
+            @isset($document->quotation->delivery_date)
+                    <td width="120px">F. ENTREGA</td>
+                    <td width="8px">:</td>
+                    <td>{{ $document->quotation->delivery_date->format('Y-m-d')}}</td>
+            @endisset
         </tr>
     @endif
+    @isset($document->quotation->sale_opportunity)
+        <tr>
+            <td width="120px">O. VENTA</td>
+            <td width="8px">:</td>
+            <td>{{ $document->quotation->sale_opportunity->number_full}}</td>
+        </tr>
+    @endisset
     @if(!is_null($document_base))
     <tr>
         <td width="120px">DOC. AFECTADO</td>
