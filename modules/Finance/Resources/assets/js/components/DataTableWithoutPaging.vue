@@ -80,6 +80,16 @@
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody> 
+                        <tfoot v-if="resource == 'finances/payment-method-types'">
+                            <tr>
+                                <td class="text-center" colspan="2">Totales</td>
+                                <td class="text-center">S/ {{totals.t_documents}}</td>
+                                <td class="text-center">S/ {{totals.t_sale_notes}}</td>
+                                <td class="text-center">S/ {{totals.t_quotations}}</td>
+                                <td class="text-center">S/ {{totals.t_purchases}}</td>
+                                <td class="text-center">S/ {{totals.t_expenses}}</td>
+                            </tr>
+                        </tfoot>
                     </table> 
                 </div>
             </div>
@@ -110,6 +120,7 @@
                 records: [],
                 pagination: {},
                 search: {},
+                totals: {},
                 payment_types: [],
                 destination_types: [],
                 form: {},
@@ -171,7 +182,14 @@
             },
             getRecords() {
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                    this.records = response.data
+
+                    if(this.resource == 'finances/payment-method-types'){
+                        this.records = response.data.records
+                        this.totals = response.data.totals
+                    }else{
+                        this.records = response.data
+                    }
+
                     this.loading_submit = false
                 });
 

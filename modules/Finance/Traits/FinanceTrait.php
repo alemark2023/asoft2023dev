@@ -270,10 +270,10 @@ trait FinanceTrait
                 'id' => $row->id,
                 'description' => $row->description, 
                 'expense_payment' => '-',
-                'sale_note_payment' => 'S/ '.number_format($sale_note_payment,2, ".", ""),
-                'document_payment' => 'S/ '.number_format($document_payment,2, ".", ""),
-                'purchase_payment' => 'S/ '.number_format($purchase_payment,2, ".", ""),
-                'quotation_payment' => 'S/ '.number_format($quotation_payment,2, ".", "")
+                'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
+                'document_payment' => number_format($document_payment,2, ".", ""),
+                'purchase_payment' => number_format($purchase_payment,2, ".", ""),
+                'quotation_payment' => number_format($quotation_payment,2, ".", "")
                 
             ];
 
@@ -295,7 +295,7 @@ trait FinanceTrait
 
                 'id' => $row->id,
                 'description' => $row->description, 
-                'expense_payment' => 'S/ '.number_format($expense_payment,2, ".", ""),
+                'expense_payment' => number_format($expense_payment,2, ".", ""),
                 'sale_note_payment' => '-',
                 'document_payment' => '-',
                 'quotation_payment' => '-',
@@ -315,4 +315,37 @@ trait FinanceTrait
         });
     }
 
+    public function getTotalsPaymentMethodType($records_by_pmt, $records_by_emt)
+    {
+        
+        $t_documents = 0;
+        $t_sale_notes = 0;
+        $t_quotations = 0;
+        $t_purchases = 0;
+        $t_expenses = 0;
+
+        foreach ($records_by_pmt as $value) {
+
+            $t_documents += $value['document_payment'];
+            $t_sale_notes += $value['sale_note_payment'];
+            $t_quotations += $value['quotation_payment'];
+            $t_purchases += $value['purchase_payment'];
+
+        }
+
+        foreach ($records_by_emt as $value) {
+
+            $t_expenses += $value['expense_payment'];
+            
+        }
+
+        return [
+            't_documents' => number_format($t_documents,2, ".", ""),
+            't_sale_notes' => number_format($t_sale_notes,2, ".", ""),
+            't_quotations' => number_format($t_quotations,2, ".", ""),
+            't_purchases' => number_format($t_purchases,2, ".", ""),
+            't_expenses' => number_format($t_expenses,2, ".", ""),
+        ];
+
+    }
 }

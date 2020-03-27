@@ -53,7 +53,12 @@
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td>{{row.state_type_description}}</td>
+                        <td>
+                            <!-- {{row.state_type_description}} -->
+                            <el-select v-model="row.state_type_id" @change="changeStateType(row)" style="width:120px !important">
+                                <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                        </td>
                         <td>{{ row.identifier }}
                         </td>
                         <td>
@@ -175,6 +180,7 @@
                 recordId: null,
                 showDialogOptions: false,
                 showDialogOptionsPdf: false,
+                state_types: [],
                 columns: {
                     total_exportation: {
                         title: 'T.Exportación',
@@ -199,9 +205,23 @@
                 }
             }
         },
-        created() {
+        async created() {
+            await this.filter()
         },
         methods: {
+            async changeStateType(row){
+
+                await this.updateStateType(`/${this.resource}/state-type/${row.state_type_id}/${row.id}`).then(() =>
+                    this.$eventHub.$emit('reloadData')
+                ) 
+
+            },
+            filter(){
+                this.$http.get(`/${this.resource}/filter`)
+                            .then(response => { 
+                                this.state_types = response.data.state_types 
+                            })
+            },
             clickEdit(id)
             {
                 this.recordId = id

@@ -39,6 +39,7 @@ use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Traits\FinanceTrait; 
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\StateType;
 
 
 class QuotationController extends Controller
@@ -73,6 +74,13 @@ class QuotationController extends Controller
             'delivery_date' => 'Fecha de entrega',
             'user_name' => 'Vendedor'
         ];
+    }
+
+    public function filter()
+    {
+        $state_types = StateType::whereIn('id',['01','05','09'])->get();
+
+        return compact('state_types');
     }
 
     public function records(Request $request)
@@ -692,4 +700,15 @@ class QuotationController extends Controller
         ];
     }
 
+    public function updateStateType($state_type_id, $id)
+    {
+        $record = Quotation::find($id);
+        $record->state_type_id = $state_type_id;
+        $record->save();
+
+        return [
+            'success' => true,
+            'message' => 'Estado actualizado correctamente'
+        ];
+    }
 }

@@ -19,11 +19,11 @@
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td> 
                             <td>{{row.description}}</td>
-                            <td class="text-center">{{row.document_payment}}</td>
-                            <td class="text-center">{{row.sale_note_payment}}</td>
-                            <td class="text-center">{{row.quotation_payment}}</td>
-                            <td class="text-center"> {{row.purchase_payment}}</td>
-                            <td class="text-center">{{row.expense_payment}}</td>
+                            <td class="text-center">{{ (row.document_payment != '-') ? 'S/ '+row.document_payment : row.document_payment}}</td>
+                            <td class="text-center">{{ (row.sale_note_payment != '-') ? 'S/ '+row.sale_note_payment : row.sale_note_payment}}</td>
+                            <td class="text-center">{{ (row.quotation_payment != '-') ? 'S/ '+row.quotation_payment : row.quotation_payment}}</td>
+                            <td class="text-center">{{ (row.purchase_payment != '-') ? 'S/ '+row.purchase_payment : row.purchase_payment}}</td>
+                            <td class="text-center">{{ (row.expense_payment != '-') ? 'S/ '+row.expense_payment : row.expense_payment}}</td>
                             <!-- <td class="text-center">{{row.balance}}</td>  -->
                         </tr>
                     </data-table>

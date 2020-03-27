@@ -57,7 +57,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($records as $key => $value)
+                            @foreach($records['records'] as $key => $value)
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value['description']}}</td>
@@ -67,7 +67,15 @@
                                     <td class="celda"> {{$value['purchase_payment']}}</td>
                                     <td class="celda">{{$value['expense_payment']}}</td>
                                 </tr>
-                            @endforeach 
+                            @endforeach
+                            <tr> 
+                                <td class="celda" colspan="2">Totales</td>
+                                <td class="celda">{{$records['totals']['t_documents']}}</td>
+                                <td class="celda">{{$records['totals']['t_sale_notes']}}</td>
+                                <td class="celda">{{$records['totals']['t_quotations']}}</td>
+                                <td class="celda"> {{$records['totals']['t_purchases']}}</td>
+                                <td class="celda">{{$records['totals']['t_expenses']}}</td>
+                            </tr> 
                         </tbody>
                     </table>
                 </div>
