@@ -64,7 +64,7 @@ class ChangelogGen extends Command
                 file_put_contents($path.'/CHANGELOG.md', $br."\n"."\n".$new_content);
 
                 $content = file_get_contents($path.'/CHANGELOG.md');
-                file_put_contents($path.'/CHANGELOG.md', $key."\n".'********'."\n".$content);
+                file_put_contents($path.'/CHANGELOG.md', "### ".$key."\n".$content);
             }
 
         }
