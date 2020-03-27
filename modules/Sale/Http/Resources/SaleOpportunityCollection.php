@@ -37,6 +37,7 @@ class SaleOpportunityCollection extends ResourceCollection
                 'total_igv' => number_format($row->total_igv,2),
                 'total' => number_format($row->total,2),
                 'state_type_id' => $row->state_type_id, 
+                'files' => $row->files, 
                 'state_type_description' => $row->state_type->description, 
                 'btn_generate' => $btn_generate,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),

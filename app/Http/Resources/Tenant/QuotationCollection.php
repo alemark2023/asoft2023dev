@@ -49,6 +49,7 @@ class QuotationCollection extends ResourceCollection
                     ];
                 }),
                 'sale_opportunity_number_full' => ($row->sale_opportunity) ? $row->sale_opportunity->number_full:null,
+                'sale_opportunity' => ($row->sale_opportunity) ? $row->sale_opportunity:null,
                 'btn_generate' => $btn_generate,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),

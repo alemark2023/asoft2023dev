@@ -29,6 +29,7 @@ if($current_hostname) {
                 Route::get('print/{external_id}/{format?}', 'SaleOpportunityController@toPrint');
                 
                 Route::post('uploads', 'SaleOpportunityFileController@uploadFile');
+                Route::get('download-file/{filename}', 'SaleOpportunityFileController@download');
 
             });
  

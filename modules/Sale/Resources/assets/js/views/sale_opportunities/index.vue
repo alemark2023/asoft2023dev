@@ -27,12 +27,13 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
-                        <th>Vendedor</th>
+                        <th v-if="columns.sale.visible">Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
                         <th>O. Venta</th>
                         <th v-if="columns.quotation.visible">Cotización</th>
                         <th class="text-center">Moneda</th>
+                        <th class="text-center">Archivos</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
@@ -45,12 +46,48 @@
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
-                        <td>{{ row.user_name }}</td>
+                        <td v-if="columns.sale.visible">{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>{{row.state_type_description}}</td>
                         <td>{{ row.number_full }}</td>
                         <td v-if="columns.quotation.visible">{{ row.quotation_number_full }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
+                        <td class="text-center">
+                            
+                            
+                            <el-popover
+                                placement="right"
+                                width="400"
+                                trigger="click">
+
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nombre</th>
+                                                    <th>Descarga</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(row, index) in row.files" :key="index">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{row.filename}}</td>
+                                                    <td class="text-center">
+                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadFile(row.filename)">
+                                                            <i class="fas fa-file-download"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div> 
+                                <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
+                            </el-popover>
+
+                        </td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
@@ -122,15 +159,19 @@
                     },
                     total_taxed: {
                         title: 'T.Gravado',
-                        visible: true
+                        visible: false
                     },
                     total_igv: {
                         title: 'T.IGV',
-                        visible: true
+                        visible: false
                     },
                     quotation: {
                         title: 'Cotización',
                         visible: true
+                    },
+                    sale: {
+                        title: 'Vendedor',
+                        visible: false
                     },
                 }
             }
@@ -138,6 +179,12 @@
         created() {
         },
         methods: {
+            clickDownloadFile(filename) {
+                window.open(
+                    `/${this.resource}/download-file/${filename}`,
+                    "_blank"
+                );
+            },
             clickDownload(external_id) {
                 window.open(`/${this.resource}/download/${external_id}`, '_blank');
             },

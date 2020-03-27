@@ -78,7 +78,7 @@
                                 <div class="form-group" :class="{'has-danger': errors.observation}">
                                     <label class="control-label">Observaciónes
                                     </label>
-                                    <el-input  type="textarea"  autosize :rows="4" v-model="form.observation"></el-input>
+                                    <el-input  type="textarea"  autosize v-model="form.observation"></el-input>
                                     <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@
                                 <div class="form-group" :class="{'has-danger': errors.detail}">
                                     <label class="control-label">Detalles
                                     </label>
-                                    <el-input  type="textarea" autosize  :rows="4" v-model="form.detail"></el-input>
+                                    <el-input  type="textarea" autosize  v-model="form.detail"></el-input>
                                     <small class="form-control-feedback" v-if="errors.detail" v-text="errors.detail[0]"></small>
                                 </div>
                             </div>
@@ -196,6 +196,13 @@
     </div>
 </template>
 
+<style >
+    .el-textarea__inner {
+        height: 60px !important;
+        min-height: 60px !important;
+    }
+</style>
+
 <script>
     import SaleOpportunityFormItem from './partials/item.vue'
     import PersonForm from '@views/persons/form.vue'
@@ -258,11 +265,8 @@
         methods: {
             handleRemove(file, fileList) {
 
-                //file es el archivo que eliminaste
-                // y en filelist queda el que no se elimino, es array
-                console.log(file, fileList)                
+                this.form.files = fileList
                  
-                // this.fileList = []
             }, 
             onSuccess(response, file, fileList) {
 

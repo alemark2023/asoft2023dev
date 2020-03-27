@@ -84,4 +84,8 @@ class SaleOpportunityFileController extends Controller
 
     }
 
+    public function download($filename) { 
+        return Storage::disk('tenant')->download('sale_opportunity_files'.DIRECTORY_SEPARATOR.$filename);
+    }
+
 }

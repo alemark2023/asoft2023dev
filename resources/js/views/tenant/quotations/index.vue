@@ -66,7 +66,50 @@
                                 <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
                             </template>
                         </td>
-                        <td>{{ row.sale_opportunity_number_full }}</td>
+                        <td>
+                            <!-- {{ row.sale_opportunity_number_full }} -->
+                            
+                            <el-popover
+                                placement="right"
+                                v-if="row.sale_opportunity"
+                                width="400"
+                                trigger="click">
+
+                                <div class="col-md-12 mt-4">
+                                    <table>
+                                        <tr>
+                                            <td><strong>O. Venta: </strong></td>
+                                            <td><strong>{{row.sale_opportunity_number_full}}</strong></td>
+                                        </tr>
+                                        <tr  class="mt-4 mb-4">
+                                            <td><strong>F. Emisión:</strong></td>
+                                            <td><strong>{{row.date_of_issue}}</strong></td>
+                                        </tr>
+                                    </table>
+                                    <div class="table-responsive mt-4">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Descripción</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(row, index) in row.sale_opportunity.items" :key="index">
+                                                    <td>{{index+1}}</td>
+                                                    <td>{{row.item.description}}</td> 
+                                                    <td>{{row.quantity}}</td> 
+                                                    <td>{{row.total}}</td> 
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div> 
+                                <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
+                            </el-popover>
+                        </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
