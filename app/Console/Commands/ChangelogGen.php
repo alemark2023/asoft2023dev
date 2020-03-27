@@ -58,18 +58,19 @@ class ChangelogGen extends Command
                 $this->error('no hay datos para '.$key);
             } else {
                 $res_gitlog = $gitlog->getOutput();
+                $br = str_replace("\n", "<br>\n", $res_gitlog);
 
                 $new_content = file_get_contents($path.'/CHANGELOG.md');
-                file_put_contents($path.'/CHANGELOG.md', $res_gitlog."\n"."\n".$new_content);
+                file_put_contents($path.'/CHANGELOG.md', $br."\n"."\n".$new_content);
 
                 $content = file_get_contents($path.'/CHANGELOG.md');
-                file_put_contents($path.'/CHANGELOG.md', $key."\n".$content);
+                file_put_contents($path.'/CHANGELOG.md', $key."\n".'********'."\n".$content);
             }
 
         }
 
         $update_content = file_get_contents($path.'/CHANGELOG.md');
-        file_put_contents($path.'/CHANGELOG.md', $option_to."\n".'********'."\n".$update_content);
+        file_put_contents($path.'/CHANGELOG.md', '## '.$option_to."\n"."\n".$update_content);
         $this->info('ha finalizado la actualización');
     }
 }
