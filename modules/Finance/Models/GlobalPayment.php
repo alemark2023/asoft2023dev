@@ -6,6 +6,7 @@ use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\SoapType;
+use Modules\Sale\Models\QuotationPayment;
 use Modules\Expense\Models\ExpensePayment;
 use App\Models\Tenant\{
     DocumentPayment,
@@ -64,6 +65,12 @@ class GlobalPayment extends ModelTenant
                     ->wherePaymentType(PurchasePayment::class);
     } 
 
+    public function quo_payment()
+    {
+        return $this->belongsTo(QuotationPayment::class, 'payment_id')
+                    ->wherePaymentType(QuotationPayment::class);
+    } 
+
     public function getDestinationDescriptionAttribute()
     {
         return $this->destination_type === Cash::class ? 'CAJA CHICA': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
@@ -81,6 +88,7 @@ class GlobalPayment extends ModelTenant
             SaleNotePayment::class => 'sale_note',
             PurchasePayment::class => 'purchase',
             ExpensePayment::class => 'expense',
+            QuotationPayment::class => 'quotation',
         ];
 
         return $instance_type[$this->payment_type];
@@ -104,6 +112,9 @@ class GlobalPayment extends ModelTenant
             case 'expense':
                 $description = 'GASTO';
                 break;
+            case 'quotation':
+                $description = 'COTIZACIÓN';
+                break;
              
         } 
 
@@ -118,6 +129,7 @@ class GlobalPayment extends ModelTenant
 
             case 'document':
             case 'sale_note':
+            case 'quotation':
                 $person['name'] = $record->customer->name;
                 $person['number'] = $record->customer->number;
                 break;
@@ -162,6 +174,14 @@ class GlobalPayment extends ModelTenant
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
                             $p->whereStateTypeAccepted()->whereTypeUser();
+                        });
+
+                })
+                ->OrWhereHas('quo_payment', function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereStateTypeAccepted()->whereTypeUser()
+                                ->whereNotChanged();
                         });
 
                 });

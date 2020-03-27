@@ -7,6 +7,7 @@ use App\Models\Tenant\{
     DocumentPayment,
     PurchasePayment,
 };  
+use Modules\Sale\Models\QuotationPayment;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,7 @@ class GlobalPaymentServiceProvider extends ServiceProvider
         $this->deletingPayment(SaleNotePayment::class);
         $this->deletingPayment(DocumentPayment::class);
         $this->deletingPayment(PurchasePayment::class);
+        $this->deletingPayment(QuotationPayment::class);
 
     }
 

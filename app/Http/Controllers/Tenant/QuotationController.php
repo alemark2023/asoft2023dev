@@ -41,9 +41,6 @@ use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Configuration;
 
 
-
-
-
 class QuotationController extends Controller
 {
 
@@ -137,8 +134,10 @@ class QuotationController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
+        $payment_destinations = $this->getPaymentDestinations();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types','company', 'document_type_03_filter','payment_method_types');
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types',
+                        'company', 'document_type_03_filter','payment_method_types', 'payment_destinations');
     }
 
     public function option_tables()
@@ -202,6 +201,8 @@ class QuotationController extends Controller
                 $this->quotation->items()->create($row);
             }
 
+            $this->savePayments($this->quotation, $data['payments']);
+
             $this->setFilename();
             $this->createPdf($this->quotation, "a4", $this->quotation->filename);
 
@@ -227,10 +228,14 @@ class QuotationController extends Controller
            $this->quotation->fill($request->all());
            $this->quotation->items()->delete();
 
+           $this->deleteAllPayments($this->quotation->payments);
+
             foreach ($request['items'] as $row) {
 
                 $this->quotation->items()->create($row);
             }
+
+            $this->savePayments($this->quotation, $request['payments']);
 
             $this->setFilename();
         });
@@ -468,7 +473,9 @@ class QuotationController extends Controller
             $total_exonerated  = $document->total_exonerated != '' ? '10' : '0';
             $total_taxed       = $document->total_taxed != '' ? '10' : '0';
             $quantity_rows     = count($document->items);
+            $payments     = $document->payments()->count() * 5;
             $discount_global = 0;
+
             foreach ($document->items as $it) {
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
@@ -493,6 +500,7 @@ class QuotationController extends Controller
                     $total_exportation +
                     $total_free +
                     $total_unaffected +
+                    $payments +
                     $total_exonerated +
                     $total_taxed],
                 'margin_top' => 2,
@@ -654,4 +662,29 @@ class QuotationController extends Controller
             'success' => true
         ];
     }
+
+    
+    private function savePayments($quotation, $payments){
+
+        foreach ($payments as $payment) {
+
+            $record_payment = $quotation->payments()->create($payment);
+
+            if(isset($payment['payment_destination_id'])){
+                $this->createGlobalPayment($record_payment, $payment);
+            }
+        }
+    }
+
+    public function changed($id)
+    {
+        $record = Quotation::find($id);
+        $record->changed = true;
+        $record->save();
+
+        return [
+            'success' => true
+        ];
+    }
+
 }

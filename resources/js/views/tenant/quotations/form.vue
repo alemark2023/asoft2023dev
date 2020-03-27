@@ -106,8 +106,59 @@
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
+
+                            <div class="col-lg-8 mt-2" >
+
+                                <table>
+                                    <thead>
+                                        <tr width="100%">
+                                            <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
+                                            <th v-if="form.payments.length>0" class="pb-2">Destino</th>
+                                            <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                            <th v-if="form.payments.length>0" class="pb-2">Monto</th>
+                                            <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(row, index) in form.payments" :key="index">
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+                                                    <el-select v-model="row.payment_method_type_id" >
+                                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+                                                    <el-select v-model="row.payment_destination_id" filterable >
+                                                        <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                    </el-select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2"  >
+                                                    <el-input v-model="row.reference"></el-input>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group mb-2 mr-2" >
+                                                    <el-input v-model="row.payment"></el-input>
+                                                </div>
+                                            </td>
+                                            <td class="series-table-actions text-center">
+                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                            <br>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+                            </div>
                             
-                            <div class="col-lg-6">
+                            <div class="col-lg-4  mt-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Descripcion
                                     </label>
@@ -239,6 +290,7 @@
                 establishment: null, 
                 currency_type: {},
                 quotationNewId: null,
+                payment_destinations:  [],
                 activePanel: 0,
                 loading_search:false
             }
@@ -256,6 +308,7 @@
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
                     this.payment_method_types = response.data.payment_method_types
+                    this.payment_destinations = response.data.payment_destinations
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
@@ -270,6 +323,21 @@
             await this.createQuotationFromSO()
         },
         methods: {
+            clickAddPayment() {
+                this.form.payments.push({
+                    id: null,
+                    document_id: null,
+                    date_of_payment:  moment().format('YYYY-MM-DD'),
+                    payment_method_type_id: '01',
+                    reference: null,
+                    payment_destination_id:'cash',
+                    payment: 0,
+
+                });
+            },
+            clickCancel(index) {
+                this.form.payments.splice(index, 1);
+            },
             async createQuotationFromSO(){
 
                 if(this.saleOpportunityId) {
@@ -386,8 +454,12 @@
                     actions: {
                         format_pdf:'a4',
                     },
+                    payments: [],
                     sale_opportunity_id:null,
                 }
+
+                this.clickAddPayment()
+
             },
             resetForm() {
                 this.activePanel = 0
@@ -479,9 +551,36 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
-             },
+            },
+            validate_payments(){
+
+                //eliminando items de pagos
+                for (let index = 0; index < this.form.payments.length; index++) {
+                    if(parseFloat(this.form.payments[index].payment) === 0)
+                        this.form.payments.splice(index, 1)
+                }
+
+                let error_by_item = 0
+                let acum_total = 0
+
+                this.form.payments.forEach((item)=>{
+                    acum_total += parseFloat(item.payment)
+                    if(item.payment <= 0 || item.payment == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                    acum_total : acum_total
+                }
+
+            },
             async submit() {
                 
+                let validate = await this.validate_payments()
+                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
+                    return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
+                }
+
                 if(this.form.date_of_issue > this.form.date_of_due)
                     return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
 

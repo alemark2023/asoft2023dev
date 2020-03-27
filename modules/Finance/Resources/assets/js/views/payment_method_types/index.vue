@@ -11,6 +11,7 @@
                             <th class="">Método de pago</th>
                             <th class="text-center">T. Pagos CPE</th>
                             <th class="text-center">T. Pagos NV</th>
+                            <th class="text-center">T. Pagos COT</th>
                             <th class="text-center">T. Pagos Compras</th>
                             <th class="text-center">T. Pagos Gastos</th>
                             <!-- <th class="text-center">Saldo</th> -->
@@ -20,6 +21,7 @@
                             <td>{{row.description}}</td>
                             <td class="text-center">{{row.document_payment}}</td>
                             <td class="text-center">{{row.sale_note_payment}}</td>
+                            <td class="text-center">{{row.quotation_payment}}</td>
                             <td class="text-center"> {{row.purchase_payment}}</td>
                             <td class="text-center">{{row.expense_payment}}</td>
                             <!-- <td class="text-center">{{row.balance}}</td>  -->

@@ -85,6 +85,7 @@
                                 <th class="">Método de pago</th>
                                 <th class="">T. Pagos - CPE</th>
                                 <th class="">T. Pagos - NV</th>
+                                <th class="">T. Pagos - COT</th>
                                 <th class="">T. Pagos - Compras</th>
                                 <th class="">T. Pagos - Gastos</th>
                             </tr>
@@ -96,6 +97,7 @@
                                     <td class="celda">{{$value['description']}}</td>
                                     <td class="celda">{{$value['document_payment']}}</td>
                                     <td class="celda">{{$value['sale_note_payment']}}</td>
+                                    <td class="celda">{{$value['quotation_payment']}}</td>
                                     <td class="celda"> {{$value['purchase_payment']}}</td>
                                     <td class="celda">{{$value['expense_payment']}}</td>
                                 </tr>
