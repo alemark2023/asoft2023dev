@@ -67,7 +67,7 @@
                         </div>
 
                         <div class="col-md-2"></div>
-                        
+
                         <div class="col-md-6 mt-4">
                             <div class="form-group" :class="{'has-danger': errors.affectation_igv_type_id}">
                                 <label class="control-label">Tipo de afectación
@@ -197,7 +197,7 @@
 
             },
             async loadTables(){
-                
+
                 await this.$http.get(`/${this.resource}/tables`) .then(response => {
                         this.affectation_igv_types = response.data.affectation_igv_types
                     })

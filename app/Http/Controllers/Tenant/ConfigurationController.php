@@ -110,14 +110,50 @@ class ConfigurationController extends Controller
         ];
     }
 
-    
+
     public function tables()
     {
-        
+
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
         return compact('affectation_igv_types');
-        
+
+    }
+
+    public function visualDefaults()
+    {
+        $defaults = [
+            'bg' => 'light',
+            'header' => 'light',
+            'sidebars' => 'light',
+        ];
+        $configuration = Configuration::first();
+        $configuration->visual = $defaults;
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
+    }
+
+    public function visualSettings(Request $request)
+    {
+        $visuals = [
+            'bg' => $request->bg,
+            'header' => $request->header,
+            'sidebars' => $request->sidebars,
+        ];
+
+        $configuration = Configuration::find(1);
+        $configuration->visual = $visuals;
+        $configuration->save();
+
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
+
     }
 
 }

@@ -14,6 +14,7 @@ class Configuration extends ModelTenant
         'limit_documents',
         'sunat_alternate_server',
         'plan',
+        'visual',
         'limit_users',
         'quantity_documents',
         'date_time_start',
@@ -34,6 +35,16 @@ class Configuration extends ModelTenant
     }
 
     public function getPlanAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setVisualAttribute($value)
+    {
+        $this->attributes['visual'] = (is_null($value))?null:json_encode($value);
+    }
+
+    public function getVisualAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);
     }

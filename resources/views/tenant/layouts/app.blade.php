@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-    @if($vc_compact_sidebar->compact_sidebar)
-        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed sidebar-light no-mobile-device custom-scroll sidebar-left-collapsed">
-    @else
-        <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="fixed sidebar-light no-mobile-device custom-scroll">
-    @endif
+<html
+    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    class="fixed no-mobile-device custom-scroll
+        {{$vc_compact_sidebar->compact_sidebar == true ? 'sidebar-left-collapsed' : ''}}
+        {{$visual->header == 'dark' ? 'header-dark' : ''}}
+        {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}}
+        {{$visual->bg == 'dark' ? 'dark' : ''}}
+        ">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -50,6 +53,8 @@
     <link rel="stylesheet" href="{{asset('porto-light/vendor/bootstrap-timepicker/css/bootstrap-timepicker.css')}}" />
 
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-loading/dist/jquery.loading.css')}}" />
+
+    <link rel="stylesheet" type="text/css" href="{{ asset('porto-light/master/style-switcher/style-switcher.css')}}">
 
     <link rel="stylesheet" href="{{ asset('porto-light/css/theme.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/css/custom.css') }}" />
@@ -114,6 +119,7 @@
             <!-- end: sidebar -->
             <section role="main" class="content-body" id="main-wrapper">
               @yield('content')
+              @include('tenant.layouts.partials.sidebar_styles')
             </section>
         </div>
     </section>
@@ -122,7 +128,7 @@
     <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-browser-mobile/jquery.browser.mobile.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-cookie/jquery-cookie.js')}}"></script>
-    <script src="{{ asset('porto-light/master/style-switcher/style.switcher.js')}}"></script>
+    {{-- <script src="{{ asset('porto-light/master/style-switcher/style.switcher.js')}}"></script> --}}
     <script src="{{ asset('porto-light/vendor/popper/umd/popper.min.js')}}"></script>
     <!-- <script src="{{ asset('porto-light/vendor/bootstrap/js/bootstrap.js')}}"></script> -->
     {{-- <script src="{{ asset('porto-light/vendor/common/common.js')}}"></script> --}}
