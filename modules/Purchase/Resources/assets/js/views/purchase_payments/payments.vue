@@ -166,7 +166,7 @@
         methods: {
             clickDownloadFile(filename) {
                 window.open(
-                    `/finances/payment-file/download-file/${filename}`,
+                    `/finances/payment-file/download-file/${filename}/purchases`,
                     "_blank"
                 );
             },

@@ -297,6 +297,12 @@ class PurchaseController extends Controller
                 if(isset($payment['payment_destination_id'])){
                     $this->createGlobalPayment($record_payment, $payment);
                 }
+                
+                if(isset($payment['payment_filename'])){
+                    $record_payment->payment_file()->create([
+                        'filename' => $payment['payment_filename']
+                    ]);
+                }
             }
 
             return $doc;

@@ -362,7 +362,7 @@
             submit() {
 
                 let validate = this.validate_payments()
-                if(validate.acum_total !== parseFloat(this.form.total) || validate.error_by_item > 0) {
+                if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
                     return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
                 }
 

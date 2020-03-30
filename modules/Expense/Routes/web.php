@@ -23,6 +23,16 @@ if($current_hostname) {
 
             });
 
+            
+            Route::prefix('expense-payments')->group(function () {
+
+                Route::get('/records/{expense_id}', 'ExpensePaymentController@records');
+                Route::get('/expense/{expense_id}', 'ExpensePaymentController@expense');
+                Route::get('/tables', 'ExpensePaymentController@tables');
+                Route::post('', 'ExpensePaymentController@store');
+                Route::delete('/{expense_payment}', 'ExpensePaymentController@destroy');
+
+            });
         });
     });
 }

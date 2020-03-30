@@ -18,6 +18,7 @@
                         <th>Proveedor</th>
                         <th>Número</th>
                         <th>Motivo</th>
+                        <th class="text-center">Pagos</th>
                         <th class="text-center">Moneda</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">Dist. Gasto</th>
@@ -30,6 +31,14 @@
                             <small v-text="row.expense_type_description"></small><br/>
                         </td>
                         <td class="">{{ row.expense_reason_description }}</td>
+                        <td class="text-center">
+                            <button
+                                type="button"
+                                style="min-width: 41px"
+                                class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                @click.prevent="clickExpensePayment(row.id)"
+                            >Pagos</button>
+                        </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right">{{ row.total }}</td>
 
@@ -55,6 +64,11 @@
             <expense-voided :showDialog.sync="showDialogVoided"
                                :expenseId="recordId"></expense-voided>
 
+            <expense-payments
+                :showDialog.sync="showDialogExpensePayments"
+                :expenseId="recordId"
+                :external="true"
+                ></expense-payments>
         </div>
     </div>
 
@@ -65,14 +79,16 @@
     import DataTable from '@components/DataTable.vue'
     import DocumentPayments from './partials/payments.vue'
     import ExpenseVoided from './partials/voided.vue'
+    import ExpensePayments from '@viewsModuleExpense/expense_payments/payments.vue'
 
     export default {
-        components: {DataTable, DocumentPayments, ExpenseVoided},
+        components: {DataTable, DocumentPayments, ExpenseVoided, ExpensePayments},
         data() {
             return {
                 showDialogVoided: false,
                 resource: 'expenses',
                 showDialogPayments: false,
+                showDialogExpensePayments: false,
                 recordId: null,
                 showDialogOptions: false
             }
@@ -80,6 +96,10 @@
         created() {
         },
         methods: {
+            clickExpensePayment(recordId) {
+                this.recordId = recordId;
+                this.showDialogExpensePayments = true
+            },
             clickVoided(recordId) {
                 this.recordId = recordId;
                 this.showDialogVoided = true;

@@ -26,11 +26,12 @@ trait FilePaymentTrait
             $extension = $file_name_old_array[1];
             $file_name = Str::slug($file_name_old_array[0])."-{$type}-".$record->id.'.'.$extension;
 
-            Storage::disk('tenant')->put('payment_files'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.$file_name, $file_content);
-
             $record->payment_file()->create([
                 'filename' => $file_name
             ]);
+
+            Storage::disk('tenant')->put('payment_files'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.$file_name, $file_content);
+
 
         }
 

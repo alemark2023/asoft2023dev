@@ -1,7 +1,6 @@
 <?php
 namespace Modules\Purchase\Http\Controllers;
 
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Controllers\Controller;
 use Modules\Purchase\Http\Resources\PurchasePaymentCollection;
 use Modules\Purchase\Http\Requests\PurchasePaymentRequest;
@@ -14,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class PurchasePaymentController extends Controller
 {
-    use StorageDocument, FinanceTrait, FilePaymentTrait;
+    use FinanceTrait, FilePaymentTrait;
 
     public function records($purchase_id)
     {
@@ -59,7 +58,7 @@ class PurchasePaymentController extends Controller
             $record->fill($request->all());
             $record->save();
             $this->createGlobalPayment($record, $request->all());
-            $this->saveFiles($record, $request, 'sale_notes');
+            $this->saveFiles($record, $request, 'purchases');
 
         });
 
