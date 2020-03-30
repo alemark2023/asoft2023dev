@@ -44,6 +44,18 @@ if($current_hostname) {
 
             });
 
+            Route::prefix('purchase-payments')->group(function () {
+
+                Route::get('/records/{purchase_id}', 'PurchasePaymentController@records');
+                Route::get('/purchase/{purchase_id}', 'PurchasePaymentController@purchase');
+                Route::get('/tables', 'PurchasePaymentController@tables');
+                Route::post('', 'PurchasePaymentController@store');
+                Route::delete('/{purchase_payment}', 'PurchasePaymentController@destroy');
+
+            });
+
+            
+
         });
     });
 }
