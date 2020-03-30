@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Storage;
 class PaymentFileController extends Controller
 { 
 
-    public function download($filename) { 
-        return Storage::disk('tenant')->download('payment_files'.DIRECTORY_SEPARATOR.$filename);
+    public function download($filename, $type) { 
+        return Storage::disk('tenant')->download('payment_files'.DIRECTORY_SEPARATOR.$type.DIRECTORY_SEPARATOR.$filename);
     }
 
     public function uploadAttached(Request $request)
