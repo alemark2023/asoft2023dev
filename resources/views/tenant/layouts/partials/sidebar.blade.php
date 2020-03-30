@@ -678,7 +678,7 @@
                             </li>
                             <li>
                                 <a class="nav-link" href="#">
-                                    Cuentas por pagar (Pronto)
+                                    Cuentas por pagar <span class="float-right badge badge-info badge-danger mr-3">Pronto</span>
                                 </a>
                             </li>
                         </ul>

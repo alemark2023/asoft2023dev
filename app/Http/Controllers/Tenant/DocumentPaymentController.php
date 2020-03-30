@@ -11,12 +11,12 @@ use App\Models\Tenant\PaymentMethodType;
 use Exception, Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Finance\Traits\FinanceTrait; 
-
+use Modules\Finance\Traits\FilePaymentTrait; 
 
 class DocumentPaymentController extends Controller
 {
 
-    use FinanceTrait;
+    use FinanceTrait, FilePaymentTrait;
 
     public function records($document_id)
     {
@@ -52,6 +52,7 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
+        // dd($request->all());
 
         $id = $request->input('id');
 
@@ -61,6 +62,7 @@ class DocumentPaymentController extends Controller
             $record->fill($request->all());
             $record->save();
             $this->createGlobalPayment($record, $request->all());
+            $this->saveFiles($record, $request, 'documents');
 
         });
 

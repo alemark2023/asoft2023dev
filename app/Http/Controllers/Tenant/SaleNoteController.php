@@ -841,6 +841,7 @@ class SaleNoteController extends Controller
                     "payment_method_type_id" => $row['payment_method_type_id'],
                     "reference" => $row['reference'],
                     "payment_destination_id" => isset($row['payment_destination_id']) ? $row['payment_destination_id'] : null,
+                    "payment_filename" => isset($row['payment_filename']) ? $row['payment_filename'] : null,
                     "change" => $change,
                     "payment" => $payment
                 ];
@@ -863,6 +864,13 @@ class SaleNoteController extends Controller
             if(isset($row['payment_destination_id'])){
                 $this->createGlobalPayment($record_payment, $row);
             }
+
+            if(isset($row['payment_filename'])){
+                $record_payment->payment_file()->create([
+                    'filename' => $row['payment_filename']
+                ]);
+            }
+
         }
     }
 

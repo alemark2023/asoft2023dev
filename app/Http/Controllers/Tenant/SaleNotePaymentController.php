@@ -17,11 +17,12 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FilePaymentTrait; 
 use Illuminate\Support\Facades\DB;
 
 class SaleNotePaymentController extends Controller
 {
-    use StorageDocument, FinanceTrait;
+    use StorageDocument, FinanceTrait, FilePaymentTrait;
 
     public function records($sale_note_id)
     {
@@ -71,6 +72,7 @@ class SaleNotePaymentController extends Controller
             $record->fill($request->all());
             $record->save();
             $this->createGlobalPayment($record, $request->all());
+            $this->saveFiles($record, $request, 'sale_notes');
 
         });
 
