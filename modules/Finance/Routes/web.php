@@ -35,7 +35,7 @@ if($hostname) {
                 Route::get('unpaid/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
 
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');
-                Route::get('payment-file/download-file/{filename}', 'PaymentFileController@download');
+                Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
 
             });
 

@@ -167,7 +167,7 @@
         methods: {
             clickDownloadFile(filename) {
                 window.open(
-                    `/finances/payment-file/download-file/${filename}`,
+                    `/finances/payment-file/download-file/${filename}/sale_notes`,
                     "_blank"
                 );
             },

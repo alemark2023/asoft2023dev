@@ -172,7 +172,7 @@
         methods: {
             clickDownloadFile(filename) {
                 window.open(
-                    `/finances/payment-file/download-file/${filename}`,
+                    `/finances/payment-file/download-file/${filename}/documents`,
                     "_blank"
                 );
             },

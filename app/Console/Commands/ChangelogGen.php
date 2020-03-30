@@ -55,21 +55,22 @@ class ChangelogGen extends Command
             $gitlog = new Process('git log '.$option_from.'..'.$option_to.' --no-merges --date=short --pretty=format:"%ad : %s" | grep -e '.$key);
             $gitlog->run();
             if (!$gitlog->isSuccessful()) {
-                $this->error('no se pudo actualizar');
+                $this->error('no hay datos para '.$key);
             } else {
                 $res_gitlog = $gitlog->getOutput();
+                $br = str_replace("\n", "<br>\n", $res_gitlog);
 
                 $new_content = file_get_contents($path.'/CHANGELOG.md');
-                file_put_contents($path.'/CHANGELOG.md', $res_gitlog."\n"."\n".$new_content);
+                file_put_contents($path.'/CHANGELOG.md', $br."\n"."\n".$new_content);
 
                 $content = file_get_contents($path.'/CHANGELOG.md');
-                file_put_contents($path.'/CHANGELOG.md', $key."\n".$content);
+                file_put_contents($path.'/CHANGELOG.md', "### ".$key."\n".$content);
             }
 
         }
 
         $update_content = file_get_contents($path.'/CHANGELOG.md');
-        file_put_contents($path.'/CHANGELOG.md', $option_to."\n".'********'."\n".$update_content);
+        file_put_contents($path.'/CHANGELOG.md', '## '.$option_to."\n"."\n".$update_content);
         $this->info('ha finalizado la actualización');
     }
 }
