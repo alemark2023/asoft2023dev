@@ -37,6 +37,10 @@ class GlobalPaymentServiceProvider extends ServiceProvider
                 $record->global_payment()->delete();
             }
 
+            if($record->payment_file){
+                $record->payment_file()->delete();
+            }
+
         });
 
     }

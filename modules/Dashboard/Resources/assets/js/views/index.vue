@@ -600,227 +600,11 @@
             <dashboard-stock></dashboard-stock>
           </div>
 
-          <div class="col-xl-12">
-            <section class="card">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-6">
-                    <h2 class="card-title">Cuentas por cobrar</h2>
-                  </div>
-                  <div class="col-md-6 text-right p-2">
-                  <el-button
-                      class="submit"
-                      type="success"
-                      @click.prevent="clickOpen()"
-                    >
-                      <i class="fa fa-file-excel"></i> Exportar Todo
-                  </el-button><br><br>
-
-                    <el-button
-                      v-if="records.length > 0"
-                      class="submit"
-                      type="success"
-                      @click.prevent="clickDownload('excel')"
-                    >
-                      <i class="fa fa-file-excel"></i> Exportar Excel
-                    </el-button>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-md-4 text-right">
-                    <el-select
-                      @change="changeCustomerUnpaid"
-                      filterable
-                      clearable
-                      v-model="form.customer_id"
-                      placeholder="Seleccionar cliente"
-                    >
-                      <el-option
-                        v-for="item in customers"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      ></el-option>
-                    </el-select>
-                  </div>
-                  <div class="col-md-1 text-right">
-                    <el-badge :value="getTotalRowsUnpaid" class="item">
-                      <span size="small">Total comprobantes</span>
-                    </el-badge>
-                  </div>
-                  <div class="col-md-1 text-right">
-                    <el-badge :value="getTotalAmountUnpaid" class="item">
-                      <span size="small">Monto general (PEN)</span>
-                    </el-badge>
-                  </div>
-                  <div class="col-md-1 text-right">
-                    <el-badge :value="getCurrentBalance" class="item">
-                      <span size="small">Saldo corriente (PEN)</span>
-                    </el-badge>
-                  </div>
-                  <div class="col-md-1 text-right">
-                    <el-badge :value="getTotalAmountUnpaidUsd" class="item">
-                      <span size="small">Monto general (USD)</span>
-                    </el-badge>
-                  </div>
-                  <div class="col-md-1 text-right">
-                    <el-badge :value="getCurrentBalanceUsd" class="item">
-                      <span size="small">Saldo corriente (USD)</span>
-                    </el-badge>
-                  </div>
-                </div>
-
-                <div class="table-responsive">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>F.Emisión</th>
-                        <th>F.Vencimiento</th>
-                        <th>Número</th>
-                        <th>Cliente</th>
-                        <th>Días de retraso</th>
-
-                        <th>Guías</th>
-
-                        <th>Ver Cartera</th>
-                        <th>Moneda</th>
-                        <th class="text-right">Por cobrar</th>
-                        <th class="text-right">Total</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <template v-for="(row, index) in records">
-                        <tr v-if="row.total_to_pay > 0">
-                          <td>{{ index + 1 }}</td>
-                          <td>{{ row.date_of_issue }}</td>
-                          <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
-                          <td>{{ row.number_full }}</td>
-                          <td>{{ row.customer_name }}</td>
-                          <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
-
-                          <td>
-                            <template>
-                              <el-popover placement="right" width="400" trigger="click">
-                                <el-table :data="row.guides">
-                                  <el-table-column
-                                    width="120"
-                                    property="date_of_issue"
-                                    label="Fecha Emisión"
-                                  ></el-table-column>
-                                  <el-table-column width="100" property="number" label="Número"></el-table-column>
-                                  <el-table-column
-                                    width="100"
-                                    property="date_of_shipping"
-                                    label="Fecha Envío"
-                                  ></el-table-column>
-                                  <el-table-column fixed="right" label="Descargas" width="120">
-                                    <template slot-scope="scope">
-                                      <button
-                                        type="button"
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        @click.prevent="clickDownloadDispatch(scope.row.download_external_xml)"
-                                      >XML</button>
-                                      <button
-                                        type="button"
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        @click.prevent="clickDownloadDispatch(scope.row.download_external_pdf)"
-                                      >PDF</button>
-                                      <button
-                                        type="button"
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        @click.prevent="clickDownloadDispatch(scope.row.download_external_cdr)"
-                                      >CDR</button>
-                                    </template>
-                                  </el-table-column>
-                                </el-table>
-                                <el-button slot="reference" icon="el-icon-view"></el-button>
-                              </el-popover>
-                            </template>
-                          </td>
-
-                          <td>
-                            <el-popover placement="right" width="300" trigger="click">
-                              <p>
-                                Saldo actual:
-                                <span class="custom-badge">{{ row.total_to_pay }}</span>
-                              </p>
-                              <p>
-                                Fecha ultimo pago:
-                                <span
-                                  class="custom-badge"
-                                >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
-                              </p>
-
-                              <!-- <p>
-                                Dia de retraso en el pago:
-                                <span
-                                  class="custom-badge"
-                                >{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.'}}</span>
-                              </p> -->
-
-                              <!-- <p>
-                                Fecha de vencimiento:
-                                <span
-                                  class="custom-badge"
-                                >{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
-                              </p> -->
-                              <el-button icon="el-icon-view" slot="reference"></el-button>
-                            </el-popover>
-                          </td>
-                            <td>{{row.currency_type_id}}</td>
-                          <td class="text-right text-danger">{{ row.total_to_pay }}</td>
-                          <td class="text-right">{{ row.total }}</td>
-                          <td class="text-right">
-                            <template v-if="row.type === 'document'">
-                              <button
-                                type="button"
-                                style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                @click.prevent="clickDocumentPayment(row.id)"
-                              >Pagos</button>
-                            </template>
-                            <template v-else>
-                              <button
-                                type="button"
-                                style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                @click.prevent="clickSaleNotePayment(row.id)"
-                              >Pagos</button>
-                            </template>
-
-                            <button
-                              type="button"
-                              style="min-width: 41px"
-                              class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                              @click.prevent="clickDocumentPayment(row.id)"
-                            >Detalle</button>
-                          </td>
-                        </tr>
-                      </template>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </section>
-          </div>
         </div>
       </div>
 
       <div class="col-xl-4"></div>
     </div>
-    <document-payments
-      :showDialog.sync="showDialogDocumentPayments"
-      :documentId="recordId"
-      :external="true"
-    ></document-payments>
-
-    <sale-note-payments
-      :showDialog.sync="showDialogSaleNotePayments"
-      :documentId="recordId"
-      :external="true"
-    ></sale-note-payments>
   </div>
 </template>
 <style>
@@ -834,14 +618,14 @@
 }
 </style>
 <script>
-import DocumentPayments from "../../../../../../resources/js/views/tenant/documents/partials/payments.vue";
-import SaleNotePayments from "../../../../../../resources/js/views/tenant/sale_notes/partials/payments.vue";
+// import DocumentPayments from "../../../../../../resources/js/views/tenant/documents/partials/payments.vue";
+// import SaleNotePayments from "../../../../../../resources/js/views/tenant/sale_notes/partials/payments.vue";
 import DashboardStock from "./partials/dashboard_stock.vue";
 import queryString from "query-string";
 
 export default {
   props: ["typeUser"],
-  components: { DocumentPayments, SaleNotePayments, DashboardStock },
+  components: { DashboardStock },
   data() {
     return {
       records_base: [],
@@ -904,104 +688,9 @@ export default {
     });
     await this.loadAll();
 
-    this.$eventHub.$on("reloadDataUnpaid", () => {
-      this.loadAll();
-    });
-  },
-  computed: {
-    getCurrentBalance() {
-
-      const self = this;
-      let source = [];
-      if (self.form.customer_id) {
-        source = _.filter(self.records, function(item) {
-          return (
-            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'PEN'
-          );
-        });
-      } else {
-        source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0 && item.currency_type_id == 'PEN';
-        });
-      }
-
-      return _.sumBy(source, function(item) {
-        return parseFloat(item.total_to_pay);
-      }).toFixed(2);
-    },
-    getCurrentBalanceUsd() {
-
-      const self = this;
-      let source = [];
-      if (self.form.customer_id) {
-        source = _.filter(self.records, function(item) {
-          return (
-            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'USD'
-          );
-        });
-      } else {
-        source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0 && item.currency_type_id == 'USD';
-        });
-      }
-
-      return _.sumBy(source, function(item) {
-        return  parseFloat(item.total_to_pay);
-      }).toFixed(2);
-    },
-    getTotalRowsUnpaid() {
-      const self = this;
-
-      if (self.form.customer_id) {
-        return _.filter(self.records, function(item) {
-          return (
-            item.total_to_pay > 0 && item.customer_id == self.form.customer_id
-          );
-        }).length;
-      } else {
-        return _.filter(this.records, function(item) {
-          return item.total_to_pay > 0;
-        }).length;
-      }
-    },
-    getTotalAmountUnpaid() {
-      const self = this;
-      let source = [];
-      if (self.form.customer_id) {
-        source = _.filter(self.records, function(item) {
-          return (
-            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'PEN'
-          );
-        });
-      } else {
-        source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0 &&  item.currency_type_id == 'PEN';
-        });
-      }
-
-      return _.sumBy(source, function(item) {
-        return  parseFloat(item.total)
-      }).toFixed(2)
-    },
-    getTotalAmountUnpaidUsd() {
-      const self = this;
-      let source = [];
-      if (self.form.customer_id) {
-        source = _.filter(self.records, function(item) {
-          return (
-            item.total_to_pay > 0 && item.customer_id == self.form.customer_id && item.currency_type_id == 'USD'
-          );
-        });
-      } else {
-        source = _.filter(this.records, function(item) {
-          return item.total_to_pay > 0 && item.currency_type_id == 'USD';
-        });
-      }
-
-      return _.sumBy(source, function(item) {
-        return  parseFloat(item.total);
-      }).toFixed(2)
-    }
+    // this.$eventHub.$on("reloadDataUnpaid", () => {
+    //   this.loadAll();
+    // });
   },
 
   methods: {
@@ -1017,20 +706,6 @@ export default {
     },
     clickDownloadDispatch(download) {
       window.open(download, "_blank");
-    },
-    changeCustomerUnpaid() {
-      if (this.form.customer_id) {
-
-        this.loadUnpaid()
-        /*this.records = _.filter(this.records_base, {
-          customer_id: this.selected_customer
-        });*/
-      } else {
-        this.records = []
-      }
-    },
-    clickOpen(){
-      window.open('dashboard/unpaidall', "_blank");
     },
     clickDownload(type) {
       let query = queryString.stringify({
@@ -1131,20 +806,6 @@ export default {
         .then(response => {
           this.utilities = response.data.data.utilities;
         });
-    },
-    loadUnpaid() {
-      this.$http.post(`/${this.resource}/unpaid`, this.form).then(response => {
-        this.records = response.data.records;
-        //this.records_base = response.data.records;
-      });
-    },
-    clickDocumentPayment(recordId) {
-      this.recordId = recordId;
-      this.showDialogDocumentPayments = true;
-    },
-    clickSaleNotePayment(recordId) {
-      this.recordId = recordId;
-      this.showDialogSaleNotePayments = true;
     }
   }
 };

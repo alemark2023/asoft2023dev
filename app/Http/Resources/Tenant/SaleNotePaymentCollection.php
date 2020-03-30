@@ -21,6 +21,7 @@ class SaleNotePaymentCollection extends ResourceCollection
                 'payment_method_type_description' => $row->payment_method_type->description,
                 'destination_description' => ($row->global_payment) ? $row->global_payment->destination_description:null,
                 'reference' => $row->reference,
+                'filename' => ($row->payment_file) ? $row->payment_file->filename:null,
                 'payment' => $row->payment,
             ];
         });
