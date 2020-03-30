@@ -41,19 +41,19 @@ class DashboardController extends Controller
         ];
     }
 
-    public function unpaid(Request $request)
-    {
-        return [
-            'records' => (new DashboardView())->getUnpaid($request->all())
-       ];
-    }
+    // public function unpaid(Request $request)
+    // {
+    //     return [
+    //             'records' => (new DashboardView())->getUnpaid($request->all())
+    //     ];
+    // }
 
-    public function unpaidall()
-    {
+    // public function unpaidall()
+    // {
 
-        return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
+    //     return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
 
-    }
+    // }
 
     public function data_aditional(Request $request)
     {

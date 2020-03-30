@@ -27,6 +27,13 @@ if($hostname) {
                 Route::get('payment-method-types/excel', 'PaymentMethodTypeController@excel');
                 Route::get('payment-method-types/filter', 'PaymentMethodTypeController@filter');
                 Route::get('payment-method-types/records', 'PaymentMethodTypeController@records');
+
+                Route::get('unpaid', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
+                // Route::post('unpaid', 'UnpaidController@unpaid');
+                Route::get('unpaid/filter', 'UnpaidController@filter');
+                Route::post('unpaid/records', 'UnpaidController@records');
+                Route::get('unpaid/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
+
             });
 
 
