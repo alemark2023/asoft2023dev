@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" :visible="showDialog" @close="close" @open="getData">
+    <el-dialog :title="title" :visible="showDialog" @close="close" @open="getData" width="65%">
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12" v-if="records.length > 0">
@@ -12,6 +12,7 @@
                                 <th>Método de pago</th>
                                 <th>Destino</th>
                                 <th>Referencia</th>
+                                <th>Archivo</th>
                                 <th class="text-right">Monto</th>
                                 <th></th>
                             </tr>
@@ -24,6 +25,11 @@
                                     <td>{{ row.payment_method_type_description }}</td>
                                     <td>{{ row.destination_description }}</td>
                                     <td>{{ row.reference }}</td>
+                                    <td class="text-center">
+                                        <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadFile(row.filename)">
+                                            <i class="fas fa-file-download"></i>
+                                        </button>
+                                    </td>
                                     <td class="text-right">{{ row.payment }}</td>
                                     <td class="series-table-actions text-right">
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
@@ -65,6 +71,24 @@
                                         </div>
                                     </td>
                                     <td>
+                                        <div class="form-group mb-0">
+                                            
+                                            <el-upload
+                                                    :data="{'index': index}"
+                                                    :headers="headers"
+                                                    :multiple="false"
+                                                    :on-remove="handleRemove"
+                                                    :action="`/finances/payment-file/upload`"
+                                                    :show-file-list="true"
+                                                    :file-list="fileList"
+                                                    :on-success="onSuccess"
+                                                    :limit="1"
+                                                    >
+                                                <el-button slot="trigger" type="primary">Seleccione un archivo</el-button>
+                                            </el-upload>
+                                        </div>
+                                    </td>
+                                    <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
                                             <el-input v-model="row.payment"></el-input>
                                             <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
@@ -83,17 +107,17 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <td colspan="5" class="text-right">TOTAL PAGADO</td>
+                                <td colspan="6" class="text-right">TOTAL PAGADO</td>
                                 <td class="text-right">{{ document.total_paid }}</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-right">TOTAL A PAGAR</td>
+                                <td colspan="6" class="text-right">TOTAL A PAGAR</td>
                                 <td class="text-right">{{ document.total }}</td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-right">PENDIENTE DE PAGO</td>
+                                <td colspan="6" class="text-right">PENDIENTE DE PAGO</td>
                                 <td class="text-right">{{ document.total_difference }}</td>
                                 <td></td>
                             </tr>
@@ -124,6 +148,9 @@
                 records: [],
                 payment_destinations: [],
                 payment_method_types: [],
+                headers: headers_token,
+                index_file: null,
+                fileList: [],
                 showAddButton: true,
                 document: {}
             }
@@ -138,8 +165,41 @@
                 })
         },
         methods: {
+            clickDownloadFile(filename) {
+                window.open(
+                    `/finances/payment-file/download-file/${filename}`,
+                    "_blank"
+                );
+            },
+            onSuccess(response, file, fileList) {
+
+                // console.log(response, file, fileList)
+                this.fileList = fileList
+
+                if (response.success) {
+
+                    this.index_file = response.data.index
+                    this.records[this.index_file].filename = response.data.filename
+                    this.records[this.index_file].temp_path = response.data.temp_path
+
+                } else {
+                    this.$message.error(response.message)
+                }
+
+                // console.log(this.records)
+            
+            },
+            handleRemove(file, fileList) {       
+                
+                this.records[this.index_file].filename = null
+                this.records[this.index_file].temp_path = null
+                this.fileList = []
+                this.index_file = null
+
+            }, 
             initForm() {
                 this.records = [];
+                this.fileList = [];
                 this.showAddButton = true;
             },
             async getData() {
@@ -163,6 +223,8 @@
                     payment_method_type_id: null,
                     payment_destination_id:null,
                     reference: null,
+                    filename: null,
+                    temp_path: null,
                     payment: 0,
                     errors: {},
                     loading: false
@@ -172,6 +234,7 @@
             clickCancel(index) {
                 this.records.splice(index, 1);
                 this.showAddButton = true;
+                this.fileList = []
             },
             clickSubmit(index) {
                 if(this.records[index].payment > parseFloat(this.document.total_difference)) {
@@ -193,6 +256,8 @@
                     payment_method_type_id: this.records[index].payment_method_type_id,
                     payment_destination_id: this.records[index].payment_destination_id,
                     reference: this.records[index].reference,
+                    filename: this.records[index].filename,
+                    temp_path: this.records[index].temp_path,
                     payment: this.records[index].payment,
                     paid: paid
                 };
