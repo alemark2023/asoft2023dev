@@ -112,6 +112,16 @@ class ViewServiceProvider extends ServiceProvider
             'Modules\LevelAccess\Http\ViewComposers\ModuleLevelViewComposer'
         );
 
+        view()->composer(
+            'tenant.layouts.partials.sidebar_styles',
+            'App\Http\ViewComposers\Tenant\ConfigurationVisualViewComposer'
+        );
+
+        view()->composer(
+            'tenant.layouts.app',
+            'App\Http\ViewComposers\Tenant\ConfigurationVisualViewComposer'
+        );
+
        /*view()->composer(
             'ecommerce',
             'Modules\Ecommerce\Http\ViewComposers\TakeProductoViewComposer'

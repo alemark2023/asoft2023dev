@@ -281,3 +281,11 @@ ul.nav-main li .nav-children li.nav-active > a {
 .disable_color{
   color: red;
 }
+
+html.dark .table > thead > tr > th, html.dark .table > tbody > tr > th, html.dark .table > tfoot > tr > th, html.dark .table > thead > tr > td, html.dark .table > tbody > tr > td, html.dark .table > tfoot > tr > td, html.dark .table-bordered {
+    color: #f5f5f5;
+}
+html.dark .el-switch__label *,
+ {
+  color: #fff;
+}
