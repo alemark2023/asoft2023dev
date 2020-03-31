@@ -25,7 +25,7 @@ class ChangeDataToPlans extends Migration
      */
     public function down()
     {
-        DB::table('plans')->where('id','1')       
+        DB::table('plans')->where('id','1')
                           ->update(['limit_users' => 9999999999, 'limit_documents' => 9999999999]);
     }
 }

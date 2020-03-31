@@ -16,6 +16,8 @@
 [Docker - Linux - SSL](https://docs.google.com/document/d/1V54AoYPSNqgi2M9ddck6gh3AgQspZ-eH37_1BU7Gpuo/edit?usp=sharingg "Clic")
 <br>
 [Valet - Linux](https://docs.google.com/document/d/1x1SZnhzDITta6k-pOQC75xQKWowCgSUSRoa434gglQA/edit?usp=sharing "Clic")
+<br>
+[Linux - gestión externa de SSL](https://docs.google.com/document/d/1D87YJ9fq9yHiAauu6SGVugiC3m_i42DrFUt6VKYXuDI/edit?usp=sharing "Clic")
 
 ### Manuales de actualización
 
