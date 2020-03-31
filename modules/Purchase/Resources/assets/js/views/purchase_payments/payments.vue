@@ -212,7 +212,7 @@
                     .then(response => {
                         this.records = response.data.data
                     });
-                this.$eventHub.$emit('reloadDataUnpaid')
+                this.$eventHub.$emit('reloadDataToPay')
 
             },
             clickAddRow() {

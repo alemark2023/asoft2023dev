@@ -37,6 +37,13 @@ if($hostname) {
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');
                 Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
 
+
+                Route::get('to-pay', 'ToPayController@index')->name('tenant.finances.to_pay.index');
+                Route::get('to-pay/filter', 'ToPayController@filter');
+                Route::post('to-pay/records', 'ToPayController@records');
+                Route::get('to-pay/to-pay-all', 'ToPayController@toPayAll')->name('toPayAll');
+                Route::get('to-pay/to-pay', 'ToPayController@toPay');
+
             });
 
 
