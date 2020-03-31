@@ -9,9 +9,18 @@ class ConfigurationVisualViewComposer
 {
     public function compose($view)
     {
-    	$configuration = Configuration::first();
+        $configuration = Configuration::first();
+        if($configuration->visual != '') {
+            $defaults = [
+                'bg' => 'light',
+                'header' => 'light',
+                'sidebars' => 'light',
+            ];
+            $configuration->visual = $defaults;
+            $configuration->save();
+        }
+        $configuration = Configuration::first();
         $record = new ConfigurationResource($configuration);
-    	// $config = Configuration::first();
         $view->visual = $record->visual;
     }
 }
