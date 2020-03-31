@@ -61,6 +61,7 @@ class Purchase extends ModelTenant
         'legends',
         'date_of_due',
         'purchase_order_id',
+        'customer_id',
 
     ];
 
@@ -261,5 +262,9 @@ class Purchase extends ModelTenant
     {
         return $this->hasMany(PurchasePayment::class);
     }
-    
+
+    public function customer() {
+        return $this->belongsTo(Person::class, 'customer_id');
+    }
+
 }

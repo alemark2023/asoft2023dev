@@ -119,9 +119,10 @@ class PurchaseController extends Controller
         $company = Company::active();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
+        $customers = $this->getPersons('customers');
 
         return compact('suppliers', 'establishment','currency_types', 'discount_types',
-                    'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations');
+                    'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers');
     }
 
     public function item_tables()
@@ -589,5 +590,21 @@ class PurchaseController extends Controller
     }
 
 
+    public function getPersons($type){
+
+        $persons = Person::whereType($type)->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+
+        return $persons;
+
+    }
+ 
 
 }
