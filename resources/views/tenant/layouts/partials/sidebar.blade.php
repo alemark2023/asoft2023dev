@@ -333,6 +333,7 @@
                             {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'purchase-quotations')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'purchase-orders')?'nav-active nav-expanded':'' }}
+                            {{ ($path[0] === 'fixed-asset')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-cart-plus" aria-hidden="true"></i>
@@ -384,6 +385,27 @@
                                                 Solicitar cotización
                                             </a>
                                         </li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-parent
+                                    {{ ($path[0] === 'fixed-asset' )?'nav-active nav-expanded':'' }}
+                                    ">
+                                    <a class="nav-link" href="#">
+                                        Activos fijos
+                                    </a>
+                                    <ul class="nav nav-children">
+
+                                        <li class="{{ ($path[0] === 'fixed-asset' && $path[1] === 'items')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.fixed_asset_items.index')}}">
+                                                Ítems
+                                            </a>
+                                        </li> 
+                                        <li class="{{ ($path[0] === 'fixed-asset' && $path[1] === 'purchases')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.fixed_asset_purchases.index')}}">
+                                                Compras
+                                            </a>
+                                        </li> 
                                     </ul>
                                 </li>
                             </ul>

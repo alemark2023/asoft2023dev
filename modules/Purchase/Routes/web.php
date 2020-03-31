@@ -55,6 +55,31 @@ if($current_hostname) {
             });
 
             
+            Route::prefix('fixed-asset')->group(function () {
+
+                Route::get('items', 'FixedAssetItemController@index')->name('tenant.fixed_asset_items.index');
+                Route::get('items/columns', 'FixedAssetItemController@columns');
+                Route::get('items/records', 'FixedAssetItemController@records');
+                Route::get('items/create/{id?}', 'FixedAssetItemController@create')->name('tenant.fixed_asset_items.create');
+                Route::get('items/tables', 'FixedAssetItemController@tables');
+                Route::get('items/table/{table}', 'FixedAssetItemController@table');
+                Route::post('items/', 'FixedAssetItemController@store');
+                Route::get('items/record/{item}', 'FixedAssetItemController@record');
+                Route::get('items/item/tables', 'FixedAssetItemController@item_tables');
+                Route::delete('/items/{item}', 'FixedAssetItemController@destroy');
+
+                Route::get('purchases', 'FixedAssetPurchaseController@index')->name('tenant.fixed_asset_purchases.index');
+                Route::get('purchases/columns', 'FixedAssetPurchaseController@columns');
+                Route::get('purchases/records', 'FixedAssetPurchaseController@records');
+                Route::get('purchases/create/{id?}', 'FixedAssetPurchaseController@create')->name('tenant.fixed_asset_purchases.create');
+                Route::get('purchases/tables', 'FixedAssetPurchaseController@tables');
+                Route::get('purchases/table/{table}', 'FixedAssetPurchaseController@table');
+                Route::post('purchases', 'FixedAssetPurchaseController@store');
+                Route::get('purchases/record/{document}', 'FixedAssetPurchaseController@record');
+                Route::get('purchases/voided/{id}', 'FixedAssetPurchaseController@voided');
+                Route::delete('purchases/delete/{id}', 'FixedAssetPurchaseController@delete');
+                Route::get('purchases/item/tables', 'FixedAssetPurchaseController@item_tables');
+            });
 
         });
     });
