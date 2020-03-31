@@ -10,7 +10,7 @@ class ConfigurationVisualViewComposer
     public function compose($view)
     {
         $configuration = Configuration::first();
-        if(empty($configuration->visual) || is_null($configuration->visual) || isset($configuration->visual)) {
+        if(is_null($configuration->visual)) {
             $defaults = [
                 'bg' => 'light',
                 'header' => 'light',
