@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class ChangeDataToPlans extends Migration
+class TenantDefaultColumnVisualToConfigurations extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class ChangeDataToPlans extends Migration
      */
     public function up()
     {
-        DB::table('plans')->where('id','1')
-                          ->update(['limit_users' => 0, 'limit_documents' => 0]);
+        DB::table('configurations')->where('id','1')
+                          ->update(['visual' => '{"bg": "light", "header": "light", "sidebars": "light"}']);
     }
 
     /**
@@ -25,7 +25,6 @@ class ChangeDataToPlans extends Migration
      */
     public function down()
     {
-        DB::table('plans')->where('id','1')
-                          ->update(['limit_users' => 9999999999, 'limit_documents' => 9999999999]);
+        //
     }
 }
