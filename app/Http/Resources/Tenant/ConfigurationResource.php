@@ -29,7 +29,8 @@ class ConfigurationResource extends JsonResource
             'edit_name_product' => (bool) $this->edit_name_product,
             'restrict_receipt_date' => (bool) $this->restrict_receipt_date,
             'affectation_igv_type_id' => $this->affectation_igv_type_id,
-            'visual' => $this->visual
+            'visual' => $this->visual,
+            'enable_whatsapp' => (bool) $this->enable_whatsapp
         ];
     }
 }
