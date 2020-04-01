@@ -73,7 +73,12 @@
         <div class="row mt-3">
             <div class="col-md-12">
                 <el-input v-model="form.customer_telephone">
-                    <el-button slot="append" icon="el-icon-message" @click="clickSendWhatsapp" >Enviar</el-button>
+                    <template slot="prepend">+51</template>
+                        <el-button slot="append" @click="clickSendWhatsapp" >Enviar
+                            <el-tooltip class="item" effect="dark"  content="Es necesario tener aperturado Whatsapp web" placement="top-start">
+                                <i class="fab fa-whatsapp" ></i>
+                            </el-tooltip>
+                        </el-button>
                 </el-input>
                 <small class="form-control-feedback" v-if="errors.customer_telephone" v-text="errors.customer_telephone[0]"></small>
             </div>
@@ -121,9 +126,13 @@
         },
         methods: {
             clickSendWhatsapp() {
-                // window.open('https://api.whatsapp.com/send?phone=+447712345678')
-                // window.open(`https://wa.me/51${this.form.customer_telephone}`, '_blank');
-                window.open(`https://api.whatsapp.com/send?phone=+51${this.form.customer_telephone}`, '_blank');
+                
+                if(!this.form.customer_telephone){
+                    return this.$message.error('El número es obligatorio')
+                }
+
+                window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
+            
             },
             initForm() {
                 this.errors = {};
@@ -136,7 +145,8 @@
                     id: null,
                     response_message:null,
                     response_type:null,
-                    customer_telephone:null
+                    customer_telephone:null,
+                    message_text:null
                 };
                 this.locked_emission = {
                     success: true,
