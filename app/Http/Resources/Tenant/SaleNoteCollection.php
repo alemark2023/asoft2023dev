@@ -60,6 +60,10 @@ class SaleNoteCollection extends ResourceCollection
                 'license_plate' => $row->license_plate,
                 'total_paid' => $total_paid,
                 'total_pending_paid' => $total_pending_paid,
+                'user_name' => ($row->user) ? $row->user->name : '',
+                'quotation_number_full' => ($row->quotation) ? $row->quotation->number_full : '',
+                'sale_opportunity_number_full' => isset($row->quotation->sale_opportunity) ? $row->quotation->sale_opportunity->number_full : '',
+
             ];
         });
     }

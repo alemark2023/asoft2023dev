@@ -65,6 +65,8 @@ class DocumentCollection extends ResourceCollection
                         'description' => $row->document->number_full,
                     ];
                 }) : null,
+                'quotation_number_full' => ($row->quotation) ? $row->quotation->number_full : '',
+                'sale_opportunity_number_full' => isset($row->quotation->sale_opportunity) ? $row->quotation->sale_opportunity->number_full : '',
 
             ];
         });

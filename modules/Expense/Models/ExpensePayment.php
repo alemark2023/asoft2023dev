@@ -5,6 +5,7 @@ namespace Modules\Expense\Models;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\CardBrand;
 use Modules\Finance\Models\GlobalPayment;
+use Modules\Finance\Models\PaymentFile;
 
 class ExpensePayment extends ModelTenant
 {
@@ -48,6 +49,11 @@ class ExpensePayment extends ModelTenant
     public function associated_record_payment()
     {
         return $this->belongsTo(Expense::class, 'expense_id');
+    }
+
+    public function payment_file()
+    {
+        return $this->morphOne(PaymentFile::class, 'payment');
     }
 
 }

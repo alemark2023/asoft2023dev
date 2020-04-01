@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 use Modules\Finance\Models\GlobalPayment;
+use Modules\Finance\Models\PaymentFile;
 
 class PurchasePayment extends ModelTenant
 {
@@ -42,4 +43,10 @@ class PurchasePayment extends ModelTenant
     {
         return $this->belongsTo(Purchase::class, 'purchase_id');
     }
+
+    public function payment_file()
+    {
+        return $this->morphOne(PaymentFile::class, 'payment');
+    }
+    
 }

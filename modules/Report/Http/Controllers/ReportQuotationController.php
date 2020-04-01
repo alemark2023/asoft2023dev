@@ -31,7 +31,9 @@ class ReportQuotationController extends Controller
 
         $sellers = $this->getSellers();
 
-        return compact('document_types','establishments', 'sellers');
+        $state_types = $this->getStateTypesById(['01', '05', '09']);
+
+        return compact('document_types','establishments', 'sellers', 'state_types');
     }
 
 
@@ -55,7 +57,7 @@ class ReportQuotationController extends Controller
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Quotation::class)->get();
 
-        $pdf = PDF::loadView('report::quotations.report_pdf', compact("records", "company", "establishment"));
+        $pdf = PDF::loadView('report::quotations.report_pdf', compact("records", "company", "establishment"))->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Cotizaciones_'.date('YmdHis');
 

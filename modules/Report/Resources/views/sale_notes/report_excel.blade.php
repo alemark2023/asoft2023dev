@@ -57,11 +57,14 @@
                             <tr>
                                 <th>#</th>
                                 <th class="text-center">Fecha Emisión</th>
+                                <th class="">Usuario/Vendedor</th>
                                 <th>Cliente</th>
                                 <th>Nota de Venta</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
                                 <th class="text-center">Comprobantes</th> 
+                                <th>Cotización</th>
+                                <th>Caso</th>
                                 <th class="text-right" >T.Exportación</th>
                                 <th class="text-right" >T.Inafecta</th>
                                 <th class="text-right" >T.Exonerado</th>
@@ -75,6 +78,7 @@
                             <tr>
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$value->date_of_issue->format('Y-m-d')}}</td>
+                                <td class="celda">{{$value->user->name}}</td>
                                 <td>{{$value->customer->name}}</td>
                                 <td>{{$value->identifier}}</td>
                                 <td>{{$value->state_type->description}}</td>
@@ -85,6 +89,9 @@
                                     @endforeach
                                 </td>
                                 
+                                <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
+                                <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
+
                                 @if($value->state_type_id == '11')
                                     
                                     <td class="celda">0</td>

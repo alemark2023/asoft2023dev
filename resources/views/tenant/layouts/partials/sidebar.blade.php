@@ -333,6 +333,7 @@
                             {{ ($path[0] === 'expenses')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'purchase-quotations')?'nav-active nav-expanded':'' }}
                             {{ ($path[0] === 'purchase-orders')?'nav-active nav-expanded':'' }}
+                            {{ ($path[0] === 'fixed-asset')?'nav-active nav-expanded':'' }}
                             ">
                             <a class="nav-link" href="#">
                                 <i class="fas fa-cart-plus" aria-hidden="true"></i>
@@ -384,6 +385,27 @@
                                                 Solicitar cotización
                                             </a>
                                         </li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-parent
+                                    {{ ($path[0] === 'fixed-asset' )?'nav-active nav-expanded':'' }}
+                                    ">
+                                    <a class="nav-link" href="#">
+                                        Activos fijos
+                                    </a>
+                                    <ul class="nav nav-children">
+
+                                        <li class="{{ ($path[0] === 'fixed-asset' && $path[1] === 'items')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.fixed_asset_items.index')}}">
+                                                Ítems
+                                            </a>
+                                        </li> 
+                                        <li class="{{ ($path[0] === 'fixed-asset' && $path[1] === 'purchases')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.fixed_asset_purchases.index')}}">
+                                                Compras
+                                            </a>
+                                        </li> 
                                     </ul>
                                 </li>
                             </ul>
@@ -646,7 +668,7 @@
                     @if(in_array('finance', $vc_modules))
 
                     <li class="nav-parent {{$path[0] === 'finances' && in_array($path[1], [
-                                                'global-payments', 'balance','payment-method-types', 'unpaid'
+                                                'global-payments', 'balance','payment-method-types', 'unpaid', 'to-pay'
                                             ]) 
                                             ? 'nav-active nav-expanded' : ''}}">
 
@@ -676,11 +698,11 @@
                                     Cuentas por cobrar
                                 </a>
                             </li>
-                            <li>
-                                <a class="nav-link" href="#">
-                                    Cuentas por pagar <span class="float-right badge badge-info badge-danger mr-3">Pronto</span>
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'to-pay')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.to_pay.index')}}">
+                                    Cuentas por pagar
                                 </a>
-                            </li>
+                            </li> 
                         </ul>
                     </li>
                     @endif

@@ -63,10 +63,13 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th class="">Usuario/Vendedor</th>
                                 <th>Tipo Doc</th>
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
                                 <th>Doc. Afectado</th>
+                                <th>Cotización</th>
+                                <th>Caso</th>
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
@@ -83,6 +86,7 @@
                             @foreach($records as $key => $value)
                             <tr>
                                 <td class="celda">{{$loop->iteration}}</td>
+                                <td class="celda">{{$value->user->name}}</td>
                                 <td class="celda">{{$value->document_type->id}}</td>
                                 <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
@@ -98,6 +102,10 @@
 
                                     @endif
                                 <td class="celda">{{$serie_affec }} </td>
+
+                                <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
+                                <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
+
                                 <td class="celda">{{$value->customer->name}}</td>
                                 <td class="celda">{{$value->customer->number}}</td>
                                 <td class="celda">{{$value->state_type->description}}</td>
@@ -236,7 +244,7 @@
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="8"></td>
+                                <td colspan="11"></td>
                                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
@@ -252,7 +260,7 @@
                                 <td>{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td colspan="8"></td>
+                                <td colspan="11"></td>
                                 <td >Totales USD</td>
                                 <td></td>
                                 <td></td>

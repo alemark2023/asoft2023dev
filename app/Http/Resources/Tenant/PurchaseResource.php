@@ -19,6 +19,7 @@ class PurchaseResource extends JsonResource
     {
         $purchase = Purchase::find($this->id);
         $purchase->purchase_payments = self::getTransformPayments($purchase->purchase_payments);
+        $purchase->customer_number = $purchase->customer_id ? $purchase->customer->number:null;
         
         return [
             'id' => $this->id,
@@ -46,6 +47,7 @@ class PurchaseResource extends JsonResource
                 'payment' => $row->payment, 
                 'payment_method_type' => $row->payment_method_type, 
                 'payment_destination_id' => ($row->global_payment) ? ($row->global_payment->type_record == 'cash' ? 'cash':$row->global_payment->destination_id):null, 
+                'payment_filename' => ($row->payment_file) ? $row->payment_file->filename:null, 
             ];
         }); 
 
