@@ -144,20 +144,32 @@
                                     <small class="form-control-feedback" v-if="errors.restrict_receipt_date" v-text="errors.restrict_receipt_date[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <a href="#" @click.prevent="showDialogTermsCondition = true" class="text-center font-weight-bold text-info">[+ Términos y condiciones - Cotización]</a>
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
+            
+            <terms-condition :showDialog.sync="showDialogTermsCondition"
+                            :form="form"
+                            :showClose="false"></terms-condition>
         </div>
     </div>
 </template>
 
 <script>
+
+    import TermsCondition from '@views/quotations/partials/terms_condition.vue'
+
     export default {
         props:['typeUser'],
+        components: {TermsCondition},
 
         data() {
             return {
+                showDialogTermsCondition:false,
                 loading_submit: false,
                 resource: 'configurations',
                 errors: {},
@@ -188,6 +200,11 @@
                 // console.log(this.formatos)
             });
 
+            this.$eventHub.$on('submitFormConfigurations', (form) => {
+                this.form = form
+                this.submit()
+                // console.log(form)
+            })
         },
         methods: {
            addSeeder(){
@@ -225,7 +242,8 @@
                     decimal_quantity: null,
                     amount_plastic_bag_taxes: 0.1,
                     colums_grid_item: 4,
-                    affectation_igv_type_id:'10'
+                    affectation_igv_type_id:'10',
+                    terms_condition:null
                 };
             },
             submit() {

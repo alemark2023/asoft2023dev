@@ -29,6 +29,7 @@ class Configuration extends ModelTenant
         'edit_name_product',
         'restrict_receipt_date',
         'affectation_igv_type_id',
+        'terms_condition',
     ];
 
     public function setPlanAttribute($value)

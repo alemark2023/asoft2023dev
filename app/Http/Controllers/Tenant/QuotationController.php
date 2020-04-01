@@ -201,7 +201,9 @@ class QuotationController extends Controller
     public function store(QuotationRequest $request) {
 
         DB::connection('tenant')->transaction(function () use ($request) {
+
             $data = $this->mergeData($request);
+            $data['terms_condition'] = $this->getTermsCondition();
 
             $this->quotation =  Quotation::create($data);
 
@@ -231,6 +233,8 @@ class QuotationController extends Controller
          DB::connection('tenant')->transaction(function () use ($request) {
            // $data = $this->mergeData($request);
            // return $request['id'];
+           $configuration = Configuration::select('terms_condition')->first();
+           $request['terms_condition'] = $this->getTermsCondition();
 
            $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
            $this->quotation->fill($request->all());
@@ -254,6 +258,18 @@ class QuotationController extends Controller
                 'id' => $this->quotation->id,
             ],
         ];
+
+    }
+
+    private function getTermsCondition(){
+        
+        $configuration = Configuration::select('terms_condition')->first();
+        
+        if($configuration){
+            return $configuration->terms_condition;
+        }
+
+        return null;
 
     }
 

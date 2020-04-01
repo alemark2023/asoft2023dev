@@ -31,7 +31,8 @@ class ConfigurationResource extends JsonResource
             'affectation_igv_type_id' => $this->affectation_igv_type_id,
             'visual' => $this->visual,
             'enable_whatsapp' => (bool) $this->enable_whatsapp,
-            'visual' => $this->visual
+            'visual' => $this->visual,
+            'terms_condition' => $this->terms_condition,
         ];
     }
 }
