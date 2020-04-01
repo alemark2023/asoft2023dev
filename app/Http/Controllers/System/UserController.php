@@ -26,7 +26,8 @@ class UserController extends Controller
         $user = User::firstOrNew(['id' => $id]);
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        if ($request->input('password') !== '') {
+        $user->phone = $request->input('phone');
+        if (strlen($request->input('password')) > 0) {
             if (config('tenant.password_change')) {
                 $user->password = bcrypt($request->input('password'));
             }
@@ -38,4 +39,14 @@ class UserController extends Controller
             'message' => 'Usuario actualizado'
         ];
     }
+
+    public function getPhone()
+    {
+        $user = User::first();
+
+        $user_resource = new UserResource($user);
+
+        return $user_resource->phone;
+    }
+
 }
