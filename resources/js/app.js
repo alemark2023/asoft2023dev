@@ -187,6 +187,10 @@ Vue.component('tenant-fixed-asset-items-index', require('@viewsModulePurchase/fi
 Vue.component('tenant-fixed-asset-purchases-index', require('@viewsModulePurchase/fixed_asset_purchases/index.vue'));
 Vue.component('tenant-fixed-asset-purchases-form', require('@viewsModulePurchase/fixed_asset_purchases/form.vue'));
 
+//Expense
+
+Vue.component('tenant-expense-types-index', require('@viewsModuleExpense/expense_types/index.vue'));
+Vue.component('tenant-expense-reasons-index', require('@viewsModuleExpense/expense_reasons/index.vue'));
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));

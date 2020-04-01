@@ -20,11 +20,14 @@
         <div class="col-lg-6 col-md-12 ui-sortable">
             <tenant-card-brands-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-card-brands-index>
 
-
             <tenant-payment-method-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-payment-method-index>
 
+        </div>
+        <div class="col-lg-6 col-md-12 ui-sortable">
 
-
+            <tenant-expense-types-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-expense-types-index>
+            
+            <tenant-expense-reasons-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-expense-reasons-index>
 
         </div>
     </div>
