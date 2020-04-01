@@ -8,6 +8,11 @@ class CompactSidebarViewComposer
 {
     public function compose($view)
     {
-        $view->vc_compact_sidebar = Configuration::first();
+    	$configuration = Configuration::first();
+        $set = (new \App\Http\Controllers\Tenant\ConfigurationController)->getSystemPhone();
+
+        $view->show_ws = $configuration->enable_whatsapp;
+        $view->phone_whatsapp = $configuration->phone_whatsapp;
+        $view->vc_compact_sidebar = $configuration;
     }
 }
