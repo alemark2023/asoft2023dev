@@ -15,8 +15,6 @@ class Configuration extends ModelTenant
         'sunat_alternate_server',
         'plan',
         'visual',
-        'enable_whatsapp',
-        'phone_whatsapp',
         'limit_users',
         'quantity_documents',
         'date_time_start',

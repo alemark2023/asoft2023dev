@@ -27,6 +27,7 @@
                 </el-switch>
 
                 <div class="hidden-on-dark pt-3">
+
                     <h5>Encabezado</h5>
                     <el-switch
                         v-model="visuals.header"
@@ -38,9 +39,11 @@
                         inactive-color="#ccc"
                         @change="submit">
                     </el-switch>
+
                 </div>
 
                 <div class="hidden-on-dark pt-3">
+
                     <h5>Paneles</h5>
                     <el-switch
                         v-model="visuals.sidebars"
@@ -52,9 +55,11 @@
                         inactive-color="#ccc"
                         @change="submit">
                     </el-switch>
+
                 </div>
 
                 <div class="pt-3">
+
                     <h5>Menú lateral contraído</h5>
                     <div :class="{'has-danger': errors.compact_sidebar}">
                         <el-switch
@@ -65,9 +70,11 @@
                         </el-switch>
                         <small class="form-control-feedback" v-if="errors.compact_sidebar" v-text="errors.compact_sidebar[0]"></small>
                     </div>
+
                 </div>
 
                 <div class="pt-3">
+
                     <h5>Cantidad de columnas en POS</h5>
                     <div :class="{'has-danger': errors.amount_plastic_bag_taxes}">
                         <el-slider
@@ -77,20 +84,6 @@
                             :max="6">
                         </el-slider>
                         <small class="form-control-feedback" v-if="errors.amount_plastic_bag_taxes" v-text="errors.amount_plastic_bag_taxes[0]"></small>
-                    </div>
-                </div>
-
-                <div class="pt-3">
-
-                    <h5>Ver icono de soporte {{form.enable_whatsapp}}</h5>
-                    <div :class="{'has-danger': errors.enable_whatsapp}">
-                        <el-switch
-                            v-model="form.enable_whatsapp"
-                            active-text="Si"
-                            inactive-text="No"
-                            @change="submitForm">
-                        </el-switch>
-                        <small class="form-control-feedback" v-if="errors.enable_whatsapp" v-text="errors.enable_whatsapp[0]"></small>
                     </div>
 
                 </div>
@@ -128,8 +121,7 @@
                 this.form = {
                     id: 1,
                     compact_sidebar: true,
-                    colums_grid_item: 4,
-                    enable_whatsapp: true
+                    colums_grid_item: 4
                 }
             },
             submit() {
