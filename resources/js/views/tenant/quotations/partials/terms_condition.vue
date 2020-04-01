@@ -14,6 +14,7 @@
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
+                <el-button type="primary" @click.prevent="clickSubmit">Guardar</el-button>
             </div>
         </form>
     </el-dialog>
@@ -36,9 +37,12 @@
         created() {
         },
         methods: {
+            clickSubmit(){
+                this.$eventHub.$emit('submitFormConfigurations', this.form)
+                this.close()
+            },
             create(){
-                console.log(this.form)
-
+                // console.log(this.form)
             },
             close() {
                 this.$emit('update:showDialog', false)

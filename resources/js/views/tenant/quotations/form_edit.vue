@@ -23,7 +23,7 @@
                         </div>
                         <div class="col-sm-4">
                         
-                            <el-checkbox class="mt-3" v-model="form.active_terms_condition" @change="changeTermsCondition">Términos y condiciones del contrato</el-checkbox>
+                            <!-- <el-checkbox class="mt-3" v-model="form.active_terms_condition" @change="changeTermsCondition">Términos y condiciones del contrato</el-checkbox> -->
                                
                         </div>
                     </div>
