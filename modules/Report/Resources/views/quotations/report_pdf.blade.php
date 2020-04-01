@@ -87,6 +87,7 @@
 
                                 <th>Comprobantes</th>
                                 <th>Notas de venta</th>
+                                <th>Caso</th>
                                 <th class="text-center">Moneda</th>
                                 <th class="text-right">T.Exportación</th>
                                 <th class="text-right" >T.Inafecta</th>
@@ -115,6 +116,7 @@
                                              <label class="d-block">{{$doc->identifier}}</label>
                                         @endforeach
                                     </td>
+                                    <td class="celda">{{ ($value->sale_opportunity) ? $value->sale_opportunity->number_full : '' }}</td>
                                     
                                     <td class="celda">{{$value->currency_type_id}}</td>
                                     <td class="celda">{{$value->total_exportation}}</td>

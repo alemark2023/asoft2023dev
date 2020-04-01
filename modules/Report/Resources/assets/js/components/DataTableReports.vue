@@ -140,7 +140,7 @@
                         </tbody>
                         <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
                             <tr>
-                                <td :colspan="(resource == 'reports/sales') ? 7:8"></td>
+                                <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
                                 <td ><strong>Totales PEN</strong></td>
                                 <td>{{totals.acum_total_exonerated}}</td>
                                 <td>{{totals.acum_total_unaffected}}</td>
@@ -151,7 +151,7 @@
                                 <td>{{totals.acum_total}}</td>
                             </tr>
                             <tr>
-                                <td :colspan="(resource == 'reports/sales') ? 7:8"></td>
+                                <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
                                 <td ><strong>Totales USD</strong></td>
                                 <td></td>
                                 <td></td>

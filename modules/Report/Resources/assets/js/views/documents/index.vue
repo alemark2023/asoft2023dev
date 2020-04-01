@@ -8,10 +8,13 @@
                     <data-table :applyCustomer="true" :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
+                            <th class="">Usuario/Vendedor</th>
                             <th class="">Tipo Documento</th>
                             <th class="">Comprobante</th>
                             <th class="">Fecha emisión</th>
                             <th>Doc. Afectado</th>
+                            <th>Cotización</th>
+                            <th>Caso</th>
                             <th class="">Cliente</th>
                             <th class="">Estado</th>
                             <th class="">Moneda</th>
@@ -25,10 +28,13 @@
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
+                            <td>{{row.user_name}}</td>
                             <td>{{row.document_type_description}}</td>
                             <td>{{row.number}}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.affected_document}}</td>
+                            <td>{{row.quotation_number_full}}</td>
+                            <td>{{row.sale_opportunity_number_full}}</td>
                             <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                             <td>{{row.state_type_description}}</td>
 
