@@ -260,4 +260,10 @@ class SaleNote extends ModelTenant
     {
         return $query->where('changed', false);
     }
+    
+
+    public function quotation()
+    {
+        return $this->belongsTo(Quotation::class);
+    }
 }

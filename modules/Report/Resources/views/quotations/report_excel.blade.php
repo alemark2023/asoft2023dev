@@ -46,11 +46,13 @@
                             <tr>
                                 <th>#</th>
                                 <th class="text-center">Fecha Emisión</th>
+                                <th class="">Usuario/Vendedor</th>
                                 <th>Cliente</th>
                                 <th>Estado</th>
                                 <th>Cotización</th>
                                 <th>Comprobantes</th>
                                 <th>Notas de venta</th>
+                                <th>Caso</th>
                                 <th class="text-center">Moneda</th>
                                 <th class="text-right">T.Exportación</th>
                                 <th class="text-right" >T.Inafecta</th>
@@ -65,6 +67,7 @@
                             <tr>
                                  <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
+                                    <td class="celda">{{$value->user->name}}</td>
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
                                     <td class="celda">{{$value->identifier}}</td>
@@ -79,6 +82,7 @@
                                         @endforeach
                                     </td>
                                     
+                                    <td class="celda">{{ ($value->sale_opportunity) ? $value->sale_opportunity->number_full : '' }}</td>
                                     <td class="celda">{{$value->currency_type_id}}</td>
                                     <td class="celda">{{$value->total_exportation}}</td>
                                     <td class="celda">{{$value->total_unaffected}}</td>

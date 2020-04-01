@@ -12,6 +12,8 @@ use App\Models\Tenant\FormatTemplate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client;
 
 class ConfigurationController extends Controller
 {
@@ -154,6 +156,26 @@ class ConfigurationController extends Controller
             'message' => 'Configuración actualizada'
         ];
 
+    }
+
+    public function getSystemPhone()
+    {
+        $configuration = Configuration::first();
+        $ws = $configuration->enable_whatsapp;
+
+        $current = url('/phone');
+        $parse_current = parse_url($current);
+        $explode_current = explode('.', $parse_current['host']);
+        $path = $parse_current['scheme'].'://'.$explode_current[1].'.'.$explode_current[2].$parse_current['path'];
+        $http = new Client(['verify' => false]);
+        $response = $http->request('GET', $path);
+        if($response->getStatusCode() == '200'){
+            $body = $response->getBody();
+
+            $configuration->phone_whatsapp = $body;
+            $configuration->save();
+        }
+        return 'error';
     }
 
 }

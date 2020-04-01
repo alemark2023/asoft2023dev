@@ -23,7 +23,13 @@ class UserRequest extends FormRequest
             'password' => [
                 'min:6',
                 'confirmed',
-            ]
+                'nullable',
+            ],
+            'phone' => [
+                'numeric',
+                'nullable',
+            ],
+
         ];
     }
 }

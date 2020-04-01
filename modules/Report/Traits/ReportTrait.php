@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\User;
-
+use App\Models\Tenant\StateType;
 
 
 trait ReportTrait
@@ -30,6 +30,7 @@ trait ReportTrait
         $person_id = $request['person_id'];
         $type_person = $request['type_person'];
         $seller_id = $request['seller_id'];
+        $state_type_id = $request['state_type_id'];
 
 
         $d_start = null;
@@ -56,14 +57,14 @@ trait ReportTrait
                 break;
         }
 
-        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id);
+        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id, $state_type_id);
 
         return $records;
 
     }
 
 
-    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id)
+    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id, $state_type_id)
     {
 
         if($document_type_id && $establishment_id){
@@ -95,6 +96,10 @@ trait ReportTrait
         if($seller_id)
         {
             $data =  $data->where('user_id', $seller_id);
+        }
+
+        if($state_type_id){
+            $data =  $data->where('state_type_id', $state_type_id);
         }
 
         return $data;
@@ -301,4 +306,14 @@ trait ReportTrait
 
     }
 
+    public function getStateTypesById($params){
+ 
+        return StateType::whereIn('id', $params)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->description
+            ];
+        });
+
+    }
 }

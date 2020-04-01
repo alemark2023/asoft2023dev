@@ -81,20 +81,33 @@
                             </div>
                         </div>
 
-                        <div :class="resource == 'reports/sales' ? 'col-lg-4 col-md-4':'col-lg-3 col-md-3'" v-if="applyCustomer">
+                        <div :class="(resource == 'reports/sales' || resource == 'reports/purchases') ? 'col-lg-4 col-md-4':'col-lg-3 col-md-3'" v-if="applyCustomer">
                             <div class="form-group">
                                 <label class="control-label">
-                                   Vendedores
+                                   Usuarios
                                 </label>
 
                                 <el-select v-model="form.seller_id" filterable  popper-class="el-select-customers" clearable
-                                    placeholder="Nombre vendedor" >
+                                    placeholder="Nombre usuario" >
                                     <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
 
                             </div>
                         </div>
 
+                        <div class="col-lg-3 col-md-3" v-if="resource == 'reports/quotations'">
+                            <div class="form-group">
+                                <label class="control-label">
+                                   Estado
+                                </label>
+
+                                <el-select v-model="form.state_type_id" filterable  popper-class="el-select-customers" clearable
+                                    >
+                                    <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
 
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
@@ -127,7 +140,7 @@
                         </tbody>
                         <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
                             <tr>
-                                <td :colspan="(resource == 'reports/sales') ? 7:8"></td>
+                                <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
                                 <td ><strong>Totales PEN</strong></td>
                                 <td>{{totals.acum_total_exonerated}}</td>
                                 <td>{{totals.acum_total_unaffected}}</td>
@@ -138,7 +151,7 @@
                                 <td>{{totals.acum_total}}</td>
                             </tr>
                             <tr>
-                                <td :colspan="(resource == 'reports/sales') ? 7:8"></td>
+                                <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
                                 <td ><strong>Totales USD</strong></td>
                                 <td></td>
                                 <td></td>
@@ -196,6 +209,7 @@
                 totals: {},
                 establishment: null,
                 establishments: [],
+                state_types: [],
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -229,6 +243,7 @@
                     this.all_persons = response.data.persons
                     this.document_types = response.data.document_types;
                     this.sellers = response.data.sellers
+                    this.state_types = response.data.state_types
                     // this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                 });
 
@@ -372,7 +387,8 @@
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
-                    seller_id:null
+                    seller_id:null,
+                    state_type_id:null,
                 }
 
             },
