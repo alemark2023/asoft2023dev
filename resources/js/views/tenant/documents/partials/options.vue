@@ -70,6 +70,19 @@
                 <small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <el-input v-model="form.customer_telephone">
+                    <template slot="prepend">+51</template>
+                        <el-button slot="append" @click="clickSendWhatsapp" >Enviar
+                            <el-tooltip class="item" effect="dark"  content="Es necesario tener aperturado Whatsapp web" placement="top-start">
+                                <i class="fab fa-whatsapp" ></i>
+                            </el-tooltip>
+                        </el-button>
+                </el-input>
+                <small class="form-control-feedback" v-if="errors.customer_telephone" v-text="errors.customer_telephone[0]"></small>
+            </div>
+        </div>
         <!-- <div class="row mt-4" v-if="company.soap_type_id == '02'">
             <div class="col-md-12 text-center">
                 <button type="button" class="btn waves-effect waves-light btn-outline-primary"
@@ -112,6 +125,15 @@
                 })
         },
         methods: {
+            clickSendWhatsapp() {
+                
+                if(!this.form.customer_telephone){
+                    return this.$message.error('El número es obligatorio')
+                }
+
+                window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
+            
+            },
             initForm() {
                 this.errors = {};
                 this.form = {
@@ -122,7 +144,9 @@
                     image_detraction: null,
                     id: null,
                     response_message:null,
-                    response_type:null
+                    response_type:null,
+                    customer_telephone:null,
+                    message_text:null
                 };
                 this.locked_emission = {
                     success: true,
