@@ -167,7 +167,7 @@ class ConfigurationController extends Controller
         $parse_current = parse_url($current);
         $explode_current = explode('.', $parse_current['host']);
         $path = $parse_current['scheme'].'://'.$explode_current[1].'.'.$explode_current[2].$parse_current['path'];
-        $http = new Client;
+        $http = new Client(['verify' => false]);
         $response = $http->request('GET', $path);
         if($response->getStatusCode() == '200'){
             $body = $response->getBody();
