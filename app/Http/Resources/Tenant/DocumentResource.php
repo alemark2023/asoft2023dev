@@ -53,6 +53,7 @@ class DocumentResource extends JsonResource
             'detraction' => $this->detraction,
             'response_message' => $response_message,
             'response_type' => $response_type,
+            'customer_telephone' => optional($this->person)->telephone,
         ];
     }
 }

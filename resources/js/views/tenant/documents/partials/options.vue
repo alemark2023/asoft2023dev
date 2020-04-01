@@ -70,6 +70,14 @@
                 <small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <el-input v-model="form.customer_telephone">
+                    <el-button slot="append" icon="el-icon-message" @click="clickSendWhatsapp" >Enviar</el-button>
+                </el-input>
+                <small class="form-control-feedback" v-if="errors.customer_telephone" v-text="errors.customer_telephone[0]"></small>
+            </div>
+        </div>
         <!-- <div class="row mt-4" v-if="company.soap_type_id == '02'">
             <div class="col-md-12 text-center">
                 <button type="button" class="btn waves-effect waves-light btn-outline-primary"
@@ -112,6 +120,11 @@
                 })
         },
         methods: {
+            clickSendWhatsapp() {
+                // window.open('https://api.whatsapp.com/send?phone=+447712345678')
+                // window.open(`https://wa.me/51${this.form.customer_telephone}`, '_blank');
+                window.open(`https://api.whatsapp.com/send?phone=+51${this.form.customer_telephone}`, '_blank');
+            },
             initForm() {
                 this.errors = {};
                 this.form = {
@@ -122,7 +135,8 @@
                     image_detraction: null,
                     id: null,
                     response_message:null,
-                    response_type:null
+                    response_type:null,
+                    customer_telephone:null
                 };
                 this.locked_emission = {
                     success: true,
