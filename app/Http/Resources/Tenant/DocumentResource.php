@@ -53,6 +53,8 @@ class DocumentResource extends JsonResource
             'detraction' => $this->detraction,
             'response_message' => $response_message,
             'response_type' => $response_type,
+            'customer_telephone' => optional($this->person)->telephone,
+            'message_text' => "Su comprobante de pago electrónico {$this->number_full} ha sido generado correctamente, puede revisarlo en el siguiente enlace: ".url('')."/print/document/{$this->external_id}/a4".""
         ];
     }
 }
