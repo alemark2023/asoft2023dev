@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\System\UserRequest;
 use App\Http\Resources\System\UserResource;
 use App\Models\System\User;
+use Request;
 
 class UserController extends Controller
 {
@@ -26,6 +27,7 @@ class UserController extends Controller
         $user = User::firstOrNew(['id' => $id]);
         $user->name = $request->input('name');
         $user->email = $request->input('email');
+        $user->phone = $request->input('phone');
         if ($request->input('password') !== '') {
             if (config('tenant.password_change')) {
                 $user->password = bcrypt($request->input('password'));
@@ -37,5 +39,16 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Usuario actualizado'
         ];
+    }
+
+
+
+    public function getPhone()
+    {
+        $user = User::first();
+
+        $user_resource = new UserResource($user);
+
+        return $user_resource->phone;
     }
 }
