@@ -12,8 +12,6 @@ use App\Models\Tenant\FormatTemplate;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
 
 class ConfigurationController extends Controller
 {

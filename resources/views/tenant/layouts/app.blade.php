@@ -123,11 +123,6 @@
             </section>
         </div>
     </section>
-    @if($show_ws)
-        @if(strlen($phone_whatsapp) > 0)
-        <a class='ws-flotante' href='https://wa.me/{{$phone_whatsapp}}' target="BLANK" style="background-image: url('{{asset('logo/ws.png')}}'); background-size: 70px; background-repeat: no-repeat;" ></a>
-        @endif
-    @endif
 
     <!-- Vendor -->
     <script src="{{ asset('porto-light/vendor/jquery/jquery.js')}}"></script>

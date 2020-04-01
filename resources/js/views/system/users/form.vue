@@ -38,16 +38,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group" :class="{'has-danger': errors.phone}">
-                                <label class="control-label">Teléfono</label>
-                                <el-input v-model="form.phone"></el-input>
-                                <small class="form-control-feedback text-muted">Se mostrará un icono de Whatsapp en cada cliente. Agregar codigo de pais, ejemplo; 51955955955</small>
-                                <small class="form-control-feedback" v-if="errors.phone" v-text="errors.phone[0]"></small>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="form-actions text-right pt-2">
                     <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
@@ -87,8 +77,7 @@
                     email: null,
                     api_token: null,
                     password: null,
-                    password_confirmation: null,
-                    phone: null,
+                    password_confirmation: null
                 }
             },
             submit() {
@@ -105,7 +94,7 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data
+                            this.errors = error.response.data.errors
                         } else {
                             console.log(error)
                         }
