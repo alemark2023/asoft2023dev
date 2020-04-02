@@ -422,6 +422,28 @@
                           </h4>
                         </div>
                       </div>
+                      <div class="col-lg-12 ">
+                        <div class="summary">
+                          <h4 class="title">
+                            <el-checkbox  v-model="filter_item" @change="changeFilterItem">Filtrar por producto</el-checkbox><br>
+                          </h4>
+                        </div>
+                      </div>
+                      <div class="col-lg-12 " v-if="filter_item">
+                        <div class="summary">
+                          <h4 class="title">
+                            <div class="form-group"> 
+                                <el-select v-model="form.item_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Buscar producto"
+                                    :remote-method="searchRemoteItems"
+                                    :loading="loading_search"
+                                    @change="loadDataUtilities">
+                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                            </div>
+                          </h4>
+                        </div>
+                      </div>
                     </div>
                     <div class="row m-t-20">
                       <div class="col-md-12">
@@ -628,6 +650,7 @@ export default {
   components: { DashboardStock },
   data() {
     return {
+      loading_search:false,
       records_base: [],
       selected_customer: null,
       customers: [],
@@ -676,7 +699,10 @@ export default {
       top_customers: [],
       recordId: null,
       showDialogDocumentPayments: false,
-      showDialogSaleNotePayments: false
+      showDialogSaleNotePayments: false,
+      filter_item:false,
+      all_items: [],
+      items:[]
     };
   },
   async created() {
@@ -687,6 +713,7 @@ export default {
         this.establishments.length > 0 ? this.establishments[0].id : null;
     });
     await this.loadAll();
+    await this.filterItems()
 
     // this.$eventHub.$on("reloadDataUnpaid", () => {
     //   this.loadAll();
@@ -694,6 +721,35 @@ export default {
   },
 
   methods: {
+    changeFilterItem(){
+      this.form.item_id = null
+      this.loadDataUtilities()
+    },
+    searchRemoteItems(input) {  
+        
+        if (input.length > 1) { 
+
+            this.loading_search = true
+            let parameters = `input=${input}`
+            
+
+            this.$http.get(`/reports/data-table/items/?${parameters}`)
+                    .then(response => { 
+                        this.items = response.data.items
+                        this.loading_search = false
+                        
+                        if(this.items.length == 0){
+                            this.filterItems()
+                        }
+                    })  
+        } else {
+            this.filterItems()
+        }
+
+    },
+    filterItems() { 
+        this.items = this.all_items
+    }, 
     calculateTotalCurrency(currency_type_id, exchange_rate_sale,  total )
     {
         if(currency_type_id == 'USD')
@@ -715,6 +771,7 @@ export default {
     },
     initForm() {
       this.form = {
+        item_id: null,
         establishment_id: null,
         enabled_expense: null,
         enabled_move_item:false,
@@ -780,6 +837,7 @@ export default {
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;
         this.customers = response.data.data.customers;
+        this.items = response.data.data.items;
       });
       this.$http.get(`/command/df`).then(response => {
         if (response.data[0] != 'error'){

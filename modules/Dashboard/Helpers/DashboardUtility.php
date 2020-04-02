@@ -29,6 +29,7 @@ class DashboardUtility
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
         $enabled_expense = $request['enabled_expense'];
+        $item_id = $request['item_id'];
 
         $d_start = null;
         $d_end = null;
@@ -53,14 +54,14 @@ class DashboardUtility
         }
 
         return [
-            'utilities' => $this->utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense),
+            'utilities' => $this->utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense, $item_id),
         ];
 
     }
 
 
 
-    private function utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense){
+    private function utilities_totals($establishment_id, $d_start, $d_end, $enabled_expense, $item_id){
 
 
         if($d_start && $d_end){
@@ -105,6 +106,11 @@ class DashboardUtility
 
             $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->get():null;
 
+        }
+
+        if($item_id){
+            $document_items = $document_items->where('item_id', $item_id);
+            $sale_note_items = $sale_note_items->where('item_id', $item_id);
         }
 
         // dd($document_items);
