@@ -52,6 +52,15 @@ if($current_hostname) {
 
             });
 
+            Route::prefix('expense-method-types')->group(function () {
+
+                Route::get('/records', 'ExpenseMethodTypeController@records');
+                Route::get('/record/{id}', 'ExpenseMethodTypeController@record');
+                Route::post('', 'ExpenseMethodTypeController@store');
+                Route::delete('/{id}', 'ExpenseMethodTypeController@destroy');
+
+            });
+
         });
     });
 }

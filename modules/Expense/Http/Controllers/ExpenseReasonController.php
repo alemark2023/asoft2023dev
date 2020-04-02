@@ -7,6 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Expense\Models\ExpenseReason;
 use Modules\Expense\Http\Resources\ExpenseReasonCollection;
+use Exception;
 
 class ExpenseReasonController extends Controller
 {

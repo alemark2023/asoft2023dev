@@ -33,6 +33,14 @@ if($current_hostname) {
 
             });
  
+            Route::prefix('payment-method-types')->group(function () {
+
+                Route::get('/records', 'PaymentMethodTypeController@records');
+                Route::get('/record/{id}', 'PaymentMethodTypeController@record');
+                Route::post('', 'PaymentMethodTypeController@store');
+                Route::delete('/{id}', 'PaymentMethodTypeController@destroy');
+
+            });
         });
     });
 }
