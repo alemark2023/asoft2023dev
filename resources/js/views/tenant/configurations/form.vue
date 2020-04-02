@@ -190,9 +190,9 @@
 
         },
         methods: {
-           addSeeder(){
-            var ruta = location.host
-            location.href="/configurations/addSeeder"
+            addSeeder(){
+                var ruta = location.host
+                location.href="/configurations/addSeeder"
             },
             changeFormat(value){
                this.formato = {
