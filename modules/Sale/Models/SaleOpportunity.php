@@ -12,6 +12,7 @@ use App\Models\Tenant\Quotation;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\ModelTenant;
 use Modules\Inventory\Models\InventoryKardex;
+use Modules\Purchase\Models\PurchaseOrder;
 
 class SaleOpportunity extends ModelTenant
 {
@@ -122,5 +123,10 @@ class SaleOpportunity extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
+    public function purchase_order()
+    {
+        return $this->hasOne(PurchaseOrder::class);
+    }
+ 
      
 }

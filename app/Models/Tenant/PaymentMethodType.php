@@ -15,6 +15,7 @@ class PaymentMethodType extends ModelTenant
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'description',
         'has_card',
         'charge',

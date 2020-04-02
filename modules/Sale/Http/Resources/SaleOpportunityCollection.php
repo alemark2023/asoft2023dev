@@ -17,6 +17,7 @@ class SaleOpportunityCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) {
         
             $btn_generate = ($row->quotation) ? false : true;
+            $btn_generate_oc = ($row->purchase_order) ? false : true;
 
             return [
                 'id' => $row->id, 
@@ -25,6 +26,7 @@ class SaleOpportunityCollection extends ResourceCollection
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'number_full' => $row->number_full,
                 'quotation_number_full' => ($row->quotation) ? $row->quotation->number_full:'',
+                'purchase_order_number_full' => ($row->purchase_order) ? $row->purchase_order->number_full:'',
                 'user_name' => $row->user->name,
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
@@ -40,6 +42,7 @@ class SaleOpportunityCollection extends ResourceCollection
                 'files' => $row->files, 
                 'state_type_description' => $row->state_type->description, 
                 'btn_generate' => $btn_generate,
+                'btn_generate_oc' => $btn_generate_oc,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

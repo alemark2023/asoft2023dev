@@ -28,6 +28,8 @@ class GlobalPaymentServiceProvider extends ServiceProvider
         $this->deletingPayment(QuotationPayment::class);
         $this->deletingPayment(ExpensePayment::class);
 
+        $this->paymentsPurchases(); 
+
     }
 
     private function deletingPayment($model)
@@ -47,5 +49,38 @@ class GlobalPaymentServiceProvider extends ServiceProvider
 
     }
  
+
+    private function paymentsPurchases()
+    {
+
+        PurchasePayment::created(function ($purchase_payment) {
+            $this->transaction_payment($purchase_payment);
+        });
+ 
+        PurchasePayment::deleted(function ($purchase_payment) {
+            $this->transaction_payment($purchase_payment);
+        });
+        
+    }
+ 
+    private function transaction_payment($purchase_payment){
+
+        $purchase = $purchase_payment->purchase;
+        $total_payments = $purchase->payments->sum('payment');
+
+        $balance = $purchase->total - $total_payments;
+
+        if($balance <= 0){
+
+            $purchase->total_canceled = true;
+            $purchase->update();
+
+        }else{
+            
+            $purchase->total_canceled = false;
+            $purchase->update();
+        }
+
+    }
  
 }

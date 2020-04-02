@@ -36,6 +36,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Tenant\PurchaseOrderRequest;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use Modules\Sale\Models\SaleOpportunity;
 
 class PurchaseOrderController extends Controller
 {
@@ -53,7 +54,8 @@ class PurchaseOrderController extends Controller
 
     public function create($id = null)
     {
-        return view('purchase::purchase-orders.form', compact('id'));
+        $sale_opportunity = null;
+        return view('purchase::purchase-orders.form', compact('id','sale_opportunity'));
     }
 
     public function generate($id)
@@ -61,6 +63,14 @@ class PurchaseOrderController extends Controller
         $purchase_quotation = PurchaseQuotation::with(['items'])->findOrFail($id);
 
         return view('purchase::purchase-orders.generate', compact('purchase_quotation'));
+    }
+
+    public function generateFromSaleOpportunity($id)
+    {
+        $sale_opportunity = SaleOpportunity::with(['items'])->findOrFail($id);
+        $id = null;
+
+        return view('purchase::purchase-orders.form', compact('id','sale_opportunity'));
     }
 
     public function columns()
@@ -170,6 +180,7 @@ class PurchaseOrderController extends Controller
             'success' => true,
             'data' => [
                 'id' => $this->purchase_order->id,
+                'number_full' => $this->purchase_order->number_full,
             ],
         ];
     }

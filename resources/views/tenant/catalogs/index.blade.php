@@ -30,5 +30,13 @@
             <tenant-expense-reasons-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-expense-reasons-index>
 
         </div>
+        <div class="col-lg-6 col-md-12 ui-sortable">
+
+            <tenant-expense-method-types-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-expense-method-types-index>
+
+        </div>
+        <div class="col-lg-6 col-md-12 ui-sortable">
+            <tenant-payment-method-types-index :type-user="{{json_encode(Auth::user()->type)}}" ></tenant-payment-method-types-index>
+        </div>
     </div>
 @endsection

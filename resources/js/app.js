@@ -177,9 +177,10 @@ Vue.component('tenant-finance-unpaid-index', require('@viewsModuleFinance/unpaid
 Vue.component('tenant-finance-to-pay-index', require('@viewsModuleFinance/to_pay/index.vue'));
 
 
-//Sale Opportunity
+//Sale 
 Vue.component('tenant-sale-opportunities-index', require('@viewsModuleSale/sale_opportunities/index.vue'));
 Vue.component('tenant-sale-opportunities-form', require('@viewsModuleSale/sale_opportunities/form.vue'));
+Vue.component('tenant-payment-method-types-index', require('@viewsModuleSale/payment_method_types/index.vue'));
 
 //Purchase
 
@@ -191,6 +192,8 @@ Vue.component('tenant-fixed-asset-purchases-form', require('@viewsModulePurchase
 
 Vue.component('tenant-expense-types-index', require('@viewsModuleExpense/expense_types/index.vue'));
 Vue.component('tenant-expense-reasons-index', require('@viewsModuleExpense/expense_reasons/index.vue'));
+Vue.component('tenant-expense-method-types-index', require('@viewsModuleExpense/expense_method_types/index.vue'));
+
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));

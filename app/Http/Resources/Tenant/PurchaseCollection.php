@@ -42,6 +42,7 @@ class PurchaseCollection extends ResourceCollection
                 'total' => number_format($total, 2, ".",""),
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
+                'state_type_payment_description' => $row->total_canceled ? 'Pagado':'Pendiente de pago',
                 // 'payment_method_type_description' => isset($row->purchase_payments['payment_method_type']['description'])?$row->purchase_payments['payment_method_type']['description']:'-',
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),

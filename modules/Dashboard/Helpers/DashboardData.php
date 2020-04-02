@@ -8,6 +8,7 @@ use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\SaleNotePayment;
 use Carbon\Carbon;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use Modules\Expense\Models\Expense;
 use Modules\Dashboard\Traits\TotalsTrait;
@@ -65,7 +66,7 @@ class DashboardData
             'sale_note' => $this->sale_note_totals($establishment_id, $d_start, $d_end),
             'general' => $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end),
             'balance' => $this->balance($establishment_id, $d_start, $d_end),
-            // 'customers' => $customers,
+            'items' => $this->getItems(),
         ];
     }
 
@@ -676,5 +677,17 @@ class DashboardData
         ];
     }
 
+    public function getItems(){
+
+        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
+            ];
+        });
+
+        return $items;
+
+    }
 
 }

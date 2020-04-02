@@ -113,6 +113,12 @@
         </td>
     </tr>
     @endif
+    @if($document->purchase_order)
+    <tr>
+        <td class="align-top">O. Compra:</td>
+        <td  colspan="3">{{ $document->purchase_order->number_full }}</td>
+    </tr>
+    @endif
 </table>
 
 <table class="full-width mt-3">
