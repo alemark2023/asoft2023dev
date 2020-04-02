@@ -11,6 +11,7 @@ use App\Models\Tenant\Purchase;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Modules\Sale\Models\SaleOpportunity;
 
 class PurchaseOrder extends ModelTenant
 {
@@ -49,6 +50,7 @@ class PurchaseOrder extends ModelTenant
         'upload_filename',
         'purchase_quotation_id',
         'payment_method_type_id',
+        'sale_opportunity_id',
 
     ];
 
@@ -126,5 +128,10 @@ class PurchaseOrder extends ModelTenant
     public function purchase_quotation()
     {
         return $this->belongsTo(PurchaseQuotation::class);
+    }
+
+    public function sale_opportunity()
+    {
+        return $this->belongsTo(SaleOpportunity::class);
     }
 }

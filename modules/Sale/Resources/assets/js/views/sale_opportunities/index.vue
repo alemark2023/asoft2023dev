@@ -32,6 +32,7 @@
                         <th>Estado</th>
                         <th>O. Venta</th>
                         <th v-if="columns.quotation.visible">Cotización</th>
+                        <th >O. Compra</th>
                         <th class="text-center">Moneda</th>
                         <th class="text-center">Archivos</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -51,6 +52,7 @@
                         <td>{{row.state_type_description}}</td>
                         <td>{{ row.number_full }}</td>
                         <td v-if="columns.quotation.visible">{{ row.quotation_number_full }}</td>
+                        <td >{{ row.purchase_order_number_full }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-center">
                             
@@ -101,11 +103,14 @@
                         </td>
 
                         <td class="text-right"> 
+                            <a v-if="row.btn_generate_oc && typeUser == 'admin'"   :href="`/purchase-orders/sale-opportunity/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-warning">
+                                Generar O. Compra
+                            </a> 
                             <a v-if="row.btn_generate && typeUser == 'admin'"   :href="`/quotations/create/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-primary">
                                 Generar cotizacion
                             </a>
 
-                            <a v-if="row.state_type_id != '11' && row.btn_generate" :href="`/${resource}/create/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <a v-if="row.state_type_id != '11' && (row.btn_generate && row.btn_generate_oc)" :href="`/${resource}/create/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                                     @click.prevent="clickOptions(row.id)">Opciones</button>

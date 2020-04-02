@@ -161,7 +161,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(row, index) in form.items">
+                                        <tr v-for="(row, index) in form.items" :key="index">
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                             <!-- <td class="text-left">{{ row.warehouse_description }}</td> -->
@@ -270,7 +270,7 @@
     import PersonForm from '../../../../../../../resources/js/views/tenant/persons/form.vue'
 
     export default {
-        props: ['id'],
+        props: ['id', 'saleOpportunity'],
         components: {PurchaseFormItem, PersonForm, PurchaseOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
@@ -308,6 +308,7 @@
             }
         },
         async created() {
+            // console.log(this.id, this.saleOpportunity)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -336,10 +337,32 @@
             })
 
             await this.isUpdate()
+            await this.generateFromSaleOpportunity()
 
         },
         methods: {
+            generateFromSaleOpportunity(){
 
+                if(this.saleOpportunity){
+
+                    this.form.currency_type_id = this.saleOpportunity.currency_type_id
+                    this.form.items = this.saleOpportunity.items
+                    this.form.items = this.saleOpportunity.items
+                    this.form.items = this.saleOpportunity.items
+                    this.form.total_exportation = this.saleOpportunity.total_exportation
+                    this.form.total_free = this.saleOpportunity.total_free
+                    this.form.total_taxed = this.saleOpportunity.total_taxed
+                    this.form.total_unaffected = this.saleOpportunity.total_unaffected
+                    this.form.total_exonerated = this.saleOpportunity.total_exonerated
+                    this.form.total_igv = this.saleOpportunity.total_igv
+                    this.form.total_taxes = this.saleOpportunity.total_taxes
+                    this.form.total_value = this.saleOpportunity.total_value
+                    this.form.total = this.saleOpportunity.total
+                    this.form.sale_opportunity_id = this.saleOpportunity.id
+                    // console.log(this.form)
+                }
+                
+            },
             getFormatUnitPriceRow(unit_price){
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)
@@ -523,7 +546,8 @@
                     attributes: [],
                     guides: [],
                     attached_temp_path: null,
-                    attached: null
+                    attached: null,
+                    sale_opportunity_id: null,
                 }
 
                 this.initInputPerson()
@@ -665,10 +689,21 @@
                     .then(response => {
 
                         if (response.data.success) {
+ 
                             this.resetForm()
                             this.purchaseNewId = response.data.data.id
-                            this.showDialogOptions = true
-                            this.isUpdate()
+
+                            if(this.saleOpportunity){
+                                
+                                this.$message.success(`La orden de compra ${response.data.data.number_full} fue generada`)
+                                this.close()
+
+                            }else{
+
+                                this.isUpdate()
+                                this.showDialogOptions = true
+                            }
+                            
 
                         } else {
                             this.$message.error(response.data.message)

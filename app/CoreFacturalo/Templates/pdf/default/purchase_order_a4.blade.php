@@ -112,6 +112,12 @@
             {{ $document->user->name }} 
         </td>
     </tr>
+    @if($document->sale_opportunity)
+    <tr>
+        <td class="align-top">O. Venta:</td>
+        <td  colspan="3">{{ $document->sale_opportunity->number_full }}</td>
+    </tr>
+    @endif
 </table>
 
 <table class="full-width ">
