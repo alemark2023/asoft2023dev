@@ -97,18 +97,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
-                                <label>Plantillas PDF</label>
-                                <el-select v-model="formato.formats" @change="changeFormat(formato.formats)">
-                                    <el-option disabled value="">Seleccione Plantilla</el-option>
-                                    <el-option v-for="(option, index) in formatos" :key="index" v-bind:value="option.formats"> {{option.formats}}</el-option>
-                                </el-select>
-                                <small class="form-control-feedback" v-model="form.formats"> Plantilla actual: {{form.formats}}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label>Actualizar lista de plantillas</label><br>
-                                <el-button type="success" @click="addSeeder" icon="el-icon-refresh"></el-button>
-                            </div>
                             <!-- <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                                 <label class="control-label">Menú lateral contraído</label>
                                 <div class="form-group" :class="{'has-danger': errors.compact_sidebar}">
@@ -151,7 +139,7 @@
                     </div>
                 </form>
             </div>
-            
+
             <terms-condition :showDialog.sync="showDialogTermsCondition"
                             :form="form"
                             :showClose="false"></terms-condition>
@@ -174,11 +162,7 @@
                 resource: 'configurations',
                 errors: {},
                 form: {},
-                formatos: [],
                 affectation_igv_types: [],
-                formato: {
-                    formats: ''
-                },
                 placeholder:'',
 
             }
@@ -190,38 +174,11 @@
             await this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== ''){
                 this.form = response.data.data;
-                this.placeholder = response.data.data.formats;
                 }
                 // console.log(this.placeholder)
             });
-
-            await this.$http.get(`/${this.resource}/getFormats`) .then(response => {
-                if (response.data !== '') this.formatos = response.data
-                // console.log(this.formatos)
-            });
-
-            this.$eventHub.$on('submitFormConfigurations', (form) => {
-                this.form = form
-                this.submit()
-                // console.log(form)
-            })
         },
         methods: {
-           addSeeder(){
-            var ruta = location.host
-            location.href="/configurations/addSeeder"
-            },
-            changeFormat(value){
-               this.formato = {
-                    formats: value,
-               }
-
-               this.$http.post(`/${this.resource}/changeFormat`, this.formato).then(response =>{
-                   this.$message.success(response.data.message);
-                    location.reload()
-               })
-
-            },
             async loadTables(){
 
                 await this.$http.get(`/${this.resource}/tables`) .then(response => {
@@ -233,7 +190,6 @@
                 this.errors = {};
                 this.form = {
                     send_auto: true,
-                    formats: 'default',
                     stock: true,
                     cron: true,
                     id: null,

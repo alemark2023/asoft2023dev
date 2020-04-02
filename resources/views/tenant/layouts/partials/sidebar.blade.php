@@ -56,7 +56,7 @@
                         {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'order-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
-                        
+
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -237,7 +237,7 @@
                                     </li>
 
                                 @endif
-                                
+
                             @endif
 
                         </ul>
@@ -400,12 +400,12 @@
                                             <a class="nav-link" href="{{route('tenant.fixed_asset_items.index')}}">
                                                 Ítems
                                             </a>
-                                        </li> 
+                                        </li>
                                         <li class="{{ ($path[0] === 'fixed-asset' && $path[1] === 'purchases')?'nav-active':'' }}">
                                             <a class="nav-link" href="{{route('tenant.fixed_asset_purchases.index')}}">
                                                 Compras
                                             </a>
-                                        </li> 
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
@@ -503,10 +503,10 @@
                     @endif
                     @if(in_array('reports', $vc_modules))
                     <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
-                                        'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels', 
+                                        'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels',
                                         'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
                                         'order-notes-general', 'sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
-                                        
+
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
@@ -518,14 +518,14 @@
                                 </a>
                             </li>
 
-                            <li class="nav-parent {{  ($path[0] === 'reports' && 
+                            <li class="nav-parent {{  ($path[0] === 'reports' &&
                                     in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'general-items','sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Ventas
                                 </a>
                                 <ul class="nav nav-children">
-                                    
+
                                     <li class="{{(($path[0] === 'reports') && ($path[1] === 'sales')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.sales.index')}}">
                                             Documentos
@@ -566,7 +566,7 @@
                                             Comisiones vendedor
                                         </a>
                                     </li>
-                                    
+
                                     <li class="{{(($path[0] === 'reports') && ($path[1] == 'sales-consolidated')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.sales_consolidated.index')}}">
                                             Consolidado de items
@@ -575,14 +575,14 @@
                                 </ul>
                             </li>
 
-                            <li class="nav-parent {{  ($path[0] === 'reports' && 
+                            <li class="nav-parent {{  ($path[0] === 'reports' &&
                                     in_array($path[1], ['order-notes-consolidated', 'order-notes-general'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Pedidos
                                 </a>
                                 <ul class="nav nav-children">
-                                     
+
                                     <li class="{{(($path[0] === 'reports') && ($path[1] == 'order-notes-general')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.order_notes_general.index')}}">
                                             General
@@ -669,7 +669,7 @@
 
                     <li class="nav-parent {{$path[0] === 'finances' && in_array($path[1], [
                                                 'global-payments', 'balance','payment-method-types', 'unpaid', 'to-pay'
-                                            ]) 
+                                            ])
                                             ? 'nav-active nav-expanded' : ''}}">
 
                         <a class="nav-link" href="#">
@@ -702,13 +702,13 @@
                                 <a class="nav-link" href="{{route('tenant.finances.to_pay.index')}}">
                                     Cuentas por pagar
                                 </a>
-                            </li> 
+                            </li>
                         </ul>
                     </li>
                     @endif
 
                     @if(in_array('configuration', $vc_modules))
-                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts','bussiness_turns','offline-configurations','series-configurations']) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts','bussiness_turns','offline-configurations','series-configurations','configurations']) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-cogs" aria-hidden="true"></i>
                             <span>Configuración</span>
@@ -740,6 +740,12 @@
                             <li class="{{($path[0] === 'advanced') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.advanced.index')}}">
                                     Avanzado
+                                </a>
+                            </li>
+
+                            <li class="{{($path[1] === 'pdf_templates') ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.advanced.pdf_templates')}}">
+                                    Plantillas PDF
                                 </a>
                             </li>
                             <li class="{{($path[0] === 'offline-configurations') ? 'nav-active' : ''}}">
