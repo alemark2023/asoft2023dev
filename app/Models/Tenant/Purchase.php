@@ -62,7 +62,7 @@ class Purchase extends ModelTenant
         'date_of_due',
         'purchase_order_id',
         'customer_id',
-
+        'total_canceled'
     ];
 
     protected $casts = [

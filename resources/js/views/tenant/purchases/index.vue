@@ -32,6 +32,7 @@
                         <th class="text-center" v-if="columns.date_of_due.visible" >F. Vencimiento</th>
                         <th>Proveedor</th>
                         <th>Estado</th>
+                        <th>Estado de pago</th>
                         <th>Número</th>
                         <th>Productos</th>
                         <th>Pagos</th>
@@ -55,6 +56,7 @@
                         <td v-if="columns.date_of_due.visible" class="text-center">{{ row.date_of_due }}</td>
                         <td>{{ row.supplier_name }}<br/><small v-text="row.supplier_number"></small></td>
                         <td>{{row.state_type_description}}</td>
+                        <td>{{row.state_type_payment_description}}</td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
                         </td>
@@ -82,6 +84,7 @@
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td class="text-right">
                             <button
+                                v-if="row.state_type_id != '11'"
                                 type="button"
                                 style="min-width: 41px"
                                 class="btn waves-effect waves-light btn-xs btn-info m-1__2"
