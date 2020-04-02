@@ -17,9 +17,9 @@
             <div class="card-body pt-0 pb-5">
                 <h3>Plantilla actual: <a :href="'#'+form.formats" class="text-secondary">{{form.formats}}</a></h3>
                 <div class="row">
-                  <div v-for="(o, index) in formatos" class="col-lg-4 col-md-3 my-2">
+                  <div v-for="(o, index) in formatos" class="col-md-3 my-2">
                     <el-card :body-style="{ padding: '0px' }" :id="o.formats">
-                      <img :src="path.origin+'/templates/pdf/'+o.formats+'/image.png'" class="image" style="width: 100%">
+                      <a @click="viewImage(o.formats)"><img :src="path.origin+'/templates/pdf/'+o.formats+'/image.png'" class="image" style="width: 100%"></a>
                       <div style="padding: 14px;">
                         <span class="text-center">{{o.formats}}</span>
                         <div class="bottom clearfix text-right">
@@ -35,6 +35,17 @@
                 </div>
             </div>
         </div>
+        <el-dialog
+           :visible.sync="modalImage"
+           width="60">
+            <span>
+                <img :src="path.origin+'/templates/pdf/'+template+'/image.png'" class="image" style="width: 100%">
+            </span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="modalImage = false">Cerrar</el-button>
+                <el-button @click="changeFormat(template)" type="primary">Activar</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -51,6 +62,8 @@
                 form: {},
                 formatos: [],
                 path: location,
+                modalImage: false,
+                template: '',
             }
         },
         async created() {
@@ -70,14 +83,15 @@
         },
         methods: {
             changeFormat(value){
-               this.formatos = {
+                this.modalImage = false
+                this.formatos = {
                     formats: value,
-               }
+                }
 
-               this.$http.post(`/${this.resource}/changeFormat`, this.formatos).then(response =>{
-                   this.$message.success(response.data.message);
+                this.$http.post(`/${this.resource}/changeFormat`, this.formatos).then(response =>{
+                    this.$message.success(response.data.message);
                     location.reload()
-               })
+                })
 
             },
             addSeeder(){
@@ -86,6 +100,11 @@
                     this.$message.success(response.data.message);
                     location.reload()
                 })
+            },
+            viewImage($value){
+                this.template = $value
+
+                this.modalImage = true
             }
         }
     }
