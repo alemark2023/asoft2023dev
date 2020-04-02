@@ -56,6 +56,7 @@
                         {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'order-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
                         
                         ">
                         <a class="nav-link" href="#">
@@ -212,6 +213,12 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                <li class="{{ ($path[0] === 'contracts')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.contracts.index')}}">
+                                        Contratos
+                                    </a>
+                                </li>
 
                                 <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.order_notes.index')}}">

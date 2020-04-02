@@ -181,6 +181,8 @@ Vue.component('tenant-finance-to-pay-index', require('@viewsModuleFinance/to_pay
 Vue.component('tenant-sale-opportunities-index', require('@viewsModuleSale/sale_opportunities/index.vue'));
 Vue.component('tenant-sale-opportunities-form', require('@viewsModuleSale/sale_opportunities/form.vue'));
 Vue.component('tenant-payment-method-types-index', require('@viewsModuleSale/payment_method_types/index.vue'));
+Vue.component('tenant-contracts-index', require('@viewsModuleSale/contracts/index.vue'));
+Vue.component('tenant-contracts-form', require('@viewsModuleSale/contracts/form.vue'));
 
 //Purchase
 

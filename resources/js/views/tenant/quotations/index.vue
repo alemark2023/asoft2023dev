@@ -35,6 +35,7 @@
                         <th>Comprobantes</th>
                         <th>Notas de venta</th>
                         <th>Oportunidad Venta</th>
+                        <th v-if="columns.contract.visible">Contrato</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
@@ -54,10 +55,14 @@
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                         <td>
-                            <!-- {{row.state_type_description}} -->
-                            <el-select v-model="row.state_type_id" @change="changeStateType(row)" style="width:120px !important">
-                                <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
+                            <template v-if="row.state_type_id == '11'">
+                                {{row.state_type_description}}
+                            </template>
+                            <template v-else>
+                                <el-select v-model="row.state_type_id" @change="changeStateType(row)" style="width:120px !important">
+                                    <el-option v-for="option in state_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                            </template>
                         </td>
                         <td>{{ row.identifier }}
                         </td>
@@ -116,6 +121,7 @@
                             </el-popover>
                         </td>
                         <!-- <td>{{ row.state_type_description }}</td> -->
+                        <td v-if="columns.contract.visible">{{ row.contract_number_full }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
@@ -138,6 +144,8 @@
                             <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                             <a :href="`/dispatches/create/${row.id}/q`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
+
+                            <a v-if="row.btn_generate_cnt && row.state_type_id != '11'" :href="`/contracts/generate-quotation/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Generar contrato</a>
 
 
                         </td>
@@ -196,6 +204,10 @@
                     },
                     total_free: {
                         title: 'T.Gratuito',
+                        visible: false
+                    },
+                    contract: {
+                        title: 'Contrato',
                         visible: false
                     },
                     delivery_date: {
