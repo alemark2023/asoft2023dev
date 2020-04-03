@@ -35,7 +35,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Exception;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\Tenant\ContractEmail;
+use Modules\Sale\Mail\ContractEmail;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Traits\FinanceTrait; 
 use App\Models\Tenant\Configuration;
@@ -509,8 +509,6 @@ class ContractController extends Controller
         $client = Person::find($request->customer_id);
         $contract = Contract::find($request->id);
         $customer_email = $request->input('customer_email');
-
-        // $this->reloadPDF($contract, "a4", $contract->filename);
 
         Mail::to($customer_email)->send(new ContractEmail($client, $contract));
         return [

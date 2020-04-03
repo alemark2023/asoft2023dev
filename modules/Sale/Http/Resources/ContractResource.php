@@ -23,6 +23,8 @@ class ContractResource extends JsonResource
             'external_id' => $this->external_id,  
             'identifier' => $this->identifier,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'), 
+            'customer_id' => $this->customer_id,
+            'customer_email' => $this->customer->email,
             'contract' => $contract
         ];
     }

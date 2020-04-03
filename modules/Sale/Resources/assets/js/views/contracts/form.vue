@@ -638,8 +638,14 @@
                         this.resetForm();
                         this.contractNewId = response.data.data.id;
 
-                        if(this.quotation){
+                        // console.log(this.quotationId, this.id)
 
+                        if(this.quotationId){
+
+                            this.$http.get(`/quotations/changed/${this.quotationId}`).then(() => {
+                                this.$eventHub.$emit('reloadData');
+                            });
+                            
                             this.$message.success(`El contrato ${response.data.data.number_full} fue generado`)
                             this.close()
 
