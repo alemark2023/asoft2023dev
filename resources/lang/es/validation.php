@@ -236,6 +236,7 @@ return [
         'payment_method_type_id' => 'm. pago',
         'expense_method_type_id' => 'm. gasto',
         'payment_destination_id' => 'destino',
-        'telephone' => 'teléfono'
+        'telephone' => 'teléfono',
+        'customer' => 'cliente'
     ],
 ];

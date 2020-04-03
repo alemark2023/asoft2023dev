@@ -347,8 +347,6 @@
 
                     this.form.currency_type_id = this.saleOpportunity.currency_type_id
                     this.form.items = this.saleOpportunity.items
-                    this.form.items = this.saleOpportunity.items
-                    this.form.items = this.saleOpportunity.items
                     this.form.total_exportation = this.saleOpportunity.total_exportation
                     this.form.total_free = this.saleOpportunity.total_free
                     this.form.total_taxed = this.saleOpportunity.total_taxed

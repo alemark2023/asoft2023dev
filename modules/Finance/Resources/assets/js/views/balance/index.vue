@@ -8,13 +8,15 @@
                     <data-table :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
-                            <th class="">Nombre de la cuenta</th>
-                            <th class="text-center">T. Pagos - CPE</th>
-                            <th class="text-center">T. Pagos - NV</th>
-                            <th class="text-center">T. Pagos - COT</th>
-                            <th class="text-center">T. Pagos - Compras</th>
-                            <th class="text-center">T. Pagos - Gastos</th>
-                            <th class="text-center">Saldo</th>
+                            <th class=""><strong>Nombre de la cuenta / Total pagos</strong></th>
+                            <th class="text-center"> <strong>CPE</strong></th>
+                            <th class="text-center"> <strong>N. Venta</strong></th>
+                            <th class="text-center"> <strong>Cotización</strong></th>
+                            <th class="text-center"> <strong>Contrato</strong></th>
+                            <th class="text-center"> <strong>Ingresos</strong></th>
+                            <th class="text-center"> <strong>Compras</strong></th>
+                            <th class="text-center"> <strong>Gastos</strong></th>
+                            <th class="text-center"> <strong>Saldo</strong></th>
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td> 
@@ -22,6 +24,8 @@
                             <td class="text-center">S/ {{row.document_payment}}</td>
                             <td class="text-center">S/ {{row.sale_note_payment}}</td>
                             <td class="text-center">S/ {{row.quotation_payment}}</td>
+                            <td class="text-center">S/ {{row.contract_payment}}</td>
+                            <td class="text-center">S/ {{row.income_payment}}</td>
                             <td class="text-center">S/  {{row.purchase_payment}}</td>
                             <td class="text-center">S/ {{row.expense_payment}}</td>
                             <td class="text-center">S/ {{row.balance}}</td> 

@@ -44,8 +44,41 @@ if($hostname) {
                 Route::get('to-pay/to-pay-all', 'ToPayController@toPayAll')->name('toPayAll');
                 Route::get('to-pay/to-pay', 'ToPayController@toPay');
 
+                
+                Route::prefix('income')->group(function () {
+
+                    Route::get('', 'IncomeController@index')->name('tenant.finances.income.index');
+                    Route::get('columns', 'IncomeController@columns');
+                    Route::get('records', 'IncomeController@records');
+                    Route::get('records/income-payments/{record}', 'IncomeController@recordsIncomePayments');
+                    Route::get('create', 'IncomeController@create')->name('tenant.income.create');
+                    Route::get('tables', 'IncomeController@tables');
+                    Route::get('table/{table}', 'IncomeController@table');
+                    Route::post('', 'IncomeController@store');
+                    Route::get('record/{record}', 'IncomeController@record');
+                    Route::get('voided/{record}', 'IncomeController@voided');
+
+                });
             });
 
+
+            Route::prefix('income-types')->group(function () {
+
+                Route::get('/records', 'IncomeTypeController@records');
+                Route::get('/record/{id}', 'IncomeTypeController@record');
+                Route::post('', 'IncomeTypeController@store');
+                Route::delete('/{id}', 'IncomeTypeController@destroy');
+
+            });
+
+            Route::prefix('income-reasons')->group(function () {
+
+                Route::get('/records', 'IncomeReasonController@records');
+                Route::get('/record/{id}', 'IncomeReasonController@record');
+                Route::post('', 'IncomeReasonController@store');
+                Route::delete('/{id}', 'IncomeReasonController@destroy');
+
+            });
 
         });
     });

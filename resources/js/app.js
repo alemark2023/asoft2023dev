@@ -176,12 +176,18 @@ Vue.component('tenant-finance-balance-index', require('../../modules/Finance/Res
 Vue.component('tenant-finance-payment-method-types-index', require('../../modules/Finance/Resources/assets/js/views/payment_method_types/index.vue'));
 Vue.component('tenant-finance-unpaid-index', require('@viewsModuleFinance/unpaid/index.vue'));
 Vue.component('tenant-finance-to-pay-index', require('@viewsModuleFinance/to_pay/index.vue'));
+Vue.component('tenant-finance-income-index', require('@viewsModuleFinance/income/index.vue'));
+Vue.component('tenant-finance-income-form', require('@viewsModuleFinance/income/form.vue'));
+Vue.component('tenant-income-types-index', require('@viewsModuleFinance/income_types/index.vue'));
+Vue.component('tenant-income-reasons-index', require('@viewsModuleFinance/income_reasons/index.vue'));
 
 
 //Sale 
 Vue.component('tenant-sale-opportunities-index', require('@viewsModuleSale/sale_opportunities/index.vue'));
 Vue.component('tenant-sale-opportunities-form', require('@viewsModuleSale/sale_opportunities/form.vue'));
 Vue.component('tenant-payment-method-types-index', require('@viewsModuleSale/payment_method_types/index.vue'));
+Vue.component('tenant-contracts-index', require('@viewsModuleSale/contracts/index.vue'));
+Vue.component('tenant-contracts-form', require('@viewsModuleSale/contracts/form.vue'));
 
 //Purchase
 

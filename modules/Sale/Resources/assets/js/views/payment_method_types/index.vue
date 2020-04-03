@@ -1,8 +1,8 @@
 <template>
     <div class="card card-collapsed">
         <div class="card-header bg-info">
-            <h3 class="my-0">Métodos de pago
-                <el-tooltip class="item" effect="dark" content="Manejo interno de la empresa" placement="top-start">
+            <h3 class="my-0">Métodos de pago - ingreso
+                <el-tooltip class="item" effect="dark" content="Manejo interno de la empresa / Ingresos" placement="top-start">
                     <i class="fa fa-info-circle"></i>
                 </el-tooltip>
             </h3>
