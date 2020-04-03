@@ -8,7 +8,7 @@ if($current_hostname) {
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
             Route::prefix('documents/not-sent')->group(function() {
-                Route::get('', 'DocumentController@index')->name('tenant.documents.not_sent')->middleware('redirect.level');
+                Route::get('', 'DocumentController@index')->name('tenant.documents.not_sent')->middleware('redirect.level','tenant.internal.mode');
                 Route::get('records', 'DocumentController@records');
                 Route::get('data_table', 'DocumentController@data_table');
 
@@ -36,7 +36,7 @@ if($current_hostname) {
 
             Route::prefix('reports/validate-documents')->group(function() {
 
-                Route::get('', 'ValidateDocumentController@index')->name('tenant.validate_documents.index');
+                Route::get('', 'ValidateDocumentController@index')->name('tenant.validate_documents.index')->middleware('tenant.internal.mode');
                 Route::get('records', 'ValidateDocumentController@records');
                 Route::get('data_table', 'ValidateDocumentController@data_table');
 
