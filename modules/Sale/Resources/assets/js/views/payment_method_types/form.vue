@@ -6,7 +6,7 @@
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.id}">
                         <label class="control-label">Código</label>
-                        <el-input v-model="form.id" :readonly="recordId !== null"></el-input>
+                        <el-input v-model="form.id" :readonly="recordId !== null" :maxlength="2"></el-input>
                         <small class="form-control-feedback" v-if="errors.id" v-text="errors.id[0]"></small>
                         </div>
                     </div>

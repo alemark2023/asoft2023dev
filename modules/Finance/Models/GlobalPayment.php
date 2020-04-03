@@ -76,7 +76,13 @@ class GlobalPayment extends ModelTenant
     {
         return $this->belongsTo(ContractPayment::class, 'payment_id')
                     ->wherePaymentType(ContractPayment::class);
-    } 
+    }
+
+    public function inc_payment()
+    {
+        return $this->belongsTo(IncomePayment::class, 'payment_id')
+                    ->wherePaymentType(IncomePayment::class);
+    }  
 
     public function getDestinationDescriptionAttribute()
     {
@@ -97,6 +103,7 @@ class GlobalPayment extends ModelTenant
             ExpensePayment::class => 'expense',
             QuotationPayment::class => 'quotation',
             ContractPayment::class => 'contract',
+            IncomePayment::class => 'income',
         ];
 
         return $instance_type[$this->payment_type];
@@ -126,6 +133,9 @@ class GlobalPayment extends ModelTenant
             case 'contract':
                 $description = 'CONTRATO';
                 break;
+            case 'income':
+                $description = 'INGRESO';
+                break;
              
         } 
 
@@ -150,7 +160,9 @@ class GlobalPayment extends ModelTenant
                 $person['name'] = $record->supplier->name;
                 $person['number'] = $record->supplier->number;
                 break;
-             
+            case 'income':
+                $person['name'] = $record->customer;
+                $person['number'] = '';
         } 
 
         return (object) $person;
@@ -202,6 +214,13 @@ class GlobalPayment extends ModelTenant
                         ->whereHas('associated_record_payment', function($p){
                             $p->whereStateTypeAccepted()->whereTypeUser()
                                 ->whereNotChanged();
+                        });
+
+                })
+                ->OrWhereHas('inc_payment', function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereStateTypeAccepted()->whereTypeUser();
                         });
 
                 });

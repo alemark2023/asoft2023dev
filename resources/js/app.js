@@ -177,6 +177,8 @@ Vue.component('tenant-finance-unpaid-index', require('@viewsModuleFinance/unpaid
 Vue.component('tenant-finance-to-pay-index', require('@viewsModuleFinance/to_pay/index.vue'));
 Vue.component('tenant-finance-income-index', require('@viewsModuleFinance/income/index.vue'));
 Vue.component('tenant-finance-income-form', require('@viewsModuleFinance/income/form.vue'));
+Vue.component('tenant-income-types-index', require('@viewsModuleFinance/income_types/index.vue'));
+Vue.component('tenant-income-reasons-index', require('@viewsModuleFinance/income_reasons/index.vue'));
 
 
 //Sale 

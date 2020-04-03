@@ -62,6 +62,24 @@ if($hostname) {
             });
 
 
+            Route::prefix('income-types')->group(function () {
+
+                Route::get('/records', 'IncomeTypeController@records');
+                Route::get('/record/{id}', 'IncomeTypeController@record');
+                Route::post('', 'IncomeTypeController@store');
+                Route::delete('/{id}', 'IncomeTypeController@destroy');
+
+            });
+
+            Route::prefix('income-reasons')->group(function () {
+
+                Route::get('/records', 'IncomeReasonController@records');
+                Route::get('/record/{id}', 'IncomeReasonController@record');
+                Route::post('', 'IncomeReasonController@store');
+                Route::delete('/{id}', 'IncomeReasonController@destroy');
+
+            });
+
         });
     });
 }
