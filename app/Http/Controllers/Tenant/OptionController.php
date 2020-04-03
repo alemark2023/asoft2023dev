@@ -16,6 +16,7 @@ use App\Models\Tenant\Configuration;
 use Modules\Expense\Models\Expense;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Finance\Models\GlobalPayment; 
+use Modules\Finance\Models\Income; 
 use Modules\Purchase\Models\PurchaseQuotation;
 use Modules\Order\Models\OrderNote;
 use Modules\Inventory\Models\{
@@ -80,7 +81,8 @@ class OptionController extends Controller
         OrderNote::where('soap_type_id', '01')->delete();
         
         GlobalPayment::where('soap_type_id', '01')->delete();
-
+        
+        Income::where('soap_type_id', '01')->delete();
 
         FixedAssetPurchase::where('soap_type_id', '01')->delete();
 
