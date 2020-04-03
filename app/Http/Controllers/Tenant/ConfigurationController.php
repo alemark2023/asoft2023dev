@@ -22,26 +22,29 @@ class ConfigurationController extends Controller
     }
 
     public function addSeeder(){
-       $reiniciar =  DB::connection('tenant')
+        $reiniciar =  DB::connection('tenant')
                         ->table('format_templates')
                         ->truncate();
-       $archivos = Storage::disk('core')->allDirectories('Templates/pdf');
-       $colection = array();
-       $valor = array();
-     foreach($archivos as $valor){
-        $lina = explode( '/', $valor);
-        if(count($lina) <= 3){
-        array_push($colection, $lina);
+        $archivos = Storage::disk('core')->allDirectories('Templates/pdf');
+        $colection = array();
+        $valor = array();
+        foreach($archivos as $valor){
+            $lina = explode( '/', $valor);
+            if(count($lina) <= 3){
+                array_push($colection, $lina);
+            }
         }
-       }
 
-       foreach ($colection as $insertar) {
+        foreach ($colection as $insertar) {
            $insertar =  DB::connection('tenant')
             ->table('format_templates')
             ->insert(['formats' => $insertar[2] ]);
-       }
+        }
 
-        return redirect()->route('tenant.advanced.index');
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
     }
 
     public function changeFormat(Request $request){
@@ -63,6 +66,10 @@ class ConfigurationController extends Controller
     public function getFormats(){
          $formats = DB::connection('tenant')->table('format_templates')->get();
          return $formats;
+    }
+
+    public function pdfTemplates(){
+        return view('tenant.advanced.pdf_templates');
     }
 
     public function record() {
