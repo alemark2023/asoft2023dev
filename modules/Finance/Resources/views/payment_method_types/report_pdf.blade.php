@@ -86,6 +86,7 @@
                                 <th class="">T. Pagos - CPE</th>
                                 <th class="">T. Pagos - NV</th>
                                 <th class="">T. Pagos - COT</th>
+                                <th class="">T. Pagos - Contrato</th>
                                 <th class="">T. Pagos - Compras</th>
                                 <th class="">T. Pagos - Gastos</th>
                             </tr>
@@ -98,6 +99,7 @@
                                     <td class="celda">{{$value['document_payment']}}</td>
                                     <td class="celda">{{$value['sale_note_payment']}}</td>
                                     <td class="celda">{{$value['quotation_payment']}}</td>
+                                    <td class="celda">{{$value['contract_payment']}}</td>
                                     <td class="celda"> {{$value['purchase_payment']}}</td>
                                     <td class="celda">{{$value['expense_payment']}}</td>
                                 </tr>
@@ -110,6 +112,7 @@
                                 <td class="celda">{{$records['totals']['t_documents']}}</td>
                                 <td class="celda">{{$records['totals']['t_sale_notes']}}</td>
                                 <td class="celda">{{$records['totals']['t_quotations']}}</td>
+                                <td class="celda">{{$records['totals']['t_contracts']}}</td>
                                 <td class="celda"> {{$records['totals']['t_purchases']}}</td>
                                 <td class="celda">{{$records['totals']['t_expenses']}}</td>
                             </tr>

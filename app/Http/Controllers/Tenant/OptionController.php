@@ -23,6 +23,7 @@ use Modules\Inventory\Models\{
     InventoryKardex
 };
 use Modules\Sale\Models\SaleOpportunity; 
+use Modules\Sale\Models\Contract; 
 use Modules\Purchase\Models\FixedAssetPurchase;
 
 class OptionController extends Controller
@@ -70,13 +71,16 @@ class OptionController extends Controller
         SaleNote::where('soap_type_id', '01')->delete();
         $this->deleteInventoryKardex(SaleNote::class, $sale_notes);
 
+        
+        Contract::where('soap_type_id', '01')->delete();
         Quotation::where('soap_type_id', '01')->delete();
+        SaleOpportunity::where('soap_type_id', '01')->delete();
+
         Expense::where('soap_type_id', '01')->delete();
         OrderNote::where('soap_type_id', '01')->delete();
         
         GlobalPayment::where('soap_type_id', '01')->delete();
 
-        SaleOpportunity::where('soap_type_id', '01')->delete();
 
         FixedAssetPurchase::where('soap_type_id', '01')->delete();
 

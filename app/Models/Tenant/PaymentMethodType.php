@@ -8,6 +8,7 @@ use App\Models\Tenant\{
     PurchasePayment
 };
 use Modules\Sale\Models\QuotationPayment;
+use Modules\Sale\Models\ContractPayment;
 
 class PaymentMethodType extends ModelTenant
 {
@@ -43,6 +44,11 @@ class PaymentMethodType extends ModelTenant
         return $this->hasMany(QuotationPayment::class,  'payment_method_type_id');
     }
     
+    public function contract_payments()
+    {
+        return $this->hasMany(ContractPayment::class,  'payment_method_type_id');
+    }
+    
     public function scopeWhereFilterPayments($query, $params)
     {
 
@@ -60,6 +66,13 @@ class PaymentMethodType extends ModelTenant
                         });
                 },
                 'quotation_payments' => function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereStateTypeAccepted()->whereTypeUser()
+                                ->whereNotChanged();
+                        });
+                },
+                'contract_payments' => function($q) use($params){
                     $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
                         ->whereHas('associated_record_payment', function($p){
                             $p->whereStateTypeAccepted()->whereTypeUser()

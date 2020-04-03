@@ -12,6 +12,7 @@
                             <th class="text-center">T. Pagos - CPE</th>
                             <th class="text-center">T. Pagos - NV</th>
                             <th class="text-center">T. Pagos - COT</th>
+                            <th class="text-center">T. Pagos - Contrato</th>
                             <th class="text-center">T. Pagos - Compras</th>
                             <th class="text-center">T. Pagos - Gastos</th>
                             <th class="text-center">Saldo</th>
@@ -22,6 +23,7 @@
                             <td class="text-center">S/ {{row.document_payment}}</td>
                             <td class="text-center">S/ {{row.sale_note_payment}}</td>
                             <td class="text-center">S/ {{row.quotation_payment}}</td>
+                            <td class="text-center">S/ {{row.contract_payment}}</td>
                             <td class="text-center">S/  {{row.purchase_payment}}</td>
                             <td class="text-center">S/ {{row.expense_payment}}</td>
                             <td class="text-center">S/ {{row.balance}}</td> 

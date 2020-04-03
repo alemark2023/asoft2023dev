@@ -108,7 +108,7 @@
                                         
                                         }elseif(isset($value->payment->associated_record_payment->prefix)){
                                             
-                                            $document_type = ($value->payment->associated_record_payment->prefix == 'NV') ? 'NV':'COT';
+                                            $document_type = $value->payment->associated_record_payment->prefix;
 
                                         }
                                     @endphp
