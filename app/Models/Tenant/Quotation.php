@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Sale\Models\QuotationPayment;
+use Modules\Sale\Models\Contract;
 
 class Quotation extends ModelTenant
 {
@@ -257,5 +258,10 @@ class Quotation extends ModelTenant
     public function scopeWhereNotChanged($query)
     {
         return $query->where('changed', false);
+    }
+
+    public function contract()
+    {
+        return $this->hasOne(Contract::class);
     }
 }

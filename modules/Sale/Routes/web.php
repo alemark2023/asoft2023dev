@@ -41,6 +41,35 @@ if($current_hostname) {
                 Route::delete('/{id}', 'PaymentMethodTypeController@destroy');
 
             });
+
+
+            Route::prefix('contracts')->group(function () {
+
+                Route::get('', 'ContractController@index')->name('tenant.contracts.index');
+                Route::get('/columns', 'ContractController@columns');
+                Route::get('/records', 'ContractController@records');
+                Route::get('/create/{id?}', 'ContractController@create')->name('tenant.contracts.create');
+    
+                Route::get('/state-type/{state_type_id}/{id}', 'ContractController@updateStateType');
+                Route::get('/filter', 'ContractController@filter');
+                Route::get('/tables', 'ContractController@tables');
+                Route::get('/table/{table}', 'ContractController@table');
+                Route::post('', 'ContractController@store');
+                Route::get('/record/{contract}', 'ContractController@record');
+                Route::get('/voided/{id}', 'ContractController@voided');
+                Route::get('/item/tables', 'ContractController@item_tables');
+                Route::get('/option/tables', 'ContractController@option_tables');
+                Route::get('/search/customers', 'ContractController@searchCustomers');
+                Route::get('/search/customer/{id}', 'ContractController@searchCustomerById');
+                Route::get('/download/{external_id}/{format?}', 'ContractController@download');
+                Route::get('/print/{external_id}/{format?}', 'ContractController@toPrint');
+                Route::post('/email', 'ContractController@email');
+                Route::get('/record2/{contract}', 'ContractController@record2');
+                Route::get('/changed/{contract}', 'ContractController@changed');
+                Route::get('/generate-quotation/{quotation}', 'ContractController@generateContract');
+
+            });
+
         });
     });
 }

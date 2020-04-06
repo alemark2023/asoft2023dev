@@ -48,7 +48,8 @@
                         {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'order-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
-
+                        {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
+                        
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -186,6 +187,12 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                <li class="{{ ($path[0] === 'contracts')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.contracts.index')}}">
+                                        Contratos
+                                    </a>
+                                </li>
 
                                 <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.order_notes.index')}}">
@@ -635,8 +642,8 @@
                     @if(in_array('finance', $vc_modules))
 
                     <li class="nav-parent {{$path[0] === 'finances' && in_array($path[1], [
-                                                'global-payments', 'balance','payment-method-types', 'unpaid', 'to-pay'
-                                            ])
+                                                'global-payments', 'balance','payment-method-types', 'unpaid', 'to-pay', 'income'
+                                            ]) 
                                             ? 'nav-active nav-expanded' : ''}}">
 
                         <a class="nav-link" href="#">
@@ -669,7 +676,12 @@
                                 <a class="nav-link" href="{{route('tenant.finances.to_pay.index')}}">
                                     Cuentas por pagar
                                 </a>
-                            </li>
+                            </li> 
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'income')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.income.index')}}">
+                                    Ingresos
+                                </a>
+                            </li> 
                         </ul>
                     </li>
                     @endif
