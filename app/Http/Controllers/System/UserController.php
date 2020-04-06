@@ -24,9 +24,13 @@ class UserController extends Controller
     {
         $id = $request->input('id');
         $user = User::firstOrNew(['id' => $id]);
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->phone = $request->input('phone');
+
+        if (config('tenant.password_change')) {
+            $user->email = $request->input('email');
+            $user->name = $request->input('name');
+            $user->phone = $request->input('phone');
+        }
+
         if (strlen($request->input('password')) > 0) {
             if (config('tenant.password_change')) {
                 $user->password = bcrypt($request->input('password'));
