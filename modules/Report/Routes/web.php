@@ -18,7 +18,7 @@ if($current_hostname) {
                 Route::get('purchases/filter', 'ReportPurchaseController@filter')->name('tenant.reports.purchases.filter');
                 Route::get('purchases/records', 'ReportPurchaseController@records')->name('tenant.reports.purchases.records');
 
-                Route::get('sales', 'ReportDocumentController@index')->name('tenant.reports.sales.index');
+                Route::get('sales', 'ReportDocumentController@index')->name('tenant.reports.sales.index')->middleware('tenant.internal.mode');
                 Route::get('sales/pdf', 'ReportDocumentController@pdf')->name('tenant.reports.sales.pdf');
                 Route::get('sales/excel', 'ReportDocumentController@excel')->name('tenant.reports.sales.excel');
                 Route::get('sales/filter', 'ReportDocumentController@filter')->name('tenant.reports.sales.filter');
@@ -50,8 +50,8 @@ if($current_hostname) {
                 Route::get('document-hotels/filter', 'ReportDocumentHotelController@filter')->name('tenant.reports.document_hotels.filter');
                 Route::get('document-hotels/records', 'ReportDocumentHotelController@records')->name('tenant.reports.document_hotels.records');
 
-                
-                
+
+
                 Route::get('commercial-analysis', 'ReportCommercialAnalysisController@index')->name('tenant.reports.commercial_analysis.index');
                 Route::get('commercial-analysis/pdf', 'ReportCommercialAnalysisController@pdf')->name('tenant.reports.commercial_analysis.pdf');
                 Route::get('commercial-analysis/excel', 'ReportCommercialAnalysisController@excel')->name('tenant.reports.commercial_analysis.excel');
@@ -67,13 +67,13 @@ if($current_hostname) {
                 Route::get('document-detractions/filter', 'ReportDocumentDetractionController@filter')->name('tenant.reports.document_detractions.filter');
                 Route::get('document-detractions/records', 'ReportDocumentDetractionController@records')->name('tenant.reports.document_hotels.records');
 
-                
+
                 Route::get('commissions', 'ReportCommissionController@index')->name('tenant.reports.commissions.index');
                 Route::get('commissions/pdf', 'ReportCommissionController@pdf')->name('tenant.reports.commissions.pdf');
                 Route::get('commissions/excel', 'ReportCommissionController@excel')->name('tenant.reports.commissions.excel');
                 Route::get('commissions/filter', 'ReportCommissionController@filter')->name('tenant.reports.commissions.filter');
                 Route::get('commissions/records', 'ReportCommissionController@records')->name('tenant.reports.commissions.records');
-                
+
                 Route::get('customers', 'ReportCustomerController@index')->name('tenant.reports.customers.index');
                 Route::get('customers/excel', 'ReportCustomerController@excel')->name('tenant.reports.customers.excel');
                 Route::get('customers/filter', 'ReportCustomerController@filter')->name('tenant.reports.customers.filter');
@@ -95,7 +95,7 @@ if($current_hostname) {
                 Route::get('general-items/filter', 'ReportGeneralItemController@filter');
                 Route::get('general-items/records', 'ReportGeneralItemController@records');
 
-                
+
                 Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')->name('tenant.reports.order_notes_general.index');
                 Route::get('order-notes-general/pdf', 'ReportOrderNoteGeneralController@pdf');
                 Route::get('order-notes-general/filter', 'ReportOrderNoteGeneralController@filter');

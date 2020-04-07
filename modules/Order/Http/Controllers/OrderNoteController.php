@@ -38,7 +38,7 @@ use Modules\Order\Http\Resources\OrderNoteResource;
 use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 
 
 class OrderNoteController extends Controller
@@ -51,7 +51,10 @@ class OrderNoteController extends Controller
 
     public function index()
     {
-        return view('order::order_notes.index');
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+
+        return view('order::order_notes.index', compact('soap_company'));
     }
 
 
@@ -85,7 +88,7 @@ class OrderNoteController extends Controller
     private function getRecords($request){
 
         if($request->column == 'user_name'){
-            
+
             $records = OrderNote::whereHas('user', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         })
@@ -97,9 +100,9 @@ class OrderNoteController extends Controller
             $records = OrderNote::where($request->column, 'like', "%{$request->value}%")
                                 ->whereTypeUser()
                                 ->latest();
-        
+
         }
-        
+
         return $records;
     }
 
@@ -215,7 +218,7 @@ class OrderNoteController extends Controller
     public function update(OrderNoteRequest $request)
     {
 
-        DB::connection('tenant')->transaction(function () use ($request) { 
+        DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
 
@@ -251,7 +254,7 @@ class OrderNoteController extends Controller
     {
 
         DB::connection('tenant')->transaction(function () use ($id) {
-        
+
             $item = OrderNoteItem::findOrFail($id);
             $item->delete();
 
@@ -295,7 +298,7 @@ class OrderNoteController extends Controller
     {
 
         DB::connection('tenant')->transaction(function () use ($id) {
-        
+
             $obj =  OrderNote::find($id);
             $obj->state_type_id = '11';
             $obj->update();

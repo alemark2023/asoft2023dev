@@ -32,7 +32,7 @@ if ($hostname) {
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
 
-       Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
+        Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
         // Route::middleware(['auth'])->group(function() {
             // Route::get('/', function () {
             //     return redirect()->route('tenant.documents.create');
@@ -200,10 +200,10 @@ if ($hostname) {
             Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
             Route::get('documents/search/customer/{id}', 'Tenant\DocumentController@searchCustomerById');
 
-            Route::get('documents', 'Tenant\DocumentController@index')->name('tenant.documents.index')->middleware('redirect.level');
+            Route::get('documents', 'Tenant\DocumentController@index')->name('tenant.documents.index')->middleware(['redirect.level','tenant.internal.mode']);
             Route::get('documents/columns', 'Tenant\DocumentController@columns');
             Route::get('documents/records', 'Tenant\DocumentController@records');
-            Route::get('documents/create', 'Tenant\DocumentController@create')->name('tenant.documents.create')->middleware('redirect.level');
+            Route::get('documents/create', 'Tenant\DocumentController@create')->name('tenant.documents.create')->middleware(['redirect.level','tenant.internal.mode']);
             Route::get('documents/create_tensu', 'Tenant\DocumentController@create_tensu')->name('tenant.documents.create_tensu');
 
             Route::get('documents/tables', 'Tenant\DocumentController@tables');
@@ -242,14 +242,14 @@ if ($hostname) {
             Route::get('documents/data-table/items', 'Tenant\DocumentController@getDataTableItem');
 
             //Contingencies
-            Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level');
+            Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level','tenant.internal.mode');
             Route::get('contingencies/columns', 'Tenant\ContingencyController@columns');
             Route::get('contingencies/records', 'Tenant\ContingencyController@records');
             Route::get('contingencies/create', 'Tenant\ContingencyController@create')->name('tenant.contingencies.create');
 
 
             //Summaries
-            Route::get('summaries', 'Tenant\SummaryController@index')->name('tenant.summaries.index')->middleware('redirect.level');
+            Route::get('summaries', 'Tenant\SummaryController@index')->name('tenant.summaries.index')->middleware('redirect.level','tenant.internal.mode');
             Route::get('summaries/records', 'Tenant\SummaryController@records');
             Route::post('summaries/documents', 'Tenant\SummaryController@documents');
             Route::post('summaries', 'Tenant\SummaryController@store');
@@ -268,7 +268,7 @@ if ($hostname) {
         //    Route::post('inventories/remove', 'Tenant\InventoryController@remove');
 
             //Voided
-            Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level');
+            Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level','tenant.internal.mode');
             Route::get('voided/columns', 'Tenant\VoidedController@columns');
             Route::get('voided/records', 'Tenant\VoidedController@records');
             Route::post('voided', 'Tenant\VoidedController@store');
@@ -326,7 +326,7 @@ if ($hostname) {
 //            Route::post('reports/kardex/pdf', 'Tenant\ReportKardexController@pdf')->name('tenant.report.kardex.pdf');
 //            Route::post('reports/kardex/excel', 'Tenant\ReportKardexController@excel')->name('tenant.report.kardex.report_excel');
 
-            Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index');
+            Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
 
             Route::post('options/delete_documents', 'Tenant\OptionController@deleteDocuments');

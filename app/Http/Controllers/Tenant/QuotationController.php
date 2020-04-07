@@ -37,7 +37,7 @@ use Exception;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\PaymentMethodType;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\StateType;
 
@@ -52,7 +52,10 @@ class QuotationController extends Controller
 
     public function index()
     {
-        return view('tenant.quotations.index');
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+
+        return view('tenant.quotations.index', compact('soap_company'));
     }
 
 
@@ -93,7 +96,7 @@ class QuotationController extends Controller
     private function getRecords($request){
 
         if($request->column == 'user_name'){
-            
+
             $records = Quotation::whereHas('user', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         })
@@ -105,9 +108,9 @@ class QuotationController extends Controller
             $records = Quotation::where($request->column, 'like', "%{$request->value}%")
                                 ->whereTypeUser()
                                 ->latest();
-        
+
         }
-        
+
         return $records;
     }
 
@@ -262,9 +265,9 @@ class QuotationController extends Controller
     }
 
     private function getTermsCondition(){
-        
+
         $configuration = Configuration::select('terms_condition')->first();
-        
+
         if($configuration){
             return $configuration->terms_condition;
         }
@@ -589,7 +592,7 @@ class QuotationController extends Controller
 
         }  else {
 
-            
+
 
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
@@ -660,7 +663,7 @@ class QuotationController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                
+
                 $html_footer = $template->pdfFooter($base_template);
                 $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document):"";
 
@@ -692,7 +695,7 @@ class QuotationController extends Controller
         ];
     }
 
-    
+
     private function savePayments($quotation, $payments){
 
         foreach ($payments as $payment) {
