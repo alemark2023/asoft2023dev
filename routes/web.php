@@ -562,6 +562,7 @@ if ($hostname) {
             Route::get('auto-update', 'System\UpdateController@index')->name('system.update');
             Route::get('auto-update/branch', 'System\UpdateController@branch')->name('system.update.branch');
             Route::get('auto-update/pull/{branch}', 'System\UpdateController@pull')->name('system.update.pull');
+            Route::get('auto-update/artisans', 'System\UpdateController@artisans')->name('system.update.artisans');
 
 
         });

@@ -11,28 +11,39 @@ class UpdateController extends Controller
 {
     public function index()
     {
-    	return view('system.update.index');
+        return view('system.update.index');
     }
 
     public function branch()
     {
-    	$process = new Process('git rev-parse --abbrev-ref HEAD');
+        $process = new Process('git rev-parse --abbrev-ref HEAD');
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
         $output = $process->getOutput();
-		return json_encode($output);
+        return json_encode($output);
     }
 
     public function pull($branch)
     {
-    	$process = new Process('git pull origin '.$branch);
+        $process = new Process('git pull origin '.$branch);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
         $output = $process->getOutput();
-		return json_encode($output);
+        return json_encode($output);
+    }
+
+    public function artisans()
+    {
+        $process = new Process('php ..\artisan migrate');
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        $output = $process->getOutput();
+        return json_encode($output);
     }
 }
