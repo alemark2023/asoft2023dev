@@ -24,7 +24,7 @@
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
         </div>
         </a>
-        @else
+        @elseif($vc_company->soap_type_id == "02")
         <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
         <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
             <div class="ios-switch on">
@@ -35,10 +35,21 @@
             <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
         </div>
         </a>
+        @else
+        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
+        <div class="switch switch-sm switch-info"  data-toggle="tooltip" data-placement="bottom" title="INTERNO: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
+            <div class="ios-switch on">
+                <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;INTERNO</span></div>
+                <div class="state-background background-fill"></div>
+                <div class="handle"></div>
+            </div>
+            <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
+        </div>
+        </a>
         @endif
 
-        <span class="separator"></span>
         @if($vc_document > 0)
+        <span class="separator"></span>
         <ul class="notifications">
             <li class="open">
 

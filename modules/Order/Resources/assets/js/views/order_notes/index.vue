@@ -79,7 +79,7 @@
                         </td>
 
                         <td class="text-right">
-                            <button v-if="row.state_type_id != '11' && row.btn_generate && typeUser == 'admin'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                            <button v-if="row.state_type_id != '11' && row.btn_generate && typeUser == 'admin' &&  soapCompany != '03'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
 
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
@@ -119,7 +119,7 @@
     import {deletable} from '@mixins/deletable'
 
     export default {
-        props:['typeUser'],
+        props:['typeUser', 'soapCompany'],
         mixins: [deletable],
         components: {DataTable,QuotationOptions, QuotationOptionsPdf},
         data() {

@@ -11,7 +11,10 @@
     </div>
   </div>-->
 
-    <tenant-pos-index :configuration="{{ $configuration}}" ></tenant-pos-index>
+    <tenant-pos-index
+     	:configuration="{{ $configuration}}"
+     	:soap-company="{{ json_encode($soap_company) }}">
+    </tenant-pos-index>
 @endsection
 
 @push('scripts')

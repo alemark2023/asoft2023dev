@@ -138,7 +138,7 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <h2><el-switch @change="changeEnabledDiscount" v-model="enabled_discount" class="control-label font-weight-semibold m-0 text-center m-b-0" active-text="Aplicar descuento"></el-switch></h2>
-                                    </div>  
+                                    </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="form-group">
@@ -298,7 +298,7 @@
     export default {
         components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm},
 
-        props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment'],
+        props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany'],
         data() {
             return {
                 enabled_discount: false,
@@ -365,7 +365,7 @@
 
             },
             inputDiscountAmount(){
-                
+
                 if(this.enabled_discount){
 
                     if(this.discount_amount && !isNaN(this.discount_amount) && parseFloat(this.discount_amount) > 0){
@@ -374,9 +374,9 @@
                             return this.$message.error("El monto de descuento debe ser menor al total de venta")
 
                         this.reCalculateTotal()
-                    
+
                     }else{
-                        
+
                         // this.discount_amount = 0
                         this.deleteDiscountGlobal()
                         this.reCalculateTotal()
@@ -388,7 +388,7 @@
             },
             discountGlobal(){
 
-                let global_discount = parseFloat(this.discount_amount) 
+                let global_discount = parseFloat(this.discount_amount)
 
                 let base = parseFloat(this.form.total)
                 let amount = parseFloat(global_discount)
@@ -497,7 +497,7 @@
                 this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
 
                 this.discountGlobal()
- 
+
 
             },
             deleteDiscountGlobal(){

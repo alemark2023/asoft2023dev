@@ -20,12 +20,13 @@ use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Inventory\Models\ItemWarehouse;
 use Exception;
 use Modules\Item\Models\Category;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
+use App\Models\Tenant\Company;
 
 
 class PosController extends Controller
 {
-    
+
     use FinanceTrait;
 
     public function index()
@@ -36,7 +37,10 @@ class PosController extends Controller
 
         $configuration = Configuration::first();
 
-        return view('tenant.pos.index', compact('configuration'));
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+
+        return view('tenant.pos.index', compact('configuration', 'soap_company'));
     }
 
     public function index_full()
