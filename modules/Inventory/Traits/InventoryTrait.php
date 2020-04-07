@@ -16,6 +16,8 @@ use App\Models\Tenant\{
     Item
 };
 use Exception;
+use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\ItemLot;
 
 trait InventoryTrait
 {
@@ -272,4 +274,68 @@ trait InventoryTrait
         $model->inventory_kardex()->delete();
     }
 
+    private function updateDataLots($document_item){
+        
+        // dd($document_item);
+        
+        if(isset($document_item->item->IdLoteSelected) )
+        {
+            if($document_item->item->IdLoteSelected != null)
+            {
+                $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
+                $lot->quantity =  $lot->quantity + $document_item->quantity;
+                $lot->save();
+            }
+        }
+
+        if(isset($document_item->item->lots) )
+        {
+            foreach ($document_item->item->lots as $it) {
+
+                if($it->has_sale == true)
+                {
+                    $r = ItemLot::find($it->id);
+                    $r->has_sale = false;
+                    $r->save();
+                }
+
+            } 
+        }
+
+    }
+
+    
+    private function deleteItemLots($item){
+
+        $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group:[];
+
+        $lot_group_selected = collect($i_lots_group)->first(function($row){
+            return $row->checked;
+        });
+
+        if($lot_group_selected){
+
+            $lot = ItemLotsGroup::find($lot_group_selected->id);
+            $lot->quantity =  $lot->quantity + $item->quantity;
+            $lot->save();
+
+        }
+
+        if(isset($item->item->lots)){
+
+            foreach ($item->item->lots as $it) {
+
+                if($it->has_sale == true){
+
+                    $ilt = ItemLot::find($it->id);
+                    $ilt->has_sale = false;
+                    $ilt->save();
+                    
+                }
+
+            } 
+        }
+
+    }
+    
 }

@@ -87,7 +87,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 if($document_item->item->IdLoteSelected != null)
                 {
                     $lot = ItemLotsGroup::find($document_item->item->IdLoteSelected);
-                    $lot->quantity = ($lot->quantity - $document_item->quantity);
+                    // $lot->quantity = ($lot->quantity - $document_item->quantity);
+                    $lot->quantity = ($document->document_type_id === '07') ? ($lot->quantity + $document_item->quantity) : ($lot->quantity - $document_item->quantity);
                     $lot->save();
                 }
             }
@@ -99,7 +100,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     if($it->has_sale == true)
                     {
                         $r = ItemLot::find($it->id);
-                        $r->has_sale = true;
+                        // $r->has_sale = true;
+                        $r->has_sale = ($document->document_type_id === '07') ? false : true;
                         $r->save();
                     }
 
@@ -192,6 +194,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             }
 
+            $this->deleteItemLots($sale_note_item);
+
         });
     }
 
@@ -275,4 +279,6 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         });
     }
+
+    
 }
