@@ -71,5 +71,15 @@ if($current_hostname) {
             });
 
         });
+
+        
+        Route::prefix('production-orders')->group(function () {
+
+            Route::get('', 'ProductionOrderController@index')->name('tenant.production_orders.index');
+            Route::get('/columns', 'ProductionOrderController@columns');
+            Route::get('/records', 'ProductionOrderController@records');
+
+        });
+
     });
 }
