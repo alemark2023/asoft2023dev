@@ -35,7 +35,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                         $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
                         $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
-
+                        $this->updateDataLots($detail);
                     }
 
                     $this->voidedWasDeductedPrepayment($document);

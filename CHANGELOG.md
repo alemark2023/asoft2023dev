@@ -1,3 +1,39 @@
+## 3.3.3
+
+### fixed
+2020-04-06 : fixed | consultando correctamente posea puerto o sea un dominio con diferentes niveles (error phone)<br>
+2020-04-01 : fixed | merge configuracion whatsapp<br>
+2020-04-01 : fixed | config whatsapp curl 60<br>
+
+
+### feature
+2020-04-03 : feature | t-509 | mantenimiento t comprobante y motivos ingreso - agregando a m. finanzas<br>
+2020-04-03 : feature | t-509 | modulo ingresos<br>
+2020-04-03 : feature | t-509 | agregar m. contrato a finanzas<br>
+2020-04-03 : feature | t-509 | email m. contrato<br>
+2020-04-02 : feature | t-509 | modulo contrato<br>
+2020-04-02 : feature | modal imagenes de plantillas pdf<br>
+2020-04-02 : feature | imagenes referenciales para plantillas pdf<br>
+2020-04-02 : feature | t-509 | estado de pago de la compra<br>
+2020-04-02 : feature | t-509 | generar o. compra a partir de o. venta<br>
+2020-04-02 : feature | t-509 | Añadir filtro “producto” en Utilidades/ Ganancias<br>
+2020-04-02 : feature | t-509 | mantenimiento metodo de gasto y pago<br>
+2020-04-01 : feature | vista independiente para seleccionar plantilla pdf<br>
+2020-04-01 : feature | t-509 | mantenimiento tipo comprobante y motivos - gastos diversos<br>
+2020-04-01 : feature | t-509 | modificar terminos y condicaciones cot a configuracion<br>
+2020-04-01 : feature | t-385 | enviar mensaje whatsapp cpe<br>
+2020-04-01 : feature | template pdf jc<br>
+2020-04-01 : feature | t-509 | agregar caso, cotizacion, vendedor en reportes de ventas<br>
+2020-04-01 : feature | t-509 | filtro por estado - reporte cotizacion<br>
+2020-03-31 : feature | agregado icono whatsapp configurable<br>
+2020-03-31 : feature | t-509 | filtro usuario reporte compras<br>
+2020-03-31 : feature | t-509 | modulo activos fijos<br>
+2020-03-31 : feature | t-509 | añadir clientes y condicion en pago - compras<br>
+2020-03-31 : feature | t-509 | modulo cuentas por pagar<br>
+2020-03-30 : feature | t-509 | agregar pagos y carga archivo en listado compras y gastos<br>
+2020-03-30 : feature | t-509 | agregar form pagos listado compra<br>
+
+
 ## 3.3.2
 
 ### docs

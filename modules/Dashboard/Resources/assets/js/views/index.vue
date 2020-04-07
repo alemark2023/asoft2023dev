@@ -189,7 +189,7 @@
               </div>
             </section>
           </div>
-          <div class="col-xl-3">
+          <div class="col-xl-3" v-if="soapCompany != '03'">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" v-if="document">
                 <div class="widget-summary">
@@ -432,7 +432,7 @@
                       <div class="col-lg-12 " v-if="filter_item">
                         <div class="summary">
                           <h4 class="title">
-                            <div class="form-group"> 
+                            <div class="form-group">
                                 <el-select v-model="form.item_id" filterable remote  popper-class="el-select-customers"  clearable
                                     placeholder="Buscar producto"
                                     :remote-method="searchRemoteItems"
@@ -646,7 +646,7 @@ import DashboardStock from "./partials/dashboard_stock.vue";
 import queryString from "query-string";
 
 export default {
-  props: ["typeUser"],
+  props: ["typeUser", "soapCompany"],
   components: { DashboardStock },
   data() {
     return {
@@ -725,31 +725,31 @@ export default {
       this.form.item_id = null
       this.loadDataUtilities()
     },
-    searchRemoteItems(input) {  
-        
-        if (input.length > 1) { 
+    searchRemoteItems(input) {
+
+        if (input.length > 1) {
 
             this.loading_search = true
             let parameters = `input=${input}`
-            
+
 
             this.$http.get(`/reports/data-table/items/?${parameters}`)
-                    .then(response => { 
+                    .then(response => {
                         this.items = response.data.items
                         this.loading_search = false
-                        
+
                         if(this.items.length == 0){
                             this.filterItems()
                         }
-                    })  
+                    })
         } else {
             this.filterItems()
         }
 
     },
-    filterItems() { 
+    filterItems() {
         this.items = this.all_items
-    }, 
+    },
     calculateTotalCurrency(currency_type_id, exchange_rate_sale,  total )
     {
         if(currency_type_id == 'USD')

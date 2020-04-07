@@ -173,7 +173,21 @@ class ConfigurationController extends Controller
         $current = url('/phone');
         $parse_current = parse_url($current);
         $explode_current = explode('.', $parse_current['host']);
-        $path = $parse_current['scheme'].'://'.$explode_current[1].'.'.$explode_current[2].$parse_current['path'];
+        $app_url = config('app.url');
+        if(!array_key_exists('port', $parse_current)){
+            if (strpos($app_url, 'admin') !== false) {
+               $path = $parse_current['scheme'].'://admin.'.config('tenant.app_url_base').$parse_current['path'];
+            } else {
+                $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').$parse_current['path'];
+            }
+        }else{
+            if (strpos($app_url, 'admin') !== false) {
+               $path = $parse_current['scheme'].'://admin.'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
+            } else {
+                $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
+            }
+        }
+
         $http = new Client(['verify' => false]);
         $response = $http->request('GET', $path);
         if($response->getStatusCode() == '200'){

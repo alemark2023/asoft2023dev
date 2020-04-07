@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Cotizaciones</span></li>
+                <li class="active"><span>Cotizaciones {{soapCompany}}</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
@@ -78,7 +78,7 @@
                         </td>
                         <td>
                             <!-- {{ row.sale_opportunity_number_full }} -->
-                            
+
                             <el-popover
                                 placement="right"
                                 v-if="row.sale_opportunity"
@@ -109,14 +109,14 @@
                                             <tbody>
                                                 <tr v-for="(row, index) in row.sale_opportunity.items" :key="index">
                                                     <td>{{index+1}}</td>
-                                                    <td>{{row.item.description}}</td> 
-                                                    <td>{{row.quantity}}</td> 
-                                                    <td>{{row.total}}</td> 
+                                                    <td>{{row.item.description}}</td>
+                                                    <td>{{row.quantity}}</td>
+                                                    <td>{{row.total}}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div> 
+                                </div>
                                 <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
                             </el-popover>
                         </td>
@@ -137,8 +137,12 @@
                         </td>
 
                         <td class="text-right">
-                            <button v-if="row.state_type_id != '11' && row.btn_generate && typeUser == 'admin'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
+                            <button v-if="row.state_type_id != '11' && row.btn_generate && typeUser == 'admin' && soapCompany != '03'"
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)" >
+                                Generar comprobante
+                            </button>
 
                             <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
@@ -179,7 +183,7 @@
     import {deletable} from '../../../mixins/deletable'
 
     export default {
-        props:['typeUser'],
+        props:['typeUser', 'soapCompany'],
         mixins: [deletable],
         components: {DataTable,QuotationOptions, QuotationOptionsPdf},
         data() {
@@ -225,13 +229,13 @@
 
                 await this.updateStateType(`/${this.resource}/state-type/${row.state_type_id}/${row.id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
-                ) 
+                )
 
             },
             filter(){
                 this.$http.get(`/${this.resource}/filter`)
-                            .then(response => { 
-                                this.state_types = response.data.state_types 
+                            .then(response => {
+                                this.state_types = response.data.state_types
                             })
             },
             clickEdit(id)

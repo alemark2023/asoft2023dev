@@ -545,6 +545,13 @@ class ClientController extends Controller
     {
         $client = Client::find($id);
 
+        if($client->locked){
+            return [
+                'success' => false,
+                'message' => 'Cliente bloqueado, no puede eliminarlo'
+            ];
+        }
+
         $hostname = Hostname::find($client->hostname_id);
         $website = Website::find($hostname->website_id);
 

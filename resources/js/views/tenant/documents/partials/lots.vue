@@ -82,7 +82,8 @@
 
                 if(this.search)
                 {
-                    this.lots_ = this.lots.filter( x => x.series.toUpperCase().includes(this.search.toUpperCase()))
+                    // this.lots_ = this.lots.filter( x => x.series.toUpperCase().includes(this.search.toUpperCase()))
+                    this.lots_ = _.filter(this.lots, x => x.series.toUpperCase().includes(this.search.toUpperCase()))
                 }
                 else{
                     this.lots_ = this.lots
