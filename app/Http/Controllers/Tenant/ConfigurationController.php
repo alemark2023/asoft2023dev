@@ -175,13 +175,13 @@ class ConfigurationController extends Controller
         $explode_current = explode('.', $parse_current['host']);
         $app_url = config('app.url');
         if(!array_key_exists('port', $parse_current)){
-            if (strpos('admin', $app_url) !== false) {
+            if (strpos($app_url, 'admin') !== false) {
                $path = $parse_current['scheme'].'://admin.'.config('tenant.app_url_base').$parse_current['path'];
             } else {
                 $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').$parse_current['path'];
             }
         }else{
-            if (strpos('admin', $app_url) !== false) {
+            if (strpos($app_url, 'admin') !== false) {
                $path = $parse_current['scheme'].'://admin.'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
             } else {
                 $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
