@@ -12,32 +12,11 @@ if ($hostname) {
         Route::get('search/tables', 'Tenant\SearchController@tables');
         Route::post('search', 'Tenant\SearchController@store');
 
-        //Ecommerce
-        /*Route::get('ecommerce', 'Tenant\EcommerceController@index')->name('tenant.ecommerce.index');
-        Route::get('ecommerce/item/{id}', 'Tenant\EcommerceController@item')->name('tenant.ecommerce.item');
-        Route::get('ecommerce/items', 'Tenant\EcommerceController@items')->name('tenant.ecommerce.item.index');
-        Route::get('ecommerce/item_partial/{id}', 'Tenant\EcommerceController@partialItem')->name('item_partial');
-        Route::get('ecommerce/detail_cart', 'Tenant\EcommerceController@detailCart')->name('tenant_detail_cart');
-        Route::get('ecommerce/pay_cart', 'Tenant\EcommerceController@pay')->name('tenant_pay_cart');
-        Route::get('ecommerce/login', 'Tenant\EcommerceController@showLogin')->name('tenant_ecommerce_login');
-        Route::get('ecommerce/logout', 'Tenant\EcommerceController@logout')->name('tenant_ecommerce_logout');
-        Route::get('ecommerce/items_bar', 'Tenant\EcommerceController@itemsBar');
-        Route::post('ecommerce/login', 'Tenant\EcommerceController@login')->name('tenant_ecommerce_login');
-        Route::post('ecommerce/storeUser', 'Tenant\EcommerceController@storeUser')->name('tenant_ecommerce_store_user');
-        Route::post('ecommerce/rating_item', 'Tenant\EcommerceController@ratingItem')->name('tenant_ecommerce_rating_item');
-        Route::get('ecommerce/rating_item/{id}', 'Tenant\EcommerceController@getRating');*/
-
-
-
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
-        // Route::middleware(['auth'])->group(function() {
-            // Route::get('/', function () {
-            //     return redirect()->route('tenant.documents.create');
-            // });
-            // Route::get('dashboard', 'Tenant\HomeController@index')->name('tenant.dashboard');
+
 
             Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
@@ -48,18 +27,10 @@ if ($hostname) {
             Route::post('tasks', 'Tenant\TaskController@store');
             Route::delete('tasks/{task}', 'Tenant\TaskController@destroy');
 
-            //Ecommerce
-            /*Route::post('ecommerce/culqi', 'Tenant\CulqiController@payment')->name('tenant_ecommerce_culqui');
-            Route::post('ecommerce/transaction_finally', 'Tenant\EcommerceController@transactionFinally')->name('tenant_ecommerce_transaction_finally');
-            Route::post('ecommerce/payment_cash', 'Tenant\EcommerceController@paymentCash')->name('tenant_ecommerce_payment_cash');*/
-
-
             //Orders
             Route::get('orders', 'Tenant\OrderController@index')->name('tenant_orders_index');
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
-
-
 
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');
@@ -67,7 +38,6 @@ if ($hostname) {
             Route::get('companies/record', 'Tenant\CompanyController@record');
             Route::post('companies', 'Tenant\CompanyController@store');
             Route::post('companies/uploads', 'Tenant\CompanyController@uploadFile');
-
 
             //Card Brands
             Route::get('card_brands/records', 'Tenant\CardBrandController@records');
@@ -87,7 +57,6 @@ if ($hostname) {
             Route::get('configurations/visual_defaults', 'Tenant\ConfigurationController@visualDefaults')->name('visual_defaults');
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
-
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -158,30 +127,6 @@ if ($hostname) {
             Route::get('items/enable/{item}', 'Tenant\ItemController@enable');
             Route::get('items/images/{item}', 'Tenant\ItemController@images');
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
-
-
-
-
-
-
-
-            //Customers
-//            Route::get('customers', 'Tenant\CustomerController@index')->name('tenant.customers.index');
-//            Route::get('customers/columns', 'Tenant\CustomerController@columns');
-//            Route::get('customers/records', 'Tenant\CustomerController@records');
-//            Route::get('customers/tables', 'Tenant\CustomerController@tables');
-//            Route::get('customers/record/{item}', 'Tenant\CustomerController@record');
-//            Route::post('customers', 'Tenant\CustomerController@store');
-//            Route::delete('customers/{customer}', 'Tenant\CustomerController@destroy');
-//
-//            //Suppliers
-//            Route::get('suppliers', 'Tenant\SupplierController@index')->name('tenant.suppliers.index');
-//            Route::get('suppliers/columns', 'Tenant\SupplierController@columns');
-//            Route::get('suppliers/records', 'Tenant\SupplierController@records');
-//            Route::get('suppliers/tables', 'Tenant\SupplierController@tables');
-//            Route::get('suppliers/record/{item}', 'Tenant\SupplierController@record');
-//            Route::post('suppliers', 'Tenant\SupplierController@store');
-//            Route::delete('suppliers/{supplier}', 'Tenant\SupplierController@destroy');
 
             //Persons
             Route::get('persons/columns', 'Tenant\PersonController@columns');
@@ -257,16 +202,6 @@ if ($hostname) {
             Route::get('summaries/columns', 'Tenant\SummaryController@columns');
             Route::delete('summaries/{summary}', 'Tenant\SummaryController@destroy');
 
-           //Inventories
-        //    Route::get('inventories', 'Tenant\InventoryController@index')->name('tenant.inventories.index');
-        //    Route::get('inventories/records', 'Tenant\InventoryController@records');
-        //    Route::get('inventories/columns', 'Tenant\InventoryController@columns');
-        //    Route::get('inventories/tables', 'Tenant\InventoryController@tables');
-        //    Route::get('inventories/record/{inventory}', 'Tenant\InventoryController@record');
-        //    Route::post('inventories', 'Tenant\InventoryController@store');
-        //    Route::post('inventories/move', 'Tenant\InventoryController@move');
-        //    Route::post('inventories/remove', 'Tenant\InventoryController@remove');
-
             //Voided
             Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level','tenant.internal.mode');
             Route::get('voided/columns', 'Tenant\VoidedController@columns');
@@ -298,33 +233,6 @@ if ($hostname) {
             Route::get('dispatches/create/{document?}/{type?}/{dispatch?}', 'Tenant\DispatchController@create');
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
-
-//            Route::get('dispatches', 'Tenant\DispatchController@index')->name('tenant.dispatches.index');
-//            Route::get('dispatches/columns', 'Tenant\DispatchController@columns');
-//            Route::get('dispatches/records', 'Tenant\DispatchController@records');
-//            Route::get('dispatches/create', 'Tenant\DispatchController@create');
-//            Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
-//            Route::post('dispatches', 'Tenant\DispatchController@store');
-
-            // Route::get('reports/sales', 'Tenant\ReportController@index')->name('tenant.reports.index');
-            // Route::get('reports/sales/search', 'Tenant\ReportController@search')->name('tenant.search');
-            // Route::post('reports/sales/pdf', 'Tenant\ReportController@pdf')->name('tenant.report_pdf');
-            // Route::post('reports/sales/excel', 'Tenant\ReportController@excel')->name('tenant.report_excel');
-
-            // Route::get('reports/purchases', 'Tenant\ReportPurchaseController@index')->name('tenant.reports.purchases.index');
-            // Route::get('reports/purchases/search', 'Tenant\ReportPurchaseController@search')->name('tenant.reports.purchases.search');
-            // Route::post('reports/purchases/pdf', 'Tenant\ReportPurchaseController@pdf')->name('tenant.report.purchases.pdf');
-            // Route::post('reports/purchases/excel', 'Tenant\ReportPurchaseController@excel')->name('tenant.report.purchases.report_excel');
-
-//            Route::get('reports/inventories', 'Tenant\ReportInventoryController@index')->name('tenant.reports.inventories.index');
-//            Route::post('reports/inventories/search', 'Tenant\ReportInventoryController@search')->name('tenant.reports.inventories.search');
-//            Route::post('reports/inventories/pdf', 'Tenant\ReportInventoryController@pdf')->name('tenant.report.inventories.pdf');
-//            Route::post('reports/inventories/excel', 'Tenant\ReportInventoryController@excel')->name('tenant.report.inventories.report_excel');
-//
-//            Route::get('reports/kardex', 'Tenant\ReportKardexController@index')->name('tenant.reports.kardex.index');
-//            Route::post('reports/kardex/search', 'Tenant\ReportKardexController@search')->name('tenant.reports.kardex.search');
-//            Route::post('reports/kardex/pdf', 'Tenant\ReportKardexController@pdf')->name('tenant.report.kardex.pdf');
-//            Route::post('reports/kardex/excel', 'Tenant\ReportKardexController@excel')->name('tenant.report.kardex.report_excel');
 
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
@@ -445,16 +353,6 @@ if ($hostname) {
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
             Route::get('quotations/changed/{quotation}', 'Tenant\QuotationController@changed');
 
-            // Route::get('reports/quotations', 'Tenant\ReportQuotationController@index')->name('tenant.reports.quotations.index');
-            // Route::get('reports/quotations/search', 'Tenant\ReportQuotationController@search')->name('tenant.reports.quotations.search');
-            // Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
-            // Route::post('reports/quotations/pdf', 'Tenant\ReportQuotationController@pdf')->name('tenant.reports.quotations.pdf');
-            // Route::post('reports/quotations/excel', 'Tenant\ReportQuotationController@excel')->name('tenant.report.quotations.report_excel');
-
-
-
-
-
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');
             Route::get('sale-notes/columns', 'Tenant\SaleNoteController@columns');
@@ -477,18 +375,9 @@ if ($hostname) {
             Route::get('sale-notes/option/tables', 'Tenant\SaleNoteController@option_tables');
             Route::get('sale-notes/changed/{salenote}', 'Tenant\SaleNoteController@changed');
             Route::post('sale-notes/email', 'Tenant\SaleNoteController@email');
-         //   Route::get('sale-notes/recreate_pdf/{sale_note}', 'Tenant\SaleNoteController@recreatePdf');
-            // Route::get('sale-notes/print/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
-            // Route::get('sale-notes/print/{sale_note_id}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/dispatches', 'Tenant\SaleNoteController@dispatches');
             Route::delete('sale-notes/destroy_sale_note_item/{sale_note_item}', 'Tenant\SaleNoteController@destroy_sale_note_item');
-
-            // Route::get('reports/sale-notes', 'Tenant\ReportSaleNoteController@index')->name('tenant.reports.sale_note.index');
-            // Route::get('reports/sale-notes/search', 'Tenant\ReportSaleNoteController@search')->name('tenant.reports.sale_note.search');
-            // Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
-            // Route::post('reports/sale-notes/pdf', 'Tenant\ReportSaleNoteController@pdf')->name('tenant.reports.sale_note.pdf');
-            // Route::post('reports/sale-notes/excel', 'Tenant\ReportSaleNoteController@excel')->name('tenant.report.sale_note.report_excel');
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');
@@ -515,7 +404,6 @@ if ($hostname) {
            Route::get('pos/status_configuration', 'Tenant\PosController@status_configuration');
            Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
 
-
            Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
            Route::get('cash/columns', 'Tenant\CashController@columns');
            Route::get('cash/records', 'Tenant\CashController@records');
@@ -537,7 +425,6 @@ if ($hostname) {
            Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
 
            Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
-
 
            //Tags
            Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');
@@ -636,9 +523,6 @@ if ($hostname) {
 
             Route::post('clients/upload', 'System\ClientController@upload');
 
-
-
-
             Route::get('client_payments/records/{client_id}', 'System\ClientPaymentController@records');
             Route::get('client_payments/client/{client_id}', 'System\ClientPaymentController@client');
             Route::get('client_payments/tables', 'System\ClientPaymentController@tables');
@@ -646,12 +530,9 @@ if ($hostname) {
             Route::delete('client_payments/{client_payment}', 'System\ClientPaymentController@destroy');
             Route::get('client_payments/cancel_payment/{client_payment_id}', 'System\ClientPaymentController@cancel_payment');
 
-
             Route::get('client_account_status/records/{client_id}', 'System\AccountStatusController@records');
             Route::get('client_account_status/client/{client_id}', 'System\AccountStatusController@client');
             Route::get('client_account_status/tables', 'System\AccountStatusController@tables');
-
-
 
             //Planes
             Route::get('plans', 'System\PlanController@index')->name('system.plans.index');
@@ -668,7 +549,6 @@ if ($hostname) {
 
             Route::get('services/ruc/{number}', 'System\ServiceController@ruc');
 
-
             Route::get('certificates/record', 'System\CertificateController@record');
             Route::post('certificates/uploads', 'System\CertificateController@uploadFile');
             Route::post('certificates/saveSoapUser', 'System\CertificateController@saveSoapUser');
@@ -677,6 +557,11 @@ if ($hostname) {
 
             Route::get('companies/record', 'System\CompanyController@record');
             Route::post('companies', 'System\CompanyController@store');
+
+            // auto-update
+            Route::get('auto-update', 'System\UpdateController@index')->name('system.update');
+            Route::get('auto-update/branch', 'System\UpdateController@branch')->name('system.update.branch');
+            Route::get('auto-update/pull/{branch}', 'System\UpdateController@pull')->name('system.update.pull');
 
 
         });

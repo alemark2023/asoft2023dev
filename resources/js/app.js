@@ -182,7 +182,7 @@ Vue.component('tenant-income-types-index', require('@viewsModuleFinance/income_t
 Vue.component('tenant-income-reasons-index', require('@viewsModuleFinance/income_reasons/index.vue'));
 
 
-//Sale 
+//Sale
 Vue.component('tenant-sale-opportunities-index', require('@viewsModuleSale/sale_opportunities/index.vue'));
 Vue.component('tenant-sale-opportunities-form', require('@viewsModuleSale/sale_opportunities/form.vue'));
 Vue.component('tenant-payment-method-types-index', require('@viewsModuleSale/payment_method_types/index.vue'));
@@ -231,6 +231,8 @@ Vue.component('tenant-orders-index', require('./views/tenant/orders/index.vue'))
 Vue.component('tenant-account-payment-index', require('./views/tenant/account/payment_index.vue'));
 Vue.component('tenant-account-configuration-index', require('./views/tenant/account/configuration.vue'));
 
+//auto update
+Vue.component('system-update', require('./views/system/update/index.vue'));
 
 const app = new Vue({
     el: '#main-wrapper'
