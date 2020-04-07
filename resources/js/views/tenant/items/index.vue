@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportListPrice()"><i class="fa fa-upload"></i> Importar L. Precios</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
                 </template>
@@ -81,6 +82,8 @@
                 :warehouses="warehousesDetail">
             </warehouses-detail>
 
+            <items-import-list-price :showDialog.sync="showImportListPriceDialog"></items-import-list-price>
+
         </div>
     </div>
 </template>
@@ -89,17 +92,19 @@
     import ItemsForm from './form.vue'
     import WarehousesDetail from './partials/warehouses.vue'
     import ItemsImport from './import.vue'
+    import ItemsImportListPrice from './partials/import_list_price.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         props:['typeUser'],
         mixins: [deletable],
-        components: {ItemsForm, ItemsImport, DataTable, WarehousesDetail},
+        components: {ItemsForm, ItemsImport, DataTable, WarehousesDetail, ItemsImportListPrice},
         data() {
             return {
                 showDialog: false,
                 showImportDialog: false,
+                showImportListPriceDialog: false,
                 showWarehousesDetail: false,
                 resource: 'items',
                 recordId: null,
@@ -135,6 +140,9 @@
             },
             clickImport() {
                 this.showImportDialog = true
+            },
+            clickImportListPrice() {
+                this.showImportListPriceDialog = true
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>

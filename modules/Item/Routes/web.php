@@ -30,6 +30,8 @@ if($hostname) {
 
             Route::get('items/barcode/{item}', 'ItemController@generateBarcode');
 
+            Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
+
         });
     });
 }

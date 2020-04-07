@@ -66,7 +66,11 @@
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.delivery_date}"> 
-                                    <label class="control-label">Fec. Entrega</label>
+                                    <label class="control-label">Fec. Entrega
+                                        <el-tooltip class="item" effect="dark" content="Fecha de entrega de proyecto" placement="top-end">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
                                     <el-date-picker v-model="form.delivery_date" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
