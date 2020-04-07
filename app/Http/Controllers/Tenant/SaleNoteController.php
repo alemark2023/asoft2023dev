@@ -737,35 +737,41 @@ class SaleNoteController extends Controller
 
     public function anulate($id)
     {
-        $obj =  SaleNote::find($id);
-        $obj->state_type_id = 11;
-        $obj->save();
 
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+        DB::connection('tenant')->transaction(function () use ($id) {
 
-        foreach ($obj->items as $item) {
-            $item->sale_note->inventory_kardex()->create([
-                'date_of_issue' => date('Y-m-d'),
-                'item_id' => $item->item_id,
-                'warehouse_id' => $warehouse->id,
-                'quantity' => $item->quantity,
-            ]);
-            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
-            if($wr)
-            {
-                $wr->stock =  $wr->stock + $item->quantity;
-                $wr->save();
+            $obj =  SaleNote::find($id);
+            $obj->state_type_id = 11;
+            $obj->save();
+
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+
+            foreach ($obj->items as $item) {
+                $item->sale_note->inventory_kardex()->create([
+                    'date_of_issue' => date('Y-m-d'),
+                    'item_id' => $item->item_id,
+                    'warehouse_id' => $warehouse->id,
+                    'quantity' => $item->quantity,
+                ]);
+                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
+                if($wr)
+                {
+                    $wr->stock =  $wr->stock + $item->quantity;
+                    $wr->save();
+                }
+
+                //habilito las series
+                // ItemLot::where('item_id', $item->item_id )->where('warehouse_id', $warehouse->id)->update(['has_sale' => false]);
+                $this->voidedLots($item);
+
             }
 
-            //habilito las series
-            ItemLot::where('item_id', $item->item_id )->where('warehouse_id', $warehouse->id)->update(['has_sale' => false]);
-
-        }
+        });
 
         return [
             'success' => true,
-            'message' => 'Compra anulada con éxito'
+            'message' => 'N. Venta anulada con éxito'
         ];
 
 
@@ -872,6 +878,40 @@ class SaleNoteController extends Controller
             }
 
         }
+    }
+
+
+    private function voidedLots($item){
+
+        $i_lots_group = isset($item->item->lots_group) ? $item->item->lots_group:[];
+
+        $lot_group_selected = collect($i_lots_group)->first(function($row){
+            return $row->checked;
+        });
+
+        if($lot_group_selected){
+
+            $lot = ItemLotsGroup::find($lot_group_selected->id);
+            $lot->quantity =  $lot->quantity + $item->quantity;
+            $lot->save();
+
+        }
+
+        if(isset($item->item->lots)){
+
+            foreach ($item->item->lots as $it) {
+
+                if($it->has_sale == true){
+
+                    $ilt = ItemLot::find($it->id);
+                    $ilt->has_sale = false;
+                    $ilt->save();
+                    
+                }
+
+            } 
+        }
+
     }
 
 }
