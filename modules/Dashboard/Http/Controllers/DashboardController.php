@@ -13,6 +13,7 @@ use Modules\Dashboard\Helpers\DashboardView;
 use Modules\Dashboard\Helpers\DashboardStock;
 use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\Company;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Arr;
@@ -24,7 +25,10 @@ class DashboardController extends Controller
         if(auth()->user()->type != 'admin' || !auth()->user()->searchModule('dashboard'))
             return redirect()->route('tenant.documents.index');
 
-        return view('dashboard::index');
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+
+        return view('dashboard::index', compact('soap_company'));
     }
 
     public function filter()

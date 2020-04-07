@@ -59,7 +59,10 @@ class SaleNoteController extends Controller
 
     public function index()
     {
-        return view('tenant.sale_notes.index');
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+
+        return view('tenant.sale_notes.index', compact('soap_company'));
     }
 
 

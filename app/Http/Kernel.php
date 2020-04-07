@@ -64,10 +64,11 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'input.request' => \App\CoreFacturalo\InputRequest::class,
-//        'module' => \App\Http\Middleware\CheckModule::class,
-       'redirect.module' => \App\Http\Middleware\RedirectModule::class,
-       'redirect.level' => \App\Http\Middleware\RedirectModuleLevel::class,
-       'locked.tenant' => \App\Http\Middleware\LockedTenant::class,
-    //    'locked.admin' => \App\Http\Middleware\LockedAdmin::class,
+        //'module' => \App\Http\Middleware\CheckModule::class,
+        'redirect.module' => \App\Http\Middleware\RedirectModule::class,
+        'redirect.level' => \App\Http\Middleware\RedirectModuleLevel::class,
+        'locked.tenant' => \App\Http\Middleware\LockedTenant::class,
+        //'locked.admin' => \App\Http\Middleware\LockedAdmin::class,
+        'tenant.internal.mode' => \App\Http\Middleware\InternalModeTenant::class,
     ];
 }

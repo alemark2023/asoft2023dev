@@ -147,12 +147,15 @@
                             <button data-toggle="tooltip" data-placement="top" title="Editar" type="button" class="btn waves-effect waves-light btn-xs btn-primary"
                                     @click.prevent="clickCreate(row.id)" v-if="row.btn_generate && row.state_type_id != '11'"><i class="fas fa-file-signature"></i></button>
 
-                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickGenerate(row.id)" v-if="!row.changed && row.state_type_id != '11' ">Generar comprobante</button> -->
-
-
-                            <button data-toggle="tooltip" data-placement="top" title="Generar comprobante" type="button" class="btn waves-effect waves-light btn-xs btn-success"
-                                    @click.prevent="clickGenerate(row.id)" v-if="!row.changed && row.state_type_id != '11' "><i class="fas fa-file-excel"></i></button>
+                            <button data-toggle="tooltip"
+                                    data-placement="top"
+                                    title="Generar comprobante"
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-success"
+                                    @click.prevent="clickGenerate(row.id)"
+                                    v-if="!row.changed && row.state_type_id != '11' && soapCompany != '03'">
+                                <i class="fas fa-file-excel"></i>
+                            </button>
 
                             <!-- <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)">Opciones</button> -->
@@ -198,7 +201,8 @@
     import {deletable} from '../../../mixins/deletable'
 
     export default {
-         mixins: [deletable],
+        props: ['soapCompany'],
+        mixins: [deletable],
         components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate},
         data() {
             return {
