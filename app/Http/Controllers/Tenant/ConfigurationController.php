@@ -177,13 +177,15 @@ class ConfigurationController extends Controller
         if(!array_key_exists('port', $parse_current)){
             if (strpos('admin', $app_url) !== false) {
                $path = $parse_current['scheme'].'://admin.'.config('tenant.app_url_base').$parse_current['path'];
+            } else {
+                $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').$parse_current['path'];
             }
-            $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').$parse_current['path'];
         }else{
             if (strpos('admin', $app_url) !== false) {
                $path = $parse_current['scheme'].'://admin.'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
+            } else {
+                $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
             }
-            $path = $parse_current['scheme'].'://'.config('tenant.app_url_base').':'.$parse_current['port'].$parse_current['path'];
         }
 
         $http = new Client(['verify' => false]);
