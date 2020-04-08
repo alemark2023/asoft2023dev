@@ -158,6 +158,9 @@ class PurchaseController extends Controller
                         'name' => $row->name,
                         'number' => $row->number,
                         'identity_document_type_id' => $row->identity_document_type_id,
+                        'address' => $row->address,
+                        'email' => $row->email,
+                        'selected' => false
                     ];
                 });
                 return $suppliers;
