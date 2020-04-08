@@ -45,15 +45,42 @@ class PurchaseController extends Controller
 
         return new PurchaseCollection($records);
     }
- 
 
     public function tables()
     {
-        $suppliers = $this->table('suppliers');
-        $currency_types = CurrencyType::whereActive()->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', 'GU75', 'NE76'])->get();
 
-        return compact('suppliers','currency_types', 'document_types_invoice');
+        return compact('document_types_invoice');
+    }
+
+    public function suppliers()
+    {
+        return $this->table('suppliers');
+    }
+
+    public function searchSuppliers(Request $request)
+    {
+        
+        $persons = Person::where('number','like', "%{$request->input}%")
+                            ->orWhere('name','like', "%{$request->input}%")
+                            ->whereType('suppliers')
+                            ->orderBy('name')
+                            ->get()
+                            ->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                    'name' => $row->name,
+                                    'number' => $row->number,
+                                    'identity_document_type_id' => $row->identity_document_type_id,
+                                    'address' => $row->address,
+                                    'email' => $row->email,
+                                    'selected' => false
+                                ];
+                            });
+
+        return $persons;
+
     }
 
     public function item_tables()
@@ -124,7 +151,7 @@ class PurchaseController extends Controller
         switch ($table) {
             case 'suppliers':
 
-                $suppliers = Person::whereType('suppliers')->orderBy('name')->get()->transform(function($row) {
+                $suppliers = Person::whereType('suppliers')->orderBy('name')->take(20)->get()->transform(function($row) {
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,
