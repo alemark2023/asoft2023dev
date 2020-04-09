@@ -60,10 +60,13 @@ class PurchaseController extends Controller
 
     public function searchSuppliers(Request $request)
     {
+
+        $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);
         
         $persons = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('suppliers')
+                            ->whereIn('identity_document_type_id', $identity_document_type_id)
                             ->orderBy('name')
                             ->get()
                             ->transform(function($row) {
@@ -82,6 +85,14 @@ class PurchaseController extends Controller
         return $persons;
 
     }
+
+    
+    public function getIdentityDocumentTypeId($document_type_id){
+
+        return ($document_type_id == '01') ? [6] : [1,4,6,7,0];
+        
+    }
+
 
     public function item_tables()
     {
