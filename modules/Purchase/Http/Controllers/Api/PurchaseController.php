@@ -37,8 +37,8 @@ use Modules\Item\Models\ItemLotsGroup;
 
 
 class PurchaseController extends Controller
-{ 
-  
+{
+
     public function records()
     {
         $records = Purchase::latest()->get();
@@ -60,7 +60,7 @@ class PurchaseController extends Controller
 
     public function searchSuppliers(Request $request)
     {
-        
+
         $persons = Person::where('number','like', "%{$request->input}%")
                             ->orWhere('name','like', "%{$request->input}%")
                             ->whereType('suppliers')
@@ -98,7 +98,7 @@ class PurchaseController extends Controller
         $record = new PurchaseResource(Purchase::findOrFail($id));
         return $record;
     }
- 
+
     public function store(PurchaseRequest $request)
     {
 
@@ -110,9 +110,9 @@ class PurchaseController extends Controller
 
             foreach ($data['items'] as $row)
             {
-                $doc->items()->create($row); 
+                $doc->items()->create($row);
             }
- 
+
             return $doc;
         });
 
@@ -126,7 +126,7 @@ class PurchaseController extends Controller
             ],
         ];
     }
-  
+
 
     public static function convert($inputs)
     {
@@ -186,7 +186,7 @@ class PurchaseController extends Controller
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                         'has_perception' => (bool) $row->has_perception,
                         'lots_enabled' => (bool) $row->lots_enabled,
-                        'percentage_perception' => $row->percentage_perception, 
+                        'percentage_perception' => $row->percentage_perception,
                     ];
                 });
 
@@ -197,7 +197,7 @@ class PurchaseController extends Controller
 
                 break;
         }
-    } 
- 
+    }
+
 
 }
