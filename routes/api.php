@@ -18,9 +18,6 @@ if ($hostname) {
             Route::get('document/search-items', 'Tenant\Api\MobileController@searchItems');
             Route::get('document/search-customers', 'Tenant\Api\MobileController@searchCustomers');
 
-
-
-
             Route::post('documents', 'Tenant\Api\DocumentController@store');
             Route::get('documents/lists', 'Tenant\Api\DocumentController@lists');
             Route::post('summaries', 'Tenant\Api\SummaryController@store');

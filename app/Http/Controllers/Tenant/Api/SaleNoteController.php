@@ -52,7 +52,7 @@ class SaleNoteController extends Controller
 
     public function lists()
     {
-        $record = SaleNote::all();
+        $record = SaleNote::orderBy('id', 'desc')->get();
         $records = new SaleNoteCollection($record);
         return $records;
     }
