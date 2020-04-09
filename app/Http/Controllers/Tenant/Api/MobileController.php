@@ -177,7 +177,7 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'msg' => 'Cliente registrado con éxito',
+            'msg' => ($row->type == 'customers') ? 'Cliente registrado con éxito' : 'Proveedor registrado con éxito',
             'data' => (object)[
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
