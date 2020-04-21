@@ -74,9 +74,9 @@ class UpdateController extends Controller
     {
         $process = new Process(system('composer dumpautoload -d '. base_path()));
         $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
         $output = $process->getOutput();
         return json_encode($output);
     }

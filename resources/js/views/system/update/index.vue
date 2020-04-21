@@ -10,15 +10,15 @@
             </div>
             <div class="card-body">
 
-                <div v-if="content.status == true" id="response-content">
+                <div v-if="content.status == true && content.step == 'updating'" id="response-content">
 
-                    <h3>Comprobando rama del repositorio</h3>
+                    <h3>Obteniendo rama del repositorio</h3>
                     <el-progress :percentage="branch.percent"></el-progress>
-                    <h4>Rama actual: <strong>{{branch.name}}</strong></h4>
-                    <span class="text-danger">{{branch.error}}</span><br>
-                    <!-- <span class="text-danger">{{branch.status}}</span> -->
 
                     <div v-if="branch.status == 'success'">
+                        <h4>Rama actual: <strong>{{branch.name}}</strong></h4>
+                        <span class="text-danger">{{branch.error}}</span><br>
+                        <!-- <span class="text-danger">{{branch.status}}</span> -->
                         <hr>
                         <h3>Descargando actualización</h3>
                         <h4>Log: {{pull.content}}</h4>
@@ -58,6 +58,19 @@
                         <h4>Log: {{artisan.clear.content}}</h4>
                         <span class="text-danger">{{artisan.clear.error}}</span><br>
                         <!-- <span class="text-danger">{{artisan.clear.status}}</span> -->
+                    </div>
+                </div>
+
+                <div v-if="content.status == true && content.step == 'composer'" id="response-content">
+
+                    <div v-if="composer.install.status == 'success'">
+                        <h3>Actualizando dependencias</h3>
+                        <h4>Log:</h4>
+                        <pre>
+                            {{composer.install.content}}
+                        </pre>
+                        <span class="text-danger">{{composer.install.error}}</span><br>
+                        <!-- <span class="text-danger">{{composer.install.status}}</span> -->
                     </div>
                 </div>
 
@@ -130,10 +143,12 @@
                 this.loading_submit = true
                 this.initContent()
                 this.content.status = true
+                this.content.step = 'updating'
                 await this.getBranch()
             },
             initContent() {
                 this.content.status= false
+                this.content.step= ''
                 this.branch.name = ''
                 this.branch.percent = 1
                 this.branch.error = ''
@@ -177,7 +192,6 @@
                 }).catch(error => {
                     if (error.response.status !== 200) {
                         this.branch.percent = 0
-                        // this.$message.error('Error consultado rama: '+error.response.data.message)
                         this.branch.error = error.response.data.message
                         this.branch.status = 'false'
                     } else {
@@ -205,7 +219,6 @@
                 }).catch(error => {
                     if (error.response.status !== 200) {
                         this.pull.percent = 0
-                        // this.$message.error('Error consultado rama: '+error.response.data.message)
                         this.pull.error = error.response.data.message
                         this.pull.status = 'false'
                     } else {
@@ -227,7 +240,6 @@
                 }).catch(error => {
                     if (error.response.status !== 200) {
                         this.artisan.migrate.percent = 0
-                        // this.$message.error('Error consultado rama: '+error.response.data.message)
                         this.artisan.migrate.error = error.response.data.message
                         this.artisan.migrate.status = 'false'
                     } else {
@@ -253,7 +265,6 @@
                 }).catch(error => {
                     if (error.response.status !== 200) {
                         this.artisan.tenancy_migrate.percent = 0
-                        // this.$message.error('Error consultado rama: '+error.response.data.message)
                         this.artisan.tenancy_migrate.error = error.response.data.message
                         this.artisan.tenancy_migrate.status = 'false'
                     } else {
@@ -274,7 +285,6 @@
                 }).catch(error => {
                     if (error.response.status !== 200) {
                         this.artisan.clear.percent = 0
-                        // this.$message.error('Error consultado rama: '+error.response.data.message)
                         this.artisan.clear.error = error.response.data.message
                         this.artisan.clear.status = 'false'
                     } else {
@@ -284,25 +294,31 @@
             },
             execComposer() {
                 this.initContent()
+                this.loading_submit = true
+                this.content.status = true
+                this.content.step = 'composer'
                 this.$http.get(`/${this.resource}/composer/install`)
                 .then(response => {
+
                     if (response.data !== '') {
-                        this.artisan.clear.content = response.data
-                        this.artisan.clear.percent = 100
+                        this.composer.install.content = response.data
+                        this.composer.install.percent = 100
                         if (response.status === 200) {
-                            this.artisan.clear.status = 'success'
+                            this.composer.install.status = 'success'
                         }
                     }
                 }).catch(error => {
                     if (error.response.status !== 200) {
-                        this.artisan.clear.percent = 0
-                        // this.$message.error('Error consultado rama: '+error.response.data.message)
-                        this.artisan.clear.error = error.response.data.message
-                        this.artisan.clear.status = 'false'
+                        this.composer.install.percent = 0
+                        this.composer.install.error = error.response.data.message
+                        this.composer.install.status = 'false'
                     } else {
                         console.log(error)
                     }
                 })
+
+                this.loading_submit = false
+                //dar permisos 777 a vendor mpdf
             }
         }
     }
