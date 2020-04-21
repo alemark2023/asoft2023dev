@@ -1,30 +1,64 @@
 <template>
     <div class="row">
         <div class="card col-md-12">
-            <!-- <div class="card-header bg-info">Comprobando Rama de Repositorio</div> -->
+            <div class="card-header justify-content-center">
+                <div class="text-center">
+                    <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
+
+                    <el-button @click.prevent="execComposer()" :loading="loading_submit">Composer Install</el-button>
+                </div>
+            </div>
             <div class="card-body">
-                <h3>Comprobando rama del repositorio</h3>
-                <el-progress :percentage="branch.percent"></el-progress>
-                <h4>Rama actual: <strong>{{branch.name}}</strong></h4>
-                <span class="text-danger">{{branch.error}}</span><br>
-                <span class="text-danger">{{branch.status}}</span>
 
-                <div v-if="branch.status == 'success'">
-                    <hr>
-                    <h3>Descargando actualización</h3>
-                    <h4>Resultado: {{pull.content}}</h4>
-                    <span class="text-danger">{{pull.error}}</span><br>
-                    <span class="text-danger">{{pull.status}}</span>
-                </div>
+                <div v-if="content.status == true" id="response-content">
 
-                <div v-if="pull.content == 'Already up to date.'">
-                    <hr>
-                    <h3>El sistema está actualizado</h3>
-                </div>
-                <div v-if="pull.content != 'Already up to date.' && pull.status == 'success'">
-                    <hr>
-                    <h3>Comandos Artisan</h3>
-                    <h4>Resultado: {{artisan.content}}</h4>
+                    <h3>Comprobando rama del repositorio</h3>
+                    <el-progress :percentage="branch.percent"></el-progress>
+                    <h4>Rama actual: <strong>{{branch.name}}</strong></h4>
+                    <span class="text-danger">{{branch.error}}</span><br>
+                    <!-- <span class="text-danger">{{branch.status}}</span> -->
+
+                    <div v-if="branch.status == 'success'">
+                        <hr>
+                        <h3>Descargando actualización</h3>
+                        <h4>Log: {{pull.content}}</h4>
+                        <span class="text-danger">{{pull.error}}</span><br>
+                        <!-- <span class="text-danger">{{pull.status}}</span> -->
+                    </div>
+
+                    <div v-if="pull.content.includes('Already up to date.')">
+                        <hr>
+                        <h3>El sistema está actualizado</h3>
+                    </div>
+                    <div v-if="pull.content.includes('Already up to date.') == false && pull.status == 'success'">
+                        <hr>
+                        <h3>Comandos Artisan</h3>
+                        <h4>Log: {{artisan.content}}</h4>
+                    </div>
+
+                    <div v-if="artisan.migrate.status == 'success'">
+                        <hr>
+                        <h3>Corriendo migraciones en administrador</h3>
+                        <h4>Log: {{artisan.migrate.content}}</h4>
+                        <span class="text-danger">{{artisan.migrate.error}}</span><br>
+                        <!-- <span class="text-danger">{{artisan.migrate.status}}</span> -->
+                    </div>
+
+                    <div v-if="artisan.tenancy_migrate.status == 'success'">
+                        <hr>
+                        <h3>Corriendo migraciones en cliente</h3>
+                        <h4>Log: {{artisan.tenancy_migrate.content}}</h4>
+                        <span class="text-danger">{{artisan.tenancy_migrate.error}}</span><br>
+                        <!-- <span class="text-danger">{{artisan.tenancy_migrate.status}}</span> -->
+                    </div>
+
+                    <div v-if="artisan.clear.status == 'success'">
+                        <hr>
+                        <h3>Eliminando Caché</h3>
+                        <h4>Log: {{artisan.clear.content}}</h4>
+                        <span class="text-danger">{{artisan.clear.error}}</span><br>
+                        <!-- <span class="text-danger">{{artisan.clear.status}}</span> -->
+                    </div>
                 </div>
 
             </div>
@@ -32,6 +66,8 @@
     </div>
 </template>
 <script>
+    import $ from 'jquery'
+
     export default {
         data() {
             return {
@@ -39,6 +75,10 @@
                 resource: 'auto-update',
                 errors: {},
                 form: {},
+                loading_submit: false,
+                content: {
+                    status: false,
+                },
                 branch: {
                     name: '',
                     percent: 1,
@@ -54,14 +94,73 @@
                     error: '',
                     status: '',
                     content: '',
+                    migrate: {
+                        error: '',
+                        status: false,
+                        content: '',
+                    },
+                    tenancy_migrate: {
+                        error: '',
+                        status: false,
+                        content: '',
+                    },
+                    clear: {
+                        error: '',
+                        status: false,
+                        content: '',
+                    }
+                },
+                composer: {
+                    install: {
+                        error: '',
+                        status: false,
+                        content: '',
+                    },
+                    update: {
+                        error: '',
+                        status: false,
+                        content: '',
+                    },
                 }
             }
         },
-        async created() {
-            await this.getBranch()
-
-        },
+        created() {},
         methods: {
+            async start() {
+                this.loading_submit = true
+                this.initContent()
+                this.content.status = true
+                await this.getBranch()
+            },
+            initContent() {
+                this.content.status= false
+                this.branch.name = ''
+                this.branch.percent = 1
+                this.branch.error = ''
+                this.branch.status = ''
+                this.pull.error = ''
+                this.pull.status = ''
+                this.pull.content = ''
+                this.artisan.error = ''
+                this.artisan.status = ''
+                this.artisan.content = ''
+                this.artisan.migrate
+                this.artisan.migrate.error = ''
+                this.artisan.migrate.status = false
+                this.artisan.migrate.content = ''
+                this.artisan.tenancy_migrate.error = ''
+                this.artisan.tenancy_migrate.status = false
+                this.artisan.tenancy_migrate.content = ''
+                this.artisan.clear.error = ''
+                this.artisan.clear.status = false
+                this.artisan.clear.content = ''
+                this.composer.install.error = ''
+                this.composer.install.status = false
+                this.composer.install.content = ''
+                this.composer.update.error = ''
+                this.composer.update.status = false
+                this.composer.update.content = ''
+            },
             getBranch() {
                 this.branch.percent = 40
                 this.$http.get(`/${this.resource}/branch`)
@@ -95,7 +194,13 @@
                         if (response.status === 200) {
                             this.pull.status = 'success'
                         }
-                        this.execArtisan()
+                        if (this.pull.content.includes('Already up to date.') !== true ) {
+                            this.execArtisan()
+                        } else {
+                            this.loading_submit = false
+                        }
+                        //se ejecutan los artisan
+                        this.execArtisanMigrate()
                     }
                 }).catch(error => {
                     if (error.response.status !== 200) {
@@ -108,23 +213,92 @@
                     }
                 })
             },
-            execArtisan() {
-                this.$http.get(`/${this.resource}/artisans`)
+            execArtisanMigrate() {
+                this.$http.get(`/${this.resource}/artisan/migrate`)
                 .then(response => {
-                    console.log(response)
                     if (response.data !== '') {
-                        this.artisan.content = response.data
-                        this.artisan.percent = 100
+                        this.artisan.migrate.content = response.data
+                        this.artisan.migrate.percent = 100
                         if (response.status === 200) {
-                            this.artisan.status = 'success'
+                            this.artisan.migrate.status = 'success'
+                            this.execArtisanMigrateTenant()
                         }
                     }
                 }).catch(error => {
                     if (error.response.status !== 200) {
-                        this.artisan.percent = 0
+                        this.artisan.migrate.percent = 0
                         // this.$message.error('Error consultado rama: '+error.response.data.message)
-                        this.artisan.error = error.response.data.message
-                        this.artisan.status = 'false'
+                        this.artisan.migrate.error = error.response.data.message
+                        this.artisan.migrate.status = 'false'
+                    } else {
+                        console.log(error)
+                    }
+                })
+            },
+            execArtisanMigrateTenant() {
+                this.$http.get(`/${this.resource}/artisan/migrate/tenant`)
+                .then(response => {
+                    if (response.data !== '') {
+                        if (response.data.includes('Nothing to migrate.')) {
+                            this.artisan.tenancy_migrate.content = 'Nothing to migrate.'
+                        } else {
+                            this.artisan.tenancy_migrate.content = response.data
+                        }
+                        this.artisan.tenancy_migrate.percent = 100
+                        if (response.status === 200) {
+                            this.artisan.tenancy_migrate.status = 'success'
+                            this.execArtisanClear()
+                        }
+                    }
+                }).catch(error => {
+                    if (error.response.status !== 200) {
+                        this.artisan.tenancy_migrate.percent = 0
+                        // this.$message.error('Error consultado rama: '+error.response.data.message)
+                        this.artisan.tenancy_migrate.error = error.response.data.message
+                        this.artisan.tenancy_migrate.status = 'false'
+                    } else {
+                        console.log(error)
+                    }
+                })
+            },
+            execArtisanClear() {
+                this.$http.get(`/${this.resource}/artisan/clear`)
+                .then(response => {
+                    if (response.data !== '') {
+                        this.artisan.clear.content = response.data
+                        this.artisan.clear.percent = 100
+                        if (response.status === 200) {
+                            this.artisan.clear.status = 'success'
+                        }
+                    }
+                }).catch(error => {
+                    if (error.response.status !== 200) {
+                        this.artisan.clear.percent = 0
+                        // this.$message.error('Error consultado rama: '+error.response.data.message)
+                        this.artisan.clear.error = error.response.data.message
+                        this.artisan.clear.status = 'false'
+                    } else {
+                        console.log(error)
+                    }
+                })
+            },
+            execComposer() {
+                this.initContent()
+                this.$http.get(`/${this.resource}/composer/install`)
+                .then(response => {
+                    if (response.data !== '') {
+                        this.artisan.clear.content = response.data
+                        this.artisan.clear.percent = 100
+                        if (response.status === 200) {
+                            this.artisan.clear.status = 'success'
+                        }
+                    }
+                }).catch(error => {
+                    if (error.response.status !== 200) {
+                        this.artisan.clear.percent = 0
+                        // this.$message.error('Error consultado rama: '+error.response.data.message)
+                        this.artisan.clear.error = error.response.data.message
+                        this.artisan.clear.status = 'false'
                     } else {
                         console.log(error)
                     }
