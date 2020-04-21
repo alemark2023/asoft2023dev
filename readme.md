@@ -31,6 +31,11 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 [Guia](https://gitlab.com/snippets/1942621 "Clic")<br>
 [Script](https://gitlab.com/snippets/1942621/raw "Clic")<br>
 
+### Scripts de actualización con Docker
+
+[Pasos para la ejecución](https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker)<br>
+[Script](blob/master/script-update.sh)<br>
+
 ### Manuales de Usuario
 
 [Manual de usuario](https://docs.google.com/document/d/1i7yKGy3rIvv9TrnwRWZifTuZMMnZ8dbWpqcjPZ3ClmE/edit "Clic")<br>
