@@ -32,8 +32,8 @@ class EcommerceController extends Controller
 
     public function index()
     {
-
-        return view('ecommerce::index');
+      $dataPaginate = Item::where('apply_store', 1)->orderBy('id', 'DESC')->take(2)->paginate(15);
+      return view('ecommerce::index', ['dataPaginate' => $dataPaginate]);
     }
 
     public function item($id)

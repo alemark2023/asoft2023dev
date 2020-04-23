@@ -2,7 +2,7 @@
     $tagid = request()->query('tagid');
 @endphp
 
-@foreach ($items as $item)
+@foreach ($dataPaginate as $item)
 
     @if($tagid)
 
