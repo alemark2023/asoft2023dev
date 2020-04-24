@@ -1,5 +1,5 @@
 @php
-    $tagid = request()->query('tagid');
+    $tagid = Request::segment(3);
 
 @endphp
   <nav class="side-nav">
@@ -135,7 +135,7 @@
           </li> --}}
 
           @foreach ($items as $item)
-            <li class="{{ ($tagid == $item->id) ? 'active':'' }}"><a href="{{ route("tenant.ecommerce.index", ['tagid' => $item->id]) }}"><i class="icon-cat-gift"></i>{{ $item->name }}</a></li>
+            <li class="{{ ($tagid == $item->id) ? 'active':'' }}"><a href="{{ route("tenant.ecommerce.category", ['tagid' => $item->id]) }}"><i class="icon-cat-gift"></i>{{ $item->name }}</a></li>
           @endforeach
 
       </ul>

@@ -32,8 +32,17 @@ class EcommerceController extends Controller
 
     public function index()
     {
-      $dataPaginate = Item::where('apply_store', 1)->orderBy('id', 'DESC')->take(2)->paginate(15);
-      return view('ecommerce::index', ['dataPaginate' => $dataPaginate]);
+      $dataPaginate['dataPaginate'] = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
+      return view('ecommerce::index', $dataPaginate);
+    }
+
+    public function category(Request $request)
+    {
+      $dataPaginate['dataPaginate'] = Item::where([['i.apply_store', 1], ['i.internal_id','!=', null], ['it.tag_id', $request->category]])
+              ->from('items as i')
+              ->join('item_tags as it', 'it.item_id','i.id')
+              ->paginate(15);
+      return view('ecommerce::index', $dataPaginate);
     }
 
     public function item($id)

@@ -45,8 +45,7 @@
                     <div class="col-lg-9">
 
                     @php
-                        $tagid = request()->query('tagid');
-
+                        $tagid = Request::segment(3);
                     @endphp
 
                         @if(!$tagid)
