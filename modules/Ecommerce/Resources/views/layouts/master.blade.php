@@ -45,8 +45,7 @@
                     <div class="col-lg-9">
 
                     @php
-                        $tagid = request()->query('tagid');
-
+                        $tagid = Request::segment(3);
                     @endphp
 
                         @if(!$tagid)
@@ -88,6 +87,12 @@
                         {{-- @include('ecommerce::layouts.partials_ecommerce.featured_products') --}}
                         <div class="row row-sm">
                             @include('ecommerce::layouts.partials_ecommerce.list_products')
+                        </div>
+
+                        <div class="row float-right">
+                          <div class="col-md-12 col-lg-12">
+                            {{ $dataPaginate->links() }}
+                          </div>
                         </div>
 
                         <div class="mb-6"></div><!-- margin -->

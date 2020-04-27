@@ -15,14 +15,15 @@ class OrderNoteCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
-        
+
             $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
 
             return [
-                'id' => $row->id, 
+                'id' => $row->id,
                 'soap_type_id' => $row->soap_type_id,
                 'external_id' => $row->external_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
+                'date_of_due' => ($row->date_of_due) ? $row->date_of_due->format('Y-m-d') : null,
                 'delivery_date' => ($row->delivery_date) ? $row->delivery_date->format('Y-m-d') : null,
                 'identifier' => $row->identifier,
                 'user_name' => $row->user->name,
@@ -36,11 +37,11 @@ class OrderNoteCollection extends ResourceCollection
                 'total_taxed' => number_format($row->total_taxed,2),
                 'total_igv' => number_format($row->total_igv,2),
                 'total' => number_format($row->total,2),
-                'state_type_id' => $row->state_type_id, 
-                'state_type_description' => $row->state_type->description, 
+                'state_type_id' => $row->state_type_id,
+                'state_type_description' => $row->state_type->description,
                 'documents' => $row->documents->transform(function($row) {
                     return [
-                        'number_full' => $row->number_full, 
+                        'number_full' => $row->number_full,
                     ];
                 }),
                 'sale_notes' => $row->sale_notes->transform(function($row) {
@@ -54,5 +55,5 @@ class OrderNoteCollection extends ResourceCollection
             ];
         });
     }
-    
+
 }

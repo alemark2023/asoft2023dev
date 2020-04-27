@@ -15,6 +15,7 @@ Route::prefix('ecommerce')->group(function() {
    // Route::get('/', 'EcommerceController@index');
 
     Route::get('/', 'EcommerceController@index')->name('tenant.ecommerce.index');
+    Route::get('/category/{category}', 'EcommerceController@category')->name('tenant.ecommerce.category');
     Route::get('item/{id}', 'EcommerceController@item')->name('tenant.ecommerce.item');
     Route::get('items', 'EcommerceController@items')->name('tenant.ecommerce.item.index');
     Route::get('item_partial/{id}', 'EcommerceController@partialItem')->name('item_partial');

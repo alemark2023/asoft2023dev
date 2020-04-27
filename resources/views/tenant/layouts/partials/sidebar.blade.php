@@ -49,6 +49,7 @@
                         {{ ($path[0] === 'order-notes')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
                         
                         ">
                         <a class="nav-link" href="#">
@@ -188,11 +189,27 @@
                                     </li>
                                 @endif
 
-                                <li class="{{ ($path[0] === 'contracts')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.contracts.index')}}">
+                                <li class="nav-parent
+                                    {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
+                                    {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
+                                    ">
+                                    <a class="nav-link" href="#">
                                         Contratos
                                     </a>
+                                    <ul class="nav nav-children">
+                                        <li class="{{ ($path[0] === 'contracts')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.contracts.index')}}">
+                                                Listado
+                                            </a>
+                                        </li>
+                                        <li class="{{ ($path[0] === 'production-orders')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.production_orders.index')}}">
+                                                Ordenes de Producción
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
+
 
                                 <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.order_notes.index')}}">

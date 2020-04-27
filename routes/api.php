@@ -8,6 +8,7 @@ if ($hostname) {
 
         Route::middleware(['auth:api', 'locked.tenant'])->group(function() {
             //MOBILE
+            Route::get('document/series', 'Tenant\Api\MobileController@getSeries');
             Route::get('document/tables', 'Tenant\Api\MobileController@tables');
             Route::get('document/customers', 'Tenant\Api\MobileController@customers');
             Route::post('document/email', 'Tenant\Api\MobileController@document_email');
@@ -17,9 +18,6 @@ if ($hostname) {
             Route::post('person', 'Tenant\Api\MobileController@person');
             Route::get('document/search-items', 'Tenant\Api\MobileController@searchItems');
             Route::get('document/search-customers', 'Tenant\Api\MobileController@searchCustomers');
-
-
-
 
             Route::post('documents', 'Tenant\Api\DocumentController@store');
             Route::get('documents/lists', 'Tenant\Api\DocumentController@lists');

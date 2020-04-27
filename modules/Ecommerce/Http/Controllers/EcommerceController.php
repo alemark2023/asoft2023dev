@@ -32,8 +32,17 @@ class EcommerceController extends Controller
 
     public function index()
     {
+      $dataPaginate['dataPaginate'] = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
+      return view('ecommerce::index', $dataPaginate);
+    }
 
-        return view('ecommerce::index');
+    public function category(Request $request)
+    {
+      $dataPaginate['dataPaginate'] = Item::select('i.*')
+        ->where([['i.apply_store', 1], ['i.internal_id','!=', null], ['it.tag_id', $request->category]])
+        ->from('items as i')
+        ->join('item_tags as it', 'it.item_id','i.id')->paginate(15);
+      return view('ecommerce::index', $dataPaginate);
     }
 
     public function item($id)
@@ -198,7 +207,7 @@ class EcommerceController extends Controller
     public function paymentCash(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'telephone' => 'required',
+            'telephone' => 'required|numeric',
             'address' => 'required',
         ]);
 

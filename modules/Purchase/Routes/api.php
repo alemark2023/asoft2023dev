@@ -1,18 +1,22 @@
 <?php
 
-use Illuminate\Http\Request;
+$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+if ($hostname) {
+    Route::domain($hostname->fqdn)->group(function() {
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+        Route::middleware(['auth:api', 'locked.tenant'])->group(function() {
+            
+            Route::prefix('purchases')->group(function () {
+                Route::get('records', 'Api\PurchaseController@records');
+                Route::get('tables', 'Api\PurchaseController@tables');
+                Route::get('suppliers', 'Api\PurchaseController@suppliers');
+                Route::get('search-suppliers', 'Api\PurchaseController@searchSuppliers');
+                Route::get('item-tables', 'Api\PurchaseController@item_tables');
+                Route::get('table/{table}', 'Api\PurchaseController@table');
+                Route::post('', 'Api\PurchaseController@store');
+            });
 
-Route::middleware('auth:api')->get('/purchase', function (Request $request) {
-    return $request->user();
-});
+        }); 
+
+    });
+}

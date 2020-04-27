@@ -205,7 +205,10 @@ class InventoryController extends Controller
                     if($lot['has_sale']){
 
                         $item_lot = ItemLot::findOrFail($lot['id']);
-                        $item_lot->delete();
+                        // $item_lot->delete();
+                        $item_lot->has_sale = true;
+                        $item_lot->state = 'Inactivo';
+                        $item_lot->save();
                     }
 
                 }

@@ -17,11 +17,8 @@ use App\Models\Tenant\Document;
 use App\Mail\Tenant\DocumentEmail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Tenant\Configuration;
-
-
-
-
-
+use App\Models\Tenant\Series;
+ 
 
 class MobileController extends Controller
 {
@@ -109,11 +106,28 @@ class MobileController extends Controller
             ];
         });
 
+
         return [
             'success' => true,
             'data' => array('items' => $items, 'affectation_types' => $affectation_igv_types)
         ];
 
+    }
+
+
+    public function getSeries(){
+
+        return Series::where('establishment_id', auth()->user()->establishment_id)
+                    ->whereIn('document_type_id', ['01', '03'])
+                    ->get()
+                    ->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'document_type_id' => $row->document_type_id,
+                            'number' => $row->number
+                        ];
+                    });
+                    
     }
 
     public function document_email(Request $request)
@@ -177,7 +191,7 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'msg' => 'Cliente registrado con éxito',
+            'msg' => ($row->type == 'customers') ? 'Cliente registrado con éxito' : 'Proveedor registrado con éxito',
             'data' => (object)[
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
