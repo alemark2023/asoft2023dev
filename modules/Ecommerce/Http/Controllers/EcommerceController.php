@@ -207,7 +207,7 @@ class EcommerceController extends Controller
     public function paymentCash(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'telephone' => 'required',
+            'telephone' => 'required|numeric',
             'address' => 'required',
         ]);
 

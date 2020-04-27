@@ -22,6 +22,8 @@ class OrderCollection extends ResourceCollection
                 'order_id' => str_pad($row->id, 6, "0", STR_PAD_LEFT),
                 'customer' => $row->customer->apellidos_y_nombres_o_razon_social,
                 'customer_email' => $row->customer->correo_electronico,
+                'customer_telefono' => $row->customer->telefono,
+                'customer_direccion' => $row->customer->direccion,
                 'items' => $row->items,
                 'total' => $row->total,
                 'reference_payment' => strtoupper($row->reference_payment),

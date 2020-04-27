@@ -134,7 +134,7 @@
 
             <form autocomplete="off" action="#">
                 <div class="form-group" :class="{'text-danger': errors.telephone}">
-                    <label for="email">Telefono:</label>
+                    <label for="email">Teléfono:</label>
                     <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono">
                     <small class="form-control-feedback" v-if="errors.telephone" v-text="errors.telephone[0]"></small>
                 </div>
@@ -322,6 +322,8 @@
         },
         methods: {
             getFormPaymentCash() {
+              this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
+              this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
                 let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
                 let precio_culqi = Number(this.summary.total)
                 return {
@@ -335,6 +337,17 @@
                 }
             },
             async paymentCash() {
+              // verifica si tiene productos seleccionado
+              let product = JSON.parse(localStorage.getItem('products_cart'));
+
+              if (product.length < 1){
+                swal({
+                    title: "No se han encontrado productos",
+                    text: "Por favor seleccione algún producto de la tienda.",
+                    type: "error"
+                })
+                return
+              }
 
                 swal({
                     title: "Estamos generando el Pago.",
@@ -660,9 +673,9 @@
                         "apellidos_y_nombres_o_razon_social": this.user.name,
                         "codigo_pais": "PE",
                         "ubigeo": "150101",
-                        "direccion": "",
+                        "direccion": this.user.address,
                         "correo_electronico": this.user.email,
-                        "telefono": ""
+                        "telefono": this.user.telephone
                     },
                     "totales": {},
                     "items": [],
@@ -702,13 +715,13 @@
                 this.summary = {
                     subtotal: '0.0',
                     tax: '0.0',
-                    total: '0.0',
+                    total: '0.00',
                     total_taxed: '0.0',
                     total_value: '0.0',
                     total_exonerated: '0.0',
                     total_igv: '0.0'
                 }
-
+                this.payment_cash.amount = '0.00'
             },
             calculateSummary() {
 

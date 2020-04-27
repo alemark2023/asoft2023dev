@@ -36,7 +36,7 @@
             <td>{{ row.customer }}</td>
             <td class="text-center">
               <template>
-                <el-popover placement="right" width="400" trigger="click">
+                <el-popover placement="right" width="415" trigger="click">
                   <el-table  style="width: 100%" :data="row.items">
                     <el-table-column width="150" property="name" label="Nombre"></el-table-column>
                     <el-table-column width="90" property="cantidad" label="Cantidad"></el-table-column>
@@ -46,6 +46,15 @@
                       </template>
                     </el-table-column>
                   </el-table>
+                  <table class="el-table--small el-table--fit el-table">
+                    <thead class="has-gutter">
+                      <th colspan="2" class="text-center">Contacto</th>
+                    </thead>
+                    <tbody>
+                      <tr class="el-table tr"><td class="el-table--small td">TELÉFONO: {{ row.customer_telefono }}</td></tr>
+                      <tr class="el-table tr"><td class="el-table--small td">DIRECCIÓN: {{ row.customer_direccion }}</td></tr>
+                    </tbody>
+                  </table>
                   <el-button slot="reference" icon="el-icon-zoom-in"></el-button>
                 </el-popover>
               </template>

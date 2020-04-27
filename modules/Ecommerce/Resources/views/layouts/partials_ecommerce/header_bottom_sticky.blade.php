@@ -4,7 +4,7 @@
             <ul class="menu sf-arrows">
 
                 @foreach ($items as $item)
-                <li><a href="{{ route("tenant.ecommerce.index", ['tagid' => $item->id]) }}">{{ $item->name }}</a></li>
+                <li><a href="{{ route("tenant.ecommerce.category", ['tagid' => $item->id]) }}">{{ $item->name }}</a></li>
                 @endforeach
 
             </ul>
