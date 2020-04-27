@@ -6,6 +6,8 @@
                     <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
 
                     <el-button @click.prevent="execComposer()" :loading="loading_submit">Composer Install</el-button>
+
+                    <el-button @click.prevent="getKey()" :loading="loading_submit">Optener Clave SSH</el-button>
                 </div>
             </div>
             <div class="card-body">
@@ -134,7 +136,12 @@
                         status: false,
                         content: '',
                     },
-                }
+                },
+                keygen: {
+                    error: '',
+                    status: '',
+                    content: '',
+                },
             }
         },
         created() {},
@@ -175,6 +182,9 @@
                 this.composer.update.error = ''
                 this.composer.update.status = false
                 this.composer.update.content = ''
+                this.keygen.error = ''
+                this.keygen.status = false
+                this.keygen.content = ''
             },
             getBranch() {
                 this.branch.percent = 40
@@ -319,6 +329,35 @@
 
                 this.loading_submit = false
                 //dar permisos 777 a vendor mpdf
+            },
+            getKey() {
+                this.initContent()
+                this.loading_submit = true
+                this.content.status = true
+                this.content.step = 'ssh'
+
+                this.$http.get(`/${this.resource}/keygen`)
+                .then(response => {
+
+                    if (response.data !== '') {
+                        this.keygen.content = response.data
+                        this.keygen.percent = 100
+                        if (response.status === 200) {
+                            this.keygen.status = 'success'
+                        }
+                    }
+                }).catch(error => {
+                    if (error.response.status !== 200) {
+                        this.keygen.percent = 0
+                        this.keygen.error = error.response.data.message
+                        this.keygen.status = 'false'
+                    } else {
+                        console.log(error)
+                    }
+                })
+
+                this.loading_submit = false
+
             }
         }
     }

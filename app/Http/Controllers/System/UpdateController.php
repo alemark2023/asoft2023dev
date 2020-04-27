@@ -80,4 +80,38 @@ class UpdateController extends Controller
         $output = $process->getOutput();
         return json_encode($output);
     }
+
+    public function keygen()
+    {
+        //genero ssh
+        $process = new Process('ssh-keygen -t rsa -q -P "" -f ../id_rsa');
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        // $output = $process->getOutput();
+
+
+        // copio ssh a contenedor
+        //docker cp archivo.txt facturadorpro31_fpm1_1:/root/.ssh/
+
+        //eliminar la clave creada para evitar conflictos con el pull
+        // rm ../id_*
+
+        /* alternativa
+        $process = new Process('sh /folder_name/file_name.sh');
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        echo $process->getOutput();
+        */
+
+
+
+        return json_encode($output);
+    }
 }
