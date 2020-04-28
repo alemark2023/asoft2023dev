@@ -348,28 +348,29 @@
                 this.loading_submit = true
                 this.content.status = true
                 this.content.step = 'ssh'
+                this.keygen.content = 'Próximamente disponible'
 
-                this.$http.get(`/${this.resource}/keygen`)
-                .then(response => {
+                // this.$http.get(`/${this.resource}/keygen`)
+                // .then(response => {
 
-                    if (response.data !== '') {
-                        this.keygen.content = response.data
-                        this.keygen.percent = 100
-                        if (response.status === 200) {
-                            this.keygen.status = 'success'
-                        }
-                    }
-                }).catch(error => {
-                    if (error.response.status !== 200) {
-                        this.keygen.percent = 0
-                        this.keygen.error = error.response.data.message
-                        this.keygen.status = 'false'
-                    } else {
-                        console.log(error)
-                    }
-                })
+                //     if (response.data !== '') {
+                //         this.keygen.content = response.data
+                //         this.keygen.percent = 100
+                //         if (response.status === 200) {
+                //             this.keygen.status = 'success'
+                //         }
+                //     }
+                // }).catch(error => {
+                //     if (error.response.status !== 200) {
+                //         this.keygen.percent = 0
+                //         this.keygen.error = error.response.data.message
+                //         this.keygen.status = 'false'
+                //     } else {
+                //         console.log(error)
+                //     }
+                // })
 
-                this.loading_submit = false
+                // this.loading_submit = false
 
             }
         }
