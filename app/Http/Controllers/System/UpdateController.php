@@ -78,18 +78,22 @@ class UpdateController extends Controller
         //     throw new ProcessFailedException($process);
         // }
         $output = $process->getOutput();
+
+        $chmod = new Process('chmod -R 777 ../vendor/mpdf/mpdf');
+        $chmod->run();
+
         return json_encode($output);
     }
 
     public function keygen()
     {
         //genero ssh
-        $process = new Process(['chmod +x ../script-ssh.sh','sh ../script-ssh.sh']);
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        $output = $process->getOutput();
+        // $process = new Process(['chmod +x ../script-ssh.sh','sh ../script-ssh.sh']);
+        // $process->run();
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
+        // $output = $process->getOutput();
 
         //genero ssh sin validar
         //ssh-keygen -t rsa -q -P "" -f ../id_rsa
@@ -115,6 +119,6 @@ class UpdateController extends Controller
 
 
 
-        return json_encode($output);
+        // return json_encode($output);
     }
 }

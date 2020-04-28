@@ -1,14 +1,13 @@
 <template>
     <div class="row">
         <div class="card col-md-12">
-            <div class="card-header justify-content-center">
-                <div class="text-center">
+            <div class="card-header justify-content-center d-block">
+                <div class="text-center mt-2">
                     <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
 
                     <el-button @click.prevent="execComposer()" :loading="loading_submit">Composer Install</el-button>
-
-                    <el-button @click.prevent="getKey()" :loading="loading_submit">Optener Clave SSH</el-button>
                 </div>
+                <p class="text-center text-muted mb-0 mt-2">Disponible para instalaciones con el script Docker desde Mayo 2020</p>
             </div>
             <div class="card-body">
 
@@ -76,19 +75,6 @@
                     </div>
                 </div>
 
-                <div v-if="content.status == true && content.step == 'ssh'" id="response-content">
-
-                    <div v-if="composer.keygen.status == 'success'">
-                        <h3>Generando SSH</h3>
-                        <h4>Log:</h4>
-                        <pre>
-                            {{composer.keygen.content}}
-                        </pre>
-                        <span class="text-danger">{{composer.keygen.error}}</span><br>
-                        <!-- <span class="text-danger">{{composer.install.status}}</span> -->
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -149,12 +135,7 @@
                         status: false,
                         content: '',
                     },
-                },
-                keygen: {
-                    error: '',
-                    status: '',
-                    content: '',
-                },
+                }
             }
         },
         created() {},
@@ -195,9 +176,6 @@
                 this.composer.update.error = ''
                 this.composer.update.status = false
                 this.composer.update.content = ''
-                this.keygen.error = ''
-                this.keygen.status = false
-                this.keygen.content = ''
             },
             getBranch() {
                 this.branch.percent = 40
@@ -342,36 +320,6 @@
 
                 this.loading_submit = false
                 //dar permisos 777 a vendor mpdf
-            },
-            getKey() {
-                this.initContent()
-                this.loading_submit = true
-                this.content.status = true
-                this.content.step = 'ssh'
-                this.keygen.content = 'Próximamente disponible'
-
-                // this.$http.get(`/${this.resource}/keygen`)
-                // .then(response => {
-
-                //     if (response.data !== '') {
-                //         this.keygen.content = response.data
-                //         this.keygen.percent = 100
-                //         if (response.status === 200) {
-                //             this.keygen.status = 'success'
-                //         }
-                //     }
-                // }).catch(error => {
-                //     if (error.response.status !== 200) {
-                //         this.keygen.percent = 0
-                //         this.keygen.error = error.response.data.message
-                //         this.keygen.status = 'false'
-                //     } else {
-                //         console.log(error)
-                //     }
-                // })
-
-                // this.loading_submit = false
-
             }
         }
     }
