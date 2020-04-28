@@ -84,12 +84,15 @@ class UpdateController extends Controller
     public function keygen()
     {
         //genero ssh
-        $process = new Process('ssh-keygen -t rsa -q -P "" -f ../id_rsa');
+        $process = new Process(['chmod +x ../script-ssh.sh','sh ../script-ssh.sh']);
         $process->run();
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
-        // $output = $process->getOutput();
+        $output = $process->getOutput();
+
+        //genero ssh sin validar
+        //ssh-keygen -t rsa -q -P "" -f ../id_rsa
 
 
         // copio ssh a contenedor

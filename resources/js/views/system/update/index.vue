@@ -76,6 +76,19 @@
                     </div>
                 </div>
 
+                <div v-if="content.status == true && content.step == 'ssh'" id="response-content">
+
+                    <div v-if="composer.keygen.status == 'success'">
+                        <h3>Generando SSH</h3>
+                        <h4>Log:</h4>
+                        <pre>
+                            {{composer.keygen.content}}
+                        </pre>
+                        <span class="text-danger">{{composer.keygen.error}}</span><br>
+                        <!-- <span class="text-danger">{{composer.install.status}}</span> -->
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

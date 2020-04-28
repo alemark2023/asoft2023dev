@@ -569,6 +569,8 @@ if ($hostname) {
 
             Route::get('auto-update/composer/install', 'System\UpdateController@composerInstall')->name('system.update.composer.install');
 
+            Route::get('auto-update/keygen', 'System\UpdateController@keygen')->name('system.update.keygen');
+
 
         });
     });
