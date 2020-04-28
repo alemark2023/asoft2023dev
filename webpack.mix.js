@@ -29,4 +29,4 @@ mix.webpackConfig({
 
         }
     }
-});
+}).sourceMaps()

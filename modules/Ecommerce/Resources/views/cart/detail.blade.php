@@ -369,7 +369,8 @@
                         text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
                         type: "success"
                     }).then((x) => {
-                        askedDocument(response.data.order);
+                      app_cart.order_generated = order
+                        //askedDocument(response.data.order);
                     })
                 }
               }).catch(error => {
