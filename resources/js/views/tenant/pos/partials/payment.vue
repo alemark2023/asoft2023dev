@@ -726,6 +726,7 @@
 
                 if (this.form.document_type_id === "80") {
                     this.form.prefix = "NV";
+                    this.form.paid = 1;
                     this.resource_documents = "sale-notes";
                     this.resource_payments = "sale_note_payments";
                     this.resource_options = this.resource_documents;
