@@ -206,7 +206,8 @@
                         if (response.status === 200) {
                             this.pull.status = 'success'
                         }
-                        if (this.pull.content.includes('Already up to date.') ) {
+                        let pullContent = this.pull.content
+                        if (pullContent.includes('Already up to date.') === true ) {
                             this.loading_submit = false
                         } else {
                             this.execArtisanMigrate()
@@ -267,6 +268,7 @@
                         if (response.status === 200) {
                             this.artisan.clear.status = 'success'
                         }
+                        this.loading_submit = false
                     }
                 }).catch(error => {
                     this.artisan.clear.percent = 0
