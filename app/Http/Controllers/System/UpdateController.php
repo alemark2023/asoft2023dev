@@ -53,24 +53,28 @@ class UpdateController extends Controller
 
     public function artisanTenancyMigrate()
     {
-        $process = new Process('php ..\artisan tenancy:migrate');
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        $output = $process->getOutput();
+        $output = Artisan::call('tenancy:migrate');
         return json_encode($output);
+        // $process = new Process('php ..\artisan tenancy:migrate');
+        // $process->run();
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
+        // $output = $process->getOutput();
+        // return json_encode($output);
     }
 
     public function artisanClear()
     {
-        $process = new Process('php ..\artisan config:cache');
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        $output = $process->getOutput();
+        $output = Artisan::call('config:cache');
         return json_encode($output);
+        // $process = new Process('php ..\artisan config:cache');
+        // $process->run();
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
+        // $output = $process->getOutput();
+        // return json_encode($output);
     }
 
     public function composerInstall()
