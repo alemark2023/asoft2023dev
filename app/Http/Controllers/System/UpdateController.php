@@ -18,7 +18,7 @@ class UpdateController extends Controller
 
     public function version()
     {
-        $id = new Process('git show HEAD~2 --pretty=format:"%h" --no-patch');
+        $id = new Process('git show HEAD~0 --pretty=format:"%h" --no-patch');
         $id->run();
         $res_id = $id->getOutput();
         $tag = new Process('git tag | sort -V | tail -1');
@@ -46,6 +46,10 @@ class UpdateController extends Controller
             throw new ProcessFailedException($process);
         }
         $output = $process->getOutput();
+
+        $fetch = new Process('git fetch');
+        $fetch->run();
+
         return json_encode($output);
     }
 
