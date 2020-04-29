@@ -153,12 +153,12 @@
                 this.branch.name = ''
                 this.branch.percent = 1
                 this.branch.error = ''
-                this.branch.status = ''
+                this.branch.status = false
                 this.pull.error = ''
-                this.pull.status = ''
+                this.pull.status = false
                 this.pull.content = ''
                 this.artisan.error = ''
-                this.artisan.status = ''
+                this.artisan.status = false
                 this.artisan.content = ''
                 this.artisan.migrate
                 this.artisan.migrate.error = ''
@@ -259,13 +259,10 @@
                         }
                     }
                 }).catch(error => {
-                    if (error.response.status !== 200) {
-                        this.artisan.tenancy_migrate.percent = 0
-                        this.artisan.tenancy_migrate.error = error.response.data.message
-                        this.artisan.tenancy_migrate.status = 'false'
-                    } else {
-                        console.log(error)
-                    }
+                    this.artisan.tenancy_migrate.percent = 0
+                    this.artisan.tenancy_migrate.error = error.response.data.message
+                    this.artisan.tenancy_migrate.status = false
+                    console.log(error)
                 })
             },
             execArtisanClear() {
@@ -279,13 +276,10 @@
                         }
                     }
                 }).catch(error => {
-                    if (error.response.status !== 200) {
-                        this.artisan.clear.percent = 0
-                        this.artisan.clear.error = error.response.data.message
-                        this.artisan.clear.status = 'false'
-                    } else {
-                        console.log(error)
-                    }
+                    this.artisan.clear.percent = 0
+                    this.artisan.clear.error = error.response.data.message
+                    this.artisan.clear.status = false
+                    console.log(error)
                 })
             },
             execComposer() {
