@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\Storage;
+use Artisan;
 
 class UpdateController extends Controller
 {
@@ -39,13 +40,15 @@ class UpdateController extends Controller
 
     public function artisanMigrate()
     {
-        $process = new Process('php ..\artisan migrate');
-        $process->run();
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        $output = $process->getOutput();
+        $output = Artisan::call('migrate');
         return json_encode($output);
+        // $process = new Process('php ..\artisan migrate');
+        // $process->run();
+        // if (!$process->isSuccessful()) {
+        //     throw new ProcessFailedException($process);
+        // }
+        // $output = $process->getOutput();
+        // return json_encode($output);
     }
 
     public function artisanTenancyMigrate()
