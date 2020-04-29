@@ -210,17 +210,15 @@
                             this.pull.status = 'success'
                         }
                         if (this.pull.content.includes('Already up to date.') !== true ) {
-                            this.execArtisan()
+                            this.execArtisanMigrate()
                         } else {
                             this.loading_submit = false
                         }
-                        //se ejecutan los artisan
-                        this.execArtisanMigrate()
                     }
                 }).catch(error => {
-                    if (error.response.status !== 200) {
+                    if (error.status !== 200) {
                         this.pull.percent = 0
-                        this.pull.error = error.response.data.message
+                        this.pull.error = error.data.message
                         this.pull.status = 'false'
                     } else {
                         console.log(error)
