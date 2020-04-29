@@ -209,10 +209,10 @@
                         if (response.status === 200) {
                             this.pull.status = 'success'
                         }
-                        if (this.pull.content.includes('Already up to date.') !== true ) {
-                            this.execArtisanMigrate()
-                        } else {
+                        if (this.pull.content.includes('Already up to date.') ) {
                             this.loading_submit = false
+                        } else {
+                            this.execArtisanMigrate()
                         }
                     }
                 }).catch(error => {
