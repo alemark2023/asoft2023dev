@@ -2,12 +2,14 @@
     <div class="row">
         <div class="card col-md-12">
             <div class="card-header justify-content-center d-block">
+                <p class="text-center text-muted mb-0 mt-2">Disponible para instalaciones con el script Docker desde Mayo 2020</p>
                 <div class="text-center mt-2">
                     <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
 
                     <el-button @click.prevent="execComposer()" :loading="loading_submit">Composer Install</el-button>
                 </div>
-                <p class="text-center text-muted mb-0 mt-2">Disponible para instalaciones con el script Docker desde Mayo 2020</p>
+                <p class="text-center text-muted mb-0 mt-2">Versión actual: <span>{{version}}</span></p>
+                <p class="text-right mb-0 mt-2"><a href="https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker" class="text-info" target="BLANK">Actualización alternativa</a></p>
             </div>
             <div class="card-body">
 
@@ -89,6 +91,7 @@
                 errors: {},
                 form: {},
                 loading_submit: false,
+                version: '',
                 content: {
                     status: false,
                 },
@@ -136,7 +139,9 @@
                 }
             }
         },
-        created() {},
+        created() {
+            this.getVersion()
+        },
         methods: {
             async start() {
                 this.loading_submit = true
@@ -173,6 +178,20 @@
                 this.composer.update.error = ''
                 this.composer.update.status = false
                 this.composer.update.content = ''
+            },
+            getVersion() {
+                this.$http.get(`/${this.resource}/version`)
+                .then(response => {
+                    if (response.data !== '') {
+                        this.version = response.data
+                    }
+                }).catch(error => {
+                    if (error.response.status !== 200) {
+                        this.version.error = error.response.data.message
+                    } else {
+                        console.log(error)
+                    }
+                })
             },
             getBranch() {
                 this.branch.percent = 40

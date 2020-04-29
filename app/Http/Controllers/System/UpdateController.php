@@ -16,6 +16,17 @@ class UpdateController extends Controller
         return view('system.update.index');
     }
 
+    public function version()
+    {
+        $id = new Process('git show HEAD~2 --pretty=format:"%h" --no-patch');
+        $id->run();
+        $res_id = $id->getOutput();
+        $tag = new Process('git tag | sort -V | tail -1');
+        $tag->run();
+        $res_tag = $tag->getOutput();
+        return json_encode($res_tag.' - '.$res_id);
+    }
+
     public function branch()
     {
         $process = new Process('git rev-parse --abbrev-ref HEAD');
@@ -42,48 +53,24 @@ class UpdateController extends Controller
     {
         $output = Artisan::call('migrate');
         return json_encode($output);
-        // $process = new Process('php ..\artisan migrate');
-        // $process->run();
-        // if (!$process->isSuccessful()) {
-        //     throw new ProcessFailedException($process);
-        // }
-        // $output = $process->getOutput();
-        // return json_encode($output);
     }
 
     public function artisanTenancyMigrate()
     {
         $output = Artisan::call('tenancy:migrate');
         return json_encode($output);
-        // $process = new Process('php ..\artisan tenancy:migrate');
-        // $process->run();
-        // if (!$process->isSuccessful()) {
-        //     throw new ProcessFailedException($process);
-        // }
-        // $output = $process->getOutput();
-        // return json_encode($output);
     }
 
     public function artisanClear()
     {
         $output = Artisan::call('config:cache');
         return json_encode($output);
-        // $process = new Process('php ..\artisan config:cache');
-        // $process->run();
-        // if (!$process->isSuccessful()) {
-        //     throw new ProcessFailedException($process);
-        // }
-        // $output = $process->getOutput();
-        // return json_encode($output);
     }
 
     public function composerInstall()
     {
         $process = new Process(system('composer dumpautoload -d '. base_path()));
         $process->run();
-        // if (!$process->isSuccessful()) {
-        //     throw new ProcessFailedException($process);
-        // }
         $output = $process->getOutput();
 
         $chmod = new Process('chmod -R 777 ../vendor/mpdf/mpdf');
