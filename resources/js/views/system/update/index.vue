@@ -34,7 +34,6 @@
                     <div v-if="pull.content.includes('Already up to date.') == false && pull.status == 'success'">
                         <hr>
                         <h3>Comandos Artisan</h3>
-                        <h4>Log: {{artisan.content}}</h4>
                     </div>
 
                     <div v-if="artisan.migrate.status == 'success'">
@@ -107,7 +106,6 @@
                 artisan: {
                     error: '',
                     status: '',
-                    content: '',
                     migrate: {
                         error: '',
                         status: false,
@@ -156,7 +154,6 @@
                 this.branch.status = false
                 this.pull.error = ''
                 this.pull.status = false
-                this.pull.content = ''
                 this.artisan.error = ''
                 this.artisan.status = false
                 this.artisan.content = ''
@@ -247,7 +244,7 @@
                 this.$http.get(`/${this.resource}/artisan/migrate/tenant`)
                 .then(response => {
                     if (response.data !== '') {
-                        if (response.data.includes('Nothing to migrate.')) {
+                        if (response.data.includes('Nothing to migrate.') === true) {
                             this.artisan.tenancy_migrate.content = 'Nothing to migrate.'
                         } else {
                             this.artisan.tenancy_migrate.content = response.data
