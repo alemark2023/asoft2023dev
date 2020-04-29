@@ -216,13 +216,10 @@
                         }
                     }
                 }).catch(error => {
-                    if (error.status !== 200) {
-                        this.pull.percent = 0
-                        this.pull.error = error.data.message
-                        this.pull.status = 'false'
-                    } else {
-                        console.log(error)
-                    }
+                    this.pull.percent = 0
+                    this.pull.error = 'no ha podido finalizar'
+                    this.pull.status = 'false'
+                    console.log(error)
                 })
             },
             execArtisanMigrate() {
