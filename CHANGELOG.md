@@ -1,3 +1,30 @@
+## 3.3.4
+
+### docs
+2020-04-21 : docs | script update git pull - docker<br>
+
+
+### fixed
+2020-04-08 : fixed | almacen opcional registrar compra<br>
+2020-04-07 : fixed | i-12 | ajuste reporte kardex - flujo salidas (inventario) - buscador series - flujo de series y lotes al anular cpe y generar nc<br>
+2020-04-07 : fixed | url consultada agrega variacion para subdominios como panel admin (error phone)<br>
+2020-04-07 : fixed | url consultada agrega variacion para subdominios como panel admin (error phone)<br>
+
+
+### feature
+2020-04-29 : feature | auto-update | actualizacion automatica testeada en servidores linux (disponible solo con script de instalación)<br>
+2020-04-28 : feature | replace process artisan<br>
+2020-04-20 : feature | auto updating artisans command<br>
+2020-04-09 : feature | formato para fecha de vencimiento<br>
+2020-04-08 : feature | busqueda remota proveedor api<br>
+2020-04-08 : feature | agregar compras via api - app movil<br>
+2020-04-07 : feature | preparando comandos artisan<br>
+2020-04-07 : feature | t-509 | f. entrega proyecto - orden de produccion en base a contrato - importar listado de precios<br>
+2020-04-07 : feature | consulta rama, ejecucion pull en proceso<br>
+2020-04-06 : feature | botones enlace a comprobantes electronicos eliminados en modo interno<br>
+2020-04-03 : feature | modo interno 60%, middleware para vistas generales de facturacion electronica<br>
+
+
 ## 3.3.3
 
 ### fixed
