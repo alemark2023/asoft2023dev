@@ -260,7 +260,7 @@
                     }
                 }).catch(error => {
                     this.artisan.tenancy_migrate.percent = 0
-                    this.artisan.tenancy_migrate.error = error.response.data.message
+                    this.artisan.tenancy_migrate.error = error
                     this.artisan.tenancy_migrate.status = false
                     console.log(error)
                 })
@@ -277,7 +277,7 @@
                     }
                 }).catch(error => {
                     this.artisan.clear.percent = 0
-                    this.artisan.clear.error = error.response.data.message
+                    this.artisan.clear.error = error
                     this.artisan.clear.status = false
                     console.log(error)
                 })
@@ -308,7 +308,6 @@
                 })
 
                 this.loading_submit = false
-                //dar permisos 777 a vendor mpdf
             }
         }
     }
