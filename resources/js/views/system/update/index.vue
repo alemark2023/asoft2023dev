@@ -244,11 +244,7 @@
                 this.$http.get(`/${this.resource}/artisan/migrate/tenant`)
                 .then(response => {
                     if (response.data !== '') {
-                        if (response.data.includes('Nothing to migrate.') === true) {
-                            this.artisan.tenancy_migrate.content = 'Nothing to migrate.'
-                        } else {
-                            this.artisan.tenancy_migrate.content = response.data
-                        }
+                        this.artisan.tenancy_migrate.content = response.data
                         this.artisan.tenancy_migrate.percent = 100
                         if (response.status === 200) {
                             this.artisan.tenancy_migrate.status = 'success'
