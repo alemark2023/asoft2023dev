@@ -19,6 +19,14 @@
 <br>
 [Linux - gestión externa de SSL](https://docs.google.com/document/d/1D87YJ9fq9yHiAauu6SGVugiC3m_i42DrFUt6VKYXuDI/edit?usp=sharing "Clic")
 
+ 
+### Scripts de instalación con Docker
+
+Linux - Ubuntu 18 - Docker - SSL opcional<br>
+[Guia](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490 "Clic")<br>
+[Script](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490/raw "Clic")<br>
+
+
 ### Manuales de actualización
 
 * Docker
@@ -31,12 +39,7 @@
 
 [Pasos para la ejecución](https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker)<br>
 [Script](blob/master/script-update.sh)<br>
- 
-### Scripts de instalación con Docker
 
-Linux - Ubuntu 18 - Docker - SSL opcional<br>
-[Guia](https://gitlab.com/snippets/1942621 "Clic")<br>
-[Script](https://gitlab.com/snippets/1942621/raw "Clic")<br>
 
 ### Manuales de Usuario
 
