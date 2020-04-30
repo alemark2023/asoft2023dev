@@ -441,7 +441,7 @@
                 this.filterDistricts()
 //                this.form.addresses[0].telephone = data.telefono;
            },
-           clickRemoveAddress()
+           clickRemoveAddress(index)
            {
                 this.form.addresses.splice(index, 1);
            }
