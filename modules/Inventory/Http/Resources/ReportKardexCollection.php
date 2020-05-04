@@ -4,16 +4,21 @@ namespace Modules\Inventory\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Modules\Inventory\Models\InventoryTransaction;
+use Modules\Inventory\Models\InventoryKardex;
+use Modules\Inventory\Models\Warehouse;
 
 class ReportKardexCollection extends ResourceCollection
 {
 
     protected static $balance = 0;
+    protected static $restante = 0;
+    protected static $re;
 
     public function toArray($request)
-    { 
+    {
+      self::$re = $request;
         return $this->collection->transform(function($row, $key) {
-            
+          $this->calcularRestante(self::$re, $row);
             return self::determinateRow($row);
 
         });
@@ -22,16 +27,16 @@ class ReportKardexCollection extends ResourceCollection
     public static function determinateRow($row){
 
         $models = [
-            "App\Models\Tenant\Document", 
-            "App\Models\Tenant\Purchase", 
-            "App\Models\Tenant\SaleNote", 
+            "App\Models\Tenant\Document",
+            "App\Models\Tenant\Purchase",
+            "App\Models\Tenant\SaleNote",
             "Modules\Inventory\Models\Inventory",
             "Modules\Order\Models\OrderNote"
         ];
 
         switch ($row->inventory_kardexable_type) {
 
-            case $models[0]: 
+            case $models[0]:
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -44,7 +49,7 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
                 ];
-            
+
             case $models[1]:
                 return [
                     'id' => $row->id,
@@ -57,9 +62,9 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
-                ]; 
-            
-            case $models[2]: 
+                ];
+
+            case $models[2]:
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -71,8 +76,8 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => $row->quantity,
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
-                ]; 
-            
+                ];
+
             case $models[3]:{
 
                 $transaction = '';
@@ -82,16 +87,16 @@ class ReportKardexCollection extends ResourceCollection
                 if(!$row->inventory_kardexable->type){
                     $transaction = InventoryTransaction::findOrFail($row->inventory_kardexable->inventory_transaction_id);
                 }
-                
+
                 if($row->inventory_kardexable->type != null){
-                    $input = ($row->inventory_kardexable->type == 1) ? $row->quantity : "-";                                                    
+                    $input = ($row->inventory_kardexable->type == 1) ? $row->quantity : "-";
                 }
                 else{
-                    $input = ($transaction->type == 'input') ? $row->quantity : "-" ; 
+                    $input = ($transaction->type == 'input') ? $row->quantity : "-" ;
                 }
 
                 if($row->inventory_kardexable->type != null){
-                    $output = ($row->inventory_kardexable->type == 2 || $row->inventory_kardexable->type == 3) ? $row->quantity : "-"; 
+                    $output = ($row->inventory_kardexable->type == 2 || $row->inventory_kardexable->type == 3) ? $row->quantity : "-";
                 }
                 else{
                     $output = ($transaction->type == 'output') ? $row->quantity : "-";
@@ -106,13 +111,14 @@ class ReportKardexCollection extends ResourceCollection
                     'number' => "-",
                     'input' => $input,
                     'output' => $output,
-                    'balance' => self::$balance+= $row->quantity,
+                    //'balance' => self::$balance+= $row->quantity,
+                    'balance' => self::$balance+= $row->quantity+self::$restante,
                     'sale_note_asoc' => '-',
-                ]; 
-            } 
+                ];
+            }
 
-            
-            case $models[4]: 
+
+            case $models[4]:
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -127,7 +133,32 @@ class ReportKardexCollection extends ResourceCollection
                 ];
 
         }
-        
 
+
+    }
+
+    public function calcularRestante($request, $row)
+    {
+
+      if($request->page >= 2) {
+
+        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
+        if($request->date_start && $request->date_end) {
+          $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
+          ->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
+          ->limit(($request->page*20)-20)->get();
+        } else {
+          $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
+          ->limit(($request->page*20)-20)->get();
+        }
+
+        for($i=0;$i<=count($data)-1;$i++) {
+          self::$restante+=$data[$i]->quantity;
+        }
+
+      }
+
+      return self::$restante;
     }
 }
