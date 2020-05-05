@@ -20,8 +20,7 @@
                 </div>
                 {{ $item->internal_id }}
                 <h2 class="product-title">
-                    <a href="/ecommerce/item/{{ $item->id }}">{{$item->name}}</a>
-                    <!-- <label style="cursor:pointer">{{$item->name}}</label> -->
+                    <a href="/ecommerce/item/{{ $item->id }}">{{ $item->description }}</a>
                 </h2>
                 <div class="price-box">
                     <!-- <span class="old-price">S/ {{ number_format( ($item->sale_unit_price * 1.2 ) , 2 )}}</span> -->
