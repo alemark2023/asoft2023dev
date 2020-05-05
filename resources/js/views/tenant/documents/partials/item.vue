@@ -565,7 +565,7 @@
                 isUpdateWarehouseId:null,
                 showDialogLots: false,
                 showDialogSelectLots: false,
-                lots:[]
+                lots:[],
 
                 //item_unit_type: {}
             }
