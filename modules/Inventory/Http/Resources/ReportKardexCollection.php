@@ -17,11 +17,11 @@ class ReportKardexCollection extends ResourceCollection
     public function toArray($request)
     {
       self::$re = $request;
-        return $this->collection->transform(function($row, $key) {
-          $this->calcularRestante(self::$re, $row);
-            return self::determinateRow($row);
+      $this->calcularRestante(self::$re);
 
-        });
+      return $this->collection->transform(function($row, $key) {
+        return self::determinateRow($row);
+      });
     }
 
     public static function determinateRow($row){
@@ -36,7 +36,7 @@ class ReportKardexCollection extends ResourceCollection
 
         switch ($row->inventory_kardexable_type) {
 
-            case $models[0]:
+            case $models[0]: //venta
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -64,7 +64,7 @@ class ReportKardexCollection extends ResourceCollection
                     'sale_note_asoc' => '-',
                 ];
 
-            case $models[2]:
+            case $models[2]: // Nota de venta
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -111,8 +111,7 @@ class ReportKardexCollection extends ResourceCollection
                     'number' => "-",
                     'input' => $input,
                     'output' => $output,
-                    //'balance' => self::$balance+= $row->quantity,
-                    'balance' => self::$balance+= $row->quantity+self::$restante,
+                    'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                 ];
             }
@@ -137,7 +136,7 @@ class ReportKardexCollection extends ResourceCollection
 
     }
 
-    public function calcularRestante($request, $row)
+    public function calcularRestante($request)
     {
 
       if($request->page >= 2) {
@@ -157,8 +156,9 @@ class ReportKardexCollection extends ResourceCollection
           self::$restante+=$data[$i]->quantity;
         }
 
+        return self::$balance = self::$restante;
+
       }
 
-      return self::$restante;
     }
 }
