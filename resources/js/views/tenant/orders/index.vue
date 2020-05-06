@@ -23,10 +23,10 @@
             <th>#</th>
             <th>Codigo de Pedido</th>
             <th>Cliente</th>
-            <th class="text-center" >Detalle Productos</th>
+            <th class="text-center">Detalle Productos</th>
             <th>Total</th>
             <th>Fecha Emision</th>
-           <!-- <th>Medio Pago</th> -->
+            <th>Medio Pago</th>
             <th>Comprobante Electronico</th>
           </tr>
           <tr></tr>
@@ -61,7 +61,7 @@
             </td>
             <td>{{row.total}}</td>
             <td>{{row.created_at}}</td>
-           <!-- <td>{{row.reference_payment}}</td> -->
+            <td>{{row.reference_payment}}</td>
             <td>{{row.number_document}}</td>
           </tr>
         </data-table>
