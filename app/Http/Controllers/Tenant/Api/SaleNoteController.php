@@ -356,6 +356,19 @@ class SaleNoteController extends Controller
         $this->uploadStorage($filename, $file_content, $file_type);
     }
 
+    public function series(){
 
+        return Series::where('establishment_id', auth()->user()->establishment_id)
+                    ->where('document_type_id', '80')
+                    ->get()
+                    ->transform(function($row) {
+                        return [
+                            'id' => $row->id,
+                            'document_type_id' => $row->document_type_id,
+                            'number' => $row->number
+                        ];
+                    });
+                    
+    }
 
 }

@@ -151,7 +151,7 @@ class DocumentController extends Controller
 
     public function lists()
     {
-        $record = Document::orderBy('date_of_issue', 'desc')->get();
+        $record = Document::orderBy('series', 'desc')->orderBy('number', 'desc')->get();
         $records = new DocumentCollection($record);
 
         return $records;
