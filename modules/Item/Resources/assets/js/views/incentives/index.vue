@@ -10,7 +10,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de incentivos</h3>
+                <h3 class="my-0">Incentivos por producto</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">

@@ -245,5 +245,6 @@ return [
         'serial_number' => 'n° serie',
         'prepayment' => 'pago adelantado',
         'activities' => 'actividades',
+        'user_id' => 'vendedor',
     ],
 ];

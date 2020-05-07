@@ -105,6 +105,18 @@ if($current_hostname) {
                 Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
                 Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
                 Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
+
+
+                Route::prefix('user-commissions')->group(function () {
+
+                    Route::get('', 'ReportUserCommissionController@index')->name('tenant.reports.user_commissions.index');
+                    Route::get('/pdf', 'ReportUserCommissionController@pdf')->name('tenant.reports.user_commissions.pdf');
+                    Route::get('/excel', 'ReportUserCommissionController@excel')->name('tenant.reports.user_commissions.excel');
+                    Route::get('/filter', 'ReportUserCommissionController@filter')->name('tenant.reports.user_commissions.filter');
+                    Route::get('/records', 'ReportUserCommissionController@records')->name('tenant.reports.user_commissions.records');
+
+                });
+
             });
 
             Route::get('cash/report/income-summary/{cash}', 'ReportIncomeSummaryController@pdf')->name('tenant.reports.income_summary.pdf');
