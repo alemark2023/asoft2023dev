@@ -189,6 +189,7 @@ Vue.component('tenant-payment-method-types-index', require('@viewsModuleSale/pay
 Vue.component('tenant-contracts-index', require('@viewsModuleSale/contracts/index.vue'));
 Vue.component('tenant-contracts-form', require('@viewsModuleSale/contracts/form.vue'));
 Vue.component('tenant-production-orders-index', require('@viewsModuleSale/production_orders/index.vue'));
+Vue.component('tenant-technical-services-index', require('@viewsModuleSale/technical-services/index.vue'));
 
 //Purchase
 

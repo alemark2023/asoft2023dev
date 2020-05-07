@@ -50,6 +50,7 @@
                         {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'technical-services')?'nav-active nav-expanded':'' }}
                         
                         ">
                         <a class="nav-link" href="#">
@@ -225,6 +226,12 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                <li class="{{ ($path[0] === 'technical-services')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.technical_services.index')}}">
+                                        Servicio técnico
+                                    </a>
+                                </li>
 
                                 @if(in_array('incentives', $vc_module_levels))
 

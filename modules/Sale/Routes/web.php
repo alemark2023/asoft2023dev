@@ -81,5 +81,20 @@ if($current_hostname) {
 
         });
 
+        Route::prefix('technical-services')->group(function () {
+
+            Route::get('', 'TechnicalServiceController@index')->name('tenant.technical_services.index');
+            Route::get('/columns', 'TechnicalServiceController@columns');
+            Route::get('/records', 'TechnicalServiceController@records');
+            Route::get('/tables', 'TechnicalServiceController@tables');
+            Route::post('', 'TechnicalServiceController@store');
+            Route::get('/record/{contract}', 'TechnicalServiceController@record');
+            Route::get('/search/customers', 'TechnicalServiceController@searchCustomers');
+            Route::get('/search/customer/{id}', 'TechnicalServiceController@searchCustomerById');
+            Route::get('/download/{id}/{format?}', 'TechnicalServiceController@download');
+            Route::get('/print/{id}/{format?}', 'TechnicalServiceController@toPrint');
+            Route::delete('/{id}', 'TechnicalServiceController@destroy');
+
+        });
     });
 }
