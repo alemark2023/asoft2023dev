@@ -52,7 +52,7 @@ class SaleNoteController extends Controller
 
     public function lists()
     {
-        $record = SaleNote::orderBy('id', 'desc')->get();
+        $record = SaleNote::orderBy('series', 'desc')->orderBy('number', 'desc')->get();
         $records = new SaleNoteCollection($record);
         return $records;
     }
@@ -61,6 +61,8 @@ class SaleNoteController extends Controller
     {
 
         DB::connection('tenant')->transaction(function () use ($request) {
+
+            $request['establishment_id'] = $request['establishment_id'] ? $request['establishment_id'] : auth()->user()->establishment_id;
 
             $data = $this->mergeData($request);
 
