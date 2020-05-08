@@ -25,7 +25,7 @@
                         <th>Costo</th>
                         <th>Pago adelantado</th>
                         <th>Saldo</th>
-                        <th>Ver</th>
+                        <th class="text-center">Ver</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }" >
@@ -81,7 +81,7 @@
             }
         },
         created() {
-            this.title = 'Servicios técnicos'
+            this.title = 'Servicios de soporte técnico'
         },
         methods: {
             clickPrint(recordId){

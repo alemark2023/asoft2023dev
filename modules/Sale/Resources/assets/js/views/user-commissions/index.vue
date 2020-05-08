@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Incentivos</span></li>
+                <li class="active"><span>Comisiones</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
@@ -11,7 +11,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Incentivos por vendedor</h3>
+                <h3 class="my-0">Comisiones por vendedor</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">

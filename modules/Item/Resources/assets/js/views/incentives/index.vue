@@ -3,14 +3,14 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Incentivos</span></li>
+                <li class="active"><span>Comisiones</span></li>
             </ol>
             <div class="right-wrapper pull-right"> 
             </div>
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Incentivos por producto</h3>
+                <h3 class="my-0">Comisiones por producto</h3>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">

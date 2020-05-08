@@ -1,26 +1,30 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
-            <h3 class="my-0">Comisiones vendedores - utilidades (ventas - compras)</h3>
+            <h3 class="my-0">Comisiones vendedores - utilidades 
+                <el-tooltip class="item" effect="dark" content="Total ventas (CPE - NV) - Total compras" placement="top-end">
+                    <i class="fa fa-info-circle"></i>
+                </el-tooltip>
+            </h3>
         </div>
         <div class="card mb-0">
                 <div class="card-body">
                     <data-table :resource="resource">
                         <tr slot="heading">
                             <th>#</th>
-                            <!-- <th class="text-center">Código vendedor</th> -->
                             <th>Vendedor</th>
-                            <th class="text-center">Cantidad transacciones</th>
-                            <th class="text-center">Ventas acumuladas</th>
+                            <th class="text-center">Tipo comisión</th>
+                            <th class="text-center">Monto comisión</th>
+                            <th class="text-center">Total utilidad</th>
                             <th class="text-center">Total comisiones</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>  
-                            <!-- <td>{{row.user_name}}</td> -->
                             <td>{{row.user_name}}</td>
-                            <td class="text-center">{{row.total_transactions}}</td>
-                            <td class="text-center">{{row.acum_sales}}</td> 
-                            <td class="text-center">{{row.total_commision}}</td> 
+                            <td class="text-center">{{row.type}}</td>
+                            <td class="text-center">{{row.amount}}</td> 
+                            <td class="text-center">{{row.total_utility}}</td> 
+                            <td class="text-center">{{row.commission}}</td> 
                         </tr>
                         
                     </data-table>

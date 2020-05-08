@@ -5,7 +5,7 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
-use Modules\Report\Exports\CommissionExport;
+use Modules\Report\Exports\UserCommissionExport;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNote;
@@ -95,13 +95,13 @@ class ReportUserCommissionController extends Controller
             $data = $model::whereHas('user_commission')
                             ->with(['documents'=>function($q) use($date_start, $date_end){
 
-                                $q->whereIn('state_type_id', ['01','03','05','07','13'])
-                                ->whereIn('document_type_id', ['01','03','08'])
+                                $q->whereStateTypeAccepted()
                                 ->whereBetween('date_of_issue', [$date_start, $date_end]);
 
                             },'sale_notes'=>function($z) use($date_start, $date_end){
 
-                                $z->whereIn('state_type_id', ['01','03','05','07','13'])
+                                $z->whereStateTypeAccepted()
+                                ->whereNotChanged()
                                 ->whereBetween('date_of_issue', [$date_start, $date_end]);
 
                             }])
@@ -114,13 +114,13 @@ class ReportUserCommissionController extends Controller
             $data = $model::whereHas('user_commission')
                             ->with(['documents'=>function($q) use($date_start, $date_end){
                             
-                                $q->whereIn('state_type_id', ['01','03','05','07','13'])
-                                ->whereIn('document_type_id', ['01','03','08'])
+                                $q->whereStateTypeAccepted()
                                 ->whereBetween('date_of_issue', [$date_start, $date_end]);
                             
                             },'sale_notes'=>function($z) use($date_start, $date_end){
 
-                                $z->whereIn('state_type_id', ['01','03','05','07','13'])
+                                $z->whereStateTypeAccepted()
+                                ->whereNotChanged()
                                 ->whereBetween('date_of_issue', [$date_start, $date_end]);
                             
                             }])
@@ -141,9 +141,9 @@ class ReportUserCommissionController extends Controller
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), User::class)->get();
 
-        $pdf = PDF::loadView('report::commissions.report_pdf', compact("records", "company", "establishment"));
+        $pdf = PDF::loadView('report::user_commissions.report_pdf', compact("records", "company", "establishment"));
 
-        $filename = 'Reporte_Comision_Vendedor_'.date('YmdHis');
+        $filename = 'Reporte_Comision_utilidades_Vendedor_'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
     }
@@ -158,11 +158,11 @@ class ReportUserCommissionController extends Controller
 
         $records = $this->getRecords($request->all(), User::class)->get();
 
-        return (new CommissionExport)
+        return (new UserCommissionExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->download('Reporte_Comision_Vendedor'.Carbon::now().'.xlsx');
+                ->download('Reporte_Comision_utilidades_Vendedor'.Carbon::now().'.xlsx');
 
     }
 }

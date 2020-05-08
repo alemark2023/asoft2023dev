@@ -230,7 +230,7 @@
 
                                 <li class="{{ ($path[0] === 'technical-services')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.technical_services.index')}}">
-                                        Servicio técnico
+                                        Servicio de soporte técnico
                                     </a>
                                 </li>
 
@@ -241,7 +241,7 @@
                                         {{ ($path[0] === 'user-commissions')?'nav-active nav-expanded':'' }}
                                         ">
                                         <a class="nav-link" href="#">
-                                            Incentivos
+                                            Comisiones
                                         </a>
                                         <ul class="nav nav-children">
                                             <li class="{{ ($path[0] === 'user-commissions')?'nav-active':'' }}">
