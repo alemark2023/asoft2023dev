@@ -18,7 +18,7 @@ use App\Mail\Tenant\DocumentEmail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Series;
- 
+use App\Http\Requests\Tenant\PersonRequest;
 
 class MobileController extends Controller
 {
@@ -45,7 +45,7 @@ class MobileController extends Controller
 
     public function customers()
     {
-        $customers = Person::whereType('customers')->orderBy('name')->take(50)->get()->transform(function($row) {
+        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -54,6 +54,9 @@ class MobileController extends Controller
                 'identity_document_type_id' => $row->identity_document_type_id,
                 'identity_document_type_code' => $row->identity_document_type->code,
                 'address' => $row->address,
+                'telephone' => $row->telephone,
+                'country_id' => $row->country_id,
+                'district_id' => $row->district_id,
                 'email' => $row->email,
                 'selected' => false
             ];
@@ -80,7 +83,7 @@ class MobileController extends Controller
             ];
         });*/
 
-        $items = Item::whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->take(50)->get()->transform(function($row){
+        $items = Item::whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get()->transform(function($row){
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
             return [
@@ -183,7 +186,7 @@ class MobileController extends Controller
 
     }
 
-    public function person(Request $request)
+    public function person(PersonRequest $request)
     {
         $row = new Person();
         $row->fill($request->all());
@@ -191,7 +194,7 @@ class MobileController extends Controller
 
         return [
             'success' => true,
-            'msg' => ($row->type == 'customers') ? 'Cliente registrado con éxito' : 'Proveedor registrado con éxito',
+            'msg' => ($request->type == 'customers') ? 'Cliente registrado con éxito' : 'Proveedor registrado con éxito',
             'data' => (object)[
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -201,6 +204,9 @@ class MobileController extends Controller
                 'identity_document_type_code' => $row->identity_document_type->code,
                 'address' => $row->address,
                 'email' => $row->email,
+                'telephone' => $row->telephone,
+                'country_id' => $row->country_id,
+                'district_id' => $row->district_id,
                 'selected' => false
             ]
         ];
@@ -245,19 +251,30 @@ class MobileController extends Controller
     public function searchCustomers(Request $request)
     {
 
-        $customers = Person::whereType('customers')->where('name', 'like', "%{$request->input}%" )->orderBy('name')->take(50)->get()->transform(function($row) {
-            return [
-                'id' => $row->id,
-                'description' => $row->number.' - '.$row->name,
-                'name' => $row->name,
-                'number' => $row->number,
-                'identity_document_type_id' => $row->identity_document_type_id,
-                'identity_document_type_code' => $row->identity_document_type->code,
-                'address' => $row->address,
-                'email' => $row->email,
-                'selected' => false
-            ];
-        });
+        $identity_document_type_id = $this->getIdentityDocumentTypeId($request->document_type_id);
+
+        $customers = Person::where('name', 'like', "%{$request->input}%" )
+                            ->orWhere('number','like', "%{$request->input}%")
+                            ->whereType('customers')
+                            ->whereIn('identity_document_type_id', $identity_document_type_id)
+                            ->orderBy('name')
+                            ->get()
+                            ->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                    'name' => $row->name,
+                                    'number' => $row->number,
+                                    'identity_document_type_id' => $row->identity_document_type_id,
+                                    'identity_document_type_code' => $row->identity_document_type->code,
+                                    'address' => $row->address,
+                                    'telephone' => $row->telephone,
+                                    'email' => $row->email,
+                                    'country_id' => $row->country_id,
+                                    'district_id' => $row->district_id,
+                                    'selected' => false
+                                ];
+                            });
 
         return [
             'success' => true,
@@ -266,6 +283,11 @@ class MobileController extends Controller
     }
 
 
+    public function getIdentityDocumentTypeId($document_type_id){
+
+        return ($document_type_id == '01') ? [6] : [1,4,6,7,0];
+        
+    }
 
 
 
