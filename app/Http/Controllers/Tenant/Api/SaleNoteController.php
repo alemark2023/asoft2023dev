@@ -135,6 +135,8 @@ class SaleNoteController extends Controller
 
         }
 
+        $data_series = $this->getDataSeries($inputs['series_id'], $inputs['id'], $inputs['number']);
+
         $values = [
             'automatic_date_of_issue' => $automatic_date_of_issue,
             'user_id' => auth()->id(),
@@ -142,12 +144,37 @@ class SaleNoteController extends Controller
             'customer' => PersonInput::set($inputs['customer_id']),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
             'soap_type_id' => $this->company->soap_type_id,
-            'state_type_id' => '01'
+            'state_type_id' => '01',
+            'series' => $data_series['series'],
+            'number' => $data_series['number']
         ];
 
         $inputs->merge($values);
 
         return $inputs->all();
+    }
+
+
+    private function getDataSeries($series_id, $id, $number){
+
+        $series = Series::find($series_id)->number;
+
+        if(!$id){ 
+
+            $sale_note = SaleNote::select('number')->where('soap_type_id', $this->company->soap_type_id)
+                                ->where('series', $series)
+                                ->orderBy('number', 'desc')
+                                ->first();
+    
+            $number = ($sale_note) ? $sale_note->number + 1 : 1;
+
+        }
+ 
+        return [
+            'series' => $series,
+            'number' => $number,
+        ];
+
     }
 
 
