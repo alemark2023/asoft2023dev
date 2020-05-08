@@ -81,5 +81,33 @@ if($current_hostname) {
 
         });
 
+        Route::prefix('technical-services')->group(function () {
+
+            Route::get('', 'TechnicalServiceController@index')->name('tenant.technical_services.index');
+            Route::get('/columns', 'TechnicalServiceController@columns');
+            Route::get('/records', 'TechnicalServiceController@records');
+            Route::get('/tables', 'TechnicalServiceController@tables');
+            Route::post('', 'TechnicalServiceController@store');
+            Route::get('/record/{contract}', 'TechnicalServiceController@record');
+            Route::get('/search/customers', 'TechnicalServiceController@searchCustomers');
+            Route::get('/search/customer/{id}', 'TechnicalServiceController@searchCustomerById');
+            Route::get('/download/{id}/{format?}', 'TechnicalServiceController@download');
+            Route::get('/print/{id}/{format?}', 'TechnicalServiceController@toPrint');
+            Route::delete('/{id}', 'TechnicalServiceController@destroy');
+
+        });
+
+        
+        Route::prefix('user-commissions')->group(function () {
+
+            Route::get('', 'UserCommissionController@index')->name('tenant.user_commissions.index');
+            Route::get('/columns', 'UserCommissionController@columns');
+            Route::get('/records', 'UserCommissionController@records');
+            Route::get('/tables', 'UserCommissionController@tables');
+            Route::post('', 'UserCommissionController@store');
+            Route::get('/record/{id}', 'UserCommissionController@record');
+            Route::delete('/{id}', 'UserCommissionController@destroy');
+
+        });
     });
 }

@@ -50,6 +50,8 @@
                         {{ ($path[0] === 'sale-opportunities')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'technical-services')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'user-commissions')?'nav-active nav-expanded':'' }}
                         
                         ">
                         <a class="nav-link" href="#">
@@ -226,15 +228,38 @@
                                     </li>
                                 @endif
 
+                                <li class="{{ ($path[0] === 'technical-services')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.technical_services.index')}}">
+                                        Servicio de soporte técnico
+                                    </a>
+                                </li>
+
                                 @if(in_array('incentives', $vc_module_levels))
 
-                                    <li class="{{ ($path[0] === 'incentives')?'nav-active':'' }}">
-                                        <a class="nav-link" href="{{route('tenant.incentives.index')}}">
-                                            Incentivos
+                                    <li class="nav-parent
+                                        {{ ($path[0] === 'incentives')?'nav-active nav-expanded':'' }}
+                                        {{ ($path[0] === 'user-commissions')?'nav-active nav-expanded':'' }}
+                                        ">
+                                        <a class="nav-link" href="#">
+                                            Comisiones
                                         </a>
+                                        <ul class="nav nav-children">
+                                            <li class="{{ ($path[0] === 'user-commissions')?'nav-active':'' }}">
+                                                <a class="nav-link" href="{{route('tenant.user_commissions.index')}}">
+                                                    Vendedores
+                                                </a>
+                                            </li>
+                                            <li class="{{ ($path[0] === 'incentives')?'nav-active':'' }}">
+                                                <a class="nav-link" href="{{route('tenant.incentives.index')}}">
+                                                    Productos
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </li>
 
                                 @endif
+
+
 
                             @endif
 
@@ -503,7 +528,7 @@
                     <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
                                         'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels',
                                         'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
-                                        'order-notes-general', 'sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+                                        'order-notes-general', 'sales-consolidated', 'user-commissions'])) ? 'nav-active nav-expanded' : ''}}">
 
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
@@ -517,7 +542,8 @@
                             </li>
 
                             <li class="nav-parent {{  ($path[0] === 'reports' &&
-                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 'commissions',  'general-items','sales-consolidated'])) ? 'nav-active nav-expanded' : ''}}">
+                                    in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions', 
+                                    'commissions',  'general-items','sales-consolidated', 'user-commissions'])) ? 'nav-active nav-expanded' : ''}}">
 
                                 <a class="nav-link" href="#">
                                     Ventas
@@ -562,11 +588,33 @@
                                         </a>
                                     </li>
                                     @endif
-                                    <li class="{{(($path[0] === 'reports') && ($path[1] == 'commissions')) ? 'nav-active' : ''}}">
-                                        <a class="nav-link" href="{{route('tenant.reports.commissions.index')}}">
-                                            Comisiones vendedor
+
+                                    
+                                    <li class="nav-parent
+                                        {{ (($path[0] === 'reports') && ($path[1] == 'commissions')) ?'nav-active nav-expanded':'' }}
+                                        {{ (($path[0] === 'reports') && ($path[1] == 'user-commissions')) ?'nav-active nav-expanded':'' }}
+                                        ">
+                                        <a class="nav-link" href="#">
+                                            Comisiones
                                         </a>
+                                        <ul class="nav nav-children">
+                                            
+                                            <li class="{{(($path[0] === 'reports') && ($path[1] == 'user-commissions')) ? 'nav-active' : ''}}">
+                                                <a class="nav-link" href="{{route('tenant.reports.user_commissions.index')}}">
+                                                    Utilidad ventas
+                                                </a>
+                                            </li>
+                                            
+                                            <li class="{{(($path[0] === 'reports') && ($path[1] == 'commissions')) ? 'nav-active' : ''}}">
+                                                <a class="nav-link" href="{{route('tenant.reports.commissions.index')}}">
+                                                    Ventas
+                                                </a>
+                                            </li> 
+                                        </ul>
                                     </li>
+
+
+
 
                                     <li class="{{(($path[0] === 'reports') && ($path[1] == 'sales-consolidated')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.sales_consolidated.index')}}">
