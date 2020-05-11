@@ -1,3 +1,25 @@
+## 3.3.5
+
+### docs
+2020-04-29 : docs | update chagelog<br>
+
+
+### fixed
+2020-04-30 : fixed | i-43 | No eliminaba la diracción al editar un usuario<br>
+
+
+### feature
+2020-05-08 : feature | i-57 | reporte comisiones vendedor utilidad - ajustes<br>
+2020-05-07 : feature | i-57 | avance comisiones vendedor - utilidad<br>
+2020-05-07 : feature | i-57 | gestion servicio tecnico<br>
+2020-05-06 : feature | i-38 | Agregada forma pago en la tabla principal<br>
+2020-05-05 : feature | i-27 | Problemas con los valores de Saldos en Kardex (Correción)<br>
+2020-05-04 : feature | i-39 | Productos en tienda No muestra Nombre si no Descripción<br>
+2020-05-04 : feature | i-27 | Productos en tienda No muestra Nombre si no Descripción<br>
+2020-05-04 : feature | i-27 | Problemas con los valores de Saldos en Kardex (paginación)<br>
+2020-04-29 : feature | auto-update command fetch to download tags<br>
+
+
 ## 3.3.4
 
 ### docs
