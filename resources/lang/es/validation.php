@@ -237,6 +237,7 @@ return [
         'expense_method_type_id' => 'm. gasto',
         'payment_destination_id' => 'destino',
         'telephone' => 'teléfono',
-        'customer' => 'cliente'
+        'customer' => 'cliente',
+        'internal_id' => 'código interno',
     ],
 ];
