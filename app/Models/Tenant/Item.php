@@ -295,4 +295,9 @@ class Item extends ModelTenant
         return $query->where('active', false);
     }
     
+    public function scopeWhereHasInternalId($query)
+    {
+        return $query->where('internal_id','!=', null);
+    }
+    
 }

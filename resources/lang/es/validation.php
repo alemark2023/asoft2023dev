@@ -246,5 +246,6 @@ return [
         'prepayment' => 'pago adelantado',
         'activities' => 'actividades',
         'user_id' => 'vendedor',
+        'internal_id' => 'código interno',
     ],
 ];

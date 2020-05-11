@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Series;
 use App\Http\Requests\Tenant\PersonRequest;
+use Modules\Item\Http\Requests\ItemRequest;
 
 class MobileController extends Controller
 {
@@ -83,31 +84,38 @@ class MobileController extends Controller
             ];
         });*/
 
-        $items = Item::whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get()->transform(function($row){
-            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+        $items = Item::whereWarehouse()
+                    ->whereHasInternalId()
+                    ->whereNotIsSet()
+                    ->whereIsActive()
+                    ->orderBy('description')
+                    ->take(20)
+                    ->get()
+                    ->transform(function($row){
+                        $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
-            return [
-                'id' => $row->id,
-                'item_id' => $row->id,
-                'name' => $row->name,
-                'full_description' => $full_description,
-                'description' => $row->description,
-                'currency_type_id' => $row->currency_type_id,
-                'internal_id' => $row->internal_id,
-                'item_code' => $row->item_code,
-                'currency_type_symbol' => $row->currency_type->symbol,
-                'sale_unit_price' => number_format( $row->sale_unit_price, 2),
-                'purchase_unit_price' => $row->purchase_unit_price,
-                'unit_type_id' => $row->unit_type_id,
-                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'calculate_quantity' => (bool) $row->calculate_quantity,
-                'has_igv' => (bool) $row->has_igv,
-                'is_set' => (bool) $row->is_set,
-                'aux_quantity' => 1,
+                        return [
+                            'id' => $row->id,
+                            'item_id' => $row->id,
+                            'name' => $row->name,
+                            'full_description' => $full_description,
+                            'description' => $row->description,
+                            'currency_type_id' => $row->currency_type_id,
+                            'internal_id' => $row->internal_id,
+                            'item_code' => $row->item_code,
+                            'currency_type_symbol' => $row->currency_type->symbol,
+                            'sale_unit_price' => number_format( $row->sale_unit_price, 2),
+                            'purchase_unit_price' => $row->purchase_unit_price,
+                            'unit_type_id' => $row->unit_type_id,
+                            'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                            'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                            'calculate_quantity' => (bool) $row->calculate_quantity,
+                            'has_igv' => (bool) $row->has_igv,
+                            'is_set' => (bool) $row->is_set,
+                            'aux_quantity' => 1,
 
-            ];
-        });
+                        ];
+                    });
 
 
         return [
@@ -148,7 +156,7 @@ class MobileController extends Controller
     }
 
 
-    public function item(Request $request)
+    public function item(ItemRequest $request)
     {
         $row = new Item();
         $row->item_type_id = '01';
@@ -215,32 +223,40 @@ class MobileController extends Controller
     public function searchItems(Request $request)
     {
 
-        $items = Item::where('description', 'like', "%{$request->input}%" )->whereWarehouse()->whereNotIsSet()->whereIsActive()->orderBy('description')->get()->transform(function($row){
+        $items = Item::where('description', 'like', "%{$request->input}%" )
+                    ->orWhere('internal_id', 'like', "%{$request->input}%")
+                    ->whereHasInternalId()
+                    ->whereWarehouse()
+                    ->whereNotIsSet()
+                    ->whereIsActive()
+                    ->orderBy('description')
+                    ->get()
+                    ->transform(function($row){
 
-            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+                        $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
-            return [
-                'id' => $row->id,
-                'item_id' => $row->id,
-                'name' => $row->name,
-                'full_description' => $full_description,
-                'description' => $row->description,
-                'currency_type_id' => $row->currency_type_id,
-                'internal_id' => $row->internal_id,
-                'item_code' => $row->item_code,
-                'currency_type_symbol' => $row->currency_type->symbol,
-                'sale_unit_price' => number_format( $row->sale_unit_price, 2),
-                'purchase_unit_price' => $row->purchase_unit_price,
-                'unit_type_id' => $row->unit_type_id,
-                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                'calculate_quantity' => (bool) $row->calculate_quantity,
-                'has_igv' => (bool) $row->has_igv,
-                'is_set' => (bool) $row->is_set,
-                'aux_quantity' => 1,
+                        return [
+                            'id' => $row->id,
+                            'item_id' => $row->id,
+                            'name' => $row->name,
+                            'full_description' => $full_description,
+                            'description' => $row->description,
+                            'currency_type_id' => $row->currency_type_id,
+                            'internal_id' => $row->internal_id,
+                            'item_code' => $row->item_code,
+                            'currency_type_symbol' => $row->currency_type->symbol,
+                            'sale_unit_price' => number_format( $row->sale_unit_price, 2),
+                            'purchase_unit_price' => $row->purchase_unit_price,
+                            'unit_type_id' => $row->unit_type_id,
+                            'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                            'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                            'calculate_quantity' => (bool) $row->calculate_quantity,
+                            'has_igv' => (bool) $row->has_igv,
+                            'is_set' => (bool) $row->is_set,
+                            'aux_quantity' => 1,
 
-            ];
-        });
+                        ];
+                    });
 
         return [
             'success' => true,
