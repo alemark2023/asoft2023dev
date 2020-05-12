@@ -89,7 +89,7 @@
             <div class="checkout-methods text-center">
 
                 @guest
-                <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Pagar
+                <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link culqi">Pagar
                     con VISA</a>
                 <a href="{{route('tenant_ecommerce_login')}}" class="btn btn-block btn-sm btn-primary login-link">Pagar
                     con EFECTIVO</a>
@@ -99,7 +99,7 @@
                 </a>
 
                 @else
-                <button class="btn btn-block btn-sm btn-primary" onclick="execCulqi()"> Pagar con VISA </button>
+                <button class="btn btn-block btn-sm btn-primary culqi" onclick="execCulqi()"> Pagar con VISA </button>
 
                 <button @click="payment_cash.clicked = !payment_cash.clicked" class="btn btn-block btn-sm btn-primary">
                     Pagar con EFECTIVO </button>
@@ -806,14 +806,16 @@
     Culqi.publicKey = {!! json_encode($configuration->token_public_culqui ) !!};
     if(!Culqi.publicKey)
     {
+      $('.culqi').hide()
+/*
         swal({
-
             title: "Culqi configuración",
             text: "El pago con visa aun no esta disponible. Intente con efectivo.",
             type: "error",
             position: 'top-end',
             icon: 'warning',
         })
+*/
     }
     Culqi.options({
         installments: true

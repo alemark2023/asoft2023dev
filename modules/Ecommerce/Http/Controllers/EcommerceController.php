@@ -223,6 +223,7 @@ class EcommerceController extends Controller
                 'items' =>  $request->items,
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
+                'status_order_id' => 1
               ]);
 
             $customer_email = $user->email;
@@ -232,7 +233,7 @@ class EcommerceController extends Controller
             $document->total = $request->precio_culqi;
             $document->items = $request->items;
 
-            Mail::to($customer_email)->send(new CulqiEmail($document));
+//            Mail::to($customer_email)->send(new CulqiEmail($document));
             return [
                 'success' => true,
                 'order' => $order
