@@ -135,6 +135,13 @@
                             <div class="col-md-6 mt-4">
                                 <a href="#" @click.prevent="showDialogTermsCondition = true" class="text-center font-weight-bold text-info">[+ Términos y condiciones - Cotización]</a>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Mostrar cotización en finanzas</label>
+                                <div class="form-group" :class="{'has-danger': errors.cotizaction_finance}">
+                                    <el-switch v-model="form.cotizaction_finance" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.cotizaction_finance" v-text="errors.cotizaction_finance[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
