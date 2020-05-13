@@ -33,6 +33,7 @@ class ConfigurationResource extends JsonResource
             'enable_whatsapp' => (bool) $this->enable_whatsapp,
             'visual' => $this->visual,
             'terms_condition' => $this->terms_condition,
+            'cotizaction_finance' => (bool) $this->cotizaction_finance
         ];
     }
 }
