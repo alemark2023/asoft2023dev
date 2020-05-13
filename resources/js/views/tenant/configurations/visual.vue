@@ -117,12 +117,7 @@
         },
         async created() {
             await this.initForm()
-            await this.$http.get(`/${this.resource}/record`) .then(response => {
-                if (response.data !== ''){
-                    this.visuals = response.data.data.visual;
-                    this.form = response.data.data;
-                }
-            });
+            await this.getRecords()
         },
         methods: {
             initForm() {
@@ -134,6 +129,14 @@
                     enable_whatsapp: true,
                     phone_whatsapp: ''
                 }
+            },
+            getRecords() {
+                this.$http.get(`/${this.resource}/record`) .then(response => {
+                    if (response.data !== ''){
+                        this.visuals = response.data.data.visual;
+                        this.form = response.data.data;
+                    }
+                });
             },
             submit() {
                 this.$http.post(`/${this.resource}/visual_settings`, this.visuals).then(response => {
