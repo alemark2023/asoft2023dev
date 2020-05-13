@@ -40,11 +40,15 @@
                         <td>{{ row.name }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
-                            <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
-                            <template v-else-if="typeUser!='seller'&& row.unit_type_id !='ZZ'">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
-                            </template>
-
+                            <div v-if="config.product_only_location == true">
+                                {{ row.stock }}
+                            </div>
+                            <div v-else>
+                                <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
+                                <template v-else-if="typeUser!='seller' && row.unit_type_id !='ZZ'">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
+                                </template>
+                            </div>
                             <!-- <template v-for="item in row.warehouses">
                                 <template>{{item.stock}} - {{item.warehouse_description}}</template><br>
                             </template> -->
@@ -108,10 +112,14 @@
                 showWarehousesDetail: false,
                 resource: 'items',
                 recordId: null,
-                warehousesDetail:[]
+                warehousesDetail:[],
+                config: {}
             }
         },
         created() {
+            this.$http.get(`/configurations/record`) .then(response => {
+                this.config = response.data.data
+            })
         },
         methods: {
             duplicate(id)
