@@ -136,6 +136,22 @@
                                 <a href="#" @click.prevent="showDialogTermsCondition = true" class="text-center font-weight-bold text-info">[+ Términos y condiciones - Cotización]</a>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Impuesto incluido en registro de productos</label>
+                                <div class="form-group" :class="{'has-danger': errors.include_igv}">
+                                    <el-switch v-model="form.include_igv" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.include_igv" v-text="errors.include_igv[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Productos de una ubicación</label>
+                                <div class="form-group" :class="{'has-danger': errors.product_only_location}">
+                                    <el-switch v-model="form.product_only_location" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.product_only_location" v-text="errors.product_only_location[0]"></small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -199,7 +215,7 @@
                     amount_plastic_bag_taxes: 0.1,
                     colums_grid_item: 4,
                     affectation_igv_type_id:'10',
-                    terms_condition:null
+                    terms_condition:null,
                 };
             },
             submit() {
