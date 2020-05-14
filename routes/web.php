@@ -31,6 +31,13 @@ if ($hostname) {
             Route::get('orders', 'Tenant\OrderController@index')->name('tenant_orders_index');
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
+            Route::post('statusOrder/update/', 'Tenant\OrderController@updateStatusOrders');
+
+            //warehouse
+            Route::post('orders/warehouse', 'Tenant\OrderController@searchWarehouse');
+
+            //Status Orders
+            Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
 
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');
