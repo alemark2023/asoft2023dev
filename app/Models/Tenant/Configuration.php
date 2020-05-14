@@ -30,7 +30,7 @@ class Configuration extends ModelTenant
         'restrict_receipt_date',
         'affectation_igv_type_id',
         'terms_condition',
-        'cotizaction_finance'
+        'cotizaction_finance',
         'include_igv',
         'product_only_location'
     ];
