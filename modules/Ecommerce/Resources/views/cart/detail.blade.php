@@ -723,6 +723,7 @@
                     total_igv: '0.0'
                 }
                 this.payment_cash.amount = '0.00'
+                location.reload()
             },
             calculateSummary() {
 
@@ -872,34 +873,33 @@
             }
 
             $.ajax({
-                url: "{{route('tenant_ecommerce_culqui')}}",
-                method: 'post',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: data,
-                dataType: 'JSON',
-                success: function (data) {
-                    if (data.success == true) {
-                        app_cart.clearShoppingCart();
-                        swal({
-                            title: "Gracias por su pago!",
-                            text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
-                            type: "success"
-                        }).then((x) => {
-
-                            askedDocument(data.order);
-                            app_cart.saveContactDataUser();
-                            //window.location = "{{ route('tenant.ecommerce.index') }}";
-                        })
-                    } else {
-                        const message = data.message
-                        swal("Pago No realizado", message, "error");
-                    }
-                },
-                error: function (error_data) {
-                    swal("Pago No realizado", error_data, "error");
+              url: "{{route('tenant_ecommerce_culqui')}}",
+              method: 'post',
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              data: data,
+              dataType: 'JSON',
+              success: function (data) {
+                if (data.success == true) {
+                  app_cart.saveContactDataUser();
+                  app_cart.clearShoppingCart();
+                  swal({
+                    title: "Gracias por su pago!",
+                    text: "En breve le enviaremos un correo electronico con los detalles de su compra.",
+                    type: "success"
+                  }).then((x) => {
+                    askedDocument(data.order);
+                    //window.location = "{{ route('tenant.ecommerce.index') }}";
+                  })
+                } else {
+                  const message = data.message
+                  swal("Pago No realizado", message, "error");
                 }
+              },
+              error: function (error_data) {
+                swal("Pago No realizado", error_data, "error");
+              }
             });
 
         } else {
