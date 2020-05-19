@@ -34,7 +34,7 @@ class Person extends ModelTenant
         'person_type_id',
         'comment',
         'enabled',
-
+        'contact'
     ];
 
     // protected static function boot()
@@ -45,7 +45,7 @@ class Person extends ModelTenant
     //         $builder->where('status', 1);
     //     });
     // }
-    
+
     public function addresses()
     {
         return $this->hasMany(PersonAddress::class);
@@ -104,7 +104,7 @@ class Person extends ModelTenant
     {
         return $this->belongsTo(PersonType::class);
     }
-    
+
     public function scopeWhereIsEnabled($query)
     {
         return $query->where('enabled', true);

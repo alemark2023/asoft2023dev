@@ -230,6 +230,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="row border-top mt-2">
+                    <div class="col-12">
+                        <h4>Contacto</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.contact}">
+                            <label class="control-label">Nombre y Apellido</label>
+                            <el-input v-model="form.contact.full_name"></el-input>
+                            <small class="form-control-feedback" v-if="errors.contact" v-text="errors.contact[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" :class="{'has-danger': errors.contact}">
+                            <label class="control-label">Teléfono</label>
+                            <el-input v-model="form.contact.phone"></el-input>
+                            <small class="form-control-feedback" v-if="errors.contact" v-text="errors.contact[0]"></small>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -315,7 +334,11 @@
                     percentage_perception:0,
                     person_type_id:null,
                     comment:null,
-                    addresses: []
+                    addresses: [],
+                    contact: {
+                        full_name: null,
+                        phone: null,
+                    },
                 }
             },
             async opened() {
