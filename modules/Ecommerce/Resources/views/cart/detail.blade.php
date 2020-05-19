@@ -44,7 +44,7 @@
                     <tr>
                         <td colspan="4" class="clearfix">
                             <div class="float-left">
-                                <a href="/ecommerce" class="btn btn-outline-secondary">Continar Comprando</a>
+                                <a href="/ecommerce" class="btn btn-outline-secondary">Continuar Comprando</a>
                             </div><!-- End .float-left -->
 
                             <div class="float-right">
