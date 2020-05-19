@@ -76,7 +76,7 @@
 
 
                 <div class="product-action">
-                    <div class="product-single-qty">
+                    <!-- div class="product-single-qty">
                         <input class="horizontal-quantity form-control" type="text">
                     </div><!-- End .product-single-qty -->
 

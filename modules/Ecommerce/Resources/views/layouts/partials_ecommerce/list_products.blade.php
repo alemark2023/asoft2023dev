@@ -1,10 +1,10 @@
 @foreach ($dataPaginate as $item)
 
     <div class="col-6 col-md-4">
-        <div class="product">
+        <div class="product product-style">
             <figure class="product-image-container">
                 <a href="/ecommerce/item/{{ $item->id }}" class="product-image">
-                    <img src="{{ asset('storage/uploads/items/'.$item->image) }}" alt="product">
+                    <img src="{{ asset('storage/uploads/items/'.$item->image) }}" class="product-image" alt="product">
                 </a>
                 <a href="{{route('item_partial', ['id' => $item->id])}}" class="btn-quickview">Vista Rápida</a>
                 {{-- <span class="product-label label-sale">-20%</span> --}}
@@ -36,3 +36,16 @@
     </div>
 
 @endforeach
+
+<style>
+.product-style {
+    border-style: solid;
+    border-width: 1px;
+    border-color: "#ddd";
+    margin: 10px 1px;
+}
+.product-image {
+    max-height: 210px;
+    min-height: 210px;
+}
+</style>
