@@ -379,6 +379,12 @@
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
+                            if (response.data.data.contact == null) {
+                                this.form.contact = {
+                                    full_name: null,
+                                    phone: null,
+                                }
+                            }
                             this.filterProvinces()
                             this.filterDistricts()
                         })
