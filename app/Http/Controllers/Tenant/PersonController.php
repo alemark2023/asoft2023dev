@@ -71,7 +71,6 @@ class PersonController extends Controller
 
     public function store(PersonRequest $request)
     {
-
         if($request->state){
             if($request->state != "ACTIVO"){
                 return [
@@ -83,7 +82,8 @@ class PersonController extends Controller
 
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
-        $person->fill($request->all());
+        $person->fill($request->except(['contact']));
+        $person->contact = json_encode($request->contact);
         $person->save();
 
         $person->addresses()->delete();
@@ -179,7 +179,7 @@ class PersonController extends Controller
         return $locations;
     }
 
-    
+
     public function enabled($type, $id)
     {
 
