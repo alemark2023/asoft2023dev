@@ -295,6 +295,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th class="font-weight-bold">Unidad</th>
                                     <th class="font-weight-bold">Descripción</th>
                                     <th class="text-right font-weight-bold">Cantidad</th>
                                     <th></th>
@@ -303,6 +304,7 @@
                             <tbody v-if="form.items.length > 0">
                                 <tr v-for="(row, index) in form.items">
                                     <td>{{index + 1}}</td>
+                                    <td>{{ row.unit_type_id }}</td>
                                     <td>{{row.description}}</td>
                                     <td class="text-right">{{row.quantity}}</td>
                                     <td class="text-right">
@@ -491,6 +493,7 @@
                     'internal_id': form.item.internal_id,
                     'quantity': form.quantity,
                     'item_id': form.item.id,
+                    'unit_type_id': form.item.unit_type_id,
                     'id': form.item.id,
                 });
             },
