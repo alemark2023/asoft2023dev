@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
 use App\Http\Controllers\Tenant\Api\ServiceController;
 use Illuminate\Support\Facades\Validator;
+use Modules\Inventory\Models\InventoryConfiguration;
 
 class EcommerceController extends Controller
 {
@@ -32,17 +33,19 @@ class EcommerceController extends Controller
 
     public function index()
     {
-      $dataPaginate['dataPaginate'] = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
-      return view('ecommerce::index', $dataPaginate);
+      $dataPaginate = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
+      $configuration = InventoryConfiguration::first();
+      return view('ecommerce::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
     }
 
     public function category(Request $request)
     {
-      $dataPaginate['dataPaginate'] = Item::select('i.*')
+      $dataPaginate = Item::select('i.*')
         ->where([['i.apply_store', 1], ['i.internal_id','!=', null], ['it.tag_id', $request->category]])
         ->from('items as i')
         ->join('item_tags as it', 'it.item_id','i.id')->paginate(15);
-      return view('ecommerce::index', $dataPaginate);
+        $configuration = InventoryConfiguration::first();
+      return view('ecommerce::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
     }
 
     public function item($id)

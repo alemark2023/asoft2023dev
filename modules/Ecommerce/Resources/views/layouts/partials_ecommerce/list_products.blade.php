@@ -1,17 +1,17 @@
 @foreach ($dataPaginate as $item)
 
     <div class="col-6 col-md-4">
-        <div class="product product-style {{ stock($item) ? 'productdisabled' : '' }}">
+        <div class="product product-style {{ stock($item, $configuration) ? 'productdisabled' : '' }}">
             <figure class="product-image-container">
                 <a href="/ecommerce/item/{{ $item->id }}" class="product-image">
-                    <img src="{{ asset('storage/uploads/items/'.$item->image) }}" class="product-image" alt="product">
+                    <img src="{{ asset('storage/uploads/items/'.$item->image) }}" class="image" alt="product">
                 </a>
                 <a href="{{route('item_partial', ['id' => $item->id])}}" class="btn-quickview">Vista Rápida</a>
                 {{-- <span class="product-label label-sale">-20%</span> --}}
                 @if(json_encode($item->is_new) == 1)
                     <span class="product-label label-hot">New</span>
                 @endif
-                @if(stock($item))
+                @if(stock($item, $configuration))
                     <span class="product-label product-danger">AGOTADO</span>
                 @endif
             </figure>
@@ -41,26 +41,32 @@
 @endforeach
 
 <?php
-    function stock($item)
-    {
-        $stock=0;
-        foreach ($item->warehouses as $key => $value) {
-            $stock += $value->stock;
+    
+    function stock($item, $config)
+    {        
+        if($config) {
+            $stock=0;
+            foreach ($item->warehouses as $key => $value) {
+                $stock += $value->stock;
+            }
+            return ($stock > 0) ? false : true;
         }
-        return ($stock > 0) ? false : true;
     }
 ?>
 
 <style>
-    .product-style {
+    /* .product-style {
         border-style: solid;
         border-width: 1px;
         border-color: "#ddd";
         margin: 10px 1px;
-    }
+    } */
     .product-image {
         max-height: 210px;
         min-height: 210px;
+    }
+    .image {
+        max-height: 210px;
     }
     .product-danger {
         float: right;
@@ -70,7 +76,7 @@
     }
     .productdisabled
     {
-    pointer-events: none;
-    opacity: 0.7;
+        pointer-events: none;
+        /* opacity: 0.7; */
     }
 </style>
