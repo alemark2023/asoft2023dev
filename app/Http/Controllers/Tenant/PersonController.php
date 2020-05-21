@@ -29,7 +29,8 @@ class PersonController extends Controller
     {
         return [
             'name' => 'Nombre',
-            'number' => 'Número'
+            'number' => 'Número',
+            'document_type' => 'Tipo de documento'
         ];
     }
 
