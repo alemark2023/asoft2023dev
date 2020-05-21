@@ -110,4 +110,13 @@ class Person extends ModelTenant
         return $query->where('enabled', true);
     }
 
+    public function getContactAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setContactAttribute($value)
+    {
+        $this->attributes['contact'] = (is_null($value))?null:json_encode($value);
+    }
 }
