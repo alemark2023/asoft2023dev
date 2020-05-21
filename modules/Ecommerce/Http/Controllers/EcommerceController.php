@@ -236,7 +236,9 @@ class EcommerceController extends Controller
             $document->total = $request->precio_culqi;
             $document->items = $request->items;
 
-//            Mail::to($customer_email)->send(new CulqiEmail($document));
+            $this->paymentCashEmail($customer_email, $document);
+
+            //Mail::to($customer_email)->send(new CulqiEmail($document));
             return [
                 'success' => true,
                 'order' => $order
@@ -250,6 +252,16 @@ class EcommerceController extends Controller
             ];
         }
       }
+    }
+
+    public function paymentCashEmail($customer_email, $document)
+    {
+        try {
+            Mail::to($customer_email)->send(new CulqiEmail($document));
+        }catch(\Exception $e)
+        {
+            return true;
+        }
     }
 
     public function ratingItem(Request $request)
