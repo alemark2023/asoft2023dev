@@ -22,6 +22,7 @@ use Exception;
 use Modules\Item\Models\Category;
 use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Company;
+use Modules\BusinessTurn\Models\BusinessTurn;
 
 
 class PosController extends Controller
@@ -39,8 +40,9 @@ class PosController extends Controller
 
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $business_turns = BusinessTurn::select('active')->where('id', 4)->first();
 
-        return view('tenant.pos.index', compact('configuration', 'soap_company'));
+        return view('tenant.pos.index', compact('configuration', 'soap_company', 'business_turns'));
     }
 
     public function index_full()

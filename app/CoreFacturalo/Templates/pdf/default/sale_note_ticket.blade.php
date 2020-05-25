@@ -79,6 +79,12 @@
             </td>
         </tr>
     @endif
+    @if ($document->plate_number !== null)
+    <tr>
+        <td class="align-top"><p class="desc">N° Placa:</p></td>
+        <td><p class="desc">{{ $document->plate_number }}</p></td>
+    </tr>
+    @endif
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>

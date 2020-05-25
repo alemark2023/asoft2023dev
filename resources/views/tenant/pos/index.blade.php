@@ -13,7 +13,8 @@
 
     <tenant-pos-index
      	:configuration="{{ $configuration}}"
-     	:soap-company="{{ json_encode($soap_company) }}">
+     	:soap-company="{{ json_encode($soap_company) }}"
+      :business-turns="{{ $business_turns }}">
     </tenant-pos-index>
 @endsection
 

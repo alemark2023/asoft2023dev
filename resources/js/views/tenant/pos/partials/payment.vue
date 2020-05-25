@@ -146,10 +146,18 @@
                                         <el-input v-model="discount_amount" @input="inputDiscountAmount()" :disabled="!enabled_discount">
                                             <template slot="prepend">{{currencyTypeActive.symbol}}</template>
                                         </el-input>
-
                                     </div>
                                 </div>
+                            </div>
 
+                            <div v-if="businessTurns.active" class="row col-md-12 col-lg-12">
+                                <div class="col-md-6 col-lg-6"></div>
+                                <div class="col-md-6 col-lg-6">
+                                    <div class="form-group">
+                                        <label class="control-label">N° Placa</label>
+                                        <el-input type="textarea" v-model="form.plate_number"></el-input>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -298,7 +306,7 @@
     export default {
         components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm},
 
-        props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany'],
+        props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
         data() {
             return {
                 enabled_discount: false,
