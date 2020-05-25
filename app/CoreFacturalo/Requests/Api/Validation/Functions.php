@@ -54,13 +54,13 @@ class Functions
 
     public static function validateUbigeo($ubigeo) {
 
-        if (strlen($ubigeo) != 6) throw new Exception("El código ubigeo debe contener 6 dígitos");
+        if (strlen($ubigeo) > 0 && strlen($ubigeo) != 6 ) throw new Exception("El código ubigeo debe contener 6 dígitos");
 
-        $query_distric = District::where('id', $ubigeo)->first();
+        if (strlen($ubigeo) == 6) {
+            $query_distric = District::where('id', $ubigeo)->first();
 
-        if (!$query_distric) throw new Exception("No ha ingresado el código ubigeo o es incorrecto");
-
-        return true;
+            if (!$query_distric) throw new Exception("El código ubigeo es incorrecto");
+        }
     }
 
     public static function item($inputs) {
