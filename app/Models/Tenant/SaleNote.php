@@ -60,7 +60,8 @@ class SaleNote extends ModelTenant
         'series',
         'number',
         'paid',
-        'license_plate'
+        'license_plate',
+        'plate_number'
     ];
 
     protected $casts = [

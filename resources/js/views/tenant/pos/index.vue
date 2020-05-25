@@ -356,6 +356,7 @@
         :exchange-rate-sale="form.exchange_rate_sale"
         :customer="customer"
         :soapCompany="soapCompany"
+        :businessTurns="businessTurns"
       ></payment-form>
     </template>
 
@@ -439,7 +440,7 @@
       import WarehousesDetail from '../items/partials/warehouses.vue'
 
       export default {
-        props: ['configuration', 'soapCompany'],
+        props: ['configuration', 'soapCompany', 'businessTurns'],
         components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail},
         mixins: [functions, exchangeRate],
 
