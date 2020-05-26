@@ -916,9 +916,9 @@
             "apellidos_y_nombres_o_razon_social": user.name,
             "codigo_pais": "PE",
             "ubigeo": "150101",
-            "direccion": "",
+            "direccion": app_cart.user.address,
             "correo_electronico": user.email,
-            "telefono": ""
+            "telefono": app_cart.user.telephone
         }
     }
 
