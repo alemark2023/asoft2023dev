@@ -317,6 +317,7 @@
           this.records.forEach(function (item) {
             if(item.currency_type_id === 'USD') {
               item.sub_total = (parseFloat(item.sub_total) * exchange_rate_sale).toFixed(2)
+              item.exchange_rate_sale = exchange_rate_sale
             }
             item.sale_unit_price = parseFloat(item.sale_unit_price).toFixed(2)
           })
@@ -331,6 +332,7 @@
                     let obj = item
                     obj.cantidad = 1
                     obj.sub_total = parseFloat(item.sale_unit_price).toFixed(2)
+                    obj.exchange_rate_sale = ''
                     return obj
                 })
             }
