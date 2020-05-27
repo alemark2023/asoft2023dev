@@ -27,7 +27,7 @@
                 </h2>
                 <div class="price-box">
                     <!-- <span class="old-price">S/ {{ number_format( ($item->sale_unit_price * 1.2 ) , 2 )}}</span> -->
-                    <span class="product-price">S/ {{ number_format($item->sale_unit_price, 2) }}</span>
+                    <span class="product-price">{{ $item->currency_type['symbol'] }} {{ number_format($item->sale_unit_price, 2) }}</span>
                 </div>
                 <div class="product-action">
                     <a href="#" class="paction add-cart" data-product="{{ json_encode( $item ) }}" title="Add to Cart">
@@ -41,9 +41,9 @@
 @endforeach
 
 <?php
-    
+
     function stock($item, $config)
-    {        
+    {
         if($config) {
             $stock=0;
             foreach ($item->warehouses as $key => $value) {

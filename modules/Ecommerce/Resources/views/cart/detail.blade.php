@@ -26,12 +26,12 @@
                                 <a href="#">@{{ row.name }}</a>
                             </h2>
                         </td>
-                        <td>S/ @{{ row.sale_unit_price }}</td>
+                        <td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td>
                         <td>
                             <input class="vertical-quantity form-control input_quantity" :data-product="row.id"
                                 type="text">
                         </td>
-                        <td>@{{ row.sub_total }}</td>
+                        <td>S/ @{{ row.sub_total }}</td>
                         <td>
                             <button type="button" @click="deleteItem(row.id, index)"
                                 class="btn btn-outline-danger btn-sm"><i class="icon-cancel"></i></button>
@@ -280,7 +280,8 @@
             user: {},
             typeDocumentSelected: '',
             response_order_total:0,
-            errors: {}
+            errors: {},
+            exchange_rate_sale: ''
         },
         computed: {
             maxLength: function () {
@@ -292,18 +293,35 @@
                 }
             }
         },
-        mounted() {
+        async mounted() {
+          await this.changeExchangeRate(moment().format("YYYY-MM-DD"))
 
-            let contex = this
-            $(".input_quantity").change(function (e) {
-                let value = parseFloat($(this).val())
-                let id = $(this).data('product')
-                let row = contex.records.find(x => x.id == id)
-                row.sub_total = (parseFloat(row.sale_unit_price) * value).toFixed(2)
-                row.cantidad = value
-                contex.calculateSummary()
-            });
-            this.calculateSummary()
+          let exchange_rate_sale = this.exchange_rate_sale
+          let contex = this
+
+          $(".input_quantity").change(function (e) {
+            let value = parseFloat($(this).val())
+            let id = $(this).data('product')
+            let row = contex.records.find(x => x.id == id)
+
+            if(row.currency_type_id === 'USD') {
+              row.sub_total = ((parseFloat(row.sale_unit_price) * value) * exchange_rate_sale).toFixed(2)
+            } else {
+              row.sub_total = (parseFloat(row.sale_unit_price) * value).toFixed(2)
+            }
+
+            row.cantidad = value
+            contex.calculateSummary()
+          })
+
+          this.records.forEach(function (item) {
+            if(item.currency_type_id === 'USD') {
+              item.sub_total = (parseFloat(item.sub_total) * exchange_rate_sale).toFixed(2)
+            }
+            item.sale_unit_price = parseFloat(item.sale_unit_price).toFixed(2)
+          })
+
+          this.calculateSummary()
         },
         created() {
             let array = localStorage.getItem('products_cart');
@@ -321,6 +339,10 @@
 
         },
         methods: {
+          async changeExchangeRate(exchange_rate_date){
+            var response = await axios.get(`/exchange_rate/ecommence/${exchange_rate_date}`)
+            this.exchange_rate_sale = parseFloat(response.data.sale)
+          },
             getFormPaymentCash() {
               this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
               this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
@@ -727,7 +749,7 @@
             },
             calculateSummary() {
 
-                let subtotal = 0.00
+                //let subtotal = 0.00
                 let total_taxed = 0
                 let total_value = 0
                 let total_exonerated = 0
@@ -735,8 +757,8 @@
                 let total = 0
 
                 this.records.forEach(function (item) {
-                    //console.log(item)
-                    subtotal += parseFloat(item.sub_total)
+
+                    //subtotal += parseFloat(item.sub_total)
 
                     let unit_price = item.sub_total
                     let unit_value = unit_price
