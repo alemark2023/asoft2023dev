@@ -37,7 +37,7 @@
             <td>{{ row.customer }}</td>
             <td class="text-center">
               <template>
-                <el-popover placement="right" width="535" trigger="click">
+                <el-popover placement="right" width="540" trigger="click">
                   <el-table  style="width: 100%" :data="row.items">
                     <el-table-column width="150" property="name" label="Nombre"></el-table-column>
                     <el-table-column width="90" property="cantidad" label="Cant."></el-table-column>
@@ -49,7 +49,7 @@
                     <el-table-column width="90" property="exchange_rate_sale" label="T/C"></el-table-column>
                     <el-table-column width="90" label="Subtotal">
                       <template slot-scope="scope">
-                        <span>{{ subtotal(scope.row) }}</span>
+                        <span>S/ {{ subtotal(scope.row) }}</span>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -66,7 +66,7 @@
                 </el-popover>
               </template>
             </td>
-            <td>{{row.total}}</td>
+            <td>S/ {{row.total}}</td>
             <td>{{row.created_at}}</td>
             <td>{{row.reference_payment}}</td>
             <td>
@@ -202,7 +202,7 @@ export default {
     },
     async save () {
       var save = []
-      
+
       for (var i = 0; i < this.record.items.length; i++) {
         if (this.totalProduct[i] === this.record.items[i].id) {
           save.push({
