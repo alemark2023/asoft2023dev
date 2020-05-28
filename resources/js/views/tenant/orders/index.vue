@@ -37,13 +37,19 @@
             <td>{{ row.customer }}</td>
             <td class="text-center">
               <template>
-                <el-popover placement="right" width="415" trigger="click">
+                <el-popover placement="right" width="535" trigger="click">
                   <el-table  style="width: 100%" :data="row.items">
                     <el-table-column width="150" property="name" label="Nombre"></el-table-column>
-                    <el-table-column width="90" property="cantidad" label="Cantidad"></el-table-column>
-                    <el-table-column width="150" label="Precio">
+                    <el-table-column width="90" property="cantidad" label="Cant."></el-table-column>
+                    <el-table-column width="90" label="Precio">
                       <template slot-scope="scope">
-                        <span>{{ Number( scope.row.sale_unit_price).toFixed(2)}}</span>
+                        <span>{{ (scope.row.currency_type_id === 'USD') ? '$' : 'S/' }} {{ Number( scope.row.sale_unit_price).toFixed(2)}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column width="90" property="exchange_rate_sale" label="T/C"></el-table-column>
+                    <el-table-column width="90" label="Subtotal">
+                      <template slot-scope="scope">
+                        <span>{{ subtotal(scope.row) }}</span>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -151,6 +157,19 @@ export default {
   },
   computed: {},
   methods: {
+    subtotal(item) {
+      var subtotal
+      if(item.currency_type_id === 'USD') {
+        subtotal = Number(item.cantidad * item.exchange_rate_sale * parseFloat(item.sale_unit_price)).toFixed(2)
+        if(isNaN(subtotal)){
+          return '-'
+        } else {
+          return subtotal
+        }
+      } else {
+        return parseFloat(item.cantidad * item.sale_unit_price)
+      }
+    },
     optionDisable(product, stock) {
       for (var i = 0; i < this.record.items.length; i++) {
         if (product === this.record.items[i].id) {
