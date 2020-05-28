@@ -11,38 +11,38 @@
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: center;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -85,6 +85,7 @@
                                 <th>Descripción</th>
                                 <th>Inventario actual</th>
                                 <th>Costo</th>
+                                <th>Costo Total</th>
                                 <th>Precio de venta</th>
                                 <th>Almacén</th>
                             </tr>
@@ -96,6 +97,7 @@
                                     <td class="celda">{{$value->item->description ?? ''}}</td>
                                     <td class="celda">{{$value->stock}}</td>
                                     <td class="celda">{{$value->item->sale_unit_price}}</td>
+                                    <td class="celda">{{number_format($value->stock * $value->item->sale_unit_price, 6)}}</td>
                                     <td class="celda">{{$value->item->purchase_unit_price}}</td>
                                     <td class="celda">{{$value->warehouse->description}}</td>
                                 </tr>
