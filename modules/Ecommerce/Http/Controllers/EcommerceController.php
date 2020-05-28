@@ -64,7 +64,7 @@ class EcommerceController extends Controller
             'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $sale_unit_price : ($sale_unit_price * $exchange_rate_sale),
             'currency_type_id' => $row->currency_type_id,
             'has_igv' => (bool) $row->has_igv,
-            // 'sale_unit_price' => $row->sale_unit_price,
+            'sale_unit' => $row->sale_unit_price,
             'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
             'currency_type_symbol' => $row->currency_type->symbol,
             'image' =>  $row->image,
@@ -328,12 +328,4 @@ class EcommerceController extends Controller
         return ['success' => true];
 
     }
-
-
-
-
-
-
-
-
 }

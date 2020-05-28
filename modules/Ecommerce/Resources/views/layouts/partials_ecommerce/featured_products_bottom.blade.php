@@ -27,10 +27,10 @@ $item_id = (isset($path[2])) ? $path[2] : 0;
                                 </div><!-- End .product-ratings -->
                             </div><!-- End .product-container -->
                             <h2 class="product-title">
-                                <a href="/ecommerce/item/{{ $item->id }}">{{$item->name}}</a>
+                                <a href="/ecommerce/item/{{ $item->id }}">{{$item->description}}</a>
                             </h2>
                             <div class="price-box">
-                                <span class="product-price">S/ {{ number_format($item->sale_unit_price, 2) }}</span>
+                                <span class="product-price">{{ $item->currency_type_symbol }} {{ number_format($item->sale_unit, 2) }}</span>
                             </div><!-- End .price-box -->
 
                             <div class="product-action">
