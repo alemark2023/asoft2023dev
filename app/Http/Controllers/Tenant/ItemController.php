@@ -33,6 +33,8 @@ use Modules\Item\Models\Brand;
 use Modules\Inventory\Models\Warehouse as WarehouseModule;
 use App\Models\Tenant\Establishment;
 use Modules\Item\Models\ItemLotsGroup;
+use Carbon\Carbon;
+use App\Exports\ItemExport;
 
 
 class ItemController extends Controller
@@ -527,6 +529,22 @@ class ItemController extends Controller
             return  ['success' => false, 'message' => 'Error inesperado, no se pudo habilitar el producto'];
 
         }
+    }
+
+    public function export(Request $request)
+    {
+        $date = $request->month_start.'-01';
+        $start_date = Carbon::parse($date);
+        $end_date = Carbon::parse($date)->addMonth()->subDay();
+        // dd($start_date.' - '.$end_date);
+
+        $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
+        // dd(new ItemCollection($records));
+
+        return (new ItemExport)
+                ->records($records)
+                ->download('Reporte_Items_'.Carbon::now().'.xlsx');
+
     }
 
 
