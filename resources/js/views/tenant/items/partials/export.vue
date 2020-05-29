@@ -1,28 +1,28 @@
 <template>
-	<el-dialog :title="Exportar Productos" :visible="showDialog" @close="close" @open="create" class="dialog-import">
-		<div class="form-body">
-			<div class="row">
-				<div class="col-12">
-					<template v-if="form.period === 'month' || form.period === 'between_months'">
-                        <div class="col-md-3">
-                            <label class="control-label">Mes de</label>
-                            <el-date-picker v-model="form.month_start" type="month"
-                                            @change="changeDisabledMonths"
-                                            value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
-                        </div>
-                    </template>
-				</div>
-			</div>
-			<div class="form-actions text-right mt-4">
-                <el-button @click.prevent="close()">Cancelar</el-button>
-                <el-button type="primary" native-type="submit" :loading="loading_submit">Procesar</el-button>
+    <el-dialog title="Exportar Productos" :visible="showDialog" @close="close" class="dialog-import">
+        <form autocomplete="off" @submit.prevent="submit">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-6">
+                        <template>
+                            <label class="control-label">Mes</label>
+                            <el-date-picker v-model="form.month_start" type="month" value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
+                        </template>
+                    </div>
+                </div>
+                <div class="form-actions text-right mt-4">
+                    <el-button @click.prevent="close()">Cancelar</el-button>
+                    <el-button type="primary" native-type="submit" :loading="loading_submit">Procesar</el-button>
+                </div>
             </div>
-        </div>
-	</el-dialog>
+        </form>
+    </el-dialog>
 </template>
 
 <script>
-	export default {
+    import queryString from 'query-string'
+
+    export default {
         props: ['showDialog'],
         data() {
             return {
@@ -49,6 +49,22 @@
                     month_start: moment().format('YYYY-MM'),
                 }
             },
+            close() {
+                this.$emit('update:showDialog', false)
+                this.initForm()
+            },
+            submit() {
+                this.loading_submit = true
+
+                let query = queryString.stringify({
+                    ...this.form
+                });
+                window.open(`/${this.resource}/export/?${query}`, '_blank');
+
+                this.loading_submit = false
+                this.$emit('update:showDialog', false)
+                this.initForm()
+            }
         }
     }
 </script>
