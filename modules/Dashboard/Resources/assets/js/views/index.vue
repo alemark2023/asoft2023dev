@@ -94,7 +94,7 @@
           </div>
         </section>
       </div>
-      <div class="col-xl-6" v-if="!disc.error">
+      <div v-bind:class="[company.certificate_due != null ? 'col-xl-4': 'col-xl-6']" v-if="!disc.error">
         <section class="card card-featured-left card-featured-secondary">
           <div class="card-body">
             <div class="widget-summary">
@@ -124,6 +124,26 @@
                       <el-progress :percentage="disc.used"></el-progress>
                     </div>
                   </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-xl-2" v-if="company.certificate_due">
+        <section class="card card-featured-left card-featured-secondary">
+          <div class="card-body">
+            <div class="widget-summary">
+              <div class="widget-summary-col">
+                <div class="row no-gutters">
+                  <div class="col-md-12 m-b-10">
+                    <h4 class="card-title">Certificado</h4>
+                  </div>
+                  <div class="col-lg-12 py-1">
+                    <div class="summary">
+                      Vence: {{company.certificate_due}}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -702,7 +722,8 @@ export default {
       showDialogSaleNotePayments: false,
       filter_item:false,
       all_items: [],
-      items:[]
+      items:[],
+      company: {}
     };
   },
   async created() {
@@ -829,6 +850,12 @@ export default {
       this.loadDataAditional();
       this.loadDataUtilities();
       //this.loadCustomer();
+      this.loadCompany();
+    },
+    loadCompany() {
+      this.$http.get(`/companies/record`).then(response => {
+        this.company = response.data.data
+      });
     },
     loadData() {
       this.$http.post(`/${this.resource}/data`, this.form).then(response => {

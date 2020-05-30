@@ -19,6 +19,7 @@ class Company extends ModelTenant
         'soap_password',
         'soap_url',
         'certificate',
+        'certificate_due',
         'logo',
         'detraction_account',
         'operation_amazonia',
