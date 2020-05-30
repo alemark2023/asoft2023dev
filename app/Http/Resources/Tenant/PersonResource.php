@@ -33,7 +33,7 @@ class PersonResource extends JsonResource
             'state' => $this->state,
             'condition' => $this->condition,
             'person_type_id' => $this->person_type_id,
-            'contact' => json_decode($this->contact),
+            'contact' => $this->contact,
             'comment' => $this->comment,
             'addresses' => collect($this->addresses)->transform(function ($row) {
                 return [
