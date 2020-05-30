@@ -35,9 +35,18 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price">
-                                <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
+                            <el-input v-model="form.unit_price" class="input-with-select">
+                                <!-- template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
+                            <!-- el-input placeholder="Please input" v-model="input3" class="input-with-select" -->
+                              <el-select v-model="currency_type_symbol" slot="prepend" class="el-select-currency">
+                                <el-option label="S/" value="PEN"></el-option>
+                                <el-option label="$" value="USD"></el-option>
+                              </el-select>
+                            </el-input>
+                            <!-- el-input v-model="form.unit_price">
+                                <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
+                            </el-input -->
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
@@ -251,8 +260,14 @@
 </template>
 <style>
 .el-select-dropdown {
-    max-width: 80% !important;
-    margin-right: 5% !important;
+  max-width: 80% !important;
+  margin-right: 5% !important;
+}
+.el-select-currency {
+  width: 60px;
+}
+.input-with-select {
+  background-color: #fff;
 }
 </style>
 <script>
@@ -260,10 +275,12 @@
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
     import LotsForm from '../../items/partials/lots.vue'
+    import {functions, exchangeRate} from '../../../../mixins/functions'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
         components: {itemForm, LotsForm},
+        mixins: [functions, exchangeRate],
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
@@ -283,6 +300,9 @@
                 use_price: 1,
                 lot_code: null,
                 change_affectation_igv_type_id: false,
+                currency_type_symbol: 'PEN',
+                date_of_issue: moment().format('YYYY-MM-DD'),
+                exchange_rate_sale: 0
             }
         },
         created() {
@@ -341,6 +361,7 @@
                 this.item_unit_type = {};
                 this.lots = []
                 this.lot_code = null
+                this.currency_type_symbol = 'PEN'
             },
             // initializeFields() {
             //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
@@ -448,6 +469,14 @@
                 this.form.item.unit_price = this.form.unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
+
+                if(this.currency_type_symbol === 'USD') {
+                  await this.searchExchangeRateByDate(this.date_of_issue).then(response => {
+                      this.exchange_rate_sale = response
+                  })
+                  this.form.item.unit_price = this.form.quantity * this.form.unit_price * this.exchange_rate_sale
+                }
+
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
 
                 this.row.lot_code = await this.lot_code
