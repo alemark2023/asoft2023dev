@@ -57,18 +57,30 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $total = 0;
+                            @endphp
                             @foreach($records as $key => $value)
-                            <tr>
-                                <td>{{$loop->iteration}}</td>
-                                <td>{{$value->item->description ?? ''}}</td>
-                                <td>{{$value->stock}}</td>
-                                <td>{{$value->stock * $value->item->sale_unit_price}}</td>
-                                <td>{{$value->item->sale_unit_price}}</td>
-                                <td>{{$value->item->purchase_unit_price}}</td>
-                                <td>{{$value->warehouse->description}}</td>
-
-                            </tr>
+                                @php
+                                    $total_line = number_format($value->stock * $value->item->sale_unit_price, 6);
+                                    $total = $total + $total_line;
+                                @endphp
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$value->item->description ?? ''}}</td>
+                                    <td>{{$value->stock}}</td>
+                                    <td>{{$value->item->sale_unit_price}}</td>
+                                    <td>{{$total_line}}</td>
+                                    <td>{{$value->item->purchase_unit_price}}</td>
+                                    <td>{{$value->warehouse->description}}</td>
+                                </tr>
                             @endforeach
+                            <tr>
+                                <td colspan="4" style="text-align: right;">Costo Total de Inventario</td>
+                                <td>{{number_format($total, 6)}}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

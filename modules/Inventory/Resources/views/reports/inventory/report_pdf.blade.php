@@ -91,17 +91,30 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $total = 0;
+                            @endphp
                             @foreach($reports as $key => $value)
+                                @php
+                                    $total_line = number_format($value->stock * $value->item->sale_unit_price, 6);
+                                    $total = $total + $total_line;
+                                @endphp
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->item->description ?? ''}}</td>
                                     <td class="celda">{{$value->stock}}</td>
                                     <td class="celda">{{$value->item->sale_unit_price}}</td>
-                                    <td class="celda">{{number_format($value->stock * $value->item->sale_unit_price, 6)}}</td>
+                                    <td class="celda">{{$total_line}}</td>
                                     <td class="celda">{{$value->item->purchase_unit_price}}</td>
                                     <td class="celda">{{$value->warehouse->description}}</td>
                                 </tr>
                             @endforeach
+                            <tr>
+                                <td class="celda" colspan="4" style="text-align: right;">Costo Total de Inventario</td>
+                                <td class="celda">{{number_format($total, 6)}}</td>
+                                <td class="celda"></td>
+                                <td class="celda"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
