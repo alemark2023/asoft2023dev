@@ -33,6 +33,7 @@ if ($hostname) {
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
             Route::post('statusOrder/update/', 'Tenant\OrderController@updateStatusOrders');
+            Route::get('orders/pdf/{id}', 'Tenant\OrderController@pdf');
 
             //warehouse
             Route::post('orders/warehouse', 'Tenant\OrderController@searchWarehouse');

@@ -29,6 +29,7 @@
             <th>Medio Pago</th>
             <th>Estatus del Pedido</th>
             <th>Comprobante Electronico</th>
+            <th>Factura</th>
           </tr>
           <tr></tr>
           <tr slot-scope="{ index, row }">
@@ -80,6 +81,9 @@
               </el-select>
             </td>
             <td>{{row.number_document}}</td>
+            <td>
+              <el-button class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.id)"></el-button>
+            </td>
           </tr>
         </data-table>
       </div>
@@ -128,6 +132,7 @@
 </template>
 <script>
 import DataTable from "../../../components/DataTable.vue";
+import queryString from 'query-string'
 
 export default {
   props: [],
@@ -157,6 +162,9 @@ export default {
   },
   computed: {},
   methods: {
+    clickDownload(row) {
+      window.open(`/${this.resource}/pdf/${row}`, '_blank');
+    },
     subtotal(item) {
       var subtotal
       if(item.currency_type_id === 'USD') {

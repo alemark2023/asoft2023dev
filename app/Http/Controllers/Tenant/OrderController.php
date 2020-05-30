@@ -5,11 +5,15 @@ use App\Http\Controllers\Controller;
 //use Illuminate\Support\Str;
 //use App\Http\Requests\Tenant\OrderRequest;
 use App\Http\Resources\Tenant\OrderCollection;
+use App\Http\Resources\Tenant\OrderResource;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Order;
 use App\Models\Tenant\ItemWarehouse;
 use App\Http\Resources\Tenant\ItemWarehouseCollection;
+use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Company;
 
 class OrderController extends Controller
 {
@@ -65,6 +69,18 @@ class OrderController extends Controller
     {
       $product = ItemWarehouse::whereIn('item_id', $request->item_id)->orderBy('item_id')->get();
       return new ItemWarehouseCollection($product);
+    }
+
+    public function pdf(Request $request) {
+
+      $company = Company::first();
+      $establishment = Establishment::first();
+      $records = Order::find($request->id);
+      $customer = $records->customer;
+
+      $pdf = PDF::loadView('tenant.reports.orders.report_pdf', compact("records", "company", "establishment", "customer"));
+      $filename = 'Factura_Pedidos'.date('YmdHis');
+      return $pdf->download($filename.'.pdf');
     }
 
 }
