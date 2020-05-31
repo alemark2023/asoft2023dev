@@ -22,8 +22,8 @@
                 <a href="product.html">{{$item->name}}</a>
             </h2>
             <div class="price-box">
-                <span class="old-price">S/ {{ number_format($item->sale_unit_price, 2) }}</span>
-                <span class="product-price">S/ {{ number_format($item->sale_unit_price, 2) }}</span>
+                <span class="old-price">{{ $item->currency_type['symbol'] }} {{ number_format($item->sale_unit_price, 2) }}</span>
+                <span class="product-price">{{ $item->currency_type['symbol'] }} {{ number_format($item->sale_unit_price, 2) }}</span>
             </div><!-- End .price-box -->
 
             <div class="product-action">

@@ -31,6 +31,7 @@ class FeaturedProductsViewComposer
                 'name' => $row->name,
                 'second_name' => $row->second_name,
                 'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $sale_unit_price : $sale_unit_price * $exchange_rate_sale,
+                'sale_unit' => $sale_unit_price,
                 'currency_type_id' => $row->currency_type_id,
                 'has_igv' => (bool) $row->has_igv,
                 'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
