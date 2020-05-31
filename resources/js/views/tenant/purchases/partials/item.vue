@@ -35,8 +35,11 @@
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price">
-                                <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
+                            <el-input v-model="form.unit_price" class="input-with-select">
+                              <el-select v-model="form.item.currency_type_id" slot="prepend" class="el-select-currency">
+                                <el-option label="S/" value="PEN"></el-option>
+                                <el-option label="$" value="USD"></el-option>
+                              </el-select>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
@@ -251,8 +254,14 @@
 </template>
 <style>
 .el-select-dropdown {
-    max-width: 80% !important;
-    margin-right: 5% !important;
+  max-width: 80% !important;
+  margin-right: 5% !important;
+}
+.el-select-currency {
+  width: 59px;
+}
+.input-with-select {
+  background-color: #fff;
 }
 </style>
 <script>
@@ -282,7 +291,7 @@
                 attribute_types: [],
                 use_price: 1,
                 lot_code: null,
-                change_affectation_igv_type_id: false,
+                change_affectation_igv_type_id: false
             }
         },
         created() {
@@ -448,6 +457,7 @@
                 this.form.item.unit_price = this.form.unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
+
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
 
                 this.row.lot_code = await this.lot_code
