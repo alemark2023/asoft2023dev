@@ -796,7 +796,7 @@
               hotel: {},
               additional_information: null,
               actions: {
-                format_pdf: "a4"
+                format_pdf: 'a4'
               }
             };
 

@@ -725,11 +725,6 @@
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
             async asignPlateNumberToItems() {
-
-              this.form.actions.push({
-                'format_pdf': 'a4'
-              })
-
                 if(this.form.plate_number) {
 
                     await this.form.items.forEach(item => {
@@ -769,7 +764,6 @@
                     this.resource_payments = "document_payments";
                     this.resource_options = this.resource_documents;
                     await this.asignPlateNumberToItems()
-                    this.form.actions.format_pdf = 'a4'
                 }
 
                 this.loading_submit = true
