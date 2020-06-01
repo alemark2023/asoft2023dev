@@ -367,6 +367,7 @@ class AccountController extends Controller
     {
 
         return $documents->transform(function($row) {
+            $company_account = CompanyAccount::first();
             $document_base = ($row->note) ? $row->note : null;
 
             if($row->payments->count() > 0){
@@ -385,7 +386,7 @@ class AccountController extends Controller
                 'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
                 'document_type_id' => $row->document_type_id,
-                'series' => $row->series,
+                'series' => '00'.$row->series,
                 'number' => str_pad($row->number, 13, '0', STR_PAD_LEFT),
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
                 'customer_number' => $row->customer->number,
@@ -408,6 +409,8 @@ class AccountController extends Controller
                 'amount_usd' => null,
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
                 'payment_condition' => $payment_condition,
+                'account_taxed' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
+                'account_total' => ($row->currency_type_id === 'PEN') ? $company_account->total_pen : $company_account->total_usd,
                 'aditional_information' => $row->aditional_information,
                 'payment_method' => $payment_method,
             ];
