@@ -28,9 +28,9 @@
         <td>{{ $row['payment_condition'] }}</td>
         <td></td>
         <td></td>
-        <td>70111</td>
+        <td>{{ $row['account_taxed'] }}</td>
         <td></td>
-        <td></td>
+        <td>{{ $row['account_total'] }}</td>
         <td></td>
         <td></td>
         <td></td>
