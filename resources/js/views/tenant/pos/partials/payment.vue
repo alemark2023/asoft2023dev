@@ -733,8 +733,8 @@
 
                         if(!at){
                             item.attributes.push({
-                                attribute_type_id: '5010',
-                                description: "Numero de Placa",
+                                attribute_type_id: '7000',
+                                description: "Gastos Art. 37 Renta:  Número de Placa",
                                 value: this.form.plate_number,
                                 start_date: null,
                                 end_date: null,
