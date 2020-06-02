@@ -85,8 +85,6 @@ class PersonController extends Controller
 
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
-        $person->fill($request->except(['contact']));
-        $person->contact = json_encode($request->contact);
         $person->save();
 
         $person->addresses()->delete();
