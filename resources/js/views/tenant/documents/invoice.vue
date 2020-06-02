@@ -721,7 +721,7 @@
                 all_detraction_types: [],
                 customer_addresses:  [],
                 payment_destinations:  [],
-
+                form_cash_document: {}
             }
         },
         async created() {
@@ -1145,6 +1145,11 @@
                     customer_address_id:null
                 }
 
+                this.form_cash_document = {
+                    document_id: null,
+                    sale_note_id: null
+                }
+
                 this.clickAddPayment()
                 this.clickAddInitGuides()
                 this.is_receivable = false
@@ -1528,6 +1533,11 @@
                         this.resetForm();
                         this.documentNewId = response.data.data.id;
                         this.showDialogOptions = true;
+
+                        this.form_cash_document.document_id = response.data.data.id;
+
+                        // this.savePaymentMethod();
+                        this.saveCashDocument();
                     }
                     else {
                         this.$message.error(response.data.message);
@@ -1544,6 +1554,19 @@
                 }).then(() => {
                     this.loading_submit = false;
                 });
+            },
+            saveCashDocument(){
+                this.$http.post(`/cash/cash_document`, this.form_cash_document)
+                    .then(response => {
+                        if (response.data.success) {
+                            // console.log(response)
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    })
             },
             validate_payments(){
 
