@@ -59,14 +59,14 @@
                             </div> 
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_due}"> 
-                                    <label class="control-label">Fec. Vencimiento</label>
+                                    <label class="control-label">Tiempo de Validez</label>
                                     <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.delivery_date}"> 
-                                    <label class="control-label">Fec. Entrega</label>
+                                    <label class="control-label">Tiempo de Entrega</label>
                                     <el-date-picker v-model="form.delivery_date" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>

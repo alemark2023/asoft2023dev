@@ -56,6 +56,16 @@
                 </ul>
             </nav>
 
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    <li class="{{ ($path[0] === 'auto-update')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{route('system.update')}}">
+                            <i class="fas fa-code-branch"></i><span>Actualización</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
 
         <script>
             // Maintain Scroll Position

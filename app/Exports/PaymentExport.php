@@ -12,10 +12,10 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 class PaymentExport implements  FromView, ShouldAutoSize
 {
     use Exportable;
-    
+
     public function records($records) {
         $this->records = $records;
-        
+
         return $this;
     }
 

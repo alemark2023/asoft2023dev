@@ -9,7 +9,12 @@
                     <el-button @click.prevent="execComposer()" :loading="loading_submit">Composer Install</el-button>
                 </div>
                 <p class="text-center text-muted mb-0 mt-2">Versión actual: <span>{{version}}</span></p>
-                <p class="text-right mb-0 mt-2"><a href="https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker" class="text-info" target="BLANK">Actualización alternativa</a></p>
+                <p class="text-right mb-0 mt-2"><a href="https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker" class="text-info" target="BLANK">Actualización alternativa con script</a></p>
+                <p class="text-right mb-0 mt-2">
+                    <el-tooltip content="Instalaciones anteriores de Mayo 2020" placement="top">
+                        <a href="https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/config-auto-update" class="text-info" target="BLANK">Configuación para disponer de actualiciones automáticas</a>
+                    </el-tooltip>
+                </p>
             </div>
             <div class="card-body">
 

@@ -38,6 +38,7 @@
             <th>Nombre</th>
             <th>Descripción</th>
             <th class="text-center">P.Unitario (Venta)</th>
+            <th class="text-center">Stock General</th>
             <th class="text-center">Imagen</th>
             <th class="text-center">Tags</th>
 
@@ -52,6 +53,7 @@
             <td>{{ row.description }}</td>
             <td>{{ row.name }}</td>
             <td class="text-center">{{ row.sale_unit_price }}</td>
+            <td class="text-center">{{ stock(row.warehouses) }}</td>
             <td class="text-center">
               <a @click="viewImages(row)" href="#">
                 <img :src="row.image_url_small" alt width="150" height="150" />
@@ -197,7 +199,14 @@ export default {
       this.destroy(`/${this.resource}/${id}`).then(() =>
         this.$eventHub.$emit("reloadData")
       );
+    },
+    stock (items) {
+      let stock = 0
+      items.forEach((item) => {
+        stock += parseInt(item.stock)
+      })
+      return stock
     }
   }
-};
+}
 </script>

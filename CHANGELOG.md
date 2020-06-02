@@ -1,3 +1,55 @@
+## 3.3.6
+
+### docs
+2020-05-11 : docs | changelog update<br>
+
+
+### feature
+2020-05-29 : feature | i-70 | exportanto clientes y productos<br>
+2020-05-27 : feature | i-41 | Ajuste en pedidos<br>
+2020-05-27 : feature | i-41 | No distingue moneda en la Tienda virtual<br>
+2020-05-26 : feature | i-68 | NO MUESTRA DATOS DEL COMPRADOR para pagos con CULQI<br>
+2020-05-25 : feature | i-4 | Agregar placa al POS<br>
+2020-05-21 : feature | i-34 | campo tipo de documento en catalogo de clientes<br>
+2020-05-21 : feature | gr-notion | template pdf add contact-customer<br>
+2020-05-21 : feature | i-92 | No llega el correo de confirmación<br>
+2020-05-19 : feature | not-gr | contacto de cliente - nombre y numero<br>
+2020-05-19 : feature | i-46 | mostrando unidad de productos en guias de remision<br>
+2020-05-19 : feature | i-81 | Colocar en producto Agotado , cuando no tenga stock<br>
+2020-05-19 : feature | auto-update link config<br>
+2020-05-19 : feature | i-96 | Error de tipeo tienda on-line<br>
+2020-05-19 : feature | i-44 | textos boton anular<br>
+2020-05-19 : feature | i-73 | Observaciones en ecommerce<br>
+2020-05-18 : 'feature<br>
+2020-05-15 : feature | i-61 | Texto sobresale del contenedor<br>
+2020-05-14 : feature | i-59 | Actualizacion modulo de pedidos, resolucion de conflictos<br>
+2020-05-13 : feature | config para ver stock de productos (solo gestion de un solo establecimiento)<br>
+2020-05-12 : feature | configuracion de estado por defecto para campo igv en formulario de producto<br>
+2020-05-08 : feature | i-58 | Actualización proceso de pago ecommerce<br>
+
+
+## 3.3.5
+
+### docs
+2020-04-29 : docs | update chagelog<br>
+
+
+### fixed
+2020-04-30 : fixed | i-43 | No eliminaba la diracción al editar un usuario<br>
+
+
+### feature
+2020-05-08 : feature | i-57 | reporte comisiones vendedor utilidad - ajustes<br>
+2020-05-07 : feature | i-57 | avance comisiones vendedor - utilidad<br>
+2020-05-07 : feature | i-57 | gestion servicio tecnico<br>
+2020-05-06 : feature | i-38 | Agregada forma pago en la tabla principal<br>
+2020-05-05 : feature | i-27 | Problemas con los valores de Saldos en Kardex (Correción)<br>
+2020-05-04 : feature | i-39 | Productos en tienda No muestra Nombre si no Descripción<br>
+2020-05-04 : feature | i-27 | Productos en tienda No muestra Nombre si no Descripción<br>
+2020-05-04 : feature | i-27 | Problemas con los valores de Saldos en Kardex (paginación)<br>
+2020-04-29 : feature | auto-update command fetch to download tags<br>
+
+
 ## 3.3.4
 
 ### docs

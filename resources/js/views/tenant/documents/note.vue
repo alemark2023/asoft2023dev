@@ -180,6 +180,8 @@
                             :currency-type-id-active="form.currency_type_id"
                             :user="user"
                             :exchange-rate-sale="form.exchange_rate_sale"
+                            :configuration="configuration"
+                            :editNameProduct="configuration.edit_name_product"
                             @add="addRow"></document-form-item>
 
         <document-options :showDialog.sync="showDialogOptions"
@@ -197,7 +199,7 @@
     export default {
         components: {DocumentFormItem, DocumentOptions},
         mixins: [functions, exchangeRate],
-        props: ['document_affected'],
+        props: ['document_affected', 'configuration'],
         data() {
             return {
                 recordItem: null,

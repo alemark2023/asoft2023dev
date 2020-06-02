@@ -237,6 +237,15 @@ return [
         'expense_method_type_id' => 'm. gasto',
         'payment_destination_id' => 'destino',
         'telephone' => 'teléfono',
-        'customer' => 'cliente'
+        'customer' => 'cliente',
+
+        'cellphone' => 'celular',
+        'state' => 'estado',
+        'reason' => 'motivo',
+        'serial_number' => 'n° serie',
+        'prepayment' => 'pago adelantado',
+        'activities' => 'actividades',
+        'user_id' => 'vendedor',
+        'internal_id' => 'código interno',
     ],
 ];

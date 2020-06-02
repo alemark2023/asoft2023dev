@@ -65,8 +65,8 @@
                 </div><!-- End .product-container -->
 
                 <div class="price-box">
-                    <span class="old-price">{{ number_format( ($record->sale_unit_price * 1.2 ) , 2 ) }}</span>
-                    <span class="product-price">{{ number_format($record->sale_unit_price, 2) }}</span>
+                    <span class="old-price">{{ $record->currency_type['symbol'] }} {{ number_format( ($record->sale_unit_price * 1.2 ) , 2 ) }}</span>
+                    <span class="product-price">{{ $record->currency_type['symbol'] }} {{ number_format($record->sale_unit_price, 2) }}</span>
                 </div><!-- End .price-box -->
 
                 <div class="product-desc">
@@ -76,7 +76,7 @@
 
 
                 <div class="product-action">
-                    <div class="product-single-qty">
+                    <!-- div class="product-single-qty">
                         <input class="horizontal-quantity form-control" type="text">
                     </div><!-- End .product-single-qty -->
 
@@ -91,4 +91,3 @@
         </div><!-- End .col-lg-5 -->
     </div><!-- End .row -->
 </div><!-- End .product-single-container -->
-

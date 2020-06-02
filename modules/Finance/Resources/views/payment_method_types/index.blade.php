@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <tenant-finance-payment-method-types-index></tenant-finance-payment-method-types-index>
+    <tenant-finance-payment-method-types-index :configuration="{{ $configuration }}"></tenant-finance-payment-method-types-index>
 
 @endsection

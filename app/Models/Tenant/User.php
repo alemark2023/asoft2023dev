@@ -7,6 +7,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Modules\LevelAccess\Models\ModuleLevel;
+use Modules\Sale\Models\UserCommission;
+
 
 class User extends Authenticatable
 {
@@ -154,4 +156,10 @@ class User extends Authenticatable
         }
         return false;
     }
+    
+    public function user_commission()
+    {
+        return $this->hasOne(UserCommission::class);
+    }
+
 }

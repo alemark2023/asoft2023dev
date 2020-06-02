@@ -102,8 +102,13 @@
                 @if ($document->guides)
                     @foreach($document->guides as $guide)
                         <tr>
-                            <td>{{ \App\Models\Tenant\Catalogs\Code::byCatalogAndCode('01', $guide->document_type_code)->description }}</td>
-                            <td>{{ $guide->number }}</td>
+                            @if(isset($guide->document_type_description))
+                                <td>{{ $guide->document_type_description }}</td>
+                            @else
+                                <td>{{ $guide->document_type_id }}</td>
+                            @endif
+                            {{-- <td>{{ \App\Models\Tenant\Catalogs\Code::byCatalogAndCode('01', $guide->document_type_code)->description }}</td>
+                            <td>{{ $guide->number }}</td> --}}
                         </tr>
                     @endforeach
                 @endif

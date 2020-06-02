@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickExport()"><i class="fa fa-download"></i> Exportar</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportListPrice()"><i class="fa fa-upload"></i> Importar L. Precios</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
@@ -40,11 +41,15 @@
                         <td>{{ row.name }}</td>
                         <td>{{ row.item_code }}</td>
                         <td>
-                            <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
-                            <template v-else-if="typeUser!='seller'&& row.unit_type_id !='ZZ'">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
-                            </template>
-
+                            <div v-if="config.product_only_location == true">
+                                {{ row.stock }}
+                            </div>
+                            <div v-else>
+                                <template v-if="typeUser=='seller' && row.unit_type_id !='ZZ'">{{ row.stock }}</template>
+                                <template v-else-if="typeUser!='seller' && row.unit_type_id !='ZZ'">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickWarehouseDetail(row.warehouses)"><i class="fa fa-search"></i></button>
+                                </template>
+                            </div>
                             <!-- <template v-for="item in row.warehouses">
                                 <template>{{item.stock}} - {{item.warehouse_description}}</template><br>
                             </template> -->
@@ -76,6 +81,7 @@
                         :recordId="recordId"></items-form>
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
+            <items-export :showDialog.sync="showExportDialog"></items-export>
 
             <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
@@ -93,25 +99,31 @@
     import WarehousesDetail from './partials/warehouses.vue'
     import ItemsImport from './import.vue'
     import ItemsImportListPrice from './partials/import_list_price.vue'
+    import ItemsExport from './partials/export.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         props:['typeUser'],
         mixins: [deletable],
-        components: {ItemsForm, ItemsImport, DataTable, WarehousesDetail, ItemsImportListPrice},
+        components: {ItemsForm, ItemsImport, ItemsExport, DataTable, WarehousesDetail, ItemsImportListPrice},
         data() {
             return {
                 showDialog: false,
                 showImportDialog: false,
+                showExportDialog: false,
                 showImportListPriceDialog: false,
                 showWarehousesDetail: false,
                 resource: 'items',
                 recordId: null,
-                warehousesDetail:[]
+                warehousesDetail:[],
+                config: {}
             }
         },
         created() {
+            this.$http.get(`/configurations/record`) .then(response => {
+                this.config = response.data.data
+            })
         },
         methods: {
             duplicate(id)
@@ -140,6 +152,9 @@
             },
             clickImport() {
                 this.showImportDialog = true
+            },
+            clickExport() {
+                this.showExportDialog = true
             },
             clickImportListPrice() {
                 this.showImportListPriceDialog = true

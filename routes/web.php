@@ -14,6 +14,7 @@ if ($hostname) {
 
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
+        Route::get('/exchange_rate/ecommence/{date}', 'Tenant\Api\ServiceController@exchangeRateTest');
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
@@ -31,6 +32,13 @@ if ($hostname) {
             Route::get('orders', 'Tenant\OrderController@index')->name('tenant_orders_index');
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
+            Route::post('statusOrder/update/', 'Tenant\OrderController@updateStatusOrders');
+
+            //warehouse
+            Route::post('orders/warehouse', 'Tenant\OrderController@searchWarehouse');
+
+            //Status Orders
+            Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');
 
             //Company
             Route::get('companies/create', 'Tenant\CompanyController@create')->name('tenant.companies.create');
@@ -127,6 +135,7 @@ if ($hostname) {
             Route::get('items/enable/{item}', 'Tenant\ItemController@enable');
             Route::get('items/images/{item}', 'Tenant\ItemController@images');
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
+            Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
 
             //Persons
             Route::get('persons/columns', 'Tenant\PersonController@columns');
@@ -138,6 +147,7 @@ if ($hostname) {
             Route::delete('persons/{person}', 'Tenant\PersonController@destroy');
             Route::post('persons/import', 'Tenant\PersonController@import');
             Route::get('persons/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
+            Route::get('persons/customers/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
 
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');

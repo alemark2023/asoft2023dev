@@ -5,21 +5,15 @@
             <ol class="breadcrumbs">
                 <li class="active"><span>Anulaciones</span></li>
             </ol>
+            <div class="right-wrapper pull-right">
+                <form autocomplete="off" @submit.prevent="consultVoided">
+                    <el-button class="btn btn-custom btn-sm  mt-2 mr-2" native-type="submit" :loading="loading_submit_voided">Consultar documentos</el-button>
+                </form>
+            </div>
         </header>
         <div class="card mb-0">
             <div class="card-header bg-info">
                 <h3 class="my-0">Listado de anulaciones</h3>
-            </div>
-            <div class="data-table-visible-columns">
-                <form autocomplete="off" @submit.prevent="consultVoided">
-                    <div class="form-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <el-button type="primary" native-type="submit" :loading="loading_submit_voided">Consultar documentos</el-button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -49,10 +43,15 @@
                                     v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-warning"
-                                    @click.prevent="clickTicket(row.type, row.id)"
-                                    dusk="consult-voided"
-                                    v-if="row.btn_ticket">Consultar</button>
+                            <el-tooltip content="Completar anulación" placement="top">
+                                <button type="button"
+                                        class="btn waves-effect waves-light btn-xs btn-warning"
+                                        @click.prevent="clickTicket(row.type, row.id)"
+                                        dusk="consult-voided"
+                                        v-if="row.btn_ticket">
+                                    Enviar Baja
+                                </button>
+                            </el-tooltip>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                     @click.prevent="clickDelete(row.type, row.id)"
                                     v-if="row.btn_ticket">Eliminar</button>

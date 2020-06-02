@@ -127,7 +127,7 @@
                     </div>
                     <div class="col-md-3 center-el-checkbox" v-show="show_has_igv">
                         <div class="form-group" :class="{'has-danger': errors.has_igv}">
-                            <el-checkbox v-model="form.has_igv">Incluye Igv</el-checkbox><br>
+                            <el-checkbox v-model="form.has_igv">Incluye Igv {{configuration.include_igv}}</el-checkbox><br>
                             <small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>
                         </div>
                     </div>
@@ -573,11 +573,16 @@
             })
 
             await this.setDefaultConfiguration()
+
         },
 
         methods: {
             setDefaultConfiguration(){
                 this.form.sale_affectation_igv_type_id = (this.configuration) ? this.configuration.affectation_igv_type_id : '10'
+
+                this.$http.get(`/configurations/record`) .then(response => {
+                    this.form.has_igv = response.data.data.include_igv
+                })
             },
             clickAddAttribute() {
                 this.form.attributes.push({

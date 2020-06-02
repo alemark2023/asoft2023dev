@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
 use App\Http\Controllers\Tenant\Api\ServiceController;
 use Illuminate\Support\Facades\Validator;
+use Modules\Inventory\Models\InventoryConfiguration;
 
 class EcommerceController extends Controller
 {
@@ -32,17 +33,19 @@ class EcommerceController extends Controller
 
     public function index()
     {
-      $dataPaginate['dataPaginate'] = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
-      return view('ecommerce::index', $dataPaginate);
+      $dataPaginate = Item::where([['apply_store', 1], ['internal_id','!=', null]])->paginate(15);
+      $configuration = InventoryConfiguration::first();
+      return view('ecommerce::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
     }
 
     public function category(Request $request)
     {
-      $dataPaginate['dataPaginate'] = Item::select('i.*')
+      $dataPaginate = Item::select('i.*')
         ->where([['i.apply_store', 1], ['i.internal_id','!=', null], ['it.tag_id', $request->category]])
         ->from('items as i')
         ->join('item_tags as it', 'it.item_id','i.id')->paginate(15);
-      return view('ecommerce::index', $dataPaginate);
+        $configuration = InventoryConfiguration::first();
+      return view('ecommerce::index', ['dataPaginate' => $dataPaginate, 'configuration' => $configuration->stock_control]);
     }
 
     public function item($id)
@@ -61,7 +64,7 @@ class EcommerceController extends Controller
             'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $sale_unit_price : ($sale_unit_price * $exchange_rate_sale),
             'currency_type_id' => $row->currency_type_id,
             'has_igv' => (bool) $row->has_igv,
-            // 'sale_unit_price' => $row->sale_unit_price,
+            'sale_unit' => $row->sale_unit_price,
             'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
             'currency_type_symbol' => $row->currency_type->symbol,
             'image' =>  $row->image,
@@ -223,6 +226,7 @@ class EcommerceController extends Controller
                 'items' =>  $request->items,
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
+                'status_order_id' => 1
               ]);
 
             $customer_email = $user->email;
@@ -232,7 +236,9 @@ class EcommerceController extends Controller
             $document->total = $request->precio_culqi;
             $document->items = $request->items;
 
-            Mail::to($customer_email)->send(new CulqiEmail($document));
+            $this->paymentCashEmail($customer_email, $document);
+
+            //Mail::to($customer_email)->send(new CulqiEmail($document));
             return [
                 'success' => true,
                 'order' => $order
@@ -246,6 +252,16 @@ class EcommerceController extends Controller
             ];
         }
       }
+    }
+
+    public function paymentCashEmail($customer_email, $document)
+    {
+        try {
+            Mail::to($customer_email)->send(new CulqiEmail($document));
+        }catch(\Exception $e)
+        {
+            return true;
+        }
     }
 
     public function ratingItem(Request $request)
@@ -312,12 +328,4 @@ class EcommerceController extends Controller
         return ['success' => true];
 
     }
-
-
-
-
-
-
-
-
 }

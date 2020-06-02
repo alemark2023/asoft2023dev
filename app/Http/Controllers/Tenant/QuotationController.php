@@ -73,6 +73,7 @@ class QuotationController extends Controller
     public function columns()
     {
         return [
+          'customer' => 'Cliente',
             'date_of_issue' => 'Fecha de emisión',
             'delivery_date' => 'Fecha de entrega',
             'user_name' => 'Vendedor'

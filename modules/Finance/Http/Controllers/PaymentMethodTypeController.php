@@ -17,6 +17,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Establishment;
 use Carbon\Carbon;
 use Modules\Expense\Models\ExpenseMethodType;
+use App\Models\Tenant\Configuration;
 
 
 class PaymentMethodTypeController extends Controller
@@ -25,8 +26,8 @@ class PaymentMethodTypeController extends Controller
     use FinanceTrait;
 
     public function index(){
-
-        return view('finance::payment_method_types.index');
+      $configuration = Configuration::first();
+      return view('finance::payment_method_types.index', compact('configuration'));
     }
 
 

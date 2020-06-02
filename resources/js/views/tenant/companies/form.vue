@@ -77,6 +77,13 @@
                                     <small class="form-control-feedback" v-if="errors.detraction_account" v-text="errors.detraction_account[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6" v-if="form.soap_type_id == '02'">
+                                <div class="form-group" :class="{'has-danger': errors.certificate_due}">
+                                    <label class="control-label">Vencimiento de Certificado</label>
+                                    <el-date-picker v-model="form.certificate_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.certificate_due" v-text="errors.certificate_due[0]"></small>
+                                </div>
+                            </div>
                             <div class="col-md-6 mt-4" v-show="false">
                                 <div class="form-group" :class="{'has-danger': errors.operation_amazonia}">
                                     <el-checkbox v-model="form.operation_amazonia">¿Emite en la Amazonía?</el-checkbox>
@@ -202,6 +209,7 @@
                     soap_password: null,
                     soap_url: null,
                     certificate: null,
+                    certificate_due: null,
                     logo: null,
                     logo_store: null,
                     detraction_account: null,
