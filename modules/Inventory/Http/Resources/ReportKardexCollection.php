@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\InventoryKardex;
 use Modules\Inventory\Models\Warehouse;
+use Illuminate\Support\Facades\DB;
 
 class ReportKardexCollection extends ResourceCollection
 {
@@ -139,26 +140,32 @@ class ReportKardexCollection extends ResourceCollection
     public function calcularRestante($request)
     {
 
-      if($request->page >= 2) {
+      //if($request->page >= 2) {
 
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
         if($request->date_start && $request->date_end) {
-          $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
-          ->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
-          ->limit(($request->page*20)-20)->get();
+            $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                ->where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
+                ->where('date_of_issue', '<=', $request->date_start)->first();
+
+            self::$restante = intval($quantityOld->quantity);
+            
+          /*  $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
+                ->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
+                ->limit(($request->page*20)-20)->get();*/
         } else {
           $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
           ->limit(($request->page*20)-20)->get();
         }
-
+/*
         for($i=0;$i<=count($data)-1;$i++) {
           self::$restante+=$data[$i]->quantity;
         }
-
+*/
         return self::$balance = self::$restante;
 
-      }
+      //}
 
     }
 }
