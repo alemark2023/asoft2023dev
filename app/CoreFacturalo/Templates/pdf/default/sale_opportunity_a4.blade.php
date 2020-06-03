@@ -91,6 +91,14 @@
         </td>
     </tr>
     @endif
+    @if ($document->person->contact)
+    <tr>
+        <td class="align-top">Contacto:</td>
+        <td colspan="3">
+            {{ $document->person->contact->full_name }} - {{ $document->person->contact->phone }}
+        </td>
+    </tr>
+    @endif
     @if ($document->payment_method_type)
     <tr>
         <td class="align-top">T. Pago:</td>
@@ -272,7 +280,8 @@
             @endforeach
         </td> 
     </tr>
-    <tr>
+    <tr> 
+
         {{-- <td width="65%">
             @foreach($document->legends as $row)
                 <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
@@ -284,6 +293,31 @@
             @endforeach
         </td> --}}
     </tr>
+    <br>
+    <br>
+
+
 </table>
+
+    @inject('file_service', 'Modules\Sale\Services\SaleOpportunityFileService')
+
+    @foreach($document->files as $file)
+
+        @php
+            $is_image = $file_service->isImage($file->filename);
+        @endphp
+
+        @if($is_image)
+            <div width="100%" class="mt-5">
+                @php
+                    $image = $file_service->getFile($file->filename);
+                @endphp
+
+                <img src="{{ $image }}" />
+            </div>
+        @endif
+
+    @endforeach
+
 </body>
 </html>

@@ -89,6 +89,7 @@ class QuotationController extends Controller
 
     public function records(Request $request)
     {
+        // dd($request->all());
         $records = $this->getRecords($request);
 
         return new QuotationCollection($records->paginate(config('tenant.items_per_page')));
@@ -110,6 +111,12 @@ class QuotationController extends Controller
                                 ->whereTypeUser()
                                 ->latest();
 
+        }
+
+        $form = json_decode($request->form);
+
+        if($form->date_start && $form->date_end){
+            $records = $records->whereBetween('date_of_issue', [$form->date_start, $form->date_end]);
         }
 
         return $records;

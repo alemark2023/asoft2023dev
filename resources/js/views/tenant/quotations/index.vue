@@ -179,7 +179,7 @@
 
     import QuotationOptions from './partials/options.vue'
     import QuotationOptionsPdf from './partials/options_pdf.vue'
-    import DataTable from '../../../components/DataTable.vue'
+    import DataTable from '../../../components/DataTableQuotation.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
