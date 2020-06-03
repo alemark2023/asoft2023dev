@@ -147,19 +147,42 @@ class ReportKardexCollection extends ResourceCollection
 
             if($request->date_start && $request->date_end) {
 
-                $ultimate = InventoryKardex::select(DB::raw('MAX(id) AS id'))
+                $records = InventoryKardex::where([
+                    ['warehouse_id', $warehouse->id],
+                    ['item_id',$request->item_id],
+                    ['date_of_issue', '<=', $request->date_start]
+                ])->first();
+
+                $ultimate = InventoryKardex::select(DB::raw('COUNT(*) AS t, MAX(id) AS id'))
                     ->where([
                         ['warehouse_id', $warehouse->id],
                         ['item_id',$request->item_id],
                         ['date_of_issue', '<=', $request->date_start]
                     ])->first();
 
-                $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                if (isset($records->date_of_issue) && Carbon::parse($records->date_of_issue)->eq(Carbon::parse($request->date_start))) {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                        ->where([
+                            ['warehouse_id', $warehouse->id],
+                            ['item_id',$request->item_id],
+                            ['date_of_issue', '<=', $request->date_start]
+                        ])->first();
+                    $quantityOld->quantity = 0;
+                }elseif($ultimate->t == 1) {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
                     ->where([
                         ['warehouse_id', $warehouse->id],
                         ['item_id',$request->item_id],
                         ['date_of_issue', '<=', $request->date_start]
-                    ])->whereNotIn('id', [$ultimate->id])->first();
+                    ])->first();
+                } else {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                        ->where([
+                            ['warehouse_id', $warehouse->id],
+                            ['item_id',$request->item_id],
+                            ['date_of_issue', '<=', $request->date_start]
+                        ])->whereNotIn('id', [$ultimate->id])->first();
+                }
 
                 $data = InventoryKardex::select('quantity')
                     ->where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
