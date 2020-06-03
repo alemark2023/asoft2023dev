@@ -158,8 +158,7 @@ class ReportKardexCollection extends ResourceCollection
                         ['warehouse_id', $warehouse->id],
                         ['item_id',$request->item_id],
                         ['date_of_issue', '<=', $request->date_start]
-                    ])
-                    ->whereNotIn('id', [$ultimate->id])->first();
+                    ])->whereNotIn('id', [$ultimate->id])->first();
 
                 $data = InventoryKardex::select('quantity')
                     ->where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
@@ -203,8 +202,7 @@ class ReportKardexCollection extends ResourceCollection
                         ['warehouse_id', $warehouse->id],
                         ['item_id',$request->item_id],
                         ['date_of_issue', '<=', $request->date_start]
-                    ])
-                    ->whereNotIn('id', [$ultimate->id])->first();
+                    ])->whereNotIn('id', [$ultimate->id])->first();
 
                 return self::$balance = $quantityOld->quantity;
             }
