@@ -226,7 +226,8 @@ class EcommerceController extends Controller
                 'items' =>  $request->items,
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
-                'status_order_id' => 1
+                'status_order_id' => 1,
+                'type_document' => $request->type_document
               ]);
 
             $customer_email = $user->email;

@@ -26,7 +26,7 @@
                                 <a href="#">@{{ row.name }}</a>
                             </h2>
                         </td>
-                        <td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td>
+                        <!-- td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td -->
                         <td>
                             <input class="vertical-quantity form-control input_quantity" :data-product="row.id"
                                 type="text">
@@ -128,6 +128,17 @@
             </div><!-- End .checkout-methods -->
         </div><!-- End .cart-summary -->
 
+        <div class="cart-summary">
+            <h3>Tipo de comprobante</h3>
+
+            <div class="form-group">
+                <select v-model="typeDocument" class="form-control">
+                    <option value="1">Factura</option>
+                    <option value="2">Boleta</option>
+                </select>
+            </div>
+            
+        </div><!-- End .col-lg-4 -->
 
         <div class="cart-summary">
             <h3>Datos de contacto y envío</h3>
@@ -281,7 +292,8 @@
             typeDocumentSelected: '',
             response_order_total:0,
             errors: {},
-            exchange_rate_sale: ''
+            exchange_rate_sale: '',
+            typeDocument: 1
         },
         computed: {
             maxLength: function () {
@@ -357,7 +369,8 @@
                     customer: this.form_document.datos_del_cliente_o_receptor,
                     items: this.records,
                     telephone: this.form_contact.telephone,
-                    address: this.form_contact.address
+                    address: this.form_contact.address,
+                    type_document: this.typeDocument
                 }
             },
             async paymentCash() {
