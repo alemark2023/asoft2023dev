@@ -6,6 +6,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\InventoryKardex;
 use Modules\Inventory\Models\Warehouse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class ReportKardexCollection extends ResourceCollection
 {
@@ -138,27 +140,121 @@ class ReportKardexCollection extends ResourceCollection
 
     public function calcularRestante($request)
     {
+        
+        if($request->page >= 2) {
 
-      if($request->page >= 2) {
+            $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-        $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+            if($request->date_start && $request->date_end) {
 
-        if($request->date_start && $request->date_end) {
-          $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
-          ->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
-          ->limit(($request->page*20)-20)->get();
+                $records = InventoryKardex::where([
+                    ['warehouse_id', $warehouse->id],
+                    ['item_id',$request->item_id],
+                    ['date_of_issue', '<=', $request->date_start]
+                ])->first();
+
+                $ultimate = InventoryKardex::select(DB::raw('COUNT(*) AS t, MAX(id) AS id'))
+                    ->where([
+                        ['warehouse_id', $warehouse->id],
+                        ['item_id',$request->item_id],
+                        ['date_of_issue', '<=', $request->date_start]
+                    ])->first();
+
+                if (isset($records->date_of_issue) && Carbon::parse($records->date_of_issue)->eq(Carbon::parse($request->date_start))) {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                        ->where([
+                            ['warehouse_id', $warehouse->id],
+                            ['item_id',$request->item_id],
+                            ['date_of_issue', '<=', $request->date_start]
+                        ])->first();
+                    $quantityOld->quantity = 0;
+                }elseif($ultimate->t == 1) {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                    ->where([
+                        ['warehouse_id', $warehouse->id],
+                        ['item_id',$request->item_id],
+                        ['date_of_issue', '<=', $request->date_start]
+                    ])->first();
+                } else {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                        ->where([
+                            ['warehouse_id', $warehouse->id],
+                            ['item_id',$request->item_id],
+                            ['date_of_issue', '<=', $request->date_start]
+                        ])->whereNotIn('id', [$ultimate->id])->first();
+                }
+
+                $data = InventoryKardex::select('quantity')
+                    ->where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
+                    ->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
+                    ->limit(($request->page*20)-20)->get();
+
+                for($i=0;$i<=count($data)-1;$i++) {
+                    self::$restante += $data[$i]->quantity;
+                }
+
+                self::$restante += $quantityOld->quantity;
+
+                self::$balance = self::$restante;
+
+            } else {
+                $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
+                    ->limit(($request->page*20)-20)->get();
+
+                for($i=0;$i<=count($data)-1;$i++) {
+                    self::$restante+=$data[$i]->quantity;
+                }
+            }
+
+            return self::$balance = self::$restante;
+        
         } else {
-          $data = InventoryKardex::where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
-          ->limit(($request->page*20)-20)->get();
+
+            if($request->date_start && $request->date_end) {
+
+                $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
+                $records = InventoryKardex::where([
+                        ['warehouse_id', $warehouse->id],
+                        ['item_id',$request->item_id],
+                        ['date_of_issue', '<=', $request->date_start]
+                    ])->first();
+
+                $ultimate = InventoryKardex::select(DB::raw('COUNT(*) AS t, MAX(id) AS id'))
+                    ->where([
+                        ['warehouse_id', $warehouse->id],
+                        ['item_id',$request->item_id],
+                        ['date_of_issue', '<=', $request->date_start]
+                    ])->first();
+
+                if (isset($records->date_of_issue) && Carbon::parse($records->date_of_issue)->eq(Carbon::parse($request->date_start))) {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                        ->where([
+                            ['warehouse_id', $warehouse->id],
+                            ['item_id',$request->item_id],
+                            ['date_of_issue', '<=', $request->date_start]
+                        ])->first();
+                    $quantityOld->quantity = 0;
+                }elseif($ultimate->t == 1) {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                    ->where([
+                        ['warehouse_id', $warehouse->id],
+                        ['item_id',$request->item_id],
+                        ['date_of_issue', '<=', $request->date_start]
+                    ])->first();
+                } else {
+                    $quantityOld = InventoryKardex::select(DB::raw('SUM(quantity) AS quantity'))
+                        ->where([
+                            ['warehouse_id', $warehouse->id],
+                            ['item_id',$request->item_id],
+                            ['date_of_issue', '<=', $request->date_start]
+                        ])->whereNotIn('id', [$ultimate->id])->first();
+                }
+
+                return self::$balance = $quantityOld->quantity;
+            }
+
         }
-
-        for($i=0;$i<=count($data)-1;$i++) {
-          self::$restante+=$data[$i]->quantity;
-        }
-
-        return self::$balance = self::$restante;
-
-      }
 
     }
 }

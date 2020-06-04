@@ -3,6 +3,7 @@ namespace Modules\Account\Http\Controllers;
 
 use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
+use Modules\Account\Exports\ReportAccountingContasisExport;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
@@ -42,7 +43,7 @@ class AccountController extends Controller
                     ->download($filename.'.xlsx');
 
             case 'siscont':
-                
+
                 $records = $this->getStructureSiscont($records);
 
                 $temp = tempnam(sys_get_temp_dir(), 'txt');
@@ -53,11 +54,11 @@ class AccountController extends Controller
                     fwrite($file, $line."\r\n");
                 }
                 fclose($file);
-                
+
                 return response()->download($temp, $filename.'.txt');
 
             case 'foxcont':
-                
+
                 $data = [
                     'records' => $this->getStructureFoxcont($records),
                 ];
@@ -66,8 +67,18 @@ class AccountController extends Controller
                     ->data($data)
                     ->download($filename.'.xlsx');
 
+            case 'contasis':
 
-        } 
+                $data = [
+                    'records' => $this->getStructureContasis($records),
+                ];
+
+                return (new ReportAccountingContasisExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
+
+
+        }
 
     }
 
@@ -104,9 +115,8 @@ class AccountController extends Controller
                 'total' => number_format($row->total, 2, ".", ""),
             ];
         });
-        
-    }
 
+    }
 
     private function getStructureConcar($documents)
     {
@@ -204,11 +214,10 @@ class AccountController extends Controller
 
 
             }
-            
+
         }
         return $rows;
     }
-
 
     private function getStructureSiscont($documents)
     {
@@ -264,7 +273,7 @@ class AccountController extends Controller
                     'col_349_350' => str_pad('', 2, ' ', STR_PAD_LEFT),
                     'col_351_358' => str_pad('', 8, ' ', STR_PAD_LEFT),
                 ];
-    
+
                 $rows[] = [
                     'col_001_002' => '02',
                     'col_003_006' => $number_index,
@@ -304,14 +313,14 @@ class AccountController extends Controller
                     'col_349_350' => str_pad('', 2, ' ', STR_PAD_LEFT),
                     'col_351_358' => str_pad('', 8, ' ', STR_PAD_LEFT),
                 ];
-                
+
                 if($row->state_type_id != '11'){
 
                     $rows[] = [
                         'col_001_002' => '02',
                         'col_003_006' => $number_index,
                         'col_007_014' => $date_of_issue->format('d/m/y'),
-                        // 'col_015_024' => '70201', 
+                        // 'col_015_024' => '70201',
                         'col_015_024' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
                         'col_025_036' => str_pad($item->total_value, 12, '0', STR_PAD_LEFT),
                         'col_037_037' => 'H',
@@ -346,11 +355,65 @@ class AccountController extends Controller
                     ];
 
                 }
-                
+
             }
 
-            
+
         }
         return $rows;
+    }
+
+    private function getStructureContasis($documents)
+    {
+
+        return $documents->transform(function($row) {
+            $company_account = CompanyAccount::first();
+            $document_base = ($row->note) ? $row->note : null;
+
+            if($row->payments->count() > 0){
+                if($row->payments[0]->payment_method_type_id == '01') {
+                    $payment_condition = 'CON';
+                    $payment_method = '008';
+                }elseif($row->payments[0]->payment_method_type_id == '09'){
+                    $payment_condition = 'CRE';
+                    $payment_method = '005';
+                }
+            }else{
+                $payment_condition = '';
+                $payment_method = '';
+            }
+            return [
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'document_type_id' => $row->document_type_id,
+                'series' => '00'.$row->series,
+                'number' => str_pad($row->number, 13, '0', STR_PAD_LEFT),
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+
+                'total_exportation' => number_format($row->total_exportation, 2, ".", ""),
+                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
+                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
+                'total_unaffected' => number_format($row->total_unaffected, 2, ".", ""),
+                'total_isc' => number_format($row->total_isc, 2, ".", ""),
+                'total_igv' => number_format($row->total_igv, 2, ".", ""),
+                'total_other_taxes' => number_format($row->total_total_other_taxes, 2, ".", ""),
+                'total' => number_format($row->total, 2, ".", ""),
+                'exchange_rate_sale' => number_format($row->exchange_rate_sale, 2, ".", ""),
+                'db_date_issue' => ($document_base) ? $document_base->affected_document->date_of_issue->format('d/m/Y') : '',
+                'db_document_type_id' => ($document_base) ? $document_base->affected_document->document_type_id : '',
+                'db_series' => ($document_base) ? $document_base->affected_document->series : '',
+                'db_number' => ($document_base) ? str_pad($document_base->affected_document->number, 13, '0', STR_PAD_LEFT) : '',
+                'currency' => ($row->currency_type_id === 'PEN')?'S':'D',
+                'amount_usd' => null,
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'payment_condition' => $payment_condition,
+                'account_taxed' => ($row->currency_type_id === 'PEN') ? $company_account->subtotal_pen : $company_account->subtotal_usd,
+                'account_total' => ($row->currency_type_id === 'PEN') ? $company_account->total_pen : $company_account->total_usd,
+                'aditional_information' => $row->aditional_information,
+                'payment_method' => $payment_method,
+            ];
+        });
     }
 }

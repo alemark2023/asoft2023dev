@@ -83,7 +83,7 @@
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
-            <div v-bind:class="classObjectCol"  :key="index" >
+            <div v-bind:style="classObjectCol" :key="index">
               <section class="card ">
                 <div class="card-body pointer px-2 pt-2" @click="clickAddItem(item,index)">
                   <p class="font-weight-semibold mb-0" v-if="item.description.length > 50" data-toggle="tooltip" data-placement="top" :title="item.description">
@@ -503,29 +503,30 @@
                 switch(cols)
                 {
                     case 2:
-                         clase = '6'
+                         clase = '50%'
 
                         break;
                     case 3:
-                         clase = '4'
+                         clase = '33.33%'
 
                         break;
                     case 4:
-                         clase = '3'
+                         clase = '25%'
 
                         break;
                     case 5:
-                         clase = '2'
+                         clase = '20%'
 
                         break;
                     case 6:
-                         clase = '2'
+                         clase = '16.66%'
                         break;
                     default:
 
                 }
                 return {
-                    [`col-md-${clase}`] : true
+                    width: `${clase}`,
+                    padding: '5px'
                 }
             }
         },
@@ -796,7 +797,7 @@
               hotel: {},
               additional_information: null,
               actions: {
-                format_pdf: "a4"
+                format_pdf: 'a4'
               }
             };
 

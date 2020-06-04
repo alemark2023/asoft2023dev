@@ -16,6 +16,8 @@ use App\Models\Tenant\PersonType;
 use Exception;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
+use Carbon\Carbon;
+use App\Exports\ClientExport;
 
 class PersonController extends Controller
 {
@@ -83,8 +85,7 @@ class PersonController extends Controller
 
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
-        $person->fill($request->except(['contact']));
-        $person->contact = json_encode($request->contact);
+        $person->fill($request->all());
         $person->save();
 
         $person->addresses()->delete();
@@ -194,6 +195,22 @@ class PersonController extends Controller
             'success' => true,
             'message' => "Cliente {$type_message} con éxito"
         ];
+
+    }
+
+    public function export(Request $request)
+    {
+        $date = $request->month_start.'-01';
+        $start_date = Carbon::parse($date);
+        $end_date = Carbon::parse($date)->addMonth()->subDay();
+        // dd($start_date.' - '.$end_date);
+
+        $records = Person::whereBetween('created_at', [$start_date, $end_date])->get();
+        // dd(new PersonCollection($records));
+
+        return (new ClientExport)
+                ->records($records)
+                ->download('Reporte_Clientes_'.Carbon::now().'.xlsx');
 
     }
 

@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickExport()"><i class="fa fa-download"></i> Exportar</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportListPrice()"><i class="fa fa-upload"></i> Importar L. Precios</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
@@ -80,6 +81,7 @@
                         :recordId="recordId"></items-form>
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
+            <items-export :showDialog.sync="showExportDialog"></items-export>
 
             <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
@@ -97,17 +99,19 @@
     import WarehousesDetail from './partials/warehouses.vue'
     import ItemsImport from './import.vue'
     import ItemsImportListPrice from './partials/import_list_price.vue'
+    import ItemsExport from './partials/export.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         props:['typeUser'],
         mixins: [deletable],
-        components: {ItemsForm, ItemsImport, DataTable, WarehousesDetail, ItemsImportListPrice},
+        components: {ItemsForm, ItemsImport, ItemsExport, DataTable, WarehousesDetail, ItemsImportListPrice},
         data() {
             return {
                 showDialog: false,
                 showImportDialog: false,
+                showExportDialog: false,
                 showImportListPriceDialog: false,
                 showWarehousesDetail: false,
                 resource: 'items',
@@ -148,6 +152,9 @@
             },
             clickImport() {
                 this.showImportDialog = true
+            },
+            clickExport() {
+                this.showExportDialog = true
             },
             clickImportListPrice() {
                 this.showImportListPriceDialog = true

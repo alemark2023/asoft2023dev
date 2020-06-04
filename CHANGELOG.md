@@ -1,3 +1,33 @@
+## 3.3.6
+
+### docs
+2020-05-11 : docs | changelog update<br>
+
+
+### feature
+2020-05-29 : feature | i-70 | exportanto clientes y productos<br>
+2020-05-27 : feature | i-41 | Ajuste en pedidos<br>
+2020-05-27 : feature | i-41 | No distingue moneda en la Tienda virtual<br>
+2020-05-26 : feature | i-68 | NO MUESTRA DATOS DEL COMPRADOR para pagos con CULQI<br>
+2020-05-25 : feature | i-4 | Agregar placa al POS<br>
+2020-05-21 : feature | i-34 | campo tipo de documento en catalogo de clientes<br>
+2020-05-21 : feature | gr-notion | template pdf add contact-customer<br>
+2020-05-21 : feature | i-92 | No llega el correo de confirmación<br>
+2020-05-19 : feature | not-gr | contacto de cliente - nombre y numero<br>
+2020-05-19 : feature | i-46 | mostrando unidad de productos en guias de remision<br>
+2020-05-19 : feature | i-81 | Colocar en producto Agotado , cuando no tenga stock<br>
+2020-05-19 : feature | auto-update link config<br>
+2020-05-19 : feature | i-96 | Error de tipeo tienda on-line<br>
+2020-05-19 : feature | i-44 | textos boton anular<br>
+2020-05-19 : feature | i-73 | Observaciones en ecommerce<br>
+2020-05-18 : 'feature<br>
+2020-05-15 : feature | i-61 | Texto sobresale del contenedor<br>
+2020-05-14 : feature | i-59 | Actualizacion modulo de pedidos, resolucion de conflictos<br>
+2020-05-13 : feature | config para ver stock de productos (solo gestion de un solo establecimiento)<br>
+2020-05-12 : feature | configuracion de estado por defecto para campo igv en formulario de producto<br>
+2020-05-08 : feature | i-58 | Actualización proceso de pago ecommerce<br>
+
+
 ## 3.3.5
 
 ### docs

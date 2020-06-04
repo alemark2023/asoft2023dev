@@ -22,18 +22,17 @@ use App\Exports\AccountsReceivable;
 
 class UnpaidController extends Controller
 { 
-
+    
     use FinanceTrait;
-
-    public function index(){
-
+    
+    public function index()
+    {
         return view('finance::unpaid.index');
     }
-
-
-    public function filter(){
-
-        $customers = Person::whereType('customers')->orderBy('name')->take(100)->get()->transform(function($row) {
+    
+    public function filter()
+    {
+        $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -47,23 +46,16 @@ class UnpaidController extends Controller
 
         return compact('customers', 'establishments');
     }
-
-
+    
     public function records(Request $request)
     {
-
         return [
             'records' => (new DashboardView())->getUnpaid($request->all())
        ];
-        
     }
  
     public function unpaidall()
     {
-
         return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
-
     }
-
-
 }

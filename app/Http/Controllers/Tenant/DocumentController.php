@@ -53,7 +53,7 @@ use Modules\Item\Models\Brand;
 use Carbon\Carbon;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 
 class DocumentController extends Controller
 {
