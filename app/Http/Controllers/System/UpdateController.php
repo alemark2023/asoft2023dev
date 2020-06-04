@@ -40,6 +40,9 @@ class UpdateController extends Controller
 
     public function pull($branch)
     {
+        $chown = new Process('chown -R ssh/');
+        $chown->run();
+
         $process = new Process('git pull origin '.$branch);
         $process->run();
         if (!$process->isSuccessful()) {
@@ -67,8 +70,9 @@ class UpdateController extends Controller
 
     public function artisanClear()
     {
-        $output = Artisan::call('config:cache');
-        return json_encode($output);
+        $configcache = Artisan::call('config:cache');
+        $cacheclear = Artisan::call('cache:clear');
+        return json_encode($configcache);
     }
 
     public function composerInstall()
