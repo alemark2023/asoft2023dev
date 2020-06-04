@@ -5,7 +5,11 @@ $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function() {
 
-        Auth::routes();
+        Auth::routes([
+            'register' => false,
+            'reset' => false,
+            'verify' => false
+        ]);
 
         Route::get('search', 'Tenant\SearchController@index')->name('search.index');
         Route::get('buscar', 'Tenant\SearchController@index')->name('search.index');
