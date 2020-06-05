@@ -240,6 +240,18 @@
                             <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                         </div>
                     </div>
+
+                    <div class="col-md-3" >
+                        <div class="form-group" :class="{'has-danger': errors.line}">
+                            <label class="control-label">
+                               Línea
+                            </label>
+                            <el-input v-model="form.line" >
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.line" v-text="errors.line[0]"></small>
+                        </div>
+                    </div>
+
                     <!-- <div class="col-md-3 center-el-checkbox">
                         <div class="form-group" >
                             <el-checkbox v-model="have_account" @change="changeHaveAccount">¿Tiene cuenta contable?</el-checkbox><br>
@@ -714,6 +726,7 @@
                     brand_id: null,
                     date_of_due:null,
                     lot_code:null,
+                    line:null,
                     lots_enabled:false,
                     lots:[],
                     attributes: [],

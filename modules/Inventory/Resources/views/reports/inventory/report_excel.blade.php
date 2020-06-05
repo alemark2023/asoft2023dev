@@ -48,6 +48,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Cod. Interno</th>
                                 <th>Descripción</th>
                                 <th>Inventario actual</th>
                                 <th>Costo</th>
@@ -62,16 +63,17 @@
                             @endphp
                             @foreach($records as $key => $value)
                                 @php
-                                    $total_line = number_format($value->stock * $value->item->sale_unit_price, 6);
+                                    $total_line = $value->stock * $value->item->sale_unit_price;
                                     $total = $total + $total_line;
                                 @endphp
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
+                                    <td>{{$value->item->internal_id ?? ''}}</td>
                                     <td>{{$value->item->description ?? ''}}</td>
                                     <td>{{$value->stock}}</td>
-                                    <td>{{$value->item->sale_unit_price}}</td>
-                                    <td>{{$total_line}}</td>
                                     <td>{{$value->item->purchase_unit_price}}</td>
+                                    <td>{{number_format($total_line, 6)}}</td>
+                                    <td>{{$value->item->sale_unit_price}}</td>
                                     <td>{{$value->warehouse->description}}</td>
                                 </tr>
                             @endforeach
