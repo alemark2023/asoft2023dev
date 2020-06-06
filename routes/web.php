@@ -32,6 +32,8 @@ if ($hostname) {
             Route::get('orders', 'Tenant\OrderController@index')->name('tenant_orders_index');
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
+            Route::get('orders/record/{order}', 'Tenant\OrderController@record');
+            Route::get('orders/print/{external_id}/{format?}', 'Tenant\OrderController@toPrint');
             Route::post('statusOrder/update/', 'Tenant\OrderController@updateStatusOrders');
             Route::get('orders/pdf/{id}', 'Tenant\OrderController@pdf');
 

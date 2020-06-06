@@ -82,6 +82,7 @@
             </td>
             <td>{{row.number_document}}</td>
             <td>
+              <!-- el-button class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.id)"></el-button -->
               <el-button class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.id)"></el-button>
             </td>
           </tr>
@@ -128,16 +129,24 @@
       </div>
     </el-dialog>
 
+    <options-form
+      :showDialog.sync="showDialogOptions"
+      :recordId="documentNewId"
+      :statusDocument="statusDocument"
+      :resource="resource_options"
+    ></options-form>
+
   </div>
 </template>
 <script>
 import DataTable from "../../../components/DataTable.vue";
 import queryString from 'query-string'
+import OptionsForm from '../pos/partials/options.vue'
 
 export default {
   props: [],
 
-  components: { DataTable },
+  components: { DataTable, OptionsForm },
   data() {
     return {
       showDialog: false,
@@ -152,7 +161,12 @@ export default {
       showDialog: false,
       form: [],
       record: '', // record orders
-      stocks: ''
+      stocks: '',
+      showDialogOptions: false,
+      documentNewId: null,
+      statusDocument: {},
+      resource_documents: 'orders',
+      resource_options: null,
     };
   },
   async created() {
@@ -163,7 +177,12 @@ export default {
   computed: {},
   methods: {
     clickDownload(row) {
-      window.open(`/${this.resource}/pdf/${row}`, '_blank');
+      this.documentNewId = row;
+      this.statusDocument.send = ''
+      this.resource_options = this.resource_documents;
+
+      this.showDialogOptions = true;
+      //window.open(`/${this.resource}/pdf/${row}`, '_blank');
     },
     subtotal(item) {
       var subtotal
