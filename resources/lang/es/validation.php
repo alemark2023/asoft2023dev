@@ -247,5 +247,7 @@ return [
         'activities' => 'actividades',
         'user_id' => 'vendedor',
         'internal_id' => 'código interno',
+        'codigo_tipo_documento_identidad' => 'Tipo de documento',
+        'numero_documento' => 'Número de documento'
     ],
 ];

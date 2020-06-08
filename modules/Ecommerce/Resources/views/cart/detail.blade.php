@@ -23,7 +23,7 @@
                                 </a>
                             </figure>
                             <h2 class="product-title">
-                                <a href="#">@{{ row.name }}</a>
+                                <a href="#">@{{ row.description }}</a>
                             </h2>
                         </td>
                         <!-- td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td -->
@@ -132,10 +132,25 @@
             <h3>Tipo de comprobante</h3>
 
             <div class="form-group">
-                <select v-model="typeDocument" class="form-control">
-                    <option value="1">Factura</option>
-                    <option value="2">Boleta</option>
+                <label>Comprobante:</label>
+                <select v-model="typeVoucher" class="form-control" @change="optionDocument">
+                    <option value="" disabled>Tipo de comprobante</option>
+                    <option value="1">Boleta</option>
+                    <option value="2">Factura</option>
                 </select>
+            </div>
+            <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento_identidad}">
+                <label>Tipo de documento:</label>
+                <select v-model="typeDocuments" class="form-control">
+                    <option value="" disabled>Tipo de documento</option>
+                    <option v-for="item in typeDocumentList" :value="item.id" :label="item.name">@{{ item.name }}</option>
+                </select>
+                <small class="form-control-feedback" v-if="errors.codigo_tipo_documento_identidad" v-text="errors.codigo_tipo_documento_identidad[0]"></small>
+            </div>
+            <div class="form-group" :class="{'text-danger': errors.numero_documento}">
+                <label>Número de documento:</label>
+                <input v-model="numberDocument" :maxlength="maxLengthDoc" type="text" class="form-control">
+                <small class="form-control-feedback" v-if="errors.numero_documento" v-text="errors.numero_documento[0]"></small>
             </div>
             
         </div><!-- End .col-lg-4 -->
@@ -144,10 +159,10 @@
             <h3>Datos de contacto y envío</h3>
 
             <form autocomplete="off" action="#">
-                <div class="form-group" :class="{'text-danger': errors.telephone}">
+                <div class="form-group" :class="{'text-danger': errors.telefono}">
                     <label for="email">Teléfono:</label>
                     <input v-model="form_contact.telephone" type="text" autocomplete="off" class="form-control" placeholder="Ingrese número de teléfono" name="teléfono">
-                    <small class="form-control-feedback" v-if="errors.telephone" v-text="errors.telephone[0]"></small>
+                    <small class="form-control-feedback" v-if="errors.telefono" v-text="errors.telefono[0]"></small>
                 </div>
                 <div class="form-group" :class="{'text-danger': errors.address}">
                     <label for="email">Dirección:</label>
@@ -157,9 +172,6 @@
             </form>
         </div>
     </div><!-- End .col-lg-4 -->
-
-
-
 
     <div class="modal fade" id="modal_ask_document" tabindex="-1" role="dialog" data-backdrop="static"
         data-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -293,7 +305,10 @@
             response_order_total:0,
             errors: {},
             exchange_rate_sale: '',
-            typeDocument: 1
+            typeVoucher: '',
+            typeDocuments: '',
+            typeDocumentList: [],
+            numberDocument: ''
         },
         computed: {
             maxLength: function () {
@@ -301,6 +316,13 @@
                     return 11
                 }
                 if (this.formIdentity.identity_document_type_id === '1') {
+                    return 8
+                }
+            },
+            maxLengthDoc: function () {
+                if (this.typeDocuments === '6') {
+                    return 11
+                } else {
                     return 8
                 }
             }
@@ -357,9 +379,26 @@
             var response = await axios.get(`/exchange_rate/ecommence/${exchange_rate_date}`)
             this.exchange_rate_sale = parseFloat(response.data.sale)
           },
+          optionDocument() {
+              this.typeDocumentList = []
+              this.typeDocuments = ''
+              let voucher = [{id: '6', name: 'RUC'}]
+              let ticket = [{id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '7', name: 'Pasaporte'}]
+              if(this.typeVoucher === '2') {
+                this.typeDocumentList = voucher
+              }else if (this.typeVoucher === '1' && this.payment_cash.amount >= 700) {
+                this.typeDocumentList = [{id: '1', name: 'DNI'}]
+                this.typeDocuments = ''
+              } else {
+                this.typeDocumentList = ticket
+              }
+          },
             getFormPaymentCash() {
               this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
               this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
+              this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this.typeDocuments
+              this.form_document.datos_del_cliente_o_receptor.numero_documento = this.numberDocument
+
                 let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
                 let precio_culqi = Number(this.summary.total)
                 return {
@@ -370,7 +409,7 @@
                     items: this.records,
                     telephone: this.form_contact.telephone,
                     address: this.form_contact.address,
-                    type_document: this.typeDocument
+                    type_document: this.typeDocuments
                 }
             },
             async paymentCash() {
@@ -804,6 +843,9 @@
 
 
                 $("#total_amount").data('total', this.summary.total);
+
+                this.typeVoucher = ''
+                this.optionDocument()
 
                 this.payment_cash.amount = this.summary.total;
 
