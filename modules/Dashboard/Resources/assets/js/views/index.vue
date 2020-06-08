@@ -162,20 +162,9 @@
 
                   <template v-if="loaders.sale_note">
                       <vcl-table :rows="4" :columns="1"></vcl-table>
-                      <br/>
-                      <br/>
+                      <br/><br/>
                       <vue-content-loading v-bind="$attrs" :width="100" :height="100">
-                        <!-- <template v-for="r in 5">
-                          <template v-for="c in 1">
-                            <rect :key="r + '_' + c" :x="getXPos(c)" :y="getYPos(r)" rx="3" ry="3" :width="100" height="10" />
-                          </template>
-                          <rect :key="r + '_l'" v-if="r < 5" x="0" :y="getYPos(r) + 20" :width="width" height="1" />
-                        </template> -->
-
-                        <circle cx="50%" cy="50%" r="50" />
-                        <!-- <rect x="75" y="13" rx="4" ry="4" width="100" height="13" />
-                        <rect x="75" y="37" rx="4" ry="4" width="50" height="8" />
-                        <rect x="0" y="70" rx="5" ry="5" width="400" height="400" /> -->
+                        <circle cx="50%" cy="50%" r="50"/>
                       </vue-content-loading>
                   </template>
 
@@ -239,9 +228,7 @@
               <div class="card-body" >
                 
                 <template v-if="loaders.document">
-
                     <vcl-table :rows="8" :columns="1"></vcl-table>
-
                 </template>
 
                 <div class="widget-summary" v-show="!loaders.document">
