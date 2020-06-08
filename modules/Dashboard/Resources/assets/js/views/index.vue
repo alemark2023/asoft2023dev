@@ -154,66 +154,98 @@
     <div class="row">
       <div class="col-xl-12">
         <div class="row">
-          <div class="col-xl-3">
-            <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="sale_note">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
-                    <div class="row no-gutters">
-                      <div class="col-md-12 m-b-10">
-                        <h2 class="card-title">Notas de venta</h2>
-                      </div>
-                      <div class="col-lg-4">
-                        <div class="summary">
-                          <h4 class="title text-info">
-                            Total
-                            <br />Pagado
-                          </h4>
-                          <div class="info">
-                            <strong class="amount text-info">S/ {{ sale_note.totals.total_payment }}</strong>
+
+            <div class="col-xl-3" >
+              <section class="card card-featured-left card-featured-secondary">
+
+                <div class="card-body" >
+
+                  <template v-if="loaders.sale_note">
+                      <vcl-table :rows="4" :columns="1"></vcl-table>
+                      <br/>
+                      <br/>
+                      <vue-content-loading v-bind="$attrs" :width="100" :height="100">
+                        <!-- <template v-for="r in 5">
+                          <template v-for="c in 1">
+                            <rect :key="r + '_' + c" :x="getXPos(c)" :y="getYPos(r)" rx="3" ry="3" :width="100" height="10" />
+                          </template>
+                          <rect :key="r + '_l'" v-if="r < 5" x="0" :y="getYPos(r) + 20" :width="width" height="1" />
+                        </template> -->
+
+                        <circle cx="50%" cy="50%" r="50" />
+                        <!-- <rect x="75" y="13" rx="4" ry="4" width="100" height="13" />
+                        <rect x="75" y="37" rx="4" ry="4" width="50" height="8" />
+                        <rect x="0" y="70" rx="5" ry="5" width="400" height="400" /> -->
+                      </vue-content-loading>
+                  </template>
+
+                  <div class="widget-summary" v-show="!loaders.sale_note">
+                    <div class="widget-summary-col" v-if="sale_note">
+                      <div class="row no-gutters">
+                        <div class="col-md-12 m-b-10">
+                          <h2 class="card-title">Notas de venta</h2>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="summary">
+                            <h4 class="title text-info">
+                              Total
+                              <br />Pagado
+                            </h4>
+                            <div class="info">
+                              <strong class="amount text-info">S/ {{ sale_note.totals.total_payment }}</strong>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="summary">
+                            <h4 class="title text-danger">
+                              Total
+                              <br />por Pagar
+                            </h4>
+                            <div class="info">
+                              <strong
+                                class="amount text-danger"
+                              >S/ {{ sale_note.totals.total_to_pay }}</strong>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="summary">
+                            <h4 class="title">
+                              Total
+                              <br />&nbsp;
+                            </h4>
+                            <div class="info">
+                              <strong class="amount">S/ {{ sale_note.totals.total }}</strong>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-lg-4">
-                        <div class="summary">
-                          <h4 class="title text-danger">
-                            Total
-                            <br />por Pagar
-                          </h4>
-                          <div class="info">
-                            <strong
-                              class="amount text-danger"
-                            >S/ {{ sale_note.totals.total_to_pay }}</strong>
-                          </div>
+                      <div class="row m-t-20">
+                        <div class="col-md-12">
+                          <x-graph type="doughnut" :all-data="sale_note.graph"></x-graph>
                         </div>
-                      </div>
-                      <div class="col-lg-4">
-                        <div class="summary">
-                          <h4 class="title">
-                            Total
-                            <br />&nbsp;
-                          </h4>
-                          <div class="info">
-                            <strong class="amount">S/ {{ sale_note.totals.total }}</strong>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row m-t-20">
-                      <div class="col-md-12">
-                        <x-graph type="doughnut" :all-data="sale_note.graph"></x-graph>
                       </div>
                     </div>
                   </div>
+
                 </div>
-              </div>
-            </section>
-          </div>
+              </section>
+            </div>
+
+
           <div class="col-xl-3" v-if="soapCompany != '03'">
             <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="document">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
+              <div class="card-body" >
+                
+                <template v-if="loaders.document">
+
+                    <vcl-table :rows="8" :columns="1"></vcl-table>
+
+                </template>
+
+                <div class="widget-summary" v-show="!loaders.document">
+                  <div class="widget-summary-col" v-if="document"> 
                     <div class="row no-gutters">
                       <div class="col-md-12 m-b-10">
                         <h2 class="card-title">Comprobantes</h2>
@@ -664,10 +696,11 @@
 // import SaleNotePayments from "../../../../../../resources/js/views/tenant/sale_notes/partials/payments.vue";
 import DashboardStock from "./partials/dashboard_stock.vue";
 import queryString from "query-string";
+import { VclTable, VueContentLoading  } from 'vue-content-loading';
 
 export default {
   props: ["typeUser", "soapCompany"],
-  components: { DashboardStock },
+  components: { DashboardStock, VclTable, VueContentLoading },
   data() {
     return {
       loading_search:false,
@@ -723,11 +756,13 @@ export default {
       filter_item:false,
       all_items: [],
       items:[],
-      company: {}
+      company: {},
+      loaders: {}
     };
   },
   async created() {
     this.initForm();
+    this.initLoaders()
     await this.$http.get(`/${this.resource}/filter`).then(response => {
       this.establishments = response.data.establishments;
       this.form.establishment_id =
@@ -857,15 +892,38 @@ export default {
         this.company = response.data.data
       });
     },
+    initLoaders(){
+
+      this.loaders = {
+        document: true,
+        sale_note: true,
+      }
+
+    },
+    showLoadersLoadData(){
+      this.loaders.document = true
+      this.loaders.sale_note = true
+    },
+    hideLoadersLoadData(){
+      this.loaders.document = false
+      this.loaders.sale_note = false
+    },
     loadData() {
+
+      this.showLoadersLoadData()
+
       this.$http.post(`/${this.resource}/data`, this.form).then(response => {
+
         this.document = response.data.data.document;
         this.balance = response.data.data.balance;
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;
         this.customers = response.data.data.customers;
         this.items = response.data.data.items;
+        this.hideLoadersLoadData()
+
       });
+
       this.$http.get(`/command/df`).then(response => {
         if (response.data[0] != 'error'){
           this.disc.used = Number(response.data[0].replace(/[^0-9\.]+/g,""));
@@ -875,6 +933,7 @@ export default {
           this.disc.error = true;
         }
       });
+
     },
     loadDataAditional() {
       this.$http
