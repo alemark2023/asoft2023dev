@@ -37,7 +37,7 @@
                 </el-select>
               </div>
               <template v-if="form.period === 'month' || form.period === 'between_months'">
-                <div class="col-md-3">
+                <div class="col-md-6">
                   <label class="control-label">Mes de</label>
                   <el-date-picker
                     v-model="form.month_start"
@@ -50,7 +50,7 @@
                 </div>
               </template>
               <template v-if="form.period === 'between_months'">
-                <div class="col-md-3">
+                <div class="col-md-6">
                   <label class="control-label">Mes al</label>
                   <el-date-picker
                     v-model="form.month_end"
@@ -64,7 +64,7 @@
                 </div>
               </template>
               <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                <div class="col-md-3">
+                <div class="col-md-6">
                   <label class="control-label">Fecha del</label>
                   <el-date-picker
                     v-model="form.date_start"
@@ -77,7 +77,7 @@
                 </div>
               </template>
               <template v-if="form.period === 'between_dates'">
-                <div class="col-md-3">
+                <div class="col-md-6">
                   <label class="control-label">Fecha al</label>
                   <el-date-picker
                     v-model="form.date_end"
@@ -161,11 +161,7 @@
                 <div class="card-body" >
 
                   <template v-if="loaders.sale_note">
-                      <vcl-table :rows="4" :columns="1"></vcl-table>
-                      <br/><br/>
-                      <vue-content-loading v-bind="$attrs" :width="100" :height="100">
-                        <circle cx="50%" cy="50%" r="50"/>
-                      </vue-content-loading>
+                    <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
                   </template>
 
                   <div class="widget-summary" v-show="!loaders.sale_note">
@@ -228,7 +224,7 @@
               <div class="card-body" >
                 
                 <template v-if="loaders.document">
-                    <vcl-table :rows="8" :columns="1"></vcl-table>
+                    <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
                 </template>
 
                 <div class="widget-summary" v-show="!loaders.document">
@@ -283,9 +279,14 @@
           </div>
           <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="general">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
+              <div class="card-body" >
+                
+                <template v-if="loaders.general">
+                    <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
+                </template>
+
+                <div class="widget-summary" v-show="!loaders.general">
+                  <div class="widget-summary-col" v-if="general">
                     <div class="summary">
                       <div class="row no-gutters">
                         <div class="col-md-12 m-b-10">
@@ -344,9 +345,14 @@
 
           <div class="col-xl-3 col-md-3">
             <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="document">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
+              <div class="card-body" >
+                
+                <template v-if="loaders.balance">
+                    <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
+                </template>
+
+                <div class="widget-summary" v-show="!loaders.balance">
+                  <div class="widget-summary-col" v-if="document">
                     <div class="row no-gutters">
                       <div class="col-md-12 m-b-10 mb-4">
                         <h2 class="card-title">Balance Ventas - Compras - Gastos</h2>
@@ -415,9 +421,14 @@
 
           <div class="col-xl-3 col-md-3">
             <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="utilities">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
+              <div class="card-body" >
+                
+                <template v-if="loaders.utility">
+                    <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
+                </template>
+
+                <div class="widget-summary" v-show="!loaders.utility">
+                  <div class="widget-summary-col" v-if="utilities">
                     <div class="row no-gutters">
                       <div class="col-md-12 m-b-10">
                         <h2 class="card-title">Utilidades/Ganancias</h2>
@@ -498,9 +509,14 @@
 
           <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
-              <div class="card-body" v-if="general">
-                <div class="widget-summary">
-                  <div class="widget-summary-col">
+              <div class="card-body" >
+                
+                <template v-if="loaders.purchase">
+                    <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
+                </template>
+
+                <div class="widget-summary" v-show="!loaders.purchase">
+                  <div class="widget-summary-col" v-if="general">
                     <div class="summary">
                       <div class="row no-gutters">
                         <div class="col-md-12 m-b-10">
@@ -569,89 +585,105 @@
           <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
-                <h2 class="card-title">Ventas por producto</h2>
-                <div class="mt-3">
-                  <el-checkbox  v-model="form.enabled_move_item" @change="loadDataAditional">Ordenar por movimientos</el-checkbox><br>
-                </div>
-                <div class="table-responsive">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Código</th>
-                        <th>Nombre</th>
-                        <th class="text-right">
-                          Mov.
-                            <el-tooltip
-                              class="item"
-                              effect="dark"
-                              content="Movimientos (Cantidad de veces vendido)"
-                              placement="top-start"
-                            >
-                              <i class="fa fa-info-circle"></i>
-                            </el-tooltip>
-                        </th>
-                        <th class="text-right">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <template v-for="(row, index) in items_by_sales">
-                        <tr :key="index">
-                          <td>{{ index + 1 }}</td>
-                          <td>{{ row.internal_id }}</td>
-                          <td>{{ row.description }}</td>
-                          <td class="text-right">{{ row.move_quantity }}</td>
-                          <td class="text-right">{{ row.total }}</td>
+                
+                <template v-if="loaders.items_by_sales">
+                    <loader-graph :rows="10" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
+                </template>
+
+                <div v-show="!loaders.items_by_sales">
+                  <h2 class="card-title">Ventas por producto</h2>
+                  <div class="mt-3">
+                    <el-checkbox  v-model="form.enabled_move_item" @change="loadDataAditional">Ordenar por movimientos</el-checkbox><br>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Código</th>
+                          <th>Nombre</th>
+                          <th class="text-right">
+                            Mov.
+                              <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Movimientos (Cantidad de veces vendido)"
+                                placement="top-start"
+                              >
+                                <i class="fa fa-info-circle"></i>
+                              </el-tooltip>
+                          </th>
+                          <th class="text-right">Total</th>
                         </tr>
-                      </template>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        <template v-for="(row, index) in items_by_sales">
+                          <tr :key="index">
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ row.internal_id }}</td>
+                            <td>{{ row.description }}</td>
+                            <td class="text-right">{{ row.move_quantity }}</td>
+                            <td class="text-right">{{ row.total }}</td>
+                          </tr>
+                        </template>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
+
               </div>
             </section>
           </div>
           <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
-                <h2 class="card-title">Top clientes</h2>
-                <div class="mt-3">
-                  <el-checkbox  v-model="form.enabled_transaction_customer" @change="loadDataAditional">Ordenar por transacciones</el-checkbox><br>
-                </div>
-                <div class="table-responsive">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Cliente</th>
-                        <th class="text-right">
-                          Trans.
-                            <el-tooltip
-                              class="item"
-                              effect="dark"
-                              content="Transacciones (Cantidad de ventas realizadas)"
-                              placement="top-start"
-                            >
-                              <i class="fa fa-info-circle"></i>
-                            </el-tooltip>
-                        </th>
-                        <th class="text-right">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <template v-for="(row, index) in top_customers">
-                        <tr :key="index">
-                          <td>{{ index + 1 }}</td>
-                          <td>
-                            {{ row.name }}
-                            <br />
-                            <small v-text="row.number"></small>
-                          </td>
-                          <td class="text-right">{{ row.transaction_quantity }}</td>
-                          <td class="text-right">{{ row.total }}</td>
+                
+                <template v-if="loaders.top_customers">
+                    <loader-graph :rows="10" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
+                </template>
+
+                <div v-show="!loaders.top_customers">
+
+                  <h2 class="card-title">Top clientes</h2>
+                  <div class="mt-3">
+                    <el-checkbox  v-model="form.enabled_transaction_customer" @change="loadDataAditional">Ordenar por transacciones</el-checkbox><br>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Cliente</th>
+                          <th class="text-right">
+                            Trans.
+                              <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Transacciones (Cantidad de ventas realizadas)"
+                                placement="top-start"
+                              >
+                                <i class="fa fa-info-circle"></i>
+                              </el-tooltip>
+                          </th>
+                          <th class="text-right">Total</th>
                         </tr>
-                      </template>
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        <template v-for="(row, index) in top_customers">
+                          <tr :key="index">
+                            <td>{{ index + 1 }}</td>
+                            <td>
+                              {{ row.name }}
+                              <br />
+                              <small v-text="row.number"></small>
+                            </td>
+                            <td class="text-right">{{ row.transaction_quantity }}</td>
+                            <td class="text-right">{{ row.total }}</td>
+                          </tr>
+                        </template>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </section>
@@ -683,11 +715,11 @@
 // import SaleNotePayments from "../../../../../../resources/js/views/tenant/sale_notes/partials/payments.vue";
 import DashboardStock from "./partials/dashboard_stock.vue";
 import queryString from "query-string";
-import { VclTable, VueContentLoading  } from 'vue-content-loading';
+import LoaderGraph from "../components/loaders/l-graph.vue";
 
 export default {
   props: ["typeUser", "soapCompany"],
-  components: { DashboardStock, VclTable, VueContentLoading },
+  components: { DashboardStock, LoaderGraph },
   data() {
     return {
       loading_search:false,
@@ -819,7 +851,7 @@ export default {
         enabled_expense: null,
         enabled_move_item:false,
         enabled_transaction_customer:false,
-        period: "all",
+        period: "month",
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
         month_start: moment().format("YYYY-MM"),
@@ -884,16 +916,30 @@ export default {
       this.loaders = {
         document: true,
         sale_note: true,
+        general: true,
+        balance: true,
+        utility: true,
+        purchase: true,
+        items_by_sales: true,
+        top_customers: true,
       }
 
     },
     showLoadersLoadData(){
+
       this.loaders.document = true
       this.loaders.sale_note = true
+      this.loaders.general = true
+      this.loaders.balance = true
+
     },
     hideLoadersLoadData(){
+
       this.loaders.document = false
       this.loaders.sale_note = false
+      this.loaders.general = false
+      this.loaders.balance = false
+
     },
     loadData() {
 
@@ -923,21 +969,45 @@ export default {
 
     },
     loadDataAditional() {
+
+      this.showLoadersLoadDataAditional()
+
       this.$http
         .post(`/${this.resource}/data_aditional`, this.form)
         .then(response => {
           this.purchase = response.data.data.purchase;
           this.items_by_sales = response.data.data.items_by_sales;
           this.top_customers = response.data.data.top_customers;
-        });
+          this.hideLoadersLoadDataAditional()
+        })
+
     },
     loadDataUtilities() {
+
+      this.loaders.utility = true
+
       this.$http
         .post(`/${this.resource}/utilities`, this.form)
         .then(response => {
           this.utilities = response.data.data.utilities;
+          this.loaders.utility = false
         });
-    }
+
+    },
+    showLoadersLoadDataAditional(){
+
+      this.loaders.purchase = true
+      this.loaders.items_by_sales = true
+      this.loaders.top_customers = true
+
+    },
+    hideLoadersLoadDataAditional(){
+
+      this.loaders.purchase = false
+      this.loaders.items_by_sales = false
+      this.loaders.top_customers = false
+
+    },
   }
 };
 </script>

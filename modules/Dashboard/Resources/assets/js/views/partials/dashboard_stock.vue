@@ -3,7 +3,7 @@
         <div class="card-body">
 
             <template v-if="loader">
-                <vcl-table :rows="6" :columns="6"></vcl-table>
+                <vcl-table :rows="10" :columns="2"></vcl-table>
             </template>
 
             <div v-show="!loader">
