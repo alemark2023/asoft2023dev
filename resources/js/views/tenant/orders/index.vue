@@ -29,7 +29,7 @@
             <th>Medio Pago</th>
             <th>Estatus del Pedido</th>
             <th>Comprobante Electronico</th>
-            <th>Factura</th>
+            <th>Comprobante</th>
           </tr>
           <tr></tr>
           <tr slot-scope="{ index, row }">
@@ -173,6 +173,7 @@ export default {
     await this.$http.get(`/statusOrder/records`).then(response => {
       this.options = response.data
     })
+    this.events()
   },
   computed: {},
   methods: {
@@ -256,6 +257,11 @@ export default {
         listProduct.push(products.items[i].id)
       }
       return listProduct
+    },
+    async events() {
+      await this.$eventHub.$on("cancelSale", () => {
+        this.showDialogOptions = false
+      })
     }
   }
 };

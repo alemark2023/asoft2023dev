@@ -1,6 +1,7 @@
 @php
     $establishment = \App\Models\Tenant\Establishment::first();
     $customer = $document->customer;
+    $typeDocument = \App\Models\Tenant\CatIdentityDocumentTypes::where('id', $customer->codigo_tipo_documento_identidad)->first();
 @endphp
 <html>
     <head>
@@ -45,6 +46,12 @@
         <td width="25%">Fecha de emisión:</td>
         <td width="15%">{{ now()->format('Y-m-d') }}</td>
     </tr>
+    @if(isset($typeDocument->description))
+        <tr>
+            <td><p class="desc">{{ $typeDocument->description }}:</p></td>
+            <td><p class="desc">{{ $customer->numero_documento }}</p></td>
+        </tr>
+    @endif
     <tr>
         <td>Teléfono:</td>
         <td>{{ $customer->telefono }}</td>
@@ -84,10 +91,10 @@
             <td colspan="8" class="border-bottom"></td>
         </tr>
     @endforeach
-        <tr>
+        <!-- tr>
             <td colspan="7" class="text-right font-bold">IGV: S/</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
-        </tr>
+        </tr -->
         <tr>
             <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: S/</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
