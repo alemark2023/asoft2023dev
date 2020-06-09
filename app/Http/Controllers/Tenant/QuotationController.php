@@ -73,7 +73,7 @@ class QuotationController extends Controller
     public function columns()
     {
         return [
-          'customer' => 'Cliente',
+            'customer' => 'Cliente',
             'date_of_issue' => 'Fecha de emisión',
             'delivery_date' => 'Fecha de entrega',
             'user_name' => 'Vendedor'
@@ -101,6 +101,15 @@ class QuotationController extends Controller
 
             $records = Quotation::whereHas('user', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
+                        })
+                        ->whereTypeUser()
+                        ->latest();
+
+        }else if($request->column == 'customer'){
+
+            $records = Quotation::whereHas('person', function($query) use($request){
+                            $query->where('name', 'like', "%{$request->value}%")
+                                ->orWhere('number', 'like', "%{$request->value}%");
                         })
                         ->whereTypeUser()
                         ->latest();

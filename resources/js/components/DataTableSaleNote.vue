@@ -14,14 +14,6 @@
                             </el-select>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-2">
-                        <div class="form-group"  >
-
-                            <el-select @change="getRecords" placeholder="Serie" v-model="search.series" filterable clearable>
-                                <el-option v-for="option in series" :key="option.number" :value="option.number" :label="option.number"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
                     <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
                         <template v-if="search.column=='date_of_issue' || search.column=='date_of_due' || search.column=='date_of_payment'">
                             <el-date-picker
@@ -41,6 +33,14 @@
                                 @input="getRecords">
                             </el-input>
                         </template>
+                    </div>
+                    <div class="col-lg-2 col-md-2">
+                        <div class="form-group"  >
+
+                            <el-select @change="getRecords" placeholder="Serie" v-model="search.series" filterable clearable>
+                                <el-option v-for="option in series" :key="option.number" :value="option.number" :label="option.number"></el-option>
+                            </el-select>
+                        </div>
                     </div>
                 </div>
 
