@@ -12,7 +12,7 @@
                             <th v-if="payments.length>0">Destino</th>
                             <th v-if="payments.length>0">Referencia</th>
                             <th v-if="payments.length>0">Monto</th>
-                            <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                            <th width="15%"><a href="#" @click.prevent="clickAddPayment()" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +65,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'payments'],
+        props: ['showDialog', 'payments', 'total'],
         data() {
             return {
                 titleDialog: 'Pagos',
@@ -101,10 +101,15 @@
                     
                     if(form_pos.payments.length == 0){
 
-                        this.clickAddPayment()
+                        this.clickAddPayment(this.total)
 
                     }else{
+                        // console.log(form_pos.payments[0])
+                        form_pos.payments[0].payment = this.total
                         this.$eventHub.$emit('localSPayments', (form_pos.payments))
+                        // this.$eventHub.$emit('eventSetFormPosLocalStorage', form_pos)
+                        this.$emit('add', form_pos.payments);
+                    
                     }
                 }
 
@@ -113,7 +118,7 @@
                 
                 
             },
-            clickAddPayment() {
+            clickAddPayment(total = 0) {
                 
                 this.payments.push({
                     id: null,
@@ -123,7 +128,7 @@
                     payment_method_type_id: '01',
                     payment_destination_id: 'cash',
                     reference: null,
-                    payment: 0,
+                    payment: total,
                 });
 
                 this.$emit('add', this.payments);

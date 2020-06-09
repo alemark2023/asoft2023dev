@@ -37,6 +37,8 @@
               v-model="input_item"
               @input="searchItems"
               autofocus
+              @keyup.native="keyupTabCustomer"
+              @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
             >
             <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
@@ -51,6 +53,7 @@
                 v-model="input_item"
                 @change="searchItemsBarcode"
                 autofocus
+                @keyup.native="keyupTabCustomer"
                 class="m-bottom"
               >
               <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
@@ -532,6 +535,29 @@
         },
 
         methods: {
+          
+            keyupTabCustomer(e){
+              // console.log(e.keyCode)
+              if(e.keyCode === 9){
+                  this.$refs.select_person.$el.getElementsByTagName('input')[0].focus()
+              }
+
+            },
+            keyupEnterAddItem(){
+
+              if (this.items.length == 1) {
+
+                  this.clickAddItem(this.items[0], 0);
+                  this.filterItems();
+                  this.cleanInput();
+
+              }else{
+
+                  this.$message.warning('No puede añadir directamente el producto al listado, hay más de uno ubicado en la búsqueda')
+
+              }
+              
+            },
             filterCategorie(id,  mod = false)
             {
 
@@ -624,6 +650,13 @@
             // console.log(item)
           },
           keyupEnterCustomer(){
+
+            if(this.form.customer_id){
+
+              this.clickPayment()
+              return
+              
+            }
 
             if(this.input_person.number){
 
