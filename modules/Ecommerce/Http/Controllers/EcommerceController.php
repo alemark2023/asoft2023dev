@@ -59,6 +59,7 @@ class EcommerceController extends Controller
             'internal_id' => $row->internal_id,
             'unit_type_id' => $row->unit_type_id,
             'description' => $row->description,
+            'technical_specifications' => $row->technical_specifications,
             'name' => $row->name,
             'second_name' => $row->second_name,
             'sale_unit_price' => ($row->currency_type_id === 'PEN') ? $sale_unit_price : ($sale_unit_price * $exchange_rate_sale),
