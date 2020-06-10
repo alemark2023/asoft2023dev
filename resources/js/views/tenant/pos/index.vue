@@ -151,6 +151,17 @@
           </template>
         </div>
 
+        <div v-if="place == 'prod' || place == 'cat2'" class="row">
+          <div class="col-md-12 text-center">
+            <el-pagination
+              @current-change="getRecords"
+              layout="total, prev, pager, next"
+              :total="pagination.total"
+              :current-page.sync="pagination.current_page"
+              :page-size="pagination.per_page">
+            </el-pagination>
+          </div>
+        </div><br>
 
       </div>
       <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
@@ -438,6 +449,7 @@
       import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
       import PersonForm from "../persons/form.vue";
       import WarehousesDetail from '../items/partials/warehouses.vue'
+      import queryString from 'query-string'
 
       export default {
         props: ['configuration', 'soapCompany', 'businessTurns'],
@@ -476,7 +488,9 @@
             user: {},
             form: {},
             categories: [ ],
-            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3']
+            colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
+            pagination: {},
+            category_selected: ''
           };
         },
         async created() {
@@ -537,8 +551,9 @@
 
                 if(id)
                 {
-                    this.items = this.all_items.filter(x => x.category_id == id)
-
+                  this.category_selected = id
+                    //this.items = this.all_items.filter(x => x.category_id == id)
+                  this.getRecords()
                 }else{
                     this.filterItems()
                 }
@@ -552,6 +567,23 @@
                 }
 
             },
+          getRecords() {
+            return this.$http.get(`/${this.resource}/items?${this.getQueryParameters()}&cat=${this.category_selected}`).then((response) => {
+              this.all_items = response.data.data
+              this.filterItems()
+              this.pagination = response.data.meta
+              this.pagination.per_page = parseInt(response.data.meta.per_page)
+            });
+          },
+          customIndex(index) {
+            return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
+          },
+          getQueryParameters() {
+            return queryString.stringify({
+              page: (this.pagination.current_page) ? this.pagination.current_page : 1,
+              limit: this.limit
+            })
+          },
           getColor(i)
           {
             return this.colors[(i % this.colors.length )]
@@ -1060,7 +1092,7 @@
           },
           async getTables() {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
-              this.all_items = response.data.items;
+              //this.all_items = response.data.items;
               this.affectation_igv_types = response.data.affectation_igv_types;
               this.all_customers = response.data.customers;
               this.establishment = response.data.establishment;
@@ -1071,7 +1103,7 @@
               this.renderCategories(response.data.categories)
               // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
               // this.changeCurrencyType();
-              this.filterItems();
+              //this.filterItems();
               this.changeDateOfIssue();
               this.changeExchangeRate()
             });

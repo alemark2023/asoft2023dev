@@ -23,6 +23,7 @@ use Modules\Item\Models\Category;
 use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Company;
 use Modules\BusinessTurn\Models\BusinessTurn;
+use App\Http\Resources\Tenant\PosCollection;
 
 
 class PosController extends Controller
@@ -296,6 +297,55 @@ class PosController extends Controller
         ];
 
 
+    }
+
+    public function item(Request $request)
+    {
+
+        return new PosCollection(Item::where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(config('tenant.items_per_page')));
+        //return new ReportKardexLotsCollection($records->paginate(config('tenant.items_per_page')));
+        /*
+        $configuration = Configuration::first();
+        
+        $items = Item::whereWarehouse()->whereIsActive()->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(config('tenant.items_per_page'))->transform(function($row) use ($configuration) {
+            $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
+            return [
+                'id' => $row->id,
+                'item_id' => $row->id,
+                'full_description' => $full_description,
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'internal_id' => $row->internal_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'calculate_quantity' => (bool) $row->calculate_quantity,
+                'has_igv' => (bool) $row->has_igv,
+                'is_set' => (bool) $row->is_set,
+                'edit_unit_price' => false,
+                'aux_quantity' => 1,
+                'edit_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                'aux_sale_unit_price' => number_format($row->sale_unit_price, $configuration->decimal_quantity, ".",""),
+                'image_url' => ($row->image !== 'imagen-no-disponible.jpg') ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$row->image) : asset("/logo/{$row->image}"),
+                'warehouses' => collect($row->warehouses)->transform(function($row) {
+                    return [
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                    ];
+                }),
+                'category_id' => ($row->category) ? $row->category->id : null,
+                'sets' => collect($row->sets)->transform(function($r) {
+                    return [
+                        $r->individual_item->description
+                    ];
+                }),
+                'unit_type' => $row->item_unit_types
+            ];
+        });
+        return $items;*/
     }
 
 }
