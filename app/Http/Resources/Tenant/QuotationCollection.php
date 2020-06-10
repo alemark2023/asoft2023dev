@@ -46,7 +46,8 @@ class QuotationCollection extends ResourceCollection
                 }),
                 'sale_notes' => $row->sale_notes->transform(function($row) {
                     return [
-                        'identifier' => $row->identifier,
+                        // 'identifier' => $row->identifier,
+                        'number_full' => $row->number_full,
                     ];
                 }),
                 'sale_opportunity_number_full' => ($row->sale_opportunity) ? $row->sale_opportunity->number_full:null,

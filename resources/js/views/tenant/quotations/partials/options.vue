@@ -124,7 +124,7 @@
             ></small>
           </div>
         </div>
-        <div class="col-lg-4" v-show="is_document_type_invoice">
+        <div class="col-lg-4" >
           <div class="form-group" :class="{'has-danger': errors.series_id}">
             <label class="control-label">Serie</label>
             <el-select v-model="document.series_id">
@@ -559,6 +559,10 @@ export default {
         this.filterSeries();
         this.is_document_type_invoice = true;
       } else {
+
+        this.series = _.filter(this.all_series, {document_type_id:'80'})
+        this.document.series_id = this.series.length > 0 ? this.series[0].id : null;
+        
         this.is_document_type_invoice = false;
       }
     },

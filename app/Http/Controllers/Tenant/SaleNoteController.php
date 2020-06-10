@@ -75,6 +75,7 @@ class SaleNoteController extends Controller
     {
         return [
             'date_of_issue' => 'Fecha de emisión',
+            'customer' => 'Cliente',
         ];
     }
 
@@ -87,17 +88,41 @@ class SaleNoteController extends Controller
 
     public function records(Request $request)
     {
-        $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
-                            ->whereTypeUser()
-                            ->latest('id');
 
+        $records = $this->getRecords($request);
+
+        return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
+    
+    }
+
+
+    private function getRecords($request){
+
+        if($request->column == 'customer'){
+
+            $records = SaleNote::whereHas('person', function($query) use($request){
+                                    $query->where('name', 'like', "%{$request->value}%")
+                                        ->orWhere('number', 'like', "%{$request->value}%");
+                                })
+                                ->whereTypeUser()
+                                ->latest();
+
+        }else{
+
+            $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
+                                ->whereTypeUser()
+                                ->latest('id');
+
+        }
+ 
         if($request->series)
         {
             $records = $records->where('series', 'like', '%' . $request->series . '%');
         }
 
-        return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
+        return $records;
     }
+
 
     public function searchCustomers(Request $request)
     {
