@@ -12,7 +12,7 @@
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
         </div>
         <div class="col-md-4">
-            <h2>  <button type="button"  @click="place = 'cat'" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
+            <h2>  <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
             <h2>  <button type="button" :disabled="place == 'cat2'" @click="setView"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
             <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
         </div>
@@ -35,13 +35,13 @@
               placeholder="Buscar productos"
               size="medium"
               v-model="input_item"
-              @input="searchItems"
               autofocus
               @keyup.native="keyupTabCustomer"
               @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
             >
             <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click.prevent="searchItems"></el-button>
           </el-input>
         </template>
 
@@ -51,12 +51,12 @@
                 placeholder="Buscar productos"
                 size="medium"
                 v-model="input_item"
-                @change="searchItemsBarcode"
                 autofocus
                 @keyup.native="keyupTabCustomer"
                 class="m-bottom"
               >
               <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
+              <el-button slot="append" icon="el-icon-search" @click.prevent="searchItemsBarcode"></el-button>
             </el-input>
         </template>
 
@@ -578,10 +578,10 @@
                 if(id)
                 {
                   this.category_selected = id
-                    //this.items = this.all_items.filter(x => x.category_id == id)
                   this.getRecords()
                 }else{
-                    this.filterItems()
+                  this.category_selected = ''
+                  this.getRecords()
                 }
 
                 if(mod)
@@ -594,15 +594,19 @@
 
             },
           getRecords() {
+            this.loading = true;
             return this.$http.get(`/${this.resource}/items?${this.getQueryParameters()}&cat=${this.category_selected}`).then((response) => {
               this.all_items = response.data.data
               this.filterItems()
               this.pagination = response.data.meta
               this.pagination.per_page = parseInt(response.data.meta.per_page)
+              this.loading = false
+              if(response.data.meta.total > 0){
+                this.pagination.total=response.data.meta.total
+                } else {
+                  this.pagination.total = 0
+                }
             });
-          },
-          customIndex(index) {
-            return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
           },
           getQueryParameters() {
             return queryString.stringify({
@@ -1158,24 +1162,21 @@
                     color: '#2C8DE3'
                     })
           },
-          searchItems() {
+          async searchItems() {
             if (this.input_item.length > 0) {
               this.loading = true;
-              let parameters = `input_item=${this.input_item}`;
-
-              this.$http
-                .get(`/${this.resource}/search_items?${parameters}`)
-                .then(response => {
-                  // console.log(response)
-                  this.items = response.data.items;
+              this.all_items = []
+              let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
+              
+                await this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
+                  this.all_items = response.data.data
+                  this.filterItems()
+                  this.pagination = response.data.meta
+                  this.pagination.per_page = parseInt(response.data.meta.per_page)
 
                   this.loading = false;
-                  if (this.items.length == 0) {
-                    this.filterItems();
-                  }
                 });
             } else {
-              // this.customers = []
               this.filterItems();
             }
 
@@ -1188,17 +1189,22 @@
             if (this.input_item.length > 1) {
 
               this.loading = true;
-              let parameters = `input_item=${this.input_item}`;
+              this.all_items = []
+              //let parameters = `input_item=${this.input_item}`;
+              let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
 
-              await this.$http.get(`/${this.resource}/search_items?${parameters}`)
-                        .then(response => {
+              //await this.$http.get(`/${this.resource}/search_items?${parameters}`)
+              this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
 
-                          this.items = response.data.items;
+                          this.all_items = response.data.items;
                           this.enabledSearchItemsBarcode()
                           this.loading = false;
-                          if (this.items.length == 0) {
+                          this.filterItems();
+                          this.pagination = response.data.meta
+                          this.pagination.per_page = parseInt(response.data.meta.per_page)
+                          /*if (this.items.length == 0) {
                             this.filterItems();
-                        }
+                        }*/
 
                   });
 
@@ -1271,7 +1277,9 @@
             },
             back()
             {
-                this.place = 'cat'
+              this.all_items = []
+              this.place = 'cat'
+              this.loading = false
             },
             setView()
             {
