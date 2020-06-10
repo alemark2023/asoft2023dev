@@ -417,6 +417,8 @@ if ($hostname) {
            Route::get('pos/payment', 'Tenant\PosController@payment')->name('tenant.pos.payment');
            Route::get('pos/status_configuration', 'Tenant\PosController@status_configuration');
            Route::get('pos/validate_stock/{item}/{quantity}', 'Tenant\PosController@validate_stock');
+           Route::get('pos/items', 'Tenant\PosController@item');
+           Route::get('pos/search_items_cat', 'Tenant\PosController@search_items_cat');
 
            Route::get('cash', 'Tenant\CashController@index')->name('tenant.cash.index');
            Route::get('cash/columns', 'Tenant\CashController@columns');
