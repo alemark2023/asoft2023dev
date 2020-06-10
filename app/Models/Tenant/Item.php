@@ -21,6 +21,7 @@ class Item extends ModelTenant
         'name',
         'second_name',
         'description',
+        'technical_specifications',
         'item_type_id',
         'internal_id',
         'item_code',
