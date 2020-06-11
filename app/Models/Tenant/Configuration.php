@@ -32,7 +32,9 @@ class Configuration extends ModelTenant
         'terms_condition',
         'cotizaction_finance',
         'include_igv',
-        'product_only_location'
+        'product_only_location',
+        'header_image',
+        'legend_footer',
     ];
 
     public function setPlanAttribute($value)

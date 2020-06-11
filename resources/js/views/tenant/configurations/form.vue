@@ -158,6 +158,40 @@
                                     <small class="form-control-feedback" v-if="errors.product_only_location" v-text="errors.product_only_location[0]"></small>
                                 </div>
                             </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+                                <div class="form-group">
+                                    <label class="control-label">Imágen para encabezado - pdf
+                                        <el-tooltip class="item" effect="dark" content="Disponible para facturas y boletas en formato a4, usando la plantilla header_image_full_width" placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-input v-model="form.header_image" :readonly="true">
+                                        <el-upload slot="append"
+                                                   :headers="headers"
+                                                   action="/configurations/uploads"
+                                                   :show-file-list="false"
+                                                   :on-success="successUpload">
+                                            <el-button type="primary" icon="el-icon-upload"></el-button>
+                                        </el-upload>
+                                    </el-input>
+                                    <!-- <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div> -->
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Mostrar leyenda en footer - pdf
+                                    <el-tooltip class="item" effect="dark" content="Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma, disponible para facturas y boletas" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.legend_footer}">
+                                    <el-switch v-model="form.legend_footer" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.legend_footer" v-text="errors.legend_footer[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </form>
@@ -180,6 +214,7 @@
 
         data() {
             return {
+                headers: headers_token,
                 showDialogTermsCondition:false,
                 loading_submit: false,
                 resource: 'configurations',
@@ -202,6 +237,24 @@
             });
         },
         methods: {
+            successUpload(response, file, fileList) {
+                if (response.success) {
+                    this.$message.success(response.message)
+                    this.getRecord()
+                    this.form[response.type] = response.name
+                } else {
+                    this.$message({message:'Error al subir el archivo', type: 'error'})
+                }
+            },
+            async getRecord(){
+                
+                await this.$http.get(`/${this.resource}/record`) .then(response => {
+                    if (response.data !== ''){
+                    this.form = response.data.data;
+                    }
+                    // console.log(this.placeholder)
+                });
+            },
             async loadTables(){
 
                 await this.$http.get(`/${this.resource}/tables`) .then(response => {
@@ -223,6 +276,8 @@
                     colums_grid_item: 4,
                     affectation_igv_type_id:'10',
                     terms_condition:null,
+                    header_image: null,
+                    legend_footer: false,
                 };
             },
             submit() {

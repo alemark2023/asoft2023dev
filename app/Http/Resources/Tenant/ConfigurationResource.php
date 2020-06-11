@@ -35,6 +35,8 @@ class ConfigurationResource extends JsonResource
             'cotizaction_finance' => (bool) $this->cotizaction_finance,
             'include_igv' => (bool) $this->include_igv,
             'product_only_location' => (bool) $this->product_only_location,
+            'legend_footer' => (bool) $this->legend_footer,
+            'header_image' => $this->header_image,
         ];
     }
 }
