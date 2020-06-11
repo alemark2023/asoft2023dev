@@ -131,6 +131,11 @@
                 // this.loadAll();
             },
             clickDownload(type) {                 
+                
+                if(!this.form.item_id){
+                    return this.$message.error('El producto es obligatorio')
+                }
+
                 let query = queryString.stringify({
                     ...this.form
                 });
