@@ -296,12 +296,6 @@
         },
         computed: {
 
-            clickDownloadPaymentMethod() {
-                let query = queryString.stringify({
-                    ...this.form
-                });
-                window.open(`/${this.resource}/report-payment-method-days/?${query}`, "_blank");
-            },
             getCurrentBalance() {
 
                 const self = this;
@@ -399,6 +393,12 @@
 
         methods: {
             
+            clickDownloadPaymentMethod() {
+                let query = queryString.stringify({
+                    ...this.form
+                });
+                window.open(`/${this.resource}/report-payment-method-days/?${query}`, "_blank");
+            },
             initForm() {
                 this.form = { 
                     establishment_id: null,
