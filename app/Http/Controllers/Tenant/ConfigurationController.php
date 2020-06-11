@@ -191,4 +191,38 @@ class ConfigurationController extends Controller
         return 'error';
     }
 
+    
+    public function uploadFile(Request $request)
+    {
+        if ($request->hasFile('file')) {
+
+            $configuration = Configuration::first();
+            
+            
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension();
+            $name = date('Ymd').'_'.$configuration->id.'.'.$ext;
+         
+            
+            request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+            
+            $file->storeAs('public/uploads/header_images', $name);
+
+
+            $configuration->header_image = $name;
+
+            $configuration->save();
+
+            return [
+                'success' => true,
+                'message' => __('app.actions.upload.success'),
+                'name' => $name,
+            ];
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
 }

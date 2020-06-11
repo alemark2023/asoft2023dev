@@ -470,8 +470,16 @@ class Facturalo
         if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
+
                 $html_footer = $template->pdfFooter($base_pdf_template);
-                $pdf->SetHTMLFooter($html_footer);
+                $html_footer_legend = "";
+                // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
+                if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
+                    $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
+                }
+
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
+
             }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
