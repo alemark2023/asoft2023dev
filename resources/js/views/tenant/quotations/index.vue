@@ -73,7 +73,8 @@
                         </td>
                         <td>
                             <template v-for="(sale_note,i) in row.sale_notes">
-                                <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
+                                <!-- <label :key="i" v-text="sale_note.identifier" class="d-block"></label> -->
+                                <label :key="i" v-text="sale_note.number_full" class="d-block"></label>
                             </template>
                         </td>
                         <td>

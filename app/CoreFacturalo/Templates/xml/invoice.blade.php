@@ -156,12 +156,14 @@
     @if($document->detraction)
         @php($detraction = $document->detraction)
         <cac:PaymentMeans>
+            <cbc:ID>Detraccion</cbc:ID>
             <cbc:PaymentMeansCode>{{ $detraction->payment_method_id }}</cbc:PaymentMeansCode>
             <cac:PayeeFinancialAccount>
                 <cbc:ID>{{ $detraction->bank_account }}</cbc:ID>
             </cac:PayeeFinancialAccount>
         </cac:PaymentMeans>
         <cac:PaymentTerms>
+            <cbc:ID>Detraccion</cbc:ID>
             <cbc:PaymentMeansID>{{ $detraction->detraction_type_id }}</cbc:PaymentMeansID>
             <cbc:PaymentPercent>{{ $detraction->percentage }}</cbc:PaymentPercent>
             <cbc:Amount currencyID="PEN">{{ $detraction->amount }}</cbc:Amount>

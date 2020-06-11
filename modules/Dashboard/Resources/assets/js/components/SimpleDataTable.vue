@@ -57,6 +57,7 @@
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
+                    this.$eventHub.$emit('recordsSkeletonLoader', false)
                 });
             },
             getQueryParameters() {

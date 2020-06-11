@@ -23,6 +23,7 @@ use Modules\Item\Models\Category;
 use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Company;
 use Modules\BusinessTurn\Models\BusinessTurn;
+use App\Http\Resources\Tenant\PosCollection;
 
 
 class PosController extends Controller
@@ -295,6 +296,30 @@ class PosController extends Controller
             'message' => ''
         ];
 
+
+    }
+
+    public function item(Request $request)
+    {
+        if($request->cat) {
+            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(config('tenant.items_per_page')));
+        } else {
+            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(config('tenant.items_per_page')));
+        }
+        
+    }
+
+    public function search_items_cat(Request $request)
+    {
+        return new PosCollection(Item::where('description','like', "%{$request->input_item}%")
+                            ->orWhere('internal_id','like', "%{$request->input_item}%")
+                            ->where('category_id', $request->cat)
+                            ->orWhereHas('brand', function($query) use($request) {
+                                $query->where('name', 'like', '%' . $request->input_item . '%');
+                            })
+                            ->whereWarehouse()
+                            ->whereIsActive()
+                            ->paginate(config('tenant.items_per_page')));
 
     }
 

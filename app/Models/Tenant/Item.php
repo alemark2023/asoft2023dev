@@ -21,6 +21,7 @@ class Item extends ModelTenant
         'name',
         'second_name',
         'description',
+        'technical_specifications',
         'item_type_id',
         'internal_id',
         'item_code',
@@ -61,6 +62,7 @@ class Item extends ModelTenant
         'lot_code',
         'lots_enabled',
         'active',
+        'line',
         'series_enabled'
         // 'warehouse_id'
     ];

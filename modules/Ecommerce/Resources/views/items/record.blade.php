@@ -123,13 +123,12 @@
             <a class="nav-link active"  id="product-tab-desc" data-toggle="tab" href="#product-desc-content" role="tab"
                 aria-controls="product-desc-content" aria-selected="true">Descripcion</a>
         </li>
-        {{-- <li class="nav-item">
-            <a class="nav-link" id="product-tab-tags" data-toggle="tab" href="#product-tags-content" role="tab"
-                aria-controls="product-tags-content" aria-selected="false">Tags</a>
-        </li> --}}
         <li class="nav-item">
             <a class="nav-link" onclick="getRating('{{ $record->id}}')" id="product-tab-reviews" data-toggle="tab" href="#product-reviews-content" role="tab"
                 aria-controls="product-reviews-content" aria-selected="false">Reviews</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="product-tab-especTecn" data-toggle="tab" href="#product-especTecn-content" role="tab" aria-controls="product-especTecn-content" aria-selected="true">Especificaciones Técnicas</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -138,32 +137,8 @@
             <div class="product-desc-content">
                 <p> {{ $record->description}} </p>
                 <p> {{ $record->name}} </p>
-                {{-- <ul>
-                    <li><i class="icon-ok"></i>Any Product types that You want - Simple,
-                        Configurable</li>
-                    <li><i class="icon-ok"></i>Downloadable/Digital Products, Virtual Products
-                    </li>
-                    <li><i class="icon-ok"></i>Inventory Management with Backordered items</li>
-                </ul>
-                <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-                    minim veniam, <br>quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. </p> --}}
             </div><!-- End .product-desc-content -->
         </div><!-- End .tab-pane -->
-
-        {{-- <div class="tab-pane fade" id="product-tags-content" role="tabpanel" aria-labelledby="product-tab-tags">
-            <div class="product-tags-content">
-                <form action="#">
-                    <h4>Add Your Tags:</h4>
-                    <div class="form-group">
-                        <input type="text" class="form-control form-control-sm" required>
-                        <input type="submit" class="btn btn-primary" value="Add Tags">
-                    </div><!-- End .form-group -->
-                </form>
-                <p class="note">Use spaces to separate tags. Use single quotes (') for phrases.
-                </p>
-            </div><!-- End .product-tags-content -->
-        </div><!-- End .tab-pane --> --}}
 
         <div class="tab-pane fade" id="product-reviews-content" role="tabpanel" aria-labelledby="product-tab-reviews">
             <div class="product-reviews-content">
@@ -224,6 +199,12 @@
 
             </div>
         </div>
+
+        <div class="tab-pane fade" id="product-especTecn-content" role="tabpanel" aria-labelledby="product-tab-especTecn">
+            <div class="product-especTecn-content">
+                <p> {{ $record->technical_specifications}} </p>
+            </div><!-- End .product-desc-content -->
+        </div><!-- End .tab-pane -->
     </div>
 </div>
 

@@ -43,8 +43,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                             <label class="control-label">Unidad</label>
@@ -54,6 +52,15 @@
                             <small class="form-control-feedback" v-if="errors.unit_type_id" v-text="errors.unit_type_id[0]"></small>
                         </div>
                     </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group" :class="{'has-danger': errors.technical_specifications}">
+                            <label class="control-label">Especificaciones técnicas</label>
+                            <el-input type="textarea" v-model="form.technical_specifications" dusk="technical_specifications" maxlength="300"></el-input>
+                            <small class="form-control-feedback" v-if="errors.technical_specifications" v-text="errors.technical_specifications[0]"></small>
+                        </div>
+                    </div>
+                    
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                             <label class="control-label">Moneda</label>
@@ -564,7 +571,8 @@
                     apply_store: false,
                     tags_id: [],
                     multi_images: [],
-                    attributes: []
+                    attributes: [],
+                    technical_specifications: ''
                 }
                 this.show_has_igv = true
             },
