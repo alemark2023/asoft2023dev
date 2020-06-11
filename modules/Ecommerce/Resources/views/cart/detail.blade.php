@@ -26,7 +26,7 @@
                                 <a href="#">@{{ row.description }}</a>
                             </h2>
                         </td>
-                        <!-- td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td -->
+                        <td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td>
                         <td>
                             <input class="vertical-quantity form-control input_quantity" :data-product="row.id"
                                 type="text">
@@ -133,10 +133,10 @@
 
             <div class="form-group">
                 <label>Comprobante:</label>
-                <select v-model="typeVoucher" class="form-control" @change="optionDocument">
+                <select v-model="formIdentity.identity_document_type_id" class="form-control" @change="optionDocument">
                     <option value="" disabled>Tipo de comprobante</option>
                     <option value="1">Boleta</option>
-                    <option value="2">Factura</option>
+                    <option value="6">Factura</option>
                 </select>
             </div>
             <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento_identidad}">
@@ -172,86 +172,6 @@
             </form>
         </div>
     </div><!-- End .col-lg-4 -->
-
-    <div class="modal fade" id="modal_ask_document" tabindex="-1" role="dialog" data-backdrop="static"
-        data-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="exampleModalCenterTitle">Generar Comprobante Electronico</h2>
-
-                </div>
-                <div class="modal-body">
-                    <h3>La Transacción de se realizó correctamente.</h3>
-                    <h4>¿ Desea generar un comprobante y enviarlo a su email ? </h4> <br>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" @click="checkDocument('6')">SI, FACTURA</button>
-                    <button type="button" class="btn btn-primary" @click="checkDocument('1')">SI, BOLETA
-                        ELECTRONICA</button>
-                    <button type="button" class="btn btn-secondary" @click="redirectHome" data-dismiss="modal">No,
-                        NINGUNA</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modal_identity_document" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        data-backdrop="static" data-keyboard="false" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="exampleModalLabel">Datos Generales para el Comprobante</h3>
-                </div>
-                <div class="modal-body">
-
-                    <form>
-                        <div class="form-group">
-                            <label class="control-label">Tipo Doc. Identidad <span class="text-danger">*</span></label>
-                            <select class="form-control" :disabled="formIdentity.identity_document_type_id == '6'"
-                                v-model="formIdentity.identity_document_type_id">
-                                <option v-for="option in identity_document_types" :value="option.id"
-                                    :label="option.description"></option>
-                            </select>
-
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Ingrese Número <span> (Se debe validar el numero ingresado)</span> <span class="text-danger">*</span></label>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" v-model="formIdentity.number"
-                                    :maxlength="maxLength" aria-label="Recipient's username"
-                                    aria-describedby="button-addon2">
-                                <div class="input-group-append">
-
-                                    <button  :disabled="!formIdentity.number" @click.prevent="searchCustomer"
-                                        class="btn btn-outline-secondary" type="button" id="button-addon2">
-
-                                        <template v-if="formIdentity.identity_document_type_id === '6'">
-                                            <i class="icon-search"></i> <span>SUNAT @{{ text_search }}</span>
-                                        </template>
-                                        <template v-if="formIdentity.identity_document_type_id === '1'">
-                                            <i class="icon-search"></i> <span>RENIEC @{{ text_search }}</span>
-                                        </template>
-                                    </button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </form>
-                    <div v-show="response_search.message" class="alert"
-                        :class="{'alert-danger' : !response_search.success, 'alert-success': response_search.success}"
-                        role="alert">
-                        @{{ response_search.message }}
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCELAR</button>
-                    <button type="button" class="btn btn-primary" @click="sendDocument"
-                        v-show="formIdentity.validate">ENVIAR</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div><!-- End .row -->
 
 <input type="hidden" id="total_amount" data-total="0.0">
@@ -288,7 +208,7 @@
                 description: 'RUC'
             }],
             formIdentity: {
-                identity_document_type_id: '6'
+                identity_document_type_id: ''
             },
             records: [],
             records_old: [],
@@ -305,7 +225,6 @@
             response_order_total:0,
             errors: {},
             exchange_rate_sale: '',
-            typeVoucher: '',
             typeDocuments: '',
             typeDocumentList: [],
             numberDocument: ''
@@ -383,17 +302,17 @@
               this.typeDocumentList = []
               this.typeDocuments = ''
               let voucher = [{id: '6', name: 'RUC'}]
-              let ticket = [{id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '7', name: 'Pasaporte'}]
-              if(this.typeVoucher === '2') {
+              let ticket = [{id: '0', name: 'DOC'},{id: '4', name: 'CE'}]
+              if(this.formIdentity.identity_document_type_id === '6') {
                 this.typeDocumentList = voucher
-              }else if (this.typeVoucher === '1' && this.payment_cash.amount >= 700) {
+              }else if (this.formIdentity.identity_document_type_id === '1' && this.payment_cash.amount >= 700) {
                 this.typeDocumentList = [{id: '1', name: 'DNI'}]
                 this.typeDocuments = ''
               } else {
                 this.typeDocumentList = ticket
               }
           },
-            getFormPaymentCash() {
+            async getFormPaymentCash() {
               this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
               this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
               this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this.typeDocuments
@@ -407,9 +326,7 @@
                     precio_culqi: precio_culqi,
                     customer: this.form_document.datos_del_cliente_o_receptor,
                     items: this.records,
-                    telephone: this.form_contact.telephone,
-                    address: this.form_contact.address,
-                    type_document: this.typeDocuments
+                    purchase: await this.getDocument()
                 }
             },
             async paymentCash() {
@@ -435,7 +352,7 @@
                 });
 
                 let url_finally = '{{ route("tenant_ecommerce_payment_cash")}}';
-                let response = await axios.post(url_finally, this.getFormPaymentCash(), this.getHeaderConfig()).then(response => {
+                let response = await axios.post(url_finally, await this.getFormPaymentCash(), this.getHeaderConfig()).then(response => {
                 if (response.data.success) {
                     this.saveContactDataUser()
                     this.clearShoppingCart()
@@ -462,50 +379,6 @@
             redirectHome() {
                 window.location = "{{ route('tenant.ecommerce.index') }}";
             },
-            async searchCustomer() {
-                this.text_search = 'Buscando...'
-                this.response_search = {
-                    succes: false,
-                    message: ''
-                }
-                let identity_document_type_name = ''
-                if (this.formIdentity.identity_document_type_id === '6') {
-                    identity_document_type_name = 'ruc'
-                }
-                if (this.formIdentity.identity_document_type_id === '1') {
-                    identity_document_type_name = 'dni'
-                }
-
-                let response = await axios.get(
-                    `/services/${identity_document_type_name}/${this.formIdentity.number}`)
-
-                if (response.data.success) {
-                    this.response_search.success = response.data.success
-                    this.response_search.message = 'Datos Encontrados (Ahora puede enviar su comprobante.)'
-                    // let data = response.data.data
-                    this.formIdentity.validate = true
-                    this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this
-                        .formIdentity.identity_document_type_id
-                    this.form_document.datos_del_cliente_o_receptor.numero_documento = this.formIdentity
-                        .number
-                    /* this.form.name = data.name
-                     this.form.trade_name = data.trade_name
-                     this.form.address = data.address
-                     this.form.department_id = data.department_id
-                     this.form.province_id = data.province_id
-                     this.form.district_id = data.district_id
-                     this.form.phone = data.phone*/
-                } else {
-                    this.response_search.success = response.data.success
-                    this.response_search.message = response.data.message
-
-                    this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = "0"
-                    this.form_document.datos_del_cliente_o_receptor.numero_documento = "0"
-                }
-
-                this.text_search = ''
-
-            },
             getHeaderConfig() {
                 let token = this.user.api_token
                 let axiosConfig = {
@@ -516,116 +389,10 @@
                 };
                 return axiosConfig;
             },
-            checkDocument(typeDocument) {
-
-                $('#modal_ask_document').modal('hide');
-
-                this.formIdentity.identity_document_type_id = typeDocument
-
-                $('#modal_identity_document').modal('show');
-                //this.typeDocumentSelected = typeDocument
-                //let total = parseFloat(this.response_order_total)
-                // console.log(total, this.response_order_total)
-
-                /*if (typeDocument == '6') {
-                    let tipoDocumento = this.user.identity_document_type_id
-                    let number = this.user.number
-                    // console.log(this.user)
-
-                    // if (!tipoDocumento || !number || number.length !== 11) {
-                    $('#modal_identity_document').modal('show');
-                    // } else {
-                    //     this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad =
-                    //         tipoDocumento
-                    //     this.form_document.datos_del_cliente_o_receptor.numero_documento = number
-                    //     this.sendDocument()
-                    // }
-
-                } else {
-
-                    if(total > 700){
-
-                        $('#modal_identity_document').modal('show');
-
-                    }else{
-
-                        this.sendDocument()
-                    }
-
-                }*/
-
-            },
-            finallyProcess(form) {
-                let url_finally = '{{ route("tenant_ecommerce_transaction_finally")}}';
-                axios.post(url_finally, form, this.getHeaderConfig())
-                    .then(response => {
-                        console.log(response)
-                        console.log('transaccion finalizada correctamente')
-                        swal({
-                            title: "Gracias por su pago!",
-                            text: "La Transacción de su compra se finalizó correctamente. El Comprobante y detalle de su compra se envió a su correo.",
-                            type: "success"
-                        }).then((x) => {
-                            this.redirectHome()
-                        })
-                    })
-                    .catch(error => {
-                        console.log(error)
-                        console.log('error al finalizar la transaccion')
-                    });
-
-            },
-            async sendDocument() {
-
-                $('#modal_ask_document').modal('hide');
-                $('#modal_identity_document').modal('hide');
-
-                swal({
-                    title: "Estamos enviando el Comprobante a su Email",
-                    text: `Por favor no cierre esta ventana hasta que el proceso termine.`,
-                    focusConfirm: false,
-                    onOpen: () => {
-                        Swal.showLoading()
-                    }
-                });
-                let doc = await this.getDocument()
-               // console.log(doc)
-                // return
-                await axios.post('/api/documents', doc, this.getHeaderConfig())
-                    .then(response => {
-                       // console.log('documento generado correctamente')
-                        this.finallyProcess(this.getDataFinally(response.data))
-                        this.initForm()
-                    })
-                    .catch(error => {
-                      // console.log(error)
-                        //console.log('error al generar documento')
-                        swal({
-                            type: 'error',
-                            title: 'Oops...',
-                            text: 'Sucedió un error al generar el comprobante electronico!',
-                        }).then((x) => {
-                            window.location = "{{ route('tenant.ecommerce.index') }}";
-                        })
-
-                    });
-
-            },
-            getDataFinally(document) {
-                return {
-                    document_external_id: document.data.external_id,
-                    number_document: document.number,
-                    orderId: this.order_generated.id,
-                    product: 'Compras Ecommerce Facturador Pro',
-                    precio_culqi: this.summary.total,
-                    identity_document_type_id: this.formIdentity.identity_document_type_id,
-                    number: this.formIdentity.number,
-
-                }
-            },
             async getDocument() {
                 this.form_document.items = await this.getItemsDocument()
                 this.form_document.totales = await this.getTotales()
+                this.form_document.type = ''
 
                 if (this.formIdentity.identity_document_type_id === '6') {
                     this.form_document.serie_documento = 'F001'
@@ -760,7 +527,7 @@
 
 
                 this.formIdentity = {
-                    identity_document_type_id: '6'
+                    identity_document_type_id: ''
                 }
 
                 this.form_contact.address =  this.user.address
@@ -844,7 +611,6 @@
 
                 $("#total_amount").data('total', this.summary.total);
 
-                this.typeVoucher = ''
                 this.optionDocument()
 
                 this.payment_cash.amount = this.summary.total;

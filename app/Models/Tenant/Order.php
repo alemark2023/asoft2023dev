@@ -21,12 +21,13 @@ class Order extends ModelTenant
         'document_external_id',
         'number_document',
         'status_order_id',
-        'type_document'
+        'purchase'
     ];
 
     protected $casts = [
         'customer' => 'object',
-        'items' => 'object'
+        'items' => 'object',
+        'purchase' => 'object'
     ];
 
     public function status_order()
