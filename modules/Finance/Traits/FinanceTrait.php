@@ -256,8 +256,32 @@ trait FinanceTrait
     public function getSumPayment($record, $model)
     {
         return $record->where('payment_type', $model)->sum(function($row){
-            return $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
+            
+            $total_credit_notes = ($row->instance_type == 'document') ? $this->getTotalCreditNotes($row->payment->associated_record_payment) : 0;
+            $total_currency_type = $this->calculateTotalCurrencyType($row->payment->associated_record_payment, $row->payment->payment);
+
+            return $total_currency_type - $total_credit_notes;
+
         });
+    }
+    
+
+    public function getTotalCreditNotes($record)
+    {
+
+        $credit_notes = $record->affected_documents->where('note_type', 'credit');
+
+        $total_credit_notes = $credit_notes->sum(function($note){
+
+            if(in_array($note->document->state_type_id, ['01','03','05','07','13'])){
+                return $this->calculateTotalCurrencyType($note->document, $note->document->total);
+            }
+
+            return 0;
+        });
+
+        return $total_credit_notes;
+
     }
     
 
@@ -272,7 +296,7 @@ trait FinanceTrait
         
         $records = $payment_method_types->map(function($row){
 
-            $document_payment = $this->getSumByPMT($row->document_payments);
+            $document_payment = $this->getSumByPMT($row->document_payments, true);
             $sale_note_payment = $this->getSumByPMT($row->sale_note_payments);
             $purchase_payment = $this->getSumByPMT($row->purchase_payments); 
             $quotation_payment = $this->getSumByPMT($row->quotation_payments); 
@@ -326,11 +350,17 @@ trait FinanceTrait
         return $records;
     }
 
-    public function getSumByPMT($records)
+    public function getSumByPMT($records, $include_credit_notes = false)
     {
-        return $records->sum(function($row){
-            return $this->calculateTotalCurrencyType($row->associated_record_payment, $row->payment);
+
+        return $records->sum(function($row) use($include_credit_notes){
+            
+            $total_credit_notes = ($include_credit_notes) ? $this->getTotalCreditNotes($row->associated_record_payment) : 0;
+            $total_currency_type = $this->calculateTotalCurrencyType($row->associated_record_payment, $row->payment);
+
+            return $total_currency_type - $total_credit_notes;
         });
+
     }
 
     public function getTotalsPaymentMethodType($records_by_pmt, $records_by_emt)
