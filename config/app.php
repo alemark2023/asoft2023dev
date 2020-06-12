@@ -181,6 +181,7 @@ return [
 
         App\Providers\CashServiceProvider::class,
         Modules\Finance\Providers\GlobalPaymentServiceProvider::class,
+        Modules\Sale\Providers\SaleNotePaymentProvider::class,
 
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
 
