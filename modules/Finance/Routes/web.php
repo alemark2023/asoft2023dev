@@ -33,6 +33,7 @@ if($hostname) {
                 Route::get('unpaid/filter', 'UnpaidController@filter');
                 Route::post('unpaid/records', 'UnpaidController@records');
                 Route::get('unpaid/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
+                Route::get('unpaid/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
 
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');
                 Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
@@ -43,6 +44,7 @@ if($hostname) {
                 Route::post('to-pay/records', 'ToPayController@records');
                 Route::get('to-pay/to-pay-all', 'ToPayController@toPayAll')->name('toPayAll');
                 Route::get('to-pay/to-pay', 'ToPayController@toPay');
+                Route::get('to-pay/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
 
                 
                 Route::prefix('income')->group(function () {

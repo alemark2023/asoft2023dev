@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use App\Models\Tenant\Person;
 use Modules\Dashboard\Helpers\DashboardView;
 use App\Exports\AccountsReceivable;
+use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
 
 class UnpaidController extends Controller
 { 
@@ -58,4 +59,25 @@ class UnpaidController extends Controller
     {
         return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
     }
+
+    
+    public function reportPaymentMethodDays(Request $request)
+    {
+
+        $all_records = (new DashboardView())->getUnpaid($request->all());
+
+        $records = collect($all_records)->where('total_to_pay', '>', 0)->where('type', 'document')->map(function($row){
+            $row['difference_days'] = Carbon::parse($row['date_of_issue'])->diffInDays($row['date_of_due']);
+            return $row;
+        });
+        
+        $company = Company::first();
+
+        return (new UnpaidPaymentMethodDayExport)
+                ->company($company)
+                ->records($records)
+                ->download('Reporte_C_Cobrar_F_Pago'.Carbon::now().'.xlsx');
+
+    }
+
 }
