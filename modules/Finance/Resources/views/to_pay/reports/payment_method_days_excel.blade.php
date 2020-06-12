@@ -9,7 +9,7 @@
     </head>
     <body>
         <div>
-            <h3 align="center" class="title"><strong>Reporte formas de pago - C. Cobrar</strong></h3>
+            <h3 align="center" class="title"><strong>Reporte formas de pago - C. Pagar</strong></h3>
         </div>
         <br>
         <div style="margin-top:20px; margin-bottom:15px;">
