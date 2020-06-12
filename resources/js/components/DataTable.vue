@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-loading="loading_submit">
         <div class="row ">
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
@@ -88,7 +88,8 @@
                 },
                 columns: [],
                 records: [],
-                pagination: {}
+                pagination: {},
+                loading_submit: false
             }
         },
         computed: {
@@ -113,11 +114,13 @@
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },
             getRecords() {
+                this.loading_submit = true
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
-                });
+                    this.loading_submit = false
+                })
             },
             getQueryParameters() {
                 return queryString.stringify({
