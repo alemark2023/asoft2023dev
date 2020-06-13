@@ -527,7 +527,7 @@ class DashboardData
             $d_start = $d_start->addDay();
         }
 
-        return compact('sale_notes_array', 'documents_array', 'total_array', 'x');
+        return compact('sale_notes_array', 'documents_array', 'total_array');
     }
 
     private function getDocumentsByMonths($sale_notes, $documents, $month_start, $month_end)

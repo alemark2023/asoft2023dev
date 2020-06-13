@@ -170,7 +170,7 @@ class DashboardView
                         if($invoice)
                         {
                             $due =   Carbon::parse($invoice->date_of_due); // $invoice->date_of_due;
-                            $date_of_due = $invoice->date_of_due->format('Y-m-d');
+                            $date_of_due = $invoice->date_of_due->format('Y/m/d');
                             $now = Carbon::now();
 
                             if($now > $due){

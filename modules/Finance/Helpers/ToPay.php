@@ -163,7 +163,7 @@ class ToPay
                     if($row->date_of_due){
                         // dd($row->date_of_due);
                         $due =   Carbon::parse($row->date_of_due); 
-                        $date_of_due = Carbon::parse($row->date_of_due)->format('Y-m-d');
+                        $date_of_due = Carbon::parse($row->date_of_due)->format('Y/m/d');
                         $now = Carbon::now();
 
                         if($now > $due){
