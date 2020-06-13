@@ -911,4 +911,9 @@ class DocumentController extends Controller
         ];
     }
 
+    public function searchExternalId(Request $request)
+    {
+        return response()->json(Document::where('external_id', $request->external_id)->first());
+    }
+
 }

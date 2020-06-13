@@ -37,7 +37,7 @@ if ($hostname) {
             Route::get('orders/columns', 'Tenant\OrderController@columns');
             Route::get('orders/records', 'Tenant\OrderController@records');
             Route::get('orders/record/{order}', 'Tenant\OrderController@record');
-            Route::get('orders/print/{external_id}/{format?}', 'Tenant\OrderController@toPrint');
+            //Route::get('orders/print/{external_id}/{format?}', 'Tenant\OrderController@toPrint');
             Route::post('statusOrder/update/', 'Tenant\OrderController@updateStatusOrders');
             Route::get('orders/pdf/{id}', 'Tenant\OrderController@pdf');
 
@@ -162,6 +162,7 @@ if ($hostname) {
             Route::post('documents/brands', 'Tenant\DocumentController@storeBrands');
             Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
             Route::get('documents/search/customer/{id}', 'Tenant\DocumentController@searchCustomerById');
+            Route::get('documents/search/externalId/{external_id}', 'Tenant\DocumentController@searchExternalId');
 
             Route::get('documents', 'Tenant\DocumentController@index')->name('tenant.documents.index')->middleware(['redirect.level','tenant.internal.mode']);
             Route::get('documents/columns', 'Tenant\DocumentController@columns');
