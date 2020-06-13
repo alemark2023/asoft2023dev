@@ -100,6 +100,18 @@
                                         >
                                         <i class="fa fa-file-excel"></i> Exportar Excel
                                     </el-button>
+                                    
+                                    <el-tooltip class="item" effect="dark" content="Reporte por formas de pago (Días)" placement="top-start">
+                                        <el-button
+                                            v-if="records.length > 0"
+                                            class="submit"
+                                            type="primary"
+                                            @click.prevent="clickDownloadPaymentMethod()"
+                                            >
+                                            <i class="fa fa-file-excel"></i> Formas de pago (Días)
+                                        </el-button>
+                                    </el-tooltip>
+
                                 </div>
                             </div>
                             <div class="row mt-5 mb-3 text-right">
@@ -381,6 +393,12 @@
 
         methods: {
             
+            clickDownloadPaymentMethod() {
+                let query = queryString.stringify({
+                    ...this.form
+                });
+                window.open(`/${this.resource}/report-payment-method-days/?${query}`, "_blank");
+            },
             initForm() {
                 this.form = { 
                     establishment_id: null,

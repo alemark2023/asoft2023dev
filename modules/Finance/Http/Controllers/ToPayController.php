@@ -20,6 +20,8 @@ use Carbon\Carbon;
 use App\Models\Tenant\Person;
 use Modules\Dashboard\Helpers\DashboardView;
 use Modules\Finance\Helpers\ToPay;
+use Modules\Finance\Exports\ToPaymentMethodDayExport;
+
 
 class ToPayController extends Controller
 { 
@@ -76,4 +78,27 @@ class ToPayController extends Controller
                 ->download('Reporte_Cuentas_Por_Pagar'.Carbon::now().'.xlsx');
 
     }
+    
+    
+    public function reportPaymentMethodDays(Request $request)
+    {
+        // 'records' => (new ToPay())->getToPay($request->all())
+
+        $all_records = (new ToPay())->getToPay($request->all());
+
+        $records = collect($all_records)->where('total_to_pay', '>', 0)->where('type', 'purchase')->map(function($row){
+            $row['difference_days'] = Carbon::parse($row['date_of_issue'])->diffInDays($row['date_of_due']);
+            return $row;
+        });
+
+        $company = Company::first();
+
+        return (new ToPaymentMethodDayExport)
+                ->company($company)
+                ->records($records)
+                ->download('Reporte_C_Pagar_F_Pago'.Carbon::now().'.xlsx');
+
+    }
+
+
 }
