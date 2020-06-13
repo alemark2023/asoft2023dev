@@ -215,6 +215,7 @@ class EcommerceController extends Controller
             'direccion' => 'required',
             'codigo_tipo_documento_identidad' => 'required|numeric',
             'numero_documento' => 'required|numeric',
+            'identity_document_type_id' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {

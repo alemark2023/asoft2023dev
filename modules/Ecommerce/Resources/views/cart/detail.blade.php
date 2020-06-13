@@ -131,13 +131,14 @@
         <div class="cart-summary">
             <h3>Tipo de comprobante</h3>
 
-            <div class="form-group">
+            <div class="form-group" :class="{'text-danger': errors.identity_document_type_id}">
                 <label>Comprobante:</label>
                 <select v-model="formIdentity.identity_document_type_id" class="form-control" @change="optionDocument">
                     <option value="" disabled>Tipo de comprobante</option>
                     <option value="1">Boleta</option>
                     <option value="6">Factura</option>
                 </select>
+                <small class="form-control-feedback" v-if="errors.identity_document_type_id">El campo Comprobante es obligatorio.</small>
             </div>
             <div class="form-group" :class="{'text-danger': errors.codigo_tipo_documento_identidad}">
                 <label>Tipo de documento:</label>
@@ -149,7 +150,7 @@
             </div>
             <div class="form-group" :class="{'text-danger': errors.numero_documento}">
                 <label>Número de documento:</label>
-                <input v-model="numberDocument" :maxlength="maxLengthDoc" type="text" class="form-control">
+                <input v-model="numberDocument" :maxlength="maxLength" type="text" class="form-control">
                 <small class="form-control-feedback" v-if="errors.numero_documento" v-text="errors.numero_documento[0]"></small>
             </div>
             
@@ -237,13 +238,6 @@
                 if (this.formIdentity.identity_document_type_id === '1') {
                     return 8
                 }
-            },
-            maxLengthDoc: function () {
-                if (this.typeDocuments === '6') {
-                    return 11
-                } else {
-                    return 8
-                }
             }
         },
         async mounted() {
@@ -302,7 +296,7 @@
               this.typeDocumentList = []
               this.typeDocuments = ''
               let voucher = [{id: '6', name: 'RUC'}]
-              let ticket = [{id: '0', name: 'DOC'},{id: '4', name: 'CE'}]
+              let ticket = [{id: '0', name: 'DOC'},{id: '4', name: 'CE'},{id: '1', name: 'DNI'}]
               if(this.formIdentity.identity_document_type_id === '6') {
                 this.typeDocumentList = voucher
               }else if (this.formIdentity.identity_document_type_id === '1' && this.payment_cash.amount >= 700) {
@@ -317,6 +311,7 @@
               this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
               this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this.typeDocuments
               this.form_document.datos_del_cliente_o_receptor.numero_documento = this.numberDocument
+              this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.formIdentity.identity_document_type_id
 
                 let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
                 let precio_culqi = Number(this.summary.total)
@@ -392,7 +387,6 @@
             async getDocument() {
                 this.form_document.items = await this.getItemsDocument()
                 this.form_document.totales = await this.getTotales()
-                this.form_document.type = ''
 
                 if (this.formIdentity.identity_document_type_id === '6') {
                     this.form_document.serie_documento = 'F001'
@@ -422,7 +416,7 @@
             },
             async getItemsDocument() {
 
-                let rec = await this.records_old.map((item) => {
+                let rec = await this.records.map((item) => {
 
                     let sale_unit_price = 0
                     let total_exonerated = 0
@@ -611,6 +605,7 @@
 
                 $("#total_amount").data('total', this.summary.total);
 
+                this.formIdentity.identity_document_type_id = ''
                 this.optionDocument()
 
                 this.payment_cash.amount = this.summary.total;
