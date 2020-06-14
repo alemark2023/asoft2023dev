@@ -210,9 +210,12 @@ class EcommerceController extends Controller
 
     public function paymentCash(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'telephone' => 'required|numeric',
-            'address' => 'required',
+        $validator = Validator::make($request->customer, [
+            'telefono' => 'required|numeric',
+            'direccion' => 'required',
+            'codigo_tipo_documento_identidad' => 'required|numeric',
+            'numero_documento' => 'required|numeric',
+            'identity_document_type_id' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -227,7 +230,8 @@ class EcommerceController extends Controller
                 'items' =>  $request->items,
                 'total' => $request->precio_culqi,
                 'reference_payment' => 'efectivo',
-                'status_order_id' => 1
+                'status_order_id' => 1,
+                'purchase' => $request->purchase
               ]);
 
             $customer_email = $user->email;

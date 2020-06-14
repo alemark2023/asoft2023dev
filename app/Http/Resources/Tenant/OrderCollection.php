@@ -29,7 +29,8 @@ class OrderCollection extends ResourceCollection
                 'reference_payment' => strtoupper($row->reference_payment),
                 'document_external_id' => $row->document_external_id,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
-                'status_order_id' => $row->status_order_id
+                'status_order_id' => $row->status_order_id,
+                'purchase' => $row->purchase
             ];
         });
     }

@@ -5,14 +5,29 @@ use App\Http\Controllers\Controller;
 //use Illuminate\Support\Str;
 //use App\Http\Requests\Tenant\OrderRequest;
 use App\Http\Resources\Tenant\OrderCollection;
+use App\Http\Resources\Tenant\OrderResource;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Order;
 use App\Models\Tenant\ItemWarehouse;
 use App\Http\Resources\Tenant\ItemWarehouseCollection;
+use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Company;
+use App\CoreFacturalo\Facturalo;
+use App\Models\Tenant\Configuration;
+use App\CoreFacturalo\Template;
+use Mpdf\Mpdf;
+use Mpdf\HTMLParserMode;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 
 class OrderController extends Controller
 {
+
+  use StorageDocument;
+
+  protected $company;
+
     public function index()
     {
         return view('tenant.orders.index');
@@ -66,5 +81,4 @@ class OrderController extends Controller
       $product = ItemWarehouse::whereIn('item_id', $request->item_id)->orderBy('item_id')->get();
       return new ItemWarehouseCollection($product);
     }
-
 }

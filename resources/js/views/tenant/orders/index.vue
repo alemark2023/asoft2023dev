@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading_submit">
     <div class="page-header pr-0">
       <h2>
         <a href="/dashboard">
@@ -29,6 +29,7 @@
             <th>Medio Pago</th>
             <th>Estatus del Pedido</th>
             <th>Comprobante Electronico</th>
+            <th>Comprobante</th>
           </tr>
           <tr></tr>
           <tr slot-scope="{ index, row }">
@@ -38,7 +39,7 @@
             <td class="text-center">
               <template>
                 <el-popover placement="right" width="540" trigger="click">
-                  <el-table  style="width: 100%" :data="row.items">
+                  <el-table style="width: 100%" :data="row.items">
                     <el-table-column width="150" property="name" label="Nombre"></el-table-column>
                     <el-table-column width="90" property="cantidad" label="Cant."></el-table-column>
                     <el-table-column width="90" label="Precio">
@@ -58,8 +59,12 @@
                       <th colspan="2" class="text-center">Contacto</th>
                     </thead>
                     <tbody>
-                      <tr class="el-table tr"><td class="el-table--small td">TELÉFONO: {{ row.customer_telefono }}</td></tr>
-                      <tr class="el-table tr"><td class="el-table--small td">DIRECCIÓN: {{ row.customer_direccion }}</td></tr>
+                      <tr class="el-table tr">
+                        <td class="el-table--small td">TELÉFONO: {{ row.customer_telefono }}</td>
+                      </tr>
+                      <tr class="el-table tr">
+                        <td class="el-table--small td">DIRECCIÓN: {{ row.customer_direccion }}</td>
+                      </tr>
                     </tbody>
                   </table>
                   <el-button slot="reference" icon="el-icon-zoom-in"></el-button>
@@ -70,22 +75,38 @@
             <td>{{row.created_at}}</td>
             <td>{{row.reference_payment}}</td>
             <td>
-              <el-select v-model="row.status_order_id" placeholder="Estatus Pedido" :value="row.status_order_id" @change="updateStatus(row)">
+              <el-select
+                v-model="row.status_order_id"
+                placeholder="Estatus Pedido"
+                :value="row.status_order_id"
+                @change="updateStatus(row)"
+              >
                 <el-option
                   v-for="item in options"
                   :key="item.id"
                   :label="item.description"
-                  :value="item.id">
-                </el-option>
+                  :value="item.id"
+                ></el-option>
               </el-select>
             </td>
             <td>{{row.number_document}}</td>
+            <td class="text-center">
+              <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.document_external_id)"></el-button>
+            </td>
           </tr>
         </data-table>
       </div>
     </div>
 
-    <el-dialog title="Stock en almacén" width="40%" :visible="showDialog" :close-on-click-modal="false" :close-on-press-escape="false" append-to-body :show-close="false">
+    <el-dialog
+      title="Stock en almacén"
+      width="40%"
+      :visible="showDialog"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      append-to-body
+      :show-close="false"
+    >
       <div class="form-body">
         <div class="row">
           <div class="col-lg-12 col-md-12 table-responsive">
@@ -96,23 +117,26 @@
                   <th class="text-center">Almacén</th>
                 </tr>
               </thead>
-              <tbody v-for="(rowProduct, indexProduct) in totalProduct" :key="indexProduct" width="100%">
-
+              <tbody
+                v-for="(rowProduct, indexProduct) in totalProduct"
+                :key="indexProduct"
+                width="100%"
+              >
                 <tr>
                   <td>{{ record.items[indexProduct].name }}</td>
                   <td>
-                    <el-select v-model="form[rowProduct]" placeholder="Almacenes" @change="stock">
-                      <el-option v-if="rowProduct === item.item_id"
+                    <el-select v-model="form[rowProduct]" placeholder="Almacenes">
+                      <el-option
+                        v-if="rowProduct === item.item_id"
                         v-for="item in warehouses"
                         :key="item.id"
                         :label="item.warehouse + ' - ' + 'Stock -> ' + Math.trunc(item.stock)"
                         :value="item.id"
-                        :disabled="optionDisable(item.item_id, item.stock)">
-                      </el-option>
+                        :disabled="optionDisable(item.item_id, item.stock)"
+                      ></el-option>
                     </el-select>
                   </td>
                 </tr>
-
               </tbody>
             </table>
           </div>
@@ -124,15 +148,23 @@
       </div>
     </el-dialog>
 
+    <options-form
+      :showDialog.sync="showDialogOptions"
+      :recordId="documentNewId"
+      :statusDocument="statusDocument"
+      :resource="resource_options"
+    ></options-form>
   </div>
 </template>
 <script>
 import DataTable from "../../../components/DataTable.vue";
+import queryString from "query-string";
+import OptionsForm from "../pos/partials/options.vue";
 
 export default {
-  props: [],
+  props: ['user'],
 
-  components: { DataTable },
+  components: { DataTable, OptionsForm },
   data() {
     return {
       showDialog: false,
@@ -142,27 +174,45 @@ export default {
       recordId: null,
       options: [],
       warehouses: [],
-      estableciment_id: '',
+      estableciment_id: "",
       totalProduct: [], // items_id
       showDialog: false,
       form: [],
-      record: '', // record orders
-      stocks: ''
-    };
+      record: "", // record orders
+      stocks: "",
+      showDialogOptions: false,
+      documentNewId: null,
+      statusDocument: {},
+      resource_options: null,
+      loading_submit: false
+    }
   },
-  async created() {
-    await this.$http.get(`/statusOrder/records`).then(response => {
-      this.options = response.data
-    })
+  created() {
+    this.$http.get(`/statusOrder/records`).then(response => {
+      this.options = response.data;
+    });
+    this.events()
   },
   computed: {},
   methods: {
+    async clickDownload(row) {
+      await this.$http.get(`/documents/search/externalId/${row}`).then((response) => {
+        this.documentNewId = response.data.id
+      })
+      this.statusDocument.send = ""
+      this.resource_options = 'documents'
+      this.showDialogOptions = true
+    },
     subtotal(item) {
-      var subtotal
-      if(item.currency_type_id === 'USD') {
-        subtotal = Number(item.cantidad * item.exchange_rate_sale * parseFloat(item.sale_unit_price)).toFixed(2)
-        if(isNaN(subtotal)){
-          return '-'
+      var subtotal;
+      if (item.currency_type_id === "USD") {
+        subtotal = Number(
+          item.cantidad *
+            item.exchange_rate_sale *
+            parseFloat(item.sale_unit_price)
+        ).toFixed(2);
+        if (isNaN(subtotal)) {
+          return "-";
         } else {
           return subtotal
         }
@@ -173,63 +223,110 @@ export default {
     optionDisable(product, stock) {
       for (var i = 0; i < this.record.items.length; i++) {
         if (product === this.record.items[i].id) {
-          return (stock >= this.record.items[i].cantidad) ? false : true
-        }
-      }
-    },
-    stock(selected) {
-      for (let i = 0; i < this.warehouses.length; i++) {
-        if(this.warehouses[i].id === selected) {
-          //this.stock = this.warehouses[i].stock
+          return stock >= this.record.items[i].cantidad ? false : true
         }
       }
     },
     async updateStatus(record) {
-      console.log(record)
       this.record = record
-      if (record.status_order_id === 3) {
+      if (record.status_order_id === 2) {
+        this.loading_submit = true
+        await this.sendDocument(record.purchase)
+      } else if (record.status_order_id === 3) {
         this.totalProduct = await this.products(record)
-        await this.$http.post(`/orders/warehouse`, {item_id: this.totalProduct}).then(response => {
-          this.warehouses = response.data.data
-          this.showDialog = true
-        })
-        return
+        await this.$http
+          .post(`/orders/warehouse`, { item_id: this.totalProduct })
+          .then(response => {
+            this.warehouses = response.data.data
+            this.showDialog = true
+          });
+        return;
+      } else {
+        this.saveUpdateStatus()
       }
-
-      await this.$http.post(`/statusOrder/update`, {record: record}).then(response => {
+    },
+    saveUpdateStatus(){
+      this.$http.post(`/statusOrder/update`, { record: this.record }).then(response => {
         this.$message.success(response.data.message)
       })
     },
-    async save () {
+    async save() {
       var save = []
 
       for (var i = 0; i < this.record.items.length; i++) {
         if (this.totalProduct[i] === this.record.items[i].id) {
           save.push({
-            'id': this.form[this.totalProduct[i]],
-            'cantidad': this.record.items[i].cantidad
+            id: this.form[this.totalProduct[i]],
+            cantidad: this.record.items[i].cantidad
           })
         }
       }
 
-      await this.$http.post(`/statusOrder/update`, {record: this.record, discount: save}).then(response => {
-        this.$message.success(response.data.message)
-        this.close()
-      })
+      await this.$http
+        .post(`/statusOrder/update`, { record: this.record, discount: save })
+        .then(response => {
+          this.$message.success(response.data.message)
+          this.close()
+        });
     },
-    close () {
+    close() {
       this.form = []
       this.showDialog = false
-      this.recoard = ''
+      this.recoard = ""
     },
-    products (products) {
-      let listProduct = []
+    products(products) {
+      let listProduct = [];
 
-      for (var i = 0; i <= products.items.length-1; i++) {
+      for (var i = 0; i <= products.items.length - 1; i++) {
         listProduct.push(products.items[i].id)
       }
       return listProduct
+    },
+    async events() {
+      await this.$eventHub.$on("cancelSale", () => {
+        this.showDialogOptions = false
+      });
+    },
+    async sendDocument(purchase) {
+      await this.$http.post(`/api/documents`, purchase, this.getHeaderConfig()).then(response => {
+        this.finallyProcess(this.getDataFinally(response.data))
+      }).catch(error => {
+        this.loading_submit = false
+        this.$message.error(error.response.data.message)
+      })
+    },
+    getHeaderConfig() {
+      let token = this.user.api_token
+      let httpConfig = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+      return httpConfig
+    },
+    finallyProcess(form) {
+      this.$http.post(`/ecommerce/transaction_finally`, form, this.getHeaderConfig()).then(response => {
+        this.saveUpdateStatus()
+        this.$message.success('transaccion finalizada correctamente')
+        this.$eventHub.$emit('reloadData')
+      }).catch(error => {
+        this.$message.error(error.response.data.message)
+      }).then(() => {
+        this.loading_submit = false
+      })
+    },
+    getDataFinally(document) {
+      return {
+        document_external_id: document.data.external_id,
+        number_document: document.number,
+        orderId: this.record.id,
+        product: 'Compras Ecommerce Facturador Pro',
+        precio_culqi: Number(this.record.total),
+        identity_document_type_id: (this.record.purchase.serie_documento === 'B001') ? '1' : '6',
+        number: (this.record.purchase.serie_documento === 'B001') ? 'dni' : 'ruc'
+      }
     }
   }
-};
+}
 </script>
