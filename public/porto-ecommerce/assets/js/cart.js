@@ -57,7 +57,7 @@ function productsCartDropDown()
 				<div class="product">
 					<div class="product-details">
 					<h4 class="product-title">
-						<a href="$">${element.name}</a>
+						<a href="$">${element.description}</a>
 					</h4>
 					<span class="cart-product-info">
 						<span class="cart-product-qty">1</span> x ${element.sale_unit_price}

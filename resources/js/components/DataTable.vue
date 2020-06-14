@@ -119,8 +119,10 @@
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
+                }).catch(error => {
+                }).then(() => {
                     this.loading_submit = false
-                })
+                });
             },
             getQueryParameters() {
                 return queryString.stringify({

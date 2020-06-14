@@ -427,10 +427,16 @@
 
                     if (item.sale_affectation_igv_type_id === '10') {
 
-                        unit_value = item.sale_unit_price / (1 + percentage_igv / 100)
-                        total_igv = item.cantidad * parseFloat(item.sale_unit_price - unit_value)
-                        total = (item.cantidad * item.sale_unit_price)
-                        sale_unit_price = parseFloat(item.sale_unit_price)
+                        if(item.currency_type_id === 'USD') {
+                            sale_unit_price = (parseFloat(item.sale_unit_price) * this.exchange_rate_sale).toFixed(2)
+                        } else {
+                            sale_unit_price = item.sale_unit_price
+                        }
+
+                        unit_value = sale_unit_price / (1 + percentage_igv / 100)
+                        total_igv = item.cantidad * parseFloat(sale_unit_price - unit_value)
+                        total = (item.cantidad * sale_unit_price)
+                        //sale_unit_price = parseFloat(item.sale_unit_price)
                         total_val = (unit_value * item.cantidad)
 
                         return {
@@ -455,10 +461,16 @@
 
                     if (item.sale_affectation_igv_type_id === '20') {
 
-                        unit_value = parseFloat(item.sale_unit_price)
+                        if(item.currency_type_id === 'USD') {
+                            sale_unit_price = (parseFloat(item.sale_unit_price) * this.exchange_rate_sale).toFixed(2)
+                        } else {
+                            sale_unit_price = item.sale_unit_price
+                        }
+
+                        unit_value = parseFloat(sale_unit_price)
                         total_igv = 0
-                        total = (parseFloat(item.cantidad) * parseFloat(item.sale_unit_price))
-                        sale_unit_price = parseFloat(item.sale_unit_price)
+                        total = (parseFloat(item.cantidad) * parseFloat(sale_unit_price))
+                        //sale_unit_price = parseFloat(item.sale_unit_price)
                         total_val = (parseFloat(unit_value) * parseFloat(item.cantidad))
 
                         return {

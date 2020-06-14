@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading_submit">
     <div class="page-header pr-0">
       <h2>
         <a href="/dashboard">
@@ -90,9 +90,8 @@
               </el-select>
             </td>
             <td>{{row.number_document}}</td>
-            <td>
-              <!-- el-button class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.id)"></el-button -->
-              <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.id)"></el-button>
+            <td class="text-center">
+              <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.document_external_id)"></el-button>
             </td>
           </tr>
         </data-table>
@@ -126,7 +125,7 @@
                 <tr>
                   <td>{{ record.items[indexProduct].name }}</td>
                   <td>
-                    <el-select v-model="form[rowProduct]" placeholder="Almacenes" @change="stock">
+                    <el-select v-model="form[rowProduct]" placeholder="Almacenes">
                       <el-option
                         v-if="rowProduct === item.item_id"
                         v-for="item in warehouses"
@@ -184,8 +183,8 @@ export default {
       showDialogOptions: false,
       documentNewId: null,
       statusDocument: {},
-      resource_documents: "orders",
-      resource_options: null
+      resource_options: null,
+      loading_submit: false
     }
   },
   created() {
@@ -196,13 +195,13 @@ export default {
   },
   computed: {},
   methods: {
-    clickDownload(row) {
-      this.documentNewId = row
+    async clickDownload(row) {
+      await this.$http.get(`/documents/search/externalId/${row}`).then((response) => {
+        this.documentNewId = response.data.id
+      })
       this.statusDocument.send = ""
-      this.resource_options = this.resource_documents
-
+      this.resource_options = 'documents'
       this.showDialogOptions = true
-      //window.open(`/${this.resource}/pdf/${row}`, '_blank');
     },
     subtotal(item) {
       var subtotal;
@@ -228,16 +227,10 @@ export default {
         }
       }
     },
-    stock(selected) {
-      for (let i = 0; i < this.warehouses.length; i++) {
-        if (this.warehouses[i].id === selected) {
-          //this.stock = this.warehouses[i].stock
-        }
-      }
-    },
     async updateStatus(record) {
       this.record = record
       if (record.status_order_id === 2) {
+        this.loading_submit = true
         await this.sendDocument(record.purchase)
       } else if (record.status_order_id === 3) {
         this.totalProduct = await this.products(record)
@@ -248,13 +241,14 @@ export default {
             this.showDialog = true
           });
         return;
+      } else {
+        this.saveUpdateStatus()
       }
-
-      await this.$http
-        .post(`/statusOrder/update`, { record: record })
-        .then(response => {
-          this.$message.success(response.data.message)
-        })
+    },
+    saveUpdateStatus(){
+      this.$http.post(`/statusOrder/update`, { record: this.record }).then(response => {
+        this.$message.success(response.data.message)
+      })
     },
     async save() {
       var save = []
@@ -297,6 +291,8 @@ export default {
       await this.$http.post(`/api/documents`, purchase, this.getHeaderConfig()).then(response => {
         this.finallyProcess(this.getDataFinally(response.data))
       }).catch(error => {
+        this.loading_submit = false
+        this.$message.error(error.response.data.message)
       })
     },
     getHeaderConfig() {
@@ -311,9 +307,13 @@ export default {
     },
     finallyProcess(form) {
       this.$http.post(`/ecommerce/transaction_finally`, form, this.getHeaderConfig()).then(response => {
-        console.log('transaccion finalizada correctamente')
+        this.saveUpdateStatus()
+        this.$message.success('transaccion finalizada correctamente')
+        this.$eventHub.$emit('reloadData')
       }).catch(error => {
-        console.log('error al finalizar la transaccion')
+        this.$message.error(error.response.data.message)
+      }).then(() => {
+        this.loading_submit = false
       })
     },
     getDataFinally(document) {
