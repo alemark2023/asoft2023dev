@@ -205,6 +205,10 @@
                                                 {{ ($value->quantity > 0) ?  $value->quantity:"-"}}                                                    
                                                 @break 
                                                 
+                                            @case($models[2])
+                                                {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
+                                                @break
+
                                             @case($models[3])
 
                                                 @if($value->inventory_kardexable->type != null)
@@ -237,12 +241,15 @@
                                                 ($value->quantity < 0) ?  (isset($value->inventory_kardexable->sale_note_id) ? $value->quantity = 0:$value->quantity):"-";       
                                                 @endphp                                                   
                                                 @break
+                                                
                                             @case($models[1])
                                                 {{ ($value->quantity < 0) ?  $value->quantity:"-"}}                                                    
                                                 @break
+
                                             @case($models[2])
-                                                {{  $value->quantity }}                                                    
+                                                {{  ($value->quantity < 0) ?  $value->quantity:"-" }}  
                                                 @break      
+
                                             @case($models[3])
 
                                                 @if($value->inventory_kardexable->type != null)
