@@ -337,5 +337,26 @@ trait InventoryTrait
         }
 
     }
+
+    public function voidedDocumentItemSet($detail)
+    {
+        
+        $document_item = $detail;
+
+        $item = Item::findOrFail($document_item->item_id);
+
+        foreach ($item->sets as $it) {
+
+            $ind_item  = $it->individual_item;
+            $presentationQuantity = 1;
+            $document = $document_item->document;
+            $factor = 1;
+            $warehouse = $this->findWarehouse();
+            $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+            if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+        
+        }
+
+    }
     
 }

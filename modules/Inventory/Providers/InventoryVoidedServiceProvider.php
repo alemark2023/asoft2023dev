@@ -31,11 +31,22 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                     foreach ($document['items'] as $detail) {
                         // dd($detail['item']->presentation);
-                        $presentationQuantity = (!empty($detail['item']->presentation)) ? $detail['item']->presentation->quantity_unit : 1;
+                        
+                        if(!$detail->item->is_set){
 
-                        $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
-                        $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
-                        $this->updateDataLots($detail);
+                            $presentationQuantity = (!empty($detail['item']->presentation)) ? $detail['item']->presentation->quantity_unit : 1;
+
+                            $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+                            $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+                            $this->updateDataLots($detail);
+
+                        }
+                        else{
+                            
+                            $this->voidedDocumentItemSet($detail);
+            
+                        }
+                        
                     }
 
                     $this->voidedWasDeductedPrepayment($document);
