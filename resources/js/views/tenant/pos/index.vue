@@ -35,13 +35,13 @@
               placeholder="Buscar productos"
               size="medium"
               v-model="input_item"
+              @input="searchItems"
               autofocus
               @keyup.native="keyupTabCustomer"
               @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
             >
             <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
-            <el-button slot="append" icon="el-icon-search" @click.prevent="searchItems"></el-button>
           </el-input>
         </template>
 
@@ -51,12 +51,12 @@
                 placeholder="Buscar productos"
                 size="medium"
                 v-model="input_item"
+                @change="searchItemsBarcode"
                 autofocus
                 @keyup.native="keyupTabCustomer"
                 class="m-bottom"
               >
               <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
-              <el-button slot="append" icon="el-icon-search" @click.prevent="searchItemsBarcode"></el-button>
             </el-input>
         </template>
 
@@ -1164,19 +1164,24 @@
           },
           async searchItems() {
             if (this.input_item.length > 0) {
-              this.loading = true;
-              this.all_items = []
+              this.loading = true
               let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
               
                 await this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
-                  this.all_items = response.data.data
-                  this.filterItems()
-                  this.pagination = response.data.meta
-                  this.pagination.per_page = parseInt(response.data.meta.per_page)
+                  if(response.data.data.length > 0) {
+                    this.all_items = response.data.data
+                    this.filterItems()
+                    this.pagination = response.data.meta
+                    this.pagination.per_page = parseInt(response.data.meta.per_page)
 
-                  this.loading = false;
-                });
+                    this.loading = false;
+                  } else {
+                    this.loading = false;
+                    this.filterItems()
+                  }
+                })
             } else {
+              this.getRecords()
               this.filterItems();
             }
 
@@ -1189,22 +1194,17 @@
             if (this.input_item.length > 1) {
 
               this.loading = true;
-              this.all_items = []
-              //let parameters = `input_item=${this.input_item}`;
-              let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
+              let parameters = `input_item=${this.input_item}`;
 
-              //await this.$http.get(`/${this.resource}/search_items?${parameters}`)
-              this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
+              await this.$http.get(`/${this.resource}/search_items?${parameters}`)
+                        .then(response => {
 
-                          this.all_items = response.data.items;
+                          this.items = response.data.items;
                           this.enabledSearchItemsBarcode()
                           this.loading = false;
-                          this.filterItems();
-                          this.pagination = response.data.meta
-                          this.pagination.per_page = parseInt(response.data.meta.per_page)
-                          /*if (this.items.length == 0) {
+                          if (this.items.length == 0) {
                             this.filterItems();
-                        }*/
+                        }
 
                   });
 

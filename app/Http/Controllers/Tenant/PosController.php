@@ -302,9 +302,9 @@ class PosController extends Controller
     public function item(Request $request)
     {
         if($request->cat) {
-            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(config('tenant.items_per_page')));
+            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(50));
         } else {
-            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(config('tenant.items_per_page')));
+            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(50));
         }
         
     }
@@ -313,13 +313,16 @@ class PosController extends Controller
     {
         return new PosCollection(Item::where('description','like', "%{$request->input_item}%")
                             ->orWhere('internal_id','like', "%{$request->input_item}%")
-                            ->where('category_id', $request->cat)
+                            //->orwhere('category_id', $request->cat)
+                            ->orWhereHas('category', function($query) use($request) {
+                                $query->where('name', 'like', '%' . $request->input_item . '%');
+                            })
                             ->orWhereHas('brand', function($query) use($request) {
                                 $query->where('name', 'like', '%' . $request->input_item . '%');
                             })
                             ->whereWarehouse()
                             ->whereIsActive()
-                            ->paginate(config('tenant.items_per_page')));
+                            ->paginate(config(50)));
 
     }
 
