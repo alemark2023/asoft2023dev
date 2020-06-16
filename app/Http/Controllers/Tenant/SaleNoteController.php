@@ -46,12 +46,13 @@ use App\Models\Tenant\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Item\Models\ItemLotsGroup;
 use App\Models\Tenant\Configuration;
+use Modules\Inventory\Traits\InventoryTrait;
 
 
 class SaleNoteController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
+    use StorageDocument, FinanceTrait, InventoryTrait;
 
     protected $sale_note;
     protected $company;
@@ -775,23 +776,15 @@ class SaleNoteController extends Controller
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
-            foreach ($obj->items as $item) {
-                $item->sale_note->inventory_kardex()->create([
-                    'date_of_issue' => date('Y-m-d'),
-                    'item_id' => $item->item_id,
-                    'warehouse_id' => $warehouse->id,
-                    'quantity' => $item->quantity,
-                ]);
-                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
-                if($wr)
-                {
-                    $wr->stock =  $wr->stock + $item->quantity;
-                    $wr->save();
-                }
+            foreach ($obj->items as $sale_note_item) {
+                
+                // voided sets
+                $this->voidedSaleNoteItem($sale_note_item, $warehouse);
+                // voided sets
 
                 //habilito las series
                 // ItemLot::where('item_id', $item->item_id )->where('warehouse_id', $warehouse->id)->update(['has_sale' => false]);
-                $this->voidedLots($item);
+                $this->voidedLots($sale_note_item);
 
             }
 
@@ -805,6 +798,43 @@ class SaleNoteController extends Controller
 
     }
 
+    public function voidedSaleNoteItem($sale_note_item, $warehouse)
+    {
+
+        if(!$sale_note_item->item->is_set){
+
+            $sale_note_item->sale_note->inventory_kardex()->create([
+                'date_of_issue' => date('Y-m-d'),
+                'item_id' => $sale_note_item->item_id,
+                'warehouse_id' => $warehouse->id,
+                'quantity' => $sale_note_item->quantity,
+            ]);
+
+            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse->id]])->first();
+
+            if($wr)
+            {
+                $wr->stock =  $wr->stock + $sale_note_item->quantity;
+                $wr->save();
+            }
+
+        }else{
+
+            $item = Item::findOrFail($sale_note_item->item_id);
+
+            foreach ($item->sets as $it) {
+
+                $ind_item  = $it->individual_item;
+                $presentationQuantity = 1;
+                $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
+                $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
+                if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+
+            }
+
+        }
+
+    }
 
 
     public function totals()
