@@ -46,9 +46,9 @@
     <tr>
         <td class="text-center"><h4>{{ $company->name }}</h4></td>
     </tr>
-    <tr>
+    {{--<tr>
         <td class="text-center"><h5>{{ $company->trade_name }}</h5></td>
-    </tr>
+    </tr>--}}
     <tr>
         <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
     </tr>
