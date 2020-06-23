@@ -1,3 +1,46 @@
+## 3.3.7
+
+### fixed
+2020-06-19 : fixed | i-189 | ajuste incluye igv item exonerado<br>
+2020-06-15 : fixed | i-135 | Ajuste retorno de stock al anular cpe F/B - productos tipo pack/promociones<br>
+2020-06-15 : fixed | i-135 | Ajuste retorno de stock al anular n venta - productos tipo pack/promociones<br>
+2020-06-15 : fixed | i-171 | Ajuste modal clientes - servicio tecnico<br>
+2020-06-12 : fixed | i-161 | ajuste de estado de pagos - notas de venta<br>
+2020-06-12 : fixed | i-146 | agregando template footer en default<br>
+2020-06-12 : fixed | i-156 | elimina variable no usada en dashboard<br>
+2020-06-11 : fixed | i-23 | Se agregan reportes kardex por series y lotes - pdf/excel<br>
+2020-06-10 : fixed | i-117 | considerar notas credito en balance e ingresos y egresos - m. finanzas<br>
+2020-06-10 : fixed | registrando componentes de comisiones en app.js<br>
+2020-06-08 : fixed | agregando tags xml para operacion sujeta detraccion<br>
+
+
+### feature
+2020-06-16 : feature | i-139 | DOBLE REGISTRO DE RAZON SOCIAL EN TICKET 80MM<br>
+2020-06-15 : feature | i-169 | NO FILTRA lo productos en BARRA DE BUSQUEDA funcion esencial en POS<br>
+2020-06-14 : feature | i-52 | Tienda Online-Generar comprobante, pedido<br>
+2020-06-12 : feature | i-128 | Agrega ingreso y salida de productos - movimientos via api<br>
+2020-06-11 : feature | i-72 | Se agregaron reportes por forma de pago - dias en cuentas por cobrar/pagar<br>
+2020-06-11 : feature | i-146 | agregando nuevo template - imagen en header, configuracion texto en footer<br>
+2020-06-10 : feature | i-146 | agregando template inicial<br>
+2020-06-10 : feature | i-80 | especificaciones tecnicas ecommerce<br>
+2020-06-10 : feature | i-130 | No se mostraban los productos importados<br>
+2020-06-09 : feature | i-148 | agregando filtros en nv y cot - listar serie al generar nv desde cot<br>
+2020-06-09 : feature | i-16 | agregando atajos en pos<br>
+2020-06-04 : feature | update con un solo boton<br>
+2020-06-03 : feature | i-27 | valores de saldos en kardex (paginador)<br>
+2020-06-02 : feature | i-4 | agregar placa en POS (correcion del XML)<br>
+2020-06-02 : feature | i-76 | Error destino caja chica<br>
+2020-06-01 : feature | i-6 | contasis, cuentas contables - serie 6 caracteres<br>
+2020-05-31 : feature | i-83 | Ingreso de facturas de compras en Dolares<br>
+2020-05-30 : feature | i-6 | test export contasis<br>
+2020-05-30 : feature | i-75 | dashboard muestra fecha de vencimiento de certificado si es agregado en config/empresa<br>
+2020-05-30 : feature | i-60 | monto total (suma de costos) en reporte de inventario<br>
+2020-05-30 : feature | i-83 | Ingreso de facturas de compra en dolares<br>
+2020-05-30 : feature | i-119 | Mostrar stock para poder decidir si va ser publicado en la tienda o desactivar (assets)<br>
+2020-05-29 : feature | i-119 | Mostrar stock para poder decidir si va ser publicado en la tienda o desactivar<br>
+2020-05-28 : feature | i-60 | nuevo campo costo total (cant*costo) para reporte de inventario<br>
+
+
 ## 3.3.6
 
 ### docs
