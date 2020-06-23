@@ -20,29 +20,38 @@ foreach ($cash_documents as $cash_document) {
 
         if($cash_document->sale_note->currency_type_id == 'PEN'){
 
-            $cash_income += $cash_document->sale_note->total;
-            $final_balance += $cash_document->sale_note->total;
+            if(in_array($cash_document->sale_note->state_type_id, ['01','03','05','07','13'])){
+
+                $cash_income += $cash_document->sale_note->total;
+                $final_balance += $cash_document->sale_note->total;
+            
+            }
+
 
         }else{
 
-            $cash_income += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
-            $final_balance += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
+            if(in_array($cash_document->sale_note->state_type_id, ['01','03','05','07','13'])){
 
-        }
+                $cash_income += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
+                $final_balance += $cash_document->sale_note->total * $cash_document->sale_note->exchange_rate_sale;
 
-        if( count($cash_document->sale_note->payments) > 0)
-        {
-            $pays = $cash_document->sale_note->payments;
-
-            foreach ($methods_payment as $record) {
-
-                $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
             }
 
         }
 
+        if(in_array($cash_document->sale_note->state_type_id, ['01','03','05','07','13'])){
 
-
+            if( count($cash_document->sale_note->payments) > 0)
+            {
+                $pays = $cash_document->sale_note->payments;
+    
+                foreach ($methods_payment as $record) {
+    
+                    $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
+                }
+    
+            }
+        }
 
 
     }
@@ -50,25 +59,38 @@ foreach ($cash_documents as $cash_document) {
 
         if($cash_document->document->currency_type_id == 'PEN'){
 
-            $cash_income += $cash_document->document->total;
-            $final_balance += $cash_document->document->total;
+            if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){
 
-        }else{
-
-            $cash_income += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
-            $final_balance += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
-        }
-
-        if( count($cash_document->document->payments) > 0)
-        {
-            $pays = $cash_document->document->payments;
-
-            foreach ($methods_payment as $record) {
-
-                $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
+                $cash_income += $cash_document->document->total;
+                $final_balance += $cash_document->document->total;
 
             }
 
+        }else{
+
+            if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){
+
+                $cash_income += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
+                $final_balance += $cash_document->document->total * $cash_document->document->exchange_rate_sale;
+
+            }
+
+        }
+
+        if(in_array($cash_document->document->state_type_id, ['01','03','05','07','13'])){
+
+            if( count($cash_document->document->payments) > 0)
+            {
+                $pays = $cash_document->document->payments;
+
+                foreach ($methods_payment as $record) {
+                    // dd($pays, $record);
+
+                    $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->whereIn('document.state_type_id', ['01','03','05','07','13'])->sum('payment'));
+
+                }
+
+            }
         }
 
 
@@ -298,7 +320,13 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $date_of_issue = $value->sale_note->date_of_issue->format('Y-m-d');
                                             $customer_name = $value->sale_note->customer->name;
                                             $customer_number = $value->sale_note->customer->number;
+
                                             $total = $value->sale_note->total;
+                                            
+                                            if(!in_array($value->sale_note->state_type_id, ['01','03','05','07','13'])){
+                                                $total = 0;
+                                            }
+
                                             $currency_type_id = $value->sale_note->currency_type_id;
 
                                         }
@@ -311,6 +339,11 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $customer_name = $value->document->customer->name;
                                             $customer_number = $value->document->customer->number;
                                             $total = $value->document->total;
+                                            
+                                            if(!in_array($value->document->state_type_id, ['01','03','05','07','13'])){
+                                                $total = 0;
+                                            }
+
                                             $currency_type_id = $value->document->currency_type_id;
 
                                         }

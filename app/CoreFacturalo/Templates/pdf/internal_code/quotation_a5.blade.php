@@ -34,7 +34,6 @@
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
                 @endisset
@@ -52,7 +51,7 @@
             </div>
         </td>
         <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">PEDIDO</h5>
+            <h5 class="text-center">COTIZACIÓN</h5>
             <h3 class="text-center">{{ $tittle }}</h3>
         </td>
     </tr>
@@ -67,6 +66,7 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
+
         @if($document->date_of_due)
             <td width="25%">Fecha de vencimiento:</td>
             <td width="15%">{{ $document->date_of_due->format('Y-m-d') }}</td>
@@ -75,7 +75,7 @@
     @if ($customer->address !== '')
     <tr>
         <td class="align-top">Dirección:</td>
-        <td colspan="">
+        <td>
             {{ $customer->address }}
             {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
             {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
@@ -85,6 +85,28 @@
             <td width="25%">Fecha de entrega:</td>
             <td width="15%">{{ $document->delivery_date->format('Y-m-d') }}</td>
         @endif
+    </tr>
+    @endif
+
+    @if ($document->payment_method_type)
+    <tr>
+        <td class="align-top">T. Pago:</td>
+        <td colspan="">
+            {{ $document->payment_method_type->description }}
+        </td>
+        @if($document->sale_opportunity)
+            <td width="25%">O. Venta:</td>
+            <td width="15%">{{ $document->sale_opportunity->number_full }}</td>
+        @endif
+    </tr>
+    @endif
+
+    @if ($document->account_number)
+    <tr>
+        <td class="align-top">N° Cuenta:</td>
+        <td colspan="3">
+            {{ $document->account_number }}
+        </td>
     </tr>
     @endif
     @if ($document->shipping_address)
@@ -103,14 +125,7 @@
         </td>
     </tr>
     @endif
-    @if ($document->payment_method_type)
-    <tr>
-        <td class="align-top">T. Pago:</td>
-        <td colspan="3">
-            {{ $document->payment_method_type->description }}
-        </td>
-    </tr>
-    @endif
+
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
@@ -120,13 +135,23 @@
 </table>
 
 <table class="full-width mt-3">
-    @if ($document->observation)
+    @if ($document->description)
         <tr>
-            <td width="15%" class="align-top">Observación: </td>
-            <td width="85%">{{ $document->observation }}</td>
+            <td width="15%" class="align-top">Descripción: </td>
+            <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif
 </table>
+
+{{-- <table class="full-width mt-3">
+    @if ($document->purchase_order)
+        <tr>
+            <td width="25%">Orden de Compra: </td>
+            <td>:</td>
+            <td class="text-left">{{ $document->purchase_order }}</td>
+        </tr>
+    @endif
+</table> --}}
 
 @if ($document->guides)
 <br/>
@@ -149,7 +174,7 @@
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr class="bg-grey">
-        <th class="border-top-bottom text-left py-2" width="">COD.</th>
+        <th class="border-top-bottom text-center py-2" width="8%">COD.</th>
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
@@ -161,7 +186,7 @@
     <tbody>
     @foreach($document->items as $row)
         <tr>
-            <td class="text-left align-top">{{ $row->relation_item->internal_id }}</td>
+            <td class="text-center align-top">{{ $row->relation_item->internal_id }}</td>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
@@ -235,7 +260,7 @@
         @endif
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
@@ -276,6 +301,24 @@
             @endforeach
         </td> --}}
     </tr>
+</table>
+<br>
+<table class="full-width">
+<tr>
+    <td>
+    <strong>PAGOS:</strong> </td></tr>
+        @php
+            $payment = 0;
+        @endphp
+        @foreach($document->payments as $row)
+            <tr><td>- {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+            @php
+                $payment += (float) $row->payment;
+            @endphp
+        @endforeach
+        <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
+    </tr>
+
 </table>
 </body>
 </html>
