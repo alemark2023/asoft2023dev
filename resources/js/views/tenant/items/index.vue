@@ -7,9 +7,20 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickExport()"><i class="fa fa-download"></i> Exportar</button>
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImportListPrice()"><i class="fa fa-upload"></i> Importar L. Precios</button>
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button>
+                    <div class="btn-group flex-wrap">
+                        <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-download"></i> Exportar <span class="caret"></span></button>
+                        <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickExport()">Listado</a>
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickExportWp()">Woocommerce</a>
+                        </div>
+                    </div>
+                    <div class="btn-group flex-wrap">
+                        <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-upload"></i> Importar <span class="caret"></span></button>
+                        <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickImport()">Productos</a>
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickImportListPrice()">L. Precios</a>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
                 </template>
             </div>
@@ -82,6 +93,7 @@
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
             <items-export :showDialog.sync="showExportDialog"></items-export>
+            <items-export-wp :showDialog.sync="showExportWpDialog"></items-export-wp>
 
             <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
@@ -100,18 +112,20 @@
     import ItemsImport from './import.vue'
     import ItemsImportListPrice from './partials/import_list_price.vue'
     import ItemsExport from './partials/export.vue'
+    import ItemsExportWp from './partials/export_wp.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         props:['typeUser'],
         mixins: [deletable],
-        components: {ItemsForm, ItemsImport, ItemsExport, DataTable, WarehousesDetail, ItemsImportListPrice},
+        components: {ItemsForm, ItemsImport, ItemsExport, ItemsExportWp, DataTable, WarehousesDetail, ItemsImportListPrice},
         data() {
             return {
                 showDialog: false,
                 showImportDialog: false,
                 showExportDialog: false,
+                showExportWpDialog: false,
                 showImportListPriceDialog: false,
                 showWarehousesDetail: false,
                 resource: 'items',
@@ -155,6 +169,9 @@
             },
             clickExport() {
                 this.showExportDialog = true
+            },
+            clickExportWp() {
+                this.showExportWpDialog = true
             },
             clickImportListPrice() {
                 this.showImportListPriceDialog = true
