@@ -139,6 +139,11 @@ $cash_final_balance = 0;
                                             $customer_name = $value->sale_note->customer->name;
                                             $customer_number = $value->sale_note->customer->number;
                                             $total = $value->sale_note->total;
+                                            
+                                            if(!in_array($value->sale_note->state_type_id, ['01','03','05','07','13'])){
+                                                $total = 0;
+                                            }
+
                                             $currency_type_id = $value->sale_note->currency_type_id;
 
                                         }
@@ -151,6 +156,11 @@ $cash_final_balance = 0;
                                             $customer_name = $value->document->customer->name;
                                             $customer_number = $value->document->customer->number;
                                             $total = $value->document->total;
+                                            
+                                            if(!in_array($value->document->state_type_id, ['01','03','05','07','13'])){
+                                                $total = 0;
+                                            }
+
                                             $currency_type_id = $value->document->currency_type_id;
 
                                         }

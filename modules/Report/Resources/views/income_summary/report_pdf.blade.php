@@ -145,6 +145,11 @@ $cash_documents = $cash->cash_documents;
                                             $date_time_of_issue = "{$value->sale_note->date_of_issue->format('Y-m-d')} {$value->sale_note->time_of_issue}";
                                             $payment_method_description = $payment->payment_method_type->description;
                                             $total = $payment->payment;
+                                            
+                                            if(!in_array($payment->associated_record_payment->state_type_id, ['01','03','05','07','13'])){
+                                                $total = 0;
+                                            }
+
                                             $currency_type_id = $value->sale_note->currency_type_id;
 
                                         @endphp
@@ -174,6 +179,11 @@ $cash_documents = $cash->cash_documents;
                                             $date_time_of_issue = "{$value->document->date_of_issue->format('Y-m-d')} {$value->document->time_of_issue}";
                                             $payment_method_description = $payment->payment_method_type->description;
                                             $total = $payment->payment;
+                                            
+                                            if(!in_array($payment->associated_record_payment->state_type_id, ['01','03','05','07','13'])){
+                                                $total = 0;
+                                            }
+                                            
                                             $currency_type_id = $value->document->currency_type_id;
 
                                         @endphp
