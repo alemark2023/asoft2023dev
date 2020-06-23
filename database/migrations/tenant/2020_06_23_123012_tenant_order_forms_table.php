@@ -43,15 +43,18 @@ class TenantOrderFormsTable extends Migration
             $table->json('delivery');
 
             // $table->json('dispatcher')->nullable();
-            // $table->json('driver')->nullable();
-
-            $table->string('license_plate')->nullable();
+            $table->unsignedInteger('dispatcher_id');
+            $table->unsignedInteger('driver_id');
+            $table->json('license_plates')->nullable();
 
             $table->json('legends')->nullable();
             $table->json('optional')->nullable();
 
             $table->string('filename')->nullable();
             $table->timestamps();
+
+            $table->foreign('dispatcher_id')->references('id')->on('dispatchers');
+            $table->foreign('driver_id')->references('id')->on('drivers');
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('establishment_id')->references('id')->on('establishments');
