@@ -560,9 +560,7 @@ class ItemController extends Controller
 
         return (new ItemExportWp)
                 ->records($records)
-                ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV, [
-      'Content-Type' => 'text/csv',
-]);
+                ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV);
 
     }
 

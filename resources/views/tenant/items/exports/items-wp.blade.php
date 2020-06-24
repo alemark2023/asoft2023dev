@@ -1,32 +1,26 @@
 <html>
 @if(!empty($records))
 
-        <span>#</span>,
-        <span>Código interno</span>,
+        <span>ID</span>,
+        <span>SKU</span>,
         <span>Nombre</span>,
-        <span>Nombre alternativo</span>,
+        <span>Publicado</span>,
         <span>Descripción</span>,
-        <span>Unidad de medida</span>,
-        <span>Posee IGV</span>,
         <span>Categoría</span>,
-        <span>Marca</span>,
         <span>Precio</span>,
-        <span>Fecha de vencimiento</span>
-
-        @foreach($records as $key => $value)
+        <span>Inventario</span>
+        @foreach($records as $record)
         <br>
-            {{$loop->iteration}},
-            {{$value->internal_id}},
-            {{$value->name}},
-            {{$value->second_name }},
-            {{$value->description }},
-            {{$value->unit_type_id }},
-            {{$value->has_igv }},
-            {{$value->category_id }},
-            {{$value->brand_id }},
-            {{$value->sale_unit_price }},
-            {{$value->date_of_due }}
+            {{$record->id}},
+            {{$record->internal_id}},
+            {{$record->second_name}},
+            {{$record->description}},
+            {{$record->name }},
+            {{$record->category_id != '' ? $record->category->name : '' }},
+            {{$record->sale_unit_price }},
+            {{$record->stock}}
         @endforeach
+        <br>
 @endif
 
 </html>
