@@ -35,6 +35,7 @@ use App\Models\Tenant\Establishment;
 use Modules\Item\Models\ItemLotsGroup;
 use Carbon\Carbon;
 use App\Exports\ItemExport;
+use App\Exports\ItemExportWp;
 
 
 class ItemController extends Controller
@@ -544,6 +545,22 @@ class ItemController extends Controller
         return (new ItemExport)
                 ->records($records)
                 ->download('Reporte_Items_'.Carbon::now().'.xlsx');
+
+    }
+
+    public function exportWp(Request $request)
+    {
+        $date = $request->month_start.'-01';
+        $start_date = Carbon::parse($date);
+        $end_date = Carbon::parse($date)->addMonth()->subDay();
+        // dd($start_date.' - '.$end_date);
+
+        $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
+        // dd(new ItemCollection($records));
+
+        return (new ItemExportWp)
+                ->records($records)
+                ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV);
 
     }
 
