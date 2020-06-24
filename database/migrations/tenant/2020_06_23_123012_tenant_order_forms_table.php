@@ -22,9 +22,8 @@ class TenantOrderFormsTable extends Migration
             $table->json('establishment');
             $table->char('soap_type_id', 2);
             $table->char('state_type_id', 2);
-            $table->string('ubl_version');
             $table->string('prefix');
-            $table->date('date_of_issue');
+            $table->date('date_of_issue')->index();
             $table->time('time_of_issue');
             $table->unsignedInteger('customer_id');
             $table->json('customer');

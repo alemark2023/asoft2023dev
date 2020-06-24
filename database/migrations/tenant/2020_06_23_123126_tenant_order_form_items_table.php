@@ -15,12 +15,12 @@ class TenantOrderFormItemsTable extends Migration
     {
         Schema::create('order_form_items', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('dispatch_id');
+            $table->unsignedInteger('order_form_id');
             $table->unsignedInteger('item_id');
             $table->json('item');
-            $table->integer('quantity');
+            $table->decimal('quantity', 12, 4);
 
-            $table->foreign('dispatch_id')->references('id')->on('dispatches')->onDelete('cascade');
+            $table->foreign('order_form_id')->references('id')->on('order_forms')->onDelete('cascade');
             $table->foreign('item_id')->references('id')->on('items');
         });
     }

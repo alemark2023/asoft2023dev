@@ -70,6 +70,7 @@ class DispatchInput
             'reference_document_id' => Functions::valueKeyInArray($inputs, 'reference_document_id'),
             'reference_quotation_id' => Functions::valueKeyInArray($inputs, 'reference_quotation_id'),
             'reference_order_note_id' => Functions::valueKeyInArray($inputs, 'reference_order_note_id'),
+            'reference_order_form_id' => Functions::valueKeyInArray($inputs, 'reference_order_form_id'),
         ];
     }
 

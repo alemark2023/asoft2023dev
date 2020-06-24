@@ -338,6 +338,7 @@
     import Items from './items.vue';
 
     export default {
+        props: ['order_form_id'],
         components: {PersonForm, Items},
         data() {
             return {
@@ -370,11 +371,11 @@
                 form: {}
             }
         },
-        created() {
+        async created() {
             // this.clean();
-            this.initForm()
+            await this.initForm()
 
-            this.$http.post(`/${this.resource}/tables`).then(response => {
+            await this.$http.post(`/${this.resource}/tables`).then(response => {
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
                 this.transportModeTypes = response.data.transportModeTypes;
@@ -388,8 +389,66 @@
                 this.locations = response.data.locations;
                 this.seriesAll = response.data.series;
             });
+
+            await this.createFromOrderForm()
         },
         methods: {
+            createFromOrderForm(){
+
+                if(this.order_form_id){
+
+                    this.$http.get(`/order-forms/record/${this.order_form_id}` )
+                        .then(response => {
+                            
+                            let order_form = response.data.data.order_form
+                            // console.log(order_form)
+                            // this.form = order_form
+                            
+                            this.form.establishment_id = order_form.establishment_id
+                            this.form.establishment = order_form.establishment
+                            this.form.date_of_issue = order_form.date_of_issue
+                            this.form.customer_id = order_form.customer_id
+                            this.form.customer = order_form.customer
+                            this.form.observations = order_form.observations
+                            this.form.transport_mode_type_id = order_form.transport_mode_type_id
+                            this.form.transfer_reason_type_id = order_form.transfer_reason_type_id
+                            this.form.transfer_reason_description = order_form.transfer_reason_description
+                            this.form.date_of_shipping = order_form.date_of_shipping
+                            this.form.transshipment_indicator = order_form.transshipment_indicator
+                            this.form.port_code = order_form.port_code
+                            this.form.unit_type_id = order_form.unit_type_id
+                            this.form.total_weight = order_form.total_weight
+                            this.form.packages_number = order_form.packages_number
+                            this.form.container_number = order_form.container_number
+                            this.form.origin = order_form.origin
+                            this.form.delivery = order_form.delivery
+
+                            //aqui
+                            this.form.dispatcher = {
+                                name: order_form.dispatcher.name,
+                                number: order_form.dispatcher.number,
+                                identity_document_type_id: order_form.dispatcher.identity_document_type_id,
+                            }
+                            this.form.driver = {
+                                number: order_form.driver.number,
+                                identity_document_type_id: order_form.driver.identity_document_type_id,
+                            }
+
+                            this.form.license_plate = order_form.license_plates.license_plate_1
+                            this.form.reference_order_form_id = order_form.id
+                            this.form.items = order_form.items
+
+                            this.form.items.forEach(element => {
+                                element.description = element.item.description
+                                element.unit_type_id = element.item.unit_type_id
+                            });
+
+                            this.changeEstablishment()
+                        
+                        })
+                
+                }
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -431,6 +490,8 @@
                     //     invoice_number: this.document.series+'-'+this.document.number
                     // },
                     items: [],
+                    reference_order_form_id: null,
+                    license_plate:null,
 
                 }
             },
@@ -513,6 +574,10 @@
                             this.initForm();
 
                             this.$message.success(response.data.message)
+
+                            if(this.order_form_id){
+                                this.close()
+                            }
                         }
                         else {
                             this.$message.error(response.data.message);

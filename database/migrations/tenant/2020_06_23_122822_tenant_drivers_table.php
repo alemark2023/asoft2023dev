@@ -18,8 +18,8 @@ class TenantDriversTable extends Migration
 
             $table->increments('id');
             $table->string('identity_document_type_id');
-            $table->string('number');
-            $table->string('name');
+            $table->string('number')->index();
+            $table->string('name')->index();
             $table->string('license');
             $table->string('telephone')->nullable();
             $table->timestamps();

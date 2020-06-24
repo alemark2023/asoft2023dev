@@ -156,5 +156,18 @@
 </table>
 @endif
 
+@if ($document->reference_order_form_id)
+<table class="full-width border-box">
+    @if($document->order_form)
+    <tr>
+        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+    </tr>
+    <tr>
+        <td>{{ ($document->order_form) ? $document->order_form->number_full : "" }}</td>
+    </tr>
+    @endif
+</table>
+@endif
+
 </body>
 </html>
