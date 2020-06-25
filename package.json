@@ -20,12 +20,15 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^20.0.0",
         "chart.js": "^2.7.3",
         "element-ui": "^2.4.8",
         "moment": "^2.22.2",
         "node-sass": "^4.13.0",
         "vue-chartjs": "^3.4.0",
+        "vue-ckeditor5": "^0.5.0",
         "vue-content-loading": "^1.6.0",
+        "vue-wysiwyg": "^1.7.2",
         "watch": "^1.0.2",
         "xml-js": "^1.6.11",
         "xml2js": "^0.4.22"

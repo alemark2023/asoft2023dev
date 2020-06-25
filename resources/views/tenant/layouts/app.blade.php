@@ -111,7 +111,7 @@
 
 </head>
 <body class="pr-0">
-    
+
     <section class="body">
         <!-- start: header -->
         @include('tenant.layouts.partials.header')
