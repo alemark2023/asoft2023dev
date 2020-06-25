@@ -66,6 +66,9 @@ trait StorageDocument
             case 'contract':
                 $extension = 'pdf';
                 break;
+            case 'order_form':
+                $extension = 'pdf';
+                break;
         }
         $this->_filename = $filename.'.'.$extension;
         $this->_folder = ($root)?$root.DIRECTORY_SEPARATOR.$file_type:$file_type;

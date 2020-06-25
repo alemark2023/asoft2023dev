@@ -28,6 +28,9 @@ use App\Http\Requests\Tenant\DispatchRequest;
 use Exception, Illuminate\Support\Facades\DB;
 use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\Quotation;
+use Modules\Order\Http\Resources\DispatchResource;
+use Modules\Order\Mail\DispatchEmail;
+use Illuminate\Support\Facades\Mail;
 
 
 class DispatchController extends Controller
@@ -226,4 +229,25 @@ class DispatchController extends Controller
 
         return $this->downloadStorage($retention->filename, $folder);
     }
+
+    
+    public function record($id)
+    {
+        $record = new DispatchResource(Dispatch::findOrFail($id));
+
+        return $record;
+    }
+
+    public function email(Request $request)
+    {
+        $record = Dispatch::find($request->input('id'));
+        $customer_email = $request->input('customer_email');
+
+        Mail::to($customer_email)->send(new DispatchEmail($record));
+
+        return [
+            'success' => true
+        ];
+    }
+
 }

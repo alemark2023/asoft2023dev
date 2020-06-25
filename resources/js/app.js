@@ -205,6 +205,12 @@ Vue.component('tenant-expense-types-index', require('@viewsModuleExpense/expense
 Vue.component('tenant-expense-reasons-index', require('@viewsModuleExpense/expense_reasons/index.vue'));
 Vue.component('tenant-expense-method-types-index', require('@viewsModuleExpense/expense_method_types/index.vue'));
 
+//Order
+Vue.component('tenant-drivers-index', require('@viewsModuleOrder/drivers/index.vue'));
+Vue.component('tenant-dispatchers-index', require('@viewsModuleOrder/dispatchers/index.vue'));
+Vue.component('tenant-order-forms-index', require('@viewsModuleOrder/order_forms/index.vue'));
+Vue.component('tenant-order-forms-form', require('@viewsModuleOrder/order_forms/form.vue'));
+
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));

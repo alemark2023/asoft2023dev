@@ -19,6 +19,7 @@
                         <th>Número</th>
                         <th class="text-center">Fecha Envío</th>
                         <th class="text-center">Descargas</th>
+                        <th class="text-center">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }" :class="{'text-danger': (row.state_type_id === '11')}">
                         <td>{{ index }}</td>
@@ -31,27 +32,39 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_pdf)">PDF</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)">CDR</button>
                         </td>
+                        <td class="text-center">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
+                        </td>
                     </tr>
                 </data-table>
             </div>
         </div>
+            <dispatch-options :showDialog.sync="showDialogOptions"
+                              :recordId="recordId"
+                              :showClose="true"></dispatch-options>
     </div>
 </template>
 
 <script>
     import DataTable from '../../../components/DataTable.vue'
+    import DispatchOptions from './partials/options.vue'
 
     export default {
 
-        components: {DataTable},
+        components: {DataTable, DispatchOptions},
         data() {
             return {
                 resource: 'dispatches',
+                showDialogOptions: false,
                 recordId: null,
             }
         },
         created() {},
         methods: {
+            clickOptions(recordId = null) {
+                this.recordId = recordId
+                this.showDialogOptions = true
+            },
             clickDownload(download) {
                 window.open(download, '_blank');
             },

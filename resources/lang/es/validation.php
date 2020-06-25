@@ -248,6 +248,15 @@ return [
         'user_id' => 'vendedor',
         'internal_id' => 'código interno',
         'codigo_tipo_documento_identidad' => 'Tipo de documento',
-        'numero_documento' => 'Número de documento'
+        'numero_documento' => 'Número de documento',
+        'license' => 'licencia',
+
+        'license_plates.license_plate_1' => 'N° placa del vehiculo',
+        'license_plates.register_number_1' => 'N° registro 1',
+        'license_plates.license_plate_2' => 'N° placa semirremolque',
+        'license_plates.register_number_2' => 'N° registro 2',
+        'dispatcher_id' => 'transportista',
+        'driver_id' => 'conductor',
+
     ],
 ];

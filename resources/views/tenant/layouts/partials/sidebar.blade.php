@@ -499,6 +499,10 @@
                         {{ ($path[0] === 'retentions')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'dispatches')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'perceptions')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'drivers')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'dispatchers')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'order-forms')?'nav-active nav-expanded':'' }}
+
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-receipt" aria-hidden="true"></i>
@@ -520,6 +524,37 @@
                                 Percepciones
                                 </a>
                             </li>
+
+                            
+                            <li class="nav-parent
+                                {{ ($path[0] === 'order-forms')?'nav-active nav-expanded':'' }}
+                                {{ ($path[0] === 'drivers')?'nav-active nav-expanded':'' }}
+                                {{ ($path[0] === 'dispatchers')?'nav-active nav-expanded':'' }}
+                                ">
+                                <a class="nav-link" href="#">
+                                    Ordenes de pedido
+                                </a>
+                                <ul class="nav nav-children">
+
+                                    <li class="{{ ($path[0] === 'order-forms')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.order_forms.index')}}">
+                                            Listado
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'drivers')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.order_forms.drivers.index')}}">
+                                            Conductores
+                                        </a>
+                                    </li>
+                                    <li class="{{ ($path[0] === 'dispatchers')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.order_forms.dispatchers.index')}}">
+                                            Transportistas
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </li>
+
 
                         </ul>
                     </li>

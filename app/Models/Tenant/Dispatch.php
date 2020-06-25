@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
+use Modules\Order\Models\OrderForm;
 
 
 class Dispatch extends ModelTenant
@@ -56,7 +57,8 @@ class Dispatch extends ModelTenant
 
         'reference_document_id',
         'reference_quotation_id',
-        'reference_order_note_id'
+        'reference_order_note_id',
+        'reference_order_form_id',
     ];
 
     protected $casts = [
@@ -202,5 +204,15 @@ class Dispatch extends ModelTenant
     public function getDownloadExternalCdrAttribute()
     {
         return route('tenant.download.external_id', ['model' => 'dispatch', 'type' => 'cdr', 'external_id' => $this->external_id]);
+    }
+    
+    public function person()
+    {
+        return $this->belongsTo(Person::class, 'customer_id');
+    }
+
+    public function order_form()
+    {
+        return $this->belongsTo(OrderForm::class, 'reference_order_form_id');
     }
 }

@@ -19,6 +19,7 @@ use Modules\Finance\Models\GlobalPayment;
 use Modules\Finance\Models\Income; 
 use Modules\Purchase\Models\PurchaseQuotation;
 use Modules\Order\Models\OrderNote;
+use Modules\Order\Models\OrderForm;
 use Modules\Inventory\Models\{
     ItemWarehouse,
     InventoryKardex
@@ -79,6 +80,7 @@ class OptionController extends Controller
 
         Expense::where('soap_type_id', '01')->delete();
         OrderNote::where('soap_type_id', '01')->delete();
+        OrderForm::where('soap_type_id', '01')->delete();
         
         GlobalPayment::where('soap_type_id', '01')->delete();
         
