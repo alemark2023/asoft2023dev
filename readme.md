@@ -2,10 +2,6 @@
 
 # **Facturador PRO 3**
 
-<!-- ## Instalación reseller
-
-[Manual instalación reseller](https://docs.google.com/document/d/10ufrI9g8cx-V9Lh-rXLY1jzcHyyny8PYsBotIVFn7yA/edit# "Clic")-->
-
 
 ## Manuales de Instalación
 
@@ -19,7 +15,7 @@
 <br>
 [Linux - gestión externa de SSL](https://docs.google.com/document/d/1D87YJ9fq9yHiAauu6SGVugiC3m_i42DrFUt6VKYXuDI/edit?usp=sharing "Clic")
 
- 
+
 ### Scripts de instalación con Docker
 
 Linux - Ubuntu 18 - Docker - SSL opcional<br>
@@ -29,16 +25,22 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ### Manuales de actualización
 
-* Docker
+* Docker - Comandos manuales
 
 [Con Docker](https://docs.google.com/document/d/1ekGySBjGHspbPEE3OLkMGlWwjLvudmyLKo9Et-Cxejk/edit "Clic")
 <br>
-[SSL con Docker](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic")
 
-* Docker - Script
+* Docker - Script automático
 
 [Pasos para la ejecución](https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker)<br>
 [Script](blob/master/script-update.sh)<br>
+
+
+### Manuales de actualización de SSL gratuito
+
+* Docker
+
+[SSL](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic")
 
 
 ### Manuales de Usuario
@@ -120,12 +122,11 @@ Migracion Jira-Issues(Gitlab): [Guía](https://docs.google.com/document/d/156wEG
 
 ## Soporte
 
-* Recuerde solicitar acceso al sistema de tickets para añadir sus sugerencias, problemas o inquietudes
-* En Jira tiene un lapso de 24hrs para obtener respuesta de parte del equipo de FacturaloPeru
+* Use Issues como sistema de tickets para añadir sus sugerencias, problemas o inquietudes
 * Inconvenientes con facturación serán atendidos con prioridad
 * Una vez obtiene acceso al repositorio tendrá un año de vigencia, pasado el año debe renovar su contrato
 * Toda instalación es gestionada mediante los canales de Slack
-* Nuevas instalaciones o actualizaciones deben ser programadas y gestionadas en Jira, para ser ejecutada el mismo día debe haber un problema previo
+* Nuevas instalaciones o actualizaciones deben ser programadas y gestionadas, para ser ejecutada el mismo día debe haber un problema previo
 
 ## FacturaloPeru
 
