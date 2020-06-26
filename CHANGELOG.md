@@ -1,3 +1,25 @@
+## 3.3.8
+
+### docs
+2020-06-26 : docs | update readme<br>
+
+
+### fixed
+2020-06-23 : fixed | i-197 | Ajustes documentos anulados - caja chica en pos<br>
+
+
+### feature
+2020-06-26 : feature | admin-delete | config default<br>
+2020-06-26 : feature | admin-delete | eliminar cliente .env<br>
+2020-06-26 : feature | d | menu analisis comercial<br>
+2020-06-25 : feature | i-200 | wysiwyg nombre producto pdf<br>
+2020-06-25 : feature | i-200 | wysiwyg nombre producto pdf<br>
+2020-06-24 : feature | i-153 | Agregando ordenes de pedido - envio correo guia<br>
+2020-06-24 : feature | wp | csv fields<br>
+2020-06-23 : feature | wp | export items csv<br>
+2020-06-23 : feature | i-180 | update template internal_code<br>
+
+
 ## 3.3.7
 
 ### fixed
