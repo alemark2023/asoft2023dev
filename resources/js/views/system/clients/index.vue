@@ -202,8 +202,9 @@
                       type="button"
                       class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                       @click.prevent="clickPassword(row.id)"
-                    >Resetear clave</button>
+                    >Resetear clave {{deletePermission}}</button>
                     <button
+                      v-if="deletePermission == true"
                       type="button"
                       class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                       @click.prevent="clickDelete(row.id)"
@@ -287,6 +288,7 @@ import AccountStatus from "./partials/account_status.vue";
 
 export default {
   mixins: [deletable, changeable],
+  props: ['deletePermission'],
   components: { CompaniesForm, ChartLine, ClientPayments, AccountStatus },
   data() {
     return {
