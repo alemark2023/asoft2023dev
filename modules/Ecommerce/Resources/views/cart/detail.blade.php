@@ -26,7 +26,7 @@
                                 <a href="#">@{{ row.description }}</a>
                             </h2>
                         </td>
-                        <td>@{{ row.currency_type.symbol }} @{{ row.sale_unit_price }}</td>
+                        <td>@{{ row.currency_type_symbol }} @{{ row.sale_unit_price }}</td>
                         <td>
                             <input class="vertical-quantity form-control input_quantity" :data-product="row.id"
                                 type="text">
