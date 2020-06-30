@@ -4,6 +4,12 @@
 
     $document_number = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
     $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+
+    $address_full_delivery = Modules\Order\Services\AddressFullService::getDescription($document->delivery->location_id[2]);
+    $address_full_origin= Modules\Order\Services\AddressFullService::getDescription($document->origin->location_id[2]);
+
+    
+
 @endphp
 <html>
 <head>
@@ -82,8 +88,8 @@
         <td>Número de Bultos: {{ $document->packages_number }}</td>
     </tr>
     <tr>
-        <td>P.Partida: {{ $document->origin->location_id[2] }} - {{ $document->origin->address }}</td>
-        <td>P.Llegada: {{ $document->delivery->location_id[2] }} - {{ $document->delivery->address }}</td>
+        <td>P.Partida: {{ $address_full_origin }}, {{ $document->origin->address }}</td>
+        <td>P.Llegada: {{ $address_full_delivery }}, {{ $document->delivery->address }}</td>
     </tr>
     </tbody>
 </table>
@@ -91,24 +97,25 @@
 <table class="full-width border-box mt-10 mb-10">
     <thead>
     <tr>
-        <th class="border-bottom text-left" colspan="2">TRANSPORTE</th>
+        <th class="border-bottom text-left" colspan="3">TRANSPORTE</th>
     </tr>
     </thead>
     <tbody>
         <tr>
-            <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
+            <td colspan="2">Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
             <td>{{ $document->dispatcher->identity_document_type->description }}: {{ $document->dispatcher->number }}</td>
         </tr>
         <tr>
             <td>Conductor: {{ $document->driver->name }} - {{ $document->driver->number }}</td>
             <td>Licencia: {{ $document->driver->license }}</td>
+            <td>Teléfono: {{ $document->driver->telephone }}</td>
         </tr>
         <tr>
             <td>N° placa del vehiculo: {{ $document->license_plates->license_plate_1 }}</td>
             <td>N° registro: {{ $document->license_plates->register_number_1 }}</td>
         </tr>
         <tr>
-            <td>N° placa semirremolque: {{ $document->license_plates->license_plate_2 }}</td>
+            <td >N° placa semirremolque: {{ $document->license_plates->license_plate_2 }}</td>
             <td>N° registro: {{ $document->license_plates->register_number_2 }}</td>
         </tr>
     </tbody>

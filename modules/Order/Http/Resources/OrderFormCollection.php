@@ -25,6 +25,7 @@ class OrderFormCollection extends ResourceCollection
                 'soap_type_id' => $row->soap_type_id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'number' => $row->number_full,
+                'driver_name' => $row->driver->name,
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->identity_document_type->description.' '.$row->customer->number,
                 'date_of_shipping' => $row->date_of_shipping->format('Y-m-d'),

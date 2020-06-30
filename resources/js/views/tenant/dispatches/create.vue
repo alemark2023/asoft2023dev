@@ -368,7 +368,8 @@
                 errors: {
                     errors: {}
                 },
-                form: {}
+                form: {},
+                company: {},
             }
         },
         async created() {
@@ -376,6 +377,7 @@
             await this.initForm()
 
             await this.$http.post(`/${this.resource}/tables`).then(response => {
+                this.company = response.data.company;
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
                 this.transportModeTypes = response.data.transportModeTypes;
@@ -390,9 +392,20 @@
                 this.seriesAll = response.data.series;
             });
 
+            await this.setDefaultCustomer()
+
             await this.createFromOrderForm()
         },
         methods: {
+            setDefaultCustomer(){
+                
+                let customer = _.find(this.customers, {number: this.company.number})
+
+                if(customer){
+                    this.form.customer_id = customer.id
+                }
+
+            },
             createFromOrderForm(){
 
                 if(this.order_form_id){

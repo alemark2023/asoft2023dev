@@ -169,6 +169,7 @@
                             <div class="form-group" :class="{'has-danger': errors.dispatcher_id}">
                                 <label class="control-label">
                                     Transportista<span class="text-danger"> *</span>
+                                    <a href="#" @click.prevent="showDialogNewDispatcher = true">[+ Nuevo]</a>
                                 </label>
                                 <el-select v-model="form.dispatcher_id" filterable>
                                     <el-option v-for="option in dispatchers" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -181,6 +182,8 @@
                             <div class="form-group" :class="{'has-danger': errors.driver_id}">
                                 <label class="control-label">
                                     Conductor<span class="text-danger"> *</span>
+                                    <a href="#" @click.prevent="showDialogNewDriver = true">[+ Nuevo]</a>
+
                                 </label>
                                 <el-select v-model="form.driver_id" filterable>
                                     <el-option v-for="option in drivers" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -195,7 +198,7 @@
 
                             <div class="form-group" :class="{'has-danger': errors['license_plates.license_plate_1']}">
                                 <label class="control-label">N° placa del vehiculo<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.license_plates.license_plate_1" ></el-input>
+                                <el-input v-model="form.license_plates.license_plate_1" @keyup.native="keyUpLicensePlate1" :maxlength="8"></el-input>
                                 <small class="form-control-feedback" v-if="errors['license_plates.license_plate_1']" v-text="errors['license_plates.license_plate_1'][0]"></small>
                             </div>
                         </div>
@@ -209,7 +212,7 @@
                         <div class="col-lg-3">
                             <div class="form-group" :class="{'has-danger': errors['license_plates.license_plate_2']}">
                                 <label class="control-label">N° placa semirremolque<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.license_plates.license_plate_2" ></el-input>
+                                <el-input v-model="form.license_plates.license_plate_2" @keyup.native="keyUpLicensePlate2" :maxlength="8"></el-input>
                                 <small class="form-control-feedback" v-if="errors['license_plates.license_plate_2']" v-text="errors['license_plates.license_plate_2'][0]"></small>
                             </div>
                         </div>
@@ -263,25 +266,33 @@
 
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
 
+        <driver-form :showDialog.sync="showDialogNewDriver" :external="true"></driver-form>
+
+        <dispatcher-form :showDialog.sync="showDialogNewDispatcher" :external="true"></dispatcher-form>
+
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
 
         
         <order-form-options :showDialog.sync="showDialogOptions"
                             :recordId="recordId"
-                            :isUpdate="true"></order-form-options>
+                            :isUpdate="(id) ? true:false"></order-form-options>
     </div>
 </template>
 
 <script>
     import PersonForm from '@views/persons/form.vue';
+    import DispatcherForm from '../dispatchers/form.vue';
+    import DriverForm from '../drivers/form.vue';
     import OrderFormOptions from './partials/options.vue'
     import Items from './items.vue';
 
     export default {
         props: ['id'],
-        components: {PersonForm, Items, OrderFormOptions},
+        components: {DriverForm, PersonForm, Items, OrderFormOptions, DispatcherForm},
         data() {
             return {
+                showDialogNewDriver: false,
+                showDialogNewDispatcher: false,
                 showDialogNewPerson: false,
                 identityDocumentTypes: [],
                 showDialogOptions: false,
@@ -340,8 +351,47 @@
             await this.isUpdate()
 
             this.title = (this.id) ? 'Editar orden de pedido':'Nueva orden de pedido'
+
+            this.events()
         },
         methods: {
+            async keyUpLicensePlate1(e){
+                
+                if(this.form.license_plates.license_plate_1.length == 3 && e.keyCode !== 8){
+                    this.form.license_plates.license_plate_1 = await this.form.license_plates.license_plate_1.concat('-')
+                }
+
+            },
+            async keyUpLicensePlate2(e){
+                
+                if(this.form.license_plates.license_plate_2.length == 3 && e.keyCode !== 8){
+                    this.form.license_plates.license_plate_2 = await this.form.license_plates.license_plate_2.concat('-')
+                }
+
+            },
+            events(){
+                
+                this.$eventHub.$on('reloadDataDrivers', (driver_id) => {
+                    this.reloadDataDrivers(driver_id)
+                })
+                
+                this.$eventHub.$on('reloadDataDispatchers', (dispatcher_id) => {
+                    this.reloadDataDispatchers(dispatcher_id)
+                })
+
+            },
+            reloadDataDispatchers(dispatcher_id) { 
+                this.$http.get(`/${this.resource}/table/dispatchers`).then((response) => {
+                    this.dispatchers = response.data
+                    this.form.dispatcher_id = dispatcher_id
+                })                  
+            },
+            reloadDataDrivers(driver_id) { 
+                this.$http.get(`/${this.resource}/table/drivers`).then((response) => {
+                    this.drivers = response.data
+                    this.form.driver_id = driver_id
+                })                  
+            },
             isUpdate(){
 
                 if(this.id){
