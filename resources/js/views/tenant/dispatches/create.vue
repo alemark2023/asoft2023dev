@@ -330,18 +330,26 @@
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
 
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
+        
+        <dispatch-options :showDialog.sync="showDialogOptions"
+                            :recordId="recordId"
+                            :showClose="false"
+                            :isUpdate="(order_form_id) ? true:false"></dispatch-options>
+
     </div>
 </template>
 
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
+    import DispatchOptions from './partials/options.vue'
 
     export default {
         props: ['order_form_id'],
-        components: {PersonForm, Items},
+        components: {PersonForm, Items, DispatchOptions},
         data() {
             return {
+                showDialogOptions: false,
                 showDialogNewPerson: false,
                 identityDocumentTypes: [],
                 showDialogAddItems: false,
@@ -368,7 +376,9 @@
                 errors: {
                     errors: {}
                 },
-                form: {}
+                form: {},
+                recordId:null,
+                company: {},
             }
         },
         async created() {
@@ -376,6 +386,7 @@
             await this.initForm()
 
             await this.$http.post(`/${this.resource}/tables`).then(response => {
+                this.company = response.data.company;
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
                 this.transportModeTypes = response.data.transportModeTypes;
@@ -390,9 +401,20 @@
                 this.seriesAll = response.data.series;
             });
 
+            await this.setDefaultCustomer()
+
             await this.createFromOrderForm()
         },
         methods: {
+            setDefaultCustomer(){
+                
+                let customer = _.find(this.customers, {number: this.company.number})
+
+                if(customer){
+                    this.form.customer_id = customer.id
+                }
+
+            },
             createFromOrderForm(){
 
                 if(this.order_form_id){
@@ -573,11 +595,14 @@
                         if (response.data.success) {
                             this.initForm();
 
-                            this.$message.success(response.data.message)
+                            // this.$message.success(response.data.message)
+                            // console.log(response)
+                            this.recordId = response.data.data.id
+                            this.showDialogOptions = true
 
-                            if(this.order_form_id){
-                                this.close()
-                            }
+                            // if(this.order_form_id){
+                            //     this.close()
+                            // }
                         }
                         else {
                             this.$message.error(response.data.message);

@@ -16,6 +16,7 @@
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
                         <th>Cliente</th>
+                        <th>Conductor</th>
                         <th>Número</th>
                         <th class="text-center">Fecha Envío</th>
                         <th class="text-center">Descargas</th>
@@ -25,6 +26,7 @@
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.customer_name }} <br /> <small>{{ row.customer_number }}</small></td>
+                        <td>{{ row.driver_name }}</td>
                         <td>{{ row.number }}</td>
                         <td class="text-center">{{ row.date_of_shipping }}</td>
                         <td class="text-center">

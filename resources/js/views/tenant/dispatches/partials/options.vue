@@ -3,12 +3,12 @@
      
         <div class="row">
 
-            <!-- <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-3">
-                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a4')">
+            <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-3">
+                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickDownload()">
                     <i class="fa fa-file-alt"></i>
                 </button>
-                <p>Imprimir A4</p>
-            </div> -->
+                <p>Descargar A4</p>
+            </div>
 
         </div>
         <div class="row mt-3">
@@ -62,9 +62,12 @@
         async created() {
             this.initForm()
 
-            this.text_button = this.isUpdate ? 'Continuar':'Nueva orden de pedido'
+            this.text_button = 'Nueva guía'
         },
         methods: {
+            clickDownload() {
+                window.open(this.form.download_external_pdf, '_blank');
+            },
             clickSendWhatsapp() {
                 
                 if(!this.form.customer_telephone){
@@ -78,7 +81,7 @@
                 this.errors = {};
                 this.form = {
                     customer_email: null,
-                    download_pdf: null,
+                    download_external_pdf: null,
                     external_id: null,
                     number: null,
                     id: null,

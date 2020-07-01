@@ -230,6 +230,39 @@ class OrderFormController extends Controller
                             'locations', 'dispatchers', 'drivers');
     }
 
+    
+    public function table($table){
+
+        
+        if($table == 'drivers'){
+
+            return Driver::query()->orderBy('name')->get()
+                            ->transform(function($row) {
+                                return [
+                                    'id' => $row->id,
+                                    'description' => $row->number.' - '.$row->name,
+                                ];
+                            });
+
+        }
+
+        if($table == 'dispatchers'){
+
+            return Dispatcher::query()->orderBy('name')->get()
+                                ->transform(function($row) {
+                                    return [
+                                        'id' => $row->id,
+                                        'description' => $row->number.' - '.$row->name,
+                                    ];
+                                });
+
+        }
+
+        return [];
+
+    }
+
+
     public function email(Request $request)
     {
         $company = Company::active();

@@ -330,18 +330,25 @@
         <!--<person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>-->
 
         <!--<items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>-->
+        
+        <dispatch-options :showDialog.sync="showDialogOptions"
+                            :recordId="recordId"
+                            :showClose="false"
+                            :isUpdate="true"></dispatch-options>
     </div>
 </template>
 
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
+    import DispatchOptions from './partials/options.vue'
 
     export default {
         props: ['document', 'typeDocument', 'dispatch'],
-        components: {PersonForm, Items},
+        components: {PersonForm, Items, DispatchOptions},
         data() {
             return {
+                showDialogOptions: false,
                 showDialogNewPerson: false,
                 identityDocumentTypes: [],
                 showDialogAddItems: false,
@@ -370,6 +377,7 @@
                 errors: {
                     errors: {}
                 },
+                recordId:null,
                 form: {}
             }
         },
@@ -565,8 +573,12 @@
 
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {
-                            this.$message.success(response.data.message)
-                            location.href = '/dispatches'
+
+                            // this.$message.success(response.data.message)
+                            // location.href = '/dispatches'
+                            this.recordId = response.data.data.id
+                            this.showDialogOptions = true
+
                         } else {
                             this.$message.error(response.data.message)
                         }

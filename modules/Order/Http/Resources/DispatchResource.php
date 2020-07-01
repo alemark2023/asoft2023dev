@@ -20,6 +20,7 @@ class DispatchResource extends JsonResource
             'number' => $this->number_full,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
             'customer_email' => $this->customer->email,
+            'download_external_pdf' => $this->download_external_pdf,
             'customer_telephone' => optional($this->person)->telephone,
             'message_text' => "Su guía {$this->number_full} ha sido generada correctamente, puede revisarla en el siguiente enlace: ".url('')."/downloads/dispatch/pdf/{$this->external_id}".""
         ];

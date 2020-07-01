@@ -20,7 +20,7 @@ class DispatcherRequest extends FormRequest
         return [
             'number' => [
                 'required',
-                Rule::unique('tenant.drivers')->ignore($id),
+                Rule::unique('tenant.dispatchers')->ignore($id),
             ],
             'identity_document_type_id' => [
                 'required',

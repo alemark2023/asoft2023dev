@@ -52,7 +52,7 @@
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.license}">
                             <label class="control-label">Licencia</label>
-                            <el-input v-model="form.license" dusk="license"></el-input>
+                            <el-input v-model="form.license"  @keyup.native="keyUpLicense"></el-input>
                             <small class="form-control-feedback" v-if="errors.license" v-text="errors.license[0]"></small>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
 
     export default {
         mixins: [serviceNumber],
-        props: ['showDialog', 'recordId'],
+        props: ['showDialog', 'recordId', 'external'],
         data() {
             return {
                 loading_submit: false,
@@ -115,6 +115,11 @@
             }
         },
         methods: {
+            keyUpLicense(e){
+                if(this.form.license.length == 1 && e.keyCode !== 8 && this.form.number){
+                    this.form.license = this.form.license.concat(this.form.number)
+                }
+            },
             initForm() {
                 this.errors = {}
 
@@ -146,9 +151,17 @@
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
+
                             this.$message.success(response.data.message)
-                            this.$eventHub.$emit('reloadData')
+
+                            if (this.external) {
+                                this.$eventHub.$emit('reloadDataDrivers', response.data.id)
+                            } else {
+                                this.$eventHub.$emit('reloadData')
+                            }
+
                             this.close()
+
                         } else {
                             this.$message.error(response.data.message)
                         }

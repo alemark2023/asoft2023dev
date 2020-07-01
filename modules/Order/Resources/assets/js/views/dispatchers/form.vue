@@ -73,7 +73,7 @@
 
     export default {
         mixins: [serviceNumber],
-        props: ['showDialog', 'recordId'],
+        props: ['showDialog', 'recordId', 'external'],
         data() {
             return {
                 loading_submit: false,
@@ -136,7 +136,13 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
-                            this.$eventHub.$emit('reloadData')
+                            
+                            if (this.external) {
+                                this.$eventHub.$emit('reloadDataDispatchers', response.data.id)
+                            } else {
+                                this.$eventHub.$emit('reloadData')
+                            }
+
                             this.close()
                         } else {
                             this.$message.error(response.data.message)
@@ -177,6 +183,7 @@
             searchNumber(data) {
 
                 this.form.name = (this.form.identity_document_type_id === '1')?data.nombre_completo:data.nombre_o_razon_social;
+                this.form.address = data.direccion_completa
 
             },
         }

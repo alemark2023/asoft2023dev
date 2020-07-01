@@ -21,6 +21,7 @@ use App\Models\Tenant\{
     Dispatch,
     Person,
     Series,
+    Company,
     Item
 };
 use App\Models\Tenant\Document;
@@ -101,6 +102,9 @@ class DispatchController extends Controller
         return [
             'success' => true,
             'message' => "Se creo la guía de remisión {$document->series}-{$document->number}",
+            'data' => [
+                'id' => $document->id,
+            ],
         ];
     }
 
@@ -202,8 +206,10 @@ class DispatchController extends Controller
         $districts = District::whereActive()->get();
         $establishments = Establishment::all();
         $series = Series::all();
+        $company = Company::select('number')->first();
 
-        return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items','locations');
+        return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 
+                        'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items','locations', 'company');
     }
 
     public function downloadExternal($type, $external_id) {
