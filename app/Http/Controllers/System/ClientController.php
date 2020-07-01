@@ -366,10 +366,12 @@ class ClientController extends Controller
             'code' => '0000'
         ]);
 
-        // DB::connection('tenant')->table('warehouses')->insertGetId([
-        //     'establishment_id' => $establishment_id,
-        //     'description' => 'Almacén - '.'Oficina Principal',
-        // ]);
+        DB::connection('tenant')->table('warehouses')->insertGetId([
+            'establishment_id' => $establishment_id,
+            'description' => 'Almacén Oficina Principal',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         DB::connection('tenant')->table('series')->insert([
             ['establishment_id' => 1, 'document_type_id' => '01', 'number' => 'F001'],

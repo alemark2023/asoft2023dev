@@ -330,18 +330,26 @@
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
 
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
+        
+        <dispatch-options :showDialog.sync="showDialogOptions"
+                            :recordId="recordId"
+                            :showClose="false"
+                            :isUpdate="(order_form_id) ? true:false"></dispatch-options>
+
     </div>
 </template>
 
 <script>
     import PersonForm from '../persons/form.vue';
     import Items from './items.vue';
+    import DispatchOptions from './partials/options.vue'
 
     export default {
         props: ['order_form_id'],
-        components: {PersonForm, Items},
+        components: {PersonForm, Items, DispatchOptions},
         data() {
             return {
+                showDialogOptions: false,
                 showDialogNewPerson: false,
                 identityDocumentTypes: [],
                 showDialogAddItems: false,
@@ -369,6 +377,7 @@
                     errors: {}
                 },
                 form: {},
+                recordId:null,
                 company: {},
             }
         },
@@ -586,11 +595,14 @@
                         if (response.data.success) {
                             this.initForm();
 
-                            this.$message.success(response.data.message)
+                            // this.$message.success(response.data.message)
+                            // console.log(response)
+                            this.recordId = response.data.data.id
+                            this.showDialogOptions = true
 
-                            if(this.order_form_id){
-                                this.close()
-                            }
+                            // if(this.order_form_id){
+                            //     this.close()
+                            // }
                         }
                         else {
                             this.$message.error(response.data.message);

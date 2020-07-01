@@ -202,7 +202,7 @@
                       type="button"
                       class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                       @click.prevent="clickPassword(row.id)"
-                    >Resetear clave {{deletePermission}}</button>
+                    >Resetear clave</button>
                     <button
                       v-if="deletePermission == true"
                       type="button"

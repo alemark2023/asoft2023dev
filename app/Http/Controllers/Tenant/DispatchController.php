@@ -102,6 +102,9 @@ class DispatchController extends Controller
         return [
             'success' => true,
             'message' => "Se creo la guía de remisión {$document->series}-{$document->number}",
+            'data' => [
+                'id' => $document->id,
+            ],
         ];
     }
 

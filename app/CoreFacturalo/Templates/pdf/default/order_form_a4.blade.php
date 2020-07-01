@@ -41,8 +41,8 @@
             </div>
         </td>
         <td width="40%" class="border-box p-4 text-center">
-            <h4 class="text-center">ORDEN DE PEDIDO</h4>
-            <h3 class="text-center">{{ $document_number }}</h3>
+            <h4 class="text-center " style="color:red"><b>ORDEN DE PEDIDO</b></h4>
+            <h3 class="text-center" style="color:red"><b>{{ $document_number }}</b></h3>
         </td>
     </tr>
 </table>
