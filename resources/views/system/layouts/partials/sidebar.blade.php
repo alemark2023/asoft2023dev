@@ -66,6 +66,15 @@
                 </ul>
             </nav>
 
+            <nav id="menu" class="nav-main" role="navigation">
+                <ul class="nav nav-main">
+                    <li class="{{ ($path[0] === 'accounting')?'nav-active':'' }}">
+                        <a class="nav-link" href="{{route('system.accounting.index')}}">
+                            <i class="fas fa-calculator"></i><span>Contabilidad</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
 
         <script>
             // Maintain Scroll Position
