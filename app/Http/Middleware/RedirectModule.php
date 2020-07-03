@@ -20,19 +20,22 @@ class RedirectModule
         $path = explode('/', $request->path());
         $modules = $request->user()->getModules();
 
-        if(! $request->ajax()){
+        if(!$request->ajax()){
+
+            \Log::debug('ajax');
 
             if(count($modules)){
 
                 if(count($modules) < 9){
 
                     $group = $this->getGroup($path, $module);
+
                     if($group){
                         if($this->getModuleByGroup($modules,$group) === 0){
                             return $this->redirectRoute($module);
                         }
-
                     }
+
                 }
 
             }
@@ -93,6 +96,8 @@ class RedirectModule
 
 
     private function getGroup($path, $module){
+
+        \Log::debug($path);
 
         ///* Module Documents */
 
@@ -234,11 +239,23 @@ class RedirectModule
             $group = "finance";
         }
 
-        // elseif($path[0] == "cash"){
-        //     $group = "pos";
+        elseif($path[0] == "orders"){
+             $group = "ecommerce";
 
-        // }
-
+        }
+        elseif($path[0] == "ecommerce" && $path[1] == "configuration"){
+            $group = "ecommerce";
+        }
+        elseif($path[0] == "items_ecommerce"){
+            $group = "ecommerce";
+        }
+        elseif($path[0] == "tags"){
+            $group = "ecommerce";
+        }
+        elseif($path[0] == "promotions"){
+            $group = "ecommerce";
+        }
+        
         else{
             $group = null;
         }
