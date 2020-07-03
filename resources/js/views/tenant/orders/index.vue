@@ -89,7 +89,7 @@
                 ></el-option>
               </el-select>
             </td>
-            <td>{{row.number_document}}</td>
+            <td class="text-center">{{row.number_document}}</td>
             <td class="text-center">
               <el-button v-if="row.document_external_id" class="submit" type="success" icon="el-icon-tickets" @click.prevent="clickDownload(row.document_external_id)"></el-button>
             </td>
@@ -317,16 +317,20 @@ export default {
       })
     },
     getDataFinally(document) {
+
+      const { purchase } = this.record
+
       return {
         document_external_id: document.data.external_id,
-        number_document: document.number,
+        number_document: document.data.number,
         orderId: this.record.id,
         product: 'Compras Ecommerce Facturador Pro',
         precio_culqi: Number(this.record.total),
-        identity_document_type_id: (this.record.purchase.serie_documento === 'B001') ? '1' : '6',
-        number: (this.record.purchase.serie_documento === 'B001') ? 'dni' : 'ruc'
+        identity_document_type_id: purchase.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad ,
+        number: purchase.datos_del_cliente_o_receptor.numero_documento
       }
     }
-  }
+  },
+  
 }
 </script>
