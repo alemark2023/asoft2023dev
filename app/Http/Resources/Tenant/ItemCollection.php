@@ -17,16 +17,20 @@ class ItemCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) {
 
             $has_igv_description = null;
+            $purchase_has_igv_description = null;
+
             $affectation_igv_types_exonerated_unaffected = ['20','21','30','31','32','33','34','35','36','37'];
 
             if(in_array($row->sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
-
                 $has_igv_description = 'No';
-
             }else{
-
                 $has_igv_description = ((bool) $row->has_igv) ? 'Si':'No';
-                
+            }
+
+            if(in_array($row->purchase_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
+                $purchase_has_igv_description = 'No';
+            }else{
+                $purchase_has_igv_description = ((bool) $row->purchase_has_igv) ? 'Si':'No';
             }
 
             return [
@@ -49,6 +53,7 @@ class ItemCollection extends ResourceCollection
                 'has_igv' => (bool) $row->has_igv,
                 'active' => (bool) $row->active,
                 'has_igv_description' => $has_igv_description,
+                'purchase_has_igv_description' => $purchase_has_igv_description,
                 'sale_unit_price' => "{$row->currency_type->symbol} {$row->sale_unit_price}",
                 'purchase_unit_price' => "{$row->currency_type->symbol} {$row->purchase_unit_price}",
                 'created_at' => ($row->created_at) ? $row->created_at->format('Y-m-d H:i:s') : '',
