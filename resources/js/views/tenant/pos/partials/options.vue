@@ -1,5 +1,5 @@
 <template>
-    <el-dialog   :visible="showDialog"  @open="create" width="60%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+    <el-dialog   :visible="showDialog"  @open="create" @opened="opened" width="60%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
         <span slot="title">
             <div class="widget-summary widget-summary-xs pl-3 p-2">
                 <div class="widget-summary-col widget-summary-col-icon">
@@ -38,7 +38,7 @@
                 </div> 
                 <div class="row col-md-12"> 
                     <div class="col-md-6">   
-                        <el-input v-model="form.customer_email">
+                        <el-input v-model="form.customer_email" ref="ref_customer_email" @keyup.native="keyupCustomerEmail">
                             <el-button slot="append" icon="el-icon-message"   @click="clickSendEmail" :loading="loading">Enviar</el-button>
                         </el-input>
                         <!-- <small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
@@ -74,10 +74,21 @@
         async created() {
             this.initForm() 
         },
+        mounted(){
+        },
         methods: {
-            clickNewSale(){
-                this.initForm()
-                this.$eventHub.$emit('cancelSale')
+            keyupCustomerEmail(e){
+                if(e.keyCode === 9){
+                    this.clickNewSale()
+                }
+                // console.log(e.keyCode)
+            },
+            initFocus(){
+                this.$refs.ref_customer_email.$el.getElementsByTagName('input')[0].focus()
+            },
+            async clickNewSale(){
+                await this.initForm()
+                await this.$eventHub.$emit('cancelSale')
 
             },
             initForm() {
@@ -103,7 +114,12 @@
                 this.$http.get(`/pos/status_configuration`).then(response => {
                     this.configuration = response.data
                 });
+
+                
             }, 
+            opened(){
+                this.initFocus()
+            },
             clickSendEmail() {
                             
                 if(this.form.customer_email == null || this.form.customer_email == '') return this.$message.error('Ingrese el correo')
