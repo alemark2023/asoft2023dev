@@ -63,7 +63,8 @@ class Item extends ModelTenant
         'lots_enabled',
         'active',
         'line',
-        'series_enabled'
+        'series_enabled',
+        'purchase_has_igv',
         // 'warehouse_id'
     ];
 

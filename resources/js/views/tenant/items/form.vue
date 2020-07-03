@@ -297,7 +297,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(row, index) in form.item_unit_types">
+                                <tr v-for="(row, index) in form.item_unit_types" :key="index">
                                     <template v-if="row.id">
                                         <td class="text-center">{{row.unit_type_id}}</td>
                                         <td class="text-center">{{row.description}}</td>
@@ -396,7 +396,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(row, index) in form.attributes">
+                                <tr v-for="(row, index) in form.attributes" :key="index">
                                     <td>
                                         <el-select v-model="row.attribute_type_id" filterable @change="changeAttributeType(index)">
                                             <el-option v-for="option in attribute_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -439,7 +439,7 @@
                                 <div class="short-div col-md-8">
                                     <div class="form-group" :class="{'has-danger': errors.purchase_affectation_igv_type_id}">
                                         <label class="control-label">Tipo de afectación (Compra)</label>
-                                        <el-select v-model="form.purchase_affectation_igv_type_id">
+                                        <el-select v-model="form.purchase_affectation_igv_type_id"  @change="changePurchaseAffectationIgvType">
                                             <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                         </el-select>
                                         <small class="form-control-feedback" v-if="errors.purchase_affectation_igv_type_id" v-text="errors.purchase_affectation_igv_type_id[0]"></small>
@@ -464,6 +464,12 @@
                                     </div>
                                 </div>
 
+                                <div class="short-div col-md-4 center-el-checkbox"  v-show="purchase_show_has_igv">
+                                    <div class="form-group" :class="{'has-danger': errors.purchase_has_igv}">
+                                        <el-checkbox v-model="form.purchase_has_igv">Incluye Igv (Compra)</el-checkbox><br>
+                                        <small class="form-control-feedback" v-if="errors.purchase_has_igv" v-text="errors.purchase_has_igv[0]"></small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -542,6 +548,7 @@
                 brands: [],
                 accounts: [],
                 show_has_igv:true,
+                purchase_show_has_igv:true,
                 have_account:false,
                 item_unit_type:{
                         id:null,
@@ -594,6 +601,7 @@
 
                 this.$http.get(`/configurations/record`) .then(response => {
                     this.form.has_igv = response.data.data.include_igv
+                    this.form.purchase_has_igv = response.data.data.include_igv
                 })
             },
             clickAddAttribute() {
@@ -731,8 +739,10 @@
                     lots:[],
                     attributes: [],
                     series_enabled: false,
+                    purchase_has_igv: true,
                 }
                 this.show_has_igv = true
+                this.purchase_show_has_igv = true
                 this.enabled_percentage_of_profit = false
             },
             onSuccess(response, file, fileList) {
@@ -757,6 +767,19 @@
                 }
 
             },
+            changePurchaseAffectationIgvType(){
+
+                let affectation_igv_type_exonerated = [20,21,30,31,32,33,34,35,36,37]
+                let is_exonerated = affectation_igv_type_exonerated.includes((parseInt(this.form.purchase_affectation_igv_type_id)));
+
+                if(is_exonerated){
+                    this.purchase_show_has_igv = false
+                    this.form.purchase_has_igv = true
+                }else{
+                    this.purchase_show_has_igv = true
+                }
+
+            },
             resetForm() {
                 this.initForm()
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -774,6 +797,7 @@
                             this.form = response.data.data
                             this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                             this.changeAffectationIgvType()
+                            this.changePurchaseAffectationIgvType()
                         })
                 }
 
@@ -784,6 +808,7 @@
                         .then(response => {
                             this.form = response.data.data
                             this.changeAffectationIgvType()
+                            this.changePurchaseAffectationIgvType()
                         })
                 }
             },

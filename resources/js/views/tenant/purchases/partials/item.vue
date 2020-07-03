@@ -344,7 +344,9 @@
                     attributes: [],
                     item_unit_types: [],
                     lot_code:null,
-                    date_of_due: null
+                    date_of_due: null,
+                    purchase_has_igv: null,
+
                 }
 
                 this.item_unit_type = {};
@@ -429,6 +431,9 @@
                 this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
+
+                this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+
             },
             async clickAddItem() {
 
@@ -452,9 +457,19 @@
                         return this.$message.error('La cantidad de series registradas son diferentes al stock');
                 }
 
+                let affectation_igv_types_exonerated_unaffected = ['20','21','30','31','32','33','34','35','36','37']
+
+                let unit_price = this.form.unit_price
+
+                if(!affectation_igv_types_exonerated_unaffected.includes(this.form.affectation_igv_type_id)) {
+
+                    unit_price = (this.form.purchase_has_igv)?this.form.unit_price:this.form.unit_price*1.18;
+
+                }
+
                 let date_of_due = this.form.date_of_due
 
-                this.form.item.unit_price = this.form.unit_price
+                this.form.item.unit_price = unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
 
