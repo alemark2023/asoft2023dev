@@ -153,7 +153,7 @@
                 <input v-model="numberDocument" :maxlength="maxLength" type="text" class="form-control">
                 <small class="form-control-feedback" v-if="errors.numero_documento" v-text="errors.numero_documento[0]"></small>
             </div>
-            
+
         </div><!-- End .col-lg-4 -->
 
         <div class="cart-summary">
@@ -306,12 +306,19 @@
                 this.typeDocumentList = ticket
               }
           },
-            async getFormPaymentCash() {
+            refreshSetDatosCliente()
+            {
+
               this.form_document.datos_del_cliente_o_receptor.direccion = this.form_contact.address
               this.form_document.datos_del_cliente_o_receptor.telefono = this.form_contact.telephone
               this.form_document.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad = this.typeDocuments
               this.form_document.datos_del_cliente_o_receptor.numero_documento = this.numberDocument
               this.form_document.datos_del_cliente_o_receptor.identity_document_type_id = this.formIdentity.identity_document_type_id
+
+            },
+            async getFormPaymentCash() {
+                
+                this.refreshSetDatosCliente()
 
                 let precio = Math.round(Number(this.summary.total) * 100).toFixed(2);
                 let precio_culqi = Number(this.summary.total)
@@ -679,7 +686,14 @@
         $('#modal_ask_document').modal('show')
     }
 
-    function execCulqi() {
+    async function execCulqi() {
+
+       console.log( 'errores', app_cart.errors)
+
+       //app_cart.errors = 'demo'
+
+    //   console.log( 'errores22', app_cart.errors)
+
 
         let precio = Math.round((Number($("#total_amount").data('total')) * 100).toFixed(2));
         if (precio > 0) {
@@ -694,7 +708,7 @@
     }
 
 
-    function culqi() {
+    async function culqi() {
         if (Culqi.token) {
 
             swal({
@@ -713,6 +727,9 @@
             var token = Culqi.token.id;
             var email = Culqi.token.email;
             var installments = Culqi.token.metadata.installments;
+
+            const formpayment = await app_cart.getFormPaymentCash()
+
             var data = {
                 producto: 'Compras Ecommerce Facturador Pro',
                 precio: precio,
@@ -720,8 +737,10 @@
                 token: token,
                 email: email,
                 installments: installments,
-                customer: JSON.stringify(getCustomer()),
-                items: JSON.stringify(getItems())
+                customer: JSON.stringify(formpayment.customer),
+                items: JSON.stringify(getItems()),
+                purchase: JSON.stringify(formpayment.purchase),
+
             }
 
             $.ajax({
@@ -750,7 +769,11 @@
                 }
               },
               error: function (error_data) {
-                swal("Pago No realizado", error_data, "error");
+                console.log(error_data)
+                if (error_data.status === 422) {
+                    app_cart.errors = JSON.parse( error_data.responseText);
+                }
+                swal("Pago No realizado", 'Faltan completar campos', "error");
               }
             });
 

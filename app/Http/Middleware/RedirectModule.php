@@ -15,14 +15,12 @@ class RedirectModule
      */
     public function handle($request, Closure $next)
     {
-      
+
         $module = $request->user()->getModule();
         $path = explode('/', $request->path());
         $modules = $request->user()->getModules();
 
         if(!$request->ajax()){
-
-            \Log::debug('ajax');
 
             if(count($modules)){
 
@@ -76,7 +74,7 @@ class RedirectModule
 
             case 'finance':
                 return redirect()->route('tenant.finances.global_payments.index');
-                
+
             /*case 'ecommerce':
                 return redirect()->route('tenant.ecommerce.index');*/
 
@@ -96,8 +94,6 @@ class RedirectModule
 
 
     private function getGroup($path, $module){
-
-        \Log::debug($path);
 
         ///* Module Documents */
 
@@ -255,7 +251,7 @@ class RedirectModule
         elseif($path[0] == "promotions"){
             $group = "ecommerce";
         }
-        
+
         else{
             $group = null;
         }

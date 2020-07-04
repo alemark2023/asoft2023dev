@@ -16,6 +16,8 @@ use Illuminate\Support\Str;
 use App\Models\Tenant\Person;
 use Exception;
 use App\Models\Tenant\ConfigurationEcommerce;
+use Illuminate\Support\Facades\Validator;
+
 
 
 
@@ -36,12 +38,27 @@ class CulqiController extends Controller
     {
       try{
 
+        $customer = (array)json_decode($request->customer);
+
+        $validator = Validator::make($customer, [
+            'telefono' => 'required|numeric',
+            'direccion' => 'required',
+            'codigo_tipo_documento_identidad' => 'required|numeric',
+            'numero_documento' => 'required|numeric',
+            'identity_document_type_id' => 'required|numeric'
+        ]);
+        
+        if ($validator->fails()) {
+          return response()->json($validator->errors(), 422);
+        }
+
+
         $user = auth()->user();
         $configuration = ConfigurationEcommerce::first();
 
 
         $SECRET_API_KEY = $configuration->token_private_culqui;
-        
+
         $culqi = new Culqi(array('api_key' => $SECRET_API_KEY));
 
         $charge = $culqi->Charges->create(
@@ -60,12 +77,15 @@ class CulqiController extends Controller
         );
 
         $order = Order::create([
-          'external_id' => Str::uuid()->toString(),
-          'customer' => json_decode( $request->customer ),
-          'shipping_address' => 'direccion 1',
-          'items' => json_decode( $request->items ),
-          'total' => $request->precio_culqi,
-          'reference_payment' => 'culqui',
+
+            'external_id' => Str::uuid()->toString(),
+            'customer' => json_decode( $request->customer ),
+            'shipping_address' => 'direccion 1',
+            'items' => json_decode( $request->items ),
+            'total' => $request->precio_culqi,
+            'reference_payment' => 'culqui',
+            'purchase' => json_decode($request->purchase)
+
         ]);
 
 
