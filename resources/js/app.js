@@ -220,6 +220,7 @@ Vue.component('system-users-form', require('./views/system/users/form.vue'));
 Vue.component('system-certificate-index', require('./views/system/certificate/index.vue'));
 Vue.component('system-companies-form', require('./views/system/companies/form.vue'));
 
+Vue.component('system-accounting-index', require('@viewsModuleAccount/system/accounting/index.vue'));
 
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));

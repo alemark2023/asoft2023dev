@@ -402,6 +402,7 @@ class PurchaseController extends Controller
                         'unit_type_id' => $row->unit_type_id,
                         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
                         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'purchase_has_igv' => (bool) $row->purchase_has_igv,
                         'has_perception' => (bool) $row->has_perception,
                         'lots_enabled' => (bool) $row->lots_enabled,
                         'percentage_perception' => $row->percentage_perception,

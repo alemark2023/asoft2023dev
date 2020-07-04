@@ -28,4 +28,24 @@ if($hostname) {
 
         });
     });
+} 
+else {
+
+    Route::domain(env('APP_URL_BASE'))->group(function() {
+ 
+        Route::middleware('auth:admin')->group(function() {
+
+            Route::prefix('accounting')->group(function () {
+
+                Route::get('', 'System\AccountingController@index')->name('system.accounting.index');
+                Route::get('records', 'System\AccountingController@records');
+                Route::get('download', 'System\AccountingController@download');
+
+            });
+            
+
+        });
+    });
+
 }
+

@@ -36,10 +36,11 @@
               size="medium"
               v-model="input_item"
               @input="searchItems"
-              autofocus
+              
               @keyup.native="keyupTabCustomer"
               @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
+              ref="ref_search_items"
             >
             <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
           </el-input>
@@ -52,8 +53,9 @@
                 size="medium"
                 v-model="input_item"
                 @change="searchItemsBarcode"
-                autofocus
+                
                 @keyup.native="keyupTabCustomer"
+                ref="ref_search_items"
                 class="m-bottom"
               >
               <el-button slot="append" icon="el-icon-plus" @click.prevent="showDialogNewItem = true"></el-button>
@@ -395,6 +397,10 @@
 </template>
 <style>
 
+.el-select-dropdown__item.hover {
+    /* background-color: red; */
+    background-color: #e6e9ee;
+}
 
 /* The heart of the matter */
 .testimonial-group > .row {
@@ -505,9 +511,10 @@
           await this.initCurrencyType()
           this.customer = await this.getLocalStorageIndex('customer')
 
-           if(document.querySelector('.sidebar-toggle')){
-               document.querySelector('.sidebar-toggle').click()
-           }
+          if(document.querySelector('.sidebar-toggle')){
+              document.querySelector('.sidebar-toggle').click()
+          }
+
         },
 
         computed:{
@@ -547,9 +554,10 @@
                 }
             }
         },
-
         methods: {
-          
+            initFocus(){
+                this.$refs.ref_search_items.$el.getElementsByTagName('input')[0].focus()
+            },
             keyupTabCustomer(e){
               // console.log(e.keyCode)
               if(e.keyCode === 9){
@@ -774,7 +782,8 @@
           changeCustomer() {
             let customer = _.find(this.all_customers, { id: this.form.customer_id });
             this.customer = customer;
-            this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
+            // this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
+            this.form.document_type_id = "03";
             this.setLocalStorageIndex('customer', this.customer)
             this.setFormPosLocalStorage()
           },
@@ -808,7 +817,14 @@
               this.initForm();
               this.changeExchangeRate()
               this.cancelFormPosLocalStorage()
+              this.$nextTick(() => {
+                this.initFocus();
+              });
             });
+
+            // await this.$eventHub.$on("indexInitFocus", () => {
+            //   if(!this.is_payment) this.initFocus()
+            // });
 
             await this.$eventHub.$on("reloadDataPersons", customer_id => {
               this.reloadDataCustomers(customer_id);
