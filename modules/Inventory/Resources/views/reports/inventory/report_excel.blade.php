@@ -63,7 +63,7 @@
                             @endphp
                             @foreach($records as $key => $value)
                                 @php
-                                    $total_line = $value->stock * $value->item->sale_unit_price;
+                                    $total_line = $value->stock * $value->item->purchase_unit_price;
                                     $total = $total + $total_line;
                                 @endphp
                                 <tr>
