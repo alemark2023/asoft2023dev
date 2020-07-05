@@ -18,6 +18,7 @@ use Culqi\CulqiException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Tenant\CulqiEmail;
 use stdClass;
+use App\Models\System\Configuration as ConfigurationAdmin;
 
 
 
@@ -28,7 +29,7 @@ class AccountController extends Controller
 {
     public function index()
     {
-        return view('tenant.account.configuration');
+        return view('tenant.account.configuration' );
     }
 
     public function tables()
@@ -42,7 +43,11 @@ class AccountController extends Controller
 
     public function paymentIndex()
     {
-        return view('tenant.account.payment_index');
+        $configuration = ConfigurationAdmin::first();
+        $token_public_culqui = $configuration->token_public_culqui;
+        $token_private_culqui = $configuration->token_private_culqui;
+
+        return view('tenant.account.payment_index', compact("token_public_culqui", "token_private_culqui"));
     }
 
     public function paymentRecords()
@@ -83,27 +88,53 @@ class AccountController extends Controller
 
     public function paymentCulqui(Request $request)
     {
-        try{
+        
 
+            $configuration = ConfigurationAdmin::first();
+            $token_private_culqui = $configuration->token_private_culqui;
+
+            if(!$token_private_culqui)
+            {
+                return [
+                    'success' => false,
+                    'message' =>  'token private culqi no defined'
+                ];
+            }
            
             $user = auth()->user();
     
-            $SECRET_API_KEY = "sk_test_gZ9jAaILIsIweKfm";
+            $SECRET_API_KEY = $token_private_culqui;
             $culqi = new Culqi(array('api_key' => $SECRET_API_KEY));
-    
-            $charge = $culqi->Charges->create(
-                array(
-                    "amount" => $request->precio,
-                    "currency_code" => "PEN",
-                    "email" => $request->email,
-                    "description" =>  $request->producto, 
-                    "source_id" => $request->token,
-                    "installments" => $request->installments
-                  )
-            );
+
+
+            try{
+
+                $charge = $culqi->Charges->create(
+                    array(
+                        "amount" => $request->precio,
+                        "currency_code" => "PEN",
+                        "email" => $request->email,
+                        "description" =>  $request->producto, 
+                        "source_id" => $request->token,
+                        "installments" => $request->installments
+                      )
+                );
+
+            }catch(Exception $e)
+            {
+              return [
+                  'success' => false,
+                  'message' =>  $e->getMessage()
+              ];
+            }
+
+            /**
+             * Todo
+             *  definir estados de pago en accunpayment
+             */
 
             $account_payment = AccountPayment::find($request->id_payment_account);
-            $account_payment->state = 1;
+            $account_payment->state = 1; // 1 ees pagado, 2 es pendiente
             $account_payment->date_of_payment_real = date('Y-m-d'); 
             $account_payment->save();
 
@@ -118,6 +149,8 @@ class AccountController extends Controller
             $document->client = $user->name;
             $document->product = $request->producto;
             $document->total = $request->precio_culqi;
+            $document->items = json_decode($request->items, true);
+
             Mail::to($customer_email)->send(new CulqiEmail($document));
     
             return [
@@ -125,15 +158,9 @@ class AccountController extends Controller
                 'culqui' => $charge,
                 'message' => 'Pago efectuado correctamente'
             ];
-          }
-          catch(Exception $e)
-          {
-            return [
-                'success' => false,
-                'message' =>  $e->getMessage()
-            ];
-          }
     }
+          
+    
 
    
 

@@ -50,7 +50,7 @@
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'configurations')?'nav-active':'' }}">
                         <a class="nav-link" href="{{route('system.configuration.index')}}">
-                            <i class="fas fa-cogs"></i><span>Cerfticado PSE</span>
+                            <i class="fas fa-cogs"></i><span>Configuracion</span>
                         </a>
                     </li>
                 </ul>
@@ -75,6 +75,8 @@
                     </li>
                 </ul>
             </nav>
+
+            
 
         <script>
             // Maintain Scroll Position

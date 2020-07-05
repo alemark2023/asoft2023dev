@@ -1,7 +1,7 @@
 @extends('tenant.layouts.app')
 
 @section('content')
-<tenant-account-payment-index></tenant-account-payment-index>
+    <tenant-account-payment-index></tenant-account-payment-index>
 @endsection
 
 
@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.31.1/dist/sweetalert2.all.min.js"></script>
 
 <script>
-    Culqi.publicKey = 'pk_test_is5j26CmbQPQ6gFX';
+    Culqi.publicKey = "{{$token_public_culqui}}";
     Culqi.options({
         installments: true
     });
@@ -56,6 +56,7 @@
             var token = Culqi.token.id;
             var email = Culqi.token.email;
             var installments = Culqi.token.metadata.installments;
+            let items = [{ description: 'Pago programado facturador', cantidad: '1', unit_type_id: 'NIU' }]
             var data = {
                 producto: 'Pago Progamado Cuenta Facturador Pro',
                 precio: price_payment_account,
@@ -63,7 +64,8 @@
                 token: token,
                 email: email,
                 installments: installments,
-                id_payment_account: id_payment_account
+                id_payment_account: id_payment_account,
+                items: items
             }
 
             $.ajax({

@@ -596,6 +596,14 @@ if ($hostname) {
             Route::get('auto-update/keygen', 'System\UpdateController@keygen')->name('system.update.keygen');
 
             Route::get('auto-update/version', 'System\UpdateController@version')->name('system.update.version');
+            
+            //Configuration
+
+            Route::post('configurations', 'System\ConfigurationController@store');
+            Route::get('configurations/record', 'System\ConfigurationController@record');
+
+
+
 
 
         });

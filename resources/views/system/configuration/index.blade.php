@@ -9,6 +9,9 @@
         <div class="col-lg-6 col-md-12">
             <system-certificate-index></system-certificate-index>
         </div>
+        <div class="col-lg-6 col-md-12">
+            <system-configuration-culqi></system-configuration-culqi>
+        </div>
     </div>
 
 @endsection

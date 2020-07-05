@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <div class="card-header bg-info">
-            <h3 class="my-0">Datos Sunat</h3>
+            <h3 class="my-0">Certificado PSE - Datos Sunat</h3>
         </div>
         <div class="card-body">
             <div class="title border-bottom pt-0">
