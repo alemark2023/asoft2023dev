@@ -411,7 +411,7 @@ if ($hostname) {
 
            Route::get('sale-notes/anulate/{id}', 'Tenant\SaleNoteController@anulate');
 
-           Route::get('sale-notes/downloadExternal/{external_id}', 'Tenant\SaleNoteController@downloadExternal');
+           Route::get('sale-notes/downloadExternal/{external_id}/{format?}', 'Tenant\SaleNoteController@downloadExternal');
 
 
            //POS

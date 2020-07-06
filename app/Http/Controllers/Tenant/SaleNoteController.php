@@ -864,10 +864,10 @@ class SaleNoteController extends Controller
 
     }
 
-    public function downloadExternal($external_id)
+    public function downloadExternal($external_id, $format = 'a4')
     {
         $document = SaleNote::where('external_id', $external_id)->first();
-        $this->reloadPDF($document, 'a4', null);
+        $this->reloadPDF($document, $format, null);
         return $this->downloadStorage($document->filename, 'sale_note');
 
     }

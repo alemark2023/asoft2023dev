@@ -1,5 +1,6 @@
 <template>
     <el-dialog   :visible="showDialog"  @open="create" @opened="opened" width="60%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+        <Keypress key-event="keyup" :key-code="13" @success="someMethod" />
         <span slot="title">
             <div class="widget-summary widget-summary-xs pl-3 p-2">
                 <div class="widget-summary-col widget-summary-col-icon">
@@ -26,7 +27,7 @@
                 <div class="col-md-12 m-bottom">  
                     <el-tabs v-model="activeName"  >
                         <el-tab-pane label="Imprimir Ticket" name="first">
-                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>                                    
+                            <embed id="nemo" :src="form.print_ticket" type="application/pdf" width="100%" height="450px"/>                                    
                         </el-tab-pane> 
                         <el-tab-pane label="Imprimir A4" name="second">                                    
                             <embed :src="form.print_a4" type="application/pdf" width="100%" height="450px"/>
@@ -57,8 +58,12 @@
 </template> 
 
 <script>
+    import Keypress from 'vue-keypress'
     export default {
         props: ['showDialog', 'recordId', 'statusDocument','resource'],
+        components: {
+           Keypress
+        },
         data() {
             return {
                 titleDialog: null,
@@ -77,6 +82,41 @@
         mounted(){
         },
         methods: {
+            someMethod(response){
+
+                if(!this.showDialog)
+                {
+                    return
+                }
+
+                const external_id = this.form.external_id
+
+                let format = 'a4'
+
+                switch(this.activeName)
+                {
+                    case 'first':
+                       format = 'ticket'
+                        break;
+                    case 'second':
+                       format = 'a4'
+                        break;
+                    case 'third':
+                        format= 'a5'
+                        break;
+                }
+
+
+                if(this.resource == 'sale-notes')
+                {
+                    window.open(`/sale-notes/downloadExternal/${external_id}/${format}`, '_blank');
+                }
+                else if(this.resource == 'documents')
+                {
+                    window.open(`/downloads/Document/${type}/${external_id}/pdf`, '_blank');
+                }
+
+            },
             keyupCustomerEmail(e){
                 if(e.keyCode === 9){
                     this.clickNewSale()
@@ -87,6 +127,9 @@
                 this.$refs.ref_customer_email.$el.getElementsByTagName('input')[0].focus()
             },
             async clickNewSale(){
+                
+
+                
                 await this.initForm()
                 await this.$eventHub.$emit('cancelSale')
 

@@ -845,7 +845,7 @@
           initForm() {
             this.form = {
               establishment_id: null,
-              document_type_id: "01",
+              document_type_id: "03",
               series_id: null,
               prefix: null,
               number: "#",
