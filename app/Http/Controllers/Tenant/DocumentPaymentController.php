@@ -8,10 +8,12 @@ use App\Http\Resources\Tenant\DocumentPaymentCollection;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PaymentMethodType;
+use App\Exports\DocumentPaymentExport;
 use Exception, Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
-use Modules\Finance\Traits\FinanceTrait; 
-use Modules\Finance\Traits\FilePaymentTrait; 
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Finance\Traits\FilePaymentTrait;
+use Carbon\Carbon;
 
 class DocumentPaymentController extends Controller
 {
@@ -117,13 +119,10 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function  report($start, $end)
+    public function  report($start, $end, $type = 'pdf')
     {
-        //$document = Document::select('id')->orderBy('date_of_issue', 'DESC')->take(50)->pluck('id');
         $documents = DocumentPayment::whereBetween('date_of_payment', [$start , $end])->get();
 
-        //$customer = $document->customer;
-        //$number = $document->number_full;
         $records = collect($documents)->transform(function($row){
             return [
                 'id' => $row->id,
@@ -139,27 +138,24 @@ class DocumentPaymentController extends Controller
             ];
         });
 
+        if ($type == 'pdf') {
+            $pdf = PDF::loadView('tenant.document_payments.report', compact("records"));
 
-        /*$methods = PaymentMethodType::all();
+            $filename = "Reporte_Pagos";
 
-        $methdos_sum = array();
+            return $pdf->stream($filename.'.pdf');
+        } elseif ($type == 'excel') {
+            $filename = "Reporte_Pagos";
 
-        foreach ($methods as $item) {
+            // $pdf = PDF::loadView('tenant.document_payments.report', compact("records"))->download($filename.'.xlsx');
 
-            $row = [
-                'name' => $item->description,
-                'sum' => $documents->where('payment_method_type_id', $item->id)->sum('payment')
-            ];
+            // return $pdf->stream($filename.'.xlsx');
 
-            array_push($methdos_sum, (object)$row);
-        }*/
+            return (new DocumentPaymentExport)
+                ->records($records)
+                ->download($filename.Carbon::now().'.xlsx');
+        }
 
-
-        $pdf = PDF::loadView('tenant.document_payments.report', compact("records"));
-
-        $filename = "Reporte_Pagos";
-
-        return $pdf->stream($filename.'.pdf');
     }
 
 }
