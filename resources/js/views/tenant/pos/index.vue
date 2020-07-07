@@ -1,6 +1,6 @@
 <template >
-  <div>
-    <header class="page-header pr-0">
+  <div class="container-fluid">
+    <div class="row page-header pr-0" style="height:auto">
       <Keypress key-event="keyup" :key-code="112" @success="handleFn112" />
 
       <!-- <h2 class="text-sm">POS</h2>
@@ -8,7 +8,6 @@
         <h2 class="text-sm pr-5">T/C 3.321</h2>
         <h2 class="text-sm">{{user.name}}</h2>
       </div> -->
-      <div class="row">
         <div class="col-md-4">
           <h2 class="text-sm">POS</h2>
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
@@ -24,8 +23,8 @@
             <h2 class="text-sm  pull-right">{{user.name}}</h2>
           </div>
         </div>
-      </div>
-    </header>
+      
+    </div>
 
 
     <div v-if="!is_payment" class="row col-lg-12 m-0 p-0" v-loading="loading">
@@ -86,7 +85,6 @@
             </template>
 
         </div>
-
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <template v-for="(item,index) in items">
