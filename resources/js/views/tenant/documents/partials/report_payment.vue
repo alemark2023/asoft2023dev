@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" :visible="showDialog" @close="close">
+    <el-dialog :title="title" :visible="showDialog" @close="clickClose">
         <div class="">
             <div class="row mt-2">
                 <div class="col-lg-4 col-md-4 pb-4">
@@ -31,15 +31,25 @@
                         </el-date-picker>
                     </div>
                 </div>
-                 <div class="col-lg-4 col-md-4 pb-4">
+                <div class="col-lg-4 col-md-4 pb-4">
+                    <div class="form-group">
+                        <label class="control-label">Tipo</label>
+                        <el-select v-model="search.type">
+                            <el-option value="pdf" label="PDF"></el-option>
+                            <el-option value="excel" label="EXCEL"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+                 <div class="col-lg-2 col-md-2 pb-4">
                     <div class="form-group"  style="padding: 2.5%;"> <br>
-                       <el-button type="primary" @click="downloadReport">Descargar</el-button>
+
                     </div>
                 </div>
             </div>
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="clickClose">Cerrar</el-button>
+            <el-button type="warning" @click="clickClose">Cancelar</el-button>
+            <el-button type="primary" @click="downloadReport">Descargar</el-button>
         </span>
     </el-dialog>
 </template>
@@ -62,15 +72,14 @@ export default {
     },
     async created() {},
     methods: {
-        close() {},
         clickClose() {
             this.$emit("update:showDialog", false);
         },
         downloadReport()
         {
-            if(this.search.d_end && this.search.d_start){
+            if(this.search.d_end && this.search.d_start && this.search.type){
 
-                 window.open(`/${this.resource}/report/${this.search.d_start}/${this.search.d_end}`, '_blank');
+                 window.open(`/${this.resource}/report/${this.search.d_start}/${this.search.d_end}/${this.search.type}`, '_blank');
 
             }
         }
