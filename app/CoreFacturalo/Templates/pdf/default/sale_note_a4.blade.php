@@ -215,10 +215,10 @@
             </tr>
         @endif
         @if($document->total_taxed > 0)
-            <tr>
+             <tr>
                 <td colspan="7" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr>
+            </tr> 
         @endif
         @if($document->total_discount > 0)
             <tr>
@@ -226,10 +226,10 @@
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
-        <tr>
+        {{--<tr>
             <td colspan="7" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
-        </tr>
+        </tr>--}}
         <tr>
             <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
