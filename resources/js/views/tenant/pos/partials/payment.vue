@@ -1,5 +1,7 @@
 <template >
     <div class="row col-lg-12 m-0 p-0" v-loading="loading_submit">
+      <Keypress key-event="keyup" :key-code="113" @success="handleFn113" />
+
         <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
             <div class="h-75 bg-light" style="overflow-y: auto">
 
@@ -68,7 +70,7 @@
             <div class="row d-flex justify-content-center pt-2">
                 <div class="col-lg-6 col-md-6 ">
 
-                    <el-radio-group v-model="form.document_type_id" size="small"   @change="filterSeries">
+                    <el-radio-group v-model="form.document_type_id" size="small" @change="filterSeries">
                         <el-radio-button label="01" >FACTURA  </el-radio-button>
                         <el-radio-button label="03">BOLETA  </el-radio-button>
                         <el-radio-button label="80">N. VENTA  </el-radio-button>
@@ -298,6 +300,7 @@
 </style>
 
 <script>
+    import Keypress from 'vue-keypress'
 
     import CardBrandsForm from '../../card_brands/form.vue'
     import SaleNotesOptions from '../../sale_notes/partials/options.vue'
@@ -305,7 +308,7 @@
     import MultiplePaymentForm from './multiple_payment.vue'
 
     export default {
-        components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm},
+        components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
 
         props:['form','customer', 'currencyTypeActive', 'exchangeRateSale', 'is_payment', 'soapCompany', 'businessTurns'],
         data() {
@@ -365,6 +368,23 @@
             // console.log(this.currencyTypeActive)
         },
         methods: {
+            handleFn113(){
+                const code = this.form.document_type_id
+                if(code == '01')
+                {
+                    this.form.document_type_id = '03'
+                }
+                else if(code == '03')
+                {
+                    this.form.document_type_id = '80'
+                }
+                else if(code == '80')
+                {
+                    this.form.document_type_id = '01'
+                }
+
+                this.filterSeries()
+            },
             keyupEnterAmount(){
 
                 if(this.button_payment){

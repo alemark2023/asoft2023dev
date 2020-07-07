@@ -1,6 +1,8 @@
 <template >
   <div>
     <header class="page-header pr-0">
+      <Keypress key-event="keyup" :key-code="112" @success="handleFn112" />
+
       <!-- <h2 class="text-sm">POS</h2>
       <div class="right-wrapper pull-right">
         <h2 class="text-sm pr-5">T/C 3.321</h2>
@@ -450,6 +452,7 @@
 </style>
 
 <script>
+      import Keypress from 'vue-keypress'
       import { calculateRowItem } from "../../../helpers/functions";
       import PaymentForm from "./partials/payment.vue";
       import ItemForm from "./partials/form.vue";
@@ -462,7 +465,7 @@
 
       export default {
         props: ['configuration', 'soapCompany', 'businessTurns'],
-        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail},
+        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail, Keypress},
         mixins: [functions, exchangeRate],
 
         data() {
@@ -555,6 +558,10 @@
             }
         },
         methods: {
+            handleFn112(response)
+            {
+              this.search_item_by_barcode = !this.search_item_by_barcode
+            },
             initFocus(){
                 this.$refs.ref_search_items.$el.getElementsByTagName('input')[0].focus()
             },
