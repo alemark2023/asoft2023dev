@@ -22,7 +22,7 @@
                                 style="width: 100%;"
                                 placeholder="Buscar"
                                 value-format="yyyy-MM-dd"
-                                @change="getRecords">
+                                @change="getRequestData">
                             </el-date-picker>
                         </template>
                         <template v-else>
@@ -30,15 +30,22 @@
                                 v-model="search.value"
                                 style="width: 100%;"
                                 prefix-icon="el-icon-search"
-                                @input="getRecords">
+                                @input="getRequestData">
                             </el-input>
                         </template>
                     </div>
                     <div class="col-lg-2 col-md-2">
                         <div class="form-group"  >
-
-                            <el-select @change="getRecords" placeholder="Serie" v-model="search.series" filterable clearable>
+                            <el-select @change="getRequestData" placeholder="Serie" v-model="search.series" filterable clearable>
                                 <el-option v-for="option in series" :key="option.number" :value="option.number" :label="option.number"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 col-md-1">
+                        <div class="form-group"  >
+                            <el-select @change="getRequestData" placeholder="Estado pago" v-model="search.paid" clearable>
+                                <el-option :value="1" label="Pagado"></el-option>
+                                <el-option  :value="0" label="Pendiente"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -57,7 +64,7 @@
                         <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
                     </table>
-                    
+
                     <div class="row mb-5">
                         <div class="col-md-4 text-center">Total notas de venta en soles S/. {{totals.total_pen}}</div>
                         <div class="col-md-4 text-center">Total pagado en soles S/. {{totals.total_paid_pen}}</div>
@@ -66,7 +73,7 @@
 
                     <div>
                         <el-pagination
-                                @current-change="getRecords"
+                                @current-change="getRequestData"
                                 layout="total, prev, pager, next"
                                 :total="pagination.total"
                                 :current-page.sync="pagination.current_page"
@@ -100,7 +107,8 @@
                 search: {
                     column: null,
                     value: null,
-                    series: null
+                    series: null,
+                    paid: null
                 },
                 totals: {
                     total_pen: 0,
@@ -140,9 +148,8 @@
         methods: {
             getTotals(){
 
-                this.$http.get(`/${this.resource}/totals`)
+                this.$http.get(`/${this.resource}/totals?${this.getQueryParameters()}`)
                     .then((response) => {
-                        // console.log(response)
                         this.totals = response.data
                     });
 
@@ -164,9 +171,16 @@
                     ...this.search
                 })
             },
-            changeClearInput(){
+            async changeClearInput(){
                 this.search.value = ''
-                this.getRecords()
+                await this.getRecords()
+                await this.getTotals()
+
+            },
+            async getRequestData()
+            {
+                await this.getRecords()
+                await this.getTotals()
             }
         }
     }
