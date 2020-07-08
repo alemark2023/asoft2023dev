@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Zip;
 
 class BackupFiles extends Command
@@ -39,12 +41,15 @@ class BackupFiles extends Command
     public function handle()
     {
         try {
-            $today = now()->format('dmY');
+            $today = now()->format('dmYHi');
+            $path_sql = now()->format('dmY');
             if (!is_dir(storage_path('backups'))) mkdir(storage_path('backups'));
-            if (!is_dir(storage_path('backups/'.$today))) mkdir(storage_path('backups/'.$today));
-            $zip = Zip::create(storage_path('backups/'.$today.'storage.zip'));
-            $zip->add(storage_path('app/tenancy/tenants/'));
-            $zip->add(storage_path('backups/'.$today, true));
+            if (!is_dir(storage_path('backups/zip'))) mkdir(storage_path('backups/zip'));
+            $zip = Zip::create(storage_path('backups/zip/'.$today.'_storage.zip'));
+            $zip->add(storage_path('app/tenancy/tenants/'), true);
+            $zip->add(storage_path('backups/'.$path_sql.'/'), true);
+
+            Log::info('Backup storage success');
         } catch (Throwable $e) {
             Log::error('Backup failed', $e);
         }

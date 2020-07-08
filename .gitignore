@@ -5,7 +5,7 @@
 /public/padron_extract/*
 /public/padron_rar/*
 /storage/*.key
-/storage/backups
+/storage/backups/*
 /vendor
 /.idea
 /.vscode
