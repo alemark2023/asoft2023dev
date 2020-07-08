@@ -1,25 +1,19 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
-use App\Http\Controllers\Controller;
-//use Illuminate\Support\Str;
-//use App\Http\Requests\Tenant\OrderRequest;
-use App\Http\Resources\Tenant\OrderCollection;
-use App\Http\Resources\Tenant\OrderResource;
 use Exception;
-use Illuminate\Http\Request;
+
 use App\Models\Tenant\Order;
-use App\Models\Tenant\ItemWarehouse;
-use App\Http\Resources\Tenant\ItemWarehouseCollection;
-use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Http\Request;
+use App\Models\Tenant\Series;
+
+use App\Http\Controllers\Controller;
 use App\Models\Tenant\Establishment;
-use App\Models\Tenant\Company;
-use App\CoreFacturalo\Facturalo;
-use App\Models\Tenant\Configuration;
-use App\CoreFacturalo\Template;
-use Mpdf\Mpdf;
-use Mpdf\HTMLParserMode;
+use App\Models\Tenant\ItemWarehouse;
+
+use App\Http\Resources\Tenant\OrderCollection;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Http\Resources\Tenant\ItemWarehouseCollection;
 
 class OrderController extends Controller
 {
@@ -39,6 +33,23 @@ class OrderController extends Controller
             'id' => 'Codigo de Pedido',
             'number_document' => 'Comprobante Electronico',
         ];
+    }
+
+    public function tables()
+    {
+      $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
+      $series = collect(Series::all())->transform(function($row) {
+          return [
+              'id' => $row->id,
+              'contingency' => (bool) $row->contingency,
+              'document_type_id' => $row->document_type_id,
+              'establishment_id' => $row->establishment_id,
+              'number' => $row->number
+          ];
+      });
+
+      return compact('series', 'establishments');
+
     }
 
     public function records(Request $request)
@@ -82,3 +93,4 @@ class OrderController extends Controller
       return new ItemWarehouseCollection($product);
     }
 }
+
