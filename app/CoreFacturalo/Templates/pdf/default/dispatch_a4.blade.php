@@ -5,6 +5,8 @@
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+
 @endphp
 <html>
 <head>
@@ -99,7 +101,7 @@
     <tbody>
     <tr>
         <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
-        <td>{{ $document_type_driver->description }}: {{ $document->dispatcher->number }}</td>
+        <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
     </tr>
     <tbody>
     <tr>
