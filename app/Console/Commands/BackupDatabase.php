@@ -45,8 +45,9 @@ class BackupDatabase extends Command
     public function handle()
     {
         try {
-            $today = today()->format('_Y_m_d');
+            $today = now()->format('dmY');
             if (!is_dir(storage_path('backups'))) mkdir(storage_path('backups'));
+            if (!is_dir(storage_path('backups/'.$today))) mkdir(storage_path('backups/'.$today));
 
             $dbs = DB::table('websites')->get()->toArray();
             $bd_admin = config('database.connections.mysql.database');
@@ -58,17 +59,19 @@ class BackupDatabase extends Command
                     config('database.connections.mysql.username'),
                     config('database.connections.mysql.password'),
                     $db->uuid,
-                    storage_path("backups/{$db->uuid}{$today}.sql")
+                    storage_path("backups/{$today}/{$db->uuid}.sql")
                 ));
                 $this->process->run();
             }
+
+            $this->comment('dump '.$db->uuid);
 
             $this->process = new Process(sprintf(
                 'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s',
                 config('database.connections.mysql.username'),
                 config('database.connections.mysql.password'),
                 config('database.connections.mysql.database'),
-                storage_path("backups/{$bd_admin}{$today}.sql")
+                storage_path("backups/{$today}/{$bd_admin}.sql")
             ));
             $this->process->run();
 

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Zip;
 
 class BackupFiles extends Command
 {
@@ -11,14 +12,14 @@ class BackupFiles extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'bk:files';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Backup storage tenants';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,15 @@ class BackupFiles extends Command
      */
     public function handle()
     {
-        //
+        try {
+            $today = now()->format('dmY');
+            if (!is_dir(storage_path('backups'))) mkdir(storage_path('backups'));
+            if (!is_dir(storage_path('backups/'.$today))) mkdir(storage_path('backups/'.$today));
+            $zip = Zip::create(storage_path('backups/'.$today.'storage.zip'));
+            $zip->add(storage_path('app/tenancy/tenants/'));
+            $zip->add(storage_path('backups/'.$today, true));
+        } catch (Throwable $e) {
+            Log::error('Backup failed', $e);
+        }
     }
 }
