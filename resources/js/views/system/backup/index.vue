@@ -5,6 +5,8 @@
                 <div class="text-center mt-2">
                     <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
                 </div>
+                <p class="mb-0">Espacio disponible en disco: {{discUsed}}</p>
+                <p class="mb-0">Espacio ocupado por archivos de facturación: {{storageSize}}</p>
             </div>
             <div class="card-body">
 
@@ -31,6 +33,7 @@
     import $ from 'jquery'
 
     export default {
+        props: ['storageSize','discUsed'],
         data() {
             return {
                 headers: null,
@@ -94,6 +97,7 @@
                         if (response.status === 200) {
                             this.files.status = 'success'
                         }
+                        this.loading_submit = false
                     }
                 }).catch(error => {
                     if (error.response.status !== 200) {
@@ -104,7 +108,6 @@
                     }
                 })
 
-                this.loading_submit = false
             },
         }
     }
