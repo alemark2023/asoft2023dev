@@ -84,6 +84,7 @@ class SaleNoteController extends Controller
     {
         return [
             'series' => Series::whereIn('document_type_id', ['80'])->get(),
+
         ];
     }
 
@@ -93,7 +94,7 @@ class SaleNoteController extends Controller
         $records = $this->getRecords($request);
 
         return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
-    
+
     }
 
 
@@ -115,10 +116,15 @@ class SaleNoteController extends Controller
                                 ->latest('id');
 
         }
- 
+
         if($request->series)
         {
             $records = $records->where('series', 'like', '%' . $request->series . '%');
+        }
+
+        if($request->paid != null)
+        {
+            $records = $records->where('paid', $request->paid);
         }
 
         return $records;
@@ -777,7 +783,7 @@ class SaleNoteController extends Controller
             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
             foreach ($obj->items as $sale_note_item) {
-                
+
                 // voided sets
                 $this->voidedSaleNoteItem($sale_note_item, $warehouse);
                 // voided sets
@@ -837,10 +843,10 @@ class SaleNoteController extends Controller
     }
 
 
-    public function totals()
+    public function totals(Request $request)
     {
 
-        $records = SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
+        $records =  $this->getRecords($request)->get(); //SaleNote::where([['state_type_id', '01'],['currency_type_id', 'PEN']])->get();
         $total_pen = 0;
         $total_paid_pen = 0;
         $total_pending_paid_pen = 0;
@@ -964,10 +970,10 @@ class SaleNoteController extends Controller
                     $ilt = ItemLot::find($it->id);
                     $ilt->has_sale = false;
                     $ilt->save();
-                    
+
                 }
 
-            } 
+            }
         }
 
     }
