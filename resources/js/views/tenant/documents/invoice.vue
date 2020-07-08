@@ -657,6 +657,7 @@
     import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
     import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
     import DocumentDetraction from './partials/detraction.vue'
+import moment from 'moment'
 
     export default {
         props: ['typeUser', 'configuration'],
@@ -1264,7 +1265,8 @@
                 // this.customers = []
             },
             changeDateOfIssue() {
-              if(moment(this.form.date_of_issue) < moment().day(-1) && this.configuration.restrict_receipt_date) {
+              let minDate = moment().subtract(7, 'days')
+              if(moment(this.form.date_of_issue) < minDate && this.configuration.restrict_receipt_date) {
                 this.$message.error('No puede seleccionar una fecha menor a 6 días.');
                 this.dateValid=false
               } else { this.dateValid = true }
