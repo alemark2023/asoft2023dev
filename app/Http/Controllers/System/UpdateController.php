@@ -77,7 +77,7 @@ class UpdateController extends Controller
 
     public function composerInstall()
     {
-        $process = new Process(system('composer dumpautoload -d '. base_path()));
+        $process = new Process(system('composer install -d '. base_path()));
         $process->run();
         $output = $process->getOutput();
 

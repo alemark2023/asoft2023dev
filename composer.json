@@ -26,7 +26,8 @@
         "rap2hpoutre/laravel-log-viewer": "^1.3",
         "robrichards/xmlseclibs": "3.0.*",
         "symfony/process": "^4.4",
-        "thiagoalessio/tesseract_ocr": "^2.7"
+        "thiagoalessio/tesseract_ocr": "^2.7",
+        "zanysoft/laravel-zip": "^1.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
