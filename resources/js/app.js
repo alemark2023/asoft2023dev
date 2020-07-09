@@ -245,6 +245,9 @@ Vue.component('tenant-account-configuration-index', require('./views/tenant/acco
 //auto update
 Vue.component('system-update', require('./views/system/update/index.vue'));
 
+//auto update
+Vue.component('system-backup', require('./views/system/backup/index.vue'));
+
 //culqi
 Vue.component('system-configuration-culqi', require('./views/system/configuration/culqi.vue'))
 
