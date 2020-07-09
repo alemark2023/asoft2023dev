@@ -197,7 +197,12 @@ class ClientController extends Controller
 
             $tenancy = app(Environment::class);
             $tenancy->tenant($client->hostname->website);
-            DB::connection('tenant')->table('configurations')->where('id', 1)->update(['plan' => json_encode($plan), 'config_system_env' => $request->config_system_env]);
+            DB::connection('tenant')->table('configurations')->where('id', 1)
+                ->update([
+                            'plan' => json_encode($plan),
+                            'config_system_env' => $request->config_system_env,
+                            'limit_documents' =>  $plan->limit_documents
+                        ]);
 
             DB::connection('tenant')->table('companies')->where('id', 1)->update([
                 'soap_type_id' => $request->soap_type_id,
