@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\System;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
-use Artisan;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Config;
 use Anchu\Ftp\Facades\Ftp;
+use DateTime;
+use Artisan;
+use Config;
 
 class BackupController extends Controller
 {
@@ -22,7 +24,9 @@ class BackupController extends Controller
         $df->run();
         $storage_size = $df->getOutput();
 
-        return view('system.backup.index')->with('disc_used', $disc_used)->with('storage_size', $storage_size);
+        $most_recent = $this->mostRecent();
+
+        return view('system.backup.index')->with('disc_used', $disc_used)->with('storage_size', $storage_size)->with('last_zip', $most_recent);
     }
 
     public function db()
@@ -37,25 +41,68 @@ class BackupController extends Controller
         return json_encode($output);
     }
 
-    public function upload()
+    public function upload(Request $request)
     {
         Config::set('ftp.connections.connection1', array(
-           'host'   => 'ftp.facturaloperu.com',
-           'port' => 21,
-           'username' => 'pro3@facturaloperu.com',
-           'password'   => 'N22-R-.5HBMy',
+           'host'   => $request['host'],
+           'port' => $request['port'],
+           'username' => $request['username'],
+           'password'   => $request['password'],
            'passive'   => false,
         ));
 
-        $fileTo = 'bk.txt';
-        $fileFrom = storage_path('backups/bk.txt');
-        $upload = Ftp::connection()->uploadFile($fileFrom, $fileTo, FTP_BINARY);
+        // definimos y subimos el archivo
+        try {
+
+            $most_recent = $this->mostRecent();
+
+            $fileTo = $most_recent['name'];
+            $fileFrom = storage_path('app/'.$most_recent['path']);
+            $upload = Ftp::connection()->uploadFile($fileFrom, $fileTo, FTP_BINARY);
+
+            return [
+                'success' => $upload,
+                'message' => 'Proceso finalizado satisfactoriamente'
+            ];
 
 
-        $fileRemote = '/archivo.txt';
-        $fileLocal = storage_path('backups/archivo.txt');
-        $download = Ftp::connection()->downloadFile($fileRemote, $fileLocal, FTP_BINARY);
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e
+            ];;
+        }
 
-        dd($upload);
+    }
+
+    public function mostRecent()
+    {
+        $zips = Storage::allFiles('backups/zip/');
+
+        if (count($zips) > 0) {
+            $name_zips = [];
+            $most_recent_time = '';
+
+            foreach($zips as $zip){
+                $zip_explode = explode( '/', $zip);
+                if(count($zip_explode) <= 3){
+                    array_push($name_zips, $zip_explode[2]);
+                    $last = Storage::lastModified($zip);
+                    $datetime = new DateTime("@$last");
+                    if ($datetime > $most_recent_time) {
+                        $most_recent_time = $datetime;
+                        $most_recent_path = $zip;
+                        $most_recent_name = $zip_explode[2];
+                    }
+                }
+            }
+
+            return [
+                'path' => $most_recent_path,
+                'name' => $most_recent_name
+            ];
+        } else {
+            return '';
+        }
     }
 }

@@ -46,8 +46,8 @@ class BackupDatabase extends Command
     {
         try {
             $today = now()->format('dmY');
-            if (!is_dir(storage_path('backups'))) mkdir(storage_path('backups'));
-            if (!is_dir(storage_path('backups/'.$today))) mkdir(storage_path('backups/'.$today));
+            if (!is_dir(storage_path('app/backups'))) mkdir(storage_path('app/backups'));
+            if (!is_dir(storage_path('app/backups/'.$today))) mkdir(storage_path('app/backups/'.$today));
 
             $dbs = DB::table('websites')->get()->toArray();
             $bd_admin = config('database.connections.mysql.database');
@@ -59,7 +59,7 @@ class BackupDatabase extends Command
                     config('database.connections.mysql.username'),
                     config('database.connections.mysql.password'),
                     $db->uuid,
-                    storage_path("backups/{$today}/{$db->uuid}.sql")
+                    storage_path("app/backups/{$today}/{$db->uuid}.sql")
                 ));
                 $this->process->run();
             }
@@ -71,7 +71,7 @@ class BackupDatabase extends Command
                 config('database.connections.mysql.username'),
                 config('database.connections.mysql.password'),
                 config('database.connections.mysql.database'),
-                storage_path("backups/{$today}/{$bd_admin}.sql")
+                storage_path("app/backups/{$today}/{$bd_admin}.sql")
             ));
             $this->process->run();
 
