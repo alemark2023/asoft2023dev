@@ -14,7 +14,7 @@
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select> -->
 
-                            
+
                             <template  id="select-append">
                                 <el-input id="custom-input">
                                     <el-select
@@ -25,8 +25,8 @@
                                             ref="select_item"
                                             @focus="focusSelectItem"
                                             slot="prepend"
-                                            id="select-width"> 
-                                            
+                                            id="select-width">
+
                                             <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                                     </el-select>
                                     <el-tooltip slot="append" class="item" effect="dark" content="Ver Stock del Producto" placement="bottom" >
@@ -108,6 +108,12 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
+
+                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.item.series_enabled">
+                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+                        <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
+                    </div>
+
                     <!--<div class="col-md-6" v-show="has_list_prices">
                         <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
                             <label class="control-label">Presentación</label>
@@ -244,15 +250,22 @@
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
 
-                   
+
         <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
                 :warehouses="warehousesDetail">
             </warehouses-detail>
+
+         <select-lots-form
+            :showDialog.sync="showDialogSelectLots"
+            :lots="lots"
+            >
+        </select-lots-form>
+
     </el-dialog>
 </template>
 <style>
-.el-select-dropdown { 
+.el-select-dropdown {
     max-width: 80% !important;
     margin-right: 5% !important;
 }
@@ -262,10 +275,12 @@
     import itemForm from '@views/items/form.vue'
     import {calculateRowItem} from '@helpers/functions'
     import WarehousesDetail from './warehouses.vue'
+    import SelectLotsForm from './lots.vue'
+
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm, WarehousesDetail},
+        components: {itemForm, WarehousesDetail, SelectLotsForm},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
@@ -287,13 +302,15 @@
                 has_list_prices: false,
                 warehousesDetail:[],
                 item_unit_types: [],
-                item_unit_type: {}
+                item_unit_type: {},
+                showDialogSelectLots:false,
+                lots:[]
             }
         },
         created() {
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.items = response.data.items  
+                this.items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
@@ -308,7 +325,7 @@
             })
         },
         methods: {
-            
+
             clickWarehouseDetail(){
 
                 if(!this.form.item_id){
@@ -325,7 +342,7 @@
             },
             initForm() {
                 this.errors = {};
-                
+
                 this.form = {
                     item_id: null,
                     item: {},
@@ -345,7 +362,7 @@
                     unit_type_id: null,
                     is_set: false,
                 };
-                
+
                 this.total_item = 0;
                 this.item_unit_type = {};
                 this.has_list_prices = false;
@@ -419,21 +436,23 @@
                 this.form.item = _.find(this.items, {'id': this.form.item_id});
                 this.form.unit_price = this.form.item.sale_unit_price;
 
+                this.lots = this.form.item.lots
+
                 this.form.has_igv = this.form.item.has_igv;
 
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
                 this.item_unit_types = this.form.item.item_unit_types;
-                
+
                 (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
-                
+
                 this.cleanTotalItem();
             },
             changePresentation() {
                 let price = 0;
-                
+
                 this.item_unit_type = _.find(this.form.item.item_unit_types, {'id': this.form.item_unit_type_id});
-                
+
                 switch (this.item_unit_type.price_default) {
                     case 1: price = this.item_unit_type.price1
                         break;
@@ -442,7 +461,7 @@
                     case 3: price = this.item_unit_type.price3
                         break;
                 }
-                
+
                 this.form.unit_price = price;
                 this.form.item.unit_type_id = this.item_unit_type.unit_type_id;
             },
@@ -463,28 +482,36 @@
 
                 }
 
-               
+
                 this.item_unit_type = row
                 this.form.unit_price = valor
                 this.form.item.unit_type_id = row.unit_type_id
                 this.form.item_unit_type_id = row.id
             },
-            clickAddItem() {
+            async clickAddItem() {
+
+                let select_lots = await _.filter(this.form.item.lots, {'has_sale':true})
+
+                if(this.form.item.series_enabled){
+                    if(select_lots.length != this.form.quantity)
+                        return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
+                }
+
                 if (this.validateTotalItem().total_item) return;
-                
+
                 // this.form.item.unit_price = this.form.unit_price;
                 let unit_price = (this.form.has_igv)?this.form.unit_price:this.form.unit_price*1.18;
 
                 // this.form.item.unit_price = this.form.unit_price
                 this.form.unit_price = unit_price;
                 this.form.item.unit_price = unit_price;
-                
+
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
-                
+
                 this.initForm();
-                
+
                 // this.initializeFields()
                 this.$emit('add', this.row);
                 this.setFocusSelectItem()
@@ -500,9 +527,9 @@
             },
             cleanTotalItem(){
                 this.total_item = null;
-            },  
+            },
             calculateQuantity() {
-                if(this.form.item.calculate_quantity) { 
+                if(this.form.item.calculate_quantity) {
                     this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
                 }
             },
@@ -513,15 +540,15 @@
             },
             validateTotalItem(){
 
-                this.errors = {} 
+                this.errors = {}
 
                 if(this.form.item.calculate_quantity){
                     if(this.total_item < 0.01)
                         this.$set(this.errors, 'total_item', ['total venta producto debe ser mayor a 0']);
-                } 
+                }
 
-                return this.errors 
-            }, 
+                return this.errors
+            },
             reloadDataItems(item_id) {
                 this.$http.get(`/${this.resource}/table/items`).then((response) => {
                     this.items = response.data
@@ -532,6 +559,9 @@
                     // this.filterItems()
 
                 })
+            },
+            clickSelectLots(){
+                this.showDialogSelectLots = true
             },
         }
     }
