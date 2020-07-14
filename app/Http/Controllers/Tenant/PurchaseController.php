@@ -191,7 +191,7 @@ class PurchaseController extends Controller
 
                 if(array_key_exists('item', $row))
                 {
-                    if( $row['item']['lots_enabled'] == true)
+                    if( isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true)
                     {
 
                         ItemLotsGroup::create([
@@ -298,7 +298,7 @@ class PurchaseController extends Controller
                 if(isset($payment['payment_destination_id'])){
                     $this->createGlobalPayment($record_payment, $payment);
                 }
-                
+
                 if(isset($payment['payment_filename'])){
                     $record_payment->payment_file()->create([
                         'filename' => $payment['payment_filename']
@@ -606,6 +606,6 @@ class PurchaseController extends Controller
         return $persons;
 
     }
- 
+
 
 }
