@@ -2,6 +2,8 @@
   <div class="container-fluid">
     <div class="row page-header pr-0" style="height:auto">
       <Keypress key-event="keyup" :key-code="112" @success="handleFn112" />
+      <Keypress key-event="keyup" :key-code="113" @success="handleFn113" />
+
 
       <!-- <h2 class="text-sm">POS</h2>
       <div class="right-wrapper pull-right">
@@ -14,8 +16,10 @@
         </div>
         <div class="col-md-4">
             <h2>  <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button> </h2>
-            <h2>  <button type="button" :disabled="place == 'cat2'" @click="setView"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
+            <h2>  <button type="button" :disabled="place == 'cat2'" @click="setView('cat2')"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button> </h2>
+            <h2>  <button type="button" :disabled="place == 'cat3'"  @click="setView('cat3')" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fas fa-list-ul"></i></i></button> </h2>
             <h2>  <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button> </h2>
+
         </div>
         <div class="col-md-4">
           <div class="right-wrapper">
@@ -23,7 +27,7 @@
             <h2 class="text-sm  pull-right">{{user.name}}</h2>
           </div>
         </div>
-      
+
     </div>
 
 
@@ -32,12 +36,12 @@
 
         <template v-if="!search_item_by_barcode">
           <el-input
-              v-show="place  == 'prod' || place == 'cat2'"
+              v-show="place  == 'prod' || place == 'cat2' || place == 'cat3'"
               placeholder="Buscar productos"
               size="medium"
               v-model="input_item"
               @input="searchItems"
-              
+
               @keyup.native="keyupTabCustomer"
               @keyup.enter.native="keyupEnterAddItem"
               class="m-bottom"
@@ -54,7 +58,7 @@
                 size="medium"
                 v-model="input_item"
                 @change="searchItemsBarcode"
-                
+
                 @keyup.native="keyupTabCustomer"
                 ref="ref_search_items"
                 class="m-bottom"
@@ -156,6 +160,8 @@
           </template>
         </div>
 
+        <table-items ref="table_items" @clickAddItem="clickAddItem" @clickWarehouseDetail="clickWarehouseDetail" @clickHistorySales="clickHistorySales" @clickHistoryPurchases="clickHistoryPurchases" v-show="place == 'cat3'" :records="items" ></table-items>
+
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <div class="col-md-12 text-center">
             <el-pagination
@@ -166,7 +172,8 @@
               :page-size="pagination.per_page">
             </el-pagination>
           </div>
-        </div><br>
+        </div>
+
 
       </div>
       <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
@@ -460,10 +467,10 @@
       import PersonForm from "../persons/form.vue";
       import WarehousesDetail from '../items/partials/warehouses.vue'
       import queryString from 'query-string'
-
+      import TableItems from './partials/table.vue'
       export default {
         props: ['configuration', 'soapCompany', 'businessTurns'],
-        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail, Keypress},
+        components: { PaymentForm, ItemForm, HistorySalesForm, HistoryPurchasesForm, PersonForm, WarehousesDetail, Keypress, TableItems},
         mixins: [functions, exchangeRate],
 
         data() {
@@ -560,6 +567,10 @@
             {
               this.search_item_by_barcode = !this.search_item_by_barcode
             },
+            handleFn113()
+            {
+                this.setView('cat3')
+            },
             initFocus(){
                 this.$refs.ref_search_items.$el.getElementsByTagName('input')[0].focus()
             },
@@ -583,7 +594,7 @@
                   this.$message.warning('No puede añadir directamente el producto al listado, hay más de uno ubicado en la búsqueda')
 
               }
-              
+
             },
             filterCategorie(id,  mod = false)
             {
@@ -704,7 +715,7 @@
 
               this.clickPayment()
               return
-              
+
             }
 
             if(this.input_person.number){
@@ -1187,7 +1198,7 @@
             if (this.input_item.length > 0) {
               this.loading = true
               let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;
-              
+
                 await this.$http.get(`/${this.resource}/search_items_cat?${parameters}`).then(response => {
                   if(response.data.data.length > 0) {
                     this.all_items = response.data.data
@@ -1302,9 +1313,16 @@
               this.place = 'cat'
               this.loading = false
             },
-            setView()
+            async setView(view)
             {
-                  this.place = 'cat2'
+                  this.place = view
+
+                  if(view == 'cat3')
+                  {
+                    this.category_selected = ''
+                    await this.getRecords()
+                    this.$refs.table_items.reset()
+                  }
             },
             nameSets(id)
             {
