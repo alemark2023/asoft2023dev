@@ -14,6 +14,9 @@ use App\Models\Tenant\ItemWarehouse;
 use App\Http\Resources\Tenant\OrderCollection;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Resources\Tenant\ItemWarehouseCollection;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\Catalogs\DocumentType;
 
 class OrderController extends Controller
 {
@@ -48,8 +51,36 @@ class OrderController extends Controller
           ];
       });
 
-      return compact('series', 'establishments');
+      $document_types = DocumentType::all();
 
+      return compact('series', 'establishments', 'document_types');
+
+    }
+
+    public function item($internal_id)
+    {
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        $row = Item::where('internal_id', $internal_id)->first();
+
+        return [
+            'id' => $row->id,
+            'description' => $row->description,
+            'sale_unit_price' => round($row->sale_unit_price, 2),
+            'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'series' => $row->series,
+                    'date' => $row->date,
+                    'item_id' => $row->item_id,
+                    'warehouse_id' => $row->warehouse_id,
+                    'has_sale' => (bool)$row->has_sale,
+                    'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                ];
+            })->values(),
+            'series_enabled' => (bool) $row->series_enabled,
+        ];
     }
 
     public function records(Request $request)
@@ -61,7 +92,7 @@ class OrderController extends Controller
 
     public function updateStatusOrders(Request $request)
     {
-      
+
       if ($request->record['status_order_id'] == 3) {
         for ($i=0; $i <= count($request->discount)-1; $i++) {
           if (isset($request->discount[$i]['id'])) {
@@ -92,5 +123,8 @@ class OrderController extends Controller
       $product = ItemWarehouse::whereIn('item_id', $request->item_id)->orderBy('item_id')->get();
       return new ItemWarehouseCollection($product);
     }
+
+
+
 }
 
