@@ -144,7 +144,7 @@ class DocumentInput
                         'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation']:[]):[],
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
                         'is_set' => $item->is_set,
-                        'lots' => (isset($row['item']['lots'])) ? $row['item']['lots']:[],
+                        'lots' => self::lots($row),
                         'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null )
                     ],
                     'quantity' => $row['quantity'],
@@ -181,6 +181,20 @@ class DocumentInput
         return null;
     }
 
+    private static function lots($row)
+    {
+        if(isset($row['item']['lots']))
+        {
+            return $row['item']['lots'];
+        }
+        else if(isset($row['lots']))
+        {
+            return  $row['lots'];
+        }
+        else{
+            return [];
+        }
+    }
     private static function attributes($inputs)
     {
         if(array_key_exists('attributes', $inputs)) {

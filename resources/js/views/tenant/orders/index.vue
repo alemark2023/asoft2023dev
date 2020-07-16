@@ -156,17 +156,22 @@
       :statusDocument="statusDocument"
       :resource="resource_options"
     ></options-form>
+
+    <document-form :order_id="order_id" :user="user" :document_types="document_types" ref="document_form">
+
+    </document-form>
   </div>
 </template>
 <script>
 import DataTable from "../../../components/DataTable.vue";
 import queryString from "query-string";
 import OptionsForm from "../pos/partials/options.vue";
+import DocumentForm from "./partials/document_form.vue";
 
 export default {
   props: ['user'],
 
-  components: { DataTable, OptionsForm },
+  components: { DataTable, OptionsForm, DocumentForm},
   data() {
     return {
       showDialog: false,
@@ -187,23 +192,15 @@ export default {
       statusDocument: {},
       resource_options: null,
       loading_submit: false,
-      all_series: [],
-      establishments:[],
-      establishment_id: null
-      
+      document_types:[],
+      order_id: null
+
     }
   },
   async created() {
     this.$http.get(`/statusOrder/records`).then(response => {
       this.options = response.data;
     });
-
-    await this.$http.get(`/${this.resource}/tables`)
-          .then( (response => {
-            this.all_series = response.data.series
-            this.establishments = response.data.establishments
-            this.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
-          }))
     this.events()
   },
   computed: {},
@@ -243,8 +240,17 @@ export default {
     async updateStatus(record) {
       this.record = record
       if (record.status_order_id === 2) {
-        this.loading_submit = true
-        await this.sendDocument(record.purchase)
+
+         this.order_id =  record.id
+
+        if(record.document_external_id)
+        {
+            return this.$message.success("Ya existe un comprobante.")
+        }
+
+        this.$refs.document_form.sendPreview(record.purchase)
+        //this.loading_submit = true
+        //await this.sendDocument(record.purchase)
       } else if (record.status_order_id === 3) {
         this.totalProduct = await this.products(record)
         await this.$http
@@ -300,36 +306,7 @@ export default {
         this.showDialogOptions = false
       });
     },
-    async sendDocument(purchase) {
 
-      const {codigo_tipo_documento} = purchase
-      const series_id = await this.filterSeries(codigo_tipo_documento)
-      if(!series_id)
-      {
-        this.loading_submit = false
-        return this.$message.error("Serie de documento no disponibles")
-      }
-      
-      purchase.serie_documento = series_id
-
-      await this.$http.post(`/api/documents`, purchase, this.getHeaderConfig()).then(response => {
-        this.finallyProcess(this.getDataFinally(response.data))
-      }).catch(error => {
-        this.loading_submit = false
-        this.$message.error(error.response.data.message)
-      })
-    },
-    filterSeries(document_type_id) {
-                let series_id = null
-                
-                let series = _.filter(this.all_series, {'establishment_id': this.establishment_id,
-                                                         'document_type_id': document_type_id,
-                                                         'contingency': false});
-
-                series_id = (series.length > 0)?series[0].number:null
-
-                return series_id
-    },
     getHeaderConfig() {
       let token = this.user.api_token
       let httpConfig = {
@@ -340,32 +317,8 @@ export default {
       }
       return httpConfig
     },
-    finallyProcess(form) {
-      this.$http.post(`/ecommerce/transaction_finally`, form, this.getHeaderConfig()).then(response => {
-        this.saveUpdateStatus()
-        this.$message.success('transaccion finalizada correctamente')
-        this.$eventHub.$emit('reloadData')
-      }).catch(error => {
-        this.$message.error(error.response.data.message)
-      }).then(() => {
-        this.loading_submit = false
-      })
-    },
-    getDataFinally(document) {
 
-      const { purchase } = this.record
-
-      return {
-        document_external_id: document.data.external_id,
-        number_document: document.data.number,
-        orderId: this.record.id,
-        product: 'Compras Ecommerce Facturador Pro',
-        precio_culqi: Number(this.record.total),
-        identity_document_type_id: purchase.datos_del_cliente_o_receptor.codigo_tipo_documento_identidad ,
-        number: purchase.datos_del_cliente_o_receptor.numero_documento
-      }
-    }
   },
-  
+
 }
 </script>

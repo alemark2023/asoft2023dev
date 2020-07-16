@@ -324,7 +324,7 @@ class DocumentController extends Controller
                             'has_sale' => (bool)$row->has_sale,
                             'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                         ];
-                    }),
+                    })->values(),
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
 
