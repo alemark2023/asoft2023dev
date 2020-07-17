@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Anchu\Ftp\Facades\Ftp;
 use DateTime;
 use Artisan;
 use Config;
@@ -43,13 +42,16 @@ class BackupController extends Controller
 
     public function upload(Request $request)
     {
-        Config::set('ftp.connections.connection1', array(
-           'host'   => $request['host'],
-           'port' => $request['port'],
-           'username' => $request['username'],
-           'password'   => $request['password'],
-           'passive'   => false,
-        ));
+        $config = [
+            'driver' => 'ftp',
+            'host'   => $request['host'],
+            'port' => $request['port'],
+            'username' => $request['username'],
+            'password'   => $request['password'],
+            'port'  => 21,
+            'passive'   => false,
+        ];
+        Config::set('filesystems.disks.ftp', $config);
 
         // definimos y subimos el archivo
         try {
@@ -58,7 +60,7 @@ class BackupController extends Controller
 
             $fileTo = $most_recent['name'];
             $fileFrom = storage_path('app/'.$most_recent['path']);
-            $upload = Ftp::connection()->uploadFile($fileFrom, $fileTo, FTP_BINARY);
+            $upload = Storage::disk('ftp')->put($fileTo, $fileFrom);
 
             return [
                 'success' => $upload,

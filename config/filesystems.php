@@ -66,6 +66,14 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
         ],
+        'ftp' => [
+            'driver' => 'ftp',
+            'host' => '',
+            'port'  => 21,
+            'username' => '',
+            'password'   => '',
+            'passive'   => false,
+        ]
 
     ],
 
