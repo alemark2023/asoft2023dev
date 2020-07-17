@@ -270,16 +270,25 @@
             }, 
             onSuccess(response, file, fileList) {
 
-                // console.log(fileList)
+                // console.log(file, fileList)
 
                 if (response.success) {
 
                     this.form.files = fileList
 
                 } else {
+
+                    this.cleanFileList(fileList)
                     this.$message.error(response.message)
+
                 }
+
             },  
+            cleanFileList(fileList){
+                _.remove(fileList, function(n) {
+                    return !n.response.success
+                })
+            },
             async isUpdate(){
 
                 // console.log(this.id);
@@ -297,6 +306,7 @@
                 await this.form.files.forEach(file => {
                     file.name = file.filename
                     file.url = file.filename
+                    file.response = {success:true}
                 });
 
             },

@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Tenant\PurchaseOrderRequest;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use Modules\Sale\Models\SaleOpportunity;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 class PurchaseOrderController extends Controller
 {
@@ -413,6 +414,13 @@ class PurchaseOrderController extends Controller
 
     public function uploadAttached(Request $request)
     {
+        
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,pdf');
+        
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
+
         if ($request->hasFile('file')) {
             $new_request = [
                 'file' => $request->file('file'),

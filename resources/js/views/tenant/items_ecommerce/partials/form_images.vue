@@ -65,7 +65,14 @@
                 if(response.success)
                 {
                     this.source_images.push(response.data)
+                }else {
+
+                    // this.cleanFileList()
+                    this.$message.error(response.message)
                 }
+            },
+            cleanFileList(){
+                // this.fileList = []
             },
             async submit()
             {
