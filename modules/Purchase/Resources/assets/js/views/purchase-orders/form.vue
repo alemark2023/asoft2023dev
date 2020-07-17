@@ -373,6 +373,7 @@
                     this.form.image_url = response.data.temp_image
                     this.form.attached_temp_path = response.data.temp_path
                 } else {
+                    this.cleanFileList()
                     this.$message.error(response.message)
                 }
             },
@@ -381,6 +382,10 @@
                 this.form.temp_path = null
                 this.fileList = []
             }, 
+            cleanFileList(){
+                this.fileList = []
+
+            },
             async isUpdate(){
 
                 if (this.id) {
