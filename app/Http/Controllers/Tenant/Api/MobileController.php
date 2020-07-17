@@ -42,7 +42,8 @@ class MobileController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'token' => $user->api_token,
-            'ruc' => $company->number
+            'ruc' => $company->number,
+            'logo' => $company->logo
         ];
 
     }
