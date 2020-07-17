@@ -41,7 +41,20 @@
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
                     </div>
-                   <!-- <div class="col-md-6">
+
+                    <div class="col-md-3" v-show="form.item_id">  <br>
+                        <div class="form-group" :class="{'has-danger': errors.lot_code}" v-if="form.item.series_enabled">
+                            <label class="control-label">
+                                Ingrese series
+                            </label>
+
+                            <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+
+                            <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
+                        </div>
+                    </div>
+
+                    <!-- <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén de destino</label>
                             <el-select v-model="form.warehouse_id"   filterable  >
@@ -204,6 +217,13 @@
         </form>
         <item-form :showDialog.sync="showDialogNewItem"
                    :external="true"></item-form>
+         <lots-form
+            :showDialog.sync="showDialogLots"
+            :stock="form.quantity"
+            :lots="lots"
+            @addRowLot="addRowLot"
+            >
+        </lots-form>
     </el-dialog>
 </template>
 <style>
@@ -216,10 +236,12 @@
 
     import {calculateRowItem} from '../../../../../../../../resources/js/helpers/functions'
     import itemForm from '../../../../../../../../resources/js/views/tenant/items/form.vue'
+    import LotsForm from './lots.vue'
+
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm},
+        components: {itemForm, LotsForm},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
@@ -236,6 +258,8 @@
                 attribute_types: [],
                 use_price: 1,
                 change_affectation_igv_type_id: false,
+                showDialogLots: false,
+                lots:[]
             }
         },
         created() {
@@ -361,6 +385,8 @@
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
 
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
+
+                this.lots = []
             },
             clickAddItem() {
                 this.form.item.unit_price = this.form.unit_price
@@ -388,6 +414,13 @@
 
                 })
             },
+            clickLotcode(){
+                this.showDialogLots = true
+            },
+            addRowLot(val)
+            {
+                this.form.item.lots = val
+            }
         }
     }
 

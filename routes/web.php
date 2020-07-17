@@ -45,6 +45,7 @@ if ($hostname) {
             Route::post('orders/warehouse', 'Tenant\OrderController@searchWarehouse');
             Route::get('orders/tables', 'Tenant\OrderController@tables');
 
+            Route::get('orders/tables/item/{internal_id}', 'Tenant\OrderController@item');
 
             //Status Orders
             Route::get('statusOrder/records', 'Tenant\StatusOrdersController@records');

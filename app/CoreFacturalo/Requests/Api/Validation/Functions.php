@@ -88,6 +88,27 @@ class Functions
         return $item->id;
     }
 
+    public static function item2($inputs) {
+
+        $item = Item::firstOrCreate([
+            'internal_id' => $inputs['internal_id'],
+        ], [
+            'description' => $inputs['description'],
+            'name' => $inputs['name'],
+            'second_name' => $inputs['second_name'],
+            'item_type_id' => $inputs['item_type_id'],
+            'item_code' => $inputs['item_code'],
+            'item_code_gs1' => $inputs['item_code_gs1'],
+            'unit_type_id' => $inputs['unit_type_id'],
+            'currency_type_id' => $inputs['currency_type_id'],
+            'sale_unit_price' =>  $inputs['unit_price'],
+            'sale_affectation_igv_type_id' => $inputs['affectation_igv_type_id'],
+            'purchase_affectation_igv_type_id' => $inputs['affectation_igv_type_id'],
+            'stock' => $inputs['quantity']
+        ]);
+        return $item->id;
+    }
+
     public static function findAffectedDocumentByExternalId($external_id) {
         $document = Document::where('external_id', $external_id)
             ->first();

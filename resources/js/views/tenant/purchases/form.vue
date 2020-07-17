@@ -96,15 +96,15 @@
                                 <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-8 mt-4">
-                            <div class="form-group" > 
+                            <div class="form-group" >
                                 <el-checkbox v-model="form.has_client" @change="changeHasClient">¿Desea agregar el cliente para esta compra?</el-checkbox>
                             </div>
                         </div>
 
                         <div class="col-md-8 mt-2 mb-2">
-                            <div class="form-group" > 
+                            <div class="form-group" >
                                 <el-checkbox v-model="form.has_payment" @change="changeHasPayment">¿Desea agregar pagos a esta compra?</el-checkbox>
                             </div>
                         </div>
@@ -138,7 +138,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(row, index) in form.payments" :key="index"> 
+                                    <tr v-for="(row, index) in form.payments" :key="index">
                                         <td>
                                             <div class="form-group mb-2 mr-2">
                                                 <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(true,index)">
@@ -163,16 +163,16 @@
                                                 <el-input v-model="row.payment"></el-input>
                                             </div>
                                         </td>
-                                        <td class="series-table-actions text-center"> 
+                                        <td class="series-table-actions text-center">
                                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickCancel(index)">
                                                 <i class="fa fa-trash"></i>
                                             </button>
-                                        </td> 
+                                        </td>
                                         <br>
                                     </tr>
-                                </tbody> 
-                            </table> 
-                        
+                                </tbody>
+                            </table>
+
 
                         </div>
 
@@ -442,21 +442,22 @@
                             }
 
                             // console.log(purchase_order.supplier_id)
-                            
+
                             this.form.items = response.data.data.purchase_order.items
-                            this.form.supplier_id = purchase_order.supplier_id 
+                            this.form.supplier_id = purchase_order.supplier_id
                             this.form.currency_type_id = purchase_order.currency_type_id
                             this.form.purchase_order_id = purchase_order.id
                             this.form.payments[0].payment_method_type_id = purchase_order.payment_method_type_id
                             this.form.payments[0].payment = purchase_order.total
                             this.form.total = purchase_order.total
                             this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
-                            
+
                             this.form.items.forEach((it)=>{
                                 it.warehouse_id = warehouse.id
                                 it.charges = it.charges ? Object.values(it.charges):[]
                                 it.attributes = it.attributes ? Object.values(it.attributes):[]
                                 it.discounts = it.discounts ? Object.values(it.discounts):[]
+                                it.lots = it.item.lots ? it.item.lots:[]
                             })
                             // this.changeDocumentType()
 
@@ -465,7 +466,7 @@
                 }
             },
             async validate_payments(){
- 
+
                 let error_by_item = 0
                 let acum_total = 0
                 let q_affectation_free = 0
@@ -483,7 +484,7 @@
                 })
 
                 let all_free = (q_affectation_free == this.form.items.length) ? true : false
-    
+
                 if(!all_free && (acum_total > parseFloat(this.form.total) || error_by_item > 0)) {
                     return  {
                         success : false,
@@ -523,7 +524,7 @@
                     payment_destination_id:'cash',
                     payment: 0,
                 });
-            },   
+            },
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -762,7 +763,7 @@
 
             },
             setTotalDefaultPayment(){
-                
+
                 if(this.form.payments.length > 0){
 
                     this.form.payments[0].payment = this.form.total
@@ -807,7 +808,7 @@
 
             },
             async submit() {
-          
+
                 let validate = await this.validate_payments()
                 if(!validate.success) {
                     return this.$message.error(validate.message);

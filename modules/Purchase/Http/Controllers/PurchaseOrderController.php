@@ -268,7 +268,8 @@ class PurchaseOrderController extends Controller
                                 'price3' => $row->price3,
                                 'price_default' => $row->price_default,
                             ];
-                        })
+                        }),
+                        'series_enabled' => (bool) $row->series_enabled,
                     ];
                 });
                 return $items;
@@ -301,7 +302,7 @@ class PurchaseOrderController extends Controller
         if (!$purchase_order) throw new Exception("El código {$external_id} es inválido, no se encontro la orden de compra relacionada");
 
         return Storage::disk('tenant')->download('purchase_order_attached'.DIRECTORY_SEPARATOR.$purchase_order->upload_filename);
-        
+
     }
 
     public function toPrint($external_id, $format) {

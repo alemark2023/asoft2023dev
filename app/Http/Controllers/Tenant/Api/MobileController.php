@@ -34,12 +34,16 @@ class MobileController extends Controller
             ];
         }
 
+        $company = Company::active();
+
         $user = $request->user();
         return [
             'success' => true,
             'name' => $user->name,
             'email' => $user->email,
             'token' => $user->api_token,
+            'ruc' => $company->number,
+            'logo' => $company->logo
         ];
 
     }
@@ -138,7 +142,7 @@ class MobileController extends Controller
                             'number' => $row->number
                         ];
                     });
-                    
+
     }
 
     public function document_email(Request $request)
@@ -302,7 +306,7 @@ class MobileController extends Controller
     public function getIdentityDocumentTypeId($document_type_id){
 
         return ($document_type_id == '01') ? [6] : [1,4,6,7,0];
-        
+
     }
 
 
