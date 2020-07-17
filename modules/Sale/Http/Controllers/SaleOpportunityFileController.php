@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Modules\Sale\Models\SaleOpportunityFile;
 use Illuminate\Support\Facades\Storage;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 class SaleOpportunityFileController extends Controller
 {
@@ -48,6 +49,12 @@ class SaleOpportunityFileController extends Controller
     public function uploadFile(Request $request)
     {
 
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file');
+        
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
+        
         if ($request->hasFile('file')) {
             $new_request = [
                 'file' => $request->file('file'),

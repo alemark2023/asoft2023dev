@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Modules\Finance\Models\PaymentFile;
 use App\Models\Tenant\Cash;
 use Illuminate\Support\Facades\Storage;
+use Modules\Finance\Helpers\UploadFileHelper;
 
 class PaymentFileController extends Controller
 { 
@@ -19,6 +20,11 @@ class PaymentFileController extends Controller
     public function uploadAttached(Request $request)
     {
         // dd($request->all());
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file');
+        
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
 
         if ($request->hasFile('file')) {
             $new_request = [

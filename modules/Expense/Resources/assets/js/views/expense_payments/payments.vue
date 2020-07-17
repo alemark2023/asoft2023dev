@@ -188,11 +188,15 @@
                     this.records[this.index_file].temp_path = response.data.temp_path
 
                 } else {
+                    this.cleanFileList()
                     this.$message.error(response.message)
                 }
 
                 // console.log(this.records)
             
+            },
+            cleanFileList(){
+                this.fileList = []
             },
             handleRemove(file, fileList) {       
                 
