@@ -607,5 +607,27 @@ class PurchaseController extends Controller
 
     }
 
+    /*public function itemResource($id)
+    {
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+        $row = Item::find($id);
+        return [
+            'id' => $row->id,
+            'description' => $row->description,
+            'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'series' => $row->series,
+                    'date' => $row->date,
+                    'item_id' => $row->item_id,
+                    'warehouse_id' => $row->warehouse_id,
+                    'has_sale' => (bool)$row->has_sale,
+                    'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                ];
+            })->values(),
+            'series_enabled' => (bool) $row->series_enabled,
+        ];
+    }*/
 
 }

@@ -237,7 +237,7 @@
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button type="primary" native-type="submit">Agregar</el-button>
+                <el-button type="primary" native-type="submit" v-if="form.item_id" >Agregar</el-button>
             </div>
         </form>
         <item-form :showDialog.sync="showDialogNewItem"

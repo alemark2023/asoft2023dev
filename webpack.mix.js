@@ -33,3 +33,5 @@ mix.webpackConfig({
         }
     }
 }).sourceMaps()
+
+mix.disableSuccessNotifications();
