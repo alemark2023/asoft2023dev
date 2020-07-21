@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Item;
 use Carbon\Carbon;
 use Modules\Report\Http\Resources\SaleConsolidatedCollection;
 use Modules\Report\Traits\ReportTrait;
@@ -45,6 +46,21 @@ class ReportSaleConsolidatedController extends Controller
         return new SaleConsolidatedCollection($records->paginate(config('tenant.items_per_page')));
     }
 
+
+    public function totalsByItem(Request $request)
+    {
+        
+        $records = $this->getRecordsSalesConsolidated($request->all())->get()->groupBy('item_id');
+
+        return $records->map(function($row, $key){
+            return [
+                'item_id' => $key,
+                'item_description' => $row->first()->item->description,
+                'quantity' => number_format($row->sum('quantity'), 4, ".", ""),
+            ];
+        });
+
+    }
 
 
     public function getRecordsSalesConsolidated($request){
