@@ -269,6 +269,7 @@ class SaleNoteController extends Controller
 
             $this->setFilename();
             $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
+            $this->regularizePayments($data['payments']);
 
         });
 
@@ -278,6 +279,26 @@ class SaleNoteController extends Controller
                 'id' => $this->sale_note->id,
             ],
         ];
+
+    }
+
+
+    private function regularizePayments($payments){
+
+        $total_payments = collect($payments)->sum('payment');
+
+        $balance = $this->sale_note->total - $total_payments;
+
+        if($balance <= 0){
+
+            $this->sale_note->total_canceled = true;
+            $this->sale_note->save();
+
+        }else{
+            
+            $this->sale_note->total_canceled = false;
+            $this->sale_note->save();
+        }
 
     }
 

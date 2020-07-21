@@ -136,8 +136,8 @@ class DocumentItem extends ModelTenant
     public function scopeWhereDefaultDocumentType($query, $params)
     {
 
-        $db_raw = DB::raw("document_items.id as id, documents.series as series, documents.number as number,
-                            document_items.item as item, document_items.quantity as quantity,  
+        $db_raw = DB::raw("document_items.id as id, documents.series as series, documents.number as number, 
+                            document_items.item as item, document_items.quantity as quantity, document_items.item_id as item_id,
                             documents.date_of_issue as date_of_issue");
 
         if($params['person_id']){

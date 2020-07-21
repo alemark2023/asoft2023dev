@@ -105,6 +105,7 @@ if($current_hostname) {
                 Route::get('sales-consolidated/pdf', 'ReportSaleConsolidatedController@pdf');
                 Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
                 Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
+                Route::get('sales-consolidated/totals-by-item', 'ReportSaleConsolidatedController@totalsByItem');
 
 
                 Route::prefix('user-commissions')->group(function () {
