@@ -17,7 +17,7 @@ class TechnicalServiceResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'customer_id' => $this->customer_id,  
+            'customer_id' => $this->customer_id,
             'cellphone' => $this->cellphone,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
             'description' => $this->description,
@@ -27,6 +27,13 @@ class TechnicalServiceResource extends JsonResource
             'cost' => $this->cost,
             'prepayment' => $this->prepayment,
             'activities' => $this->activities,
+            'brand' => $this->brand,
+            'equipment' => $this->equipment,
+            'important_note' => $this->important_note,
+            'repair' => (bool)$this->repair,
+            'warranty' => (bool)$this->warranty,
+            'maintenance' => (bool)$this->maintenance,
+            'diagnosis' => (bool)$this->diagnosis,
         ];
     }
 }
