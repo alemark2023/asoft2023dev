@@ -223,12 +223,13 @@
                 document: {},
                 operation_types: [],
                 is_contingency: false,
+                affected_documents: [],
             }
         },
-        created() {
+        async created() {
             this.document = this.document_affected
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
+            await this.initForm()
+            await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.document_types = response.data.document_types_note
                     this.currency_types = response.data.currency_types
@@ -247,7 +248,8 @@
                     this.changeDateOfIssue()
                 })
 
-            this.getCustomer()
+            await this.getCustomer()
+            await this.getHasDocuments()
         },
         mounted() {
 
@@ -327,7 +329,35 @@
                     .then(response => {
                         // console.log(response)
                         this.document = response.data
+                        this.getHasDocuments()
                     })
+            },
+            getHasDocuments(){
+                
+                this.$http.get(`/${this.resource}/note/has-documents/${this.form.affected_document_id}`)
+                    .then(response => {
+
+                        if(response.data.success){
+
+                            this.affected_documents = response.data.data
+                            
+                            let message = `<strong>El CPE ${ this.document.series }-${ this.document.number } ya tiene notas generadas</strong><br/>`
+
+                            this.affected_documents.forEach(document => {
+                                message += `${document.document_type_description}: ${document.description}<br/>`
+                            });
+
+                            this.$notify({
+                                title: "",
+                                dangerouslyUseHTMLString: true,
+                                message: message,
+                                type: "warning",
+                                duration: 6000
+                            })
+                        }
+
+                    })
+
             },
             changeDocumentType() {
                 this.form.note_credit_or_debit_type_id = null
