@@ -32,19 +32,34 @@ trait TotalsTrait
         }
 
 
-        $purchases_total = $purchases->sum('total') + $purchases->sum('total_perception');
+        $purchases_total = $purchases->where('currency_type_id', 'PEN')->sum('total') + $purchases->where('currency_type_id', 'PEN')->sum('total_perception');
+        $purchases_total_usd = 0;
+
 
         $purchase_total_payment = 0;
+        $purchase_total_payment_usd = 0;
+
 
         foreach ($purchases as $purchase)
         {
-            $purchase_total_payment += collect($purchase->purchase_payments)->sum('payment');
+
+            if($purchase->currency_type_id == 'PEN'){
+
+                $purchase_total_payment += collect($purchase->purchase_payments)->sum('payment');
+
+            }else{
+                $purchases_total_usd += $purchase->total * $purchase->exchange_rate_sale +  $purchases->sum('total_perception');;
+                $purchase_total_payment_usd += collect($purchase->purchase_payments)->sum('payment') * $purchase->exchange_rate_sale;
+            }
         }
+
+        $total = $purchases_total + $purchases_total_usd;
+        $total_payment = $purchase_total_payment +$purchase_total_payment_usd;
 
         return [
             'totals' => [
-                'total_payment' => round($purchase_total_payment,2),
-                'total' => round($purchases_total,2),
+                'total_payment' => round($total_payment,2),
+                'total' => round($total,2),
             ]
         ];
     }
