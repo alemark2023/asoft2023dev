@@ -244,7 +244,10 @@
                     <div class="col-md-3" >
                         <div class="form-group" :class="{'has-danger': errors.line}">
                             <label class="control-label">
-                               Línea
+                               Línea de producto
+                                <el-tooltip class="item" effect="dark" content="Grupo de productos que tienen una relación directa entre sí" placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
                             </label>
                             <el-input v-model="form.line" >
                             </el-input>
