@@ -20,6 +20,8 @@ use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Item;
 use Modules\Document\Traits\SearchTrait;
+use Modules\Finance\Helpers\UploadFileHelper;
+
 
 class DocumentController extends Controller
 {
@@ -117,6 +119,13 @@ class DocumentController extends Controller
 
     public function upload(Request $request)
     {
+        
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
+        
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
+        
         if ($request->hasFile('file')) {
             $new_request = [
                 'file' => $request->file('file'),
