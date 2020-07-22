@@ -34,7 +34,7 @@ class TechnicalServiceController extends Controller
         return view('sale::technical-services.index');
     }
 
- 
+
     public function columns()
     {
         return [
@@ -43,7 +43,7 @@ class TechnicalServiceController extends Controller
             'date_of_issue' => 'Fecha de emisión',
         ];
     }
- 
+
 
     public function records(Request $request)
     {
@@ -55,7 +55,7 @@ class TechnicalServiceController extends Controller
     private function getRecords($request){
 
         if($request->column == 'customer'){
-            
+
             $records = TechnicalService::whereHas('person', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         });
@@ -63,9 +63,9 @@ class TechnicalServiceController extends Controller
         }else{
 
             $records = TechnicalService::where($request->column, 'like', "%{$request->value}%");
-        
+
         }
-        
+
         return $records->whereTypeUser()->latest();
     }
 
@@ -103,7 +103,7 @@ class TechnicalServiceController extends Controller
 
         return $record;
     }
- 
+
 
     public function store(TechnicalServiceRequest $request) {
 
@@ -124,8 +124,8 @@ class TechnicalServiceController extends Controller
         ];
 
     }
- 
- 
+
+
     public function mergeData($inputs)
     {
 
@@ -196,7 +196,7 @@ class TechnicalServiceController extends Controller
 
         return compact('customers');
     }
- 
+
 
 
     public function toPrint($id, $format) {
@@ -299,7 +299,7 @@ class TechnicalServiceController extends Controller
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
- 
+
 
         $this->uploadFile($filename, $pdf->output('', 'S'), 'technical_service');
     }
@@ -307,7 +307,7 @@ class TechnicalServiceController extends Controller
 
     public function uploadFile($filename, $file_content, $file_type) {
         $this->uploadStorage($filename, $file_content, $file_type);
-    } 
+    }
 
 
     public function destroy($id)

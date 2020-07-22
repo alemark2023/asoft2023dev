@@ -27,13 +27,20 @@ class TechnicalService extends ModelTenant
         'cost',
         'prepayment',
         'activities',
+        'brand',
+        'equipment',
+        'important_note',
+        'repair',
+        'warranty',
+        'maintenance',
+        'diagnosis',
 
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
     ];
- 
+
 
     public function getCustomerAttribute($value)
     {
@@ -64,5 +71,16 @@ class TechnicalService extends ModelTenant
         $user = auth()->user();
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
+
+    public function setImportantNoteAttribute($value)
+    {
+        $this->attributes['important_note'] = (is_null($value))?null:json_encode($value);
+    }
+
+    public function getImportantNoteAttribute($value)
+    {
+        return (is_null($value))?null:(array) json_decode($value);
+    }
+
 
 }
