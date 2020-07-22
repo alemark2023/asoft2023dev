@@ -29,7 +29,7 @@ class TechnicalServiceResource extends JsonResource
             'activities' => $this->activities,
             'brand' => $this->brand,
             'equipment' => $this->equipment,
-            'important_note' => $this->important_note,
+            'important_note' => $this->important_note ? $this->important_note : [],
             'repair' => (bool)$this->repair,
             'warranty' => (bool)$this->warranty,
             'maintenance' => (bool)$this->maintenance,

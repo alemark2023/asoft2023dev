@@ -130,16 +130,20 @@
     </tr>
     @endif --}}
     <tr>
-        <td><b>Marca:</b></td>
+        <td><b>Marca:</b> {{ $document->brand }} </td>
     </tr>
     <tr>
-        <td>{{ $document->brand }}</td>
+        <td><b>Equipo:</b> {{ $document->equipment }} </td>
     </tr>
     <tr>
-        <td><b>Equipo:</b></td>
-    </tr>
-    <tr>
-        <td>{{ $document->equipment }}</td>
+        <td style="padding-top: 7px;">
+            <h5>Nota Importante:</h5> <br>
+            <ul>
+                    @foreach($document->important_note as $note)
+                        <li>{{ $note->description }}</li>
+                    @endforeach
+            </ul>
+        </td>
     </tr>
 </table>
 
@@ -160,7 +164,7 @@
 
 {{-- MITAD --}}
 
-<table class="full-width mt-4">
+<table class="full-width mt-3">
     <tr>
         @if($company->logo)
             <td width="20%">
@@ -281,16 +285,20 @@
     </tr>
     @endif --}}
     <tr>
-        <td><b>Marca:</b></td>
+        <td><b>Marca:</b> {{ $document->brand }} </td>
     </tr>
     <tr>
-        <td>{{ $document->brand }}</td>
+        <td><b>Equipo:</b> {{ $document->equipment }} </td>
     </tr>
     <tr>
-        <td><b>Equipo:</b></td>
-    </tr>
-    <tr>
-        <td>{{ $document->equipment }}</td>
+        <td style="padding-top: 7px;">
+            <h5>Nota Importante:</h5> <br>
+            <ul>
+                    @foreach($document->important_note as $note)
+                        <li>{{ $note->description }}</li>
+                    @endforeach
+            </ul>
+        </td>
     </tr>
 </table>
 

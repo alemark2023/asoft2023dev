@@ -181,6 +181,11 @@ nant<template>
         methods: {
             clickAddNote()
             {
+                if(this.form.important_note.length == 2)
+                {
+                    return
+                }
+
                  this.form.important_note.push({
                     description: null,
                 })
