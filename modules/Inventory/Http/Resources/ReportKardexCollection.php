@@ -50,7 +50,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
-                    'doc_asoc' => $row->inventory_kardexable->note ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-'
+                    'doc_asoc' => isset($row->inventory_kardexable->note) ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-'
                 ];
 
             case $models[1]:
