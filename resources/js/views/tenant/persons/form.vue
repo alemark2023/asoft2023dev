@@ -406,9 +406,42 @@
                     'main': false,
                 });
             },
-            submit() {
+            validateDigits(){
+                
+                if (this.form.identity_document_type_id === '6') {
+                    
+                    if(this.form.number.length !== 11){
+                        return {
+                            success: false,
+                            message: `El campo número debe tener 11 dígitos.`
+                        }
+                    }
+                }
+
+                if (this.form.identity_document_type_id === '1') {
+
+                    if(this.form.number.length !== 8){
+                        return {
+                            success: false,
+                            message: `El campo número debe tener 8 dígitos.`
+                        }
+                    }
+                }
+
+                return {
+                    success: true
+                }
+            },
+            async submit() {
+                
+                let val_digits = await this.validateDigits()
+                if(!val_digits.success){
+                    return this.$message.error(val_digits.message)
+                }
+                
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form)
+
+                await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
