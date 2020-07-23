@@ -20,6 +20,8 @@ use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Series;
 use App\Http\Requests\Tenant\PersonRequest;
 use Modules\Item\Http\Requests\ItemRequest;
+use Modules\Dashboard\Helpers\DashboardData;
+
 
 class MobileController extends Controller
 {
@@ -309,6 +311,26 @@ class MobileController extends Controller
 
     }
 
+    public function report()
+    {
+        $request = [
+            'customer_id' => null,
+            'date_end' => date('Y-m-d'),
+            'date_start' => date('Y-m-d'),
+            'enabled_expense' => null,
+            'enabled_move_item' => false,
+            'enabled_transaction_customer' => false,
+            'establishment_id' => 1,
+            'item_id' => null,
+            'month_end' => date('Y-m'),
+            'month_start' => date('Y-m'),
+            'period' => 'month',
+        ];
+
+        return [
+            'data' => (new DashboardData())->data_mobile($request)
+        ];
+    }
 
 
 }
