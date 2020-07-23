@@ -151,9 +151,8 @@ class DocumentController extends Controller
 
     public function lists()
     {
-        $record = Document::orderBy('series', 'desc')->orderBy('number', 'desc')->get();
+        $record = Document::orderBy('created_at', 'desc')->take(50)->get();
         $records = new DocumentCollection($record);
-
         return $records;
     }
 

@@ -38,7 +38,7 @@ class OrderNoteController extends Controller
 
     public function lists()
     {
-        $records = OrderNote::orderBy('id', 'desc')->get();
+        $records = OrderNote::orderBy('id', 'desc')->take(50)->get();
 
         return new OrderNoteCollection($records);
     }
