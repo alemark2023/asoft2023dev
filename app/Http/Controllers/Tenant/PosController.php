@@ -103,7 +103,9 @@ class PosController extends Controller
                                             'stock' => $row->stock,
                                         ];
                                     }),
-                                    'unit_type' => $row->item_unit_types
+                                    'unit_type' => $row->item_unit_types,
+                                    'category' => ($row->category) ? $row->category->name : null,
+                                    'brand' => ($row->brand) ? $row->brand->name : null,
                                 ];
                             });
 
@@ -199,7 +201,9 @@ class PosController extends Controller
                                             $r->individual_item->description
                                         ];
                                     }),
-                                    'unit_type' => $row->item_unit_types
+                                    'unit_type' => $row->item_unit_types,
+                                    'category' => ($row->category) ? $row->category->name : null,
+                                    'brand' => ($row->brand) ? $row->brand->name : null,
                                 ];
                             });
             return $items;
@@ -306,7 +310,7 @@ class PosController extends Controller
         } else {
             return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(50));
         }
-        
+
     }
 
     public function search_items_cat(Request $request)

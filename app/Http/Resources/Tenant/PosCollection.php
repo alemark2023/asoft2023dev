@@ -50,7 +50,9 @@ class PosCollection extends ResourceCollection
                         $r->individual_item->description
                     ];
                 }),
-                'unit_type' => $row->item_unit_types
+                'unit_type' => $row->item_unit_types,
+                'category' => ($row->category) ? $row->category->name : null,
+                'brand' => ($row->brand) ? $row->brand->name : null,
             ];
         });
     }

@@ -9,15 +9,17 @@
             :data="records"
             highlight-current-row
             @current-change="handleCurrentChange"
-            style="width: 80%"
+            style="width: 100%"
             >
                 <el-table-column type="index" width="50"> </el-table-column>
-                <el-table-column property="description" label="Nombre" width="150">
+                <el-table-column property="description" label="Nombre" width="180">
                 </el-table-column>
                 <el-table-column property="internal_id" label="Código" width="130">
                 </el-table-column>
-                <el-table-column property="currency_type_id" label="Moneda" width="80">
+                <el-table-column property="brand" label="Marca" width="130">
                 </el-table-column>
+                <!-- <el-table-column property="currency_type_id" label="Moneda" width="80">
+                </el-table-column> -->
                 <el-table-column  label="Precio" width="130">
                     <template slot-scope="{row}">
                     {{row.currency_type_symbol}} {{row.sale_unit_price}}
@@ -44,11 +46,11 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="Historial compras">
+               <!-- <el-table-column label="Historial compras">
                     <template slot-scope="{row}">
                         <button type="button" class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(row.item_id)"><i class="fas fa-cart-plus"></i></button>
                     </template>
-                </el-table-column>
+                </el-table-column> -->
 
         </el-table>
 
@@ -127,14 +129,6 @@ export default {
             this.setCurrent(this.records[this.currentIndex])
         }
     },
-    mounted()
-    {
-    },
-    updated()
-    {
-        console.log('22')
-    }
-
 };
 </script>
 
