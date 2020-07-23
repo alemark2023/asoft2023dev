@@ -30,7 +30,7 @@
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.user_name}}</td>
                             <td>{{row.customer_name}}</td>
-                            <td>{{row.identifier}}</td>
+                            <td>{{row.number_full}}</td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.currency_type_id}}</td>
                             <td>

@@ -111,7 +111,7 @@
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
                                     <td class="celda">{{$value->customer->name}}</td>
-                                    <td class="celda">{{$value->identifier}}</td>
+                                    <td class="celda">{{$value->number_full}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
                                     <td class="celda">{{$value->currency_type_id}}</td>
                                     <td class="celda">
