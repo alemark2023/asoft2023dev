@@ -152,6 +152,19 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             }
 
+            if(isset($sale_note_item->item->lots) )
+            {
+                foreach ($sale_note_item->item->lots as $it) {
+
+                    if($it->has_sale == true)
+                    {
+                        $r = ItemLot::find($it->id);
+                        $r->has_sale =  true;
+                        $r->save();
+                    }
+
+                }
+            }
         });
     }
 

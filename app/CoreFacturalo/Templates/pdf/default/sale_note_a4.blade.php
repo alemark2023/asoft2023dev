@@ -155,7 +155,7 @@
                 @php
                     $lot_code = isset($row->item->lots_group) ? collect($row->item->lots_group)->first(function($row){ return $row->checked == true;}):null;
                 @endphp
-                {{ 
+                {{
                     $itemLotGroup->getLote($lot_code ? $lot_code->id : null)
                 }}
 
@@ -164,9 +164,9 @@
 
                 @isset($row->item->lots)
                     @foreach($row->item->lots as $lot)
-
-                        <span style="font-size: 9px">{{ $lot->series }}</span><br>
-
+                        @if( isset($lot->has_sale) && $lot->has_sale)
+                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
+                        @endif
                     @endforeach
                 @endisset
             </td>
@@ -218,7 +218,7 @@
              <tr>
                 <td colspan="7" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr> 
+            </tr>
         @endif
         @if($document->total_discount > 0)
             <tr>
