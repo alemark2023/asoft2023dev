@@ -80,7 +80,7 @@
                                 <td>{{$value->date_of_issue->format('Y-m-d')}}</td>
                                 <td class="celda">{{$value->user->name}}</td>
                                 <td>{{$value->customer->name}}</td>
-                                <td>{{$value->identifier}}</td>
+                                <td>{{$value->number_full}}</td>
                                 <td>{{$value->state_type->description}}</td>
                                 <td>{{$value->currency_type_id}}</td>
                                 <td>
@@ -152,14 +152,14 @@
 
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="12"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="12"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>
