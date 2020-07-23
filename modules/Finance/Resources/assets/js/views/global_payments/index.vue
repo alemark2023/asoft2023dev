@@ -17,6 +17,7 @@
                             <th class="">Método</th>
                             <th class="">Referencia</th>
                             <th class="">Pago</th>
+                            <th class="">Responsable</th>
  
                         <tr>
                         <tr slot-scope="{ index, row }">
@@ -33,6 +34,7 @@
                             <td>{{row.payment_method_type_description}}</td>
                             <td>{{row.reference}}</td>
                             <td>{{row.total}}</td> 
+                            <td>{{row.user_name}}</td> 
                         </tr>
                     </data-table>
 

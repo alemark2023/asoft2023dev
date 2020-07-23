@@ -47,6 +47,8 @@ class GlobalPaymentCollection extends ResourceCollection
                 // 'payment_type' => $row->payment_type, 
                 'instance_type' => $row->instance_type, 
                 'instance_type_description' => $row->instance_type_description, 
+                'user_id' => $row->user_id, 
+                'user_name' => optional($row->user)->name, 
             ];
         });
     }
