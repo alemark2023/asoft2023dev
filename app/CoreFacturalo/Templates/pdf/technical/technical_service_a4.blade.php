@@ -109,26 +109,16 @@
         <td>{{ $document->description }}</td>
     </tr>
     <tr>
-        <td ><b> Estado:</b></td>
+        <td ><b> Estado:</b> {{ $document->state }} </td>
     </tr>
     <tr>
-        <td >{{ $document->state }}</td>
+        <td><b>Motivo:</b> {{ $document->reason }} </td>
     </tr>
-
+    @if($document->activities)
     <tr>
-        <td><b>Motivo:</b></td>
+        <td><b>Actividades realizadas:</b> {{ $document->activities }} </td>
     </tr>
-    <tr>
-        <td >{{ $document->reason }}</td>
-    </tr>
-    {{--@if($document->activities)
-    <tr>
-        <td><b>Actividades realizadas:</b></td>
-    </tr>
-    <tr>
-        <td>{{ $document->activities }}</td>
-    </tr>
-    @endif --}}
+    @endif
     <tr>
         <td><b>Marca:</b> {{ $document->brand }} </td>
     </tr>
@@ -264,26 +254,16 @@
         <td>{{ $document->description }}</td>
     </tr>
     <tr>
-        <td ><b> Estado:</b></td>
+        <td ><b> Estado:</b> {{ $document->state }} </td>
     </tr>
     <tr>
-        <td >{{ $document->state }}</td>
+        <td><b>Motivo:</b> {{ $document->reason }} </td>
     </tr>
-
+    @if($document->activities)
     <tr>
-        <td><b>Motivo:</b></td>
+        <td><b>Actividades realizadas:</b> {{ $document->activities }} </td>
     </tr>
-    <tr>
-        <td >{{ $document->reason }}</td>
-    </tr>
-    {{--@if($document->activities)
-    <tr>
-        <td><b>Actividades realizadas:</b></td>
-    </tr>
-    <tr>
-        <td>{{ $document->activities }}</td>
-    </tr>
-    @endif --}}
+    @endif
     <tr>
         <td><b>Marca:</b> {{ $document->brand }} </td>
     </tr>
