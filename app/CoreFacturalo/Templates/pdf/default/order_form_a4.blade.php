@@ -8,7 +8,7 @@
     $address_full_delivery = Modules\Order\Services\AddressFullService::getDescription($document->delivery->location_id[2]);
     $address_full_origin= Modules\Order\Services\AddressFullService::getDescription($document->origin->location_id[2]);
 
-    
+
 
 @endphp
 <html>
@@ -156,6 +156,25 @@
     <tr>
         <td>{{ $document->observations }}</td>
     </tr>
+</table>
+
+<table class="full-width border-box mt-10 mb-10">
+    <tbody>
+        <tr>
+            <td width="50%" align="left">
+            @if($document->qr)
+                <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;" />
+            @else
+            @endif
+            </td>
+            <td width="50%" align="right">
+                @if($company->img_firm)
+                    <img src="data:{{mime_content_type(public_path("storage/uploads/firms/{$company->img_firm}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/firms/{$company->img_firm}")))}}" alt="{{$company->name}}" alt="{{ $company->name }}"  class="company_logo" style="max-width: 300px">
+                @else
+                @endif
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 </body>

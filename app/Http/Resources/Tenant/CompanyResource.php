@@ -33,7 +33,8 @@ class CompanyResource extends JsonResource
             'detraction_account' => $this->detraction_account,
             'logo_store' => $this->logo_store,
             'operation_amazonia' => (bool) $this->operation_amazonia,
-            'config_system_env' => (bool)$configuration->config_system_env
+            'config_system_env' => (bool)$configuration->config_system_env,
+            'img_firm' => $this->img_firm,
 
         ];
     }
