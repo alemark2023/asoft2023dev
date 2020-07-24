@@ -840,10 +840,10 @@ class DocumentController extends Controller
         return $records;
     }
 
-    public function report_payments()
+    public function report_payments($month)
     {
-
-        $records = Document::get();
+        $month_format = Carbon::parse($month)->format('m');
+        $records = Document::whereMonth('created_at', $month_format )->get();
 
         $source =  $this->transformReportPayment( $records );
 
