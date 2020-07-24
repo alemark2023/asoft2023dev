@@ -89,6 +89,7 @@
                                 <th>Tipo transacción</th>
                                 <th>Número</th>
                                 <th>NV. Asociada</th>
+                                <th>CPE. Asociado</th>
                                 <th>Feha emisión</th>
                                 <th>Entrada</th>
                                 <th>Salida</th>
@@ -165,6 +166,29 @@
                                         @endswitch
 
                                     </td>
+
+                                    <td class="celda">
+
+                                        @switch($value->inventory_kardexable_type)
+                                            @case($models[0])
+                                                {{ isset($value->inventory_kardexable->note) ? $value->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '' }}
+                                                @break
+                                            @case($models[1])
+                                                {{'-'}}
+                                                @break
+                                            @case($models[2])
+                                                {{"-"}}                                                 
+                                                @break
+                                            @case($models[3])
+                                                {{"-"}}                                                 
+                                                @break  
+                                            @case($models[4])
+                                                {{"-"}}                                                 
+                                                @break
+                                        @endswitch
+
+                                    </td>
+
                                     <td class="celda">
 
                                         @switch($value->inventory_kardexable_type)

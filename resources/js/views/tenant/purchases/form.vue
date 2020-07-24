@@ -212,6 +212,7 @@
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                         <td class="text-right">
+                                            <button v-if="purchase_order_id && row.item.series_enabled" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOpenSeries(index, row.quantity, row.lots)">Series</button>
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                         </td>
                                     </tr>
@@ -294,6 +295,12 @@
         <purchase-options :showDialog.sync="showDialogOptions"
                           :recordId="purchaseNewId"
                           :showClose="false"></purchase-options>
+
+        <series-form
+            ref="series_form"
+            @addRowLot="addRowLot">
+        </series-form>
+
     </div>
 </template>
 
@@ -304,10 +311,11 @@
     import PurchaseOptions from './partials/options.vue'
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
+    import SeriesForm from './partials/series'
 
     export default {
         props:['purchase_order_id'],
-        components: {PurchaseFormItem, PersonForm, PurchaseOptions},
+        components: {PurchaseFormItem, PersonForm, PurchaseOptions, SeriesForm},
         mixins: [functions, exchangeRate],
         data() {
             return {
@@ -340,7 +348,8 @@
                 payment_destinations:  [],
                 currency_type: {},
                 loading_search: false,
-                purchaseNewId: null
+                purchaseNewId: null,
+                showDialogLots: false
             }
         },
         async created() {
@@ -802,12 +811,13 @@
                         this.form.total_perception = null
 
                     }
-
                 }
-
-
             },
             async submit() {
+                let validate_item_series = await this.validationItemSeries()
+                if(!validate_item_series.success) {
+                    return this.$message.error(validate_item_series.message);
+                }
 
                 let validate = await this.validate_payments()
                 if(!validate.success) {
@@ -868,6 +878,38 @@
 
                 })
             },
+            clickOpenSeries(ind, qt, lt)
+            {
+                this.$refs.series_form.openDialog(ind, qt, lt)
+            },
+            addRowLot({lots, indexItem})
+            {
+                console.log(lots, indexItem)
+                this.form.items[indexItem].lots = lots
+            },
+            async validationItemSeries()
+            {
+                let error = 0
+
+                await this.form.items.forEach( (element) => {
+
+                    if(element.item.series_enabled)
+                    {
+                        const count_lot = element.lots ? element.lots.length : 0
+                        if(element.quantity != count_lot)
+                        {
+                            error ++;
+                        }
+                    }
+                })
+
+                if(error>0)
+                    return {success:false, message:'Las series y la cantidad en los productos deben ser iguales.'}
+
+
+                return {success:true, message: ''}
+            }
+
         }
     }
 </script>

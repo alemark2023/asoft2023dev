@@ -186,6 +186,7 @@ if ($hostname) {
             Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
             Route::get('documents/re_store/{document}', 'Tenant\DocumentController@reStore');
             Route::get('documents/locked_emission', 'Tenant\DocumentController@messageLockedEmission');
+            Route::get('documents/note/has-documents/{document}', 'Tenant\NoteController@hasDocuments');
 
            Route::get('document_payments/records/{document_id}', 'Tenant\DocumentPaymentController@records');
            Route::get('document_payments/document/{document_id}', 'Tenant\DocumentPaymentController@document');
@@ -203,7 +204,7 @@ if ($hostname) {
             Route::post('documents/import', 'Tenant\DocumentController@import');
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
-            Route::get('documents/payments/excel', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
+            Route::get('documents/payments/excel/{month}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
 
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
@@ -343,6 +344,8 @@ if ($hostname) {
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
+           // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
+
 
 
             // Route::get('documents/send/{document}', 'Tenant\DocumentController@send');

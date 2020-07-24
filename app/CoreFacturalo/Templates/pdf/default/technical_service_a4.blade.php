@@ -32,7 +32,7 @@
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                
+
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
                 @endisset
@@ -65,7 +65,7 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
-      
+
     </tr>
     @if ($customer->address !== '')
     <tr>
@@ -77,59 +77,59 @@
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
     </tr>
-    @endif 
+    @endif
     <tr>
         <td class="align-top">Celular:</td>
         <td colspan="3">
-            {{ $document->cellphone }} 
+            {{ $document->cellphone }}
         </td>
     </tr>
     <tr>
         <td class="align-top">N° Serie:</td>
         <td colspan="3">
-            {{ $document->serial_number }} 
+            {{ $document->serial_number }}
         </td>
     </tr>
-</table>  
+</table>
 
 
 <table class="full-width mt-4 mb-5">
     <tr>
-        <td ><b>Descripción:</b></td> 
+        <td ><b>Descripción:</b></td>
     </tr>
     <tr>
         <td>{{ $document->description }}</td>
-    </tr> 
+    </tr>
     <tr>
         <td ><b> Estado:</b></td>
     </tr>
     <tr>
         <td >{{ $document->state }}</td>
     </tr>
-    
+
     <tr>
         <td><b>Motivo:</b></td>
     </tr>
     <tr>
         <td >{{ $document->reason }}</td>
-    </tr> 
+    </tr>
     @if($document->activities)
     <tr>
         <td><b>Actividades realizadas:</b></td>
     </tr>
     <tr>
         <td>{{ $document->activities }}</td>
-    </tr> 
+    </tr>
     @endif
-</table>  
+</table>
 
 <table class="full-width mt-10 mb-10">
     <thead class="">
-    <tr class="bg-grey"> 
+    <tr class="bg-grey">
     </tr>
     </thead>
     <tbody>
-        <tr> 
+        <tr>
         </tr>
         <tr>
             <td colspan="4" class="text-right font-bold mb-3">COSTO DEL SERVICIO: </td>

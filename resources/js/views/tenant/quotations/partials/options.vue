@@ -253,6 +253,8 @@
         </div>
       </div>
 
+      <series-form v-if="generate && form.quotation" :items="form.quotation.items"></series-form>
+
       <span slot="footer" class="dialog-footer">
         <template v-if="showClose">
           <el-button @click="clickClose">Cerrar</el-button>
@@ -291,15 +293,17 @@
       :recordId="documentNewId"
       :showClose="true"
     ></sale-note-options>
+
   </div>
 </template>
 
 <script>
 import DocumentOptions from "../../documents/partials/options.vue";
 import SaleNoteOptions from "../../sale_notes/partials/options.vue";
+import SeriesForm from "./series_form.vue"
 
 export default {
-  components: { DocumentOptions, SaleNoteOptions },
+  components: { DocumentOptions, SaleNoteOptions, SeriesForm },
 
   props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser'],
   data() {
@@ -441,17 +445,23 @@ export default {
         this.document_types.length > 0 ? this.document_types[0].id : null;
       this.changeDocumentType();
     },
-    submit() {
-      this.loading_submit = true;
-      this.assignDocument();
+    async submit() {
 
-      if (this.document.document_type_id === "nv") {
-        this.document.prefix = "NV";
-        this.resource_documents = "sale-notes";
-      } else {
-        this.document.prefix = null;
-        this.resource_documents = "documents";
-      }
+
+        let validate_items = await this.validateQuantityandSeries()
+        if(!validate_items.success)
+            return this.$message.error(validate_items.message);
+
+        this.loading_submit = true;
+        this.assignDocument();
+
+        if (this.document.document_type_id === "nv") {
+            this.document.prefix = "NV";
+            this.resource_documents = "sale-notes";
+        } else {
+            this.document.prefix = null;
+            this.resource_documents = "documents";
+        }
 
       this.$http
         .post(`/${this.resource_documents}`, this.document)
@@ -562,7 +572,7 @@ export default {
 
         this.series = _.filter(this.all_series, {document_type_id:'80'})
         this.document.series_id = this.series.length > 0 ? this.series[0].id : null;
-        
+
         this.is_document_type_invoice = false;
       }
     },
@@ -629,7 +639,24 @@ export default {
         .then(() => {
           this.loading = false;
         });
-    }
+    },
+    async validateQuantityandSeries()
+    {
+        let error = 0
+        await this.form.quotation.items.forEach(element => {
+            if(element.item.series_enabled)
+            {
+                const select_lots = _.filter(element.item.lots, { has_sale:true }).length
+                if(select_lots != element.quantity)
+                    error++
+            }
+        });
+        if(error>0)
+            return {success:false, message:'Las cantidades y series seleccionadas deben ser iguales.'}
+
+
+        return {success:true}
+    },
   }
 };
 </script>

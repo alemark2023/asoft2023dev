@@ -42,7 +42,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-3" v-show="form.item_id">  <br>
+                    <!-- <div class="col-md-3" v-show="form.item_id">  <br>
                         <div class="form-group" :class="{'has-danger': errors.lot_code}" v-if="form.item.series_enabled">
                             <label class="control-label">
                                 Ingrese series
@@ -52,9 +52,9 @@
 
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
-                    </div>
+                    </div> -->
 
-                    <!-- <div class="col-md-6">
+                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén de destino</label>
                             <el-select v-model="form.warehouse_id"   filterable  >
@@ -62,7 +62,7 @@
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.warehouse_id" v-text="errors.warehouse_id[0]"></small>
                         </div>
-                    </div> -->
+                    </div>
                     <div class="col-md-12"  v-if="form.item_unit_types.length > 0">
                         <div style="margin:3px" class="table-responsive">
                             <h3>Lista de Precios</h3>
@@ -212,7 +212,7 @@
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button type="primary" native-type="submit">Agregar</el-button>
+                <el-button type="primary" native-type="submit" v-if="form.item_id" >Agregar</el-button>
             </div>
         </form>
         <item-form :showDialog.sync="showDialogNewItem"

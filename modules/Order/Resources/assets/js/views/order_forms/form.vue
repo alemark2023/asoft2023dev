@@ -122,7 +122,7 @@
                             <div class="form-group" :class="{'has-danger': errors.origin}">
                                 <label class="control-label font-weight-bold">Ubigeo<span class="text-danger"> *</span></label>
                                 <el-cascader :options="locations" v-model="form.origin.location_id" filterable></el-cascader>
-                        
+
                                 <small class="form-control-feedback" v-if="errors.origin" v-text="errors.origin.location_id[0]"></small>
                             </div>
                         </div>
@@ -149,7 +149,7 @@
                             <div class="form-group" :class="{'has-danger': errors.delivery}">
                                 <label class="control-label font-weight-bold">Ubigeo<span class="text-danger"> *</span></label>
                                 <el-cascader :options="locations" v-model="form.delivery.location_id" filterable></el-cascader>
-                             
+
                                 <small class="form-control-feedback" v-if="errors.delivery" v-text="errors.delivery.location_id[0]"></small>
                             </div>
                         </div>
@@ -164,7 +164,7 @@
                     <hr>
                     <h4></h4>
                     <div class="row">
-                        
+
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.dispatcher_id}">
                                 <label class="control-label font-weight-bold">
@@ -272,7 +272,7 @@
 
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
 
-        
+
         <order-form-options :showDialog.sync="showDialogOptions"
                             :recordId="recordId"
                             :isUpdate="(id) ? true:false"></order-form-options>
@@ -329,6 +329,8 @@
         },
         async created() {
             // this.clean();
+
+
             await this.initForm()
 
             await this.$http.post(`/${this.resource}/tables`).then(response => {
@@ -356,41 +358,41 @@
         },
         methods: {
             async keyUpLicensePlate1(e){
-                
+
                 if(this.form.license_plates.license_plate_1.length == 3 && e.keyCode !== 8){
                     this.form.license_plates.license_plate_1 = await this.form.license_plates.license_plate_1.concat('-')
                 }
 
             },
             async keyUpLicensePlate2(e){
-                
+
                 if(this.form.license_plates.license_plate_2.length == 3 && e.keyCode !== 8){
                     this.form.license_plates.license_plate_2 = await this.form.license_plates.license_plate_2.concat('-')
                 }
 
             },
             events(){
-                
+
                 this.$eventHub.$on('reloadDataDrivers', (driver_id) => {
                     this.reloadDataDrivers(driver_id)
                 })
-                
+
                 this.$eventHub.$on('reloadDataDispatchers', (dispatcher_id) => {
                     this.reloadDataDispatchers(dispatcher_id)
                 })
 
             },
-            reloadDataDispatchers(dispatcher_id) { 
+            reloadDataDispatchers(dispatcher_id) {
                 this.$http.get(`/${this.resource}/table/dispatchers`).then((response) => {
                     this.dispatchers = response.data
                     this.form.dispatcher_id = dispatcher_id
-                })                  
+                })
             },
-            reloadDataDrivers(driver_id) { 
+            reloadDataDrivers(driver_id) {
                 this.$http.get(`/${this.resource}/table/drivers`).then((response) => {
                     this.drivers = response.data
                     this.form.driver_id = driver_id
-                })                  
+                })
             },
             isUpdate(){
 
@@ -398,14 +400,14 @@
 
                     this.$http.get(`/${this.resource}/record/${this.id}` )
                     .then(response => {
-                        
+
                         let order_form = response.data.data.order_form
                         // console.log(order_form)
                         this.form = order_form
-                       
+
                     })
                 }
-               
+
             },
             initForm() {
                 this.errors = {}
@@ -448,6 +450,7 @@
                         register_number_1: null,
                         register_number_2: null,
                     },
+
 
                 }
             },
@@ -519,6 +522,8 @@
                     return this.$message.error('El campo ubigeo es obligatorio')
 
                 this.loading_submit = true;
+
+                this.form.url =  window.location.origin
 
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
                         if (response.data.success) {

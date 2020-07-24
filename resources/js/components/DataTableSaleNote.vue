@@ -3,6 +3,8 @@
         <div class="row ">
 
             <div class="col-md-12 col-lg-12 col-xl-12 ">
+                <br>
+                <br>
                 <div class="row" v-if="applyFilter">
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-2">
                         <div class="d-flex">
@@ -41,9 +43,9 @@
                             </el-select>
                         </div>
                     </div>
-                    <div class="col-lg-1 col-md-1">
+                    <div class="col-lg-3 col-md-3">
                         <div class="form-group"  >
-                            <el-select @change="getRequestData" placeholder="Estado pago" v-model="search.paid" clearable>
+                            <el-select @change="getRequestData" placeholder="Estado de pago" v-model="search.paid" clearable>
                                 <el-option :value="1" label="Pagado"></el-option>
                                 <el-option  :value="0" label="Pendiente"></el-option>
                             </el-select>

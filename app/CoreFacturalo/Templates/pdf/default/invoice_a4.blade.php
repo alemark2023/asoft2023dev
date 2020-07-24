@@ -149,7 +149,7 @@
         @if ($document->detraction)
             <td width="120px">MONTO DETRACCIÓN</td>
             <td width="8px">:</td>
-            <td>{{ $document->currency_type->symbol }} {{ $document->detraction->amount}}</td>
+            <td>S/ {{ $document->detraction->amount}}</td>
         @endif
     </tr>
     @endif
@@ -239,7 +239,7 @@
             <td width="120px">COTIZACIÓN</td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
-            
+
             @isset($document->quotation->delivery_date)
                     <td width="120px">F. ENTREGA</td>
                     <td width="8px">:</td>
@@ -313,13 +313,13 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 @if($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!} 
+                    {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} 
+                    {!!$row->item->description!!}
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>

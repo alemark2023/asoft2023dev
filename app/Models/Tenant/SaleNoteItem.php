@@ -118,8 +118,8 @@ class SaleNoteItem extends ModelTenant
     public function scopeWhereDefaultDocumentType($query, $params)
     {
         
-        $db_raw =  DB::raw("sale_note_items.id as id, sale_notes.series as series, sale_notes.number as number,
-                            sale_note_items.item as item, sale_note_items.quantity as quantity, sale_notes.date_of_issue as date_of_issue");
+        $db_raw =  DB::raw("sale_note_items.id as id, sale_notes.series as series, sale_notes.number as number, 
+                            sale_note_items.item as item, sale_note_items.quantity as quantity, sale_note_items.item_id as item_id,sale_notes.date_of_issue as date_of_issue");
 
         if($params['person_id']){
 

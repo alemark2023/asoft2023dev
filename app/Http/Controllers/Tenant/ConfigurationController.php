@@ -167,28 +167,28 @@ class ConfigurationController extends Controller
 
     public function getSystemPhone()
     {
-        $configuration = Configuration::first();
-        $ws = $configuration->enable_whatsapp;
+        // $configuration = Configuration::first();
+        // $ws = $configuration->enable_whatsapp;
 
-        $current = url('/phone');
-        $parse_current = parse_url($current);
-        $explode_current = explode('.', $parse_current['host']);
-        $app_url = config('app.url');
-        if(!array_key_exists('port', $parse_current)){
-            $path = $app_url.$parse_current['path'];
-        }else{
-            $path = $app_url.':'.$parse_current['port'].$parse_current['path'];
-        }
+        // $current = url('/phone');
+        // $parse_current = parse_url($current);
+        // $explode_current = explode('.', $parse_current['host']);
+        // $app_url = config('app.url');
+        // if(!array_key_exists('port', $parse_current)){
+        //     $path = $app_url.$parse_current['path'];
+        // }else{
+        //     $path = $app_url.':'.$parse_current['port'].$parse_current['path'];
+        // }
 
-        $http = new Client(['verify' => false]);
-        $response = $http->request('GET', $path);
-        if($response->getStatusCode() == '200'){
-            $body = $response->getBody();
+        // $http = new Client(['verify' => false]);
+        // $response = $http->request('GET', $path);
+        // if($response->getStatusCode() == '200'){
+        //     $body = $response->getBody();
 
-            $configuration->phone_whatsapp = $body;
-            $configuration->save();
-        }
-        return 'error';
+        //     $configuration->phone_whatsapp = $body;
+        //     $configuration->save();
+        // }
+        // return 'error';
     }
 
     

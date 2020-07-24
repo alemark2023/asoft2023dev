@@ -11,7 +11,8 @@ use Modules\Expense\Models\ExpensePayment;
 use App\Models\Tenant\{
     DocumentPayment,
     SaleNotePayment,
-    PurchasePayment
+    PurchasePayment,
+    User,
 };
 use Modules\Sale\Models\ContractPayment;
 
@@ -24,6 +25,7 @@ class GlobalPayment extends ModelTenant
         'destination_type',
         'payment_id',
         'payment_type', 
+        'user_id', 
     ];
  
 
@@ -225,6 +227,11 @@ class GlobalPayment extends ModelTenant
 
                 });
 
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
 }

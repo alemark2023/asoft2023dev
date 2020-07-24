@@ -77,6 +77,22 @@
                                     <small class="form-control-feedback" v-if="errors.detraction_account" v-text="errors.detraction_account[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Rúbrica (Firma digital)</label>
+                                    <el-input v-model="form.img_firm" :readonly="true">
+                                        <el-upload slot="append"
+                                                   :headers="headers"
+                                                   :data="{'type': 'img_firm'}"
+                                                   action="/companies/uploads"
+                                                   :show-file-list="false"
+                                                   :on-success="successUpload">
+                                            <el-button type="primary" icon="el-icon-upload"></el-button>
+                                        </el-upload>
+                                    </el-input>
+                                    <div class="sub-title text-danger"><small>Se recomienda resoluciones 700x300</small></div>
+                                </div>
+                            </div>
                             <div class="col-md-6" v-if="form.soap_type_id == '02'">
                                 <div class="form-group" :class="{'has-danger': errors.certificate_due}">
                                     <label class="control-label">Vencimiento de Certificado</label>
@@ -215,7 +231,8 @@
                     detraction_account: null,
                     operation_amazonia: false,
                     toggle: false,
-                    config_system_env: false
+                    config_system_env: false,
+                    img_firm: null
 
                 }
             },

@@ -32,10 +32,19 @@ class DocumentEmail extends Mailable
         $pdf = $this->getStorage($this->document->filename, 'pdf');
         $xml = $this->getStorage($this->document->filename, 'signed');
 
-        return $this->subject('Envio de Comprobante de Pago Electrónico')
+        $image_detraction = ($this->document->detraction) ? (($this->document->detraction->image_pay_constancy) ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'image_detractions'.DIRECTORY_SEPARATOR.$this->document->detraction->image_pay_constancy):false):false;
+        
+        $email = $this->subject('Envio de Comprobante de Pago Electrónico')
                     ->from(config('mail.username'), 'Comprobante electrónico')
                     ->view('tenant.templates.email.document')
                     ->attachData($pdf, $this->document->filename.'.pdf')
                     ->attachData($xml, $this->document->filename.'.xml');
+        
+                    
+        if($image_detraction){
+            return $email->attachData(file_get_contents($image_detraction), $this->document->detraction->image_pay_constancy);
+        }
+
+        return $email;
     }
 }

@@ -727,6 +727,8 @@
                         this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
                     }
 
+                    this.form.name_product_pdf = this.recordItem.name_product_pdf
+
 
                     this.calculateQuantity()
                 }else{

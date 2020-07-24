@@ -57,6 +57,7 @@ class SaleNoteCollection extends ResourceCollection
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
                 'paid' => (bool)$row->paid,
+                'total_canceled' => (bool)$row->total_canceled,
                 'license_plate' => $row->license_plate,
                 'total_paid' => $total_paid,
                 'total_pending_paid' => $total_pending_paid,

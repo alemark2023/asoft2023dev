@@ -49,7 +49,7 @@ class SaleNotePaymentController extends Controller
 
         if($total_difference < 1)
         {
-            $sale_note->paid = true;
+            $sale_note->total_canceled = true;
             $sale_note->save();
         }
 
@@ -58,7 +58,7 @@ class SaleNotePaymentController extends Controller
             'total_paid' => $total_paid,
             'total' => $total,
             'total_difference' => $total_difference,
-            'paid' => $sale_note->paid
+            'paid' => $sale_note->total_canceled
         ];
     }
 
@@ -79,7 +79,7 @@ class SaleNotePaymentController extends Controller
         if($request->paid == true)
         {
             $sale_note = SaleNote::find($request->sale_note_id);
-            $sale_note->paid = true;
+            $sale_note->total_canceled = true;
             $sale_note->save();
         }
 
@@ -98,7 +98,7 @@ class SaleNotePaymentController extends Controller
         $item->delete();
 
         $sale_note = SaleNote::find($item->sale_note_id);
-        $sale_note->paid = false;
+        $sale_note->total_canceled = false;
         $sale_note->save();
 
         $this->createPdf($sale_note_id);

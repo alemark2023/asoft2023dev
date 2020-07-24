@@ -75,6 +75,7 @@
                                 <th class="">#</th>
                                 <th class="">Fecha</th>
                                 <th class="">Tipo Documento</th>
+                                <th class="">Moneda</th>
                                 <th class="">Serie</th>
                                 <th class="">Número</th>
                                 <th class="">Monto</th>
@@ -86,6 +87,7 @@
                                 <td class="celda">{{$loop->iteration}}</td>
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td> 
                                 <td class="celda">{{$value->document_type->description}}</td>
+                                <td class="celda">{{$value->currency_type_id}}</td>
                                 <td class="celda">{{$value->series}}</td>
                                 <td class="celda">{{$value->number}}</td>
                                 <td class="celda">{{$value->total}}</td>
@@ -183,12 +185,12 @@
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="4"></td> 
+                                <td colspan="5"></td> 
                                 <td >TOTAL PEN</td>
                                 <td>{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td colspan="4"></td>
+                                <td colspan="5"></td>
                                 <td >TOTAL USD</td>  
                                 <td>{{$acum_total_usd}}</td>
                             </tr>

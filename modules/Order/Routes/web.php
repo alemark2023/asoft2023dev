@@ -55,7 +55,7 @@ if($current_hostname) {
                 Route::post('email', 'OrderFormController@email');
 
                 Route::get('dispatch-create/{id?}', 'OrderFormController@dispatchCreate');
-    
+
             });
 
             Route::prefix('drivers')->group(function () {

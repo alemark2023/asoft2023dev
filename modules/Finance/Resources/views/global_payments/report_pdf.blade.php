@@ -93,6 +93,7 @@
                                 <th class="">Método</th>
                                 <th class="">Referencia</th>
                                 <th class="">Pago</th>
+                                <th class="">Responsable</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,6 +125,7 @@
                                     <td class="celda">{{(($value->payment->payment_method_type) ? $value->payment->payment_method_type->description:$value->payment->expense_method_type->description)}}</td>  
                                     <td class="celda">{{$value->payment->reference}}</td>
                                     <td class="celda">{{$value->payment->payment}}</td>
+                                    <td class="celda">{{ optional($value->user)->name }}</td>
                                 </tr>
 
                                  

@@ -18,10 +18,11 @@
                             <th class="">Descripción</th>
                             <!-- <th class="">U. Medida</th> -->
                             <th class="">Cantidad</th>
+                            <th>Series</th>
                             <th class="">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
-                            <td>{{ index }}</td> 
+                            <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.document_type_description}}</td>
                             <td>{{row.series}}</td>
@@ -32,36 +33,59 @@
                             <td>{{row.description}}</td>
                             <!-- <td>{{row.unit_type_id}}</td> -->
                             <td>{{row.quantity}}</td>
+                            <td>
+                                {{ row.lot_has_sale | filterLots }}
+                            </td>
                             <td>{{row.total}}</td>
                         </tr>
-                        
+
                     </data-table>
-                     
-                    
-                </div> 
+
+
+                </div>
         </div>
- 
+
     </div>
 </template>
 
 <script>
- 
+
     import DataTable from '../../components/DataTableGeneralItems.vue'
 
-    export default { 
+    export default {
         components: {DataTable},
         data() {
             return {
-                resource: 'reports/general-items',                 
-                form: {}, 
+                resource: 'reports/general-items',
+                form: {},
 
             }
         },
-        async created() { 
+        filters:{
+            filterLots(data){
+
+                if(data && data.length > 0)
+                {
+                    const lots_sale = data.filter(x=> x.has_sale == true)
+                    if(lots_sale)
+                    {
+                        return lots_sale.map(p=> p.series).join(' - ')
+                    }
+                    else{
+                        return ''
+                    }
+                }
+                else{
+                    return ''
+                }
+
+            }
         },
-        methods: { 
-             
-            
+        async created() {
+        },
+        methods: {
+
+
         }
     }
 </script>

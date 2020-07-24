@@ -18,7 +18,7 @@
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-money-bill-wave-alt"></i> Reporte de Pagos <span class="caret"></span></button>
                     <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
                         <a class="dropdown-item text-1" href="#" @click.prevent="clickReportPayments()">Generar Reporte</a>
-                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportPagos('excel')">Descargar Excel</a>
+                        <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadReportPagos()">Descargar Excel</a>
                     </div>
                 </div>
             </div>
@@ -197,6 +197,8 @@
             <document-constancy-detraction :showDialog.sync="showDialogCDetraction"
                               :recordId="recordId"></document-constancy-detraction>
             <report-payment  :showDialog.sync="showDialogReportPayment" ></report-payment>
+
+            <report-payment-complete  :showDialog.sync="showDialogReportPaymentComplete" ></report-payment-complete>
         </div>
     </div>
 </template>
@@ -212,15 +214,17 @@
     import {deletable} from '../../../mixins/deletable'
     import DocumentConstancyDetraction from './partials/constancy_detraction.vue'
     import ReportPayment from './partials/report_payment.vue'
+    import ReportPaymentComplete from './partials/report_payment_complete.vue'
 
 
     export default {
         mixins: [deletable],
         props: ['isClient','typeUser','import_documents','import_documents_second'],
-        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction, ReportPayment},
+        components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction, ReportPayment, ReportPaymentComplete },
         data() {
             return {
-                showDialogReportPayment:false,
+                showDialogReportPayment: false,
+                showDialogReportPaymentComplete: false,
                 showDialogVoided: false,
                 showImportDialog: false,
                 showDialogCDetraction: false,
@@ -370,8 +374,9 @@
             clickImport() {
                 this.showImportDialog = true
             },
-            clickDownloadReportPagos(type) {
-                window.open(`/${this.resource}/payments/${type}`, '_blank');
+            clickDownloadReportPagos() {
+
+                this.showDialogReportPaymentComplete = true
             },
             clickImportSecond() {
                 this.showImportSecondDialog = true

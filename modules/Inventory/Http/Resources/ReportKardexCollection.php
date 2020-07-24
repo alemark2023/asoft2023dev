@@ -50,6 +50,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
+                    'doc_asoc' => isset($row->inventory_kardexable->note) ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-'
                 ];
 
             case $models[1]:
@@ -64,6 +65,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'doc_asoc' => '-'
                 ];
 
             case $models[2]: // Nota de venta
@@ -78,6 +80,8 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'doc_asoc' => '-'
+
                 ];
 
             case $models[3]:{
@@ -115,6 +119,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => $output,
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'doc_asoc' => '-'
                 ];
             }
 
@@ -131,6 +136,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'doc_asoc' => '-'
                 ];
 
         }
@@ -140,7 +146,7 @@ class ReportKardexCollection extends ResourceCollection
 
     public function calcularRestante($request)
     {
-        
+
         if($request->page >= 2) {
 
             $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
@@ -207,7 +213,7 @@ class ReportKardexCollection extends ResourceCollection
             }
 
             return self::$balance = self::$restante;
-        
+
         } else {
 
             if($request->date_start && $request->date_end) {

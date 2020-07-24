@@ -84,6 +84,7 @@
                         <thead>
                             <tr>
                                 <th class="">#</th>
+                                <th  class="text-center">Documento</th>
                                 <th  class="text-left">Producto</th>
                                 <th  class="text-center">Cantidad</th>
                             </tr>
@@ -92,6 +93,7 @@
                             @foreach($records as $key => $value)
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
+                                    <td class="celda">{{$value->series}}-{{$value->number}}</td> 
                                     <td class="celda">{{$value->item->description}}</td>
                                     <td class="celda">{{$value->quantity}}</td> 
                                 </tr> 
@@ -101,7 +103,7 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="1"></td>
+                                <td class="celda" colspan="2"></td>
                                 <td class="celda" ><strong>Total</strong></td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr> 
