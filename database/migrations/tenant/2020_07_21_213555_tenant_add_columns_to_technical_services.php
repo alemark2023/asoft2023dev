@@ -35,7 +35,7 @@ class TenantAddColumnsToTechnicalServices extends Migration
     public function down()
     {
         Schema::table('technical_services', function (Blueprint $table) {
-            $table->dropColumn(['brand','equipment','important_note', 'repair', 'warranty', 'diagnosis']);
+            $table->dropColumn(['brand','equipment','important_note', 'repair', 'warranty', 'maintenance', 'diagnosis']);
         });
     }
 }
