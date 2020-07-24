@@ -598,12 +598,10 @@
 
             },
             keyupEnterAddItem(){
-
-              if(this.place == 'cat3')
-              {
-                  return
-              }
-
+                if(this.place == 'cat3')
+                {
+                    return false
+                }
 
               if (this.items.length == 1) {
 
@@ -1217,6 +1215,7 @@
                     })
           },
           async searchItems() {
+
             if (this.input_item.length > 0) {
               this.loading = true
               let parameters = `input_item=${this.input_item}&cat=${this.category_selected}`;

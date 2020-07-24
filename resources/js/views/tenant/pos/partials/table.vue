@@ -79,7 +79,20 @@ export default {
     methods: {
         handle13()
         {
-            this.$emit('clickAddItem', this.currentRow)
+            if(this.records.length == 1)
+            {
+                this.$emit('clickAddItem', this.records[0])
+            }
+            else{
+
+                if(this.currentRow)
+                {
+                    this.$emit('clickAddItem', this.currentRow)
+                }
+
+            }
+
+
         },
         handle40()
         {
