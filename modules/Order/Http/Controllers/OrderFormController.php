@@ -39,6 +39,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Modules\Order\Mail\OrderFormEmail;
 use Illuminate\Support\Facades\Mail;
+use App\CoreFacturalo\Helpers\QrCode\QrCodeGenerate;
 
 
 class OrderFormController extends Controller
@@ -66,7 +67,7 @@ class OrderFormController extends Controller
 
         return new OrderFormCollection($records->paginate(config('tenant.items_per_page')));
     }
-     
+
 
     public function create($id = null)
     {
@@ -89,12 +90,12 @@ class OrderFormController extends Controller
     public function store(OrderFormRequest $request) {
 
         DB::connection('tenant')->transaction(function () use($request) {
-      
+
             $data = OrderFormHelper::set($request->all());
             // dd($data);
 
             $this->order_form =  OrderForm::updateOrCreate(['id' => $request->input('id')], $data);
-            
+
             $this->order_form->items()->delete();
 
             foreach ($data['items'] as $row) {
@@ -102,6 +103,7 @@ class OrderFormController extends Controller
             }
 
             $this->setFilename();
+            $this->updateQr($request->url);
             $this->createPdf($this->order_form, "a4", $this->order_form->filename);
 
         });
@@ -225,15 +227,15 @@ class OrderFormController extends Controller
                                     ];
                                 });
 
-        return compact('establishments', 'customers', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 
+        return compact('establishments', 'customers', 'transportModeTypes', 'transferReasonTypes', 'unitTypes',
                             'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items',
                             'locations', 'dispatchers', 'drivers');
     }
 
-    
+
     public function table($table){
 
-        
+
         if($table == 'drivers'){
 
             return Driver::query()->orderBy('name')->get()
@@ -375,6 +377,13 @@ class OrderFormController extends Controller
     {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
-
+    public function updateQr($url)
+    {
+        $qrCode = new QrCodeGenerate();
+        $qr = $qrCode->displayPNGBase64("{$url}/order-forms/print/{$this->order_form->external_id}/a4");
+        $this->order_form->update([
+            'qr' => $qr,
+        ]);
+    }
 
 }

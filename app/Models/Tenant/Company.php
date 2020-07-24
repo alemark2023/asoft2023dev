@@ -23,6 +23,7 @@ class Company extends ModelTenant
         'logo',
         'detraction_account',
         'operation_amazonia',
+        'img_firm'
     ];
 
     public function identity_document_type()
