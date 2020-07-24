@@ -51,6 +51,7 @@ class OrderForm extends ModelTenant
         'license_plates',
         'legends',
         'filename',
+        'qr'
     ];
 
     protected $casts = [
