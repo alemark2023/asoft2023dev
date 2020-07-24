@@ -11,6 +11,7 @@ use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\DocumentItem;
+use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use Modules\Report\Http\Resources\GeneralItemCollection;
@@ -27,7 +28,7 @@ class ReportGeneralItemController extends Controller
 
     public function filter() {
 
-        $document_types = DocumentType::whereIn('id', ['01', '03'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', '80'])->get();
 
         return compact('document_types');
     }
@@ -43,6 +44,7 @@ class ReportGeneralItemController extends Controller
     {
 
         $records = $this->getRecordsItems($request->all());
+
 
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -67,17 +69,31 @@ class ReportGeneralItemController extends Controller
     private function dataItems($date_start, $date_end, $document_type_id, $data_type)
     {
 
-        $document_types = $document_type_id ? [$document_type_id] : ['01','03'];
-        $model = $data_type['model'];
-        $relation = $data_type['relation'];
+        if( $document_type_id && $document_type_id == '80' )
+        {
+            $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end){
+                $query
+                ->whereBetween('date_of_issue', [$date_start, $date_end])
+                ->latest()
+                ->whereTypeUser();
+            });
+        }
+        else{
 
-        $data = $model::whereHas($relation, function($query) use($date_start, $date_end, $document_types){
+            $model = $data_type['model'];
+            $relation = $data_type['relation'];
+
+            $document_types = $document_type_id ? [$document_type_id] : ['01','03'];
+
+            $data = $model::whereHas($relation, function($query) use($date_start, $date_end, $document_types){
                             $query
                             ->whereBetween('date_of_issue', [$date_start, $date_end])
                             ->whereIn('document_type_id', $document_types)
                             ->latest()
                             ->whereTypeUser();
                         });
+
+        }
 
         return $data;
 
@@ -90,7 +106,7 @@ class ReportGeneralItemController extends Controller
 
             $data['model'] = DocumentItem::class;
             $data['relation'] = 'document';
-        
+
         }else{
 
             $data['model'] = PurchaseItem::class;
