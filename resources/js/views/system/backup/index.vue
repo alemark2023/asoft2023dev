@@ -85,9 +85,19 @@
             }
         },
         created() {
-
+            this.initForm()
         },
         methods: {
+            initForm(){
+
+                this.form = {
+                    host: null,
+                    port: null,
+                    username: null,
+                    password: null,
+                }
+
+            },
             async start() {
                 this.initContent()
                 this.loading_submit = true
@@ -151,7 +161,8 @@
                             this.$message.success(response.data.message)
                             this.$eventHub.$emit('reloadData')
                             this.loading_upload = false
-                            this.close()
+                            // this.close()
+                            this.initForm()
                         } else {
                             this.$message.error(response.data.message)
                         }
@@ -165,6 +176,8 @@
                          else {
                             console.log(error.response)
                         }
+                    })
+                    .then(()=>{
                         this.loading_upload = false
                     })
 

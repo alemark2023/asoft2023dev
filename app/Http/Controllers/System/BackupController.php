@@ -10,9 +10,15 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use DateTime;
 use Artisan;
 use Config;
+use Exception;
+use App\Traits\BackupTrait;
+
 
 class BackupController extends Controller
 {
+
+    use BackupTrait;
+
     public function index() {
 
         $avail = new Process('df -m -h --output=avail /');
@@ -42,6 +48,7 @@ class BackupController extends Controller
 
     public function upload(Request $request)
     {
+
         $config = [
             'driver' => 'ftp',
             'host'   => $request['host'],
@@ -49,8 +56,9 @@ class BackupController extends Controller
             'username' => $request['username'],
             'password'   => $request['password'],
             'port'  => 21,
-            'passive'   => false,
+            'passive'   => true,
         ];
+
         Config::set('filesystems.disks.ftp', $config);
 
         // definimos y subimos el archivo
@@ -59,20 +67,23 @@ class BackupController extends Controller
             $most_recent = $this->mostRecent();
 
             $fileTo = $most_recent['name'];
-            $fileFrom = storage_path('app/'.$most_recent['path']);
-            $upload = Storage::disk('ftp')->put($fileTo, $fileFrom);
+            // $fileFrom = storage_path('app/'.$most_recent['path']);
 
+            $fileFrom = Storage::get($most_recent['path']);
+
+            $upload = Storage::disk('ftp')->put($fileTo, $fileFrom);
+            
             return [
                 'success' => $upload,
                 'message' => 'Proceso finalizado satisfactoriamente'
             ];
 
 
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => $e
-            ];;
+        } catch (Exception $e) {
+            
+            $this->setErrorLog($e);
+            return $this->getErrorMessage("Lo sentimos, ocurrió un error inesperado: {$e->getMessage()}");
+
         }
 
     }
