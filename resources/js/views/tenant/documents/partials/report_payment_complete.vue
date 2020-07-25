@@ -16,9 +16,9 @@
                         </el-date-picker>
                     </div>
                 </div>
-                 <div class="col-lg-2 col-md-2 pb-4">
-                    <div class="form-group"  style="padding: 2.5%;"> <br>
-
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <el-checkbox  v-model="search.anulled">Cargar anulados</el-checkbox><br>
                     </div>
                 </div>
             </div>
@@ -55,10 +55,10 @@ export default {
         {
             if(this.search.month){
 
-                window.open(`/${this.resource}/payments/${type}/${this.search.month}`, '_blank');
+                window.open(`/${this.resource}/payments/${type}/${this.search.month}/${this.search.anulled}`, '_blank');
 
             } else {
-                this.$message.error('Debe completar el mes');
+                this.$message.error('Debe completar el formulario');
             }
         }
     }
