@@ -47,7 +47,7 @@
         <tr>
             <td>DIRECCIÓN</td>
             <td>:</td>
-            <td>{{ $customer->address }}, {{ strtoupper($customer->department->description) }}-{{ strtoupper($customer->province->description) }}-{{ strtoupper($customer->district->description) }}
+            <td style="text-transform: uppercase;">{{ $customer->address }}, {{ strtoupper($customer->department->description) }}-{{ strtoupper($customer->province->description) }}-{{ strtoupper($customer->district->description) }}
             </td>
         </tr>
     @endif

@@ -47,7 +47,7 @@
         <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
     </tr>
     <tr>
-        <td class="text-center">
+        <td class="text-center" style="text-transform: uppercase;">
             {{ ($establishment->address !== '-')? $establishment->address : '' }}
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -113,7 +113,7 @@
         <tr>
             <td class="align-top"><p class="desc">Dirección:</p></td>
             <td>
-                <p class="desc">
+                <p class="desc" style="text-transform: uppercase;">
                     {{ $customer->address }}
                     {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
                     {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}

@@ -26,13 +26,13 @@
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                
+
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
                 @endisset
@@ -55,15 +55,15 @@
         </td>
     </tr>
 </table>
-<table class="full-width mt-5 mb-4">   
+<table class="full-width mt-5 mb-4">
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3" class="text-left">
-            {{ $document->user->name }} 
+            {{ $document->user->name }}
         </td>
     </tr>
-</table> 
- 
+</table>
+
 
 <table class="full-width mt-10 mb-10">
     <thead class="">
@@ -86,18 +86,18 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
-            </td> 
+
+            </td>
         </tr>
         <tr>
             <td colspan="6" class="border-bottom"></td>
         </tr>
     @endforeach
-         
+
     </tbody>
 </table>
 <table class="full-width">
-    <tr> 
+    <tr>
     </tr>
 </table>
 </body>

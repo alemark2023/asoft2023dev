@@ -27,13 +27,13 @@
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                
+
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
                 @endisset
@@ -86,7 +86,7 @@
     <tr>
         <td class="align-top">Dir. Envío:</td>
         <td colspan="3">
-            {{ $document->shipping_address }} 
+            {{ $document->shipping_address }}
         </td>
     </tr>
     @endif
@@ -94,7 +94,7 @@
     <tr>
         <td class="align-top">Teléfono:</td>
         <td colspan="3">
-            {{ $supplier->telephone }} 
+            {{ $supplier->telephone }}
         </td>
     </tr>
     @endif
@@ -102,14 +102,14 @@
     <tr>
         <td class="align-top">T. Pago:</td>
         <td colspan="3">
-            {{ $document->payment_method_type->description }} 
+            {{ $document->payment_method_type->description }}
         </td>
     </tr>
     @endif
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
-            {{ $document->user->name }} 
+            {{ $document->user->name }}
         </td>
     </tr>
     @if($document->sale_opportunity)
@@ -127,7 +127,7 @@
             <td width="85%">{{ $document->purchase_quotation->identifier }}</td>
         </tr>
     @endif
-</table>  
+</table>
 <table class="full-width mt-3">
     @if ($document->description)
         <tr>
@@ -135,7 +135,7 @@
             <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif
-</table>  
+</table>
 
 @if ($document->guides)
 <br/>
