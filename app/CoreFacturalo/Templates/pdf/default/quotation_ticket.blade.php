@@ -37,7 +37,7 @@
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
             {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-            
+
             @isset($establishment->trade_address)
                 <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
             @endisset
@@ -72,15 +72,15 @@
         <td width="" class="pt-3"><p class="desc">F. Emisión:</p></td>
         <td width="" class="pt-3"><p class="desc">{{ $document->date_of_issue->format('Y-m-d') }}</p></td>
     </tr>
- 
-    @if($document->date_of_due) 
+
+    @if($document->date_of_due)
     <tr>
         <td width="" class=""><p class="desc">F. Vencimiento:</p></td>
         <td width="" class=""><p class="desc">{{ $document->date_of_due->format('Y-m-d') }}</p></td>
     </tr>
     @endif
 
-    @if($document->delivery_date) 
+    @if($document->delivery_date)
     <tr>
         <td width="" class=""><p class="desc">F. Entrega:</p></td>
         <td width="" class=""><p class="desc">{{ $document->delivery_date->format('Y-m-d') }}</p></td>
@@ -113,18 +113,18 @@
         <td class="align-top"><p class="desc">Dir. Envío:</p></td>
         <td colspan="3">
             <p class="desc">
-                {{ $document->shipping_address }} 
+                {{ $document->shipping_address }}
             </p>
         </td>
     </tr>
     @endif
-    
+
     @if ($customer->telephone)
     <tr>
         <td class="align-top"><p class="desc">Teléfono:</p></td>
         <td >
-            <p class="desc">            
-                {{ $customer->telephone }} 
+            <p class="desc">
+                {{ $customer->telephone }}
             </p>
         </td>
     </tr>
@@ -133,38 +133,38 @@
     <tr>
         <td class="align-top"><p class="desc">T. Pago:</p></td>
         <td >
-            <p class="desc">            
-                {{ $document->payment_method_type->description }} 
+            <p class="desc">
+                {{ $document->payment_method_type->description }}
             </p>
         </td>
     </tr>
     @endif
-    
+
     @if ($document->account_number)
     <tr>
         <td class="align-top"><p class="desc">N° Cuenta:</p></td>
         <td colspan="">
-            <p class="desc">            
-                {{ $document->account_number }} 
+            <p class="desc">
+                {{ $document->account_number }}
             </p>
-        </td> 
+        </td>
     </tr>
     @endif
     @if ($document->sale_opportunity)
     <tr>
         <td class="align-top"><p class="desc">O. Venta:</p></td>
         <td >
-            <p class="desc">            
-                {{ $document->sale_opportunity->number_full }} 
+            <p class="desc">
+                {{ $document->sale_opportunity->number_full }}
             </p>
         </td>
     </tr>
     @endif
-    <tr> 
+    <tr>
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>
-            <p class="desc">            
-                {{ $document->user->name }} 
+            <p class="desc">
+                {{ $document->user->name }}
 
             </p>
         </td>
@@ -188,7 +188,7 @@
         </tr>
     @endif
 </table>
- 
+
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr>
@@ -282,24 +282,24 @@
         @foreach(array_reverse((array) $document->legends) as $row)
             <tr>
                 @if ($row->code == "1000")
-                    <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
+                    <td class="desc pt-3" style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
                     @if (count((array) $document->legends)>1)
                     <tr><td class="desc pt-3"><span class="font-bold">Leyendas</span></td></tr>
-                    @endif 
+                    @endif
                 @else
-                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>                                                  
+                    <td class="desc pt-3">{{$row->code}}: {{ $row->value }}</td>
                 @endif
             </tr>
         @endforeach
     </tr>
 
     <tr>
-        <td class="desc pt-3"> 
+        <td class="desc pt-3">
             <br>
             @foreach($accounts as $account)
-                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} 
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
                 <br>
-                <span class="font-bold">N°:</span> {{$account->number}} 
+                <span class="font-bold">N°:</span> {{$account->number}}
                 @if($account->cci)
                 - <span class="font-bold">CCI:</span> {{$account->cci}}
                 @endif
@@ -308,7 +308,7 @@
 
         </td>
     </tr>
- 
+
 </table>
 <br>
 <table class="full-width">
