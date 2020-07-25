@@ -216,13 +216,13 @@
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} 
+                    {!!$row->item->description!!}
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
+
                 @foreach($row->additional_information as $information)
-                    @if ($information) 
+                    @if ($information)
                         <br/>{{ $information }}
                     @endif
                 @endforeach
@@ -335,7 +335,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
 

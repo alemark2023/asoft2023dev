@@ -7,9 +7,6 @@
 
     $address_full_delivery = Modules\Order\Services\AddressFullService::getDescription($document->delivery->location_id[2]);
     $address_full_origin= Modules\Order\Services\AddressFullService::getDescription($document->origin->location_id[2]);
-
-
-
 @endphp
 <html>
 <head>

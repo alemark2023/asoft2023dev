@@ -85,11 +85,11 @@
 </table>
 <table class="full-width mt-5">
     <tr>
-   
+
         <td width="120px">FECHA DE EMISIÓN</td>
         <td width="8px">:</td>
         <td>{{$document->date_of_issue->format('Y-m-d')}}</td>
-        
+
         @if ($document->detraction)
 
             <td width="120px">N. CTA DETRACCIONES</td>
@@ -505,7 +505,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p><span class="font-bold">{{$account->bank->description}}</span> <br/> {{$account->description}} {{$account->currency_type->description}} {{$account->number}}</p>
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
         </td>

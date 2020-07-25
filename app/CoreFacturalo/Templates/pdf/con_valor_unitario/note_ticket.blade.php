@@ -244,7 +244,13 @@
     </tr>
     @foreach($accounts as $account)
         <tr>
-            <td class="desc" >{{$account->bank->description}} {{$account->currency_type->description}} {{$account->number}}</td>
+            <td class="desc" >
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                <span class="font-bold">N°:</span> {{$account->number}}
+                @if($account->cci)
+                <span class="font-bold">CCI:</span> {{$account->cci}}
+                @endif
+            </td>
         </tr>
     @endforeach
     @if(isset($document->optional->observations))

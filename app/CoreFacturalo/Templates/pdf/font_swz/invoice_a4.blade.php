@@ -289,7 +289,13 @@
             @if(in_array($document->document_type->id,['01','03']))
                 <p class="font-bold">Cuentas bancarias</p>
                 @foreach($accounts as $account)
-                    <p><span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}</p>
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
         </td>

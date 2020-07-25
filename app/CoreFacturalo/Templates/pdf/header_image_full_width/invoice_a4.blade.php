@@ -154,7 +154,7 @@
     </tr>
     @endif
 
-    
+
     @if ($document->detraction)
     <tr>
 
@@ -162,7 +162,7 @@
         <td width="8px">:</td>
         <td>{{ $document->detraction->bank_account}}</td>
 
-        
+
         <td width="140px">B/S SUJETO A DETRACCIÓN</td>
         <td width="8px">:</td>
         @inject('detractionType', 'App\Services\DetractionTypeService')
@@ -173,7 +173,7 @@
         <td width="120px">MÉTODO DE PAGO</td>
         <td width="8px">:</td>
         <td width="220px">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
-    
+
         <td width="120px">P. DETRACCIÓN</td>
         <td width="8px">:</td>
         <td>{{ $document->detraction->percentage}}%</td>
@@ -183,7 +183,7 @@
         <td width="120px">MONTO DETRACCIÓN</td>
         <td width="8px">:</td>
         <td>{{ $document->currency_type->symbol }} {{ $document->detraction->amount}}</td>
-    
+
         @if($document->detraction->pay_constancy)
         <tr>
             <td colspan="3">
@@ -271,7 +271,7 @@
             <td width="120px">COTIZACIÓN</td>
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
-            
+
             @isset($document->quotation->delivery_date)
                     <td width="120px">F. ENTREGA</td>
                     <td width="8px">:</td>
@@ -347,13 +347,13 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 @if($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!} 
+                    {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} 
+                    {!!$row->item->description!!}
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -559,7 +559,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p><span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}</p>
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
         </td>

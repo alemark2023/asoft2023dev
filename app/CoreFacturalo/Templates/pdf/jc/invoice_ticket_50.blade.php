@@ -204,9 +204,9 @@
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left desc-9 align-top">
                 {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-                
+
                 @foreach($row->additional_information as $information)
-                    @if ($information) 
+                    @if ($information)
                         <br/>{{ $information }}
                     @endif
                 @endforeach
@@ -319,7 +319,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                <P><span class="font-bold">{{$account->bank->description}}</span>  <br/> {{$account->description}}  {{$account->currency_type->description}} {{$account->number}}</P>
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
 
