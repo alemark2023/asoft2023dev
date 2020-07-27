@@ -176,7 +176,7 @@
           </template>
         </div>
 
-        <table-items ref="table_items" @clickAddItem="clickAddItem" @clickWarehouseDetail="clickWarehouseDetail" @clickHistorySales="clickHistorySales" @clickHistoryPurchases="clickHistoryPurchases" v-show="place == 'cat3'" :records="items" ></table-items>
+        <table-items ref="table_items"  @clickAddItem="clickAddItem" @clickWarehouseDetail="clickWarehouseDetail" @clickHistorySales="clickHistorySales" @clickHistoryPurchases="clickHistoryPurchases" v-if="place == 'cat3'" :records="items" :visibleTagsCustomer="visibleTagsCustomer" ></table-items>
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <div class="col-md-12 text-center">
@@ -202,6 +202,7 @@
                 filterable
                 placeholder="Cliente"
                 @change="changeCustomer"
+                @visible-change="visibleChange"
                 @keyup.native="keyupCustomer"
                 @keyup.enter.native="keyupEnterCustomer"
               >
@@ -523,7 +524,8 @@
             categories: [ ],
             colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
             pagination: {},
-            category_selected: ''
+            category_selected: '',
+            visibleTagsCustomer: false
           };
         },
         async created() {
@@ -579,6 +581,10 @@
             }
         },
         methods: {
+            visibleChange(val)
+            {
+                this.visibleTagsCustomer = val
+            },
             handleFn112(response)
             {
               this.search_item_by_barcode = !this.search_item_by_barcode
