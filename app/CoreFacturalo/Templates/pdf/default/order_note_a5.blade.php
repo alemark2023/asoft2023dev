@@ -28,7 +28,7 @@
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -66,7 +66,7 @@
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
-        
+
         @if($document->date_of_due)
             <td width="25%">Fecha de vencimiento:</td>
             <td width="15%">{{ $document->date_of_due->format('Y-m-d') }}</td>
@@ -87,12 +87,12 @@
         @endif
     </tr>
     @endif
-    
+
     @if ($document->shipping_address)
     <tr>
         <td class="align-top">Dir. Envío:</td>
         <td colspan="3">
-            {{ $document->shipping_address }} 
+            {{ $document->shipping_address }}
         </td>
     </tr>
     @endif
@@ -100,23 +100,23 @@
     <tr>
         <td class="align-top">Teléfono:</td>
         <td colspan="3">
-            {{ $customer->telephone }} 
+            {{ $customer->telephone }}
         </td>
     </tr>
     @endif
-    
+
     @if ($document->payment_method_type)
     <tr>
         <td class="align-top">T. Pago:</td>
         <td colspan="3">
-            {{ $document->payment_method_type->description }} 
+            {{ $document->payment_method_type->description }}
         </td>
     </tr>
     @endif
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
-            {{ $document->user->name }} 
+            {{ $document->user->name }}
         </td>
     </tr>
 </table>
@@ -128,7 +128,7 @@
             <td width="85%">{{ $document->observation }}</td>
         </tr>
     @endif
-</table> 
+</table>
 
 {{-- <table class="full-width mt-3">
     @if ($document->purchase_order)
@@ -261,18 +261,18 @@
 </table>
 <table class="full-width">
     <tr>
-        <td width="65%" style="text-align: top; vertical-align: top;"> 
+        <td width="65%" style="text-align: top; vertical-align: top;">
             <br>
             @foreach($accounts as $account)
                 <p>
-                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} 
-                <span class="font-bold">N°:</span> {{$account->number}} 
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                <span class="font-bold">N°:</span> {{$account->number}}
                 @if($account->cci)
                 - <span class="font-bold">CCI:</span> {{$account->cci}}
                 @endif
                 </p>
             @endforeach
-        </td> 
+        </td>
     </tr>
     <tr>
         {{-- <td width="65%">

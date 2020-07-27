@@ -28,13 +28,13 @@
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                
+
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
                 @endisset
@@ -82,12 +82,12 @@
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
     </tr>
-    @endif 
+    @endif
     @if ($customer->telephone)
     <tr>
         <td class="align-top">Teléfono:</td>
         <td colspan="3">
-            {{ $customer->telephone }} 
+            {{ $customer->telephone }}
         </td>
     </tr>
     @endif
@@ -103,21 +103,21 @@
     <tr>
         <td class="align-top">T. Pago:</td>
         <td colspan="3">
-            {{ $document->payment_method_type->description }} 
+            {{ $document->payment_method_type->description }}
         </td>
     </tr>
     @endif
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
-            {{ $document->user->name }} 
+            {{ $document->user->name }}
         </td>
     </tr>
     @if ($document->quotation)
     <tr>
         <td class="align-top">Cotización:</td>
         <td colspan="3">
-            {{ $document->quotation->number_full }} 
+            {{ $document->quotation->number_full }}
         </td>
     </tr>
     @endif
@@ -136,7 +136,7 @@
             <td width="85%">{{ $document->observation }}</td>
         </tr>
     @endif
-</table>  
+</table>
 
 <table class="full-width mt-1">
     @if ($document->detail)
@@ -145,7 +145,7 @@
             <td width="85%">{{ $document->detail }}</td>
         </tr>
     @endif
-</table>  
+</table>
 @if ($document->guides)
 <br/>
 {{--<strong>Guías:</strong>--}}
@@ -267,20 +267,20 @@
 </table>
 <table class="full-width">
     <tr>
-        <td width="65%" style="text-align: top; vertical-align: top;"> 
+        <td width="65%" style="text-align: top; vertical-align: top;">
             <br>
             @foreach($accounts as $account)
                 <p>
-                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} 
-                <span class="font-bold">N°:</span> {{$account->number}} 
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                <span class="font-bold">N°:</span> {{$account->number}}
                 @if($account->cci)
                 - <span class="font-bold">CCI:</span> {{$account->cci}}
                 @endif
                 </p>
             @endforeach
-        </td> 
+        </td>
     </tr>
-    <tr> 
+    <tr>
 
         {{-- <td width="65%">
             @foreach($document->legends as $row)

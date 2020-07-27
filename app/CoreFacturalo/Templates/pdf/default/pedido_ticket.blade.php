@@ -53,7 +53,7 @@
         <td class="text-center"><h5>{{ 'RUC '.$company->number }}</h5></td>
     </tr>
     <tr>
-        <td class="text-center">
+        <td class="text-center" style="text-transform: uppercase;">
             {{ ($establishment->address !== '-')? $establishment->address : '' }}
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -267,9 +267,9 @@
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
-                    {!!$row->item->description!!} 
+                    {!!$row->item->description!!}
                 @endif
-                
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
 
                 @foreach($row->additional_information as $information)
@@ -390,7 +390,7 @@
         @foreach(array_reverse((array) $document->legends) as $row)
             <tr>
                 @if ($row->code == "1000")
-                    <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
+                    <td class="desc pt-3" style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
                     @if (count((array) $document->legends)>1)
                     <tr><td class="desc pt-3"><span class="font-bold">Leyendas</span></td></tr>
                     @endif
@@ -423,7 +423,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
 

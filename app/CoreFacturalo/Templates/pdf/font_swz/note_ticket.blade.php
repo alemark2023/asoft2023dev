@@ -51,7 +51,7 @@
         <td class="text-center"><h4>{{ 'RUC '.$company->number }}</h4></td>
     </tr>
     <tr>
-        <td class="text-center">
+        <td class="text-center" style="text-transform: uppercase;">
             {{ ($establishment->address !== '-')? $establishment->address : '' }}
             {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
             {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -245,12 +245,18 @@
 <table class="full-width">
     <tr>
         @foreach($document->legends as $row)
-            <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
+            <td class="desc pt-3" style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
         @endforeach
     </tr>
     @foreach($accounts as $account)
         <tr>
-            <td class="desc" >{{$account->bank->description}} {{$account->currency_type->description}} {{$account->number}}</td>
+            <td class="desc" >
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                <span class="font-bold">N°:</span> {{$account->number}}
+                @if($account->cci)
+                <span class="font-bold">CCI:</span> {{$account->cci}}
+                @endif
+            </td>
         </tr>
     @endforeach
     @if(isset($document->optional->observations))

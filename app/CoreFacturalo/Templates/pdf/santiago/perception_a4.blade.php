@@ -273,7 +273,7 @@
     </tbody>
     <tfoot style="border-top: 1px solid #333;">
     <tr>
-        <td colspan="5" class="font-lg font-bold"  style="padding-top: 2rem;">Son: {{ $document->number_to_letter }} {{ $document->currency_type->description }}</td>
+        <td colspan="5" class="font-lg font-bold"  style="padding-top: 2rem; text-transform: uppercase;">Son: {{ $document->number_to_letter }} {{ $document->currency_type->description }}</td>
     </tr>
     </tfoot>
 </table>

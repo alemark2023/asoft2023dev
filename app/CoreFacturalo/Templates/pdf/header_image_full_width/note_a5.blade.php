@@ -21,7 +21,7 @@
 <html>
 <head>
     {{--<title>{{ $document_number }}</title>--}}
-    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}} 
+    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
 <table class="full-width">
@@ -50,12 +50,12 @@
 
                 @isset($establishment->trade_address)
                     <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-                @endisset  
+                @endisset
 
                 <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
 
                 <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
-                
+
                 @isset($establishment->web_address)
                     <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
                 @endisset
@@ -81,7 +81,7 @@
             <td width="8px" class="align-top">:</td>
             <td class="align-top">{{$invoice->date_of_due->format('Y-m-d')}}</td>
         @endif
-    </tr> 
+    </tr>
     <tr>
         <td>CLIENTE:</td>
         <td>:</td>
@@ -160,11 +160,11 @@
         <td width="120px">DOC. AFECTADO</td>
         <td width="8px">:</td>
         <td>{{ $affected_document_number }}</td>
-        
+
         <td width="120px">TIPO DE NOTA</td>
         <td width="8px">:</td>
         <td>{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
-    </tr> 
+    </tr>
     <tr>
         <td>DESCRIPCIÓN</td>
         <td>:</td>
@@ -298,14 +298,14 @@
         <td width="65%" style="text-align: top; vertical-align: top;">
             @foreach(array_reverse( (array) $document->legends) as $row)
                 @if ($row->code == "1000")
-                    <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>                      
+                    <p style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
                     @if (count((array) $document->legends)>1)
                         <p><span class="font-bold">Leyendas</span></p>
-                    @endif                  
+                    @endif
                 @else
-                    <p> {{$row->code}}: {{ $row->value }} </p>                                    
+                    <p> {{$row->code}}: {{ $row->value }} </p>
                 @endif
-            
+
             @endforeach
             <br/>
             @foreach($document->additional_information as $information)
@@ -319,7 +319,13 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p><span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}} {{$account->number}}</p>
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
                 @endforeach
             @endif
         </td>
@@ -341,7 +347,7 @@
             @foreach($payments as $row)
                 <tr>
                     <td>- {{ $row->reference }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td>
-                </tr> 
+                </tr>
             @endforeach
         </tr>
 

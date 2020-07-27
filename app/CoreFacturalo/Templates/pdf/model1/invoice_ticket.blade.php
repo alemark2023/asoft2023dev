@@ -143,7 +143,7 @@
                 <tr>
                     <td class="cell-center border-top border-bottom">
                         @foreach($document->legends as $row)
-                        <span class="cell-bold">SON:</span> {{ $row->value }} {{ $document->currency_type->description }}
+                        <span class="cell-bold" style="text-transform: uppercase;">SON:</span> {{ $row->value }} {{ $document->currency_type->description }}
                         @endforeach
                     </td>
                 </tr>
