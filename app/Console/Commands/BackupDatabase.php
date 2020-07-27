@@ -55,15 +55,19 @@ class BackupDatabase extends Command
             foreach ($dbs as $db) {
                 $this->comment('dump '.$db->uuid);
                 $this->process = new Process(sprintf(
-                    "mysqldump --compact --skip-comments --user=%s --password=%s %s > %s",
-                    "'".config('database.connections.mysql.username')."'",
-                    "'".config('database.connections.mysql.password')."'",
+                    'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s',
+                    config('database.connections.mysql.username'),
+                    config('database.connections.mysql.password'),
                     $db->uuid,
-                    storage_path("app".DIRECTORY_SEPARATOR."backups".DIRECTORY_SEPARATOR.$today.DIRECTORY_SEPARATOR."{$db->uuid}.sql") 
+                    storage_path("app/backups/{$today}/{$db->uuid}.sql")
                 ));
-                // dd($this->process);
+
+                // $command = 'mysqldump --opt -u '.config('database.connections.mysql.username').' -p'.config('database.connections.mysql.password').' '.$db->uuid.' > '.storage_path("app/backups/{$today}/{$db->uuid}.sql");
+
+                // $this->process = new Process($command);
+
                 $this->process->run();
-        }
+            }
 
             $this->comment('dump '.$db->uuid);
 
