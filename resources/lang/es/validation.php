@@ -257,6 +257,8 @@ return [
         'license_plates.register_number_2' => 'N° registro 2',
         'dispatcher_id' => 'transportista',
         'driver_id' => 'conductor',
+        'soap_type_id' => 'soap tipo',
+        'soap_send_id' => 'soap envío',
 
     ],
 ];
