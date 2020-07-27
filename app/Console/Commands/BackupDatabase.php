@@ -61,7 +61,7 @@ class BackupDatabase extends Command
                     $db->uuid,
                     storage_path("app".DIRECTORY_SEPARATOR."backups".DIRECTORY_SEPARATOR.$today.DIRECTORY_SEPARATOR."{$db->uuid}.sql") 
                 ));
-                dd($this->process);
+                // dd($this->process);
                 $this->process->run();
         }
 
