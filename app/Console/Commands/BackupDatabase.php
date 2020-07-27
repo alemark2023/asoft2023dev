@@ -55,7 +55,7 @@ class BackupDatabase extends Command
             foreach ($dbs as $db) {
                 $this->comment('dump '.$db->uuid);
                 $this->process = new Process(sprintf(
-                    'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s',
+                    'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
                     config('database.connections.mysql.username'),
                     config('database.connections.mysql.password'),
                     $db->uuid,
@@ -72,7 +72,7 @@ class BackupDatabase extends Command
             $this->comment('dump '.$db->uuid);
 
             $this->process = new Process(sprintf(
-                'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s',
+                'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
                 config('database.connections.mysql.username'),
                 config('database.connections.mysql.password'),
                 config('database.connections.mysql.database'),
