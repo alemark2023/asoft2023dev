@@ -737,6 +737,11 @@
           },
           keyupEnterCustomer(){
 
+            if(this.place == 'cat3')
+            {
+                return false
+            }
+
             if(this.form.customer_id){
 
               this.clickPayment()
@@ -767,6 +772,11 @@
             }
           },
           keyupCustomer(e){
+
+            if(this.place == 'cat3')
+            {
+                  return false
+            }
 
             if(e.key !== "Enter"){
 
@@ -822,12 +832,14 @@
             this.calculateTotal();
           },
           changeCustomer() {
+
             let customer = _.find(this.all_customers, { id: this.form.customer_id });
             this.customer = customer;
             // this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
             this.form.document_type_id = "03";
             this.setLocalStorageIndex('customer', this.customer)
             this.setFormPosLocalStorage()
+
           },
 
           getLocalStorageIndex(key, re_default = null){

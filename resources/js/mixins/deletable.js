@@ -42,6 +42,10 @@ export const deletable = {
                                 this.$message.success('Se anuló correctamente el registro')
                                 resolve()
                             }
+                            else{
+                                const {message = 'Error al intentar anular'} = res.data
+                                this.$message.error(message)
+                            }
                         })
                         .catch(error => {
                             if (error.response.status === 500) {

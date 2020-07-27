@@ -316,28 +316,56 @@ class PurchaseController extends Controller
             ],
         ];
 
+    }
 
+    public static function verifyHasSaleItems($items)
+    {
+        $validated = true;
+        foreach ($items as $element) {
 
+            $lot_has_sale = collect($element->lots)->firstWhere('has_sale', 1);
+            if($lot_has_sale)
+            {
+                $validated = false;
+                break;
+            }
+
+        }
+
+        return [
+            'success' => $validated
+        ];
     }
 
     public function anular($id)
     {
         $obj =  Purchase::find($id);
+
+        $validated = self::verifyHasSaleItems($obj->items);
+
+        if(!$validated['success'])
+        {
+            return [
+                'success' => false,
+                'message' => 'No se puede anular esta compra, series en productos no disponibles'
+            ];
+        }
+
         $obj->state_type_id = 11;
         $obj->save();
 
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+        //$establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        //$warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
 
         //proceso para eliminar los actualizar el stock de proiductos
         foreach ($obj->items as $item) {
             $item->purchase->inventory_kardex()->create([
                 'date_of_issue' => date('Y-m-d'),
                 'item_id' => $item->item_id,
-                'warehouse_id' => $establishment->id,
+                'warehouse_id' => $item->warehouse_id,
                 'quantity' => -$item->quantity,
             ]);
-            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $warehouse->id]])->first();
+            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $item->warehouse_id]])->first();
             $wr->stock =  $wr->stock - $item->quantity;
             $wr->save();
         }
