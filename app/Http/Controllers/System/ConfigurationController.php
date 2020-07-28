@@ -42,13 +42,32 @@ class ConfigurationController extends Controller
             $configuration->token_private_culqui = $request->token_private_culqui;
         }
 
+        if($request->url_apiruc)
+        {
+            $configuration->url_apiruc = $request->url_apiruc;
+        }
+
+        if($request->token_apiruc)
+        {
+            $configuration->token_apiruc = $request->token_apiruc;
+        }
+
         $configuration->save();
 
         return [
             'success' => true,
             'message' => 'Datos guardados con exito'
         ];
+    }
 
+    public function apiruc()
+    {
 
+        $configuration = Configuration::first();
+
+        return [
+            'url_apiruc' => $configuration->url_apiruc,
+            'token_apiruc' => $configuration->token_apiruc,
+        ];
     }
 }
