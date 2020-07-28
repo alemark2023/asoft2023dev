@@ -85,9 +85,9 @@ export default {
         {
             if(this.visibleTagsCustomer)
             {
-                return
+                return false
             }
-            
+
             if(this.records.length == 1)
             {
                 this.$emit('clickAddItem', this.records[0])

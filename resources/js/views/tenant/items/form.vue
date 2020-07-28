@@ -174,7 +174,7 @@
                             <el-checkbox v-model="form.lots_enabled" @change="changeLotsEnabled">¿Maneja lotes?</el-checkbox><br>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.lots_enabled">
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.lots_enabled && !recordId">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
@@ -192,7 +192,7 @@
                             <el-checkbox v-model="form.series_enabled" @change="changeLotsEnabled">¿Maneja series?</el-checkbox><br>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.series_enabled">
+                    <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.series_enabled && !recordId">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
                                 <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->

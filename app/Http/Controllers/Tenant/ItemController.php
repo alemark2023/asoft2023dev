@@ -255,7 +255,7 @@ class ItemController extends Controller
         else{
 
              // $item->lots()->delete();
-             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            /* $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
              $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
              //$warehouse = WarehouseModule::find(auth()->user()->establishment_id);
 
@@ -290,9 +290,7 @@ class ItemController extends Controller
                     }
 
                 }
-
-
-             }
+            }*/
 
 
         }
@@ -380,9 +378,9 @@ class ItemController extends Controller
 
     public function upload(Request $request)
     {
-        
+
         $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
-        
+
         if(!$validate_upload['success']){
             return $validate_upload;
         }
