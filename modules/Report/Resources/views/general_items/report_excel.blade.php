@@ -29,6 +29,7 @@
                                 <th class="">CÓDIGO INTERNO</th>
                                 <th class="">DESCRIPCIÓN</th>
                                 <th class="">CANTIDAD</th>
+                                <th class="">SERIES</th>
                                 <th class="">COSTO UNIDAD</th>
                                 <th class="">VALOR UNITARIO</th>
                                 <th class="">PRECIO UNITARIO</th>
@@ -45,9 +46,21 @@
                         <tbody>
                             @if($type == 'sale')
 
+
+
                                 @if($document_type_id == '80')
 
                                     @foreach($records as $key => $value)
+
+                                        @php
+                                            $series = '';
+                                            if(isset($value->item->lots) )
+                                            {
+                                                $series_data =  collect($value->item->lots)->where('has_sale', 1)->pluck('series')->toArray();
+                                                $series = implode(" - ", $series_data);
+                                            }
+
+                                        @endphp
                                         <tr>
                                             <td class="celda">{{$value->sale_note->date_of_issue->format('Y-m-d')}}</td>
                                             <td class="celda">NOTA DE VENTA</td>
@@ -64,6 +77,8 @@
                                             <td class="celda">{{$value->relation_item->internal_id}}</td>
                                             <td class="celda">{{$value->item->description}}</td>
                                             <td class="celda">{{$value->quantity}}</td>
+
+                                            <td class="celda">{{$series}}</td>
 
                                             <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
 
@@ -87,6 +102,17 @@
                                 @else
 
                                     @foreach($records as $key => $value)
+
+                                        @php
+                                            $series = '';
+                                            if(isset($value->item->lots) )
+                                            {
+                                                $series_data =  collect($value->item->lots)->where('has_sale', 1)->pluck('series')->toArray();
+                                                $series = implode(" - ", $series_data);
+                                            }
+
+                                        @endphp
+
                                     <tr>
                                         <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td>
                                         <td class="celda">{{$value->document->document_type->description}}</td>
@@ -103,6 +129,9 @@
                                         <td class="celda">{{$value->item->internal_id}}</td>
                                         <td class="celda">{{$value->item->description}}</td>
                                         <td class="celda">{{$value->quantity}}</td>
+
+                                        <td class="celda">{{$series}}</td>
+
 
                                         <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
 

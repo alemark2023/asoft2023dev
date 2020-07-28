@@ -151,7 +151,7 @@ class CashController extends Controller
 
             }
             else if($cash_document->expense_payment){
-                
+
                 if($cash_document->expense_payment->expense->state_type_id == '05'){
                     $final_balance -= ($cash_document->expense_payment->expense->currency_type_id == 'PEN') ? $cash_document->expense_payment->payment:($cash_document->expense_payment->payment  * $cash_document->expense_payment->expense->exchange_rate_sale);
                 }
