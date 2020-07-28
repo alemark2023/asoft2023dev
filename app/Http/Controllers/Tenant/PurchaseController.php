@@ -340,9 +340,7 @@ class PurchaseController extends Controller
     public function anular($id)
     {
         $obj =  Purchase::find($id);
-
         $validated = self::verifyHasSaleItems($obj->items);
-
         if(!$validated['success'])
         {
             return [
@@ -351,24 +349,30 @@ class PurchaseController extends Controller
             ];
         }
 
-        $obj->state_type_id = 11;
-        $obj->save();
+        DB::connection('tenant')->transaction(function () use($obj){
 
-        //$establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        //$warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+            foreach ($obj->items as $it) {
+                $it->lots()->delete();
+            }
 
-        //proceso para eliminar los actualizar el stock de proiductos
-        foreach ($obj->items as $item) {
-            $item->purchase->inventory_kardex()->create([
-                'date_of_issue' => date('Y-m-d'),
-                'item_id' => $item->item_id,
-                'warehouse_id' => $item->warehouse_id,
-                'quantity' => -$item->quantity,
-            ]);
-            $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $item->warehouse_id]])->first();
-            $wr->stock =  $wr->stock - $item->quantity;
-            $wr->save();
-        }
+            $obj->state_type_id = 11;
+            $obj->save();
+
+            foreach ($obj->items as $item) {
+                $item->purchase->inventory_kardex()->create([
+                    'date_of_issue' => date('Y-m-d'),
+                    'item_id' => $item->item_id,
+                    'warehouse_id' => $item->warehouse_id,
+                    'quantity' => -$item->quantity,
+                ]);
+                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $item->warehouse_id]])->first();
+                $wr->stock =  $wr->stock - $item->quantity;
+                $wr->save();
+            }
+
+
+
+        });
 
         return [
             'success' => true,
