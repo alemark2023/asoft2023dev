@@ -24,6 +24,7 @@ class InventoryResource extends JsonResource
             'warehouse_new_id' => null,
             'quantity_move' => 0,
             'lots_enabled' => (bool)$this->item->lots_enabled,
+            'series_enabled' => (bool)$this->item->series_enabled,
             'lots' => $this->item->item_lots->where('has_sale', false)->where('warehouse_id', $this->warehouse_id)->transform(function($row) {
                 return [
                     'id' => $row->id,
@@ -34,7 +35,7 @@ class InventoryResource extends JsonResource
                     'has_sale' => (bool)$row->has_sale,
                     'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                 ];
-            }),
+            })->values(),
         ];
     }
 }

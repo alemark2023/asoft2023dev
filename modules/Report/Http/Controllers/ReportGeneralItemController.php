@@ -121,10 +121,12 @@ class ReportGeneralItemController extends Controller
 
         $records = $this->getRecordsItems($request->all())->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
+        $document_type_id = $request['document_type_id'];
 
         return (new GeneralItemExport)
                 ->records($records)
                 ->type($request->type)
+                ->document_type_id($document_type_id)
                 ->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
 
     }

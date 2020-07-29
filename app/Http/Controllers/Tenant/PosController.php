@@ -165,7 +165,7 @@ class PosController extends Controller
 
             $configuration =  Configuration::first();
 
-            $items = Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->take(100)
+            $items = Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->where('series_enabled', 0)->orderBy('description')->take(100)
                             ->get()->transform(function($row) use ($configuration) {
                                 $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                                 return [
@@ -306,16 +306,16 @@ class PosController extends Controller
     public function item(Request $request)
     {
         if($request->cat) {
-            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(50));
+            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('series_enabled', 0)->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(50));
         } else {
-            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(50));
+            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('series_enabled', 0)->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(50));
         }
 
     }
 
     public function search_items_cat(Request $request)
     {
-        return new PosCollection(Item::where('description','like', "%{$request->input_item}%")
+        return new PosCollection(Item::where('description','like', "%{$request->input_item}%")->where('series_enabled', 0)
                             ->orWhere('internal_id','like', "%{$request->input_item}%")
                             //->orwhere('category_id', $request->cat)
                             ->orWhereHas('category', function($query) use($request) {

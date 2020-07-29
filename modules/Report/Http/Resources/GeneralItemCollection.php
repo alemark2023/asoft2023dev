@@ -43,7 +43,7 @@ class GeneralItemCollection extends ResourceCollection
     {
         if(isset($row->item->lots) )
         {
-            return $row->item->lots;
+            return collect($row->item->lots)->where('has_sale', 1);
         }
         else
         {
