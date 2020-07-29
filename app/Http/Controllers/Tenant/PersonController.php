@@ -18,12 +18,14 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Excel;
 use Carbon\Carbon;
 use App\Exports\ClientExport;
+use App\Models\System\Configuration;
 
 class PersonController extends Controller
 {
     public function index($type)
     {
-        $api_service_token = config('configuration.api_service_token');
+        $configuration = Configuration::first();
+        $api_service_token = $configuration->token_apiruc =! '' ? $configuration->token_apiruc : config('configuration.api_service_token');
         return view('tenant.persons.index', compact('type','api_service_token'));
     }
 
@@ -60,7 +62,8 @@ class PersonController extends Controller
         $identity_document_types = IdentityDocumentType::whereActive()->get();
         $person_types = PersonType::get();
         $locations = $this->getLocationCascade();
-        $api_service_token = config('configuration.api_service_token');
+        $configuration = Configuration::first();
+        $api_service_token = $configuration->token_apiruc == 'false' ? config('configuration.api_service_token') : $configuration->token_apiruc;
 
         return compact('countries', 'departments', 'provinces', 'districts', 'identity_document_types', 'locations','person_types','api_service_token');
     }

@@ -74,7 +74,9 @@ class ItemResource extends JsonResource
                 ];
             }),
             'commission_type' => $this->commission_type ?? 'amount',
-            'attributes' => $this->attributes ? $this->attributes : []
+            'attributes' => $this->attributes ? $this->attributes : [],
+            'series_enabled' => (bool)$this->series_enabled,
+            'lots_enabled' => (bool)$this->lots_enabled,
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [

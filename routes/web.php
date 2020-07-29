@@ -607,6 +607,7 @@ if ($hostname) {
 
             Route::post('configurations', 'System\ConfigurationController@store');
             Route::get('configurations/record', 'System\ConfigurationController@record');
+            Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
 
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');

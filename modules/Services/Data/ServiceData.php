@@ -3,17 +3,23 @@
 namespace Modules\Services\Data;
 
 use GuzzleHttp\Client;
+use App\Models\System\Configuration;
 
 class ServiceData
 {
     public static function service($type, $number)
     {
-        $client = new Client(['base_uri' => config('configuration.api_service_url'), 'verify' => false]);
+        $configuration = Configuration::first();
+
+        $url = $configuration->url_apiruc =! '' ? $configuration->url_apiruc : config('configuration.api_service_url');
+        $token = $configuration->token_apiruc =! '' ? $configuration->token_apiruc : config('configuration.api_service_token');
+
+        $client = new Client(['base_uri' => $url, 'verify' => false]);
         $parameters = [
             'http_errors' => false,
             'connect_timeout' => 5,
             'headers' => [
-                'Authorization' => 'Bearer '.config('configuration.api_service_token'),
+                'Authorization' => 'Bearer '.$token,
                 'Accept' => 'application/json',
             ],
         ];
