@@ -36,7 +36,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(row, index) in form.documents">
+                                <tr v-for="(row, index) in form.documents" :key="index">
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ row.number }}<br/>
                                         <small v-text="row.document_type_description"></small><br/>
@@ -107,7 +107,17 @@
                     'date_of_reference': this.form.date_of_reference
                 })
                     .then(response => {
-                        this.form.documents = response.data.data
+
+                        if(response.data.success){
+
+                            this.form.documents = response.data.data
+                        
+                        }else{
+
+                            this.$message.error(response.data.message)
+
+                        }
+
                     })
                     .catch(error => {
                         this.$message.error(error.response.data.message)
