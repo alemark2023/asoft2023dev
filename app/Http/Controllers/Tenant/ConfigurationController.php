@@ -41,6 +41,14 @@ class ConfigurationController extends Controller
             ->insert(['formats' => $insertar[2] ]);
         }
 
+        // revisión custom
+        $exists = Storage::disk('core')->exists('Templates/pdf/custom/style.css');
+        if (!$exists) {
+            Storage::disk('core')->copy('Templates/pdf/default/style.css', 'Templates/pdf/custom/style.css');
+            Storage::disk('core')->copy('Templates/pdf/default/invoice_a4.blade.php', 'Templates/pdf/custom/invoice_a4.blade.php');
+            Storage::disk('core')->copy('Templates/pdf/default/partials/footer.blade.php', 'Templates/pdf/custom/partials/footer.blade.php');
+        }
+
         return [
             'success' => true,
             'message' => 'Configuración actualizada'
@@ -191,21 +199,21 @@ class ConfigurationController extends Controller
         // return 'error';
     }
 
-    
+
     public function uploadFile(Request $request)
     {
         if ($request->hasFile('file')) {
 
             $configuration = Configuration::first();
-            
-            
+
+
             $file = $request->file('file');
             $ext = $file->getClientOriginalExtension();
             $name = date('Ymd').'_'.$configuration->id.'.'.$ext;
-         
-            
+
+
             request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
-            
+
             $file->storeAs('public/uploads/header_images', $name);
 
 
