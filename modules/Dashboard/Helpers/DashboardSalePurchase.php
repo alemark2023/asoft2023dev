@@ -139,7 +139,13 @@ class DashboardSalePurchase
         // $purchases = Purchase::get();
         $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])->where('establishment_id', $establishment_id)->get();
 
-        $purchases_total = round($purchases->sum('total'),2);
+        $purchases_total = $purchases->where('currency_type_id', 'PEN')->sum('total');
+
+        $purchase_dollr = $purchases->where('currency_type_id', 'USD');
+
+        foreach ($purchase_dollr as $pr) {
+            $purchases_total +=  $pr->total * $pr->exchange_rate_sale;
+        }
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
 
 
@@ -153,7 +159,7 @@ class DashboardSalePurchase
         return [
             'totals' => [
                 'purchases_total_perception' => number_format($purchases_total_perception,2),
-                'purchases_total' => number_format($purchases_total,2),
+                'purchases_total' => number_format( round($purchases_total, 2),2),
                 'total' => number_format($purchases_total + $purchases_total_perception,2),
             ],
             'graph' => [
