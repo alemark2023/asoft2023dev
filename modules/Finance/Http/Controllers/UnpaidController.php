@@ -10,7 +10,7 @@ use App\Models\Tenant\Cash;
 use App\Models\Tenant\BankAccount;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 use Modules\Finance\Http\Resources\GlobalPaymentCollection;
 use Modules\Finance\Exports\BalanceExport;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -20,17 +20,18 @@ use App\Models\Tenant\Person;
 use Modules\Dashboard\Helpers\DashboardView;
 use App\Exports\AccountsReceivable;
 use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
+use App\Models\Tenant\User;
 
 class UnpaidController extends Controller
-{ 
-    
+{
+
     use FinanceTrait;
-    
+
     public function index()
     {
         return view('finance::unpaid.index');
     }
-    
+
     public function filter()
     {
         $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
@@ -45,22 +46,29 @@ class UnpaidController extends Controller
 
         $establishments = DashboardView::getEstablishments();
 
-        return compact('customers', 'establishments');
+        $users = [];
+
+        if(auth()->user()->type == 'admin')
+        {
+            $users = User::where('id', '!=', auth()->user()->id)->whereIn('type', ['admin', 'seller'])->get();
+        }
+
+        return compact('customers', 'establishments', 'users');
     }
-    
+
     public function records(Request $request)
     {
         return [
-            'records' => (new DashboardView())->getUnpaid($request->all())
+            'records' => (new DashboardView())->getUnpaidFilterUser($request->all())
        ];
     }
- 
+
     public function unpaidall()
     {
         return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
     }
 
-    
+
     public function reportPaymentMethodDays(Request $request)
     {
 
@@ -70,7 +78,7 @@ class UnpaidController extends Controller
             $row['difference_days'] = Carbon::parse($row['date_of_issue'])->diffInDays($row['date_of_due']);
             return $row;
         });
-        
+
         $company = Company::first();
 
         return (new UnpaidPaymentMethodDayExport)
