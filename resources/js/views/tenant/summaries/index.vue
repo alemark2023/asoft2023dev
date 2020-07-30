@@ -31,14 +31,21 @@
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td class="text-center">{{ row.date_of_reference }}</td>
                         <td>{{ row.identifier }}</td>
-                        <td>{{ row.state_type_description }}</td>
+                        <td>
+                            <!-- {{ row.state_type_description }} -->
+                            <span class="badge bg-secondary text-white" :class="{'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{row.state_type_description}}</span>
+                        </td>
                         <td>{{ row.ticket }}</td>
                         <td class="text-center">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_xml)"
                                     v-if="row.has_xml">XML</button> 
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_cdr)"
+                                    v-if="row.has_cdr">CDR</button> -->
+                                    
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)"
                                     v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-right">
@@ -56,6 +63,9 @@
             
             <summary-form :showDialog.sync="showDialog"
                         :external="false"></summary-form>
+
+            <summary-options :showDialog.sync="showDialogOptions"
+                              :recordId="recordId"></summary-options>
         </div>
     </div>
 
@@ -63,17 +73,20 @@
 
 <script>
 
+    import SummaryOptions from './partials/options.vue'
     import SummaryForm from './form.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         mixins: [deletable],
-        components: {DataTable, SummaryForm},
+        components: {DataTable, SummaryForm, SummaryOptions},
         data () {
             return {
                 resource: 'summaries',
                 showDialog: false,
+                showDialogOptions: false,
+                recordId: null,
                 records: [],
             }
         },
@@ -81,14 +94,18 @@
 
         },
         methods: { 
+            clickOptions(recordId){
+                this.recordId = recordId
+                this.showDialogOptions = true
+            },
             clickCreate() {
                 this.showDialog = true
             },
             clickTicket(id) {
                 this.$http.get(`/${this.resource}/status/${id}`)
                     .then(response => {
+                        this.$eventHub.$emit('reloadData') 
                         if (response.data.success) {
-                            this.$eventHub.$emit('reloadData') 
                             this.$message.success(response.data.message)
                         } else {
                             this.$message.error(response.data.message)

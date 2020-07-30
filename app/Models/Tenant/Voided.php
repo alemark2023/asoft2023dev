@@ -20,6 +20,7 @@ class Voided extends ModelTenant
         'ticket',
         'has_ticket',
         'has_cdr',
+        'soap_shipping_response',
     ];
 
     protected $casts = [
@@ -60,5 +61,15 @@ class Voided extends ModelTenant
     public function getDownloadExternalCdrAttribute()
     {
         return route('tenant.download.external_id', ['model' => 'voided', 'type' => 'cdr', 'external_id' => $this->external_id]);
+    }
+    
+    public function getSoapShippingResponseAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setSoapShippingResponseAttribute($value)
+    {
+        $this->attributes['soap_shipping_response'] = (is_null($value))?null:json_encode($value);
     }
 }
