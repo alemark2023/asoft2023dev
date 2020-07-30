@@ -63,10 +63,10 @@ class SummaryReportController extends Controller
         return (new ReportFormatSummaryReportExport())
             ->data($data)
             ->download($filename.'.xlsx');
-        
-    } 
- 
-    
+
+    }
+
+
     private function getTotalsAcceptedDocuments($accepted_documents){
 
         $general_total_plastic_bag_taxes = 0;
@@ -79,7 +79,7 @@ class SummaryReportController extends Controller
         $general_total_value +=  number_format($accepted_documents->sum('total_value'), 2, ".", "");
         $general_total +=  number_format($accepted_documents->sum('total'), 2, ".", "");
 
-        return [ 
+        return [
             'general_total_igv' => $general_total_igv,
             'general_total_plastic_bag_taxes' => $general_total_plastic_bag_taxes,
             'general_total_value' => $general_total_value,
@@ -93,7 +93,7 @@ class SummaryReportController extends Controller
         $general_total = 0;
         $general_total +=  number_format($voided_documents->sum('total'), 2, ".", "");
 
-        return [ 
+        return [
             'general_total' => $general_total,
         ];
 
@@ -108,25 +108,40 @@ class SummaryReportController extends Controller
 
         $accepted_documents = Series::query()
                     ->select('number', 'document_type_id')
-                    ->whereIn('document_type_id', ['01','03']) 
+                    ->whereIn('document_type_id', ['01','03'])
                     ->whereHas('documents')
                     ->with(['documents' => function($query) use($request) {
                             $query->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
                                   ->where('state_type_id', '05')
-                                  ->select('series', 'number', 'state_type_id', 'total_igv', 'total_plastic_bag_taxes', 'total_value', 'total');
+                                  ->select('series', 'number', 'state_type_id', 'total_igv', 'total_plastic_bag_taxes', 'total_value', 'total', 'currency_type_id', 'exchange_rate_sale');
                     }])
                     ->get()
                     ->map(function($series) use($total_plastic_bag_taxes, $total_igv, $total_value, $total){
 
-                        
                         $quantity = count($series->documents);
                         $start_number = $series->documents->min('number') ?? 0;
                         $end_number = $series->documents->max('number') ?? 0;
-                        
-                        $total_igv +=  number_format($series->documents->sum('total_igv'), 2, ".", "");
+
+                        $total_igv +=  $series->documents->where('currency_type_id', 'PEN')->sum('total_igv');
+
+                        $doc_dollar = collect($series->documents->where('currency_type_id', 'USD'));
+                        foreach ($doc_dollar as $doc) {
+                            $total_igv +=  $doc->total_igv * $doc->exchange_rate_sale;
+                        }
+
                         $total_plastic_bag_taxes +=  number_format($series->documents->sum('total_plastic_bag_taxes'), 2, ".", "");
-                        $total_value +=  number_format($series->documents->sum('total_value'), 2, ".", "");
-                        $total +=  number_format($series->documents->sum('total'), 2, ".", "");
+
+
+
+                        $total_value +=  $series->documents->where('currency_type_id', 'PEN')->sum('total_value');
+                        foreach ($doc_dollar as $doc) {
+                            $total_value +=  $doc->total_value * $doc->exchange_rate_sale;
+                        }
+
+                        $total +=  $series->documents->where('currency_type_id', 'PEN')->sum('total');
+                        foreach ($doc_dollar as $doc) {
+                            $total +=  $doc->total * $doc->exchange_rate_sale;
+                        }
 
                         return [
                             'document_type_description' => ($series->document_type_id == '01') ? 'FAC':'BV',
@@ -134,14 +149,14 @@ class SummaryReportController extends Controller
                             'series' => $series->number,
                             'start_number' => $start_number,
                             'end_number' => $end_number,
-                            'total_igv' => $total_igv,
+                            'total_igv' => number_format($total_igv, 2, ".", ""),
                             'total_plastic_bag_taxes' => $total_plastic_bag_taxes,
-                            'total_value' => $total_value,
-                            'total' => $total,
+                            'total_value' => number_format( $total_value, 2, ".", ""),
+                            'total' => number_format( $total, 2, ".", ""),
                         ];
                     });
-        
- 
+
+
         return $accepted_documents;
 
     }
@@ -154,7 +169,7 @@ class SummaryReportController extends Controller
 
         $voided_documents = Series::query()
                     ->select('number', 'document_type_id')
-                    ->whereIn('document_type_id', ['01','03']) 
+                    ->whereIn('document_type_id', ['01','03'])
                     ->whereHas('documents')
                     ->with(['documents' => function($query) use($request) {
                             $query->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
@@ -163,18 +178,22 @@ class SummaryReportController extends Controller
                     }])
                     ->get()
                     ->map(function($series) use($total){
-                        
+
                         $start_number = $series->documents->min('number') ?? 0;
                         $end_number = $series->documents->max('number') ?? 0;
                         $voided = (count($series->documents) > 0) ? $series->documents()->where('state_type_id', '11')->pluck('number')->toArray() : [];
-                        
-                        $total +=  number_format($series->documents->sum('total'), 2, ".", "");
+
+                        $total +=  $series->documents->where('currency_type_id', 'PEN')->sum('total');
+                        $doc_dollar = collect($series->documents->where('currency_type_id', 'USD'));
+                        foreach ($doc_dollar as $doc) {
+                            $total +=  $doc->total * $doc->exchange_rate_sale;
+                        }
 
                         return [
                             'document_type_description' => ($series->document_type_id == '01') ? 'FAC':'BV',
                             'series' => $series->number,
                             'voided' => join('; ', $voided),
-                            'total' => $total,
+                            'total' => number_format($total, 2, ".", ""),
                         ];
                     });
 

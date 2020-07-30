@@ -12,11 +12,11 @@
                 <h3 class="my-0">{{ title }}</h3>
             </div>
             <div class="card-body">
-                 
-                <div class="row mt-2">  
-                         
+
+                <div class="row mt-2">
+
                         <div class="col-md-3">
-                            <div class="form-group" :class="{'has-danger': errors.date_start}"> 
+                            <div class="form-group" :class="{'has-danger': errors.date_start}">
                                 <label class="control-label">Fecha inicial</label>
                                 <el-date-picker v-model="form.date_start" type="date"
                                                 @change="changeDisabledDates"
@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group" :class="{'has-danger': errors.date_end}"> 
+                            <div class="form-group" :class="{'has-danger': errors.date_end}">
                                 <label class="control-label">Fecha final</label>
                                 <el-date-picker v-model="form.date_end" type="date"
                                                 :picker-options="pickerOptionsDates"
@@ -34,19 +34,19 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6" style="margin-top:29px"> 
+                        <div class="col-md-6" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
-                            <template v-if="accepted_documents.length > 0"> 
+                            <template v-if="accepted_documents.length > 0">
 
 
                                 <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
 
                             </template>
                         </div>
-                    
+
                 </div>
                 <div class="row mt-3 mb-4">
-                    <div class="col-md-12" v-if="accepted_documents.length > 0"> 
+                    <div class="col-md-12" v-if="accepted_documents.length > 0">
                         <h4>CONFIRMADOS
                             <el-tooltip class="item" effect="dark" content="Facturas aceptadas" placement="top-start">
                                 <i class="fa fa-info-circle"></i>
@@ -87,8 +87,8 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div> 
-                    <div class="col-md-12 mt-4" v-if="voided_documents.length > 0"> 
+                    </div>
+                    <div class="col-md-12 mt-4" v-if="voided_documents.length > 0">
                         <h4>INVALIDADOS
                             <el-tooltip class="item" effect="dark" content="Facturas anuladas" placement="top-start">
                                 <i class="fa fa-info-circle"></i>
@@ -100,7 +100,7 @@
                                     <tr>
                                         <th>Comprobante</th>
                                         <th>Serie</th>
-                                        <th class="text-center">Numeros</th> 
+                                        <th class="text-center">Numeros</th>
                                         <th class="text-right">Importe</th>
                                     </tr>
                                 </thead>
@@ -118,9 +118,9 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div> 
-                </div> 
-            </div> 
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -155,13 +155,13 @@
         },
         methods: {
             initForm(){
- 
+
                 this.form = {
                     date_start:null,
                     date_end:null,
                 }
 
-            },  
+            },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {
                     this.form.date_end = this.form.date_start
@@ -177,14 +177,14 @@
             getRecords() {
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     // console.log(response)
-                    this.accepted_documents = response.data.accepted_documents 
-                    this.voided_documents = response.data.voided_documents 
-                    this.totals_accepted_documents = response.data.totals_accepted_documents 
-                    this.totals_voided_documents = response.data.totals_voided_documents 
+                    this.accepted_documents = response.data.accepted_documents
+                    this.voided_documents = response.data.voided_documents
+                    this.totals_accepted_documents = response.data.totals_accepted_documents
+                    this.totals_voided_documents = response.data.totals_voided_documents
 
                 }).catch(error => {
                     if (error.response.status === 422) {
-                        this.errors = error.response.data 
+                        this.errors = error.response.data
                         // console.log(error.response.data)
                     } else {
                         // console.log(error.response)
