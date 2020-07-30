@@ -4,10 +4,10 @@
             <h3 class="my-0">Cuentas por cobrar</h3>
         </div>
         <div class="card mb-0">
-            <div class="card-body"> 
+            <div class="card-body">
 
                 <div class="row">
-                
+
                     <div class="col-xl-12">
                         <section >
                         <div>
@@ -83,6 +83,24 @@
                                     </el-select>
                                 </div>
 
+                                <div v-if="typeUser == 'admin'" class="col-md-4">
+                                    <label class="control-label">Usuario</label>
+                                    <el-select
+                                        @change="changeUser"
+                                        filterable
+                                        clearable
+                                        v-model="form.user_id"
+                                        placeholder="Seleccionar usuario"
+                                        >
+                                        <el-option
+                                            v-for="item in users"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id"
+                                        ></el-option>
+                                    </el-select>
+                                </div>
+
                                 <div class="col-md-6" style="margin-top:29px">
                                     <el-button
                                         class="submit"
@@ -101,7 +119,7 @@
                                         <i class="fa fa-file-excel"></i> Exportar Excel
                                     </el-button>
 
-                                    
+
                                     <el-tooltip class="item" effect="dark" content="Reporte por formas de pago (Días)" placement="top-start">
                                         <el-button
                                             v-if="records.length > 0"
@@ -155,6 +173,7 @@
                                     <th>F.Vencimiento</th>
                                     <th>Número</th>
                                     <th>Cliente</th>
+                                    <th>Usuario</th>
                                     <th>Días de retraso</th>
 
                                     <th>Guías</th>
@@ -174,6 +193,8 @@
                                             <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
                                             <td>{{ row.number_full }}</td>
                                             <td>{{ row.customer_name }}</td>
+                                            <td>{{ row.username }}</td>
+
                                             <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
 
                                             <td>
@@ -308,6 +329,7 @@
     import queryString from "query-string";
 
     export default {
+        props:['typeUser'],
         components: {DocumentPayments, SaleNotePayments, DataTable},
         data() {
             return {
@@ -330,11 +352,12 @@
                     }
                 },
                 showDialogDocumentPayments: false,
-                showDialogSaleNotePayments: false
+                showDialogSaleNotePayments: false,
+                users:[]
             }
         },
         async created() {
-            
+
             this.$eventHub.$on("reloadDataUnpaid", () => {
                 this.loadUnpaid();
             });
@@ -442,16 +465,17 @@
         },
 
         methods: {
-            
+
             initForm() {
-                this.form = { 
+                this.form = {
                     establishment_id: null,
                     period: 'between_dates',
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
-                    customer_id: null
+                    customer_id: null,
+                    user_id:null
                 };
             },
             filter() {
@@ -459,6 +483,7 @@
                     this.establishments = response.data.establishments;
                     this.customers = response.data.customers;
                     this.form.establishment_id = this.establishments.length > 0 ? this.establishments[0].id : null;
+                    this.users = response.data.users
                 });
             },
             loadUnpaid() {
@@ -507,6 +532,16 @@
                     });*/
                 } else {
                     this.records = []
+                }
+            },
+            changeUser()
+            {
+                if (this.form.customer_id) {
+
+                    this.loadUnpaid()
+
+                } else {
+
                 }
             },
             changeDisabledDates() {
