@@ -15,6 +15,9 @@ class ExtService extends BaseSunat
      *
      * @return StatusResult
      */
+
+    private $customStatusCode;
+
     public function getStatus($ticket)
     {
         $client = $this->getClient();
@@ -27,6 +30,7 @@ class ExtService extends BaseSunat
             $response = $client->call('getStatus', ['parameters' => $params]);
             $status = $response->status;
             $code = $status->statusCode;
+            $this->setCustomStatusCode($code);
 
             $result->setCode($code);
 
@@ -78,4 +82,16 @@ class ExtService extends BaseSunat
     {
         return '98' == $code;
     }
+    
+    //custom
+    public function setCustomStatusCode($code)
+    {
+        $this->customStatusCode = $code;
+    }
+
+    public function getCustomStatusCode()
+    {
+        return (int) $this->customStatusCode;
+    }
+
 }

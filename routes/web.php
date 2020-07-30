@@ -225,6 +225,7 @@ if ($hostname) {
             Route::get('summaries/status/{summary}', 'Tenant\SummaryController@status');
             Route::get('summaries/columns', 'Tenant\SummaryController@columns');
             Route::delete('summaries/{summary}', 'Tenant\SummaryController@destroy');
+            Route::get('summaries/record/{summary}', 'Tenant\SummaryController@record');
 
             //Voided
             Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level','tenant.internal.mode');
