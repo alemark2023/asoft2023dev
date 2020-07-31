@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 use Ifsnop\Mysqldump as IMysqldump;
 
 class BackupDatabase extends Command
@@ -52,7 +53,11 @@ class BackupDatabase extends Command
             $dbs = DB::table('websites')->get()->toArray();
             $bd_admin = config('database.connections.mysql.database');
 
-            $dump = new IMysqldump\Mysqldump('mysql:host=172.20.0.2;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
+            $dbConfig = config('database.connections.' . config('tenancy.db.system-connection-name', 'system'));
+            $var = Arr::first(Arr::wrap($dbConfig['host'] ?? ''));
+
+            $dump = new IMysqldump\Mysqldump('mysql:host='.$var.';dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
+            // $dump = new IMysqldump\Mysqldump('mysql:host=172.20.0.2;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
             $dump->start(storage_path("app/backups/{$today}/{$bd_admin}.sql"));
 
             // foreach ($dbs as $db) {
