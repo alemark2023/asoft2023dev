@@ -9,6 +9,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 use Ifsnop\Mysqldump as IMysqldump;
+use Exception;
 
 class BackupDatabase extends Command
 {
@@ -28,6 +29,10 @@ class BackupDatabase extends Command
 
     protected $process;
 
+    protected $host;
+    protected $username;
+    protected $password;
+
     /**
      * Create a new command instance.
      *
@@ -46,48 +51,52 @@ class BackupDatabase extends Command
     public function handle()
     {
         try {
+
             $today = now()->format('dmY');
             if (!is_dir(storage_path('app/backups'))) mkdir(storage_path('app/backups'));
             if (!is_dir(storage_path('app/backups/'.$today))) mkdir(storage_path('app/backups/'.$today));
 
             $dbs = DB::table('websites')->get()->toArray();
-            $bd_admin = config('database.connections.mysql.database');
+            $db_admin = config('database.connections.mysql.database');
 
-            $dbConfig = config('database.connections.' . config('tenancy.db.system-connection-name', 'system'));
-            $var = Arr::first(Arr::wrap($dbConfig['host'] ?? ''));
+            $this->initDbConfig();
 
-            $dump = new IMysqldump\Mysqldump('mysql:host='.$var.';dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
-            // $dump = new IMysqldump\Mysqldump('mysql:host=172.20.0.2;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
-            $dump->start(storage_path("app/backups/{$today}/{$bd_admin}.sql"));
 
             foreach ($dbs as $db) {
-                $this->comment('dump '.$db->uuid);
-                $this->process = new Process(sprintf(
-                    'mysqldump -h '.$var.' --compact --skip-comments --user=%s --password=%s %s > %s',
-                    config('database.connections.mysql.username'),
-                    config('database.connections.mysql.password'),
-                    $db->uuid,
-                    storage_path("app/backups/{$today}/{$db->uuid}.sql")
-                ));
+                
+                $tenant_dump = new IMysqldump\Mysqldump('mysql:host='.$this->host.';dbname='.$db->uuid, $this->username, $this->password);
+                $tenant_dump->start(storage_path("app/backups/{$today}/{$db->uuid}.sql"));
 
-                $this->process->run();
             }
 
-            // $this->comment('dump '.$db->uuid);
-
-            // $this->process = new Process(sprintf(
-            //     'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
-            //     config('database.connections.mysql.username'),
-            //     config('database.connections.mysql.password'),
-            //     config('database.connections.mysql.database'),
-            //     storage_path("app/backups/{$today}/{$bd_admin}.sql")
-            // ));
-            // dd($this->process);
-            // $this->process->run();
-
+            $system_dump = new IMysqldump\Mysqldump('mysql:host='.$this->host.';dbname='.$db_admin, $this->username, $this->password);
+            $system_dump->start(storage_path("app/backups/{$today}/{$db_admin}.sql"));
+ 
             Log::info('Backup database success');
-        } catch (ProcessFailedException $exception) {
-            Log::error('Backup failed', $exception);
+
+
+        }catch (Exception $e) {
+
+            Log::error("Backup failed -- Line: {$e->getLine()} - Message: {$e->getMessage()} - File: {$e->getFile()}");
+
+            return [
+                'success' => false,
+                'message' => 'Error inesperado: ' . $e->getMessage()
+            ];
+
         }
+
     }
+
+    
+    private function initDbConfig(){
+
+        $dbConfig = config('database.connections.' . config('tenancy.db.system-connection-name', 'system'));
+
+        $this->host = Arr::first(Arr::wrap($dbConfig['host'] ?? ''));
+        $this->username = $dbConfig['username'];
+        $this->password = $dbConfig['password'];
+
+    }
+
 }
