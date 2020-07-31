@@ -69,6 +69,21 @@ class FormatController extends Controller
                                 ->orderBy('series')
                                 ->orderBy('number')
                                 ->get()->transform(function($row) {
+                                    $total = $row->total;
+                                    $total_taxed = $row->total_taxed;
+                                    $symbol = $row->currency_type->symbol;
+                                    $total_igv = $row->total_igv;
+
+                                    if($row->currency_type_id == 'USD')
+                                    {
+                                        $total = round($row->total * $row->exchange_rate_sale, 2);
+                                        $total_taxed = round($row->total_taxed * $row->exchange_rate_sale, 2);
+                                        $symbol = 'S/';
+
+                                        $total_igv = round($row->total_igv * $row->exchange_rate_sale, 2);
+                                    }
+
+
                                     return [
                                         'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                                         'document_type_id' => $row->document_type_id,
@@ -79,15 +94,15 @@ class FormatController extends Controller
                                         'customer_number' => $row->customer->number,
                                         'customer_name' => $row->customer->name,
                                         'total_exportation' => $row->total_exportation,
-                                        'total_taxed' => $row->total_taxed,
+                                        'total_taxed' => $total_taxed,
                                         'total_exonerated' => $row->total_exonerated,
                                         'total_unaffected' => $row->total_unaffected,
                                         'total_plastic_bag_taxes' => $row->total_plastic_bag_taxes,
                                         'total_isc' => $row->total_isc,
-                                        'total_igv' => $row->total_igv,
-                                        'total' => $row->total,
+                                        'total_igv' => $total_igv,
+                                        'total' => $total,
                                         'exchange_rate_sale' => $row->exchange_rate_sale,
-                                        'currency_type_symbol' => $row->currency_type->symbol,
+                                        'currency_type_symbol' => $symbol,
                                         'affected_document' => (in_array($row->document_type_id, ['07', '08'])) ? [
 
                                             'date_of_issue' => $row->note->affected_document->date_of_issue->format('d/m/Y'),
