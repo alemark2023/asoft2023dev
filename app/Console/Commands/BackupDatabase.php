@@ -52,7 +52,7 @@ class BackupDatabase extends Command
             $dbs = DB::table('websites')->get()->toArray();
             $bd_admin = config('database.connections.mysql.database');
 
-            $dump = new IMysqldump\Mysqldump('mysql:host=localhost;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
+            $dump = new IMysqldump\Mysqldump('mysql:host=127.0.0.1;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
             $dump->start(storage_path("app/backups/{$today}/{$bd_admin}.sql"));
 
             // foreach ($dbs as $db) {
