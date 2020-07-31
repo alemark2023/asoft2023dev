@@ -52,7 +52,7 @@ class BackupDatabase extends Command
             $dbs = DB::table('websites')->get()->toArray();
             $bd_admin = config('database.connections.mysql.database');
 
-            $dump = new IMysqldump\Mysqldump('mysql:host=127.0.0.1;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
+            $dump = new IMysqldump\Mysqldump('mysql:host=172.20.0.2;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
             $dump->start(storage_path("app/backups/{$today}/{$bd_admin}.sql"));
 
             // foreach ($dbs as $db) {
@@ -74,13 +74,14 @@ class BackupDatabase extends Command
 
             // $this->comment('dump '.$db->uuid);
 
-            // $this->process = new Process(sprintf(
-            //     'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
-            //     config('database.connections.mysql.username'),
-            //     config('database.connections.mysql.password'),
-            //     config('database.connections.mysql.database'),
-            //     storage_path("app/backups/{$today}/{$bd_admin}.sql")
-            // ));
+            $this->process = new Process(sprintf(
+                'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
+                config('database.connections.mysql.username'),
+                config('database.connections.mysql.password'),
+                config('database.connections.mysql.database'),
+                storage_path("app/backups/{$today}/{$bd_admin}.sql")
+            ));
+            dd($this->process);
             // $this->process->run();
 
             Log::info('Backup database success');
