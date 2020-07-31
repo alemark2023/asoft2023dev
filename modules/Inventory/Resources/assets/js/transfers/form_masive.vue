@@ -78,7 +78,7 @@
                 </el-select>
 
                 <a
-                  v-if="form_add.item_id  && form_add.lots_enabled"
+                  v-if="form_add.item_id  && form_add.series_enabled"
                   href="#"
                   class="text-center font-weight-bold text-info"
                   @click.prevent="clickLotcodeOutput"
@@ -216,6 +216,8 @@ export default {
       let row = this.items.find(x => x.id == this.form_add.item_id);
       this.form_add.lots = row.lots;
       this.form_add.lots_enabled = row.lots_enabled;
+      this.form_add.series_enabled = row.series_enabled;
+
     },
     initFormAdd() {
       this.form_add = {
@@ -223,7 +225,8 @@ export default {
         stock: 0,
         quantity: 0,
         lots: [],
-        lots_enabled: false
+        lots_enabled: false,
+        series_enabled: false
       };
     },
     clickAddItem() {
@@ -240,21 +243,20 @@ export default {
       }
 
       if (parseFloat(this.form_add.stock) < this.form_add.quantity) {
-        return;
+        return this.$message.error("El stock es menor a la cantidad de traslado.");
       }
 
-      if (this.form_add.lots.length > 0) {
-        let selected_lots = this.form_add.lots.filter(x => x.has_sale == true)
-          .length;
-
+      if(this.form_add.series_enabled)
+      {
+        let selected_lots = this.form_add.lots.filter(x => x.has_sale == true).length;
         if (this.form_add.quantity != selected_lots) {
-          return;
+          return  this.$message.error("La cantidad de series seleccionadas es diferente a la cantidad de traslado");
         }
       }
 
       let dup = this.form.items.find(x => x.id == this.form_add.item_id);
       if (dup) {
-        return;
+        return this.$message.error("Este producto ya esta agregado.");
       }
 
       let row = this.items.find(x => x.id == this.form_add.item_id);

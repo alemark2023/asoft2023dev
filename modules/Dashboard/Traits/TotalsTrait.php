@@ -83,7 +83,13 @@ trait TotalsTrait
                                         ->get();
         }
 
-        $expenses_total = $expenses->sum('total');
+        $expenses_total = $expenses->where('currency_type_id', 'PEN')->sum('total');
+
+        $expense_dolla = $expenses->where('currency_type_id', 'USD');
+
+        foreach ($expense_dolla as $exp) {
+            $expenses_total += $exp->total * $exp->exchange_rate_sale;
+        }
 
         $expense_total_payment = 0;
 

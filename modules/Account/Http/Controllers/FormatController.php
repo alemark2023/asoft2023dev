@@ -65,7 +65,7 @@ class FormatController extends Controller
         return Document::query()
                                 ->whereBetween('date_of_issue', [$d_start, $d_end])
                                 // ->whereIn('document_type_id', ['01', '03'])
-                                ->whereIn('currency_type_id', ['PEN'])
+                                ->whereIn('currency_type_id', ['PEN', 'USD'])
                                 ->orderBy('series')
                                 ->orderBy('number')
                                 ->get()->transform(function($row) {

@@ -22,7 +22,7 @@
             <div class="text-left">
                 <h3 class="">{{ $company->name }}</h3>
                 <h4>{{ 'RUC '.$company->number }}</h4>
-                <h5>{{ ($establishment->address !== '-')? $establishment->address : '' }}</h5>
+                <h5 style="text-transform: uppercase;">{{ ($establishment->address !== '-')? $establishment->address : '' }}</h5>
                 <h5>{{ ($establishment->email !== '-')? $establishment->email : '' }}</h5>
                 <h5>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h5>
             </div>

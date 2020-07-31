@@ -13,7 +13,9 @@
 <table class="full-width">
     <tr>
         <td width="70%">
-            <img src="{{ public_path('images/imagengaba_1.jpg') }}" style="max-width: 400px"/>
+            <div class="company_logo_box">
+                <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+            </div>
         </td>
         <td width="30%" class="py-4 px-2 text-center" style="border: thin solid #ccc;">
             <h4>{{ 'RUC '.$company->number }}</h4>
@@ -45,7 +47,7 @@
         <tr>
             <td>DIRECCIÓN</td>
             <td>:</td>
-            <td>{{ $customer->address }}, {{ strtoupper($customer->department->description) }}-{{ strtoupper($customer->province->description) }}-{{ strtoupper($customer->district->description) }}
+            <td style="text-transform: uppercase;">{{ $customer->address }}, {{ strtoupper($customer->department->description) }}-{{ strtoupper($customer->province->description) }}-{{ strtoupper($customer->district->description) }}
             </td>
         </tr>
     @endif
@@ -139,7 +141,7 @@
     <tr>
         <td colspan="4">
             @foreach($document->legends as $row)
-                <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
+                <p style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
             @endforeach
             <br/>
             @if($document->additional_information)

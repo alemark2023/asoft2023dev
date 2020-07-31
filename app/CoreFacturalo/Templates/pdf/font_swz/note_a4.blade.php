@@ -43,7 +43,7 @@
             <div class="text-left">
                 <h4 class="">{{ $company->name }}</h4>
                 <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6>
+                <h6 style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
@@ -231,7 +231,7 @@
     </tbody>
     <tfoot style="border-top: 1px solid #333;">
     <tr>
-        <td colspan="5" class="font-lg"  style="padding-top: 2rem;">Son: <span class="font-bold">{{ $document->number_to_letter }} {{ $document->currency_type->description }}</span></td>
+        <td colspan="5" class="font-lg"  style="padding-top: 2rem; text-transform: uppercase;">Son: <span class="font-bold">{{ $document->number_to_letter }} {{ $document->currency_type->description }}</span></td>
     </tr>
     @if(isset($document->optional->observations))
         <tr>

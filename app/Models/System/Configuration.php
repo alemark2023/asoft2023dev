@@ -18,7 +18,9 @@ class Configuration extends Model
         'soap_password',
         'soap_url',
         'token_public_culqui',
-        'token_private_culqui'
+        'token_private_culqui',
+        'url_apiruc',
+        'token_apiruc'
     ];
 
 

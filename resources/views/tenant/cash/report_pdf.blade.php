@@ -24,7 +24,7 @@ foreach ($cash_documents as $cash_document) {
 
                 $cash_income += $cash_document->sale_note->total;
                 $final_balance += $cash_document->sale_note->total;
-            
+
             }
 
 
@@ -44,12 +44,12 @@ foreach ($cash_documents as $cash_document) {
             if( count($cash_document->sale_note->payments) > 0)
             {
                 $pays = $cash_document->sale_note->payments;
-    
+
                 foreach ($methods_payment as $record) {
-    
+
                     $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment') );
                 }
-    
+
             }
         }
 
@@ -316,13 +316,13 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
 
                                             $type_transaction =  'Venta';
                                             $document_type_description =  'NOTA DE VENTA';
-                                            $number = $value->sale_note->identifier;
+                                            $number = $value->sale_note->number_full;
                                             $date_of_issue = $value->sale_note->date_of_issue->format('Y-m-d');
                                             $customer_name = $value->sale_note->customer->name;
                                             $customer_number = $value->sale_note->customer->number;
 
                                             $total = $value->sale_note->total;
-                                            
+
                                             if(!in_array($value->sale_note->state_type_id, ['01','03','05','07','13'])){
                                                 $total = 0;
                                             }
@@ -339,7 +339,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             $customer_name = $value->document->customer->name;
                                             $customer_number = $value->document->customer->number;
                                             $total = $value->document->total;
-                                            
+
                                             if(!in_array($value->document->state_type_id, ['01','03','05','07','13'])){
                                                 $total = 0;
                                             }

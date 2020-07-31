@@ -120,11 +120,11 @@
                                         <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
 
-                                    <el-checkbox
+                                    <!-- <el-checkbox
                                            v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
                                            v-model="toggle"
                                            label="Ingresar Usuario">
-                                    </el-checkbox>
+                                    </el-checkbox> -->
                                     <small class="form-control-feedback" v-if="errors.soap_type_id" v-text="errors.soap_type_id[0]"></small>
                                 </div>
                             </div>
@@ -138,10 +138,10 @@
                                 </div>
                             </div>
                         </div>
-                        <template v-if="form.soap_type_id == '02' || toggle == true ">
+                        <template v-if="form.soap_type_id == '02' || form.soap_send_id == '02'">
                             <div class="row" >
                                 <div class="col-md-12 mt-2">
-                                    <h4 class="border-bottom">Usuario Secundario Sunat</h4>
+                                    <h4 class="border-bottom">Usuario Secundario Sunat/OSE</h4>
                                 </div>
                             </div>
                             <div class="row">
@@ -248,7 +248,7 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data.errors
+                            this.errors = error.response.data
                         } else {
                             console.log(error)
                         }

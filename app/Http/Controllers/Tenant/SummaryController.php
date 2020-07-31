@@ -12,6 +12,7 @@ use App\Http\Requests\Tenant\{
 };
 use App\Http\Resources\Tenant\{
     DocumentCollection,
+    SummaryResource,
     SummaryCollection
 };
 use App\Traits\SummaryTrait;
@@ -61,9 +62,18 @@ class SummaryController extends Controller
             ->take(500)
             ->get();
             
-        if (count($documents) === 0) throw new Exception("No se encontraron documentos con la fecha {$date_of_reference}");
+        if (count($documents) === 0) {
+            return [
+                'success' => false,
+                'message' => "No se encontraron documentos con la fecha {$date_of_reference}",
+            ];
+        }
+
+        return [
+            'success' => true,
+            'data' => new DocumentCollection($documents)
+        ];
         
-        return new DocumentCollection($documents);
     }
     
     public function store(SummaryRequest $request) {
@@ -90,4 +100,12 @@ class SummaryController extends Controller
             'message' => 'Resumen eliminada con éxito'
         ];
     }
+    
+    public function record($id)
+    {
+        $record = new SummaryResource(Summary::findOrFail($id));
+
+        return $record;
+    }
+
 }

@@ -222,13 +222,13 @@
           <div class="col-xl-3" v-if="soapCompany != '03'">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" >
-                
+
                 <template v-if="loaders.document">
                     <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
                 </template>
 
                 <div class="widget-summary" v-show="!loaders.document">
-                  <div class="widget-summary-col" v-if="document"> 
+                  <div class="widget-summary-col" v-if="document">
                     <div class="row no-gutters">
                       <div class="col-md-12 m-b-10">
                         <h2 class="card-title">Comprobantes</h2>
@@ -280,7 +280,7 @@
           <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" >
-                
+
                 <template v-if="loaders.general">
                     <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
                 </template>
@@ -346,7 +346,7 @@
           <div class="col-xl-3 col-md-3">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" >
-                
+
                 <template v-if="loaders.balance">
                     <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
                 </template>
@@ -422,7 +422,7 @@
           <div class="col-xl-3 col-md-3">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" >
-                
+
                 <template v-if="loaders.utility">
                     <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
                 </template>
@@ -510,7 +510,7 @@
           <div class="col-xl-6 col-md-6">
             <section class="card card-featured-left card-featured-secondary">
               <div class="card-body" >
-                
+
                 <template v-if="loaders.purchase">
                     <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
                 </template>
@@ -585,7 +585,7 @@
           <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
-                
+
                 <template v-if="loaders.items_by_sales">
                     <loader-graph :rows="10" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
                 </template>
@@ -637,7 +637,7 @@
           <div class="col-xl-3 col-md-6">
             <section class="card">
               <div class="card-body">
-                
+
                 <template v-if="loaders.top_customers">
                     <loader-graph :rows="10" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
                 </template>

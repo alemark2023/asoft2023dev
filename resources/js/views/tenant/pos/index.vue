@@ -176,7 +176,7 @@
           </template>
         </div>
 
-        <table-items ref="table_items" @clickAddItem="clickAddItem" @clickWarehouseDetail="clickWarehouseDetail" @clickHistorySales="clickHistorySales" @clickHistoryPurchases="clickHistoryPurchases" v-show="place == 'cat3'" :records="items" ></table-items>
+        <table-items ref="table_items"  @clickAddItem="clickAddItem" @clickWarehouseDetail="clickWarehouseDetail" @clickHistorySales="clickHistorySales" @clickHistoryPurchases="clickHistoryPurchases" v-if="place == 'cat3'" :records="items" :visibleTagsCustomer="focusClienteSelect" ></table-items>
 
         <div v-if="place == 'prod' || place == 'cat2'" class="row">
           <div class="col-md-12 text-center">
@@ -204,6 +204,9 @@
                 @change="changeCustomer"
                 @keyup.native="keyupCustomer"
                 @keyup.enter.native="keyupEnterCustomer"
+                @focus="focusClienteSelect = true"
+                @blur="focusClienteSelect = false"
+
               >
                 <el-option
                   v-for="option in all_customers"
@@ -523,7 +526,8 @@
             categories: [ ],
             colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
             pagination: {},
-            category_selected: ''
+            category_selected: '',
+            focusClienteSelect: false
           };
         },
         async created() {
@@ -731,6 +735,11 @@
           },
           keyupEnterCustomer(){
 
+            if(this.place == 'cat3')
+            {
+                return false
+            }
+
             if(this.form.customer_id){
 
               this.clickPayment()
@@ -761,6 +770,11 @@
             }
           },
           keyupCustomer(e){
+
+            if(this.place == 'cat3')
+            {
+                  return false
+            }
 
             if(e.key !== "Enter"){
 
@@ -816,12 +830,18 @@
             this.calculateTotal();
           },
           changeCustomer() {
+
+            console.log('clien 13')
+
+
             let customer = _.find(this.all_customers, { id: this.form.customer_id });
             this.customer = customer;
             // this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
             this.form.document_type_id = "03";
             this.setLocalStorageIndex('customer', this.customer)
             this.setFormPosLocalStorage()
+
+
           },
 
           getLocalStorageIndex(key, re_default = null){

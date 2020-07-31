@@ -204,7 +204,7 @@ if ($hostname) {
             Route::post('documents/import', 'Tenant\DocumentController@import');
             Route::post('documents/import_second_format', 'Tenant\DocumentController@importTwoFormat');
             Route::get('documents/data_table', 'Tenant\DocumentController@data_table');
-            Route::get('documents/payments/excel/{month}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
+            Route::get('documents/payments/excel/{month}/{anulled}', 'Tenant\DocumentController@report_payments')->name('tenant.document.payments.excel');
 
             Route::delete('documents/delete_document/{document_id}', 'Tenant\DocumentController@destroyDocument');
 
@@ -225,6 +225,7 @@ if ($hostname) {
             Route::get('summaries/status/{summary}', 'Tenant\SummaryController@status');
             Route::get('summaries/columns', 'Tenant\SummaryController@columns');
             Route::delete('summaries/{summary}', 'Tenant\SummaryController@destroy');
+            Route::get('summaries/record/{summary}', 'Tenant\SummaryController@record');
 
             //Voided
             Route::get('voided', 'Tenant\VoidedController@index')->name('tenant.voided.index')->middleware('redirect.level','tenant.internal.mode');
@@ -607,6 +608,7 @@ if ($hostname) {
 
             Route::post('configurations', 'System\ConfigurationController@store');
             Route::get('configurations/record', 'System\ConfigurationController@record');
+            Route::get('configurations/apiruc', 'System\ConfigurationController@apiruc');
 
             // backup
             Route::get('backup', 'System\BackupController@index')->name('system.backup');

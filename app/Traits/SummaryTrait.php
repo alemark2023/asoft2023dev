@@ -41,7 +41,7 @@ trait SummaryTrait
         $response = $fact->getResponse();
         
         return [
-            'success' => true,
+            'success' => ($response['status_code'] === 99) ? false : true,
             'message' => $response['description'],
         ];
     }

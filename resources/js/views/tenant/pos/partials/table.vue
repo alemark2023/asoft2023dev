@@ -69,6 +69,10 @@ export default {
             default:[],
             required:false
         },
+        visibleTagsCustomer:{
+            type:Boolean,
+            default: false
+        }
     },
     data() {
       return {
@@ -79,6 +83,11 @@ export default {
     methods: {
         handle13()
         {
+            if(this.visibleTagsCustomer)
+            {
+                return false
+            }
+
             if(this.records.length == 1)
             {
                 this.$emit('clickAddItem', this.records[0])
@@ -96,6 +105,10 @@ export default {
         },
         handle40()
         {
+            if(this.visibleTagsCustomer)
+            {
+                return
+            }
             this.currentIndex +=1;
 
             if(this.records[this.currentIndex])
@@ -110,6 +123,12 @@ export default {
         },
         handle38()
         {
+            if(this.visibleTagsCustomer)
+            {
+                return
+            }
+
+
             if(this.currentIndex == 0)
             {
                 return

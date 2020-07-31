@@ -193,7 +193,7 @@
 <table class="full-width">
     <tr>
         @foreach($document->legends as $row)
-            <td class="desc pt-3">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
+            <td class="desc pt-3" style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></td>
         @endforeach
     </tr>
     @if($document->additional_information)

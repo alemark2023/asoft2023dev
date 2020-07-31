@@ -33,7 +33,7 @@
         <td class="pl-3">
             <div class="text-left">
                 <p class="font-bold text-upp">{{ $company->name }}</p>
-                <p>
+                <p style="text-transform: uppercase;">
                     {{ ($establishment->address !== '-')? $establishment->address : '' }}
                     {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
