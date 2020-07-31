@@ -232,7 +232,7 @@
                             this.loading_submit = false
                             this.pull.updated = true
                         } else {
-                            this.execArtisanMigrate()
+                            this.execComposer()
                         }
                     }
                 }).catch(error => {
@@ -241,6 +241,30 @@
                     this.pull.status = 'false'
                     console.log(error)
                 })
+            },
+            execComposer() {
+                this.$http.get(`/${this.resource}/composer/install`)
+                .then(response => {
+
+                    if (response.data !== '') {
+                        this.composer.install.content = response.data
+                        this.composer.install.percent = 100
+                        if (response.status === 200) {
+                            this.composer.install.status = 'success'
+                            this.execArtisanMigrate()
+                        }
+                    }
+                }).catch(error => {
+                    if (error.response.status !== 200) {
+                        this.composer.install.percent = 0
+                        this.composer.install.error = error.response.data.message
+                        this.composer.install.status = 'false'
+                    } else {
+                        console.log(error)
+                    }
+                })
+
+                this.loading_submit = false
             },
             execArtisanMigrate() {
                 this.$http.get(`/${this.resource}/artisan/migrate`)
@@ -289,7 +313,6 @@
                         this.artisan.clear.percent = 100
                         if (response.status === 200) {
                             this.artisan.clear.status = 'success'
-                            this.execComposer()
                         }
                     }
                 }).catch(error => {
@@ -298,29 +321,6 @@
                     this.artisan.clear.status = false
                     console.log(error)
                 })
-            },
-            execComposer() {
-                this.$http.get(`/${this.resource}/composer/install`)
-                .then(response => {
-
-                    if (response.data !== '') {
-                        this.composer.install.content = response.data
-                        this.composer.install.percent = 100
-                        if (response.status === 200) {
-                            this.composer.install.status = 'success'
-                        }
-                    }
-                }).catch(error => {
-                    if (error.response.status !== 200) {
-                        this.composer.install.percent = 0
-                        this.composer.install.error = error.response.data.message
-                        this.composer.install.status = 'false'
-                    } else {
-                        console.log(error)
-                    }
-                })
-
-                this.loading_submit = false
             }
         }
     }

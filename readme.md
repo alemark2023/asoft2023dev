@@ -60,14 +60,14 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ### Panel de administración
 
-[URL](https://facturador.pro "Clic")
+[URL](https://facturalo.pro "Clic")
 <br>
 Usuario: admin@gmail.com<br>
 Contraseña: 123456
 
 ### Panel de cliente
 
-[URL](https://demo.facturador.pro "Clic")
+[URL](https://demo.facturalo.pro "Clic")
 <br>
 Usuario: demo@gmail.com<br>
 Contraseña: 123456
@@ -106,6 +106,7 @@ Guía incrementar espacio disco: [Guía](https://docs.google.com/document/d/1hpE
 Limpiar inodes: [Guía](https://drive.google.com/open?id=1foPKDI3V3Z9uKTjRc2SPSoztVSOBevPAluT2BqFbfxA "Clic")<br>
 Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5lrDxprwfteKrP6n100LeSox_g34Eg/edit "Clic")<br>
 Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
+Habilitar puertos en Google Cloud: [Manual](https://docs.google.com/document/d/1pbCXJyRyR4VOaQ2BE3aJp-3_vhFIp-b6RXnT_6rtw1o/edit?usp=sharing "clic")<br>
 
 ### Laragon
 Acceso red local - laragon: [Guía](https://docs.google.com/document/d/13kOE5N5LJtCJIr3hswrfNgBYxi9wx07YwUCrAfgyCoQ/edit "Clic")<br>
