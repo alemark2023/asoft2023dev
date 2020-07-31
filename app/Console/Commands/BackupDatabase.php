@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\DB;
-
+use Ifsnop\Mysqldump as IMysqldump;
 
 class BackupDatabase extends Command
 {
@@ -52,33 +52,36 @@ class BackupDatabase extends Command
             $dbs = DB::table('websites')->get()->toArray();
             $bd_admin = config('database.connections.mysql.database');
 
-            foreach ($dbs as $db) {
-                $this->comment('dump '.$db->uuid);
-                $this->process = new Process(sprintf(
-                    'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
-                    config('database.connections.mysql.username'),
-                    config('database.connections.mysql.password'),
-                    $db->uuid,
-                    storage_path("app/backups/{$today}/{$db->uuid}.sql")
-                ));
+            $dump = new IMysqldump\Mysqldump('mysql:host=localhost;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
+            $dump->start(storage_path("app/backups/{$today}/{$bd_admin}.sql"));
 
-                // $command = 'mysqldump --opt -u '.config('database.connections.mysql.username').' -p'.config('database.connections.mysql.password').' '.$db->uuid.' > '.storage_path("app/backups/{$today}/{$db->uuid}.sql");
+            // foreach ($dbs as $db) {
+            //     $this->comment('dump '.$db->uuid);
+            //     $this->process = new Process(sprintf(
+            //         'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
+            //         config('database.connections.mysql.username'),
+            //         config('database.connections.mysql.password'),
+            //         $db->uuid,
+            //         storage_path("app/backups/{$today}/{$db->uuid}.sql")
+            //     ));
 
-                // $this->process = new Process($command);
+            //     // $command = 'mysqldump --opt -u '.config('database.connections.mysql.username').' -p'.config('database.connections.mysql.password').' '.$db->uuid.' > '.storage_path("app/backups/{$today}/{$db->uuid}.sql");
 
-                $this->process->run();
-            }
+            //     // $this->process = new Process($command);
 
-            $this->comment('dump '.$db->uuid);
+            //     $this->process->run();
+            // }
 
-            $this->process = new Process(sprintf(
-                'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
-                config('database.connections.mysql.username'),
-                config('database.connections.mysql.password'),
-                config('database.connections.mysql.database'),
-                storage_path("app/backups/{$today}/{$bd_admin}.sql")
-            ));
-            $this->process->run();
+            // $this->comment('dump '.$db->uuid);
+
+            // $this->process = new Process(sprintf(
+            //     'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
+            //     config('database.connections.mysql.username'),
+            //     config('database.connections.mysql.password'),
+            //     config('database.connections.mysql.database'),
+            //     storage_path("app/backups/{$today}/{$bd_admin}.sql")
+            // ));
+            // $this->process->run();
 
             Log::info('Backup database success');
         } catch (ProcessFailedException $exception) {
