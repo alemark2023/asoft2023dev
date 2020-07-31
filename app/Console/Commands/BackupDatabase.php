@@ -60,22 +60,18 @@ class BackupDatabase extends Command
             // $dump = new IMysqldump\Mysqldump('mysql:host=172.20.0.2;dbname='.config('database.connections.mysql.database'), config('database.connections.mysql.username'), config('database.connections.mysql.password'));
             $dump->start(storage_path("app/backups/{$today}/{$bd_admin}.sql"));
 
-            // foreach ($dbs as $db) {
-            //     $this->comment('dump '.$db->uuid);
-            //     $this->process = new Process(sprintf(
-            //         'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
-            //         config('database.connections.mysql.username'),
-            //         config('database.connections.mysql.password'),
-            //         $db->uuid,
-            //         storage_path("app/backups/{$today}/{$db->uuid}.sql")
-            //     ));
+            foreach ($dbs as $db) {
+                $this->comment('dump '.$db->uuid);
+                $this->process = new Process(sprintf(
+                    'mysqldump -h '.$var.' --compact --skip-comments --user=%s --password=%s %s > %s',
+                    config('database.connections.mysql.username'),
+                    config('database.connections.mysql.password'),
+                    $db->uuid,
+                    storage_path("app/backups/{$today}/{$db->uuid}.sql")
+                ));
 
-            //     // $command = 'mysqldump --opt -u '.config('database.connections.mysql.username').' -p'.config('database.connections.mysql.password').' '.$db->uuid.' > '.storage_path("app/backups/{$today}/{$db->uuid}.sql");
-
-            //     // $this->process = new Process($command);
-
-            //     $this->process->run();
-            // }
+                $this->process->run();
+            }
 
             // $this->comment('dump '.$db->uuid);
 
