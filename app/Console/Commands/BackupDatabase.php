@@ -74,14 +74,14 @@ class BackupDatabase extends Command
 
             // $this->comment('dump '.$db->uuid);
 
-            $this->process = new Process(sprintf(
-                'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
-                config('database.connections.mysql.username'),
-                config('database.connections.mysql.password'),
-                config('database.connections.mysql.database'),
-                storage_path("app/backups/{$today}/{$bd_admin}.sql")
-            ));
-            dd($this->process);
+            // $this->process = new Process(sprintf(
+            //     'mysqldump --compact --skip-comments --user=%s --password=%s %s > %s 2>&1',
+            //     config('database.connections.mysql.username'),
+            //     config('database.connections.mysql.password'),
+            //     config('database.connections.mysql.database'),
+            //     storage_path("app/backups/{$today}/{$bd_admin}.sql")
+            // ));
+            // dd($this->process);
             // $this->process->run();
 
             Log::info('Backup database success');
