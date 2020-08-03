@@ -13,6 +13,7 @@
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "~6.0",
         "hyn/multi-tenant": "5.*",
+        "ifsnop/mysqldump-php": "^2.9",
         "imangazaliev/didom": "^1.13",
         "intervention/image": "^2.5",
         "laravel/framework": "5.7.*",

@@ -614,6 +614,7 @@ if ($hostname) {
             Route::get('backup', 'System\BackupController@index')->name('system.backup');
             Route::get('backup/db', 'System\BackupController@db')->name('system.backup.db');
             Route::get('backup/files', 'System\BackupController@files')->name('system.backup.files');
+            Route::post('backup/upload', 'System\BackupController@upload')->name('system.backup.upload');
 
         });
     });

@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="card col-md-12">
+        <div class="card col-md-8">
             <div class="card-header justify-content-center d-block">
                 <div class="text-center mt-2">
                     <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
@@ -27,13 +27,43 @@
 
             </div>
         </div>
+        <div class="card col-md-4 mt-0">
+            <div class="card-header">
+                Enviar por FTP último backup generado
+            </div>
+            <div class="card-body">
+                <p v-if="lastZip !== ''">Ultimo Backup generado: {{lastZip.name}}</p>
+                <small class="text-muted">Por seguridad sus datos FTP no son guardados</small>
+                <form v-if="lastZip !== ''">
+                    <div class="form-group" :class="{'has-danger': errors.host}">
+                        <label class="control-label">Host/IP</label>
+                        <el-input v-model="form.host"></el-input>
+                    </div>
+                    <div class="form-group" :class="{'has-danger': errors.port}">
+                        <label class="control-label">Puerto</label>
+                        <el-input v-model="form.port"></el-input>
+                    </div>
+                    <div class="form-group" :class="{'has-danger': errors.username}">
+                        <label class="control-label">Usuario</label>
+                        <el-input v-model="form.username"></el-input>
+                    </div>
+                    <div class="form-group" :class="{'has-danger': errors.password}">
+                        <label class="control-label">Contraseña</label>
+                        <el-input v-model="form.password"></el-input>
+                    </div>
+                    <div v-if="lastZip !== ''" class="form-group">
+                        <el-button @click.prevent="uploadFtp()" :loading="loading_upload">Enviar</el-button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 <script>
     import $ from 'jquery'
 
     export default {
-        props: ['storageSize','discUsed'],
+        props: ['storageSize','discUsed', 'lastZip'],
         data() {
             return {
                 headers: null,
@@ -41,6 +71,7 @@
                 errors: {},
                 form: {},
                 loading_submit: false,
+                loading_upload: false,
                 db: {
                     error: '',
                     content: '',
@@ -54,9 +85,19 @@
             }
         },
         created() {
-
+            this.initForm()
         },
         methods: {
+            initForm(){
+
+                this.form = {
+                    host: null,
+                    port: null,
+                    username: null,
+                    password: null,
+                }
+
+            },
             async start() {
                 this.initContent()
                 this.loading_submit = true
@@ -91,24 +132,57 @@
             },
             backupFiles() {
                 this.$http.get(`/${this.resource}/files`)
-                .then(response => {
-                    if (response.data !== '') {
-                        this.files.content = response.data
-                        if (response.status === 200) {
-                            this.files.status = 'success'
+                    .then(response => {
+                        if (response.data !== '') {
+                            this.files.content = response.data
+                            if (response.status === 200) {
+                                this.files.status = 'success'
+                            }
+                            this.loading_submit = false
                         }
-                        this.loading_submit = false
-                    }
-                }).catch(error => {
-                    if (error.response.status !== 200) {
-                        this.files.error = error.response.data.message
-                        this.files.status = 'false'
-                    } else {
-                        console.log(error)
-                    }
-                })
+                    }).catch(error => {
+                        if (error.response.status !== 200) {
+                            this.files.error = error.response.data.message
+                            this.files.status = 'false'
+                        } else {
+                            console.log(error)
+                        }
+                    })
 
             },
+            uploadFtp() {
+                this.loading_upload = true
+                this.sendFtp()
+            },
+            sendFtp() {
+                this.$http.post(`${this.resource}/upload`, this.form)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                            this.loading_upload = false
+                            // this.close()
+                            this.initForm()
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data
+                        }else if(error.response.status === 500){
+                            this.$message.error(error.response.data.message);
+                        }
+                         else {
+                            console.log(error.response)
+                        }
+                    })
+                    .then(()=>{
+                        this.loading_upload = false
+                    })
+
+
+            }
         }
     }
 </script>

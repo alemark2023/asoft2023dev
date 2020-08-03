@@ -43,11 +43,11 @@ class BackupFiles extends Command
         try {
             $today = now()->format('dmYHi');
             $path_sql = now()->format('dmY');
-            if (!is_dir(storage_path('backups'))) mkdir(storage_path('backups'));
-            if (!is_dir(storage_path('backups/zip'))) mkdir(storage_path('backups/zip'));
-            $zip = Zip::create(storage_path('backups/zip/'.$today.'_storage.zip'));
+            if (!is_dir(storage_path('app/backups'))) mkdir(storage_path('app/backups'));
+            if (!is_dir(storage_path('app/backups/zip'))) mkdir(storage_path('app/backups/zip'));
+            $zip = Zip::create(storage_path('app/backups/zip/'.$today.'_storage.zip'));
             $zip->add(storage_path('app/tenancy/tenants/'), true);
-            $zip->add(storage_path('backups/'.$path_sql.'/'), true);
+            $zip->add(storage_path('app/backups/'.$path_sql.'/'), true);
 
             Log::info('Backup storage success');
         } catch (Throwable $e) {
