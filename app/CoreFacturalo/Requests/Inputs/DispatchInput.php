@@ -71,6 +71,7 @@ class DispatchInput
             'reference_quotation_id' => Functions::valueKeyInArray($inputs, 'reference_quotation_id'),
             'reference_order_note_id' => Functions::valueKeyInArray($inputs, 'reference_order_note_id'),
             'reference_order_form_id' => Functions::valueKeyInArray($inputs, 'reference_order_form_id'),
+            'secondary_license_plates' => self::secondary_license_plates($inputs),
         ];
     }
 
@@ -127,10 +128,12 @@ class DispatchInput
             $driver = $inputs['driver'];
             $identity_document_type_id = $driver['identity_document_type_id'];
             $number =  ( isset($driver['number']) ) ? $driver['number'] : null ; //$driver['number'];
+            $license =  (isset($driver['license'])) ? $driver['license'] : null ;
 
             return [
                 'identity_document_type_id' => $identity_document_type_id,
                 'number' => $number,
+                'license' => $license,
             ];
         }
         return null;
@@ -160,4 +163,22 @@ class DispatchInput
         }
         return null;
     }
+    
+    private static function secondary_license_plates($inputs)
+    {
+
+        if(array_key_exists('secondary_license_plates', $inputs)) {
+
+            $secondary_license_plates = $inputs['secondary_license_plates'];
+            $semitrailer = $secondary_license_plates['semitrailer'];
+
+            return [
+                'semitrailer' => $semitrailer,
+            ];
+
+        }
+
+        return null;
+    }
+
 }
