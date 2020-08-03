@@ -59,6 +59,7 @@ class Dispatch extends ModelTenant
         'reference_quotation_id',
         'reference_order_note_id',
         'reference_order_form_id',
+        'secondary_license_plates',
     ];
 
     protected $casts = [
@@ -215,4 +216,15 @@ class Dispatch extends ModelTenant
     {
         return $this->belongsTo(OrderForm::class, 'reference_order_form_id');
     }
+    
+    public function getSecondaryLicensePlatesAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setSecondaryLicensePlatesAttribute($value)
+    {
+        $this->attributes['secondary_license_plates'] = (is_null($value))?null:json_encode($value);
+    }
+
 }

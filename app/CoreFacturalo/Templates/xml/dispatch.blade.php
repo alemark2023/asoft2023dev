@@ -110,6 +110,17 @@
             <cbc:ID>{{ $document->container_number }}</cbc:ID>
         </cac:TransportHandlingUnit>
         @endif
+        @if($document->secondary_license_plates)
+            @php($secondary_license_plates = $document->secondary_license_plates)
+            @if($secondary_license_plates->semitrailer)
+            <cac:TransportHandlingUnit>
+                <cbc:ID>{{ $document->license_plate }}</cbc:ID>
+                <cac:TransportEquipment>
+                    <cbc:ID>{{ $secondary_license_plates->semitrailer }}</cbc:ID>
+                </cac:TransportEquipment> 
+            </cac:TransportHandlingUnit>
+            @endif
+        @endif
         <cac:OriginAddress>
             <cbc:ID>{{ $document->origin->location_id }}</cbc:ID>
             <cbc:StreetName>{{ $document->origin->address }}</cbc:StreetName>
