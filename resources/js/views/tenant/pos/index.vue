@@ -157,19 +157,75 @@
                     </el-table>
                     <button type="button" style="width:100% !important;" slot="reference" class="btn btn-xs btn-default " @click="clickHistorySales(item.item_id)"><i class="fa fa-search"></i></button>
                   </el-popover> -->
-                  <el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
-                    <button type="button" style="width:33.5% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
+                  <!--<el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
+                    <button type="button" style="width:25% !important;"   class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
                       <i class="fa fa-search"></i>
                     </button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
-                    <button type="button" style="width:33% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                    <button type="button" style="width:25% !important;"   class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   </el-tooltip>
 
                   <el-tooltip class="item" effect="dark" content="Visualizar historial de compras del producto (precio compra)" placement="bottom-end">
-                    <button type="button" style="width:33.5% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                    <button type="button" style="width:25% !important;"  class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
                   </el-tooltip>
+
+                  <el-popover
+                    placement="top-start"
+                    title="Title"
+                    width="400"
+                    trigger="hover"
+                    content="this is content, this is content, this is content">
+                    <el-button slot="reference">Hov</el-button>
+                </el-popover>-->
+
+                <el-row style="width:100%">
+                    <el-col :span="6">
+                        <el-tooltip class="item" effect="dark" content="Visualizar stock" placement="bottom-end">
+                            <button style="width:100%" type="button" class="btn btn-xs btn-primary-pos" @click="clickWarehouseDetail(item)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </el-tooltip>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-tooltip class="item" effect="dark" content="Visualizar historial de ventas del producto (precio venta) y cliente" placement="bottom-end">
+                            <button type="button" style="width:100%;" class="btn btn-xs btn-primary-pos" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
+                        </el-tooltip>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-tooltip class="item" effect="dark" content="Visualizar historial de compras del producto (precio compra)" placement="bottom-end">
+                            <button type="button" style="width:100%" class="btn btn-xs btn-primary-pos" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button>
+                        </el-tooltip>
+                    </el-col>
+                     <el-col :span="6">
+                        <!-- <el-tooltip class="item" effect="dark" content="Visualizar precios disponibles" placement="bottom-end">
+                            <el-popover
+                                placement="top"
+                                title="Precios"
+                                width="200"
+                                trigger="click"
+                                >
+                                <el-table :data="gridData">
+                                    <el-table-column width="90" property="precio" label="Valor"></el-table-column>
+                                    <el-table-column width="80" property="name" label="">
+                                        <template slot-scope="{row}" >
+                                            <button @click="setPrice(row.price)" type="button" class="btn btn-custom btn-xs"><i class="fas fa-check"></i></button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <button slot="reference" type="button" style="width:100%" class="btn btn-xs btn-primary-pos"><i class="fa fa-money-bill-alt"></i></button>
+                            </el-popover>
+                        </el-tooltip> -->
+                    </el-col>
+                </el-row>
+
+
+                   <!--<el-tooltip class="item" effect="dark" content="Visualizar precios disponibles" placement="bottom-end">
+
+                    <button style="width:25% !important;"  type="button"  class="btn btn-xs btn-primary-pos"><i class="fas fa-money-bill-alt"></i></button>
+
+                  </el-tooltip>-->
                 </div>
               </section>
             </div>
@@ -527,7 +583,24 @@
             colors: ['#1cb973', '#bf7ae6', '#fc6304', '#9b4db4', '#77c1f3'],
             pagination: {},
             category_selected: '',
-            focusClienteSelect: false
+            focusClienteSelect: false,
+            gridData: [{
+          date: '2016-05-02',
+          precio: '200.8',
+          address: 'New York City'
+        }, {
+          date: '2016-05-04',
+          precio: '200.8',
+          address: 'New York City'
+        }, {
+          date: '2016-05-01',
+           precio: '500.8',
+          address: 'New York City'
+        }, {
+          date: '2016-05-03',
+          precio: '100.8',
+          address: 'New York City'
+        }]
           };
         },
         async created() {
