@@ -231,7 +231,7 @@ trait FinanceTrait
 
             $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment;
             $egress = $expense_payment + $purchase_payment;
-            $balance = $entry - $egress;
+            $balance = $row->initial_balance + $entry - $egress;
 
             return [
 

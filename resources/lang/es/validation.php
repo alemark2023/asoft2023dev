@@ -259,6 +259,7 @@ return [
         'driver_id' => 'conductor',
         'soap_type_id' => 'soap tipo',
         'soap_send_id' => 'soap envío',
+        'initial_balance' => 'saldo inicial',
 
     ],
 ];
