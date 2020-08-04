@@ -1081,7 +1081,6 @@
             this.setFormPosLocalStorage()
           },
           async clickAddItem(item, index, input = false) {
-            debugger
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
             let exist_item = _.find(this.form.items, { item_id: item.item_id, unit_type_id: item.unit_type_id });
