@@ -78,6 +78,7 @@ class Document extends ModelTenant
         'total_canceled',
         'order_note_id',
         'soap_shipping_response',
+        'pending_amount_prepayment',
 
     ];
 
