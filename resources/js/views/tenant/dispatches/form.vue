@@ -288,6 +288,18 @@
                                 <small class="form-control-feedback" v-if="errors.license_plate" v-text="errors.license_plate[0]"></small>
                             </div>
                         </div>
+                        <div class="col-lg-4">
+                            <div class="form-group" >
+                                <label class="control-label">Licencia del conductor</label>
+                                <el-input v-model="form.driver.license" ></el-input>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group" >
+                                <label class="control-label">N° placa semirremolque</label>
+                                <el-input v-model="form.secondary_license_plates.semitrailer" ></el-input>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <hr>
@@ -434,6 +446,10 @@
                 this.form.driver = this.dispatch.driver
                 this.form.license_plate = this.dispatch.license_plate
 
+                if(this.dispatch.secondary_license_plates){
+                    this.form.secondary_license_plates = this.dispatch.secondary_license_plates
+                }
+
             }
 
             // console.log(this.dispatch)
@@ -469,7 +485,8 @@
                         identity_document_type_id: null
                     },
                     driver: {
-                        identity_document_type_id: null
+                        identity_document_type_id: null,
+                        license: null,
                     },
                     delivery: {
                         country_id: 'PE',
@@ -485,6 +502,9 @@
                         invoice_number: this.document.series+'-'+this.document.number
                     },
                     items: [],
+                    secondary_license_plates: {
+                        semitrailer: null
+                    }
 
                 }
             },

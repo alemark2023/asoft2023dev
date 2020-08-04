@@ -108,6 +108,16 @@
         <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
         <td>Conductor: {{ $document->driver->number }}</td>
     </tr>
+    <tr>
+        @if($document->secondary_license_plates)
+            @if($document->secondary_license_plates->semitrailer)
+                <td>Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
+            @endif
+        @endif
+        @if($document->driver->license)
+            <td>Licencia del conductor: {{ $document->driver->license }}</td>
+        @endif
+    </tr>
 </table>
 <table class="full-width border-box mt-10 mb-10">
     <thead class="">
