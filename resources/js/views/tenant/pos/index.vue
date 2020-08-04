@@ -136,15 +136,15 @@
                   <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                   <template v-if="!item.edit_unit_price">
-                    <h5   class="font-weight-semibold text-right text-white" >
+                    <h5 class="font-weight-semibold text-right text-white" >
                       <button v-if="configuration.options_pos" type="button" class="btn btn-xs btn-primary-pos" @click="clickOpenInputEditUP(index)"><span style='font-size:16px;'>&#9998;</span> </button>
-                      {{item.currency_type_symbol}} {{item.sale_unit_price}}
+                      ({{ item.unit_type_id }}) {{item.currency_type_symbol}} {{item.sale_unit_price}}
                     </h5>
                   </template>
                   <template v-else>
-                    <el-input     min="0"  v-model="item.edit_sale_unit_price" class="mt-3 mb-3" size="mini">
-                      <el-button slot="append" icon="el-icon-check" type="primary" @click="clickEditUnitPriceItem(index)"></el-button>
-                      <el-button slot="append" icon="el-icon-close" type="danger" @click="clickCancelUnitPriceItem(index)"></el-button>
+                    <el-input min="0" v-model="item.edit_sale_unit_price" class="mt-3 mb-3" size="mini">
+                    <el-button slot="append" icon="el-icon-check" type="primary" @click="clickEditUnitPriceItem(index)"></el-button>
+                    <el-button slot="append" icon="el-icon-close" type="danger" @click="clickCancelUnitPriceItem(index)"></el-button>
                     </el-input>
                   </template>
 
@@ -199,33 +199,34 @@
                         </el-tooltip>
                     </el-col>
                      <el-col :span="6">
-                        <!-- <el-tooltip class="item" effect="dark" content="Visualizar precios disponibles" placement="bottom-end">
+                         <el-tooltip class="item" effect="dark" content="Visualizar precios disponibles" placement="bottom-end">
                             <el-popover
                                 placement="top"
                                 title="Precios"
-                                width="200"
+                                width="240"
                                 trigger="click"
                                 >
-                                <el-table :data="gridData">
-                                    <el-table-column width="90" property="precio" label="Valor"></el-table-column>
-                                    <el-table-column width="80" property="name" label="">
+                                <el-table v-if="item.unit_type" :data="item.unit_type">
+                                    <el-table-column width="90" label="Precio">
+                                      <template slot-scope="{row}">
+                                        <span v-if="row.price_default == 1" > {{row.price1}} </span>
+                                        <span v-else-if="row.price_default == 2" > {{row.price2}} </span>
+                                        <span v-else-if="row.price_default == 3" > {{row.price3}} </span>
+                                      </template>
+                                    </el-table-column>
+                                    <el-table-column width="80" label="Unidad" property="unit_type_id"></el-table-column>
+                                    <el-table-column width="80" label="">
                                         <template slot-scope="{row}" >
-                                            <button @click="setPrice(row.price)" type="button" class="btn btn-custom btn-xs"><i class="fas fa-check"></i></button>
+                                            <button @click="setPriceItem(row, index)" type="button" class="btn btn-custom btn-xs"><i class="fas fa-check"></i></button>
                                         </template>
                                     </el-table-column>
                                 </el-table>
                                 <button slot="reference" type="button" style="width:100%" class="btn btn-xs btn-primary-pos"><i class="fa fa-money-bill-alt"></i></button>
                             </el-popover>
-                        </el-tooltip> -->
+                        </el-tooltip>
                     </el-col>
                 </el-row>
 
-
-                   <!--<el-tooltip class="item" effect="dark" content="Visualizar precios disponibles" placement="bottom-end">
-
-                    <button style="width:25% !important;"  type="button"  class="btn btn-xs btn-primary-pos"><i class="fas fa-money-bill-alt"></i></button>
-
-                  </el-tooltip>-->
                 </div>
               </section>
             </div>
@@ -310,6 +311,9 @@
                       <p class="m-0">{{item.item.description}}</p>
                       <small> {{nameSets(item.item_id)}} </small>
                       <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
+                    </td>
+                    <td>
+                        <small>{{ item.unit_type_id }}</small>
                     </td>
                     <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -584,23 +588,6 @@
             pagination: {},
             category_selected: '',
             focusClienteSelect: false,
-            gridData: [{
-          date: '2016-05-02',
-          precio: '200.8',
-          address: 'New York City'
-        }, {
-          date: '2016-05-04',
-          precio: '200.8',
-          address: 'New York City'
-        }, {
-          date: '2016-05-01',
-           precio: '500.8',
-          address: 'New York City'
-        }, {
-          date: '2016-05-03',
-          precio: '100.8',
-          address: 'New York City'
-        }]
           };
         },
         async created() {
@@ -656,6 +643,7 @@
             }
         },
         methods: {
+
             handleFn112(response)
             {
               this.search_item_by_barcode = !this.search_item_by_barcode
@@ -787,6 +775,24 @@
             this.items[index].edit_unit_price = false
 
           },
+          setPriceItem(price, index)
+            {
+                let value = 0
+                switch(price.price_default)
+                {
+                    case 1: value = price.price1
+                        break;
+                    case 2: value = price.price2
+                        break;
+                    case 3: value = price.price3
+                        break;
+                }
+
+                this.items[index].sale_unit_price = value
+                this.items[index].unit_type_id = price.unit_type_id
+                this.items[index].presentation = price
+                this.$message.success('Precio seleccionado')
+            },
           clickWarehouseDetail(item){
             this.unittypeDetail = item.unit_type
               this.warehousesDetail = item.warehouses
@@ -1075,9 +1081,10 @@
             this.setFormPosLocalStorage()
           },
           async clickAddItem(item, index, input = false) {
+            debugger
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
-            let exist_item = _.find(this.form.items, { item_id: item.item_id });
+            let exist_item = _.find(this.form.items, { item_id: item.item_id, unit_type_id: item.unit_type_id });
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
 
@@ -1128,9 +1135,11 @@
                 exchangeRateSale
               );
 
+              this.row['unit_type_id'] = item.unit_type_id;
+
               this.form.items[pos] = this.row;
             } else {
-              response = await this.getStatusStock(item.item_id, 1);
+              response = await this.getStatusStock(item.item_id, item.presentation ? parseInt(item.presentation.quantity_unit) : 1);
               if (!response.success) {
                 this.loading = false;
                 return this.$message.error(response.message);
@@ -1147,7 +1156,7 @@
 
               this.form_item.unit_price = unit_price;
               this.form_item.item.unit_price = unit_price;
-              this.form_item.item.presentation = null;
+              this.form_item.item.presentation = item.presentation ? item.presentation : null;
 
               this.form_item.charges = [];
               this.form_item.discounts = [];
@@ -1164,6 +1173,8 @@
                 exchangeRateSale
               );
               // console.log(this.row)
+
+              this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
 
               this.form.items.push(this.row);
               item.aux_quantity = 1;
