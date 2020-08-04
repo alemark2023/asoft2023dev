@@ -44,6 +44,13 @@
                             <small class="form-control-feedback" v-if="errors.cci" v-text="errors.cci[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.initial_balance}">
+                            <label class="control-label">Saldo inicial</label>
+                            <el-input v-model="form.initial_balance"></el-input>
+                            <small class="form-control-feedback" v-if="errors.initial_balance" v-text="errors.initial_balance[0]"></small>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -96,6 +103,7 @@
                     number: null,
                     currency_type_id: null,
                     cci: null,
+                    initial_balance: 0,
                 }
             },
             create() {
