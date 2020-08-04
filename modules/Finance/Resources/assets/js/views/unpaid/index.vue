@@ -488,14 +488,14 @@
             },
             loadUnpaid() {
 
-                if(this.form.customer_id){
+               // if(this.form.customer_id){
 
                     this.$http.post(`/${this.resource}/records`, this.form).then(response => {
                         this.records = response.data.records;
                         //this.records_base = response.data.records;
                     });
 
-                }
+                //}
             },
             clickDocumentPayment(recordId) {
                 this.recordId = recordId;
@@ -536,13 +536,11 @@
             },
             changeUser()
             {
-                if (this.form.customer_id) {
+                //if (this.form.customer_id) {
 
-                    this.loadUnpaid()
+                this.loadUnpaid()
 
-                } else {
 
-                }
             },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {

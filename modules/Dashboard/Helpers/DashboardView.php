@@ -239,9 +239,6 @@ class DashboardView
         $user_type = auth()->user()->type;
         $user_id_session = auth()->user()->id;
 
-
-
-
         $d_start = null;
         $d_end = null;
 
@@ -275,7 +272,6 @@ class DashboardView
 
             $documents = DB::connection('tenant')
                 ->table('documents')
-                ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
                 ->join('users', 'users.id', '=', 'documents.user_id')
                 ->leftJoinSub($document_payments, 'payments', function ($join) {
@@ -295,7 +291,7 @@ class DashboardView
 
                 if($user_type == 'seller')
                 {
-                    $documents = $documents->where('documents.user_id', $user_id_session);
+                    $documents = $documents->where('user_id', $user_id_session);
                 }
 
                 if($user_type == 'admin' && $user_id)
@@ -304,12 +300,18 @@ class DashboardView
                     $documents = $documents->whereIn('user_id', [$user_id_session, $user_id]);
                 }
 
+                if($customer_id)
+                {
+                    $documents = $documents->where('customer_id', $customer_id);
+
+                }
+
 
         }else{
 
             $documents = DB::connection('tenant')
                 ->table('documents')
-                ->where('customer_id', $customer_id)
+                //->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
                 ->join('users', 'users.id', '=', 'documents.user_id')
                 ->leftJoinSub($document_payments, 'payments', function ($join) {
@@ -336,6 +338,12 @@ class DashboardView
 
                     $documents = $documents->whereIn('user_id', [$user_id_session, $user_id]);
                 }
+
+                if($customer_id)
+                {
+                    $documents = $documents->where('customer_id', $customer_id);
+
+                }
         }
 
         /*
@@ -349,7 +357,7 @@ class DashboardView
 
             $sale_notes = DB::connection('tenant')
                 ->table('sale_notes')
-                ->where('customer_id', $customer_id)
+                //->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
                 ->join('users', 'users.id', '=', 'sale_notes.user_id')
                 ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
@@ -379,11 +387,16 @@ class DashboardView
                     $sale_notes = $sale_notes->whereIn('user_id', [$user_id_session, $user_id]);
                 }
 
+                if($customer_id)
+                {
+                    $sale_notes = $sale_notes->where('customer_id', $customer_id);
+                }
+
         }else{
 
             $sale_notes = DB::connection('tenant')
                 ->table('sale_notes')
-                ->where('customer_id', $customer_id)
+               // ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'sale_notes.customer_id')
                 ->join('users', 'users.id', '=', 'sale_notes.user_id')
                 ->leftJoinSub($sale_note_payments, 'payments', function ($join) {
@@ -410,6 +423,11 @@ class DashboardView
                 {
 
                     $sale_notes = $sale_notes->whereIn('user_id', [$user_id_session, $user_id]);
+                }
+
+                if($customer_id)
+                {
+                    $sale_notes = $sale_notes->where('customer_id', $customer_id);
                 }
 
         }
