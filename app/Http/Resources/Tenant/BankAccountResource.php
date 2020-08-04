@@ -20,7 +20,8 @@ class BankAccountResource extends JsonResource
             'description' => $this->description,
             'number' => $this->number,
             'cci' => $this->cci,
-            'currency_type_id' => $this->currency_type_id
+            'currency_type_id' => $this->currency_type_id,
+            'initial_balance' => $this->initial_balance,
         ];
     }
 }
