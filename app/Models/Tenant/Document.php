@@ -78,6 +78,7 @@ class Document extends ModelTenant
         'total_canceled',
         'order_note_id',
         'soap_shipping_response',
+        'payment_method_type_id',
 
     ];
 
@@ -370,5 +371,10 @@ class Document extends ModelTenant
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+    }
+    
+    public function payment_method_type()
+    {
+        return $this->belongsTo(PaymentMethodType::class);
     }
 }

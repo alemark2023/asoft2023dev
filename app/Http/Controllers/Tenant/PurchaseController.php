@@ -36,11 +36,19 @@ use App\Models\Tenant\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Item\Models\ItemLotsGroup;
 
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Template;
+use Mpdf\Mpdf;
+use Mpdf\HTMLParserMode;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use App\Models\Tenant\Configuration;
+
 
 class PurchaseController extends Controller
 {
 
-    use FinanceTrait;
+    use FinanceTrait, StorageDocument;
 
     public function index()
     {
@@ -216,6 +224,9 @@ class PurchaseController extends Controller
                 }
             }
 
+            $this->setFilename($doc);
+            $this->createPdf($doc, "a4", $doc->filename);
+
             return $doc;
         });
 
@@ -230,16 +241,42 @@ class PurchaseController extends Controller
         ];
     }
 
+    private function setFilename($purchase){
+
+        $name = [$purchase->series,$purchase->number,$purchase->id,date('Ymd')];
+        $purchase->filename = join('-', $name);
+        $purchase->save();
+
+    }
+
+    public function toPrint($external_id, $format) {
+        $purchase = Purchase::where('external_id', $external_id)->first();
+
+        if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el pedido relacionado");
+
+        $this->reloadPDF($purchase, $format, $purchase->filename);
+        $temp = tempnam(sys_get_temp_dir(), 'purchase');
+
+        file_put_contents($temp, $this->getStorage($purchase->filename, 'purchase'));
+
+        return response()->file($temp);
+    }
+
+    private function reloadPDF($purchase, $format, $filename) {
+        $this->createPdf($purchase, $format, $filename);
+    }
+
     public function update(PurchaseRequest $request)
     {
-
-
 
         $purchase = DB::connection('tenant')->transaction(function () use ($request) {
 
             $doc = Purchase::firstOrNew(['id' => $request['id']]);
            // return json_encode($doc);
             $doc->fill($request->all());
+            $doc->supplier = PersonInput::set($request['supplier_id']);
+            $doc->group_id = ($request->document_type_id === '01') ? '01':'02';
+            $doc->user_id = auth()->id();
             $doc->save();
 
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
@@ -305,6 +342,11 @@ class PurchaseController extends Controller
                     ]);
                 }
             }
+
+            if(!$doc->filename){
+                $this->setFilename($doc);
+            }
+            $this->createPdf($doc, "a4", $doc->filename);
 
             return $doc;
         });
@@ -661,5 +703,82 @@ class PurchaseController extends Controller
             'series_enabled' => (bool) $row->series_enabled,
         ];
     }*/
+
+    
+    public function download($external_id, $format = 'a4') {
+        $purchase = SaleOpportunity::where('external_id', $external_id)->first();
+
+        if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el archivo relacionado");
+
+        return $this->downloadStorage($purchase->filename, 'purchase');
+    }
+
+
+    public function createPdf($purchase = null, $format_pdf = null, $filename = null) {
+     
+        ini_set("pcre.backtrack_limit", "5000000");
+        $template = new Template();
+        $pdf = new Mpdf();
+
+        $document = ($purchase != null) ? $purchase : $this->purchase;
+        $company = Company::active();
+        $filename = ($filename != null) ? $filename : $this->purchase->filename;
+
+        $base_template = Configuration::first()->formats;
+
+        $html = $template->pdf($base_template, "purchase", $company, $document, $format_pdf);
+
+
+        $pdf_font_regular = config('tenant.pdf_name_regular');
+        $pdf_font_bold = config('tenant.pdf_name_bold');
+
+        if ($pdf_font_regular != false) {
+            $defaultConfig = (new ConfigVariables())->getDefaults();
+            $fontDirs = $defaultConfig['fontDir'];
+
+            $defaultFontConfig = (new FontVariables())->getDefaults();
+            $fontData = $defaultFontConfig['fontdata'];
+
+            $pdf = new Mpdf([
+                'fontDir' => array_merge($fontDirs, [
+                    app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                DIRECTORY_SEPARATOR.'pdf'.
+                                                DIRECTORY_SEPARATOR.$base_template.
+                                                DIRECTORY_SEPARATOR.'font')
+                ]),
+                'fontdata' => $fontData + [
+                    'custom_bold' => [
+                        'R' => $pdf_font_bold.'.ttf',
+                    ],
+                    'custom_regular' => [
+                        'R' => $pdf_font_regular.'.ttf',
+                    ],
+                ]
+            ]);
+        }
+
+        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.$base_template.
+                                             DIRECTORY_SEPARATOR.'style.css');
+
+        $stylesheet = file_get_contents($path_css);
+
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        if ($format_pdf != 'ticket') {
+            if(config('tenant.pdf_template_footer')) {
+                $html_footer = $template->pdfFooter($base_template);
+                $pdf->SetHTMLFooter($html_footer);
+            }
+        }
+
+        $this->uploadFile($filename, $pdf->output('', 'S'), 'purchase');
+    }
+
+    public function uploadFile($filename, $file_content, $file_type) {
+        $this->uploadStorage($filename, $file_content, $file_type);
+    }
 
 }

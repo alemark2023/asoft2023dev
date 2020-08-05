@@ -123,6 +123,7 @@ class DocumentInput
             'data_json' => $data_json,
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
+            'payment_method_type_id' => Functions::valueKeyInArray($inputs, 'payment_method_type_id'),
         ];
     }
 

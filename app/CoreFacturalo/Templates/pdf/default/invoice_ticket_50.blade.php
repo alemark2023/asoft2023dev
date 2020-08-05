@@ -354,6 +354,13 @@
         <td class="text-center desc">Código Hash: {{ $document->hash }}</td>
     </tr>
 
+    @if($document->payment_method_type_id)
+        <tr>
+            <td class="desc pt-5">
+                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            </td>
+        </tr> 
+    @endif
     @if($payments->count())
         <tr>
             <td class="desc pt-5">

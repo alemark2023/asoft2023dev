@@ -34,7 +34,7 @@
                         <td>{{ row.description }}</td>
                         <td class="text-right">
 
-                            <template v-if="row.id !== '01'">
+                            <template v-if="row.show_actions">
                             
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
 
