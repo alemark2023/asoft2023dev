@@ -165,7 +165,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $user = auth()->user()->type;
-        $payment_method_types = PaymentMethodType::all();
+        $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
         $is_client = $this->getIsClient();
@@ -252,6 +252,14 @@ class DocumentController extends Controller
                 ];
             });
             return $prepayment_documents;
+        }
+        
+        if ($table === 'payment_method_types') {
+            
+            $payment_method_types = PaymentMethodType::whereNotIn('id', ['05', '08', '09'])->get();
+            $end_payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get(); //by requirement
+
+            return $payment_method_types->merge($end_payment_method_types);
         }
 
         if ($table === 'items') {

@@ -101,6 +101,28 @@
                                     </el-select>
                                 </div>
 
+                                <div class="col-md-2">
+                                    <label class="control-label">Métodos de cobro
+                                        <el-tooltip class="item" effect="dark" content="Aplica a CPE" placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-select
+                                        @change="changePaymentMethodType"
+                                        filterable
+                                        clearable
+                                        v-model="form.payment_method_type_id"
+                                        placeholder="Seleccionar"
+                                        >
+                                        <el-option
+                                            v-for="item in payment_method_types"
+                                            :key="item.id"
+                                            :label="item.description"
+                                            :value="item.id"
+                                        ></el-option>
+                                    </el-select>
+                                </div>
+
                                 <div class="col-md-6" style="margin-top:29px">
                                     <el-button
                                         class="submit"
@@ -171,6 +193,7 @@
                                     <th>#</th>
                                     <th>F.Emisión</th>
                                     <th>F.Vencimiento</th>
+                                    <th>F.Límite de Pago</th>
                                     <th>Número</th>
                                     <th>Cliente</th>
                                     <th>Usuario</th>
@@ -191,6 +214,7 @@
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ row.date_of_issue }}</td>
                                             <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
+                                            <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha límite.'}}</td>
                                             <td>{{ row.number_full }}</td>
                                             <td>{{ row.customer_name }}</td>
                                             <td>{{ row.username }}</td>
@@ -353,7 +377,8 @@
                 },
                 showDialogDocumentPayments: false,
                 showDialogSaleNotePayments: false,
-                users:[]
+                users:[],
+                payment_method_types:[],
             }
         },
         async created() {
@@ -465,7 +490,9 @@
         },
 
         methods: {
-
+            changePaymentMethodType(){
+                this.loadUnpaid()
+            },
             initForm() {
                 this.form = {
                     establishment_id: null,
@@ -475,7 +502,8 @@
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
                     customer_id: null,
-                    user_id:null
+                    user_id:null,
+                    payment_method_type_id: null
                 };
             },
             filter() {
@@ -484,6 +512,7 @@
                     this.customers = response.data.customers;
                     this.form.establishment_id = this.establishments.length > 0 ? this.establishments[0].id : null;
                     this.users = response.data.users
+                    this.payment_method_types = response.data.payment_method_types
                 });
             },
             loadUnpaid() {

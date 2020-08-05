@@ -21,6 +21,7 @@ use Modules\Dashboard\Helpers\DashboardView;
 use App\Exports\AccountsReceivable;
 use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
 use App\Models\Tenant\User;
+use App\Models\Tenant\PaymentMethodType;
 
 class UnpaidController extends Controller
 {
@@ -53,7 +54,9 @@ class UnpaidController extends Controller
             $users = User::where('id', '!=', auth()->user()->id)->whereIn('type', ['admin', 'seller'])->get();
         }
 
-        return compact('customers', 'establishments', 'users');
+        $payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get();
+
+        return compact('customers', 'establishments', 'users', 'payment_method_types');
     }
 
     public function records(Request $request)
