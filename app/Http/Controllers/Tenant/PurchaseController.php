@@ -248,8 +248,6 @@ class PurchaseController extends Controller
         $purchase->filename = join('-', $name);
         $purchase->save();
 
-<<<<<<< HEAD
-=======
     }
 
     public function toPrint($external_id, $format) {
@@ -272,7 +270,6 @@ class PurchaseController extends Controller
     public function update(PurchaseRequest $request)
     {
 
->>>>>>> e08f87c62ae3d4ee28cd40eca221a03e3a1ae390
         $purchase = DB::connection('tenant')->transaction(function () use ($request) {
 
             $doc = Purchase::firstOrNew(['id' => $request['id']]);
@@ -751,7 +748,7 @@ class PurchaseController extends Controller
         ];
     }*/
 
-    
+
     public function download($external_id, $format = 'a4') {
         $purchase = SaleOpportunity::where('external_id', $external_id)->first();
 
@@ -762,7 +759,7 @@ class PurchaseController extends Controller
 
 
     public function createPdf($purchase = null, $format_pdf = null, $filename = null) {
-     
+
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
