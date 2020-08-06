@@ -9,13 +9,13 @@ if($current_hostname) {
 
             Route::prefix('sale-opportunities')->group(function() {
 
-                Route::get('', 'SaleOpportunityController@index')->name('tenant.sale_opportunities.index');
+                Route::get('', 'SaleOpportunityController@index')->name('tenant.sale_opportunities.index')->middleware(['redirect.level']);
                 Route::post('', 'SaleOpportunityController@store');
 
                 Route::get('columns', 'SaleOpportunityController@columns');
                 Route::get('records', 'SaleOpportunityController@records');
                 Route::get('record/{id}', 'SaleOpportunityController@record');
-                Route::get('create/{id?}', 'SaleOpportunityController@create')->name('tenant.sale_opportunities.create');
+                Route::get('create/{id?}', 'SaleOpportunityController@create')->name('tenant.sale_opportunities.create')->middleware(['redirect.level']);
                 // Route::get('edit/{id}', 'SaleOpportunityController@edit');
                 Route::get('search/customers', 'SaleOpportunityController@searchCustomers');
                 Route::get('search/customer/{id}', 'SaleOpportunityController@searchCustomerById');
@@ -45,10 +45,10 @@ if($current_hostname) {
 
             Route::prefix('contracts')->group(function () {
 
-                Route::get('', 'ContractController@index')->name('tenant.contracts.index');
+                Route::get('', 'ContractController@index')->name('tenant.contracts.index')->middleware(['redirect.level']);
                 Route::get('/columns', 'ContractController@columns');
                 Route::get('/records', 'ContractController@records');
-                Route::get('/create/{id?}', 'ContractController@create')->name('tenant.contracts.create');
+                Route::get('/create/{id?}', 'ContractController@create')->name('tenant.contracts.create')->middleware('redirect.level');
     
                 Route::get('/state-type/{state_type_id}/{id}', 'ContractController@updateStateType');
                 Route::get('/filter', 'ContractController@filter');
@@ -66,7 +66,7 @@ if($current_hostname) {
                 Route::post('/email', 'ContractController@email');
                 Route::get('/record2/{contract}', 'ContractController@record2');
                 Route::get('/changed/{contract}', 'ContractController@changed');
-                Route::get('/generate-quotation/{quotation}', 'ContractController@generateContract');
+                Route::get('/generate-quotation/{quotation}', 'ContractController@generateContract')->middleware(['redirect.level']);
 
             });
 
@@ -75,7 +75,7 @@ if($current_hostname) {
         
         Route::prefix('production-orders')->group(function () {
 
-            Route::get('', 'ProductionOrderController@index')->name('tenant.production_orders.index');
+            Route::get('', 'ProductionOrderController@index')->name('tenant.production_orders.index')->middleware(['redirect.level']);
             Route::get('/columns', 'ProductionOrderController@columns');
             Route::get('/records', 'ProductionOrderController@records');
 
@@ -83,7 +83,7 @@ if($current_hostname) {
 
         Route::prefix('technical-services')->group(function () {
 
-            Route::get('', 'TechnicalServiceController@index')->name('tenant.technical_services.index');
+            Route::get('', 'TechnicalServiceController@index')->name('tenant.technical_services.index')->middleware(['redirect.level']);
             Route::get('/columns', 'TechnicalServiceController@columns');
             Route::get('/records', 'TechnicalServiceController@records');
             Route::get('/tables', 'TechnicalServiceController@tables');
@@ -100,7 +100,7 @@ if($current_hostname) {
         
         Route::prefix('user-commissions')->group(function () {
 
-            Route::get('', 'UserCommissionController@index')->name('tenant.user_commissions.index');
+            Route::get('', 'UserCommissionController@index')->name('tenant.user_commissions.index')->middleware(['redirect.level']);
             Route::get('/columns', 'UserCommissionController@columns');
             Route::get('/records', 'UserCommissionController@records');
             Route::get('/tables', 'UserCommissionController@tables');
