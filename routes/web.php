@@ -356,6 +356,9 @@ if ($hostname) {
             Route::get('purchases/item/tables', 'Tenant\PurchaseController@item_tables');
             // Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
 
+            Route::delete('purchases/destroy_purchase_item/{purchase_item}', 'PurchaseController@destroy_purchase_item');
+
+
             //quotations
             Route::get('quotations', 'Tenant\QuotationController@index')->name('tenant.quotations.index')->middleware('redirect.level');
             Route::get('quotations/columns', 'Tenant\QuotationController@columns');
