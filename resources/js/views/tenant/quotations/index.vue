@@ -27,7 +27,7 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
-                        <th class="text-center" v-if="columns.delivery_date.visible">Fecha Entrega</th>
+                        <th class="text-center" v-if="columns.delivery_date.visible">T. Entrega</th>
                         <th>Vendedor</th>
                         <th>Cliente</th>
                         <th>Estado</th>
@@ -216,7 +216,7 @@
                         visible: false
                     },
                     delivery_date: {
-                        title: 'F.Entrega',
+                        title: 'T.Entrega',
                         visible: false
                     }
                 }

@@ -67,8 +67,8 @@ class Quotation extends ModelTenant
 
     protected $casts = [
         'date_of_issue' => 'date',
-        'date_of_due' => 'date',
-        'delivery_date' => 'date',
+        // 'date_of_due' => 'date',
+        // 'delivery_date' => 'date',
     ];
 
     public function getEstablishmentAttribute($value)
