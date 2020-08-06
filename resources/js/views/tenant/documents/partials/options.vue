@@ -83,12 +83,12 @@
                 <small class="form-control-feedback" v-if="errors.customer_telephone" v-text="errors.customer_telephone[0]"></small>
             </div>
         </div>
-        <!-- <div class="row mt-4" v-if="company.soap_type_id == '02'">
+        <div class="row mt-4" v-if="company.soap_type_id == '02' && form.group_id == '01'">
             <div class="col-md-12 text-center">
                 <button type="button" class="btn waves-effect waves-light btn-outline-primary"
                         @click.prevent="clickConsultCdr(form.id)">Consultar CDR</button>
             </div>
-        </div> -->
+        </div>
         <span slot="footer" class="dialog-footer">
             <template v-if="showClose">
                 <el-button @click="clickClose">Cerrar</el-button>
@@ -117,12 +117,6 @@
         },
         async created() {
             this.initForm()
-            await this.$http.get(`/companies/record`)
-                .then(response => {
-                    if (response.data !== '') {
-                        this.company = response.data.data
-                    }
-                })
         },
         methods: {
             clickSendWhatsapp() {
@@ -146,7 +140,8 @@
                     response_message:null,
                     response_type:null,
                     customer_telephone:null,
-                    message_text:null
+                    message_text:null,
+                    group_id:null,
                 };
                 this.locked_emission = {
                     success: true,
@@ -157,15 +152,30 @@
                 }
             },
             async create() {
-                await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
-                    this.form = response.data.data;
-                    this.titleDialog = 'Comprobante: '+this.form.number;
-                    if(this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/i/${this.dispatchId}`)
-                });
+                
+                await this.getCompany()
+                await this.getRecord()
 
                 await this.$http.get(`/${this.resource}/locked_emission`).then(response => {
                     this.locked_emission = response.data
                     // console.log(response)
+                });
+            },
+            async getCompany(){
+                
+                await this.$http.get(`/companies/record`)
+                    .then(response => {
+                        if (response.data !== '') {
+                            this.company = response.data.data
+                        }
+                    })
+            },
+            async getRecord(){
+
+                await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                    this.form = response.data.data;
+                    this.titleDialog = 'Comprobante: '+this.form.number;
+                    if(this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/i/${this.dispatchId}`)
                 });
             },
             clickPrint(format){
@@ -206,6 +216,7 @@
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)
+                            this.getRecord()
                             this.$eventHub.$emit('reloadData')
                         } else {
                             this.$message.error(response.data.message)
