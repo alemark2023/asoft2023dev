@@ -541,6 +541,17 @@
         </td>
     </tr>
 </table>
+
+@if($document->payment_method_type_id)
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            </td>
+        </tr> 
+    </table>
+@endif
+
 @if($payments->count())
 
 

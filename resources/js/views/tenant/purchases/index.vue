@@ -101,11 +101,12 @@
                         <td v-if="columns.total_igv.visible" class="text-right">{{ row.total_igv }}</td>
                         <td v-if="columns.total_perception.visible" class="text-right">{{ row.total_perception ? row.total_perception : 0 }}</td>
                         <td class="text-right">{{ row.total   }}</td>
-                        <td>
+                        <td class="text-right">
 
                             <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
                             <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id)">Opciones</button>
 
 
 
@@ -146,6 +147,10 @@
             :purchaseId="recordId"
             :external="true"
             ></purchase-payments>
+            
+        <purchase-options :showDialog.sync="showDialogOptions"
+                          :recordId="recordId"
+                          :showClose="true"></purchase-options>
     </div>
 </template>
 
@@ -157,14 +162,16 @@
     import {deletable} from '../../../mixins/deletable'
     import PurchaseImport from './import.vue'
     import PurchasePayments from '@viewsModulePurchase/purchase_payments/payments.vue'
+    import PurchaseOptions from './partials/options.vue'
 
 
     export default {
         mixins: [deletable],
         // components: {DocumentsVoided, DocumentOptions, DataTable},
-        components: {DataTable, PurchaseImport, PurchasePayments},
+        components: {DataTable, PurchaseImport, PurchasePayments, PurchaseOptions},
         data() {
             return {
+                showDialogOptions: false,
                 showDialogVoided: false,
                 resource: 'purchases',
                 recordId: null,
