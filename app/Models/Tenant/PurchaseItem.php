@@ -45,8 +45,11 @@ class PurchaseItem extends ModelTenant
         'charges',
         'lot_code',
         'warehouse_id',
-        'discounts'
+        'discounts',
+        'date_of_due'
     ];
+
+    
 
     public function getItemAttribute($value)
     {
@@ -113,18 +116,18 @@ class PurchaseItem extends ModelTenant
         return $this->belongsTo(Item::class);
     }
 
-    
+
     public function lots()
     {
         return $this->morphMany(ItemLot::class, 'item_loteable');
     }
 
-    
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
     }
-    
+
     public function relation_item()
     {
         return $this->belongsTo(Item::class, 'item_id');

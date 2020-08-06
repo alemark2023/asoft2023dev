@@ -14,8 +14,6 @@ use Modules\Order\Models\OrderNoteItem;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\ItemLot;
 
-
-
 class InventoryKardexServiceProvider extends ServiceProvider
 {
     use InventoryTrait;
@@ -32,6 +30,10 @@ class InventoryKardexServiceProvider extends ServiceProvider
         $this->sale_document_type_03_delete();
         $this->order_note();
         $this->order_note_item_delete();
+        $this->purchase_item_delete();
+        $this->item_lot_delete();
+
+
     }
 
     private function purchase() {
@@ -267,6 +269,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         OrderNoteItem::created(function ($order_note_item) {
 
+            // \Log::debug($order_note_item);
+
             $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
             $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
@@ -295,6 +299,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         OrderNoteItem::deleted(function ($order_note_item) {
 
+
+
             // dd($order_note_item);
             $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
@@ -307,6 +313,42 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         });
     }
+
+    private function purchase_item_delete()
+    {
+        PurchaseItem::deleted(function ($purchase_item) {
+
+
+            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+
+            $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+
+            $this->verifyHasSaleLots($purchase_item);
+            $this->verifyHasSaleLotsGroup($purchase_item);
+
+            $this->deleteItemSeriesAndGroup($purchase_item);
+
+            $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, (-1 * ($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+            $this->updateStock($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+
+        });
+    }
+    private function item_lot_delete()
+    {
+        /*ItemLot::deleted(function($item_lot) {
+
+           // \Log::debug($item_lot);
+
+            if((bool)$item_lot->has_sale)
+            {
+                throw new Exception("La serie {$item_lot->series} ha sido vendida!");
+            }
+        });*/
+    }
+
+
+
+
 
 
 }

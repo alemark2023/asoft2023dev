@@ -35,6 +35,8 @@ use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\ItemLot;
+
 
 
 class PurchaseController extends Controller
@@ -186,7 +188,6 @@ class PurchaseController extends Controller
                         ]);
 
                     }
-
                 }
 
                 if(array_key_exists('item', $row))
@@ -233,40 +234,21 @@ class PurchaseController extends Controller
     public function update(PurchaseRequest $request)
     {
 
-
-
         $purchase = DB::connection('tenant')->transaction(function () use ($request) {
 
             $doc = Purchase::firstOrNew(['id' => $request['id']]);
-           // return json_encode($doc);
             $doc->fill($request->all());
             $doc->save();
 
-            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-            //proceso para eliminar los actualizar el stock de proiductos
-            foreach ($doc->items as $item) {
-                $item->purchase->inventory_kardex()->create([
-                    'date_of_issue' => date('Y-m-d'),
-                    'item_id' => $item->item_id,
-                    'warehouse_id' => $establishment->id,
-                    'quantity' => -$item->quantity,
-                ]);
-                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
-                $wr->stock =  $wr->stock - $item->quantity;
-                $wr->save();
+            foreach ($doc->items as $it) {
+
+                $p_i = PurchaseItem::findOrFail($it->id);
+                $p_i->delete();
+
             }
-
-            foreach ($doc->items()->get() as $it) {
-                // dd($it);
-                $it->lots()->delete();
-            }
-
-
-            $doc->items()->delete();
 
             foreach ($request['items'] as $row)
             {
-                // $doc->items()->create($row);
                 $p_item = new PurchaseItem;
                 $p_item->fill($row);
                 $p_item->purchase_id = $doc->id;
@@ -286,9 +268,23 @@ class PurchaseController extends Controller
 
                     }
                 }
+
+                if(array_key_exists('item', $row))
+                {
+                    if( isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true)
+                    {
+
+                        ItemLotsGroup::create([
+                            'code'  => $row['lot_code'],
+                            'quantity'  => $row['quantity'],
+                            'date_of_due'  => $row['date_of_due'],
+                            'item_id' => $row['item_id']
+                        ]);
+
+                    }
+                }
             }
 
-            // $doc->purchase_payments()->delete();
             $this->deleteAllPayments($doc->purchase_payments);
 
             foreach ($request['payments'] as $payment) {
@@ -318,23 +314,55 @@ class PurchaseController extends Controller
 
     }
 
+    /*public static function deleteLotsSerie($records)
+    {
+        foreach ($records as $row) {
+
+            $it = ItemLot::findOrFail($row->id);
+            $it->delete();
+        }
+    }*/
+
     public static function verifyHasSaleItems($items)
     {
         $validated = true;
+        $message = '';
         foreach ($items as $element) {
 
             $lot_has_sale = collect($element->lots)->firstWhere('has_sale', 1);
             if($lot_has_sale)
             {
                 $validated = false;
+                $message = 'No se puede anular esta compra, series en productos no disponibles';
                 break;
             }
 
+            if($element->item->lots_enabled && $element->lot_code )
+            {
+                $lot_group = ItemLotsGroup::where('code', $element->lot_code)->first();
+
+                if(!$lot_group)
+                {
+                    $message = "Lote {$element->lot_code} no encontrado.";
+                    $validated = false;
+                    break;
+                }
+
+                if( (int)$lot_group->quantity != (int)$element->quantity)
+                {
+                    $message = "Los productos del lote {$element->lot_code} han sido vendidos!";
+                    $validated = false;
+                    break;
+                }
+            }
         }
 
         return [
-            'success' => $validated
+            'success' => $validated,
+            'message' => $message
         ];
+
+
     }
 
     public function anular($id)
@@ -345,7 +373,7 @@ class PurchaseController extends Controller
         {
             return [
                 'success' => false,
-                'message' => 'No se puede anular esta compra, series en productos no disponibles'
+                'message' => $validated['message']
             ];
         }
 
@@ -369,8 +397,6 @@ class PurchaseController extends Controller
                 $wr->stock =  $wr->stock - $item->quantity;
                 $wr->save();
             }
-
-
 
         });
 
@@ -491,7 +517,7 @@ class PurchaseController extends Controller
                 'message' => 'Compra eliminada con éxito'
             ];
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             return [
                 'success' => false,
@@ -637,6 +663,22 @@ class PurchaseController extends Controller
 
         return $persons;
 
+    }
+
+    public function destroy_purchase_item($id)
+    {
+
+        DB::connection('tenant')->transaction(function () use ($id) {
+
+            $item = PurchaseItem::findOrFail($id);
+            $item->delete();
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Item eliminado'
+        ];
     }
 
     /*public function itemResource($id)
