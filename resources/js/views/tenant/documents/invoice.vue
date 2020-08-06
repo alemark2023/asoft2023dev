@@ -197,15 +197,16 @@
 
                             <div class="row" >
                                 <div class="col-lg-8" v-if="!is_receivable">
-                                    <template v-if="enabled_payments">
                                         <table>
                                             <thead>
                                                 <tr width="100%">
                                                     <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
-                                                    <th v-if="form.payments.length>0" class="pb-2">Destino</th>
-                                                    <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
-                                                    <th v-if="form.payments.length>0" class="pb-2">Monto</th>
-                                                    <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                                    <template v-if="enabled_payments">
+                                                        <th v-if="form.payments.length>0" class="pb-2">Destino</th>
+                                                        <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
+                                                        <th v-if="form.payments.length>0" class="pb-2">Monto</th>
+                                                        <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                                    </template>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -217,36 +218,38 @@
                                                             </el-select>
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        <div class="form-group mb-2 mr-2">
-                                                            <el-select v-model="row.payment_destination_id" filterable >
-                                                                <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                            </el-select>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="form-group mb-2 mr-2"  >
-                                                            <el-input v-model="row.reference"></el-input>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="form-group mb-2 mr-2" >
-                                                            <el-input v-model="row.payment"></el-input>
-                                                        </div>
-                                                    </td>
-                                                    <td class="series-table-actions text-center">
-                                                        <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-                                                    </td>
+                                                    <template v-if="enabled_payments">
+                                                        <td>
+                                                            <div class="form-group mb-2 mr-2">
+                                                                <el-select v-model="row.payment_destination_id" filterable >
+                                                                    <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                </el-select>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-group mb-2 mr-2"  >
+                                                                <el-input v-model="row.reference"></el-input>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="form-group mb-2 mr-2" >
+                                                                <el-input v-model="row.payment"></el-input>
+                                                            </div>
+                                                        </td>
+                                                        <td class="series-table-actions text-center">
+                                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </template>
+
                                                     <br>
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </template>
-                                    <template v-else>
+                                    <!-- <template v-else>
                                         <el-checkbox v-model="enabled_payments" class=" font-weight-bold" @change="changeEnabledPayments">¿Habilitar pagos?</el-checkbox>
-                                    </template>
+                                    </template> -->
 
 
                                 </div>
@@ -778,10 +781,10 @@ import moment from 'moment'
         },
         methods: {
             changeEnabledPayments(){
-                this.clickAddPayment()
-                this.form.date_of_due = this.form.date_of_issue
-                this.readonly_date_of_due = false
-                this.form.payment_method_type_id = null
+                // this.clickAddPayment()
+                // this.form.date_of_due = this.form.date_of_issue
+                // this.readonly_date_of_due = false
+                // this.form.payment_method_type_id = null
             },
             changePaymentMethodType(index){
 
@@ -790,7 +793,7 @@ import moment from 'moment'
                 if(payment_method_type.number_days){
 
                     this.form.date_of_due =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD')
-                    this.form.payments = []
+                    // this.form.payments = []
                     this.enabled_payments = false
                     this.readonly_date_of_due = true
                     this.form.payment_method_type_id = payment_method_type.id
@@ -799,8 +802,15 @@ import moment from 'moment'
 
                     this.form.payment_method_type_id = payment_method_type.id
                     this.form.date_of_due = this.form.date_of_issue
-                    this.form.payments = []
+                    // this.form.payments = []
                     this.enabled_payments = false
+
+                }else{
+                    
+                    this.form.date_of_due = this.form.date_of_issue
+                    this.readonly_date_of_due = false
+                    this.form.payment_method_type_id = null
+                    this.enabled_payments = true
 
                 }
 
@@ -1558,6 +1568,9 @@ import moment from 'moment'
                 if(!val_detraction.success)
                     return this.$message.error(val_detraction.message);
 
+                if(!this.enabled_payments){
+                    this.form.payments = []
+                }
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {
