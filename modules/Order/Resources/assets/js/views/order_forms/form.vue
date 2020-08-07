@@ -246,6 +246,9 @@
                                     <td class="text-right">{{row.quantity}}</td>
                                     <td class="text-right">
                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                        <button data-toggle="tooltip" data-placement="top" title="Editar" type="button" class="btn waves-effect waves-light btn-xs btn-primary"
+                                            @click.prevent="clickEditItem(row)"><i class="fas fa-file-signature"></i></button>
+
                                     </td>
                                 </tr>
                             </tbody>
@@ -254,7 +257,7 @@
                 </div>
                 <div class="col-lg-12">
                     <div class="form-group">
-                        <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItems = true">+ Agregar Producto</button>
+                        <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="clickShowDialogFormItem">+ Agregar Producto</button>
                     </div>
                 </div>
                 <div class="form-actions text-right mt-4">
@@ -270,7 +273,7 @@
 
         <dispatcher-form :showDialog.sync="showDialogNewDispatcher" :external="true"></dispatcher-form>
 
-        <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
+        <items :recordItem.sync="recordItem" :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
 
 
         <order-form-options :showDialog.sync="showDialogOptions"
@@ -325,6 +328,7 @@
                 form: {},
                 title: null,
                 recordId:null,
+                recordItem:null
             }
         },
         async created() {
@@ -515,6 +519,11 @@
             clickRemoveItem(index) {
                 this.form.items.splice(index, 1);
             },
+            clickEditItem(item)
+            {
+                this.recordItem = item
+                this.showDialogAddItems = true
+            },
             submit() {
 
                 // console.log(this.form)
@@ -550,6 +559,11 @@
             close() {
                 location.href = '/order-forms';
             },
+            clickShowDialogFormItem()
+            {
+                this.recordItem = null
+                this.showDialogAddItems = true
+            }
         }
     }
 </script>

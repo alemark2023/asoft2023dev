@@ -342,7 +342,7 @@
         <person-form :showDialog.sync="showDialogNewPerson" type="customers" :external="true"></person-form>
 
         <items :dialogVisible.sync="showDialogAddItems" @addItem="addItem"></items>
-        
+
         <dispatch-options :showDialog.sync="showDialogOptions"
                             :recordId="recordId"
                             :showClose="false"
@@ -419,7 +419,7 @@
         },
         methods: {
             setDefaultCustomer(){
-                
+
                 let customer = _.find(this.customers, {number: this.company.number})
 
                 if(customer){
@@ -433,11 +433,11 @@
 
                     this.$http.get(`/order-forms/record/${this.order_form_id}` )
                         .then(response => {
-                            
+
                             let order_form = response.data.data.order_form
                             // console.log(order_form)
                             // this.form = order_form
-                            
+
                             this.form.establishment_id = order_form.establishment_id
                             this.form.establishment = order_form.establishment
                             this.form.date_of_issue = order_form.date_of_issue
@@ -478,9 +478,9 @@
                             });
 
                             this.changeEstablishment()
-                        
+
                         })
-                
+
                 }
             },
             initForm() {
@@ -599,9 +599,14 @@
             clickRemoveItem(index) {
                 this.form.items.splice(index, 1);
             },
-            submit() {
+            async submit() {
 
-                // console.log(this.form)
+                const validateQuantity = await  this.verifyQuantityItems()
+                if(!validateQuantity.validate)
+                {
+                    return this.$message.error('Los productos no pueden tener cantidad 0.')
+                }
+
                 if(this.form.origin.location_id.length != 3 || this.form.delivery.location_id.length != 3)
                     return this.$message.error('El campo ubigeo es obligatorio')
 
@@ -662,6 +667,17 @@
             close() {
                 location.href = '/dispatches';
             },
+            verifyQuantityItems()
+            {
+                let validate = true
+                this.form.items.forEach( (element) => {
+
+                    if(parseInt(element.quantity) < 1) validate= false
+
+                })
+
+                return { validate }
+            }
         }
     }
 </script>
