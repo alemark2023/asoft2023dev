@@ -26,7 +26,7 @@ class RedirectModuleLevel
             if(count($levels)){
                 // dd("w");
 
-                if(count($levels) < 9){
+                if(count($levels) < 13){
                     // dd($levels);
                     
                     $group = $this->getGroup($path, $level);
@@ -79,6 +79,19 @@ class RedirectModuleLevel
             case 'incentives':
                 return redirect()->route('tenant.incentives.create'); 
 
+
+            case 'sale-opportunity':
+                return redirect()->route('tenant.sale_opportunities.index'); 
+                    
+            case 'contracts':
+                return redirect()->route('tenant.contracts.create'); 
+                
+            case 'order-note':
+                return redirect()->route('tenant.order_notes.create'); 
+                
+            case 'technical-service':
+                return redirect()->route('tenant.technical_services.create'); 
+
         }
     }
 
@@ -121,6 +134,15 @@ class RedirectModuleLevel
             else if($path[0] == "sale-notes" && $path[1] == "create"){
                 $group = "sale_notes";
             }
+            else if($path[0] == "contracts" && $path[1] == "create"){
+                $group = "contracts";
+            }
+            else if($path[0] == "sale-opportunities" && $path[1] == "create"){
+                $group = "sale-opportunity";
+            }
+            else if($path[0] == "order-notes" && $path[1] == "create"){
+                $group = "order-note";
+            }
 
         }
         else if($path[0] == "documents"){
@@ -141,8 +163,20 @@ class RedirectModuleLevel
         elseif($path[0] == "sale-notes"){
             $group = "sale_notes";
         }
-        elseif($path[0] == "incentives"){
+        elseif(in_array($path[0], ["incentives", "user-commissions"])){
             $group = "incentives";
+        }
+        elseif($path[0] == "sale-opportunities"){
+            $group = "sale-opportunity";
+        }
+        elseif(in_array($path[0], ["contracts", "production-orders"])){
+            $group = "contracts";
+        }
+        elseif($path[0] == "order-notes"){
+            $group = "order-note";
+        }
+        elseif($path[0] == "technical-services"){
+            $group = "technical-service";
         }
         else{
             $group = null;

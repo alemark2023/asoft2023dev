@@ -131,8 +131,8 @@
     @endif
     @isset($document->quotation->delivery_date)
         <tr>
-            <td><p class="desc-9">F. Entrega</p></td>
-            <td><p class="desc-9">{{ $document->quotation->delivery_date->format('Y-m-d')}}</p></td>
+            <td><p class="desc-9">T. Entrega</p></td>
+            <td><p class="desc-9">{{ $document->quotation->delivery_date}}</p></td>
         </tr>
     @endisset
     @isset($document->quotation->sale_opportunity)

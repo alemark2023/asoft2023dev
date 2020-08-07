@@ -21,6 +21,7 @@ use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Item;
 use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Document\Helpers\ConsultCdr;
 
 
 class DocumentController extends Controller
@@ -420,6 +421,16 @@ class DocumentController extends Controller
         });
 
         return compact('items');
+    }
+
+    
+    public function consultCdr($document_id)
+    {
+
+        $document = Document::find($document_id);
+
+        return (new ConsultCdr)->search($document); 
+        
     }
 
 }

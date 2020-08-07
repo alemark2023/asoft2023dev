@@ -60,15 +60,17 @@
                             
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_due}"> 
-                                    <label class="control-label">Fec. Vencimiento</label>
-                                    <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                                    <label class="control-label">Tiempo de Validez</label>
+                                    <el-input v-model="form.date_of_due"></el-input>
+                                    <!-- <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker> -->
                                     <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.delivery_date}"> 
-                                    <label class="control-label">Fec. Entrega</label>
-                                    <el-date-picker v-model="form.delivery_date" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker>
+                                    <label class="control-label">Tiempo de Entrega</label>
+                                    <el-input v-model="form.delivery_date"></el-input>
+                                    <!-- <el-date-picker v-model="form.delivery_date" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker> -->
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
                             </div>
@@ -619,11 +621,11 @@
                     return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                 }
 
-                if(this.form.date_of_issue > this.form.date_of_due)
-                    return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
+                // if(this.form.date_of_issue > this.form.date_of_due)
+                //     return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
 
-                if(this.form.date_of_issue > this.form.delivery_date)
-                    return this.$message.error('La fecha de emisión no puede ser posterior a la de entrega');
+                // if(this.form.date_of_issue > this.form.delivery_date)
+                //     return this.$message.error('La fecha de emisión no puede ser posterior a la de entrega');
 
                 this.loading_submit = true
                 await this.$http.post(`/${this.resource}/update`, this.form).then(response => {

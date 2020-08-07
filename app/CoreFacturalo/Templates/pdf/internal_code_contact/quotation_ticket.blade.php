@@ -75,15 +75,15 @@
 
     @if($document->date_of_due)
     <tr>
-        <td width="" class=""><p class="desc">F. Vencimiento:</p></td>
-        <td width="" class=""><p class="desc">{{ $document->date_of_due->format('Y-m-d') }}</p></td>
+        <td width="" class=""><p class="desc">T. Validez:</p></td>
+        <td width="" class=""><p class="desc">{{ $document->date_of_due }}</p></td>
     </tr>
     @endif
 
     @if($document->delivery_date)
     <tr>
-        <td width="" class=""><p class="desc">F. Entrega:</p></td>
-        <td width="" class=""><p class="desc">{{ $document->delivery_date->format('Y-m-d') }}</p></td>
+        <td width="" class=""><p class="desc">T. Entrega:</p></td>
+        <td width="" class=""><p class="desc">{{ $document->delivery_date }}</p></td>
     </tr>
     @endif
 

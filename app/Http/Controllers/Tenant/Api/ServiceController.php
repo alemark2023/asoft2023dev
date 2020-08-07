@@ -19,6 +19,7 @@ use App\CoreFacturalo\WS\Client\WsClient;
 use App\CoreFacturalo\WS\Services\SunatEndpoints;
 use App\Http\Requests\Tenant\ServiceRequest;
 use Exception;
+use Modules\Document\Helpers\ConsultCdr;
 
 
 class ServiceController extends Controller
@@ -32,7 +33,6 @@ class ServiceController extends Controller
 
     public function consultCdrStatus(ServiceRequest $request){
 
-
         $document_type_id = $request->codigo_tipo_documento;
         $series = $request->serie_documento;
         $number = $request->numero_documento;
@@ -43,54 +43,15 @@ class ServiceController extends Controller
                                             ['number',$number]
                                             ])->first();
 
-        if(!$this->document)  throw new Exception("Documento no encontrado");
+        // if(!$this->document)  throw new Exception("Documento no encontrado");
+        if(!$this->document)  return [
+            'success' => false,
+            'message' => "Documento no encontrado"
+        ];
 
-        $wsdl = 'consultCdrStatus';
-        $company = Company::active();
-        $username = $company->soap_username;
-        $password = $company->soap_password;
-
-        $company_number = $company->number;
-
-        $this->wsClient = new WsClient($wsdl);
-        $this->wsClient->setCredentials($username, $password);
-        $this->wsClient->setService(SunatEndpoints::FE_CONSULTA_CDR.'?wsdl');
-
-        $consultCdrService = new ConsultCdrService();
-        $consultCdrService->setClient($this->wsClient);
-        $consultCdrService->setCodeProvider(new XmlErrorCodeProvider());
-        $res = $consultCdrService->getStatusCdr($company_number,$document_type_id,$series,$number);
-
-        if(!$res->isSuccess()) {
-            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
-        } else {
-            $cdrResponse = $res->getCdrResponse();
-            $this->uploadFile($res->getCdrZip(), 'cdr');
-            $this->updateState(self::ACCEPTED);
-            return [
-                'sent' => true,
-                'code' => $cdrResponse->getCode(),
-                'description' => $cdrResponse->getDescription(),
-                'notes' => $cdrResponse->getNotes()
-            ];
-        }
-
+        return (new ConsultCdr)->search($this->document); 
 
     }
-
-    public function uploadFile($file_content, $file_type)
-    {
-        $this->uploadStorage($this->document->filename, $file_content, $file_type);
-    }
-
-
-    public function updateState($state_type_id)
-    {
-        $this->document->update([
-            'state_type_id' => $state_type_id
-        ]);
-    }
-
 
 
     public function ruc($number)

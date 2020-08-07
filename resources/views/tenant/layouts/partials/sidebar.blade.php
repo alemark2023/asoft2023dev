@@ -176,11 +176,13 @@
                                     </li>
                                 @endif
 
-                                <li class="{{ ($path[0] === 'sale-opportunities')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.sale_opportunities.index')}}">
-                                        Oportunidad de venta
-                                    </a>
-                                </li>
+                                @if(in_array('sale-opportunity', $vc_module_levels))
+                                    <li class="{{ ($path[0] === 'sale-opportunities')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.sale_opportunities.index')}}">
+                                            Oportunidad de venta
+                                        </a>
+                                    </li>
+                                @endif
 
                                 @if(in_array('quotations', $vc_module_levels))
 
@@ -191,33 +193,36 @@
                                     </li>
                                 @endif
 
-                                <li class="nav-parent
-                                    {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
-                                    {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
-                                    ">
-                                    <a class="nav-link" href="#">
-                                        Contratos
-                                    </a>
-                                    <ul class="nav nav-children">
-                                        <li class="{{ ($path[0] === 'contracts')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.contracts.index')}}">
-                                                Listado
-                                            </a>
-                                        </li>
-                                        <li class="{{ ($path[0] === 'production-orders')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.production_orders.index')}}">
-                                                Ordenes de Producción
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                @if(in_array('contracts', $vc_module_levels))
+                                    <li class="nav-parent
+                                        {{ ($path[0] === 'contracts')?'nav-active nav-expanded':'' }}
+                                        {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
+                                        ">
+                                        <a class="nav-link" href="#">
+                                            Contratos
+                                        </a>
+                                        <ul class="nav nav-children">
+                                            <li class="{{ ($path[0] === 'contracts')?'nav-active':'' }}">
+                                                <a class="nav-link" href="{{route('tenant.contracts.index')}}">
+                                                    Listado
+                                                </a>
+                                            </li>
+                                            <li class="{{ ($path[0] === 'production-orders')?'nav-active':'' }}">
+                                                <a class="nav-link" href="{{route('tenant.production_orders.index')}}">
+                                                    Ordenes de Producción
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
 
-
-                                <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.order_notes.index')}}">
-                                        Pedidos
-                                    </a>
-                                </li>
+                                @if(in_array('order-note', $vc_module_levels))
+                                    <li class="{{ ($path[0] === 'order-notes')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.order_notes.index')}}">
+                                            Pedidos
+                                        </a>
+                                    </li>
+                                @endif
 
                                 @if(in_array('sale_notes', $vc_module_levels))
 
@@ -228,11 +233,13 @@
                                     </li>
                                 @endif
 
-                                <li class="{{ ($path[0] === 'technical-services')?'nav-active':'' }}">
-                                    <a class="nav-link" href="{{route('tenant.technical_services.index')}}">
-                                        Servicio de soporte técnico
-                                    </a>
-                                </li>
+                                @if(in_array('technical-service', $vc_module_levels))
+                                    <li class="{{ ($path[0] === 'technical-services')?'nav-active':'' }}">
+                                        <a class="nav-link" href="{{route('tenant.technical_services.index')}}">
+                                            Servicio de soporte técnico
+                                        </a>
+                                    </li>
+                                @endif
 
                                 @if(in_array('incentives', $vc_module_levels))
 
