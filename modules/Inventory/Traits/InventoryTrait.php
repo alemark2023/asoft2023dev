@@ -411,6 +411,10 @@ trait InventoryTrait
         if($purchase_item->item->lots_enabled && $purchase_item->lot_code )
         {
             $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
+            if(!$lot_group)
+            {
+                throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+            }
             $lot_group->delete();
         }
     }
