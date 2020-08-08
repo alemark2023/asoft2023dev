@@ -408,9 +408,11 @@ trait InventoryTrait
             $it = ItemLot::findOrFail($row->id);
             $it->delete();
         }
-
-        $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
-        $lot_group->delete();
+        if($purchase_item->item->lots_enabled && $purchase_item->lot_code )
+        {
+            $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
+            $lot_group->delete();
+        }
     }
 
 }
