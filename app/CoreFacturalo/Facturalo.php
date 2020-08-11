@@ -793,9 +793,19 @@ class Facturalo
                 $number = $fullnumber[1];
 
                 $doc = Document::where([['series',$series],['number',$number]])->first();
+                
                 if($doc){
-                    $doc->was_deducted_prepayment = true;
+
+                    $total = $row['total'];
+                    $balance = $doc->pending_amount_prepayment - $total;
+                    $doc->pending_amount_prepayment = $balance;
+
+                    if($balance <= 0){
+                        $doc->was_deducted_prepayment = true;
+                    }
+
                     $doc->save();
+
                 }
             }
         }

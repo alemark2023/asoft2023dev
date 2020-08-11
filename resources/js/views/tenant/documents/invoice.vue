@@ -276,7 +276,7 @@
                                                     </el-select>
                                                 </td>
                                                 <td>
-                                                    <el-input v-model="row.amount" readonly></el-input>
+                                                    <el-input v-model="row.amount" @input="inputAmountPrepayment(index)"></el-input>
                                                 </td>
                                                 <td align="right">
 
@@ -780,6 +780,33 @@ import moment from 'moment'
             })
         },
         methods: {
+            getPrepayment(index){
+                return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
+            },
+            inputAmountPrepayment(index){
+                
+                let prepayment = this.getPrepayment(index)
+                // console.log(prepayment)
+
+                if(parseFloat(this.form.prepayments[index].amount) > parseFloat(prepayment.amount)){
+
+                    this.form.prepayments[index].amount = prepayment.amount
+                    this.$message.error('El monto debe ser menor o igual al del anticipo');
+                
+                }
+
+                this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * 1.18, 2) : this.form.prepayments[index].amount
+
+                this.changeTotalPrepayment()
+
+            },
+            changePaymentDestination(index){
+                // if(this.form.payments[index].payment_method_type_id=='01'){
+                //     this.payment_destinations = this.cash
+                // }else{
+                //     this.payment_destinations = this.payment_destinations
+                // }
+            },
             changeEnabledPayments(){
                 // this.clickAddPayment()
                 // this.form.date_of_due = this.form.date_of_issue
@@ -1006,6 +1033,9 @@ import moment from 'moment'
                 // }
 
             },
+            setPendingAmount(){
+                this.form.pending_amount_prepayment = this.form.has_prepayment ? this.form.total:0
+            },
             initialValueATPrepayment(){
                 this.form.affectation_type_prepayment = (!this.form.affectation_type_prepayment) ? 10 : this.form.affectation_type_prepayment
             },
@@ -1019,6 +1049,8 @@ import moment from 'moment'
                 }else{
                     this.cleanValueATPrepayment()
                 }
+
+                this.setPendingAmount()
 
             },
             async changeAffectationTypePrepayment(){
@@ -1181,6 +1213,7 @@ import moment from 'moment'
                     hotel: {},
                     transport: {},
                     customer_address_id:null,
+                    pending_amount_prepayment:0,
                     payment_method_type_id:null,
                 }
 
@@ -1450,6 +1483,7 @@ import moment from 'moment'
                     this.changeDetractionType()
 
                 this.setTotalDefaultPayment()
+                this.setPendingAmount()
 
             },
             setTotalDefaultPayment(){
