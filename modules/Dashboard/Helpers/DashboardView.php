@@ -235,6 +235,7 @@ class DashboardView
         $month_end = $request['month_end'];
         $customer_id = $request['customer_id'];
         $user_id = $request['user_id'];
+        $payment_method_type_id = $request['payment_method_type_id'];
 
         $user_type = auth()->user()->type;
         $user_id_session = auth()->user()->id;
@@ -345,6 +346,11 @@ class DashboardView
 
                 }
         }
+
+        if($payment_method_type_id){
+            $documents = $documents->where('payment_method_type_id', $payment_method_type_id);
+        }
+
 
         /*
          * Sale Notes

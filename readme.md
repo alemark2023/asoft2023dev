@@ -91,7 +91,8 @@ Linux - Eliminar temporales: [Guía](https://docs.google.com/document/d/17-9F9xr
 Linux - Eliminar archivos por extensión: [Guía](https://docs.google.com/document/d/1M1s6EYF7sA89JccrXh7d_UhLB367F7Kk41yKCpSIzdo/edit#heading=h.ghi3ru1xdrna "Clic")<br>
 Configuración servidor alterno SUNAT: [Guía](https://docs.google.com/document/d/1pr-9ewFYY7JFtYg-0V5MY4R16OGv-02VH5MqXjeUCh0/edit#heading=h.nezjsyganf1w "Clic")<br>
 Habilitar debug: [Guía](https://drive.google.com/open?id=1OdU-rDjr_cxM7t3fujBxPnEQn7qMoxIO6KZNjiKzyvU "Clic")<br>
-Configuracion de API RUC/DNI (APIPERU): [Guía](https://docs.google.com/document/d/15_MjQBamZI20UC08p-zC9N3yrMhIqh8iObikZ_eNKKg/edit?usp=sharing "Clic")<br>
+Configuración de API RUC/DNI (APIPERU): [Guía](https://docs.google.com/document/d/15_MjQBamZI20UC08p-zC9N3yrMhIqh8iObikZ_eNKKg/edit?usp=sharing "Clic")<br>
+Configuración de tareas programadas (crontab-LAMP): [Guía](https://docs.google.com/document/d/1fv_wWZSbbhEBo_uHiIE80y7PcU3m-A-HhPTPgQBth3Y/edit?usp=sharing "Clic")<br>
 
 ### Base de datos
 Guía acceso a base de datos: [Guía](https://drive.google.com/open?id=1uZ_qt34I8HucJYmt_RfI2orgfl9_dpqIh8RukwiG1uM "Clic")<br>

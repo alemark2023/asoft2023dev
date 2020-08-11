@@ -79,6 +79,7 @@ class Document extends ModelTenant
         'order_note_id',
         'soap_shipping_response',
         'pending_amount_prepayment',
+        'payment_method_type_id',
 
     ];
 
@@ -371,5 +372,10 @@ class Document extends ModelTenant
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+    }
+    
+    public function payment_method_type()
+    {
+        return $this->belongsTo(PaymentMethodType::class);
     }
 }

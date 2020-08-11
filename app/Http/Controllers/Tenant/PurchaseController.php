@@ -35,12 +35,22 @@ use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\ItemWarehouse;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\ItemLot;
+
+
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Template;
+use Mpdf\Mpdf;
+use Mpdf\HTMLParserMode;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use App\Models\Tenant\Configuration;
 
 
 class PurchaseController extends Controller
 {
 
-    use FinanceTrait;
+    use FinanceTrait, StorageDocument;
 
     public function index()
     {
@@ -186,7 +196,6 @@ class PurchaseController extends Controller
                         ]);
 
                     }
-
                 }
 
                 if(array_key_exists('item', $row))
@@ -216,6 +225,9 @@ class PurchaseController extends Controller
                 }
             }
 
+            $this->setFilename($doc);
+            $this->createPdf($doc, "a4", $doc->filename);
+
             return $doc;
         });
 
@@ -230,43 +242,52 @@ class PurchaseController extends Controller
         ];
     }
 
+    private function setFilename($purchase){
+
+        $name = [$purchase->series,$purchase->number,$purchase->id,date('Ymd')];
+        $purchase->filename = join('-', $name);
+        $purchase->save();
+
+    }
+
+    public function toPrint($external_id, $format) {
+        $purchase = Purchase::where('external_id', $external_id)->first();
+
+        if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el pedido relacionado");
+
+        $this->reloadPDF($purchase, $format, $purchase->filename);
+        $temp = tempnam(sys_get_temp_dir(), 'purchase');
+
+        file_put_contents($temp, $this->getStorage($purchase->filename, 'purchase'));
+
+        return response()->file($temp);
+    }
+
+    private function reloadPDF($purchase, $format, $filename) {
+        $this->createPdf($purchase, $format, $filename);
+    }
+
     public function update(PurchaseRequest $request)
     {
-
-
 
         $purchase = DB::connection('tenant')->transaction(function () use ($request) {
 
             $doc = Purchase::firstOrNew(['id' => $request['id']]);
-           // return json_encode($doc);
             $doc->fill($request->all());
+            $doc->supplier = PersonInput::set($request['supplier_id']);
+            $doc->group_id = ($request->document_type_id === '01') ? '01':'02';
+            $doc->user_id = auth()->id();
             $doc->save();
 
-            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-            //proceso para eliminar los actualizar el stock de proiductos
-            foreach ($doc->items as $item) {
-                $item->purchase->inventory_kardex()->create([
-                    'date_of_issue' => date('Y-m-d'),
-                    'item_id' => $item->item_id,
-                    'warehouse_id' => $establishment->id,
-                    'quantity' => -$item->quantity,
-                ]);
-                $wr = ItemWarehouse::where([['item_id', $item->item_id],['warehouse_id', $establishment->id]])->first();
-                $wr->stock =  $wr->stock - $item->quantity;
-                $wr->save();
+            foreach ($doc->items as $it) {
+
+                $p_i = PurchaseItem::findOrFail($it->id);
+                $p_i->delete();
+
             }
-
-            foreach ($doc->items()->get() as $it) {
-                // dd($it);
-                $it->lots()->delete();
-            }
-
-
-            $doc->items()->delete();
 
             foreach ($request['items'] as $row)
             {
-                // $doc->items()->create($row);
                 $p_item = new PurchaseItem;
                 $p_item->fill($row);
                 $p_item->purchase_id = $doc->id;
@@ -286,9 +307,23 @@ class PurchaseController extends Controller
 
                     }
                 }
+
+                if(array_key_exists('item', $row))
+                {
+                    if( isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true)
+                    {
+
+                        ItemLotsGroup::create([
+                            'code'  => $row['lot_code'],
+                            'quantity'  => $row['quantity'],
+                            'date_of_due'  => $row['date_of_due'],
+                            'item_id' => $row['item_id']
+                        ]);
+
+                    }
+                }
             }
 
-            // $doc->purchase_payments()->delete();
             $this->deleteAllPayments($doc->purchase_payments);
 
             foreach ($request['payments'] as $payment) {
@@ -306,6 +341,11 @@ class PurchaseController extends Controller
                 }
             }
 
+            if(!$doc->filename){
+                $this->setFilename($doc);
+            }
+            $this->createPdf($doc, "a4", $doc->filename);
+
             return $doc;
         });
 
@@ -318,23 +358,55 @@ class PurchaseController extends Controller
 
     }
 
+    /*public static function deleteLotsSerie($records)
+    {
+        foreach ($records as $row) {
+
+            $it = ItemLot::findOrFail($row->id);
+            $it->delete();
+        }
+    }*/
+
     public static function verifyHasSaleItems($items)
     {
         $validated = true;
+        $message = '';
         foreach ($items as $element) {
 
             $lot_has_sale = collect($element->lots)->firstWhere('has_sale', 1);
             if($lot_has_sale)
             {
                 $validated = false;
+                $message = 'No se puede anular esta compra, series en productos no disponibles';
                 break;
             }
 
+            if($element->item->lots_enabled && $element->lot_code )
+            {
+                $lot_group = ItemLotsGroup::where('code', $element->lot_code)->first();
+
+                if(!$lot_group)
+                {
+                    $message = "Lote {$element->lot_code} no encontrado.";
+                    $validated = false;
+                    break;
+                }
+
+                if( (int)$lot_group->quantity != (int)$element->quantity)
+                {
+                    $message = "Los productos del lote {$element->lot_code} han sido vendidos!";
+                    $validated = false;
+                    break;
+                }
+            }
         }
 
         return [
-            'success' => $validated
+            'success' => $validated,
+            'message' => $message
         ];
+
+
     }
 
     public function anular($id)
@@ -345,7 +417,7 @@ class PurchaseController extends Controller
         {
             return [
                 'success' => false,
-                'message' => 'No se puede anular esta compra, series en productos no disponibles'
+                'message' => $validated['message']
             ];
         }
 
@@ -369,8 +441,6 @@ class PurchaseController extends Controller
                 $wr->stock =  $wr->stock - $item->quantity;
                 $wr->save();
             }
-
-
 
         });
 
@@ -491,7 +561,7 @@ class PurchaseController extends Controller
                 'message' => 'Compra eliminada con éxito'
             ];
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             return [
                 'success' => false,
@@ -639,6 +709,22 @@ class PurchaseController extends Controller
 
     }
 
+    public function destroy_purchase_item($id)
+    {
+
+        DB::connection('tenant')->transaction(function () use ($id) {
+
+            $item = PurchaseItem::findOrFail($id);
+            $item->delete();
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Item eliminado'
+        ];
+    }
+
     /*public function itemResource($id)
     {
         $establishment_id = auth()->user()->establishment_id;
@@ -661,5 +747,82 @@ class PurchaseController extends Controller
             'series_enabled' => (bool) $row->series_enabled,
         ];
     }*/
+
+
+    public function download($external_id, $format = 'a4') {
+        $purchase = SaleOpportunity::where('external_id', $external_id)->first();
+
+        if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el archivo relacionado");
+
+        return $this->downloadStorage($purchase->filename, 'purchase');
+    }
+
+
+    public function createPdf($purchase = null, $format_pdf = null, $filename = null) {
+
+        ini_set("pcre.backtrack_limit", "5000000");
+        $template = new Template();
+        $pdf = new Mpdf();
+
+        $document = ($purchase != null) ? $purchase : $this->purchase;
+        $company = Company::active();
+        $filename = ($filename != null) ? $filename : $this->purchase->filename;
+
+        $base_template = Configuration::first()->formats;
+
+        $html = $template->pdf($base_template, "purchase", $company, $document, $format_pdf);
+
+
+        $pdf_font_regular = config('tenant.pdf_name_regular');
+        $pdf_font_bold = config('tenant.pdf_name_bold');
+
+        if ($pdf_font_regular != false) {
+            $defaultConfig = (new ConfigVariables())->getDefaults();
+            $fontDirs = $defaultConfig['fontDir'];
+
+            $defaultFontConfig = (new FontVariables())->getDefaults();
+            $fontData = $defaultFontConfig['fontdata'];
+
+            $pdf = new Mpdf([
+                'fontDir' => array_merge($fontDirs, [
+                    app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                DIRECTORY_SEPARATOR.'pdf'.
+                                                DIRECTORY_SEPARATOR.$base_template.
+                                                DIRECTORY_SEPARATOR.'font')
+                ]),
+                'fontdata' => $fontData + [
+                    'custom_bold' => [
+                        'R' => $pdf_font_bold.'.ttf',
+                    ],
+                    'custom_regular' => [
+                        'R' => $pdf_font_regular.'.ttf',
+                    ],
+                ]
+            ]);
+        }
+
+        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.$base_template.
+                                             DIRECTORY_SEPARATOR.'style.css');
+
+        $stylesheet = file_get_contents($path_css);
+
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        if ($format_pdf != 'ticket') {
+            if(config('tenant.pdf_template_footer')) {
+                $html_footer = $template->pdfFooter($base_template);
+                $pdf->SetHTMLFooter($html_footer);
+            }
+        }
+
+        $this->uploadFile($filename, $pdf->output('', 'S'), 'purchase');
+    }
+
+    public function uploadFile($filename, $file_content, $file_type) {
+        $this->uploadStorage($filename, $file_content, $file_type);
+    }
 
 }

@@ -178,7 +178,7 @@ if ($hostname) {
             Route::get('documents/record/{document}', 'Tenant\DocumentController@record');
             Route::post('documents', 'Tenant\DocumentController@store');
             Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
-            Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
+            // Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
             Route::post('documents/email', 'Tenant\DocumentController@email');
             Route::get('documents/note/{document}', 'Tenant\NoteController@create');
             Route::get('documents/note/record/{document}', 'Tenant\NoteController@record');
@@ -345,7 +345,8 @@ if ($hostname) {
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
-           // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
+            Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
 
 
 
@@ -355,6 +356,9 @@ if ($hostname) {
             // Route::get('documents/note/{document}', 'Tenant\NoteController@create');
             Route::get('purchases/item/tables', 'Tenant\PurchaseController@item_tables');
             // Route::get('documents/table/{table}', 'Tenant\DocumentController@table');
+
+            Route::delete('purchases/destroy_purchase_item/{purchase_item}', 'PurchaseController@destroy_purchase_item');
+
 
             //quotations
             Route::get('quotations', 'Tenant\QuotationController@index')->name('tenant.quotations.index')->middleware('redirect.level');

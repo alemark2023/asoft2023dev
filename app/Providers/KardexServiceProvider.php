@@ -81,4 +81,6 @@ class KardexServiceProvider extends ServiceProvider
 
     }
 
+
+
 }

@@ -20,7 +20,7 @@ class ReportUnpaidController extends Controller
         $company = Company::first();
         return (new NoPaidExport)
                 ->company($company)
-                ->records((new DashboardView())->getUnpaid($request->all()))
+                ->records((new DashboardView())->getUnpaidFilterUser($request->all()))
                 ->download('Reporte_Cuentas_Por_Cobrar'.Carbon::now().'.xlsx');
 
     }

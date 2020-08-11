@@ -11,11 +11,11 @@ if($current_hostname) {
 
             Route::prefix('order-notes')->group(function () {
 
-                Route::get('/', 'OrderNoteController@index')->name('tenant.order_notes.index');
+                Route::get('/', 'OrderNoteController@index')->name('tenant.order_notes.index')->middleware(['redirect.level']);
                 Route::get('columns', 'OrderNoteController@columns');
                 Route::get('records', 'OrderNoteController@records');
-                Route::get('create', 'OrderNoteController@create')->name('tenant.order_notes.create');
-                Route::get('edit/{id}', 'OrderNoteController@edit');
+                Route::get('create', 'OrderNoteController@create')->name('tenant.order_notes.create')->middleware(['redirect.level']);
+                Route::get('edit/{id}', 'OrderNoteController@edit')->middleware(['redirect.level']);
 
                 Route::get('tables', 'OrderNoteController@tables');
                 Route::get('table/{table}', 'OrderNoteController@table');

@@ -357,7 +357,66 @@ trait InventoryTrait
             if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
 
         }
+    }
 
+    public function verifyHasSaleLots($purchase_item)
+    {
+        $validated = true;
+
+        $items = $purchase_item->lots;
+
+        foreach ($items as $element) {
+
+            //$lot_has_sale = collect($element->lots)->firstWhere('has_sale', 1);
+            if($element->has_sale == 1)
+            {
+                $validated = false;
+                break;
+            }
+        }
+
+        if($validated == false)
+        {
+            throw new Exception("El producto {$purchase_item->item->description} contiene series vendidas!");
+        }
+    }
+
+    public function verifyHasSaleLotsGroup($purchase_item)
+    {
+        if($purchase_item->item->lots_enabled && $purchase_item->lot_code )
+        {
+            $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
+
+            if(!$lot_group)
+            {
+                throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+            }
+
+            if( (int)$lot_group->quantity != (int)$purchase_item->quantity)
+            {
+                throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
+            }
+
+        }
+
+    }
+
+    public static function deleteItemSeriesAndGroup($purchase_item)
+    {
+        $series = $purchase_item->lots;
+        foreach ($series as $row) {
+            $it = ItemLot::findOrFail($row->id);
+            $it->delete();
+        }
+        if($purchase_item->item->lots_enabled && $purchase_item->lot_code )
+        {
+            $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
+            if(!$lot_group)
+            {
+                throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+            }
+            $lot_group->delete();
+        }
     }
 
 }

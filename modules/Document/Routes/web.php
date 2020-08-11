@@ -22,6 +22,8 @@ if($current_hostname) {
                 Route::get('prepayments/{type}', 'DocumentController@prepayments');
                 Route::get('search-items', 'DocumentController@searchItems');
                 Route::get('search/item/{item}', 'DocumentController@searchItemById');
+                Route::get('consult_cdr/{document}', 'DocumentController@consultCdr');
+
             });
 
             Route::prefix('series-configurations')->group(function() {

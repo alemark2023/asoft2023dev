@@ -235,6 +235,10 @@ class ClientController extends Controller
                             ['module_level_id' => 7, 'user_id' => 1],
                             ['module_level_id' => 8, 'user_id' => 1],
                             ['module_level_id' => 9, 'user_id' => 1],
+                            ['module_level_id' => 10, 'user_id' => 1],
+                            ['module_level_id' => 11, 'user_id' => 1],
+                            ['module_level_id' => 12, 'user_id' => 1],
+                            ['module_level_id' => 13, 'user_id' => 1],
                         ]);
                     }
                 }
@@ -388,6 +392,7 @@ class ClientController extends Controller
             ['establishment_id' => 1, 'document_type_id' => '20', 'number' => 'R001'],
             ['establishment_id' => 1, 'document_type_id' => '09', 'number' => 'T001'],
             ['establishment_id' => 1, 'document_type_id' => '40', 'number' => 'P001'],
+            ['establishment_id' => 1, 'document_type_id' => '80', 'number' => 'NV01'],
         ]);
 
 
@@ -421,6 +426,10 @@ class ClientController extends Controller
                             ['module_level_id' => 7, 'user_id' => $user_id],
                             ['module_level_id' => 8, 'user_id' => $user_id],
                             ['module_level_id' => 9, 'user_id' => $user_id],
+                            ['module_level_id' => 10, 'user_id' => $user_id],
+                            ['module_level_id' => 11, 'user_id' => $user_id],
+                            ['module_level_id' => 12, 'user_id' => $user_id],
+                            ['module_level_id' => 13, 'user_id' => $user_id],
                         ]);
                     }
                 }

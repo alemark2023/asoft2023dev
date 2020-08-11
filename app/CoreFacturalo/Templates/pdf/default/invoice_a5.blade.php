@@ -236,9 +236,9 @@
             <td width="8px">:</td>
             <td>{{ $document->quotation->identifier }}</td>
             @isset($document->quotation->delivery_date)
-                    <td width="120px">F. ENTREGA</td>
+                    <td width="120px">T. ENTREGA</td>
                     <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date->format('Y-m-d')}}</td>
+                    <td>{{ $document->quotation->delivery_date}}</td>
             @endisset
         </tr>
     @endif
@@ -503,6 +503,15 @@
     </tr>
 </table>
 
+@if($document->payment_method_type_id)
+    <table class="full-width">
+        <tr>
+            <td>
+                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+            </td>
+        </tr> 
+    </table>
+@endif
 @if($payments->count())
     <table class="full-width">
         <tr>
