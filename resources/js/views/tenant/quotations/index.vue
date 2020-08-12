@@ -92,6 +92,10 @@
                                             <td><strong>O. Venta: </strong></td>
                                             <td><strong>{{row.sale_opportunity_number_full}}</strong></td>
                                         </tr>
+                                        <tr>
+                                            <td><strong>Detalle: </strong></td>
+                                            <td><strong>{{row.sale_opportunity.detail}}</strong></td>
+                                        </tr>
                                         <tr  class="mt-4 mb-4">
                                             <td><strong>F. Emisión:</strong></td>
                                             <td><strong>{{row.date_of_issue}}</strong></td>
