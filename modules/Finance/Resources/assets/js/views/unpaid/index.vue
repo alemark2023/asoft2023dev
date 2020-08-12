@@ -521,6 +521,10 @@
 
                     this.$http.post(`/${this.resource}/records`, this.form).then(response => {
                         this.records = response.data.records;
+
+                        this.records.sort(function(a, b) {
+                            return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
+                        });
                         //this.records_base = response.data.records;
                     });
 
