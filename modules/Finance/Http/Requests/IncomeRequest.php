@@ -7,25 +7,25 @@ use Illuminate\Validation\Rule;
 
 class IncomeRequest extends FormRequest
 {
-     
+
     public function authorize()
     {
-        return true; 
+        return true;
     }
- 
+
     public function rules()
-    { 
-        
+    {
+
         return [
             'customer' => [
                 'required',
             ],
             'income_reason_id' => [
                 'required',
-            ], 
+            ],
             'date_of_issue' => [
                 'required',
-            ], 
+            ],
         ];
     }
 }
