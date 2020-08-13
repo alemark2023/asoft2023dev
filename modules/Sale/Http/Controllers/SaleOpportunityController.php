@@ -57,12 +57,13 @@ class SaleOpportunityController extends Controller
     {
         return view('sale::sale_opportunities.form', compact('id'));
     }
- 
+
     public function columns()
     {
         return [
             'date_of_issue' => 'Fecha de emisión',
-            'user_name' => 'Vendedor'
+            'user_name' => 'Vendedor',
+            'customer_name' => 'Cliente'
         ];
     }
 
@@ -76,8 +77,16 @@ class SaleOpportunityController extends Controller
     private function getRecords($request){
 
         if($request->column == 'user_name'){
-            
+
             $records = SaleOpportunity::whereHas('user', function($query) use($request){
+                            $query->where('name', 'like', "%{$request->value}%");
+                        })
+                        ->whereTypeUser()
+                        ->latest();
+
+        }elseif($request->column == 'customer_name'){
+
+            $records = SaleOpportunity::whereHas('person', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         })
                         ->whereTypeUser()
@@ -88,9 +97,9 @@ class SaleOpportunityController extends Controller
             $records = SaleOpportunity::where($request->column, 'like', "%{$request->value}%")
                                 ->whereTypeUser()
                                 ->latest();
-        
+
         }
-        
+
         return $records;
     }
 
@@ -153,7 +162,7 @@ class SaleOpportunityController extends Controller
 
         return $record;
     }
- 
+
 
     public function getFullDescription($row){
 
@@ -165,7 +174,7 @@ class SaleOpportunityController extends Controller
 
         return $desc;
     }
-    
+
 
     public function store(SaleOpportunityRequest $request) {
 
@@ -198,7 +207,7 @@ class SaleOpportunityController extends Controller
             ],
         ];
     }
- 
+
 
     public function mergeData($inputs)
     {
@@ -335,7 +344,7 @@ class SaleOpportunityController extends Controller
         return $this->downloadStorage($sale_opportunity->filename, 'sale_opportunity');
     }
 
-    
+
     public function toPrint($external_id, $format) {
         $sale_opportunity = SaleOpportunity::where('external_id', $external_id)->first();
 
@@ -355,7 +364,7 @@ class SaleOpportunityController extends Controller
     }
 
     public function createPdf($sale_opportunity = null, $format_pdf = null, $filename = null) {
-     
+
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
@@ -429,7 +438,7 @@ class SaleOpportunityController extends Controller
         $customer_email = $request->input('customer_email');
 
         Mail::to($customer_email)->send(new SaleOpportunityEmail($client, $sale_opportunity));
-        
+
         return [
             'success' => true
         ];

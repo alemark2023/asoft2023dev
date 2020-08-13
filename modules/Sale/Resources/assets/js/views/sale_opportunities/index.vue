@@ -55,8 +55,8 @@
                         <td >{{ row.purchase_order_number_full }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
                         <td class="text-center">
-                            
-                            
+
+
                             <el-popover
                                 placement="right"
                                 width="400"
@@ -85,7 +85,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                </div> 
+                                </div>
                                 <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
                             </el-popover>
 
@@ -102,16 +102,16 @@
                                     @click.prevent="clickDownload(row.external_id)">PDF</button>
                         </td>
 
-                        <td class="text-right"> 
+                        <td class="text-right">
                             <a v-if="row.btn_generate_oc && typeUser == 'admin'"   :href="`/purchase-orders/sale-opportunity/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-warning">
                                 Generar O. Compra
-                            </a> 
+                            </a>
                             <a v-if="row.btn_generate && typeUser == 'admin'"   :href="`/quotations/create/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-primary">
                                 Generar cotizacion
                             </a>
 
                             <a v-if="row.state_type_id != '11' && (row.btn_generate && row.btn_generate_oc)" :href="`/${resource}/create/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                                     @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>
@@ -125,7 +125,7 @@
                               :recordId="recordId"
                               :showGenerate="true"
                               :showClose="true"></sale-opportunities-options>
- 
+
         </div>
     </div>
 </template>
@@ -205,7 +205,7 @@
             clickOptionsPdf(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptionsPdf = true
-            }, 
+            },
         }
     }
 </script>
