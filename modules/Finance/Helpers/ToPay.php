@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ToPay
-{ 
+{
 
     public static function getToPay($request)
     {
@@ -20,6 +20,7 @@ class ToPay
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
         $supplier_id = $request['supplier_id'];
+        $user = $request['user'];
 
 
         $d_start = null;
@@ -52,10 +53,11 @@ class ToPay
             ->groupBy('purchase_id');
 
         if($d_start && $d_end){
-
+            // ->join('users', 'users.name', 'like', "%{$user}%")
             $purchases = DB::connection('tenant')
                 ->table('purchases')
                 ->where('supplier_id', $supplier_id)
+                ->where('user_id', $user)
                 ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
                 ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                     $join->on('purchases.id', '=', 'payments.purchase_id');
@@ -78,6 +80,7 @@ class ToPay
             $purchases = DB::connection('tenant')
                 ->table('purchases')
                 ->where('supplier_id', $supplier_id)
+                ->where('user_id', $user)
                 ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
                 ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                     $join->on('purchases.id', '=', 'payments.purchase_id');
@@ -108,6 +111,7 @@ class ToPay
             $expenses = DB::connection('tenant')
                 ->table('expenses')
                 ->where('supplier_id', $supplier_id)
+                ->where('user_id', $user)
                 ->join('persons', 'persons.id', '=', 'expenses.supplier_id')
                 ->leftJoinSub($expense_payments, 'payments', function ($join) {
                     $join->on('expenses.id', '=', 'payments.expense_id');
@@ -131,6 +135,7 @@ class ToPay
             $expenses = DB::connection('tenant')
                 ->table('expenses')
                 ->where('supplier_id', $supplier_id)
+                ->where('user_id', $user)
                 ->join('persons', 'persons.id', '=', 'expenses.supplier_id')
                 ->leftJoinSub($expense_payments, 'payments', function ($join) {
                     $join->on('expenses.id', '=', 'payments.expense_id');
@@ -159,10 +164,10 @@ class ToPay
                 $date_of_due = null;
 
                 if($total_to_pay > 0) {
-                        
+
                     if($row->date_of_due){
                         // dd($row->date_of_due);
-                        $due =   Carbon::parse($row->date_of_due); 
+                        $due =   Carbon::parse($row->date_of_due);
                         $date_of_due = Carbon::parse($row->date_of_due)->format('Y/m/d');
                         $now = Carbon::now();
 
@@ -177,7 +182,7 @@ class ToPay
                 $guides = null;
                 $date_payment_last = '';
 
-                if($row->document_type_id){ 
+                if($row->document_type_id){
 
                     $date_payment_last = PurchasePayment::where('purchase_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
                 }
@@ -205,12 +210,12 @@ class ToPay
     }
 
     public static function getToPayNoFilter()
-    {  
+    {
 
         $purchase_payments = DB::table('purchase_payments')
             ->select('purchase_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('purchase_id');
- 
+
 
             $purchases = DB::connection('tenant')
                 ->table('purchases')
@@ -229,11 +234,11 @@ class ToPay
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
                                     "'purchase' AS 'type', ". "purchases.currency_type_id, " . "purchases.exchange_rate_sale"));
 
- 
+
         $expense_payments = DB::table('expense_payments')
             ->select('expense_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('expense_id');
- 
+
             $expenses = DB::connection('tenant')
                 ->table('expenses')
                 ->join('persons', 'persons.id', '=', 'expenses.supplier_id')
@@ -260,10 +265,10 @@ class ToPay
                 $date_of_due = null;
 
                 if($total_to_pay > 0) {
-                        
+
                     if($row->date_of_due){
                         // dd($row->date_of_due);
-                        $due =   Carbon::parse($row->date_of_due); 
+                        $due =   Carbon::parse($row->date_of_due);
                         $date_of_due = Carbon::parse($row->date_of_due)->format('Y-m-d');
                         $now = Carbon::now();
 
@@ -278,7 +283,7 @@ class ToPay
                 $guides = null;
                 $date_payment_last = '';
 
-                if($row->document_type_id){ 
+                if($row->document_type_id){
 
                     $date_payment_last = PurchasePayment::where('purchase_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
                 }
