@@ -59,14 +59,16 @@ class ReportGeneralItemController extends Controller
         $d_start = $data_of_period['d_start'];
         $d_end = $data_of_period['d_end'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type);
+        $user = $request['user'];
+
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user);
 
         return $records;
 
     }
 
 
-    private function dataItems($date_start, $date_end, $document_type_id, $data_type)
+    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user)
     {
 
         if( $document_type_id && $document_type_id == '80' )
@@ -91,6 +93,9 @@ class ReportGeneralItemController extends Controller
                             ->whereIn('document_type_id', $document_types)
                             ->latest()
                             ->whereTypeUser();
+                        })
+                        ->whereHas('document.user', function($query) use($user){
+                            $query->where('name', 'like', "%{$user}%");
                         });
 
         }

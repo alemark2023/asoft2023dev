@@ -70,7 +70,7 @@
                             <div class="form-group" :class="{'has-danger': errors.customer}">
                                 <label class="control-label">
                                     Cliente
-                                </label>                                
+                                </label>
                                 <el-input v-model="form.customer"></el-input>
                                 <small class="form-control-feedback" v-if="errors.customer" v-text="errors.customer[0]"></small>
                             </div>
@@ -240,7 +240,7 @@
                 this.reloadDataSuppliers(customer)
            })
         },
-        methods: {  
+        methods: {
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -344,7 +344,11 @@
                 if(validate.acum_total != parseFloat(this.form.total) || validate.error_by_item > 0) {
                     return this.$message.error('Los montos ingresados no coinciden con el monto total o son incorrectos');
                 }
-                
+
+                if (this.form.customer == null) {
+                    this.form.customer = '-';
+                }
+
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {

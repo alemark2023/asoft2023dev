@@ -7,10 +7,12 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Finance\Models\GlobalPayment;
 use App\Models\Tenant\Cash;
+use App\Models\Tenant\User;
+use App\Http\Resources\Tenant\UserCollection;
 use App\Models\Tenant\BankAccount;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 use Modules\Finance\Http\Resources\GlobalPaymentCollection;
 use Modules\Finance\Exports\ToPayAllExport;
 use Modules\Finance\Exports\ToPayExport;
@@ -24,7 +26,7 @@ use Modules\Finance\Exports\ToPaymentMethodDayExport;
 
 
 class ToPayController extends Controller
-{ 
+{
 
     use FinanceTrait;
 
@@ -46,9 +48,12 @@ class ToPayController extends Controller
             ];
         });
 
+        $query_users = User::all();
+        $users = new UserCollection($query_users);
+
         $establishments = DashboardView::getEstablishments();
 
-        return compact('suppliers', 'establishments');
+        return compact('suppliers', 'establishments', 'users');
     }
 
 
@@ -58,9 +63,9 @@ class ToPayController extends Controller
         return [
             'records' => (new ToPay())->getToPay($request->all())
        ];
-        
+
     }
- 
+
     public function toPayAll()
     {
 
@@ -78,8 +83,8 @@ class ToPayController extends Controller
                 ->download('Reporte_Cuentas_Por_Pagar'.Carbon::now().'.xlsx');
 
     }
-    
-    
+
+
     public function reportPaymentMethodDays(Request $request)
     {
         // 'records' => (new ToPay())->getToPay($request->all())
