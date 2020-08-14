@@ -5,6 +5,7 @@
     //$template = 'default';
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.$template.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+    $accounts = \App\Models\Tenant\BankAccount::all();
 @endphp
 <html>
 <head>
@@ -157,11 +158,11 @@
                 <p style="text-transform: uppercase;">Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
             @endforeach
             <br/>
-            @if($document->additional_information)
-            <strong>Información adicional</strong>
-            @foreach($document->additional_information as $information)
-                <p>{{ $information }}</p>
-            @endforeach
+            @if($document->additional_information[0] != '')
+                <strong>Información adicional</strong>
+                @foreach($document->additional_information as $information)
+                    <p>{{ $information }}</p>
+                @endforeach
             @endif
         </td>
     </tr>
@@ -171,11 +172,22 @@
 <table class="full-width">
     <tr>
         <td width="65%">
+            @if(in_array($document->document_type->id,['01','03']))
+                @foreach($accounts as $account)
+                    <p>
+                    <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                    <span class="font-bold">N°:</span> {{$account->number}}
+                    @if($account->cci)
+                    <span class="font-bold">CCI:</span> {{$account->cci}}
+                    @endif
+                    </p>
+                @endforeach
+            @endif
             <div class="text-left"><img class="qr_code" src="data:image/png;base64, {{ $document->qr }}" /></div>
             <p>Código Hash: {{ $document->hash }}</p>
             <p class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</p>
         </td>
-        <td width="35%">
+        <td width="35%" class="align-top">
             <table class="full-width">
                 @if($document->total_exportation > 0)
                     <tr>
