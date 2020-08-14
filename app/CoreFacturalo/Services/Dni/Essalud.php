@@ -17,44 +17,53 @@ class Essalud
             ];
         }
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,"https://ww1.essalud.gob.pe/sisep/postulante/postulante/postulante_obtenerDatosPostulante.htm?strDni={$number}");        
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec ($ch);         
-        curl_close ($ch);
+        try {
 
-        // $client = new  Client(['base_uri' => 'https://ww1.essalud.gob.pe/sisep/postulante/postulante/']);
-        // $response = $client->request('GET', 'postulante_obtenerDatosPostulante.htm?strDni='.$number);
-        // if ($response->getStatusCode() == 200 && $response != "") {
+            // $ch = curl_init();
+            // curl_setopt($ch, CURLOPT_URL,"https://ww1.essalud.gob.pe/sisep/postulante/postulante/postulante_obtenerDatosPostulante.htm?strDni={$number}");
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // $response = curl_exec ($ch);
+            // curl_close ($ch);
 
-        if ($response) {
+            $client = new  Client(['base_uri' => 'https://ww1.essalud.gob.pe/sisep/postulante/postulante/']);
+            $response = $client->request('GET', 'postulante_obtenerDatosPostulante.htm?strDni='.$number);
+            if ($response->getStatusCode() == 200 && $response != "") {
 
-            // $json = (object) json_decode($response->getBody()->getContents(), true);
-            $json = (object) json_decode($response, true);
-            $data_person = $json->DatosPerson[0];
-            if (isset($data_person) && count($data_person) > 0 &&
-                strlen($data_person['DNI']) >= 8 && $data_person['Nombres'] !== '') {
-                $person = new Person();
-                $person->name = $data_person['ApellidoPaterno'].' '.$data_person['ApellidoMaterno'].', '.$data_person['Nombres'];
-                $person->number = $data_person['DNI'];
-                $person->verification_code = Functions::verificationCode($data_person['DNI']);
-                $person->first_name = $data_person['ApellidoPaterno'];
-                $person->last_name = $data_person['ApellidoMaterno'];
-                $person->names = $data_person['Nombres'];
-                $person->date_of_birthday = $data_person['FechaNacimiento'];
-                $person->sex = ((string)$data_person['Sexo'] === '2')?'Masculino':'Femenino';
-                $person->voting_group = null;
+                // if ($response) {
 
-                return [
-                    'success' => true,
-                    'data' => $person
-                ];
-            } else {
-                return [
-                    'success' => false,
-                    'message' => 'Datos no encontrados.'
-                ];
+                $json = (object) json_decode($response->getBody()->getContents(), true);
+                // $json = (object) json_decode($response, true);
+                $data_person = $json->DatosPerson[0];
+                if (isset($data_person) && count($data_person) > 0 &&
+                    strlen($data_person['DNI']) >= 8 && $data_person['Nombres'] !== '') {
+                    $person = new Person();
+                    $person->name = $data_person['ApellidoPaterno'].' '.$data_person['ApellidoMaterno'].', '.$data_person['Nombres'];
+                    $person->number = $data_person['DNI'];
+                    $person->verification_code = Functions::verificationCode($data_person['DNI']);
+                    $person->first_name = $data_person['ApellidoPaterno'];
+                    $person->last_name = $data_person['ApellidoMaterno'];
+                    $person->names = $data_person['Nombres'];
+                    $person->date_of_birthday = $data_person['FechaNacimiento'];
+                    $person->sex = ((string)$data_person['Sexo'] === '2')?'Masculino':'Femenino';
+                    $person->voting_group = null;
+
+                    return [
+                        'success' => true,
+                        'data' => $person
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'Datos no encontrados.'
+                    ];
+                }
             }
+
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            return [
+                'success' => false,
+                'message' => 'Coneccion fallida.'
+            ];
         }
 
         return [
