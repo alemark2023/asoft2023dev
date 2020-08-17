@@ -1,3 +1,104 @@
+## 3.3.9
+
+### docs
+2020-08-10 : docs | Update readme.md<br>
+2020-07-31 : docs | Update readme.md<br>
+
+
+### fixed
+2020-08-06 : fixed | i-314 | Se agrega permisos y validaciones faltantes en modulo de ventas<br>
+2020-08-06 : fixed | i-314 | Se modifica tipo de dato para tiempo validez y entrega en cotizacion - modifica funcionalidades relacionadas al cambio<br>
+2020-08-04 : fixed | i-275 | Ajuste envio correo c. detraccion<br>
+2020-07-31 : fixed | Ajustes backup bd<br>
+2020-07-30 : fixed | Se agrega validacion status code para resumen de boletas y mensaje de respuesta de sunat<br>
+2020-07-29 : fixed | i-311 | Se agrega mensaje descriptivo al buscar boletas en resumen diario<br>
+2020-07-27 : fixed | i-217 | Ajustes en headers del envio soap - ose bizlinks<br>
+2020-07-24 : fixed | i-291 | Se agrega columna moneda en reporte clientes<br>
+2020-07-23 : fixed | i-265 | Ajustar serie y correlativo en reporte n venta<br>
+2020-07-23 : fixed | i-285 | Se elimina peticion al admin para obtener telefono soporte - Se agrega la actualizacion desde admin a tenants<br>
+2020-07-22 : fixed | Se agrega validacion carga imagen en formulario detraccion<br>
+2020-07-22 : fixed | i-245 | Ajuste de acceso a propiedad en kardex, se agrega CPE asociado a nota c/d en formato .pdf .xlsx<br>
+2020-07-21 : fixed | i-275 | Modificar simbolo de USD en detraccion - Envio de constancia de detraccion via email<br>
+2020-07-21 : fixed | i-248 | Agregar validacion de digitos en numero de documento ruc/dni clientes y proveedores<br>
+2020-07-21 : fixed | i-247 | Ajuste pagos en nota venta - agregar totales por productos en reporte consolidado de items<br>
+2020-07-20 : fixed | i-273 | Ajuste - enlace de búsqueda de comprobantes duplicado en ticket 50mm<br>
+2020-07-17 : fixed | Se agrega validacion a la carga de archivos - diferentes modulos<br>
+2020-07-09 : fixed | Agregar token de consulta de ruc/dni .env.example<br>
+2020-07-08 : fixed | limite  documents en update plan - admin<br>
+2020-07-08 : fixed | i-200 | Modificar tipo de dato campo name_product_pdf<br>
+2020-07-01 : fixed | Agregar creacion de almacen inicial - tenant<br>
+2020-06-30 : fixed | i-204 | Ajuste para visualizar items en carrito de compras - ecommerce<br>
+
+
+### feature
+2020-08-17 : feature | texto en configuraciones visuales<br>
+2020-08-17 : feature | i-350 | new template (invoice) full-height table<br>
+2020-08-17 : feature | i-350 | new template (invoice) full-height<br>
+2020-08-14 : feature | template pdf | model3 bank accounts<br>
+2020-08-13 : feature | i-314 | pto 14 - no obligatorio campo cliente<br>
+2020-08-13 : feature | i-314 | pto 17 - por pagar filtro usuario<br>
+2020-08-13 : feature | i-314 | pto 11 - reporte general productos filtro usuario<br>
+2020-08-13 : feature | i-314 | pto 2 - client filter<br>
+2020-08-12 : feature | i-314 | pto 18 por probar<br>
+2020-08-12 : feature | i-314 | pto 16 compras destino x desde<br>
+2020-08-12 : feature | i-314 | pto 6 cotizaciones detalle de caso de venta<br>
+2020-08-12 : feature | i-314 | pto 3 desc x obs<br>
+2020-08-12 : feature | i-314 | pto 1 v.unit<br>
+2020-08-07 : feature | i_268_v2 | orden de pedido editar productos, validacion guia remision productos mayor que 0<br>
+2020-08-07 : feature | i_286 | tarea programada consultar documentos anulados<br>
+2020-08-06 : feature | i-337 | Se agrega consulta cdr por interfaz<br>
+2020-08-04 : feature | i-240 | Se agrega funcionalidad para deducir anticipos de forma parcial<br>
+2020-08-04 : feature | i-282 | Se agrego saldo inicial a cuentas bancarias - ajuste reportes<br>
+2020-08-04 : feature | i_315 | filtro por usuari cuentas por cobrar<br>
+2020-08-03 : feature | i_260 | template pdf doble print invoice, sale_note<br>
+2020-08-03 : feature | i_261 | lista pecios producto pos<br>
+2020-08-03 : feature | i-319 | Se agrega licencia de conducir y placa secundaria en guia de remision<br>
+2020-07-30 : feature | templates pdf | custom disponible para editar sin afectar cambios de git, nuevo template<br>
+2020-07-30 : feature | i_281 | filtro por usuario cuentas por cobrar<br>
+2020-07-28 : feature | cfg_apiperu | switch token tenant<br>
+2020-07-28 : feature | cfg_apiperu | set data from bd<br>
+2020-07-27 : feature | i_297 | anulate purchase series<br>
+2020-07-27 : feature | cfg_apiperu | add config apiperu.dev panel admin<br>
+2020-07-26 : feature | service api dni ruc<br>
+2020-07-25 : feature | 283 - 8<br>
+2020-07-25 : feature | 283 - 7<br>
+2020-07-25 : feature | 283 - 4<br>
+2020-07-25 : feature | 283 - 3<br>
+2020-07-25 : feature | 283 - 1<br>
+2020-07-25 : feature | d | filtro reporte de pagos, con/sin anulados<br>
+2020-07-24 : feature | i_269 | reportes enta producto ampos series y notas venta<br>
+2020-07-24 : feature | d | report excel complete, validaciones<br>
+2020-07-23 : feature | i_258 | qr firma digital orden de pedido<br>
+2020-07-23 : feature | 289 | template legend_amazonia_2 field series<br>
+2020-07-23 : feature | i-278 | Se agrega usuario responsable - pagos<br>
+2020-07-22 : feature | i_8 app facturalo | api data report<br>
+2020-07-22 : feature | i_236 | control series en generar comprobante desde cotizaciones<br>
+2020-07-22 : feature | Añadir tooltip en linea de producto<br>
+2020-07-22 : feature | i-245 | Se agrega notificacion de documentos relacionados en notas<br>
+2020-07-22 : feature | i_263 | se agrega campos y se crea nuevo template para soporte<br>
+2020-07-21 : feature | i_244 | se agrega doc asociado en reporte kardex<br>
+2020-07-17 : feature | change package send ftp, use laravel disk<br>
+2020-07-16 : feature | i_12 | add logo data login<br>
+2020-07-16 : feature | i_12 | add ruc data  login<br>
+2020-07-16 : feature | i_200 | add template rich_text<br>
+2020-07-16 : feature | recovery report excel payment<br>
+2020-07-16 : feature | i-236 | control serie pedidos ecoomerce<br>
+2020-07-14 : feature | list items  events in pos<br>
+2020-07-14 : feature | creae item in api dispatches<br>
+2020-07-14 : feature | control series purchase-order generate purchase<br>
+2020-07-14 : feature | control series en pedidos<br>
+2020-07-10 : feature | ftp | formulario y validacion si existe algun backup generado<br>
+2020-07-09 : feature | ftp | requiere extension php-ftp<br>
+2020-07-08 : feature | backup | update views<br>
+2020-07-08 : feature | backup | views system<br>
+2020-07-08 : feature | bk organizando directorios<br>
+2020-07-06 : feature | d-paymentreport | export excel type<br>
+2020-07-03 : feature | i-185 | Avance atajos en pos<br>
+2020-07-03 : feature | i-221 | Agregar configuracion incluye igv productos/compras<br>
+2020-07-03 : feature | i-100 | Exportar formatos contables desde admin<br>
+2020-07-01 : feature | template pdf default3<br>
+
+
 ## 3.3.8
 
 ### docs
