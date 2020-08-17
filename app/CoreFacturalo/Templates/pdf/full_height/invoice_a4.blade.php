@@ -36,7 +36,7 @@
         <img src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
     </div>
 @else
-    <div class="company_logo_box" style="position: absolute; text-align: center; top:30%;width: 100%">
+    <div class="company_logo_box" style="position: absolute; text-align: center; top:40%;width: 100%">
         <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="logo" class="" style="opacity: 0.1;">
     </div>
 @endif
@@ -173,23 +173,39 @@
         <td class="desc"></td>
     </tr>
 </table>
-<table class="full-width mt-10 mb-10 border-bottom">
+<div style="border: 1px solid #000;height: 48%;padding-left: -1px;width:95.1%;position: absolute;display: table;">
+</div>
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:11.4%;position: absolute;display: table;">
+</div>
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:49.5%;position: absolute;display: table;">
+</div>
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:57.2%;position: absolute;display: table;">
+</div>
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:64.8%;position: absolute;display: table;">
+</div>
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:76.3%;position: absolute;display: table;">
+</div>
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:83.7%;position: absolute;display: table;">
+</div>
+
+
+<table class="full-width mt-0 mb-0">
     <thead >
         <tr class="">
-            <th class="border-box text-center py-1 desc" width="12%">CÓDIGO</th>
-            <th class="border-box text-center py-1 desc">DESCRIPCIÓN</th>
-            <th class="border-box text-center py-1 desc" width="8%">CANT.</th>
-            <th class="border-box text-center py-1 desc" width="8%">U.M.</th>
-            <th class="border-box text-right py-1 desc" width="12%">P.U</th>
-            <th class="border-box text-center py-1 desc" width="8%">DESC</th>
-            <th class="border-box text-center py-1 desc" width="12%">IMPORTE</th>
+            <th class="border-top-bottom text-center py-1 desc" width="12%">CÓDIGO</th>
+            <th class="border-top-bottom text-center py-1 desc" width="40%">DESCRIPCIÓN</th>
+            <th class="border-top-bottom text-center py-1 desc" width="8%">CANT.</th>
+            <th class="border-top-bottom text-center py-1 desc" width="8%">U.M.</th>
+            <th class="border-top-bottom text-right py-1 desc" width="12%">P.U</th>
+            <th class="border-top-bottom text-center py-1 desc" width="8%">DESC</th>
+            <th class="border-top-bottom text-center py-1 desc" width="12%">IMPORTE</th>
         </tr>
     </thead>
     <tbody class="">
         @foreach($document->items as $row)
             <tr>
-                <td class="p-1 border-left border-right text-center align-top desc">{{ $row->item->internal_id }}</td>
-                <td class="p-1 border-left border-right text-left align-top desc text-upp">
+                <td class="p-1 text-center align-top desc">{{ $row->item->internal_id }}</div></td>
+                <td class="p-1 text-left align-top desc text-upp">
                     @if($row->name_product_pdf)
                         {!!$row->name_product_pdf!!}
                     @else
@@ -203,11 +219,11 @@
                             <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
                         @endforeach
                     @endif
-                    @if($row->discounts)
+                    {{-- @if($row->discounts)
                         @foreach($row->discounts as $dtos)
                             <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                         @endforeach
-                    @endif
+                    @endif --}}
 
                     @if($row->item->is_set == 1)
                      <br>
@@ -215,16 +231,16 @@
                         {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
                     @endif
                 </td>
-                <td class="p-1 border-left border-right text-center align-top desc">
+                <td class="p-1 text-center align-top desc">
                     @if(((int)$row->quantity != $row->quantity))
                         {{ $row->quantity }}
                     @else
                         {{ number_format($row->quantity, 0) }}
                     @endif
                 </td>
-                <td class="p-1 border-left border-right text-center align-top desc">{{ $row->item->unit_type_id }}</td>
-                <td class="p-1 border-left border-right text-right align-top desc">{{ number_format($row->unit_price, 2) }}</td>
-                <td class="p-1 border-left border-right text-right align-top desc">
+                <td class="p-1 text-center align-top desc">{{ $row->item->unit_type_id }}</td>
+                <td class="p-1 text-right align-top desc">{{ number_format($row->unit_price, 2) }}</td>
+                <td class="p-1 text-right align-top desc">
                     @if($row->discounts)
                         @php
                             $total_discount_line = 0;
@@ -235,7 +251,7 @@
                         {{ number_format($total_discount_line, 2) }}
                     @endif
                 </td>
-                <td class="p-1 border-left border-right text-right align-top desc">{{ number_format($row->total, 2) }}</td>
+                <td class="p-1 text-right align-top desc">{{ number_format($row->total, 2) }}</td>
             </tr>
         @endforeach
     </tbody>
