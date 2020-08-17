@@ -30,7 +30,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Perception;
 use App\Models\Tenant\Configuration;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 
 
 class Facturalo
@@ -274,10 +274,21 @@ class Facturalo
         $this->type = ($type != null) ? $type : $this->type;
 
         $configuration = $this->configuration->formats;
-        
+
         $base_pdf_template = $configuration;//config(['tenant.pdf_template'=> $configuration]);
         // dd($base_pdf_template);
-   
+
+        $pdf_margin_top = 15;
+        $pdf_margin_right = 15;
+        $pdf_margin_bottom = 15;
+        $pdf_margin_left = 15;
+
+        if ($base_pdf_template === 'full_height') {
+            $pdf_margin_top = 5;
+            $pdf_margin_right = 5;
+            $pdf_margin_bottom = 5;
+            $pdf_margin_left = 5;
+        }
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
@@ -427,7 +438,7 @@ class Facturalo
             ]);
 
 
-       } else {
+        } else {
 
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
@@ -453,7 +464,19 @@ class Facturalo
                         'custom_regular' => [
                             'R' => $pdf_font_regular.'.ttf',
                         ],
-                    ]
+                    ],
+                    'margin_top' => $pdf_margin_top,
+                    'margin_right' => $pdf_margin_right,
+                    'margin_bottom' => $pdf_margin_bottom,
+                    'margin_left' => $pdf_margin_left
+                ]);
+
+            } else {
+                $pdf = new Mpdf([
+                    'margin_top' => $pdf_margin_top,
+                    'margin_right' => $pdf_margin_right,
+                    'margin_bottom' => $pdf_margin_bottom,
+                    'margin_left' => $pdf_margin_left
                 ]);
             }
         }
@@ -472,7 +495,7 @@ class Facturalo
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
 
-                $html_footer = $template->pdfFooter($base_pdf_template);
+                $html_footer = $template->pdfFooter($base_pdf_template,$this->document);
                 $html_footer_legend = "";
                 // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
@@ -543,7 +566,7 @@ class Facturalo
                 'code' => $code,
                 'description' => $message
             ];
-            
+
             $this->validationCodeResponse($code, $message);
 
         }
@@ -619,7 +642,7 @@ class Facturalo
         } else {
             $cdrResponse = $res->getCdrResponse();
             $this->uploadFile($res->getCdrZip(), 'cdr');
-            
+
             $this->response = [
                 'sent' => true,
                 'code' => $cdrResponse->getCode(),
@@ -647,7 +670,7 @@ class Facturalo
                     $this->updateStateDocuments(self::REGISTERED);
 
                 }
-                
+
             } else {
                 $this->updateStateDocuments(self::VOIDED);
             }
@@ -656,7 +679,7 @@ class Facturalo
     }
 
     public function validationStatusCodeResponse($status_code)
-    { 
+    {
 
         switch ($status_code) {
             case 0:
@@ -666,7 +689,7 @@ class Facturalo
             case 99:
                 $this->updateState(self::REJECTED);
                 break;
-            
+
         }
 
     }
@@ -740,7 +763,7 @@ class Facturalo
     {
 
         if($this->isOse) {
-            
+
             $this->soapUsername = $this->company->soap_username;
             $this->soapPassword = $this->company->soap_password;
 
@@ -755,7 +778,7 @@ class Facturalo
             }
 
         }
-        
+
 
 //        $this->soapUsername = ($this->isDemo)?$this->company->number.'MODDATOS':$this->company->soap_username;
 //        $this->soapPassword = ($this->isDemo)?'moddatos':$this->company->soap_password;
@@ -793,7 +816,7 @@ class Facturalo
                 $number = $fullnumber[1];
 
                 $doc = Document::where([['series',$series],['number',$number]])->first();
-                
+
                 if($doc){
 
                     $total = $row['total'];
@@ -814,21 +837,21 @@ class Facturalo
     public function updateResponse(){
 
         // if($this->response['sent']) {
-        //     return 
-            
+        //     return
+
         //     $this->document->update([
         //         'soap_shipping_response' => $this->response
         //     ]);
-            
+
         // }
 
     }
 
     private function savePayments($document, $payments){
-         
+
         $total = $document->total;
         $balance = $total - collect($payments)->sum('payment');
-        
+
         $search_cash = ($balance < 0) ? collect($payments)->firstWhere('payment_method_type_id', '01') : null;
 
         $this->apply_change = false;
@@ -836,16 +859,16 @@ class Facturalo
         if($balance < 0 && $search_cash){
 
             $payments = collect($payments)->map(function($row) use($balance){
-    
+
                 $change = null;
                 $payment = $row['payment'];
 
                 if($row['payment_method_type_id'] == '01' && !$this->apply_change){
-        
+
                     $change = abs($balance);
-                    $payment = $row['payment'] - abs($balance); 
-                    $this->apply_change = true; 
-    
+                    $payment = $row['payment'] - abs($balance);
+                    $this->apply_change = true;
+
                 }
 
                 return [
@@ -869,12 +892,12 @@ class Facturalo
 
             if($balance < 0 && !$this->apply_change){
                 $row['change'] = abs($balance);
-                $row['payment'] = $row['payment'] - abs($balance); 
-                $this->apply_change = true; 
+                $row['payment'] = $row['payment'] - abs($balance);
+                $this->apply_change = true;
             }
 
             $record = $document->payments()->create($row);
-            
+
             //considerar la creacion de una caja chica cuando recien se crea el cliente
             if(isset($row['payment_destination_id'])){
                 $this->createGlobalPayment($record, $row);

@@ -27,11 +27,11 @@ class Template
         return view($view, compact('company', 'document'))->render();
     }
 
-    public function pdfFooter($base_template)
+    public function pdfFooter($base_template, $document)
     {
         view()->addLocation(__DIR__.'/Templates');
 
-        return view('pdf.'.$base_template.'.partials.footer')->render();
+        return view('pdf.'.$base_template.'.partials.footer', compact('document'))->render();
     }
 
     public function validate_template($base_template, $template, $format_pdf)
@@ -40,7 +40,7 @@ class Template
         $path_template_default = 'pdf'.DIRECTORY_SEPARATOR.'default'.DIRECTORY_SEPARATOR.$template.'_'.$format_pdf;
         $path_template = 'pdf'.DIRECTORY_SEPARATOR.$base_template.DIRECTORY_SEPARATOR.$template.'_'.$format_pdf;
 
-      
+
 
         if(file_exists($path_app_template.DIRECTORY_SEPARATOR.$path_template.'.blade.php')) {
             return str_replace(DIRECTORY_SEPARATOR, '.', $path_template);
@@ -49,7 +49,7 @@ class Template
         return str_replace(DIRECTORY_SEPARATOR, '.', $path_template_default);
     }
 
-    
+
     public function pdfFooterTermCondition($base_template, $document)
     {
         view()->addLocation(__DIR__.'/Templates');
@@ -57,7 +57,7 @@ class Template
         return view('pdf.'.$base_template.'.partials.footer_term_condition', compact('document'))->render();
     }
 
-    
+
     public function pdfFooterLegend($base_template, $document)
     {
         view()->addLocation(__DIR__.'/Templates');
