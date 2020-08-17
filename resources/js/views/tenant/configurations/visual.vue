@@ -92,7 +92,7 @@
                         </el-switch>
                         <small class="form-control-feedback" v-if="errors.enable_whatsapp" v-text="errors.enable_whatsapp[0]"></small>
                         <br>
-                        <small class="form-control-feedback">Se mostrará si el administrador ha añadido número de soporte</small>
+                        <small class="form-control-feedback">Se mostrará si su administrador ha añadido número de soporte: Administrador/Perfil/Teléfono</small>
                     </div>
                 </div>
 
