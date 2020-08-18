@@ -19,7 +19,7 @@
 
     $payments = $document->payments;
 
-    $document->load('reference_guides');
+    // $document->load('reference_guides');
 
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
@@ -49,11 +49,13 @@
 <table class="full-width border-box my-2">
     <tr>
         <td class="text-upp p-2">OBSERVACIONES:
-            @foreach($document->additional_information as $information)
-                @if ($information)
-                    {{ $information }}
-                @endif
-            @endforeach
+        	@if($document->additional_information)
+	            @foreach($document->additional_information as $information)
+	                @if ($information)
+	                    {{ $information }}
+	                @endif
+	            @endforeach
+            @endif
         </td>
     </tr>
 </table>
@@ -96,7 +98,6 @@
     </tr>
 </table>
 <table class="full-width border-box my-2">
-    @if(in_array($document->document_type->id,['01','03']))
         @foreach($accounts as $account)
             <tr>
                 <th class="p-1">Banco</th>
@@ -115,7 +116,6 @@
                 <td class="text-center">{{$account->number}}</td>
             </tr>
         @endforeach
-    @endif
 </table>
 <table class="full-width">
     <tr>

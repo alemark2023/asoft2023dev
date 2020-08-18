@@ -295,7 +295,7 @@ class SaleNoteController extends Controller
             $this->sale_note->save();
 
         }else{
-            
+
             $this->sale_note->total_canceled = false;
             $this->sale_note->save();
         }
@@ -585,7 +585,7 @@ class SaleNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            $html_footer = $template->pdfFooter($base_template);
+            $html_footer = $template->pdfFooter($base_template,$this->document);
             $pdf->SetHTMLFooter($html_footer);
         }
 
