@@ -27,7 +27,7 @@ class Template
         return view($view, compact('company', 'document'))->render();
     }
 
-    public function pdfFooter($base_template, $document)
+    public function pdfFooter($base_template, $document = null)
     {
         view()->addLocation(__DIR__.'/Templates');
 
