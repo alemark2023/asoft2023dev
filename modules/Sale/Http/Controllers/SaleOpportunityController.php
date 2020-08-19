@@ -418,7 +418,7 @@ class SaleOpportunityController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$document);
                 $pdf->SetHTMLFooter($html_footer);
             }
         }

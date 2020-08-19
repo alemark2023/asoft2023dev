@@ -681,7 +681,7 @@ class QuotationController extends Controller
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
 
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$this->quotation);
                 $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document):"";
 
                 $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer);

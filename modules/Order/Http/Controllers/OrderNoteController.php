@@ -634,7 +634,7 @@ class OrderNoteController extends Controller
 
         if ($format_pdf != 'ticket') {
             if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template);
+                $html_footer = $template->pdfFooter($base_template,$this->order_note);
                 $pdf->SetHTMLFooter($html_footer);
             }
             //$html_footer = $template->pdfFooter();

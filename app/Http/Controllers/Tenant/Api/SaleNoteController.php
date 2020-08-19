@@ -373,7 +373,7 @@ class SaleNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            $html_footer = $template->pdfFooter($base_template);
+            $html_footer = $template->pdfFooter($base_template, $this->document);
             $pdf->SetHTMLFooter($html_footer);
         }
 

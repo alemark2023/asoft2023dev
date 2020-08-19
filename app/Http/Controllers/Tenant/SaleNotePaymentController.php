@@ -16,8 +16,8 @@ use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
-use Modules\Finance\Traits\FinanceTrait; 
-use Modules\Finance\Traits\FilePaymentTrait; 
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Finance\Traits\FilePaymentTrait;
 use Illuminate\Support\Facades\DB;
 
 class SaleNotePaymentController extends Controller
@@ -194,7 +194,7 @@ class SaleNotePaymentController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            $html_footer = $template->pdfFooter($base_template);
+            $html_footer = $template->pdfFooter($base_template,$document);
             $pdf->SetHTMLFooter($html_footer);
         }
 
