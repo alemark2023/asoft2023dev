@@ -218,11 +218,11 @@ class Facturalo
         $this->document->update([
             'soap_type_id' => $soap_type_id
         ]);
-        if($type === 'invoice') {
-            $invoice = Invoice::where('document_id', $this->document->id)->first();
-            $invoice->date_of_due = $this->document->date_of_issue;
-            $invoice->save();
-        }
+        // if($type === 'invoice') {
+        //     $invoice = Invoice::where('document_id', $this->document->id)->first();
+        //     $invoice->date_of_due = $this->document->date_of_issue;
+        //     $invoice->save();
+        // }
     }
 
     public function updateStateDocuments($state_type_id)
