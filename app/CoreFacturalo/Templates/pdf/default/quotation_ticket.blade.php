@@ -329,7 +329,9 @@
 
     @if($document->terms_condition)
     <tr>
-        <td class="text-center desc pt-5 font-bold">{{$document->terms_condition}}</td>
+        <td class="desc pt-5 ">
+            {!!$document->terms_condition!!}
+        </td>
     </tr>
     @endif
 </table>

@@ -235,8 +235,18 @@
                 }
                 // console.log(this.placeholder)
             });
+
+            await this.events()
         },
         methods: {
+            events(){
+                
+                this.$eventHub.$on('submitFormConfigurations', (form) => {
+                    this.form = form
+                    this.submit()
+                })
+
+            },
             successUpload(response, file, fileList) {
                 if (response.success) {
                     this.$message.success(response.message)
