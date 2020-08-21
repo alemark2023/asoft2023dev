@@ -68,8 +68,8 @@
         <td>{{ $customer->identity_document_type->description }}:</td>
         <td>{{ $customer->number }}</td>
         @if($document->date_of_due)
-            <td width="25%">Fecha de vencimiento:</td>
-            <td width="15%">{{ $document->date_of_due->format('Y-m-d') }}</td>
+            <td width="25%">Tiempo de Validez:</td>
+            <td width="15%">{{ $document->date_of_due }}</td>
         @endif
     </tr>
     @if ($customer->address !== '')
@@ -82,8 +82,8 @@
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
         @if($document->delivery_date)
-            <td width="25%">Fecha de entrega:</td>
-            <td width="15%">{{ $document->delivery_date->format('Y-m-d') }}</td>
+            <td width="25%">Tiempo de Entrega:</td>
+            <td width="15%">{{ $document->delivery_date }}</td>
         @endif
     </tr>
     @endif
