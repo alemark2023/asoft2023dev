@@ -432,9 +432,16 @@
                                 <tr>
                                     <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
                                 </tr>
+                                @php
+                                    $payment += (float) $row->payment;
+                                @endphp
                             @endforeach
                         </tr>
-
+                        <tr>
+                            <td>
+                                <strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}
+                            </td>
+                        </tr>
                     </table>
                 @endif
             </td>
@@ -932,7 +939,15 @@
                                 <tr>
                                     <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
                                 </tr>
+                                @php
+                                    $payment += (float) $row->payment;
+                                @endphp
                             @endforeach
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}
+                            </td>
                         </tr>
 
                     </table>
