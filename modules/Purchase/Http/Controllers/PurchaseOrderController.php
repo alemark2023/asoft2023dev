@@ -394,23 +394,17 @@ class PurchaseOrderController extends Controller
     }
 
 
-    // public function email($purchase_order)
-    // {
-    //     $suppliers = $purchase_order->suppliers;
-    //     // dd($suppliers);
+    public function email(Request $request)
+    {
+        $record = PurchaseOrder::find($request->input('id'));
+        $customer_email = $request->input('customer_email');
 
-    //     foreach ($suppliers as $supplier) {
+        Mail::to($customer_email)->send(new PurchaseOrderEmail($record));
 
-    //         $client = Person::find($supplier->supplier_id);
-    //         $supplier_email = $supplier->email;
-
-    //         Mail::to($supplier_email)->send(new PurchaseOrderEmail($client, $purchase_order));
-    //     }
-
-    //     return [
-    //         'success' => true
-    //     ];
-    // }
+        return [
+            'success' => true
+        ];
+    }
 
     public function uploadAttached(Request $request)
     {

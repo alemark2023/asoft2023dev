@@ -42,6 +42,7 @@ if($current_hostname) {
 
                 Route::get('download-attached/{external_id}', 'PurchaseOrderController@downloadAttached');
                 Route::get('sale-opportunity/{id}', 'PurchaseOrderController@generateFromSaleOpportunity');
+                Route::post('email', 'PurchaseOrderController@email');
 
             });
 
@@ -55,7 +56,7 @@ if($current_hostname) {
 
             });
 
-            
+
             Route::prefix('fixed-asset')->group(function () {
 
                 Route::get('items', 'FixedAssetItemController@index')->name('tenant.fixed_asset_items.index');
