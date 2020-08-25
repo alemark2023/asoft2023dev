@@ -1,3 +1,23 @@
+## 3.4.0
+
+### docs
+2020-08-17 : docs | changelog<br>
+
+
+### fixed
+2020-08-21 : fixed | i-349 | Ajuste accedo a propiedad formatos cotizacion<br>
+2020-08-21 : fixed | i-27 | Ajustes saldos - vista kardex<br>
+2020-08-20 : fixed | i-379 | Se modifica tipo de dato con decimales en lotes<br>
+2020-08-20 : fixed | i-376 | ERROR EN FECHA DE VENCIMIENTO AL RECREAR DOCUMENTOS<br>
+2020-08-20 : fixed | i-349 | Ajuste y modificacion form terminos y condiciones configuracion - formatos cotizacion<br>
+
+
+### feature
+2020-08-25 : feature | template pdf | jazmar<br>
+2020-08-24 : feature | 314 | pto 7 mail orden de compra<br>
+2020-08-24 : feature | i-260 | add payment invoice<br>
+
+
 ## 3.3.9
 
 ### docs
