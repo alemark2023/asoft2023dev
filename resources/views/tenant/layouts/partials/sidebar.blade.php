@@ -570,18 +570,42 @@
                     <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
                                         'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels',
                                         'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
-                                        'order-notes-general', 'sales-consolidated', 'user-commissions'])) ? 'nav-active nav-expanded' : ''}}">
+                                        'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases'])) ? 'nav-active nav-expanded' : ''}}">
 
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
                             <span>Reportes</span>
                         </a>
                         <ul class="nav nav-children" style="">
-                            <li class="{{(($path[0] === 'reports') && ($path[1] === 'purchases')) ? 'nav-active' : ''}}">
+
+                            
+                            <li class="nav-parent {{  ($path[0] === 'reports' &&
+                                    in_array($path[1], ['purchases', 'fixed-asset-purchases'])) ? 'nav-active nav-expanded' : ''}}">
+
+                                <a class="nav-link" href="#">
+                                    Compras
+                                </a>
+                                <ul class="nav nav-children">
+
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'purchases')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.purchases.index')}}">
+                                            Compras totales
+                                        </a>
+                                    </li> 
+
+                                    <li class="{{(($path[0] === 'reports') && ($path[1] === 'fixed-asset-purchases')) ? 'nav-active' : ''}}">
+                                        <a class="nav-link" href="{{route('tenant.reports.fixed-asset-purchases.index')}}">
+                                            Activos fijos
+                                        </a>
+                                    </li> 
+                                </ul>
+                            </li>
+
+                            {{-- <li class="{{(($path[0] === 'reports') && ($path[1] === 'purchases')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.purchases.index')}}">
                                     Compras
                                 </a>
-                            </li>
+                            </li> --}}
 
                             <li class="nav-parent {{  ($path[0] === 'reports' &&
                                     in_array($path[1], ['sales','customers','items','quotations', 'sale-notes', 'document-detractions',

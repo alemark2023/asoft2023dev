@@ -38,6 +38,7 @@
                         <th v-if="columns.contract.visible">Contrato</th>
                         <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
+                        <th class="text-center"></th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-right" v-if="columns.total_free.visible">T.Gratuito</th>
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
@@ -128,6 +129,12 @@
                         <!-- <td>{{ row.state_type_description }}</td> -->
                         <td v-if="columns.contract.visible">{{ row.contract_number_full }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
+
+                        <td class="text-right">
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickPayment(row.id)">Pagos</button>
+                        </td>
+
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
@@ -154,7 +161,12 @@
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                             <a :href="`/dispatches/create/${row.id}/q`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
 
-                            <a v-if="row.btn_generate_cnt && row.state_type_id != '11'" :href="`/contracts/generate-quotation/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Generar contrato</a>
+                            <template v-if="row.btn_generate_cnt && row.state_type_id != '11'">
+                                <a  :href="`/contracts/generate-quotation/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Generar contrato</a>
+                            </template>
+                            <template v-else>
+                                <button  type="button" @click="clickPrintContract(row.external_id_contract)"  class="btn waves-effect waves-light btn-xs btn-primary m-1__2">Ver contrato</button>
+                            </template>
 
 
                         </td>
@@ -172,6 +184,10 @@
             <quotation-options-pdf :showDialog.sync="showDialogOptionsPdf"
                               :recordId="recordId"
                               :showClose="true"></quotation-options-pdf>
+
+                              
+            <quotation-payments :showDialog.sync="showDialogPayments"
+                                :recordId="recordId"></quotation-payments>
         </div>
     </div>
 </template>
@@ -186,15 +202,17 @@
     import QuotationOptionsPdf from './partials/options_pdf.vue'
     import DataTable from '../../../components/DataTableQuotation.vue'
     import {deletable} from '../../../mixins/deletable'
+    import QuotationPayments from './partials/payments.vue'
 
     export default {
         props:['typeUser', 'soapCompany'],
         mixins: [deletable],
-        components: {DataTable,QuotationOptions, QuotationOptionsPdf},
+        components: {DataTable,QuotationOptions, QuotationOptionsPdf, QuotationPayments},
         data() {
             return {
                 resource: 'quotations',
                 recordId: null,
+                showDialogPayments: false,
                 showDialogOptions: false,
                 showDialogOptionsPdf: false,
                 state_types: [],
@@ -230,6 +248,13 @@
             await this.filter()
         },
         methods: {
+            clickPrintContract(external_id){
+                window.open(`/contracts/print/${external_id}/a4`, '_blank');
+            } , 
+            clickPayment(recordId) {
+                this.recordId = recordId;
+                this.showDialogPayments = true;
+            },
             async changeStateType(row){
 
                 await this.updateStateType(`/${this.resource}/state-type/${row.state_type_id}/${row.id}`).then(() =>

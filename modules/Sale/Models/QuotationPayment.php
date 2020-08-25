@@ -7,6 +7,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\CardBrand;
 use App\Models\Tenant\ModelTenant;
+use Modules\Finance\Models\PaymentFile;
 
 class QuotationPayment extends ModelTenant
 {
@@ -47,4 +48,10 @@ class QuotationPayment extends ModelTenant
     {
         return $this->belongsTo(Quotation::class, 'quotation_id');
     }
+    
+    public function payment_file()
+    {
+        return $this->morphOne(PaymentFile::class, 'payment');
+    }
+
 }

@@ -109,5 +109,16 @@ if($current_hostname) {
             Route::delete('/{id}', 'UserCommissionController@destroy');
 
         });
+
+        Route::prefix('quotation_payments')->group(function () {
+
+            Route::get('/records/{quotation}', 'QuotationPaymentController@records');
+            Route::get('/document/{quotation}', 'QuotationPaymentController@document');
+            Route::get('/tables', 'QuotationPaymentController@tables');
+            Route::post('', 'QuotationPaymentController@store');
+            Route::delete('/{quotation_payment}', 'QuotationPaymentController@destroy');
+
+        });
+        
     });
 }
