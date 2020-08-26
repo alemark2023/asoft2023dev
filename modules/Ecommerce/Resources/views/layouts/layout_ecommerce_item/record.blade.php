@@ -26,9 +26,13 @@
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
 
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/rating.css') }}">
-    
+
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
+
+    @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
+    @endif
 </head>
 
 <body>
@@ -36,7 +40,7 @@
 
         @include('ecommerce::layouts.partials_ecommerce.header')
         @include('ecommerce::layouts.partials_ecommerce.header_bottom_sticky')
-        
+
 
         <main class="main">
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
@@ -45,7 +49,7 @@
                         <!--<li class="breadcrumb-item"><a href="index-2.html"><i class="icon-home"></i></a></li>
                         <li class="breadcrumb-item"><a href="#">Electronics</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Headsets</li>-->
-                    </ol> 
+                    </ol>
                 </div><!-- End .container -->
             </nav>
             <div class="container">
@@ -78,7 +82,7 @@
         @include('ecommerce::layouts.partials_ecommerce.mobile_menu')
     </div><!-- End .mobile-menu-container -->
 
-    
+
 
     <a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
 

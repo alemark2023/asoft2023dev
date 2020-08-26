@@ -585,8 +585,10 @@ class SaleNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if(config('tenant.pdf_template_footer')) {
-            $html_footer = $template->pdfFooter($base_template,$this->document);
-            $pdf->SetHTMLFooter($html_footer);
+            if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
+                $html_footer = $template->pdfFooter($base_template,$this->document);
+                $pdf->SetHTMLFooter($html_footer);
+            }
         }
 
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');

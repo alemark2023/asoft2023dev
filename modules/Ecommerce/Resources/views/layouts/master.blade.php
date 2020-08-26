@@ -28,6 +28,11 @@
 
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
+
+
+    @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
+    @endif
 </head>
 <style>
 

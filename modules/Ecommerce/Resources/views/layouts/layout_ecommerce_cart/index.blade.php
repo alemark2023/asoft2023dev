@@ -13,7 +13,7 @@
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
     <meta name="author" content="SW-THEMES">
-        
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('porto-ecommerce/assets/images/icons/favicon.ico') }}">
 
@@ -23,9 +23,13 @@
     <!-- Main CSS File -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/style.min.css') }}">
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/css/custom.css') }}">
-    
+
     <!-- Fontawesome -->
     <link rel="stylesheet" href="{{ asset('porto-ecommerce/assets/font-awesome/css/fontawesome-all.min.css') }}">
+
+    @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
+        <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
+    @endif
 </head>
 <body>
     <div class="page-wrapper">
