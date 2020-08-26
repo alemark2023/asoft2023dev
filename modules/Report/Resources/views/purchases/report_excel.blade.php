@@ -38,6 +38,27 @@
                     </td>
                     <td align="center">{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</td>
                 </tr>
+
+                @inject('reportService', 'Modules\Report\Services\ReportService')
+                <tr>
+                    @if($filters['seller_id'])
+                    <td>
+                        <p><strong>Usuario: </strong></p>
+                    </td>
+                    <td align="center">
+                        {{$reportService->getUserName($filters['seller_id'])}}
+                    </td>
+                    @endif
+                    @if($filters['person_id'])
+                    <td>
+                        <p><strong>Proveedor: </strong></p>
+                    </td>
+                    <td align="center">
+                        {{$reportService->getPersonName($filters['person_id'])}}
+                    </td>
+                    @endif
+                </tr>
+                
             </table>
         </div>
         <br>

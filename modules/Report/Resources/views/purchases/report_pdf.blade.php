@@ -73,6 +73,21 @@
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                 </tr>
+
+                @inject('reportService', 'Modules\Report\Services\ReportService')
+                <tr>
+                    @if($filters['seller_id'])
+                    <td>
+                        <p><strong>Usuario: </strong>{{$reportService->getUserName($filters['seller_id'])}}</p>
+                    </td>
+                    @endif
+                    @if($filters['person_id'])
+                    <td>
+                        <p><strong>Proveedor: </strong>{{$reportService->getPersonName($filters['person_id'])}}</p>
+                    </td>
+                    @endif
+                </tr>
+
             </table>
         </div>
         @if(!empty($records))

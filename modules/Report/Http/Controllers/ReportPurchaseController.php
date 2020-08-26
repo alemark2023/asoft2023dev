@@ -21,7 +21,7 @@ class ReportPurchaseController extends Controller
 
     public function filter() {
 
-        $document_types = DocumentType::whereIn('id', ['01', '03'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03','GU75', 'NE76'])->get();
 
         $persons = $this->getPersons('suppliers');
         $sellers = $this->getSellers();
@@ -56,8 +56,9 @@ class ReportPurchaseController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Purchase::class)->get();
+        $filters = $request->all();
 
-        $pdf = PDF::loadView('report::purchases.report_pdf', compact("records", "company", "establishment"));
+        $pdf = PDF::loadView('report::purchases.report_pdf', compact("records", "company", "establishment", "filters"));
 
         $filename = 'Reporte_Compras_'.date('YmdHis');
 
@@ -72,11 +73,13 @@ class ReportPurchaseController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Purchase::class)->get();
+        $filters = $request->all();
 
         return (new PurchaseExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
+                ->filters($filters)
                 ->download('Reporte_Compras_'.Carbon::now().'.xlsx');
 
     }

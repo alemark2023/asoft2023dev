@@ -69,8 +69,17 @@
                     <td>
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
+                    @inject('reportService', 'Modules\Report\Services\ReportService')
+                    @if($params['seller_id'])
                     <td>
+                        <p><strong>Usuario: </strong>{{$reportService->getUserName($params['seller_id'])}}</p>
                     </td>
+                    @endif 
+                    @if($params['person_id'])
+                    <td>
+                        <p><strong>Cliente: </strong>{{$reportService->getPersonName($params['person_id'])}}</p>
+                    </td>
+                    @endif 
                 </tr>
             </table>
         </div>

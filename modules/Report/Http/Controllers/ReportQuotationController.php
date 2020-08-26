@@ -56,8 +56,9 @@ class ReportQuotationController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Quotation::class)->get();
+        $filters = $request->all();
 
-        $pdf = PDF::loadView('report::quotations.report_pdf', compact("records", "company", "establishment"))->setPaper('a4', 'landscape');
+        $pdf = PDF::loadView('report::quotations.report_pdf', compact("records", "company", "establishment", "filters"))->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Cotizaciones_'.date('YmdHis');
 
@@ -73,11 +74,13 @@ class ReportQuotationController extends Controller
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
         $records = $this->getRecords($request->all(), Quotation::class)->get();
+        $filters = $request->all();
 
         return (new QuotationExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
+                ->filters($filters)
                 ->download('Reporte_Cotizaciones_'.Carbon::now().'.xlsx');
 
     }

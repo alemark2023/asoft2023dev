@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <tenant-report-purchases-index></tenant-report-purchases-index>
+    <tenant-report-fixed-asset-purchases-index></tenant-report-fixed-asset-purchases-index>
 
 @endsection

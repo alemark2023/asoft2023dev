@@ -34,6 +34,15 @@
                     </td>
                     <td align="center">{{$company->number}}</td>
                   
+                    @inject('reportService', 'Modules\Report\Services\ReportService')
+                    @if($filters['seller_id'])
+                    <td>
+                        <p><strong>Usuario: </strong></p>
+                    </td>
+                    <td align="center">
+                        {{$reportService->getUserName($filters['seller_id'])}}
+                    </td>
+                    @endif
                 </tr>
             </table>
         </div>

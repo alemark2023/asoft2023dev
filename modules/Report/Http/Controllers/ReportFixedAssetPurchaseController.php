@@ -5,23 +5,24 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
-use Modules\Report\Exports\PurchaseExport;
+use Modules\Report\Exports\FixedAssetPurchaseExport;
 use Illuminate\Http\Request;
 use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
-use App\Http\Resources\Tenant\PurchaseCollection;
+use Modules\Report\Http\Resources\FixedAssetPurchaseCollection;
+use Modules\Purchase\Models\FixedAssetPurchase;
 
 class ReportFixedAssetPurchaseController extends Controller
 {
-    use ReportTrait;
 
+    use ReportTrait;
 
     public function filter() {
 
-        $document_types = DocumentType::whereIn('id', ['01', '03'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03','GU75', 'NE76'])->get();
 
         $persons = $this->getPersons('suppliers');
         $sellers = $this->getSellers();
@@ -44,9 +45,9 @@ class ReportFixedAssetPurchaseController extends Controller
 
     public function records(Request $request)
     {
-        $records = $this->getRecords($request->all(), Purchase::class);
+        $records = $this->getRecords($request->all(), FixedAssetPurchase::class);
 
-        return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
+        return new FixedAssetPurchaseCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
@@ -55,11 +56,12 @@ class ReportFixedAssetPurchaseController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = $this->getRecords($request->all(), Purchase::class)->get();
+        $records = $this->getRecords($request->all(), FixedAssetPurchase::class)->get();
+        $filters = $request->all();
 
-        $pdf = PDF::loadView('report::purchases.report_pdf', compact("records", "company", "establishment"));
+        $pdf = PDF::loadView('report::fixed-asset-purchases.report_pdf', compact("records", "company", "establishment", "filters"));
 
-        $filename = 'Reporte_Compras_'.date('YmdHis');
+        $filename = 'Reporte_A_Fijos_Compras_'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
     }
@@ -71,13 +73,15 @@ class ReportFixedAssetPurchaseController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = $this->getRecords($request->all(), Purchase::class)->get();
+        $records = $this->getRecords($request->all(), FixedAssetPurchase::class)->get();
+        $filters = $request->all();
 
-        return (new PurchaseExport)
+        return (new FixedAssetPurchaseExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->download('Reporte_Compras_'.Carbon::now().'.xlsx');
+                ->filters($filters)
+                ->download('Reporte_A_Fijos_Compras_'.Carbon::now().'.xlsx');
 
     }
 }

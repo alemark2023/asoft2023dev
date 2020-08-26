@@ -5,11 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Compras</title>
+        <title>A. Fijos - Compras</title>
     </head>
     <body>
         <div>
-            <h3 align="center" class="title"><strong>Reporte Compras</strong></h3>
+            <h3 align="center" class="title"><strong>Reporte A. Fijos - Compras</strong></h3>
         </div>
         <br>
         <div style="margin-top:20px; margin-bottom:15px;">
@@ -38,6 +38,27 @@
                     </td>
                     <td align="center">{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</td>
                 </tr>
+                
+                @inject('reportService', 'Modules\Report\Services\ReportService')
+                <tr>
+                    @if($filters['seller_id'])
+                    <td>
+                        <p><strong>Usuario: </strong></p>
+                    </td>
+                    <td align="center">
+                        {{$reportService->getUserName($filters['seller_id'])}}
+                    </td>
+                    @endif
+                    @if($filters['person_id'])
+                    <td>
+                        <p><strong>Proveedor: </strong></p>
+                    </td>
+                    <td align="center">
+                        {{$reportService->getPersonName($filters['person_id'])}}
+                    </td>
+                    @endif
+                </tr>
+
             </table>
         </div>
         <br>
@@ -64,7 +85,7 @@
 
                                 <th>Cliente</th>
                                 <th>RUC</th>
-                                <th class="">F. Pago</th>
+                                {{-- <th class="">F. Pago</th> --}}
                                 <th>Estado</th>
                                 <th>Moneda</th>
                                 <th>Percepción</th>
@@ -88,7 +109,7 @@
 
                                 <td class="celda">{{$value->supplier->name}}</td>
                                 <td class="celda">{{$value->supplier->number}}</td>
-                                <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
+                                {{-- <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td> --}}
                                 <td class="celda">{{$value->state_type->description}}</td>
                                 <td class="celda">{{$value->currency_type_id}}</td> 
                                 <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_perception}}</td>
@@ -149,14 +170,14 @@
 
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="13"></td>
+                                <td class="celda" colspan="12"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="13"></td>
+                                <td class="celda" colspan="12"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

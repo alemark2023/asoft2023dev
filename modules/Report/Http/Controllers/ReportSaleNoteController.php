@@ -55,8 +55,9 @@ class ReportSaleNoteController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), SaleNote::class)->get();
+        $filters = $request->all();
 
-        $pdf = PDF::loadView('report::sale_notes.report_pdf', compact("records", "company", "establishment"))->setPaper('a4', 'landscape');
+        $pdf = PDF::loadView('report::sale_notes.report_pdf', compact("records", "company", "establishment", "filters"))->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Nota_Ventas_'.date('YmdHis');
 
@@ -72,11 +73,13 @@ class ReportSaleNoteController extends Controller
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
         $records = $this->getRecords($request->all(), SaleNote::class)->get();
+        $filters = $request->all();
 
         return (new SaleNoteExport)
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
+                ->filters($filters)
                 ->download('Reporte_Nota_Ventas_'.Carbon::now().'.xlsx');
 
     }

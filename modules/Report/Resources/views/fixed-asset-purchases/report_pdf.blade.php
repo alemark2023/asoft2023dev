@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Compras</title>
+        <title>A. Fijos - Compras</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -53,7 +53,7 @@
     </head>
     <body>
         <div>
-            <p align="center" class="title"><strong>Reporte Compras</strong></p>
+            <p align="center" class="title"><strong>Reporte A. Fijos - Compras</strong></p>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
             <table>
@@ -72,6 +72,20 @@
                     <td>
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
+                </tr>
+
+                @inject('reportService', 'Modules\Report\Services\ReportService')
+                <tr>
+                    @if($filters['seller_id'])
+                    <td>
+                        <p><strong>Usuario: </strong>{{$reportService->getUserName($filters['seller_id'])}}</p>
+                    </td>
+                    @endif
+                    @if($filters['person_id'])
+                    <td>
+                        <p><strong>Proveedor: </strong>{{$reportService->getPersonName($filters['person_id'])}}</p>
+                    </td>
+                    @endif
                 </tr>
             </table>
         </div>
@@ -97,7 +111,7 @@
                                 <th class="">F. Vencimiento</th>
                                 <th>Cliente</th>
                                 <th>RUC</th>
-                                <th class="">F. Pago</th>
+                                {{-- <th class="">F. Pago</th> --}}
                                 <!-- <th class="" >T.Exonerado</th>
                                 <th class="" >T.Inafecta</th>
                                 <th class="" >T.Gratuito</th> -->
@@ -119,7 +133,7 @@
                                     <td class="celda">{{$value->date_of_due->format('Y-m-d')}}</td>
                                     <td class="celda">{{$value->supplier->name}}</td>
                                     <td class="celda">{{$value->supplier->number}}</td>
-                                    <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
+                                    {{-- <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td> --}}
 
                                     <!-- <td class="celda">{{$value->total_exonerated}}</td>
                                     <td class="celda">{{$value->total_unaffected}}</td>
@@ -179,14 +193,14 @@
 
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="8"></td>
+                                <td class="celda" colspan="7"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="8"></td>
+                                <td class="celda" colspan="7"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>
