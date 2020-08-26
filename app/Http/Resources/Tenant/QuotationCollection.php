@@ -18,6 +18,7 @@ class QuotationCollection extends ResourceCollection
         
             $btn_generate = (count($row->documents) > 0 || count($row->sale_notes) > 0)?false:true;
             $btn_generate_cnt = $row->contract ?false:true;
+            $external_id_contract = $row->contract ? $row->contract->external_id : null;
 
             return [
                 'id' => $row->id, 
@@ -56,6 +57,7 @@ class QuotationCollection extends ResourceCollection
                 'sale_opportunity' => ($row->sale_opportunity) ? $row->sale_opportunity:null,
                 'btn_generate' => $btn_generate,
                 'btn_generate_cnt' => $btn_generate_cnt,
+                'external_id_contract' => $external_id_contract,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

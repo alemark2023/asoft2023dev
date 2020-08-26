@@ -139,6 +139,8 @@ Vue.component('tenant-report-general-items-index', require('../../modules/Report
 Vue.component('tenant-report-order-notes-general-index', require('../../modules/Report/Resources/assets/js/views/order_notes_general/index.vue'));
 Vue.component('tenant-report-sales-consolidated-index', require('../../modules/Report/Resources/assets/js/views/sales_consolidated/index.vue'));
 Vue.component('tenant-report-user-commissions-index', require('../../modules/Report/Resources/assets/js/views/user_commissions/index.vue'));
+Vue.component('tenant-report-fixed-asset-purchases-index', require('../../modules/Report/Resources/assets/js/views/fixed-asset-purchases/index.vue'));
+
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
 Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));

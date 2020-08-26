@@ -55,7 +55,7 @@
                                 </el-select>
                             </div>
                         </div>
-                        <div class="col-md-3" v-show="resource == 'reports/sales' || resource == 'reports/purchases'">
+                        <div class="col-md-3" v-show="resource == 'reports/sales' || resource == 'reports/purchases'|| resource == 'reports/fixed-asset-purchases'">
                             <div class="form-group">
                                 <label class="control-label">Tipo de documento</label>
                                 <el-select v-model="form.document_type_id" clearable>
@@ -64,7 +64,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-5 col-md-5" v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
+                        <div class="col-lg-5 col-md-5" v-if="resource == 'reports/sales' || resource == 'reports/purchases'|| resource == 'reports/fixed-asset-purchases'">
                             <div class="form-group">
                                 <label class="control-label">
                                     {{(resource == 'reports/sales') ? 'Clientes':'Proveedores'}}
@@ -138,7 +138,7 @@
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
-                        <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases'">
+                        <tfoot v-if="resource == 'reports/sales' || resource == 'reports/purchases' || resource == 'reports/fixed-asset-purchases'">
                             <tr>
                                 <td :colspan="(resource == 'reports/sales') ? 10:8"></td>
                                 <td ><strong>Totales PEN</strong></td>
@@ -424,7 +424,7 @@
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.loading_submit = false
                     // this.initTotals()
-                    if(this.resource == 'reports/sales' || this.resource == 'reports/purchases') this.getTotals(response.data.data)
+                    if(this.resource == 'reports/sales' || this.resource == 'reports/purchases' || this.resource == 'reports/fixed-asset-purchases') this.getTotals(response.data.data)
                 });
 
 

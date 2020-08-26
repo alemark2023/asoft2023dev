@@ -70,6 +70,12 @@
                         <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
                 
+                    @inject('reportService', 'Modules\Report\Services\ReportService')
+                    @if($filters['seller_id'])
+                    <td>
+                        <p><strong>Usuario: </strong>{{$reportService->getUserName($filters['seller_id'])}}</p>
+                    </td>
+                    @endif 
                 </tr>
             </table>
         </div>
