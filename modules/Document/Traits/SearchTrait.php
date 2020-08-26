@@ -17,6 +17,7 @@ trait SearchTrait
                     ->orWhereHas('brand', function($query) use($request) {
                         $query->where('name', 'like', '%' . $request->input . '%');
                     })
+                    ->with(['item_lots'])
                     ->where('unit_type_id','ZZ')
                     ->whereNotIsSet()
                     ->whereIsActive()
