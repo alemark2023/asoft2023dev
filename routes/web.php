@@ -346,6 +346,8 @@ if ($hostname) {
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
             Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
+            Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
 
 
@@ -411,6 +413,9 @@ if ($hostname) {
             Route::get('sale-notes/print-a5/{sale_note_id}/{format}', 'Tenant\SaleNotePaymentController@toPrint');
             Route::get('sale-notes/dispatches', 'Tenant\SaleNoteController@dispatches');
             Route::delete('sale-notes/destroy_sale_note_item/{sale_note_item}', 'Tenant\SaleNoteController@destroy_sale_note_item');
+            Route::get('sale-notes/search-items', 'Tenant\SaleNoteController@searchItems');
+            Route::get('sale-notes/search/item/{item}', 'Tenant\SaleNoteController@searchItemById');
+
 
            Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
            Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

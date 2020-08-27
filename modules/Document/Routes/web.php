@@ -24,6 +24,8 @@ if($current_hostname) {
                 Route::get('search/item/{item}', 'DocumentController@searchItemById');
                 Route::get('consult_cdr/{document}', 'DocumentController@consultCdr');
 
+                Route::get('item-lots', 'DocumentController@searchLots');
+
             });
 
             Route::prefix('series-configurations')->group(function() {

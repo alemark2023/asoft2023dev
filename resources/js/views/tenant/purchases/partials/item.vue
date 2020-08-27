@@ -9,7 +9,13 @@
                                 Producto/Servicio
                                 <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                             </label>
-                            <el-select v-model="form.item_id" @change="changeItem" filterable>
+                            <el-select v-model="form.item_id" @change="changeItem"
+                                filterable
+                                placeholder="Buscar"
+                                remote
+                                :remote-method="searchRemoteItems"
+                                :loading="loading_search"
+                            >
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.full_description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
@@ -78,7 +84,7 @@
                                 Ingrese series
                             </label>
 
-                            <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
+                            <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"> </el-button>
 
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
@@ -268,13 +274,15 @@
 
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
-    import LotsForm from '../../items/partials/lots.vue'
+    // import LotsForm from '../../items/partials/lots.vue'
+    import LotsForm from '@components/incomeLots.vue'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
         components: {itemForm, LotsForm},
         data() {
             return {
+                loading_search:false,
                 titleDialog: 'Agregar Producto o Servicio',
                 showDialogLots:false,
                 resource: 'purchases',
@@ -297,13 +305,15 @@
         created() {
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.items = response.data.items
+                this.all_items = response.data.items
+                // this.items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
                 this.charge_types = response.data.charge_types
                 this.attribute_types = response.data.attribute_types
                 this.warehouses = response.data.warehouses
+                this.initFilterItems()
                 // this.filterItems()
             })
 
@@ -312,6 +322,31 @@
             })
         },
         methods: {
+            async searchRemoteItems(input) {
+
+                if (input.length > 2) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+                            .then(response => {
+                                // console.log(response)
+                                this.items = response.data.items
+                                this.loading_search = false
+
+                                if(this.items.length == 0){
+                                    this.initFilterItems()
+                                }
+                            })
+                } else {
+                    await this.initFilterItems()
+                }
+
+            },
+            initFilterItems() {
+                this.items = this.all_items
+            },
             addRowLot(lots){
                 this.lots = lots
             },
@@ -494,13 +529,25 @@
                 return row
             },
             reloadDataItems(item_id) {
-                this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                    this.items = response.data
-                    this.form.item_id = item_id
-                    this.changeItem()
-                    // this.filterItems()
 
-                })
+                if(!item_id){
+
+                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                        this.items = response.data
+                        this.form.item_id = item_id
+                    })
+
+                }else{
+
+                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+
+                        this.items = response.data.items
+                        this.form.item_id = item_id
+                        this.changeItem()
+
+                    })
+                }
+
             },
         }
     }
