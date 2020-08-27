@@ -19,6 +19,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th class="text-center">#</th>
                                     <th class="text-center">Seleccionar</th>
                                     <th >Cod. Lote</th>
                                     <th>Serie</th>
@@ -26,9 +27,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
+                                <!-- <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot> -->
                                 <tr v-for="(row, index) in records" :key="index">
 
+                                    <td class="text-center">
+                                        {{customIndex(index)}}
+                                    </td>
                                     <td class="text-center">
                                         <el-checkbox v-model="row.has_sale" @change="changeHasSale(row, index)"></el-checkbox>
                                     </td>

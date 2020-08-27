@@ -346,6 +346,8 @@ if ($hostname) {
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
             Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
+            Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
 
 
