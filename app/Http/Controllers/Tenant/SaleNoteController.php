@@ -759,6 +759,68 @@ class SaleNoteController extends Controller
 
     }
 
+    
+    public function searchItemById($id)
+    {
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $search_item = $this->getItemsNotServicesById($id);
+
+        if(count($search_item) == 0){
+            $search_item = $this->getItemsServicesById($id);
+        }
+
+        $items = collect($search_item)->transform(function($row) use($warehouse){
+
+            $detail = $this->getFullDescription($row, $warehouse);
+
+            return [
+                'id' => $row->id,
+                'full_description' => $detail['full_description'],
+                'brand' => $detail['brand'],
+                'category' => $detail['category'],
+                'stock' => $detail['stock'],
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => round($row->sale_unit_price, 2),
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'has_igv' => (bool) $row->has_igv,
+                'lots_enabled' => (bool) $row->lots_enabled,
+                'series_enabled' => (bool) $row->series_enabled,
+                'is_set' => (bool) $row->is_set,
+                'warehouses' => collect($row->warehouses)->transform(function($row) {
+                    return [
+                        'warehouse_id' => $row->warehouse->id,
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+                    ];
+                }),
+                'item_unit_types' => $row->item_unit_types,
+                'lots' => [], 
+                'lots_group' => collect($row->lots_group)->transform(function($row){
+                    return [
+                        'id'  => $row->id,
+                        'code' => $row->code,
+                        'quantity' => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
+                        'checked'  => false
+                    ];
+                }),
+                'lot_code' => $row->lot_code,
+                'date_of_due' => $row->date_of_due
+            ];
+        });
+
+        return compact('items');
+    }
+
+
     public function getFullDescription($row, $warehouse){
 
         $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;

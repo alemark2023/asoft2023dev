@@ -526,15 +526,27 @@
                 this.$emit('add', this.row)
             },
             reloadDataItems(item_id) {
-                this.$http.get(`/${this.resource}/table/items`).then((response) => {
-                    this.items = response.data
-                    this.form.item_id = item_id
-                    if(item_id){
-                        this.changeItem()
-                    }
-                    // this.filterItems()
 
-                })
+                if(!item_id){
+
+                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                        this.items = response.data
+                        this.form.item_id = item_id
+                        // if(item_id) this.changeItem()
+                        // this.filterItems()
+                    })
+
+                }else{
+
+                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+
+                        this.items = response.data.items
+                        this.form.item_id = item_id
+                        this.changeItem()
+
+                    })
+                }
+
             },
             addRowLotGroup(id)
             {

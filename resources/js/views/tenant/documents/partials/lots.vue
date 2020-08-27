@@ -160,7 +160,16 @@
                 })
             },
             async create(){
+                await this.initForm()
                 await this.getRecords()
+            },
+            initForm(){
+
+                this.search = {
+                    input: null,
+                    item_id: null
+                }
+
             },
             async submit(){
 
