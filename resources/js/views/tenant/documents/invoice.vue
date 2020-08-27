@@ -456,15 +456,15 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="font-weight-bold">Descripción</th>
+                                                <th width="5%">#</th>
+                                                <th width="30%" class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
                                                 <th class="text-right font-weight-bold">Total</th>
-                                                <th></th>
+                                                <th width="8%"></th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
@@ -784,7 +784,7 @@ import moment from 'moment'
                 return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
             },
             inputAmountPrepayment(index){
-                
+
                 let prepayment = this.getPrepayment(index)
                 // console.log(prepayment)
 
@@ -792,7 +792,7 @@ import moment from 'moment'
 
                     this.form.prepayments[index].amount = prepayment.amount
                     this.$message.error('El monto debe ser menor o igual al del anticipo');
-                
+
                 }
 
                 this.form.prepayments[index].total = (this.form.affectation_type_prepayment == 10) ? _.round(this.form.prepayments[index].amount * 1.18, 2) : this.form.prepayments[index].amount
@@ -833,7 +833,7 @@ import moment from 'moment'
                     this.enabled_payments = false
 
                 }else{
-                    
+
                     this.form.date_of_due = this.form.date_of_issue
                     this.readonly_date_of_due = false
                     this.form.payment_method_type_id = null
@@ -1236,7 +1236,7 @@ import moment from 'moment'
                 if(!this.configuration.restrict_receipt_date){
                   this.datEmision = {}
                 }
-                
+
                 this.enabled_payments = true
                 this.readonly_date_of_due = false
             },

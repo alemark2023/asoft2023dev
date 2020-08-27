@@ -198,11 +198,13 @@
 
                 <td class="text-right">
                   <template v-if="!row.locked">
-                    <button
-                      type="button"
-                      class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                      @click.prevent="clickPassword(row.id)"
-                    >Resetear clave</button>
+                    <el-tooltip content="Se ingresa con el RUC" placement="top">
+                      <button
+                        type="button"
+                        class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                        @click.prevent="clickPassword(row.id)"
+                      >Resetear clave</button>
+                    </el-tooltip>
                     <button
                       v-if="deletePermission == true"
                       type="button"

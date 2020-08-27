@@ -63,9 +63,9 @@
         <link rel="stylesheet" href="{{ asset('theme/custom_styles.css') }}" />
     @endif
 
-    @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
+    {{-- @if (file_exists(public_path('theme/custom_styles_ecommerce.css')))
         <link rel="stylesheet" href="{{ asset('theme/custom_styles_ecommerce.css') }}" />
-    @endif
+    @endif --}}
 
 
     @stack('styles')
