@@ -371,6 +371,7 @@
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
+            <td class="text-center align-top"></td>
             <td class="text-center align-top">
                 1
             </td>

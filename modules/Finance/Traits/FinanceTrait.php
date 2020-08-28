@@ -133,7 +133,7 @@ trait FinanceTrait
             ['id'=> PurchasePayment::class, 'description' => 'COMPRAS'],
             ['id'=> ExpensePayment::class, 'description' => 'GASTOS'],
             ['id'=> QuotationPayment::class, 'description' => 'COTIZACIÓN'],
-            ['id'=> ContractPayment::class, 'description' => 'CONTRATO'],
+            // ['id'=> ContractPayment::class, 'description' => 'CONTRATO'],
             ['id'=> IncomePayment::class, 'description' => 'INGRESO'],
         ];
     }
@@ -190,7 +190,7 @@ trait FinanceTrait
         $sale_note_payment = $this->getSumPayment($cash, SaleNotePayment::class);
         $purchase_payment = $this->getSumPayment($cash, PurchasePayment::class); 
         $quotation_payment = $this->getSumPayment($cash, QuotationPayment::class); 
-        $contract_payment = $this->getSumPayment($cash, ContractPayment::class); 
+        $contract_payment = 0; //$this->getSumPayment($cash, ContractPayment::class); 
         $income_payment = $this->getSumPayment($cash, IncomePayment::class); 
 
         $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment;
@@ -226,7 +226,7 @@ trait FinanceTrait
             $sale_note_payment = $this->getSumPayment($row->global_destination, SaleNotePayment::class);
             $purchase_payment = $this->getSumPayment($row->global_destination, PurchasePayment::class); 
             $quotation_payment = $this->getSumPayment($row->global_destination, QuotationPayment::class); 
-            $contract_payment = $this->getSumPayment($row->global_destination, ContractPayment::class); 
+            $contract_payment = 0; //$this->getSumPayment($row->global_destination, ContractPayment::class); 
             $income_payment = $this->getSumPayment($row->global_destination, IncomePayment::class); 
 
             $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment;
@@ -301,7 +301,7 @@ trait FinanceTrait
             $sale_note_payment = $this->getSumByPMT($row->sale_note_payments);
             $purchase_payment = $this->getSumByPMT($row->purchase_payments); 
             $quotation_payment = $this->getSumByPMT($row->quotation_payments); 
-            $contract_payment = $this->getSumByPMT($row->contract_payments); 
+            $contract_payment = 0; //$this->getSumByPMT($row->contract_payments); 
             $income_payment = $this->getSumByPMT($row->income_payments); 
 
             return [
@@ -380,7 +380,7 @@ trait FinanceTrait
             $t_documents += $value['document_payment'];
             $t_sale_notes += $value['sale_note_payment'];
             $t_quotations += $value['quotation_payment'];
-            $t_contracts += $value['contract_payment'];
+            // $t_contracts += $value['contract_payment'];
             $t_purchases += $value['purchase_payment'];
             $t_income += $value['income_payment'];
 
