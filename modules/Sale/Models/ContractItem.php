@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\Item;
 
 class ContractItem extends ModelTenant
 {
@@ -101,4 +102,10 @@ class ContractItem extends ModelTenant
     {
         return $this->belongsTo(PriceType::class, 'price_type_id');
     }
+    
+    public function relation_item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
 }
