@@ -21,7 +21,7 @@
                                         <td class="text-center">{{row.item.description}}</td>
                                         <td class="text-center">{{row.quantity}}</td>
                                         <td class="series-table-actions text-right">
-                                            <button :disabled="!row.item.lots || row.item.lots.length == 0" type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="openDialogLots(row.item.lots)">
+                                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="openDialogLots(row.item.lots, row.item_id)">
                                                     <i class="el-icon-check"></i> Series
                                             </button>
                                         </td>
@@ -33,42 +33,54 @@
                 </div>
             </div>
 
-            <lots :showDialog.sync="showDialogLots" :lots="lots"></lots>
+            <!-- <lots :showDialog.sync="showDialogLots" :lots="lots"></lots> -->
+
+            <select-lots-form
+                :showDialog.sync="showDialogLots"
+                :lots="lots"
+                :itemId="item_id"
+                @addRowSelectLot="addRowSelectLot">
+            </select-lots-form>
+
         </div>
 
 </template>
 
 <script>
-import Lots from "./lots.vue";
+    // import Lots from "./lots.vue";
+    import SelectLotsForm from '../../documents/partials/lots.vue'
 
-export default {
-    props:['items'],
-    components:{Lots},
-    data()
-    {
-        return{
-            showDialogLots: false,
-            lots:[]
-        }
-    },
-    created(){
+    export default {
+        props:['items'],
+        components:{SelectLotsForm},
 
-    },
-    methods:{
-        openDialogLots(lt)
+        data()
         {
-            this.showDialogLots = true
-            this.lots = lt
+            return{
+                showDialogLots: false,
+                lots:[],
+                item_id: null,
+            }
         },
-        previewItems()
-        {
+        created(){
+            console.log(this.items)
+        },
+        methods:{
+            addRowSelectLot(){
+                
+            },
+            openDialogLots(lt, item_id)
+            {
+                this.item_id = item_id
+                this.showDialogLots = true
+                this.lots = lt
+            },
+            previewItems()
+            {
+
+            }
 
         }
-
     }
-}
 </script>
-
-<style>
-
-</style>
+ 

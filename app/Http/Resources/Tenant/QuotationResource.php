@@ -69,17 +69,18 @@ class QuotationResource extends JsonResource
         $resource = Item::find($item->id);
 
         $data_lots = [
-            'lots' => $resource->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
-                return [
-                    'id' => $row->id,
-                    'series' => $row->series,
-                    'date' => $row->date,
-                    'item_id' => $row->item_id,
-                    'warehouse_id' => $row->warehouse_id,
-                    'has_sale' => (bool)$row->has_sale,
-                    'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                ];
-            })->values(),
+            'lots' => [],
+            // 'lots' => $resource->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse_id)->transform(function($row) {
+            //     return [
+            //         'id' => $row->id,
+            //         'series' => $row->series,
+            //         'date' => $row->date,
+            //         'item_id' => $row->item_id,
+            //         'warehouse_id' => $row->warehouse_id,
+            //         'has_sale' => (bool)$row->has_sale,
+            //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+            //     ];
+            // })->values(),
             'series_enabled' => (bool) $resource->series_enabled,
         ];
 

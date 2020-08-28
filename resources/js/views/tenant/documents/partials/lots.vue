@@ -18,7 +18,7 @@
                             v-model="search.input"
                             style="width: 100%;"
                             prefix-icon="el-icon-search"
-                            @input="getRecords">
+                            @input="getRecords(true)">
                         </el-input>
                     </template>
                 </div>
@@ -64,7 +64,7 @@
                         </table>
                         <div>
                             <el-pagination
-                                    @current-change="getRecords"
+                                    @current-change="getRecords()"
                                     layout="total, prev, pager, next"
                                     :total="pagination.total"
                                     :current-page.sync="pagination.current_page"
@@ -130,18 +130,22 @@
             },
             async searchSeriesBarcode() {
 
-                await this.getRecords()
+                await this.getRecords(true)
                 await this.checkedSerie() 
 
             },
-            checkedSerie(){
+            async checkedSerie(){
 
                 if (this.search_series_by_barcode) {
 
                     if (this.records.length == 1) {
+                        
+                        let lot = await _.find(this.lots, {id: this.records[0].id})
 
-                        this.records[0].has_sale = true
-                        this.addLot(this.records[0])
+                        if(!lot){
+                            this.records[0].has_sale = true
+                            this.addLot(this.records[0])
+                        }
 
                     }
                     this.cleanInput();
@@ -167,7 +171,11 @@
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },
-            getRecords() {
+            getRecords(init_current_page = false) {
+
+                if(init_current_page){ 
+                    this.pagination.current_page = 1
+                }
 
                 this.loading = true
                 this.search.item_id = this.itemId
