@@ -5,12 +5,26 @@
             <div class="row" >
 
                 <div class="col-md-6 col-lg-6 col-xl-6 ">
-                    <el-input placeholder="Buscar serie ..."
-                        v-model="search.input"
-                        style="width: 100%;"
-                        prefix-icon="el-icon-search"
-                        @input="getRecords">
-                    </el-input>
+                    <template v-if="search_series_by_barcode">
+                        <el-input placeholder="Buscar serie ..."
+                            v-model="search.input"
+                            style="width: 100%;"
+                            prefix-icon="el-icon-search"
+                            @change="searchSeriesBarcode">
+                        </el-input>
+                    </template>
+                    <template v-else>
+                        <el-input placeholder="Buscar serie ..."
+                            v-model="search.input"
+                            style="width: 100%;"
+                            prefix-icon="el-icon-search"
+                            @input="getRecords">
+                        </el-input>
+                    </template>
+                </div>
+
+                <div class="col-md-6 col-lg-6 col-xl-6 ">
+                    <el-switch v-model="search_series_by_barcode" active-text="Buscar por código de barras" @change="changeSearchSeriesBarcode"></el-switch>
                 </div>
 
                 <div class="col-md-12" v-loading="loading">
@@ -83,6 +97,7 @@
             return {
                 titleDialog: 'Series',
                 resource: 'documents',
+                search_series_by_barcode:false,
                 loading: false,
                 errors: {},
                 form: {},
@@ -107,6 +122,32 @@
 
         }, 
         methods: { 
+            changeSearchSeriesBarcode(){
+                this.cleanInput()
+            },
+            cleanInput() {
+                this.search.input = null
+            },
+            async searchSeriesBarcode() {
+
+                await this.getRecords()
+                await this.checkedSerie() 
+
+            },
+            checkedSerie(){
+
+                if (this.search_series_by_barcode) {
+
+                    if (this.records.length == 1) {
+
+                        this.records[0].has_sale = true
+                        this.addLot(this.records[0])
+
+                    }
+                    this.cleanInput();
+                }
+
+            },
             changeHasSale(row, index){
 
                 if(row.has_sale){
