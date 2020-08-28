@@ -125,7 +125,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-8 mt-2" >
+                            <!-- <div class="col-lg-8 mt-2" >
 
                                 <table>
                                     <thead>
@@ -174,7 +174,7 @@
                                 </table>
 
 
-                            </div>
+                            </div> -->
                             
                             <div class="col-lg-4">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
@@ -505,7 +505,7 @@
                     quotation_id:null,
                 }
 
-                this.clickAddPayment()
+                // this.clickAddPayment()
 
             },
             resetForm() {
