@@ -570,7 +570,7 @@
                     <li class="nav-parent {{  ($path[0] === 'reports' && in_array($path[1], ['purchases', 'search','sales','customers','items',
                                         'general-items','consistency-documents', 'quotations', 'sale-notes','cash','commissions','document-hotels',
                                         'validate-documents', 'document-detractions','commercial-analysis', 'order-notes-consolidated',
-                                        'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases'])) ? 'nav-active nav-expanded' : ''}}">
+                                        'order-notes-general', 'sales-consolidated', 'user-commissions', 'fixed-asset-purchases', 'massive-downloads'])) ? 'nav-active nav-expanded' : ''}}">
 
                         <a class="nav-link" href="#">
                             <i class="fas fa-chart-area" aria-hidden="true"></i>
@@ -733,6 +733,11 @@
                             <li class="{{(($path[0] === 'reports') && ($path[1] == 'commercial-analysis')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.commercial_analysis.index')}}">
                                     Análisis comercial
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'reports') && ($path[1] == 'massive-downloads')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.reports.massive-downloads.index')}}">
+                                    Descarga masiva
                                 </a>
                             </li>
                         </ul>

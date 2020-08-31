@@ -227,4 +227,10 @@ class Dispatch extends ModelTenant
         $this->attributes['secondary_license_plates'] = (is_null($value))?null:json_encode($value);
     }
 
+    public function scopeWhereTypeUser($query)
+    {
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
+    }
+    
 }
