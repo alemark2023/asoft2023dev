@@ -59,7 +59,7 @@
                                 </div>
 
                                 <div class="col-md-12 mt-3">
-                                    <div class="form-group">
+                                    <div class="form-group" v-if="init_search">
                                         <label class="control-label">
                                             <strong>Se encontraron {{total}} documento(s)</strong>
                                         </label>
@@ -98,7 +98,8 @@
                         return this.form.date_start > time
                     }
                 },
-                total: 0
+                total: 0,
+                init_search: false,
 
             }
         },
@@ -148,10 +149,7 @@
                 }
             },
             clickDownload(type) {
-                let query = queryString.stringify({
-                    ...this.form
-                });
-                window.open(`/${this.resource}/${type}/?${query}`, '_blank');
+                window.open(`/${this.resource}/${type}/?${this.getQueryParameters()}`, '_blank');
             },
             initForm(){
 
@@ -166,6 +164,7 @@
             },
             getRecords() {
                 this.loading_submit = true
+                this.init_search = true
 
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.total = response.data.total
@@ -174,14 +173,12 @@
 
 
             },
-            getQueryParameters() {
-                // return JSON.stringify(this.form)
-                let data = this.form
-                data.document_types = JSON.stringify(this.form.document_types)
+            getQueryParameters() { 
 
                 return queryString.stringify({
-                    ...data
+                    form: JSON.stringify(this.form)
                 })
+
             },
             
         }

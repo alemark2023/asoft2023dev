@@ -9,6 +9,7 @@ use Modules\Report\Exports\DocumentHotelExport;
 use Illuminate\Http\Request;
 use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\{
     Document,
@@ -16,11 +17,12 @@ use App\Models\Tenant\{
     Dispatch
 };
 use Carbon\Carbon;
+use Modules\Report\Traits\MassiveDownloadTrait;
 
 class ReportMassiveDownloadController extends Controller
 {
      
-    use ReportTrait;
+    use ReportTrait, MassiveDownloadTrait;
 
     public function index() 
     {
@@ -41,76 +43,33 @@ class ReportMassiveDownloadController extends Controller
     public function records(Request $request)
     {
 
-        $document_types = json_decode($request->document_types);
-        $total_documents = 0;
-        // dd($request->all());
+        $params = json_decode($request->form);
+        $document_types = $params->document_types;
 
         if(count($document_types) == 0){
             $document_types = ['all'];
         }
-
-        foreach ($document_types as $document_type) {
-
-            switch ($document_type) {
-                case '01':
-                case '03':
-                    $total_documents += $this->getRecordsByModel(Document::class, $request)->whereIn('document_type_id', ['01', '03'])->count();
-                    break;
-                case '80':
-                    $total_documents += $this->getRecordsByModel(SaleNote::class, $request)->count();
-                    break;
-                case '09':
-                    $total_documents += $this->getRecordsByModel(Dispatch::class, $request)->count();
-                    break;
-                default:
-                    $total_documents += $this->getRecordsByModel(Document::class, $request)->whereIn('document_type_id', ['01', '03'])->count();
-                    $total_documents += $this->getRecordsByModel(SaleNote::class, $request)->count();
-                    $total_documents += $this->getRecordsByModel(Dispatch::class, $request)->count();
-                    break;
-            }
-            
-        }
     
         return [
-            'total' => $total_documents
+            'total' => $this->getTotals($document_types, $params)
         ];
 
     }
 
 
-    public function getRecordsByModel($model, $request){
+    public function pdf(Request $request) {
 
-        return $model::whereBetween('date_of_issue', [$request->date_start, $request->date_end])
-                        ->latest()
-                        ->whereTypeUser();
+
+        $params = json_decode($request->form);
+        $document_types = $params->document_types;
+
+        if(count($document_types) == 0){
+            $document_types = ['all'];
+        }
+
+        return $this->toPrintByView('massive_downloads', $this->createPdf($this->getData($document_types, $params)));
+
     }
   
-
-    public function getRecords($request){
  
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end']; 
- 
-        $records = $this->data( $date_start, $date_end);
-
-        return $records;
-
-    }
-
-
-    private function data($date_start, $date_end)
-    {
-
-        if($date_start && $date_end){
-
-            $data = DocumentHotel::where([['date_entry','>=', $date_start],['date_exit','<=', $date_end]])->latest();
-
-        }else{
-            $data = DocumentHotel::latest();
-        }
-       
-        return $data;
-        
-    }
-
 }

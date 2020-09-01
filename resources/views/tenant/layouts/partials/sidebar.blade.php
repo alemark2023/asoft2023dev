@@ -737,7 +737,7 @@
                             </li>
                             <li class="{{(($path[0] === 'reports') && ($path[1] == 'massive-downloads')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.reports.massive-downloads.index')}}">
-                                    Descarga masiva
+                                    Descarga masiva - documentos
                                 </a>
                             </li>
                         </ul>
