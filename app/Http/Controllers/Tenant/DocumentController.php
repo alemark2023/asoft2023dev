@@ -855,13 +855,14 @@ class DocumentController extends Controller
         return $records;
     }
 
-    public function report_payments($month, $anulled)
+    public function report_payments(Request $request)
     {
-        $month_format = Carbon::parse($month)->format('m');
-        if($anulled == 'true') {
-           $records = Document::whereMonth('created_at', $month_format)->get();
+        // $month_format = Carbon::parse($month)->format('m');
+
+        if($request->anulled == 'true') {
+           $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->get();
         } else {
-            $records = Document::whereMonth('created_at', $month_format)->where('state_type_id', '!=', '11')->get();
+            $records = Document::whereBetween('date_of_issue', [$request->date_start, $request->date_end])->where('state_type_id', '!=', '11')->get();
         }
 
         $source =  $this->transformReportPayment( $records );
