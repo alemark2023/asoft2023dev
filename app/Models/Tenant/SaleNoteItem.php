@@ -46,6 +46,7 @@ class SaleNoteItem extends ModelTenant
         'charges',
         'discounts',
         'inventory_kardex_id',
+        'warehouse_id',
 
     ];
 
