@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Models\Warehouse;
 
 class SaleNoteItem extends ModelTenant
 {
@@ -145,6 +146,11 @@ class SaleNoteItem extends ModelTenant
                 ->select($db_raw)
                 ->latest('id');
 
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
 }

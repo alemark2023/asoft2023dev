@@ -274,8 +274,9 @@
 
     import itemForm from '@views/items/form.vue'
     import {calculateRowItem} from '@helpers/functions'
-    import WarehousesDetail from './warehouses.vue'
+    // import WarehousesDetail from './warehouses.vue'
     import SelectLotsForm from './lots.vue'
+    import WarehousesDetail from '@views/documents/partials/select_warehouses.vue'
 
 
     export default {
@@ -323,9 +324,15 @@
             this.$eventHub.$on('reloadDataItems', (item_id) => {
                 this.reloadDataItems(item_id)
             })
+            this.events()
         },
         methods: {
-
+            events(){
+                
+                this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
+                    this.form.warehouse_id = warehouse_id
+                })
+            },
             clickWarehouseDetail(){
 
                 if(!this.form.item_id){
@@ -361,6 +368,7 @@
                     item_unit_type_id: null,
                     unit_type_id: null,
                     is_set: false,
+                    warehouse_id:null,
                 };
 
                 this.total_item = 0;

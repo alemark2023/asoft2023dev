@@ -934,8 +934,8 @@ class SaleNoteController extends Controller
             $obj->state_type_id = 11;
             $obj->save();
 
-            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+            // $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$obj->establishment_id)->first();
 
             foreach ($obj->items as $sale_note_item) {
 
@@ -962,16 +962,18 @@ class SaleNoteController extends Controller
     public function voidedSaleNoteItem($sale_note_item, $warehouse)
     {
 
+        $warehouse_id = ($sale_note_item->warehouse_id) ? $sale_note_item->warehouse_id : $warehouse->id;
+
         if(!$sale_note_item->item->is_set){
 
             $sale_note_item->sale_note->inventory_kardex()->create([
                 'date_of_issue' => date('Y-m-d'),
                 'item_id' => $sale_note_item->item_id,
-                'warehouse_id' => $warehouse->id,
+                'warehouse_id' => $warehouse_id,
                 'quantity' => $sale_note_item->quantity,
             ]);
 
-            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse->id]])->first();
+            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse_id]])->first();
 
             if($wr)
             {

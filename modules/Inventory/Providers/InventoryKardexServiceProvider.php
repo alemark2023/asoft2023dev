@@ -277,7 +277,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
-            $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
+            // $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
+            $warehouse = ($order_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($order_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
+
             $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
             $this->updateStock($order_note_item->item_id, (-1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
 
@@ -308,7 +310,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
             // dd($order_note_item);
             $presentationQuantity = (!empty($order_note_item->item->presentation)) ? $order_note_item->item->presentation->quantity_unit : 1;
 
-            $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
+            // $warehouse = $this->findWarehouse($order_note_item->order_note->establishment_id);
+            $warehouse = ($order_note_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($order_note_item->warehouse_id)->establishment_id) : $this->findWarehouse($order_note_item->order_note->establishment_id);
 
             $this->createInventoryKardex($order_note_item->order_note, $order_note_item->item_id , (1 * ($order_note_item->quantity * $presentationQuantity)), $warehouse->id);
 
