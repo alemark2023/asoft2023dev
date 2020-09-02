@@ -748,7 +748,7 @@ import moment from 'moment'
                     this.all_customers = response.data.customers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
-                   this.payment_method_types = response.data.payment_method_types
+                    this.payment_method_types = response.data.payment_method_types
                     this.enabled_discount_global = response.data.enabled_discount_global
                     this.company = response.data.company;
                     this.user = response.data.user;
@@ -1328,6 +1328,21 @@ import moment from 'moment'
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
                 this.filterSeries()
+                this.selectDefaultCustomer()
+            },
+            async selectDefaultCustomer(){
+
+                if(this.establishment.customer_id){
+                     
+                    await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
+                        this.all_customers = response.data.customers
+                    })
+                    
+                    await this.filterCustomers()
+                    this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
+                    
+                }
+
             },
             changeDocumentType() {
                 this.filterSeries();

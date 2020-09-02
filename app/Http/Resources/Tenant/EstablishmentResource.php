@@ -28,6 +28,8 @@ class EstablishmentResource extends JsonResource
             'trade_address' => $this->trade_address,
             'web_address' => $this->web_address,
             'aditional_information' => $this->aditional_information,
+            'customer_id' => $this->customer_id,
+            'customer_number' => optional($this->customer)->number,
         ];
     }
 }

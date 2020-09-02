@@ -105,6 +105,26 @@
                             <small class="form-control-feedback" v-if="errors.aditional_information" v-text="errors.aditional_information[0]"></small>
                         </div>
                     </div>
+                    
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">
+                                Cliente por defecto
+                                <el-tooltip class="item" effect="dark" content="Aplica para Nuevo CPE" placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+
+                            <el-select v-model="form.customer_id" filterable remote  popper-class="el-select-customers"  clearable
+                                placeholder="Nombre o número de documento"
+                                :remote-method="searchRemoteCustomers"
+                                :loading="loading_search">
+                                <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -133,6 +153,9 @@
                 all_districts: [],
                 provinces: [],
                 districts: [],
+                customers: [],
+                all_customers: [],
+                loading_search:false,
             }
         },
         async created() {
@@ -143,9 +166,36 @@
                     this.all_departments = response.data.departments
                     this.all_provinces = response.data.provinces
                     this.all_districts = response.data.districts
+                    this.all_customers = response.data.customers
                 })
+
+            await this.filterCustomers()
         },
         methods: {
+            searchRemoteCustomers(input) {
+
+                if (input.length > 0) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    this.$http.get(`/reports/data-table/persons/customers?${parameters}`)
+                            .then(response => {
+                                this.customers = response.data.persons
+                                this.loading_search = false
+
+                                if(this.customers.length == 0){
+                                    this.filterCustomers()
+                                }
+                            })
+                } else {
+                    this.filterCustomers()
+                }
+
+            },
+            filterCustomers() {
+                this.customers = this.all_customers
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
@@ -162,6 +212,7 @@
                     trade_address: null,
                     web_address: null,
                     aditional_information: null,
+                    customer_id: null,
                 }
             },
             async create() {
@@ -173,6 +224,7 @@
                                 this.form = response.data.data
                                 this.filterProvinces()
                                 this.filterDistricts()
+                                this.searchRemoteCustomers(this.form.customer_number)
                             }
                         })
                 }

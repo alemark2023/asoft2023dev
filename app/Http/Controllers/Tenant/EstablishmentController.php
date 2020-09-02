@@ -11,6 +11,7 @@ use App\Http\Requests\Tenant\EstablishmentRequest;
 use App\Http\Resources\Tenant\EstablishmentResource;
 use App\Http\Resources\Tenant\EstablishmentCollection;
 use App\Models\Tenant\Warehouse;
+use App\Models\Tenant\Person;
 
 class EstablishmentController extends Controller
 {
@@ -31,7 +32,17 @@ class EstablishmentController extends Controller
         $provinces = Province::whereActive()->orderByDescription()->get();
         $districts = District::whereActive()->orderByDescription()->get();
 
-        return compact('countries', 'departments', 'provinces', 'districts');
+        $customers = Person::whereType('customers')->orderBy('name')->take(1)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+
+        return compact('countries', 'departments', 'provinces', 'districts', 'customers');
     }
 
     public function record($id)
