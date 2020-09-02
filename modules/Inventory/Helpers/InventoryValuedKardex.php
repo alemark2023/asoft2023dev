@@ -24,6 +24,7 @@ class InventoryValuedKardex
                 'id' => $row->id,
                 'item_description' => $row->description,
                 'category_description' => optional($row->category)->name,
+                'brand_description' => optional($row->brand)->name,
                 'unit_type_id' => $row->unit_type_id,
                 'quantity_sale' => number_format($quantity_sale,2, ".", ""),
                 'purchase_unit_price' => number_format($row->purchase_unit_price,2, ".", ""),
