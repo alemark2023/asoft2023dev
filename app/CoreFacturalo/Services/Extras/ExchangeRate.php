@@ -36,12 +36,12 @@ class ExchangeRate
 
         try {
 
-            $url = "http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?me1s={$month}&anho={$year}";
+            $url = "http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,$url);        
+            curl_setopt($ch, CURLOPT_URL,$url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $response = curl_exec ($ch);         
+            $response = curl_exec ($ch);
             curl_close ($ch);
             // dd($response);
 
@@ -65,22 +65,22 @@ class ExchangeRate
                         $values[] = trim(preg_replace("/[\t|\n|\r]+/", '', $td->text()));
                     }
                 }
-                
+
                 return collect($values)->chunk(3)->toArray();
             }
 
         } catch (Exception $e) {
-            
+
             Log::info("Error consulta T/C: ".$e->getMessage());
             return false;
-            
+
         }
 
         return false;
     }
 
     public function searchDate($date)
-    { 
+    {
         // $date = Carbon::parse($date);
         // do {
         //     $res = $this->searchByDay($date);
@@ -93,7 +93,7 @@ class ExchangeRate
 
         $res = $this->searchByDay($date);
         $date = $date->addDay(-1);
-        
+
         if(!$res){
             $res = $this->searchByDay($date);
             $date = $date->addDay(-1);
