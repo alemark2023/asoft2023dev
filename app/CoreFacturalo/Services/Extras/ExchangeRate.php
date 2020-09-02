@@ -36,7 +36,8 @@ class ExchangeRate
 
         try {
 
-            $url = "http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
+            // $url = "http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
+            $url = "https://e-consulta.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL,$url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
