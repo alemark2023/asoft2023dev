@@ -368,7 +368,7 @@ class OrderNoteController extends Controller
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
-                    ->get()->transform(function($row) {
+                    ->get()->transform(function($row) use($warehouse){
                     $full_description = $this->getFullDescription($row);
                     // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                     return [
@@ -398,11 +398,12 @@ class OrderNoteController extends Controller
                                 'price_default' => $row->price_default,
                             ];
                         }),
-                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
                             return [
                                 'warehouse_id' => $row->warehouse->id,
                                 'warehouse_description' => $row->warehouse->description,
                                 'stock' => $row->stock,
+                                'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                             ];
                         }),
                         'lots' => collect($row->item_lots->where('has_sale', false))->transform(function($row) {

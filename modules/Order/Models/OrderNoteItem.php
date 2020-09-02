@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\ModelTenant;
+use Modules\Inventory\Models\Warehouse;
 
 class OrderNoteItem extends ModelTenant
 {
@@ -44,7 +45,8 @@ class OrderNoteItem extends ModelTenant
 
         'attributes',
         'charges',
-        'discounts'
+        'discounts',
+        'warehouse_id',
     ];
 
     public function getItemAttribute($value)
@@ -177,6 +179,12 @@ class OrderNoteItem extends ModelTenant
                         ->whereTypeUser();
                 })->latest('id');
 
+    }
+
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
 }

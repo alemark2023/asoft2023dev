@@ -657,11 +657,12 @@ class SaleNoteController extends Controller
                         'lots_enabled' => (bool) $row->lots_enabled,
                         'series_enabled' => (bool) $row->series_enabled,
                         'is_set' => (bool) $row->is_set,
-                        'warehouses' => collect($row->warehouses)->transform(function($row) {
+                        'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
                             return [
                                 'warehouse_id' => $row->warehouse->id,
                                 'warehouse_description' => $row->warehouse->description,
                                 'stock' => $row->stock,
+                                'checked' => ($row->warehouse_id == $warehouse_id) ? true : false,
                             ];
                         }),
                         'item_unit_types' => $row->item_unit_types,
@@ -736,11 +737,12 @@ class SaleNoteController extends Controller
                 'lots_enabled' => (bool) $row->lots_enabled,
                 'series_enabled' => (bool) $row->series_enabled,
                 'is_set' => (bool) $row->is_set,
-                'warehouses' => collect($row->warehouses)->transform(function($row) {
+                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse_id){
                     return [
                         'warehouse_id' => $row->warehouse->id,
                         'warehouse_description' => $row->warehouse->description,
                         'stock' => $row->stock,
+                        'checked' => ($row->warehouse_id == $warehouse_id) ? true : false,
                     ];
                 }),
                 'item_unit_types' => $row->item_unit_types,
@@ -798,11 +800,12 @@ class SaleNoteController extends Controller
                 'lots_enabled' => (bool) $row->lots_enabled,
                 'series_enabled' => (bool) $row->series_enabled,
                 'is_set' => (bool) $row->is_set,
-                'warehouses' => collect($row->warehouses)->transform(function($row) {
+                'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
                     return [
                         'warehouse_id' => $row->warehouse->id,
                         'warehouse_description' => $row->warehouse->description,
                         'stock' => $row->stock,
+                        'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                     ];
                 }),
                 'item_unit_types' => $row->item_unit_types,
@@ -931,8 +934,8 @@ class SaleNoteController extends Controller
             $obj->state_type_id = 11;
             $obj->save();
 
-            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+            // $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$obj->establishment_id)->first();
 
             foreach ($obj->items as $sale_note_item) {
 
@@ -959,16 +962,18 @@ class SaleNoteController extends Controller
     public function voidedSaleNoteItem($sale_note_item, $warehouse)
     {
 
+        $warehouse_id = ($sale_note_item->warehouse_id) ? $sale_note_item->warehouse_id : $warehouse->id;
+
         if(!$sale_note_item->item->is_set){
 
             $sale_note_item->sale_note->inventory_kardex()->create([
                 'date_of_issue' => date('Y-m-d'),
                 'item_id' => $sale_note_item->item_id,
-                'warehouse_id' => $warehouse->id,
+                'warehouse_id' => $warehouse_id,
                 'quantity' => $sale_note_item->quantity,
             ]);
 
-            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse->id]])->first();
+            $wr = ItemWarehouse::where([['item_id', $sale_note_item->item_id],['warehouse_id', $warehouse_id]])->first();
 
             if($wr)
             {
