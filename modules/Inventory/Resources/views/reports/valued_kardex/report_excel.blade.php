@@ -50,6 +50,7 @@
                                 <th>#</th>
                                 <th>Producto</th>
                                 <th >Categoría</th>
+                                <th >Marca</th>
                                 <th class="text-center">Unidad</th>
                                 <th class="text-center">Unidades físicas vendidas</th>
                                 <th class="text-center">Costo unitario</th>
@@ -64,6 +65,7 @@
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{ $value['item_description'] }}</td>
                                 <td>{{ $value['category_description'] }}</td>
+                                <td>{{ $value['brand_description'] }}</td>
                                 <td  class="text-center">{{ $value['unit_type_id'] }}</td>
                                 <td  class="text-center">{{ $value['quantity_sale'] }}</td>
                                 <td class="text-center">{{ $value['purchase_unit_price'] }}</td>

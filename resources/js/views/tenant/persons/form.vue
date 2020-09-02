@@ -121,18 +121,27 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.telephone}">
                             <label class="control-label">Teléfono</label>
                             <el-input v-model="form.telephone" dusk="telephone"></el-input>
                             <small class="form-control-feedback" v-if="errors.telephone" v-text="errors.telephone[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.email}">
                             <label class="control-label">Correo electrónico</label>
                             <el-input v-model="form.email" dusk="email"></el-input>
                             <small class="form-control-feedback" v-if="errors.email" v-text="errors.email[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.person_type_id}">
+                            <label class="control-label">Tipo de cliente</label>
+                            <el-select v-model="form.person_type_id" filterable  clearable>
+                                <el-option v-for="option in person_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.person_type_id" v-text="errors.person_type_id[0]"></small>
                         </div>
                     </div>
                 </div>

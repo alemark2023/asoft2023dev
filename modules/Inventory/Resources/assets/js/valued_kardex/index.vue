@@ -19,6 +19,7 @@
                         <th>#</th>
                         <th>Producto</th>
                         <th >Categoría</th>
+                        <th >Marca</th>
                         <th class="text-center">Unidad</th>
                         <th class="text-center">Unidades físicas vendidas</th>
                         <th class="text-center">Costo unitario</th>
@@ -30,6 +31,7 @@
                         <td>{{ index }}</td>
                         <td>{{ row.item_description }}</td>
                         <td>{{ row.category_description }}</td>
+                        <td>{{ row.brand_description }}</td>
                         <td  class="text-center">{{ row.unit_type_id }}</td>
                         <td  class="text-center">{{ row.quantity_sale }}</td>
                         <td class="text-center">{{ row.purchase_unit_price }}</td>

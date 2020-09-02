@@ -143,11 +143,11 @@
                                                     Clientes
                                                 </a>
                                             </li>
-                                            <!-- <li class="{{ ($path[0] === 'person-types')?'nav-active':'' }}">
+                                            <li class="{{ ($path[0] === 'person-types')?'nav-active':'' }}">
                                                 <a class="nav-link" href="{{route('tenant.person_types.index')}}">
                                                     Tipos de clientes
                                                 </a>
-                                            </li> -->
+                                            </li>
                                         </ul>
                                     </li>
                                 @endif
