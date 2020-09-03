@@ -65,7 +65,7 @@ class DocumentWebTransform
             'informacion_adicional' => Functions::valueKeyInArray($inputs, 'additional_information'),
             'acciones' => self::actions_transform($inputs),
             // 'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
-            // 'payments' => self::payments($inputs),
+            'pagos' => self::payments($inputs),
             // 'data_json' => $inputs
         ];
 
@@ -330,26 +330,26 @@ class DocumentWebTransform
 
     private static function payments($inputs)
     {
-        // if(in_array($inputs['codigo_tipo_documento'], ['01', '03'])) {
+        if(in_array($inputs['document_type_id'], ['01', '03'])) {
 
-        //     $payments = [];
+            $payments = [];
 
-        //     if(key_exists('pagos', $inputs)) {
+            if(key_exists('payments', $inputs)) {
 
-        //         foreach ($inputs['pagos'] as $row) {
-        //             $payments[] = [
-        //                 'date_of_payment' => Functions::valueKeyInArray($inputs, 'fecha_de_emision'),
-        //                 'payment_method_type_id' => $row['codigo_metodo_pago'],
-        //                 'reference' => Functions::valueKeyInArray($row, 'referencia'), 
-        //                 'payment' => Functions::valueKeyInArray($row, 'monto', 0), 
-        //             ];
-        //         } 
+                foreach ($inputs['payments'] as $row) {
+                    $payments[] = [
+                        'fecha_de_emision' => $row['date_of_payment'],
+                        'codigo_metodo_pago' => $row['payment_method_type_id'],
+                        'referencia' => Functions::valueKeyInArray($row, 'reference'), 
+                        'monto' => Functions::valueKeyInArray($row, 'payment', 0), 
+                    ];
+                } 
 
-        //     }
+            }
 
-        //     return $payments;
+            return $payments;
 
-        // } 
+        } 
 
         return [];
     }
