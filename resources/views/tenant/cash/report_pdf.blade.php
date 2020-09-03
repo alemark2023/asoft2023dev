@@ -173,6 +173,8 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                 text-align: center;
             }
             .td-custom { line-height: 0.1em; }
+
+            .width-custom { width: 50% }
         </style>
     </head>
     <body>
@@ -184,7 +186,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
 
             <table>
                 <tr>
-                    <td class="td-custom">
+                    <td class="td-custom width-custom">
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
                     </td>
                     <td class="td-custom">
@@ -195,7 +197,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                     <td class="td-custom">
                         <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
-                    <td class="td-custom">
+                    <td class="width-custom">
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                 </tr>
