@@ -125,6 +125,7 @@
                     <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
+                            <!-- <el-input-number v-model="form.quantity" :min="0.01" :disabled="(form.item) ? ((form.item.hasOwnProperty('calculate_quantity')) ? form.item.calculate_quantity:false):false"></el-input-number> -->
                             <el-input-number v-model="form.quantity" :min="0.01" :disabled="form.item.calculate_quantity"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
@@ -715,6 +716,7 @@
 
                 if (this.recordItem) {
                     // console.log(this.recordItem)
+                    await this.reloadDataItems(this.recordItem.item_id)
                     this.form.item_id = await this.recordItem.item_id
                     await this.changeItem()
                     this.form.quantity = this.recordItem.quantity
@@ -933,11 +935,11 @@
 
                 return this.errors
             },
-            reloadDataItems(item_id) {
+            async reloadDataItems(item_id) {
 
                 if(!item_id){
 
-                    this.$http.get(`/${this.resource}/table/items`).then((response) => {
+                    await this.$http.get(`/${this.resource}/table/items`).then((response) => {
                         this.items = response.data
                         this.form.item_id = item_id
                         // if(item_id) this.changeItem()
@@ -946,7 +948,7 @@
 
                 }else{
 
-                    this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
+                    await this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
 
                         this.items = response.data.items
                         this.form.item_id = item_id
