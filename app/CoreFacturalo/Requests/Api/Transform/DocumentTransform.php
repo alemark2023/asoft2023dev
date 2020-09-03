@@ -313,6 +313,7 @@ class DocumentTransform
                     $payments[] = [
                         'date_of_payment' => Functions::valueKeyInArray($inputs, 'fecha_de_emision'),
                         'payment_method_type_id' => $row['codigo_metodo_pago'],
+                        'payment_destination_id' => $row['codigo_destino_pago'],
                         'reference' => Functions::valueKeyInArray($row, 'referencia'),
                         'payment' => Functions::valueKeyInArray($row, 'monto', 0),
                     ];
