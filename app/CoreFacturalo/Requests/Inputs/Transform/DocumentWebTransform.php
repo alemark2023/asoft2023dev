@@ -340,6 +340,7 @@ class DocumentWebTransform
                     $payments[] = [
                         'fecha_de_emision' => $row['date_of_payment'],
                         'codigo_metodo_pago' => $row['payment_method_type_id'],
+                        'codigo_destino_pago' => $row['payment_destination_id'],
                         'referencia' => Functions::valueKeyInArray($row, 'reference'), 
                         'monto' => Functions::valueKeyInArray($row, 'payment', 0), 
                     ];
