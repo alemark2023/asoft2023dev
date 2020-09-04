@@ -53,7 +53,7 @@ class ItemResource extends JsonResource
             'apply_store' => (bool)$this->apply_store,
             'tags' => $this->tags,
             'tags_id' => $this->tags->pluck('tag_id'),
-            'individual_items' => collect($this->sets)->pluck('individual_item_id'),
+            // 'individual_items' => collect($this->sets)->pluck('individual_item_id'),
             'commission_amount' => $this->commission_amount,
             'lot_code' => $this->lot_code,
             'line' => $this->line,
@@ -77,6 +77,19 @@ class ItemResource extends JsonResource
             'attributes' => $this->attributes ? $this->attributes : [],
             'series_enabled' => (bool)$this->series_enabled,
             'lots_enabled' => (bool)$this->lots_enabled,
+            'individual_items' => $this->sets->transform(function($row, $key) {
+
+                $full_description = ($row->individual_item->internal_id)?$row->individual_item->internal_id.' - '.$row->individual_item->description:$row->individual_item->description;
+
+                return [
+                    'id' => $row->id,
+                    'item_id' => $row->item_id,
+                    'individual_item_id' => $row->individual_item_id,
+                    'full_description' => $full_description,
+                    'sale_unit_price' => (float) $row->individual_item->sale_unit_price,
+                    'quantity' => (float) $row->quantity, 
+                ];
+            }),
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [
