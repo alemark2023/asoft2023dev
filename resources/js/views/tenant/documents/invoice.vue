@@ -1260,6 +1260,7 @@ import moment from 'moment'
                 this.changeCurrencyType()
             },
             async changeOperationType() {
+                this.form.customer_id = null
                 await this.filterCustomers();
                 await this.setDataDetraction();
             },
