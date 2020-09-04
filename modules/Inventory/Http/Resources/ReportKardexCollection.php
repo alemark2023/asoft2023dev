@@ -47,8 +47,8 @@ class ReportKardexCollection extends ResourceCollection
                     'type_transaction' => ($row->quantity < 0) ? "Venta":"Anulación Venta",
                     'number' => optional($row->inventory_kardexable)->series.'-'.optional($row->inventory_kardexable)->number,
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
-                    'balance' => self::$balance+= $row->quantity,
+                    'output' => ($row->quantity < 0) ?  (isset($row->inventory_kardexable->sale_note_id) ? "-" : $row->quantity):"-",
+                    'balance' => isset($row->inventory_kardexable->sale_note_id) ? self::$balance+=0 : self::$balance+= $row->quantity,
                     'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
                     'doc_asoc' => isset($row->inventory_kardexable->note) ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-'
                 ];
