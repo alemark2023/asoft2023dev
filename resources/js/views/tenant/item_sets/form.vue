@@ -56,7 +56,7 @@
                     </div>
 
                     
-                    <div class="col-md-6">
+                    <!-- <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.individual_items}">
                             <label class="control-label">Elegir productos</label>
                             <el-select v-model="form.individual_items" filterable multiple collapse-tags @change="changeIndividualItems" >
@@ -64,7 +64,7 @@
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.individual_items" v-text="errors.individual_items[0]"></small>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
@@ -80,6 +80,37 @@
                             <label class="control-label">Precio Unitario (Venta) <span class="text-danger">*</span></label>
                             <el-input v-model="form.sale_unit_price" dusk="sale_unit_price" @input="calculatePercentageOfProfitBySale"></el-input>
                             <small class="form-control-feedback" v-if="errors.sale_unit_price" v-text="errors.sale_unit_price[0]"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mt-4">
+                        <el-button type="primary" icon="el-icon-plus" @click.prevent="showDialogAddItem = true">Agregar productos</el-button>
+                    </div>
+
+                    <div class="col-md-12 mt-2" v-if="form.individual_items.length > 0">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th class="font-weight-bold">Descripción</th>
+                                        <th class="text-center font-weight-bold">Precio Unitario</th>
+                                        <th class="text-right font-weight-bold">Cantidad</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(row, index) in form.individual_items" :key="index">
+                                        <td>{{index + 1}}</td>
+                                        <td>{{row.full_description}}</td>
+                                        <td class="text-center">{{row.sale_unit_price}}</td>
+                                        <td class="text-right">{{row.quantity}}</td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <!-- <div class="col-md-3" v-show="recordId==null && form.unit_type_id !='ZZ'">
@@ -294,7 +325,9 @@
                         </div> 
                     </div> 
 
-
+                    <item-set-form-item  
+                                    :showDialog.sync="showDialogAddItem"
+                                    @add="addRow"></item-set-form-item>
  
                 </div>
             </div>
@@ -307,12 +340,15 @@
 </template>
 
 <script>
+    import ItemSetFormItem from './partials/item.vue'
 
     export default {
         props: ['showDialog', 'recordId', 'external'],
+        components: {ItemSetFormItem},
 
         data() {
             return {
+                showDialogAddItem: false,
                 warehouses: [],
                 loading_submit: false,
                 showPercentagePerception: false,
@@ -353,7 +389,7 @@
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
                     this.affectation_igv_types = response.data.affectation_igv_types
-                    this.individual_items = response.data.individual_items
+                    // this.individual_items = response.data.individual_items
                     this.warehouses = response.data.warehouses
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -367,14 +403,30 @@
 
         },
         methods: {
+            clickRemoveItem(index) {
+                this.form.individual_items.splice(index, 1)
+                this.changeIndividualItems()
+            },
+            addRow(row) {
+
+                let exist = this.form.individual_items.find((item) => item.individual_item_id == row.individual_item_id)
+
+                if(exist) {
+                    exist.quantity += row.quantity;
+                }else{
+                    this.form.individual_items.push(row)
+                }
+
+                console.log(row)
+                this.changeIndividualItems()
+            },
             changeIndividualItems(){
-                // console.log(this.form.individual_items)
+
                 let acum_sale_unit_price = 0
 
-                this.form.individual_items.forEach(id => {
-                    
-                    let individual_item = _.find(this.individual_items,{'id':id})
-                    acum_sale_unit_price += parseFloat(individual_item.sale_unit_price)
+                this.form.individual_items.forEach(row => {
+                    // let individual_item = _.find(this.individual_items,{'id':id})
+                    acum_sale_unit_price += parseFloat(row.sale_unit_price) * parseFloat(row.quantity)
                 });
 
                 this.form.sale_unit_price = acum_sale_unit_price

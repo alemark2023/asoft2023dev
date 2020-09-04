@@ -988,10 +988,11 @@ class SaleNoteController extends Controller
             foreach ($item->sets as $it) {
 
                 $ind_item  = $it->individual_item;
+                $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                 $presentationQuantity = 1;
                 $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
-                $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
-                if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id, $sale_note_item->id);
+                if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
             }
 

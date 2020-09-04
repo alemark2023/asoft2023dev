@@ -74,12 +74,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 foreach ($item->sets as $it) {
 
                     $ind_item  = $it->individual_item;
+                    $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                     $presentationQuantity = 1;
                     $document = $document_item->document;
                     $factor = ($document->document_type_id === '07') ? 1 : -1;
                     $warehouse = $this->findWarehouse();
-                    $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-                    if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                    $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
+                    if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
                 }
 
@@ -146,11 +147,12 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 foreach ($item->sets as $it) {
 
                     $ind_item  = $it->individual_item;
+                    $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                     $presentationQuantity = 1;
                     $warehouse = $this->findWarehouse($sale_note_item->sale_note->establishment_id);
                     // $this->createInventoryKardex($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
-                    $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id, $sale_note_item->id);
-                    if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                    $this->createInventoryKardexSaleNote($sale_note_item->sale_note, $ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id, $sale_note_item->id);
+                    if(!$sale_note_item->sale_note->order_note_id) $this->updateStock($ind_item->id , (-1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
                 }
 
@@ -205,10 +207,11 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 foreach ($item->sets as $it) {
 
                     $ind_item  = $it->individual_item;
+                    $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                     $presentationQuantity = 1;
                     $warehouse = $this->findWarehouse();
                     $this->deleteInventoryKardex($sale_note_item->sale_note, $sale_note_item->inventory_kardex_id);
-                    $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity)), $warehouse->id);
+                    $this->updateStock($ind_item->id , (1 * ($sale_note_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
                 }
 
@@ -249,12 +252,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
                         foreach ($item->sets as $it) {
 
                             $ind_item  = $it->individual_item;
+                            $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
                             $presentationQuantity = 1;
                             $factor = 1;
                             $warehouse = $this->findWarehouse();
 
                             $this->deleteAllInventoryKardexByModel($document);
-                            if(!$document->sale_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+                            if(!$document->sale_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
                         }
 

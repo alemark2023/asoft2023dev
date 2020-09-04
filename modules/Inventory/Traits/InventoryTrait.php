@@ -349,12 +349,13 @@ trait InventoryTrait
         foreach ($item->sets as $it) {
 
             $ind_item  = $it->individual_item;
+            $item_set_quantity  = ($it->quantity) ? $it->quantity : 1;
             $presentationQuantity = 1;
             $document = $document_item->document;
             $factor = 1;
             $warehouse = $this->findWarehouse();
-            $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
-            if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity)), $warehouse->id);
+            $this->createInventoryKardex($document_item->document, $ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
+            if(!$document_item->document->sale_note_id && !$document_item->document->order_note_id) $this->updateStock($ind_item->id, ($factor * ($document_item->quantity * $presentationQuantity * $item_set_quantity)), $warehouse->id);
 
         }
     }

@@ -68,7 +68,15 @@ class ItemSetController extends Controller
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         // $warehouses = Warehouse::all();
         // $accounts = Account::all();
-        // $tags = Tag::all();
+        // $tags = Tag::all(); 
+
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types');
+    }
+
+
+    public function item_tables()
+    { 
+
         $individual_items = Item::whereWarehouse()->whereTypeUser()->whereNotIsSet()->whereIsActive()->get()->transform(function($row) {
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
             return [
@@ -80,8 +88,9 @@ class ItemSetController extends Controller
             ];
         });
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types', 'individual_items');
+        return compact('individual_items');
     }
+
 
     public function record($id)
     {
@@ -121,11 +130,15 @@ class ItemSetController extends Controller
 
             $item->sets()->delete();
 
-            foreach ($request->individual_items as $value) {
+            foreach ($request->individual_items as $row) {
+                
                 $item->sets()->create([
-                    'individual_item_id' => $value
+                    'individual_item_id' => $row['individual_item_id'],
+                    'quantity' => $row['quantity'],
                 ]);
+
             }
+            
             $item->update();
 
             return $item;
