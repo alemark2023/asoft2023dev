@@ -480,7 +480,7 @@
 
                     @endif
 
-                    @if(in_array('configuration', $vc_modules))
+                    @if(in_array('establishments', $vc_modules))
                     <li class="nav-parent {{ in_array($path[0], ['users', 'establishments'])?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-users" aria-hidden="true"></i>
