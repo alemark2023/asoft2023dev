@@ -92,8 +92,8 @@
                                 <th class="">F. Pago</th>
                                 <th class="">Método</th>
                                 <th class="">Referencia</th>
-                                <th class="">Pago</th>
                                 <th class="">Responsable</th>
+                                <th class="">Pago</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -124,13 +124,26 @@
                                     <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
                                     <td class="celda">{{(($value->payment->payment_method_type) ? $value->payment->payment_method_type->description:$value->payment->expense_method_type->description)}}</td>  
                                     <td class="celda">{{$value->payment->reference}}</td>
-                                    <td class="celda">{{$value->payment->payment}}</td>
                                     <td class="celda">{{ optional($value->user)->name }}</td>
+                                    <td class="celda">{{$value->payment->payment}}</td>
                                 </tr>
 
                                  
                             @endforeach 
                         </tbody>
+                        <tfoot> 
+                            <tr>
+                                <td class="celda" colspan="11"></td>
+                                <td class="celda"><strong>Totales PEN</strong></td> 
+                                <td class="celda">{{ $records->where('payment.associated_record_payment.currency_type_id', 'PEN')->sum('payment.payment') }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11"></td>
+                                <td class="celda"><strong>Totales USD</strong></td> 
+                                <td class="celda">{{ $records->where('payment.associated_record_payment.currency_type_id', 'USD')->sum('payment.payment') }}</td>
+
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

@@ -97,6 +97,19 @@
                                  
                             @endforeach 
                         </tbody>
+                        <tfoot> 
+                            <tr>
+                                <td class="celda" colspan="11"></td>
+                                <td class="celda"><strong>Totales PEN</strong></td> 
+                                <td class="celda">{{ $records->where('payment.associated_record_payment.currency_type_id', 'PEN')->sum('payment.payment') }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11"></td>
+                                <td class="celda"><strong>Totales USD</strong></td> 
+                                <td class="celda">{{ $records->where('payment.associated_record_payment.currency_type_id', 'USD')->sum('payment.payment') }}</td>
+
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
