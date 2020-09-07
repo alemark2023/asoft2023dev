@@ -495,7 +495,7 @@ class Facturalo
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
 
-                $html_footer = $template->pdfFooter($base_pdf_template,$this->document);
+                $html_footer = $template->pdfFooter($base_pdf_template, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
                 $html_footer_legend = "";
                 // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
