@@ -340,7 +340,8 @@
                 form_cash_document:{},
                 statusDocument:{},
                 payment_method_types:[],
-                payments:[]
+                payments:[],
+                locked_submit: false
             }
         },
         async created() {
@@ -390,6 +391,8 @@
                 if(this.button_payment){
                     return this.$message.warning("El monto a pagar es menor al total")
                 }
+
+                if(this.locked_submit) return;
 
                 this.clickPayment()
 
@@ -808,6 +811,8 @@
                 }
 
                 this.loading_submit = true
+                this.locked_submit = true
+                
                 await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
 
@@ -846,6 +851,7 @@
                     }
                 }).then(() => {
                     this.loading_submit = false;
+                    this.locked_submit = false
                 });
             },
             saveCashDocument(){
