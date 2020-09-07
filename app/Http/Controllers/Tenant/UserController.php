@@ -66,12 +66,17 @@ class UserController extends Controller
         }
         $user->save();
 
-        $modules = collect($request->input('modules'))->where('checked', true)->pluck('id')->toArray();
-        $user->modules()->sync($modules);
+        $first_user = User::select('id')->first();
 
-        
-        $levels = collect($request->input('levels'))->where('checked', true)->pluck('id')->toArray();
-        $user->levels()->sync($levels);
+        if($first_user->id != $id){
+
+            $modules = collect($request->input('modules'))->where('checked', true)->pluck('id')->toArray();
+            $user->modules()->sync($modules);
+            
+            $levels = collect($request->input('levels'))->where('checked', true)->pluck('id')->toArray();
+            $user->levels()->sync($levels);
+            
+        }
 
         // dd($user->getModules()->transform(function($row, $key) {
         //     return [
