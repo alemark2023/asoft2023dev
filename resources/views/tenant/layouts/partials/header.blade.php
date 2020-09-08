@@ -70,6 +70,28 @@
         </ul>
         @endif
 
+        @if($vc_document_regularize_shipping > 0)
+        <span class="separator"></span>
+        <ul class="notifications">
+            <li class="open">
+
+                <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-exclamation-triangle text-secondary"></i>
+                    <span class="badge badge-red">{{ $vc_document_regularize_shipping }}</span>
+                </a>
+                <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+                    <a href="{{route('tenant.documents.regularize_shipping')}}">
+                        <div class="notification-title">
+                            <span class="float-right badge badge-default"><i class="fas fa-arrow-right"></i></span>Comprobantes pendientes de rectificación
+                        </div>
+                    </a>
+                    {{-- <div class="content">
+                    </div> --}}
+                </div>
+            </li>
+        </ul>
+        @endif
+
         <span class="separator"></span>
         <div id="userbox" class="userbox">
             <a href="#" data-toggle="dropdown">

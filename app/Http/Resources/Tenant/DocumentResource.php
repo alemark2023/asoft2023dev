@@ -35,6 +35,12 @@ class DocumentResource extends JsonResource
                 }
             }
 
+        }else if ($this->regularize_shipping) {
+            
+            $response_message = "Por regularizar: {$this->response_regularize_shipping->code} - {$this->response_regularize_shipping->description}";
+            $code =  (int) $this->response_regularize_shipping->code;
+            $response_type = 'error';
+
         }
 
         return [
@@ -42,6 +48,7 @@ class DocumentResource extends JsonResource
             'external_id' => $this->external_id,
             'group_id' => $this->group_id,
             'number' => $this->number_full,
+            'regularize_shipping' => (bool) $this->regularize_shipping,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
             'customer_email' => $this->customer->email,
             'download_pdf' => $this->download_external_pdf,

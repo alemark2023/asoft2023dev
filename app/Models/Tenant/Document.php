@@ -80,6 +80,8 @@ class Document extends ModelTenant
         'soap_shipping_response',
         'pending_amount_prepayment',
         'payment_method_type_id',
+        'regularize_shipping',
+        'response_regularize_shipping',
 
     ];
 
@@ -208,6 +210,15 @@ class Document extends ModelTenant
         $this->attributes['soap_shipping_response'] = (is_null($value))?null:json_encode($value);
     }
 
+    public function getResponseRegularizeShippingAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setResponseRegularizeShippingAttribute($value)
+    {
+        $this->attributes['response_regularize_shipping'] = (is_null($value))?null:json_encode($value);
+    }
 
     public function getAdditionalInformationAttribute($value)
     {
@@ -378,4 +389,10 @@ class Document extends ModelTenant
     {
         return $this->belongsTo(PaymentMethodType::class);
     }
+    
+    public function scopeWhereRegularizeShipping($query)
+    {
+        return  $query->where('state_type_id', '01')->where('regularize_shipping', true);
+    }
+
 }

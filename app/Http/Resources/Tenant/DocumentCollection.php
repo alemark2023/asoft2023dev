@@ -76,6 +76,12 @@ class DocumentCollection extends ResourceCollection
 
             $total_payment = $row->payments->sum('payment');
             $balance = number_format($row->total - $total_payment,2, ".", "");
+            
+            $message_regularize_shipping = null;
+
+            if($row->regularize_shipping) {
+                $message_regularize_shipping = "Por regularizar: {$row->response_regularize_shipping->code} - {$row->response_regularize_shipping->description}";
+            }
 
             return [
                 
@@ -140,7 +146,9 @@ class DocumentCollection extends ResourceCollection
                         'description' => $row->document->number_full,
                     ];
                 }) : null,
-                'balance' => $balance
+                'balance' => $balance,
+                'message_regularize_shipping' => $message_regularize_shipping,
+                'regularize_shipping' => (bool) $row->regularize_shipping,
 
             ];
         });
