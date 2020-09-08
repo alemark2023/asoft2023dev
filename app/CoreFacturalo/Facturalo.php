@@ -580,7 +580,9 @@ class Facturalo
         }
         if($code === 'HTTP') {
 //            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
-            throw new Exception("Code: {$code}; Description: {$message}");
+            // throw new Exception("Code: {$code}; Description: {$message}");
+            $this->updateRegularizeShipping($code, $message);
+            return;
         }
         if((int)$code === 0) {
             $this->updateState(self::ACCEPTED);
@@ -588,7 +590,10 @@ class Facturalo
         }
         if((int)$code < 2000) {
             //Excepciones
-            throw new Exception("Code: {$code}; Description: {$message}");
+            // throw new Exception("Code: {$code}; Description: {$message}");
+            $this->updateRegularizeShipping($code, $message);
+            return;
+
         } elseif ((int)$code < 4000) {
             //Rechazo
             $this->updateState(self::REJECTED);
@@ -599,6 +604,22 @@ class Facturalo
         }
         return;
     }
+
+
+    public function updateRegularizeShipping($code, $description)
+    {
+
+        $this->document->update([
+            'state_type_id' => self::REGISTERED,
+            'regularize_shipping' => true,
+            'response_regularize_shipping' => [
+                'code' => $code,
+                'description' => $description
+            ]
+        ]);
+
+    }
+
 
     public function senderXmlSignedSummary()
     {
