@@ -52,7 +52,8 @@
                         {{ ($path[0] === 'production-orders')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'technical-services')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'user-commissions')?'nav-active nav-expanded':'' }}
-
+                        {{ ($path[0] === 'regularize-shipping')?'nav-active nav-expanded':'' }}
+                        
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -78,7 +79,7 @@
                             @if(in_array('documents', $vc_modules) && $vc_company->soap_type_id != '03')
 
                                 @if(in_array('list_document', $vc_module_levels))
-                                    <li class="{{ ($path[0] === 'documents' && $path[1] != 'create' && $path[1] != 'not-sent')?'nav-active':'' }}">
+                                    <li class="{{ ($path[0] === 'documents' && $path[1] != 'create' && $path[1] != 'not-sent'&& $path[1] != 'regularize-shipping')?'nav-active':'' }}">
                                         <a class="nav-link" href="{{route('tenant.documents.index')}}">
                                             Listado de comprobantes
                                         </a>
@@ -96,6 +97,12 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                <li class="{{ ($path[0] === 'documents' && $path[1] === 'regularize-shipping')?'nav-active':'' }}">
+                                    <a class="nav-link" href="{{route('tenant.documents.regularize_shipping')}}">
+                                        CPE pendientes de rectificación
+                                    </a>
+                                </li>
 
                             @endif
 

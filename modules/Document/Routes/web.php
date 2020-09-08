@@ -46,6 +46,12 @@ if($current_hostname) {
 
             });
 
+            Route::prefix('documents/regularize-shipping')->group(function() {
+                Route::get('', 'DocumentRegularizeShippingController@index')->name('tenant.documents.regularize_shipping');
+                Route::get('records', 'DocumentRegularizeShippingController@records');
+                Route::get('data_table', 'DocumentRegularizeShippingController@data_table');
+
+            });
         });
     });
 }

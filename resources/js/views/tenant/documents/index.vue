@@ -95,9 +95,18 @@
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
                                 <div slot="content">{{tooltip(row)}}</div>
-                                <span class="badge bg-secondary text-white" :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{row.state_type_description}}</span>
+                                <span class="badge bg-secondary text-white" :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">
+                                    {{row.state_type_description}}
+                                </span>
                             </el-tooltip>
-                            <span v-else class="badge bg-secondary text-white" :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{row.state_type_description}}</span>
+                            <span v-else class="badge bg-secondary text-white" :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">
+                                {{row.state_type_description}}
+                            </span>
+                            <template v-if="row.regularize_shipping && row.state_type_id === '01'">
+                                <el-tooltip class="item" effect="dark" :content="row.message_regularize_shipping" placement="top-start">
+                                    <i class="fas fa-exclamation-triangle fa-lg" style="color: #d2322d !important"></i>
+                                </el-tooltip>
+                            </template>
                         </td>
                         <td v-if="columns.user_name.visible">
                             {{row.user_name}}
