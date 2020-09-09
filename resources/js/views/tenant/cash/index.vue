@@ -9,7 +9,7 @@
                 <template  v-if="open_cash">
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickDownloadGeneral()"><i class="fas fa-shopping-cart"></i> Reporte general</button>
 
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fas fa-shopping-cart"></i> Aperturar caja chica</button>
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fas fa-shopping-cart"></i> Aperturar caja chica POS</button>
                 </template>
                 <!-- <template v-else>                 -->
                     <!-- <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickOpenPos()"><i class="fas fa-shopping-cart" ></i> Aperturar punto de venta</button> -->
@@ -119,7 +119,7 @@
                 this.recordId = recordId
                 const h = this.$createElement;
                 this.$msgbox({
-                    title: 'Cerrar caja chica',
+                    title: 'Cerrar caja chica POS',
                     type: 'warning',
                     message: h('p', null, [
                         h('p', { style: 'text-align: justify; font-size:15px' }, '¿Está seguro de cerrar la caja?'),

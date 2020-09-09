@@ -195,7 +195,7 @@
     <thead class="">
     <tr>
         <th class="border-top-bottom desc-9 text-left">CANT.</th>
-        <th class="border-top-bottom desc-9 text-left">UdM</th>
+        <th class="border-top-bottom desc-9 text-left">UNIDAD</th>
         <th class="border-top-bottom desc-9 text-left">DESCRIPCIÓN</th>
         <th class="border-top-bottom desc-9 text-left">P.UNIT</th>
         <th class="border-top-bottom desc-9 text-left">TOTAL</th>

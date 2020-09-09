@@ -262,6 +262,7 @@ class DashboardView
                 break;
         }
 
+        // dd($request['customer_id']);
         /*
          * Documents
          */
@@ -286,6 +287,7 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                    "documents.total - total_payment  as total_subtraction, ".
                                     "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale, "." documents.user_id, ". "users.name as username"))
                 ->where('documents.establishment_id', $establishment_id)
                 ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
@@ -326,6 +328,7 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                    "documents.total - total_payment  as total_subtraction, ".
                                     "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale, "." documents.user_id, "." users.name as username"))
                 ->where('documents.establishment_id', $establishment_id);
 
@@ -352,6 +355,7 @@ class DashboardView
         }
 
 
+
         /*
          * Sale Notes
          */
@@ -376,6 +380,7 @@ class DashboardView
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                "sale_notes.total - total_payment  as total_subtraction, ".
                                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale, "." sale_notes.user_id, ". "users.name as username"))
                 ->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
@@ -415,6 +420,7 @@ class DashboardView
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
+                                "sale_notes.total - total_payment  as total_subtraction, ".
                                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale, ". " sale_notes.user_id, ". "users.name as username"))
                 ->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
@@ -438,74 +444,8 @@ class DashboardView
 
         }
 
-        $records = $documents->union($sale_notes)->get();
-
-        return collect($records)->transform(function($row) {
-                $total_to_pay = (float)$row->total - (float)$row->total_payment;
-                $delay_payment = null;
-                $date_of_due = null;
-
-                if($total_to_pay > 0) {
-                    if($row->document_type_id){
-
-                        $invoice = Invoice::where('document_id', $row->id)->first();
-                        if($invoice)
-                        {
-                            $due =   Carbon::parse($invoice->date_of_due); // $invoice->date_of_due;
-                            $date_of_due = $invoice->date_of_due->format('Y/m/d');
-                            $now = Carbon::now();
-
-                            if($now > $due){
-
-                                $delay_payment = $now->diffInDays($due);
-                            }
-
-
-                        }
-                    }
-                }
-
-                $guides = null;
-                $date_payment_last = '';
-
-                if($row->document_type_id){
-                    $guides =  Dispatch::where('reference_document_id', $row->id )->orderBy('series')->orderBy('number', 'desc')->get()->transform(function($item) {
-                        return [
-                            'id' => $item->id,
-                            'external_id' => $item->external_id,
-                            'number' => $item->number_full,
-                            'date_of_issue' => $item->date_of_issue->format('Y-m-d'),
-                            'date_of_shipping' => $item->date_of_shipping->format('Y-m-d'),
-                            'download_external_xml' => $item->download_external_xml,
-                            'download_external_pdf' => $item->download_external_pdf,
-                        ];
-                    });
-
-                    $date_payment_last = DocumentPayment::where('document_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
-                }
-                else{
-                    $date_payment_last = SaleNotePayment::where('sale_note_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
-                }
-
-                return [
-                    'id' => $row->id,
-                    'date_of_issue' => $row->date_of_issue,
-                    'customer_name' => $row->customer_name,
-                    'customer_id' => $row->customer_id,
-                    'number_full' => $row->number_full,
-                    'total' => number_format((float) $row->total,2, ".", ""),
-                    'total_to_pay' => number_format($total_to_pay,2, ".", ""),
-                    'type' => $row->type,
-                    'guides' => $guides,
-                    'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
-                    'delay_payment' => $delay_payment,
-                    'date_of_due' =>  $date_of_due,
-                    'currency_type_id' => $row->currency_type_id,
-                    'exchange_rate_sale' => (float)$row->exchange_rate_sale,
-                    "user_id"=> $row->user_id,
-                    "username" => $row->username
-                ];
-        });
+        return $documents->union($sale_notes)->havingRaw('total_subtraction > 0');
+ 
     }
 
 }

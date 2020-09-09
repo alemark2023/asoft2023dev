@@ -22,6 +22,7 @@ use App\Exports\AccountsReceivable;
 use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
 use App\Models\Tenant\User;
 use App\Models\Tenant\PaymentMethodType;
+use Modules\Finance\Http\Resources\UnpaidCollection;
 
 class UnpaidController extends Controller
 {
@@ -61,9 +62,13 @@ class UnpaidController extends Controller
 
     public function records(Request $request)
     {
-        return [
-            'records' => (new DashboardView())->getUnpaidFilterUser($request->all())
-       ];
+        // dd($request->all());
+
+        $records = (new DashboardView())->getUnpaidFilterUser($request->all());
+        // dd($records->get());
+
+        return new UnpaidCollection($records->paginate(config('tenant.items_per_page')));
+
     }
 
     public function unpaidall()

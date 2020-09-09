@@ -31,7 +31,8 @@ if($hostname) {
                 Route::get('unpaid', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
                 // Route::post('unpaid', 'UnpaidController@unpaid');
                 Route::get('unpaid/filter', 'UnpaidController@filter');
-                Route::post('unpaid/records', 'UnpaidController@records');
+                // Route::post('unpaid/records', 'UnpaidController@records');
+                Route::get('unpaid/records', 'UnpaidController@records');
                 Route::get('unpaid/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
                 Route::get('unpaid/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
 
