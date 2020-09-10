@@ -5,7 +5,7 @@ namespace Modules\Sale\Models;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
-use App\Models\Tenant\StateType;
+// use App\Models\Tenant\StateType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Quotation;
@@ -193,7 +193,7 @@ class Contract extends ModelTenant
 
     public function state_type()
     {
-        return $this->belongsTo(StateType::class);
+        return $this->belongsTo(ContractStateType::class, 'state_type_id');
     }
 
     public function person() {
