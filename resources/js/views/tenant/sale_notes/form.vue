@@ -438,6 +438,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    id:null,
                     series_id: null,
                     prefix:'NV',
                     establishment_id: null,
@@ -582,7 +583,29 @@
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
                 this.form_payment.payment = this.form.total
-             },
+            },
+            async saveCashDocument(sale_note_id){
+
+                if(!this.id){
+
+                    await this.$http.post(`/cash/cash_document`, {
+                            document_id: null,
+                            sale_note_id: sale_note_id
+                        })
+                        .then(response => {
+                            if (response.data.success) {
+                                // console.log(response)
+                            } else {
+                                this.$message.error(response.data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+
+                }
+            
+            },
             async submit() {
 
                 let validate = await this.validate_payments()
@@ -615,6 +638,8 @@
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;
                         this.showDialogOptions = true;
+                        this.saveCashDocument(response.data.data.id)
+
                         this.isUpdate()
 
                     }
