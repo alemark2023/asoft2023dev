@@ -39,7 +39,8 @@ use Modules\Sale\Mail\ContractEmail;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Configuration;
-use App\Models\Tenant\StateType;
+// use App\Models\Tenant\StateType;
+use Modules\Sale\Models\ContractStateType;
 
 
 class ContractController extends Controller
@@ -80,7 +81,7 @@ class ContractController extends Controller
 
     public function filter()
     {
-        $state_types = StateType::whereIn('id',['01','05','09'])->get();
+        $state_types = ContractStateType::get();
 
         return compact('state_types');
     }
@@ -104,6 +105,10 @@ class ContractController extends Controller
 
             $records = Contract::where($request->column, 'like', "%{$request->value}%");
 
+        }
+
+        if($request->column == 'delivery_date'){
+            return $records->whereTypeUser()->orderBy('delivery_date');
         }
 
         return $records->whereTypeUser()->latest();

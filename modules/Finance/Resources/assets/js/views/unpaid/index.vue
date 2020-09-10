@@ -123,7 +123,12 @@
                                     </el-select>
                                 </div>
 
-                                <div class="col-md-6" style="margin-top:29px">
+                            </div>
+
+                            <div class="row" v-loading="loading">
+
+                                
+                                <div class="col-md-12" style="margin-top:29px">
                                     <el-button
                                         class="submit"
                                         type="success"
@@ -154,174 +159,162 @@
                                     </el-tooltip>
 
                                 </div>
-                            </div>
-                            <div class="row mt-5 mb-3 text-right">
-                                <div class="col-md-1 text-right">
+                                <div class="col-md-1 mt-5 text-right">
                                 </div>
 
-                                <div class="col-md-2 text-right">
+                                <div class="col-md-2 mt-5 text-right">
                                     <el-badge :value="getTotalRowsUnpaid" class="item">
                                     <span size="small">Total comprobantes</span>
                                     </el-badge>
                                 </div>
-                                <div class="col-md-2 text-right">
+                                <div class="col-md-2 mt-5 text-right">
                                     <el-badge :value="getTotalAmountUnpaid" class="item">
                                     <span size="small">Monto general (PEN)</span>
                                     </el-badge>
                                 </div>
-                                <div class="col-md-2 text-right">
+                                <div class="col-md-2 mt-5 text-right">
                                     <el-badge :value="getCurrentBalance" class="item">
                                     <span size="small">Saldo corriente (PEN)</span>
                                     </el-badge>
                                 </div>
-                                <div class="col-md-2 text-right">
+                                <div class="col-md-2 mt-5 text-right">
                                     <el-badge :value="getTotalAmountUnpaidUsd" class="item">
                                     <span size="small">Monto general (USD)</span>
                                     </el-badge>
                                 </div>
-                                <div class="col-md-2 text-right">
+                                <div class="col-md-2 mt-5 text-right">
                                     <el-badge :value="getCurrentBalanceUsd" class="item">
                                     <span size="small">Saldo corriente (USD)</span>
                                     </el-badge>
                                 </div>
-                            </div>
 
-                            <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>F.Emisión</th>
-                                    <th>F.Vencimiento</th>
-                                    <th>F.Límite de Pago</th>
-                                    <th>Número</th>
-                                    <th>Cliente</th>
-                                    <th>Usuario</th>
-                                    <th>Días de retraso</th>
+                                <div class="col-md-12 table-responsive" >
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>F.Emisión</th>
+                                            <th>F.Vencimiento</th>
+                                            <th>F.Límite de Pago</th>
+                                            <th>Número</th>
+                                            <th>Cliente</th>
+                                            <th>Usuario</th>
+                                            <th>Días de retraso</th>
 
-                                    <th>Guías</th>
+                                            <th>Guías</th>
 
-                                    <th>Ver Cartera</th>
-                                    <th>Moneda</th>
-                                    <th class="text-right">Por cobrar</th>
-                                    <th class="text-right">Total</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    <template v-for="(row, index) in records">
-                                        <tr v-if="row.total_to_pay > 0" :key="index">
-                                            <td>{{ index + 1 }}</td>
-                                            <td>{{ row.date_of_issue }}</td>
-                                            <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
-                                            <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha límite.'}}</td>
-                                            <td>{{ row.number_full }}</td>
-                                            <td>{{ row.customer_name }}</td>
-                                            <td>{{ row.username }}</td>
-
-                                            <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
-
-                                            <td>
-                                                <template>
-                                                <el-popover placement="right" width="400" trigger="click">
-                                                    <el-table :data="row.guides">
-                                                    <el-table-column
-                                                        width="120"
-                                                        property="date_of_issue"
-                                                        label="Fecha Emisión"
-                                                    ></el-table-column>
-                                                    <el-table-column width="100" property="number" label="Número"></el-table-column>
-                                                    <el-table-column
-                                                        width="100"
-                                                        property="date_of_shipping"
-                                                        label="Fecha Envío"
-                                                    ></el-table-column>
-                                                    <el-table-column fixed="right" label="Descargas" width="120">
-                                                        <template slot-scope="scope">
-                                                        <button
-                                                            type="button"
-                                                            class="btn waves-effect waves-light btn-xs btn-info"
-                                                            @click.prevent="clickDownloadDispatch(scope.row.download_external_xml)"
-                                                        >XML</button>
-                                                        <button
-                                                            type="button"
-                                                            class="btn waves-effect waves-light btn-xs btn-info"
-                                                            @click.prevent="clickDownloadDispatch(scope.row.download_external_pdf)"
-                                                        >PDF</button>
-                                                        <button
-                                                            type="button"
-                                                            class="btn waves-effect waves-light btn-xs btn-info"
-                                                            @click.prevent="clickDownloadDispatch(scope.row.download_external_cdr)"
-                                                        >CDR</button>
-                                                        </template>
-                                                    </el-table-column>
-                                                    </el-table>
-                                                    <el-button slot="reference" icon="el-icon-view"></el-button>
-                                                </el-popover>
-                                                </template>
-                                            </td>
-
-                                            <td>
-                                                <el-popover placement="right" width="300" trigger="click">
-                                                <p>
-                                                    Saldo actual:
-                                                    <span class="custom-badge">{{ row.total_to_pay }}</span>
-                                                </p>
-                                                <p>
-                                                    Fecha ultimo pago:
-                                                    <span
-                                                    class="custom-badge"
-                                                    >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
-                                                </p>
-
-                                                <!-- <p>
-                                                    Dia de retraso en el pago:
-                                                    <span
-                                                    class="custom-badge"
-                                                    >{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.'}}</span>
-                                                </p> -->
-
-                                                <!-- <p>
-                                                    Fecha de vencimiento:
-                                                    <span
-                                                    class="custom-badge"
-                                                    >{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
-                                                </p> -->
-                                                <el-button icon="el-icon-view" slot="reference"></el-button>
-                                                </el-popover>
-                                            </td>
-                                                <td>{{row.currency_type_id}}</td>
-                                            <td class="text-right text-danger">{{ row.total_to_pay }}</td>
-                                            <td class="text-right">{{ row.total }}</td>
-                                            <td class="text-right">
-                                                <template v-if="row.type === 'document'">
-                                                <button
-                                                    type="button"
-                                                    style="min-width: 41px"
-                                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                    @click.prevent="clickDocumentPayment(row.id)"
-                                                >Pagos</button>
-                                                </template>
-                                                <template v-else>
-                                                <button
-                                                    type="button"
-                                                    style="min-width: 41px"
-                                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                    @click.prevent="clickSaleNotePayment(row.id)"
-                                                >Pagos</button>
-                                                </template>
-
-                                                <!-- <button
-                                                type="button"
-                                                style="min-width: 41px"
-                                                class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                @click.prevent="clickDocumentPayment(row.id)"
-                                                >Detalle</button> -->
-                                            </td>
+                                            <th>Ver Cartera</th>
+                                            <th>Moneda</th>
+                                            <th class="text-right">Por cobrar</th>
+                                            <th class="text-right">Total</th>
+                                            <th></th>
                                         </tr>
-                                    </template>
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                            <template v-for="(row, index) in records">
+                                                <tr v-if="row.total_to_pay > 0" :key="index">
+                                                    <td>{{ customIndex(index) }}</td>
+                                                    <td>{{ row.date_of_issue }}</td>
+                                                    <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
+                                                    <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha límite.'}}</td>
+                                                    <td>{{ row.number_full }}</td>
+                                                    <td>{{ row.customer_name }}</td>
+                                                    <td>{{ row.username }}</td>
+
+                                                    <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+
+                                                    <td>
+                                                        <template>
+                                                        <el-popover placement="right" width="400" trigger="click">
+                                                            <el-table :data="row.guides">
+                                                            <el-table-column
+                                                                width="120"
+                                                                property="date_of_issue"
+                                                                label="Fecha Emisión"
+                                                            ></el-table-column>
+                                                            <el-table-column width="100" property="number" label="Número"></el-table-column>
+                                                            <el-table-column
+                                                                width="100"
+                                                                property="date_of_shipping"
+                                                                label="Fecha Envío"
+                                                            ></el-table-column>
+                                                            <el-table-column fixed="right" label="Descargas" width="120">
+                                                                <template slot-scope="scope">
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                                    @click.prevent="clickDownloadDispatch(scope.row.download_external_xml)"
+                                                                >XML</button>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                                    @click.prevent="clickDownloadDispatch(scope.row.download_external_pdf)"
+                                                                >PDF</button>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                                    @click.prevent="clickDownloadDispatch(scope.row.download_external_cdr)"
+                                                                >CDR</button>
+                                                                </template>
+                                                            </el-table-column>
+                                                            </el-table>
+                                                            <el-button slot="reference" icon="el-icon-view"></el-button>
+                                                        </el-popover>
+                                                        </template>
+                                                    </td>
+
+                                                    <td>
+                                                        <el-popover placement="right" width="300" trigger="click">
+                                                        <p>
+                                                            Saldo actual:
+                                                            <span class="custom-badge">{{ row.total_to_pay }}</span>
+                                                        </p>
+                                                        <p>
+                                                            Fecha ultimo pago:
+                                                            <span
+                                                            class="custom-badge"
+                                                            >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
+                                                        </p>
+        
+                                                        <el-button icon="el-icon-view" slot="reference"></el-button>
+                                                        </el-popover>
+                                                    </td>
+                                                        <td>{{row.currency_type_id}}</td>
+                                                    <td class="text-right text-danger">{{ row.total_to_pay }}</td>
+                                                    <td class="text-right">{{ row.total }}</td>
+                                                    <td class="text-right">
+                                                        <template v-if="row.type === 'document'">
+                                                        <button
+                                                            type="button"
+                                                            style="min-width: 41px"
+                                                            class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                                            @click.prevent="clickDocumentPayment(row.id)"
+                                                        >Pagos</button>
+                                                        </template>
+                                                        <template v-else>
+                                                        <button
+                                                            type="button"
+                                                            style="min-width: 41px"
+                                                            class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                                            @click.prevent="clickSaleNotePayment(row.id)"
+                                                        >Pagos</button>
+                                                        </template>
+        
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                    <div>
+                                        <el-pagination
+                                                @current-change="loadUnpaid()"
+                                                layout="total, prev, pager, next"
+                                                :total="pagination.total"
+                                                :current-page.sync="pagination.current_page"
+                                                :page-size="pagination.per_page">
+                                        </el-pagination>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         </section>
@@ -349,12 +342,12 @@
 
     import DocumentPayments from "@views/documents/partials/payments.vue";
     import SaleNotePayments from "@views/sale_notes/partials/payments.vue";
-    import DataTable from '../../components/DataTableWithoutPaging.vue'
+    // import DataTable from '../../components/DataTableWithoutPaging.vue'
     import queryString from "query-string";
 
     export default {
         props:['typeUser'],
-        components: {DocumentPayments, SaleNotePayments, DataTable},
+        components: {DocumentPayments, SaleNotePayments},
         data() {
             return {
                 resource: 'finances/unpaid',
@@ -379,6 +372,8 @@
                 showDialogSaleNotePayments: false,
                 users:[],
                 payment_method_types:[],
+                pagination: {},
+                loading: false,
             }
         },
         async created() {
@@ -494,6 +489,7 @@
                 this.loadUnpaid()
             },
             initForm() {
+                
                 this.form = {
                     establishment_id: null,
                     period: 'between_dates',
@@ -506,8 +502,8 @@
                     payment_method_type_id: null
                 };
             },
-            filter() {
-                this.$http.get(`/${this.resource}/filter`, this.form).then(response => {
+            async filter() {
+                await this.$http.get(`/${this.resource}/filter`, this.form).then(response => {
                     this.establishments = response.data.establishments;
                     this.customers = response.data.customers;
                     this.form.establishment_id = this.establishments.length > 0 ? this.establishments[0].id : null;
@@ -515,20 +511,35 @@
                     this.payment_method_types = response.data.payment_method_types
                 });
             },
-            loadUnpaid() {
+            customIndex(index) {
+                return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
+            },
+            async loadUnpaid() {
 
-               // if(this.form.customer_id){
+                this.loading = true
 
-                    this.$http.post(`/${this.resource}/records`, this.form).then(response => {
-                        this.records = response.data.records;
-
-                        this.records.sort(function(a, b) {
-                            return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
-                        });
-                        //this.records_base = response.data.records;
-                    });
-
-                //}
+                await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
+                                this.records = response.data.data
+                                this.pagination = response.data.meta
+                                this.pagination.per_page = parseInt(response.data.meta.per_page)
+                                
+                                this.records.sort(function(a, b) {
+                                    return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
+                                });
+                            })
+                            .catch(error => {
+                            })
+                            .then(() => {
+                                this.loading = false
+                            })
+ 
+            },
+            getQueryParameters() {
+                return queryString.stringify({
+                    page: this.pagination.current_page,
+                    limit: this.limit,
+                    ...this.form
+                })
             },
             clickDocumentPayment(recordId) {
                 this.recordId = recordId;
@@ -551,21 +562,21 @@
                 let query = queryString.stringify({
                     ...this.form
                 });
-                window.open(`/${this.resource}/report-payment-method-days/?${query}`, "_blank");
+                window.open(`/${this.resource}/report-payment-method-days?${query}`, "_blank");
             },
             clickOpen(){
                 window.open(`/${this.resource}/unpaidall`, "_blank");
             },
             changeCustomerUnpaid() {
-                if (this.form.customer_id) {
+                // if (this.form.customer_id) {
 
                     this.loadUnpaid()
                     /*this.records = _.filter(this.records_base, {
                     customer_id: this.selected_customer
                     });*/
-                } else {
-                    this.records = []
-                }
+                // } else {
+                //     this.records = []
+                // }
             },
             changeUser()
             {
