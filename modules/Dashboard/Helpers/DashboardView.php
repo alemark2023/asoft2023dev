@@ -287,7 +287,7 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "documents.total - total_payment  as total_subtraction, ".
+                                    "documents.total - IFNULL(total_payment, 0)  as total_subtraction, ".
                                     "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale, "." documents.user_id, ". "users.name as username"))
                 ->where('documents.establishment_id', $establishment_id)
                 ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
@@ -328,7 +328,7 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "documents.total - total_payment  as total_subtraction, ".
+                                    "documents.total - IFNULL(total_payment, 0)  as total_subtraction, ".
                                     "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale, "." documents.user_id, "." users.name as username"))
                 ->where('documents.establishment_id', $establishment_id);
 
@@ -380,7 +380,7 @@ class DashboardView
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                "sale_notes.total - total_payment  as total_subtraction, ".
+                                "sale_notes.total - IFNULL(total_payment, 0)  as total_subtraction, ".
                                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale, "." sale_notes.user_id, ". "users.name as username"))
                 ->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
@@ -420,7 +420,7 @@ class DashboardView
                                 "sale_notes.filename as number_full, ".
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                "sale_notes.total - total_payment  as total_subtraction, ".
+                                "sale_notes.total - IFNULL(total_payment, 0)  as total_subtraction, ".
                                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale, ". " sale_notes.user_id, ". "users.name as username"))
                 ->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
@@ -444,6 +444,7 @@ class DashboardView
 
         }
 
+        // return $documents->union($sale_notes);
         return $documents->union($sale_notes)->havingRaw('total_subtraction > 0');
  
     }

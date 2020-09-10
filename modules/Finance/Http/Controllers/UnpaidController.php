@@ -23,11 +23,12 @@ use Modules\Finance\Exports\UnpaidPaymentMethodDayExport;
 use App\Models\Tenant\User;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Http\Resources\UnpaidCollection;
+use Modules\Finance\Traits\UnpaidTrait; 
 
 class UnpaidController extends Controller
 {
 
-    use FinanceTrait;
+    use FinanceTrait, UnpaidTrait;
 
     public function index()
     {
@@ -62,10 +63,8 @@ class UnpaidController extends Controller
 
     public function records(Request $request)
     {
-        // dd($request->all());
 
         $records = (new DashboardView())->getUnpaidFilterUser($request->all());
-        // dd($records->get());
 
         return new UnpaidCollection($records->paginate(config('tenant.items_per_page')));
 
@@ -80,7 +79,7 @@ class UnpaidController extends Controller
     public function reportPaymentMethodDays(Request $request)
     {
 
-        $all_records = (new DashboardView())->getUnpaid($request->all());
+        $all_records = $this->transformRecords((new DashboardView())->getUnpaidFilterUser($request->all())->get());
 
         $records = collect($all_records)->where('total_to_pay', '>', 0)->where('type', 'document')->map(function($row){
             $row['difference_days'] = Carbon::parse($row['date_of_issue'])->diffInDays($row['date_of_due']);

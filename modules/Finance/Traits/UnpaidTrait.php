@@ -1,27 +1,21 @@
 <?php
 
-namespace Modules\Finance\Http\Resources;
+namespace Modules\Finance\Traits; 
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Invoice;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
-class UnpaidCollection extends ResourceCollection
-{
-    /**
-     * Transform the resource collection into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function toArray($request)
-    {
-        return $this->collection->transform(function($row, $key) {
+trait UnpaidTrait
+{ 
+
+    public function transformRecords($records) {
+
+        return $records->transform(function($row, $key) {
 
             $total_to_pay = (float)$row->total - (float)$row->total_payment;
             $delay_payment = null;
@@ -91,6 +85,7 @@ class UnpaidCollection extends ResourceCollection
             ];
     
         });
-    }
 
+    }
+ 
 }
