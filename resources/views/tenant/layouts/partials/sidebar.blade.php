@@ -53,6 +53,7 @@
                         {{ ($path[0] === 'technical-services')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'user-commissions')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'regularize-shipping')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'item-lots')?'nav-active nav-expanded':'' }}
                         
                         ">
                         <a class="nav-link" href="#">
@@ -122,6 +123,7 @@
                                         {{ ($path[0] === 'items')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
+                                        {{ ($path[0] === 'item-lots')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'person-types')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active nav-expanded':'' }}
                                         ">
@@ -143,6 +145,11 @@
                                             <li class="{{ ($path[0] === 'brands')?'nav-active':'' }}">
                                                 <a class="nav-link" href="{{route('tenant.brands.index')}}">
                                                     Marcas
+                                                </a>
+                                            </li>
+                                            <li class="{{ ($path[0] === 'item-lots')?'nav-active':'' }}">
+                                                <a class="nav-link" href="{{route('tenant.item-lots.index')}}">
+                                                    Series
                                                 </a>
                                             </li>
                                             <li class="{{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active':'' }}">
