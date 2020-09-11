@@ -15,6 +15,7 @@ use App\Models\Tenant\{
 use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\ContractPayment;
 use Modules\Finance\Models\IncomePayment;
+use Modules\Pos\Models\CashTransaction;
 
 
 trait FinanceTrait
@@ -135,6 +136,7 @@ trait FinanceTrait
             ['id'=> QuotationPayment::class, 'description' => 'COTIZACIÓN'],
             // ['id'=> ContractPayment::class, 'description' => 'CONTRATO'],
             ['id'=> IncomePayment::class, 'description' => 'INGRESO'],
+            // ['id'=> CashTransaction::class, 'description' => 'CAJA CHICA POS'],
         ];
     }
 
@@ -192,8 +194,9 @@ trait FinanceTrait
         $quotation_payment = $this->getSumPayment($cash, QuotationPayment::class); 
         $contract_payment = 0; //$this->getSumPayment($cash, ContractPayment::class); 
         $income_payment = $this->getSumPayment($cash, IncomePayment::class); 
+        $cash_pos = $this->getSumPaymentCashPos($cash, CashTransaction::class); 
 
-        $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment;
+        $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment + $cash_pos;
         $egress = $expense_payment + $purchase_payment;
         
         $balance = $entry - $egress;
@@ -206,7 +209,7 @@ trait FinanceTrait
             'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
             'quotation_payment' => number_format($quotation_payment,2, ".", ""),
             'contract_payment' => number_format($contract_payment,2, ".", ""),
-            'income_payment' => number_format($income_payment,2, ".", ""),
+            'income_payment' => number_format($income_payment + $cash_pos,2, ".", ""),
             'document_payment' => number_format($document_payment,2, ".", ""),
             'purchase_payment' => number_format($purchase_payment,2, ".", ""),
             'balance' => number_format($balance,2, ".", "")
@@ -215,6 +218,13 @@ trait FinanceTrait
 
     }
 
+
+    public function getSumPaymentCashPos($record, $model)
+    {
+        return $record->where('payment_type', $model)->sum(function($row){
+            return $row->payment->payment;
+        });
+    }
     
     
     public function getBalanceByBankAcounts($bank_accounts){
@@ -302,7 +312,9 @@ trait FinanceTrait
             $purchase_payment = $this->getSumByPMT($row->purchase_payments); 
             $quotation_payment = $this->getSumByPMT($row->quotation_payments); 
             $contract_payment = 0; //$this->getSumByPMT($row->contract_payments); 
-            $income_payment = $this->getSumByPMT($row->income_payments); 
+            $cash_transaction = $row->cash_transactions->sum('payment'); 
+            $income_payment = $this->getSumByPMT($row->income_payments) + $cash_transaction; 
+
 
             return [
 

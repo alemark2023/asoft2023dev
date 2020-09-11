@@ -9,7 +9,7 @@
                         <tr slot="heading">
                             <th class="">#</th>
                             <th class="">Adquiriente</th>
-                            <th class="">Documento</th>
+                            <th class="">Documento/Transacción</th>
                             <th class="">Moneda</th>
                             <th class="">Tipo</th>
                             <th class="">Destino</th>
