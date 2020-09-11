@@ -62,6 +62,17 @@ if($hostname) {
                     Route::get('voided/{record}', 'IncomeController@voided');
 
                 });
+
+                
+                Route::prefix('movements')->group(function () {
+
+                    Route::get('', 'MovementController@index')->name('tenant.finances.movements.index');
+                    Route::get('pdf', 'MovementController@pdf');
+                    Route::get('excel', 'MovementController@excel');
+                    Route::get('records', 'MovementController@records');
+
+                });
+
             });
 
 
