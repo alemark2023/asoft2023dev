@@ -792,7 +792,7 @@
                     @if(in_array('finance', $vc_modules))
 
                     <li class="nav-parent {{$path[0] === 'finances' && in_array($path[1], [
-                                                'global-payments', 'balance','payment-method-types', 'unpaid', 'to-pay', 'income'
+                                                'global-payments', 'balance','payment-method-types', 'unpaid', 'to-pay', 'income', 'movements'
                                             ])
                                             ? 'nav-active nav-expanded' : ''}}">
 
@@ -815,6 +815,11 @@
                             <li class="{{(($path[0] === 'finances') && ($path[1] == 'payment-method-types')) ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.finances.payment_method_types.index')}}">
                                     Ingresos y Egresos - M. Pago
+                                </a>
+                            </li>
+                            <li class="{{(($path[0] === 'finances') && ($path[1] == 'movements')) ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.finances.movements.index')}}">
+                                    Movimientos
                                 </a>
                             </li>
                             <li class="{{(($path[0] === 'finances') && ($path[1] == 'unpaid')) ? 'nav-active' : ''}}">

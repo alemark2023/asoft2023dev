@@ -155,6 +155,33 @@ class GlobalPayment extends ModelTenant
         return $description;
     }
 
+    
+    public function getTypeMovementAttribute()
+    {
+        $type = null;
+        
+        switch ($this->instance_type) {
+
+            case 'document':
+            case 'sale_note':
+            case 'quotation':
+            case 'contract':
+            case 'income':
+            case 'cash_transaction':
+                $type = 'input';
+                break;
+            case 'purchase':
+            case 'expense':
+                $type = 'output';
+                break;
+             
+        } 
+
+        return $type;
+        
+    }
+
+
     public function getDataPersonAttribute(){
 
         $record = $this->payment->associated_record_payment;
