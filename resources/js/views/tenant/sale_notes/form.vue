@@ -634,6 +634,7 @@
                     if (response.data.success) {
 
                         this.form_payment.sale_note_id = response.data.data.id;
+                        this.$eventHub.$emit('reloadDataItems', null)
                         // if(!this.id) this.sale_note_payment()
                         this.resetForm();
                         this.saleNotesNewId = response.data.data.id;

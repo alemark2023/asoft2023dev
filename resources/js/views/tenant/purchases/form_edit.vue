@@ -190,6 +190,7 @@
                                         <th>#</th>
                                         <th>Descripción</th>
                                         <th>Almacén</th>
+                                        <th>Lote</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-right">Cantidad</th>
                                         <th class="text-right">Precio Unitario</th>
@@ -204,6 +205,7 @@
                                         <td>{{ index + 1 }}</td>
                                         <td>{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td>
+                                        <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
                                         <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
