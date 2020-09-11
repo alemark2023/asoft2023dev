@@ -24,12 +24,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(row, index) in lots_group" :key="index">
+                            <tr v-for="(row, index) in lots_group" v-show="row.quantity > 0" :key="index">
                                 <th align="center">
                                     <el-checkbox
-                                        :disabled="row.quantity  < 1"
+                                        :disabled="row.quantity  < 0"
                                         v-model="row.checked"
-                                        @change="changeSelect(index, row.id)"
+                                        @change="changeSelect(index, row.id, row.quantity)"
                                     ></el-checkbox>
                                 </th>
                                 <th>{{ row.code }}</th>
@@ -51,7 +51,7 @@
 
 <script>
 export default {
-    props: ["showDialog", "lots_group", "stock", "recordId"],
+    props: ["showDialog", "lots_group", "stock", "recordId", "quantity"],
     data() {
         return {
             titleDialog: "Lotes",
@@ -71,15 +71,25 @@ export default {
         //     })
     },
     methods: {
-        changeSelect(index, id)
+        changeSelect(index, id, quantity_lot)
         {
-            this.lots_group.forEach(row => {
-                row.checked  = false
-            })
+            
+            if (this.quantity > quantity_lot) {
 
-            this.lots_group[index].checked = true
+                this.$message.error('La cantidad a vender es superior al stock');
+                this.lots_group[index].checked = false;
 
-            this.idSelected = id
+            }else {
+
+                this.lots_group.forEach(row => {
+                    row.checked  = false
+                })
+
+                this.lots_group[index].checked = true
+
+                this.idSelected = id
+
+            }
 
         },
         handleSelectionChange(val) {
