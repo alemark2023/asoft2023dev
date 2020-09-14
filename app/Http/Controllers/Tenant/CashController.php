@@ -24,6 +24,8 @@ use App\Models\Tenant\PaymentMethodType;
 use Modules\Pos\Models\CashTransaction;
 use Modules\Finance\Traits\FinanceTrait;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\SaleNoteItem;
+use App\Exports\CashProductExport;
 
 
 class CashController extends Controller
@@ -304,6 +306,35 @@ class CashController extends Controller
 
     public function report_products($id)
     {
+
+        $data = $this->getDataReport($id);
+        $pdf = PDF::loadView('tenant.cash.report_product_pdf', $data);
+
+        $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
+
+    }
+
+
+    
+    public function report_products_excel($id)
+    { 
+
+        $data = $this->getDataReport($id);
+        $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
+
+        return (new CashProductExport)
+                ->documents($data['documents'])
+                ->company($data['company'])
+                ->cash($data['cash'])
+                ->download($filename.'.xlsx');
+
+    }
+
+
+    public function getDataReport($id){
+
         $cash = Cash::findOrFail($id);
         $company = Company::first();
         $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
@@ -318,18 +349,29 @@ class CashController extends Controller
                 'quantity' => $row->quantity,
             ];
         });
+        
+        $documents = $documents->merge($this->getSaleNotesReportProducts($cash));
 
-
-        $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents"));
-
-        $filename = "Reporte_POS_PRODUCTOS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
-
-        return $pdf->stream($filename.'.pdf');
-
-
+        return compact("cash", "company", "documents");
 
     }
 
 
+    public function getSaleNotesReportProducts($cash){
+
+        $cd_sale_notes =  CashDocument::select('sale_note_id')->where('cash_id', $cash->id)->get();
+        
+        $sale_note_items = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cd_sale_notes)->get();
+
+        return collect($sale_note_items)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->sale_note->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+
+    }
 
 }

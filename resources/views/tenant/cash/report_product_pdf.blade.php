@@ -55,6 +55,8 @@ $establishment = $cash->user->establishment;
                 text-align: center;
             }
             .td-custom { line-height: 0.1em; }
+            .width-custom { width: 50% }
+
         </style>
     </head>
     <body>
@@ -64,7 +66,7 @@ $establishment = $cash->user->establishment;
         <div style="margin-top:20px; margin-bottom:20px;">
             <table>
                 <tr>
-                    <td class="td-custom">
+                    <td class="width-custom">
                         <p><strong>Empresa: </strong>{{$company->name}}</p>
                     </td>
                     <td class="td-custom">
@@ -75,7 +77,7 @@ $establishment = $cash->user->establishment;
                     <td class="td-custom">
                         <p><strong>Ruc: </strong>{{$company->number}}</p>
                     </td>
-                    <td class="td-custom">
+                    <td class="width-custom">
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                 </tr>
