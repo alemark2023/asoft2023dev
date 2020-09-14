@@ -243,6 +243,18 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
+        @elseif(collect($document->prepayments)->count() > 0 && collect($document->discounts)->where('discount_type_id', '04')->count() === 1 && $document->total_taxed >= 0)
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_taxed }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv }}</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>1000</cbc:ID>
+                    <cbc:Name>IGV</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
         @endif
         @if($document->total_unaffected > 0)
         <cac:TaxSubtotal>
@@ -258,6 +270,18 @@
         </cac:TaxSubtotal>
         @endif
         @if($document->total_exonerated > 0)
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_exonerated }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9997</cbc:ID>
+                    <cbc:Name>EXO</cbc:Name>
+                    <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+        @elseif(collect($document->prepayments)->count() > 0 && collect($document->discounts)->where('discount_type_id', '05')->count() === 1 && $document->total_exonerated >= 0)
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_exonerated }}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
