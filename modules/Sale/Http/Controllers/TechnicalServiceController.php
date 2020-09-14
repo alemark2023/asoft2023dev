@@ -314,6 +314,14 @@ class TechnicalServiceController extends Controller
     {
 
         $record = TechnicalService::findOrFail($id);
+
+        if($record->payments()->count() > 0){
+            return [
+                'success' => false,
+                'message' => 'El servicio técnico tiene pagos asociados, debe eliminarlos previamente'
+            ];
+        }
+
         $record->delete();
 
         return [

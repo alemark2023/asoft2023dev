@@ -98,6 +98,19 @@
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody> 
+                        <tfoot v-if="resource == 'finances/global-payments'">
+                            <tr>
+                                <td colspan="9"></td>
+                                <td ><strong>Totales PEN</strong></td> 
+                                <td>{{totals.total_pen}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="9"></td>
+                                <td ><strong>Totales USD</strong></td> 
+                                <td>{{totals.total_usd}}</td>
+
+                            </tr>
+                        </tfoot>
                     </table>
                     <div>
                         <el-pagination
@@ -141,6 +154,7 @@
                 payment_types: [],
                 destination_types: [],
                 form: {},
+                totals: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
                         time = moment(time).format('YYYY-MM-DD')
@@ -160,6 +174,7 @@
         },
         created() {
             this.initForm()
+            this.initTotals()
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
             })
@@ -177,6 +192,14 @@
 
         },
         methods: {
+            initTotals(){
+
+                this.totals = {
+                    total_pen : 0,
+                    total_usd : 0,
+                }
+
+            },
             clickDownload(type) {
                 let query = queryString.stringify({
                     ...this.form
@@ -211,10 +234,18 @@
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
+                    this.getTotals(response.data.data)
                     this.loading_submit = false
                 });
 
 
+            },
+            getTotals(records){
+
+                this.initTotals()
+                this.totals.total_pen = _.round(_.sumBy(_.filter(records, {currency_type_id : 'PEN'}), (row) => { return parseFloat(row.total) }), 2)
+                this.totals.total_usd = _.round(_.sumBy(_.filter(records, {currency_type_id : 'USD'}), (row) => { return parseFloat(row.total) }), 2)
+ 
             },
             getQueryParameters() {
                 return queryString.stringify({

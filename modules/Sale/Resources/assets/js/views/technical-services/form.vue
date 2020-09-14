@@ -65,13 +65,13 @@ nant<template>
                             <small class="form-control-feedback" v-if="errors.cost" v-text="errors.cost[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <!-- <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.prepayment}">
                             <label class="control-label">Pago adelantado </label>
                             <el-input v-model="form.prepayment" ></el-input>
                             <small class="form-control-feedback" v-if="errors.prepayment" v-text="errors.prepayment[0]"></small>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-12" v-if="recordId">
                         <div class="form-group" :class="{'has-danger': errors.activities}">
                             <label class="control-label">Actividades realizadas (Equipo internado)</label>
@@ -112,7 +112,7 @@ nant<template>
                             </label>
 
                             <table style="width: 100%">
-                                <tr v-for="(guide,index) in form.important_note">
+                                <tr v-for="(guide,index) in form.important_note" :key="index">
                                     <td>
                                         <el-input v-model="guide.description"></el-input>
                                     </td>
