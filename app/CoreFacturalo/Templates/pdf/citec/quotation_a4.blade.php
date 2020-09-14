@@ -62,7 +62,7 @@
         </td>
         @if($document->date_of_due)
             <td class="font-bold">VÁLIDO HASTA:</td>
-            <td>{{ $document->date_of_due->format('Y-m-d') }}</td>
+            <td>{{ $document->date_of_due }}</td>
         @endif
     </tr>
     @endif

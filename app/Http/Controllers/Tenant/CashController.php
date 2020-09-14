@@ -21,12 +21,18 @@ use Maatwebsite\Excel\Excel;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\PaymentMethodType;
-
-
+use Modules\Pos\Models\CashTransaction;
+use Modules\Finance\Traits\FinanceTrait;
+use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\SaleNoteItem;
+use App\Exports\CashProductExport;
 
 
 class CashController extends Controller
 {
+
+    use FinanceTrait;
+
     public function index()
     {
         return view('tenant.cash.index');
@@ -100,15 +106,23 @@ class CashController extends Controller
     public function store(CashRequest $request) {
 
         $id = $request->input('id');
-        $cash = Cash::firstOrNew(['id' => $id]);
-        $cash->fill($request->all());
 
-        if(!$id){
-            $cash->date_opening = date('Y-m-d');
-            $cash->time_opening = date('H:i:s');
-        }
+        DB::connection('tenant')->transaction(function () use ($id, $request) {
 
-        $cash->save();
+            $cash = Cash::firstOrNew(['id' => $id]);
+            $cash->fill($request->all());
+
+            if(!$id){
+                $cash->date_opening = date('Y-m-d');
+                $cash->time_opening = date('H:i:s');
+            }
+
+            $cash->save();
+
+            $this->createCashTransaction($cash, $request);
+            
+        });
+
 
         return [
             'success' => true,
@@ -116,6 +130,26 @@ class CashController extends Controller
         ];
 
     }
+
+
+    public function createCashTransaction($cash, $request){
+ 
+        $this->destroyCashTransaction($cash);
+
+        $data = [
+            'date' => date('Y-m-d'),  
+            'description' => 'Saldo inicial',  
+            'payment_method_type_id' => '01',  
+            'payment' => $request->beginning_balance,  
+            'payment_destination_id' => 'cash',  
+        ];
+
+        $cash_transaction = $cash->cash_transaction()->create($data);
+
+        $this->createGlobalPayment($cash_transaction, $data);
+
+    }
+
 
     public function close($id) {
 
@@ -196,21 +230,41 @@ class CashController extends Controller
 
     public function destroy($id)
     {
-        $cash = Cash::findOrFail($id);
 
-        if($cash->global_destination->count() > 0){
+        $data = DB::connection('tenant')->transaction(function () use ($id) {
+
+            $cash = Cash::findOrFail($id);
+
+            if($cash->global_destination()->where('payment_type', '!=', CashTransaction::class)->count() > 0){
+                return [
+                    'success' => false,
+                    'message' => 'No puede eliminar la caja, tiene transacciones relacionadas'
+                ];
+            }
+
+            $this->destroyCashTransaction($cash);
+            $cash->delete();
+
             return [
-                'success' => false,
-                'message' => 'No puede eliminar la caja, tiene transacciones relacionadas'
+                'success' => true,
+                'message' => 'Caja eliminada con éxito'
             ];
+
+        });
+
+        return $data;
+
+    }
+    
+
+    public function destroyCashTransaction($cash){
+
+        $ini_cash_transaction = $cash->cash_transaction;
+                
+        if($ini_cash_transaction){
+            CashTransaction::find($ini_cash_transaction->id)->delete();
         }
 
-        $cash->delete();
-
-        return [
-            'success' => true,
-            'message' => 'Caja eliminada con éxito'
-        ];
     }
 
 
@@ -252,6 +306,35 @@ class CashController extends Controller
 
     public function report_products($id)
     {
+
+        $data = $this->getDataReport($id);
+        $pdf = PDF::loadView('tenant.cash.report_product_pdf', $data);
+
+        $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
+
+        return $pdf->stream($filename.'.pdf');
+
+    }
+
+
+    
+    public function report_products_excel($id)
+    { 
+
+        $data = $this->getDataReport($id);
+        $filename = "Reporte_POS_PRODUCTOS - {$data['cash']->user->name} - {$data['cash']->date_opening} {$data['cash']->time_opening}";
+
+        return (new CashProductExport)
+                ->documents($data['documents'])
+                ->company($data['company'])
+                ->cash($data['cash'])
+                ->download($filename.'.xlsx');
+
+    }
+
+
+    public function getDataReport($id){
+
         $cash = Cash::findOrFail($id);
         $company = Company::first();
         $cash_documents =  CashDocument::select('document_id')->where('cash_id', $cash->id)->get();
@@ -266,18 +349,29 @@ class CashController extends Controller
                 'quantity' => $row->quantity,
             ];
         });
+        
+        $documents = $documents->merge($this->getSaleNotesReportProducts($cash));
 
-
-        $pdf = PDF::loadView('tenant.cash.report_product_pdf', compact("cash", "company", "documents"));
-
-        $filename = "Reporte_POS_PRODUCTOS - {$cash->user->name} - {$cash->date_opening} {$cash->time_opening}";
-
-        return $pdf->stream($filename.'.pdf');
-
-
+        return compact("cash", "company", "documents");
 
     }
 
 
+    public function getSaleNotesReportProducts($cash){
+
+        $cd_sale_notes =  CashDocument::select('sale_note_id')->where('cash_id', $cash->id)->get();
+        
+        $sale_note_items = SaleNoteItem::with('sale_note')->whereIn('sale_note_id', $cd_sale_notes)->get();
+
+        return collect($sale_note_items)->transform(function($row){
+            return [
+                'id' => $row->id,
+                'number_full' => $row->sale_note->number_full,
+                'description' => $row->item->description,
+                'quantity' => $row->quantity,
+            ];
+        });
+
+    }
 
 }

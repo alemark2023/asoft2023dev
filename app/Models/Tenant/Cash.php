@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
  
 use Modules\Finance\Models\GlobalPayment;
+use Modules\Pos\Models\CashTransaction;
 
 class Cash extends ModelTenant
 {
@@ -47,5 +48,26 @@ class Cash extends ModelTenant
     {
         return $this->morphMany(GlobalPayment::class, 'destination');
     }
- 
+
+    public function cash_transaction()
+    {
+        return $this->hasOne(CashTransaction::class);
+    }
+    
+    public function getCurrencyTypeIdAttribute()
+    {
+        return 'PEN';
+    }
+
+    public function getNumberFullAttribute()
+    {
+
+        if($this->cash_transaction){
+            return "{$this->cash_transaction->description} - Caja chica POS".($this->reference_number ? ' N° '.$this->reference_number:'');
+        }
+
+        return '-';
+
+    }
+
 }

@@ -60,7 +60,7 @@ class GlobalPaymentController extends Controller
         $records = $model::whereFilterPaymentType($params);
     
         if($payment_type){
-            $records = $records->wherePaymentType($payment_type);
+            $records = $records->whereDefinePaymentType($payment_type);
         }
 
         if($destination_type){

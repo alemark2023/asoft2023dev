@@ -141,11 +141,13 @@ Vue.component('tenant-report-sales-consolidated-index', require('../../modules/R
 Vue.component('tenant-report-user-commissions-index', require('../../modules/Report/Resources/assets/js/views/user_commissions/index.vue'));
 Vue.component('tenant-report-fixed-asset-purchases-index', require('../../modules/Report/Resources/assets/js/views/fixed-asset-purchases/index.vue'));
 Vue.component('tenant-report-massive-downloads-index', require('../../modules/Report/Resources/assets/js/views/massive-downloads/index.vue'));
+Vue.component('tenant-documents-regularize-shipping', require('../../modules/Document/Resources/assets/js/views/documents/regularize_shipping.vue'));
 
 
 Vue.component('tenant-categories-index', require('../../modules/Item/Resources/assets/js/views/categories/index.vue'));
 Vue.component('tenant-brands-index', require('../../modules/Item/Resources/assets/js/views/brands/index.vue'));
 Vue.component('tenant-incentives-index', require('../../modules/Item/Resources/assets/js/views/incentives/index.vue'));
+Vue.component('tenant-item-lots-index', require('../../modules/Item/Resources/assets/js/views/item-lots/index.vue'));
 
 Vue.component('tenant-ecommerce-configuration-info', require('../../modules/Ecommerce/Resources/assets/js/views/configuration/index.vue'));
 Vue.component('tenant-ecommerce-configuration-culqi', require('../../modules/Ecommerce/Resources/assets/js/views/configuration_culqi/index.vue'));
@@ -183,6 +185,7 @@ Vue.component('tenant-finance-income-index', require('@viewsModuleFinance/income
 Vue.component('tenant-finance-income-form', require('@viewsModuleFinance/income/form.vue'));
 Vue.component('tenant-income-types-index', require('@viewsModuleFinance/income_types/index.vue'));
 Vue.component('tenant-income-reasons-index', require('@viewsModuleFinance/income_reasons/index.vue'));
+Vue.component('tenant-finance-movements-index', require('@viewsModuleFinance/movements/index.vue'));
 
 
 //Sale

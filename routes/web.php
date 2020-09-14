@@ -466,6 +466,7 @@ if ($hostname) {
            Route::get('cash/search/customer/{id}', 'Tenant\CashController@searchCustomerById');
 
            Route::get('cash/report/products/{cash}', 'Tenant\CashController@report_products');
+           Route::get('cash/report/products-excel/{cash}', 'Tenant\CashController@report_products_excel');
 
            //Tags
            Route::get('tags', 'Tenant\TagController@index')->name('tenant.tags.index');

@@ -20,7 +20,7 @@
 
                         <div class="col-lg-2">
                             <div class="form-group" :class="{'has-danger': errors.number}">
-                                <label class="control-label">Número <span class="text-danger">*</span></label>
+                                <label class="control-label">Número <span class="text-danger" v-if="form.expense_type_id != 4">*</span></label>
                                 <el-input v-model="form.number"></el-input>
 
                                 <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
@@ -368,6 +368,12 @@
 
                 if(validate.empty_payment_destination > 0) {
                     return this.$message.error('El destino del pago es requerido');
+                }
+
+                if(this.form.expense_type_id != 4){
+                    if(!this.form.number){
+                        return this.$message.error('El número es obligatorio')
+                    }
                 }
 
                 this.loading_submit = true

@@ -251,6 +251,7 @@
         </select-lots-form>
 
          <lots-group
+            :quantity="form.quantity"
             :showDialog.sync="showDialogLots"
             :lots_group="form.lots_group"
             @addRowLotGroup="addRowLotGroup">

@@ -85,7 +85,7 @@
                                 <th class="">Adquiriente</th>
                                 <th class="">N° Doc. Identidad</th>
                                 <th class="">Tipo documento</th>
-                                <th class="">Documento</th>
+                                <th class="">Documento/Transacción</th>
                                 <th class="">Moneda</th>
                                 <th class="">Tipo</th>
                                 <th class="">Destino</th>
@@ -112,6 +112,17 @@
                                             $document_type = $value->payment->associated_record_payment->prefix;
 
                                         }
+
+
+                                        $payment_method_type_description = '';
+
+                                        if($value->payment->payment_method_type){
+                                            $payment_method_type_description = $value->payment->payment_method_type->description;
+                                        }else{
+                                            $payment_method_type_description = $value->payment->expense_method_type->description;
+                                        }
+
+
                                     @endphp
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$data_person->name}}</td>
@@ -122,7 +133,7 @@
                                     <td class="celda">{{$value->instance_type_description}}</td>
                                     <td class="celda">{{$value->destination_description}}</td>
                                     <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
-                                    <td class="celda">{{(($value->payment->payment_method_type) ? $value->payment->payment_method_type->description:$value->payment->expense_method_type->description)}}</td>  
+                                    <td class="celda">{{$payment_method_type_description}}</td>  
                                     <td class="celda">{{$value->payment->reference}}</td>
                                     <td class="celda">{{ optional($value->user)->name }}</td>
                                     <td class="celda">{{$value->payment->payment}}</td>

@@ -58,7 +58,7 @@
                     </td>
                     @endif
                 </tr>
-                
+
             </table>
         </div>
         <br>
@@ -69,7 +69,7 @@
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
                         $acum_total=0;
-                     
+
                         $acum_total_taxed_usd=0;
                         $acum_total_igv_usd=0;
                         $acum_total_usd=0;
@@ -109,9 +109,14 @@
 
                                 <td class="celda">{{$value->supplier->name}}</td>
                                 <td class="celda">{{$value->supplier->number}}</td>
-                                <td class="celda">{{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}}</td>
+                                <td class="celda">
+                                    {{-- {{isset($value->purchase_payments['payment_method_type']['description'])?$value->purchase_payments['payment_method_type']['description']:'-'}} --}}
+                                    @foreach($value->payments as $pay)
+                                        {{$pay->payment_method_type->description}}
+                                    @endforeach
+                                </td>
                                 <td class="celda">{{$value->state_type->description}}</td>
-                                <td class="celda">{{$value->currency_type_id}}</td> 
+                                <td class="celda">{{$value->currency_type_id}}</td>
                                 <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_perception}}</td>
 
                                 <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_exonerated}}</td>
@@ -122,7 +127,7 @@
                                 <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
                                 <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total + $value->total_perception}}</td>
 
-                                
+
                                 @php
                                     $value->total_taxed = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_taxed;
                                     $value->total_igv = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_igv;
@@ -130,9 +135,9 @@
                                     $state = $value->state_type_id;
                                 @endphp
                             </tr>
-                            
+
                             @php
-                                
+
                                 if($value->currency_type_id == 'PEN'){
 
                                     if($state == '11'){
@@ -146,7 +151,7 @@
 
                                         $acum_total += $value->total;
                                         $acum_total_taxed += $value->total_taxed;
-                                        $acum_total_igv += $value->total_igv; 
+                                        $acum_total_igv += $value->total_igv;
                                     }
 
                                 }else if($value->currency_type_id == 'USD'){

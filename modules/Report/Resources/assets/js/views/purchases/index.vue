@@ -36,7 +36,9 @@
                                 <small v-text="row.document_type_description"></small><br/>
 
                             </td>
-                            <td>{{row.payment_method_type_description}}</td>
+                            <td>
+                                <span v-for="pay in row.payments">{{pay.payment_method_type_description}}</span>
+                            </td>
                             <td class="text-center">{{ row.currency_type_id }}</td>
                             <td class="text-right">{{ (row.total_perception && row.state_type_id != '11') ? row.total_perception : '0.00' }}</td>
 

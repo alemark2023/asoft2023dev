@@ -100,7 +100,7 @@
                 }
             },
             create() {
-                this.titleDialog = (this.recordId)? 'Editar Caja chica':'Aperturar Caja chica'
+                this.titleDialog = (this.recordId)? 'Editar Caja chica POS':'Aperturar Caja chica POS'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {

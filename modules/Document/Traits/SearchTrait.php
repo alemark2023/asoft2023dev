@@ -17,6 +17,7 @@ trait SearchTrait
                     ->orWhereHas('brand', function($query) use($request) {
                         $query->where('name', 'like', '%' . $request->input . '%');
                     })
+                    ->OrWhereJsonContains('attributes', ['value' => $request->input])
                     ->with(['item_lots'])
                     ->where('unit_type_id','ZZ')
                     ->whereNotIsSet()
@@ -36,6 +37,7 @@ trait SearchTrait
                     ->orWhereHas('brand', function($query) use($request) {
                         $query->where('name', 'like', '%' . $request->input . '%');
                     })
+                    ->OrWhereJsonContains('attributes', ['value' => $request->input])
                     ->whereWarehouse()
                     ->whereNotIsSet()
                     ->whereIsActive()

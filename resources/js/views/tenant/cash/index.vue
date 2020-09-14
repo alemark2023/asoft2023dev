@@ -9,7 +9,7 @@
                 <template  v-if="open_cash">
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickDownloadGeneral()"><i class="fas fa-shopping-cart"></i> Reporte general</button>
 
-                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fas fa-shopping-cart"></i> Aperturar caja chica</button>
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fas fa-shopping-cart"></i> Aperturar caja chica POS</button>
                 </template>
                 <!-- <template v-else>                 -->
                     <!-- <button type="button" class="btn btn-success btn-sm  mt-2 mr-2" @click.prevent="clickOpenPos()"><i class="fas fa-shopping-cart" ></i> Aperturar punto de venta</button> -->
@@ -48,7 +48,16 @@
                         <td>{{ row.state_description }}</td>
                         <td class="text-center">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownload(row.id)">Reporte</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadProducts(row.id)">Reporte Productos</button>
+
+                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadProducts(row.id)">Reporte Productos</button> -->
+                            
+                            <div class="btn-group flex-wrap">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Reporte Productos <span class="caret"></span></button>
+                                <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'pdf')">PDF</a>
+                                    <a class="dropdown-item text-1" href="#" @click.prevent="clickDownloadProducts(row.id, 'excel')">Excel</a>
+                                </div>
+                            </div>
 
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="clickDownloadIncomeSummary(row.id)">R. Ingreso</button>
 
@@ -119,7 +128,7 @@
                 this.recordId = recordId
                 const h = this.$createElement;
                 this.$msgbox({
-                    title: 'Cerrar caja chica',
+                    title: 'Cerrar caja chica POS',
                     type: 'warning',
                     message: h('p', null, [
                         h('p', { style: 'text-align: justify; font-size:15px' }, '¿Está seguro de cerrar la caja?'),
@@ -181,8 +190,14 @@
             {
                   window.open(`/${this.resource}/report`, '_blank');
             },
-            clickDownloadProducts(id)
+            clickDownloadProducts(id, type)
             {
+
+                if(type == 'excel'){
+                    window.open(`/${this.resource}/report/products-excel/${id}`, '_blank');
+                    return
+                }
+
                 window.open(`/${this.resource}/report/products/${id}`, '_blank');
 
             }
