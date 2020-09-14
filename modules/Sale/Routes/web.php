@@ -120,5 +120,14 @@ if($current_hostname) {
 
         });
         
+        Route::prefix('technical-service-payments')->group(function () {
+
+            Route::get('/records/{record}', 'TechnicalServicePaymentController@records');
+            Route::get('/document/{record}', 'TechnicalServicePaymentController@document');
+            Route::get('/tables', 'TechnicalServicePaymentController@tables');
+            Route::post('', 'TechnicalServicePaymentController@store');
+            Route::delete('/{record_payment}', 'TechnicalServicePaymentController@destroy');
+
+        });
     });
 }

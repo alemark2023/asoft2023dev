@@ -58,8 +58,8 @@
                                 <th class="">F. Pago</th>
                                 <th class="">Método</th>
                                 <th class="">Referencia</th>
-                                <th class="">Pago</th>
                                 <th class="">Responsable</th>
+                                <th class="">Pago</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,6 +73,10 @@
 
                                             $document_type = $value->payment->associated_record_payment->document_type->description;
                                         
+                                        }elseif($value->instance_type == 'technical_service'){
+                
+                                            $document_type = 'ST';
+                                            
                                         }elseif(isset($value->payment->associated_record_payment->prefix)){
                                             
                                             $document_type = $value->payment->associated_record_payment->prefix;
@@ -99,8 +103,8 @@
                                     <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
                                     <td class="celda">{{$payment_method_type_description}}</td>  
                                     <td class="celda">{{$value->payment->reference}}</td>
-                                    <td class="celda">{{$value->payment->payment}}</td>
                                     <td class="celda">{{ optional($value->user)->name }}</td>
+                                    <td class="celda">{{$value->payment->payment}}</td>
                                 </tr>
 
                                  

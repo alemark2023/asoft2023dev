@@ -107,6 +107,10 @@
 
                                             $document_type = $value->payment->associated_record_payment->document_type->description;
                                         
+                                        }elseif($value->instance_type == 'technical_service'){
+                
+                                            $document_type = 'ST';
+                                            
                                         }elseif(isset($value->payment->associated_record_payment->prefix)){
                                             
                                             $document_type = $value->payment->associated_record_payment->prefix;

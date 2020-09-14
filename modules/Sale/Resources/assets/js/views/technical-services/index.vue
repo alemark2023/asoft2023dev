@@ -23,7 +23,8 @@
                         <th>F. Emisión</th>
                         <th>N° Serie</th>
                         <th>Costo</th>
-                        <th>Pago adelantado</th>
+                        <!-- <th>Pago adelantado</th> -->
+                        <th></th>
                         <th>Saldo</th>
                         <th class="text-center">Ver</th>
                         <th class="text-right">Acciones</th>
@@ -36,7 +37,16 @@
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td class="text-center">{{ row.serial_number }}</td>
                         <td class="text-center">{{ row.cost }}</td>
-                        <td class="text-center">{{ row.prepayment }}</td>
+                        <!-- <td class="text-center">{{ row.prepayment }}</td> -->
+                        <td class="text-right">
+                            <button
+                                type="button"
+                                style="min-width: 41px"
+                                class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                @click.prevent="clickPayment(row.id)"
+                            >Pagos</button>
+                        </td>
+
                         <td class="text-center">{{ row.balance }}</td>
 
                         <td class="text-center">
@@ -58,6 +68,12 @@
             <technical-services-form :showDialog.sync="showDialog"
                           :recordId="recordId"></technical-services-form>
  
+            <technical-service-payments
+                :showDialog.sync="showDialogPayments"
+                :recordId="recordId"
+                :external="true"
+                ></technical-service-payments>
+            
         </div>
     </div>
 </template>
@@ -67,23 +83,29 @@
     import TechnicalServicesForm from './form.vue'
     import DataTable from '@components/DataTable.vue'
     import {deletable} from '@mixins/deletable'
+    import TechnicalServicePayments from './partials/payments.vue'
 
     export default {
         mixins: [deletable],
         props: ['typeUser'],
-        components: {TechnicalServicesForm, DataTable},
+        components: {TechnicalServicesForm, DataTable, TechnicalServicePayments},
         data() {
             return {
                 title: null,
                 showDialog: false,
                 resource: 'technical-services',
                 recordId: null,
+                showDialogPayments: false,
             }
         },
         created() {
             this.title = 'Servicios de soporte técnico'
         },
         methods: {
+            clickPayment(recordId) {
+                this.recordId = recordId;
+                this.showDialogPayments = true
+            },
             clickPrint(recordId){
                 window.open(`/${this.resource}/print/${recordId}/a4`, '_blank');
             },

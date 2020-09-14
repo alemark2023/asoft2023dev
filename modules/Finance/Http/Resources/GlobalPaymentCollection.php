@@ -24,6 +24,10 @@ class GlobalPaymentCollection extends ResourceCollection
 
                 $document_type = $row->payment->associated_record_payment->document_type->description;
             
+            }elseif($row->instance_type == 'technical_service'){
+                
+                $document_type = 'ST';
+                
             }elseif(isset($row->payment->associated_record_payment->prefix)){
                 
                 $document_type = $row->payment->associated_record_payment->prefix;

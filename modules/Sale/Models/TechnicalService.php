@@ -82,5 +82,19 @@ class TechnicalService extends ModelTenant
         return (is_null($value))?null:(array) json_decode($value);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(TechnicalServicePayment::class);
+    }
+
+    public function getNumberFullAttribute()
+    {
+        return "TS-{$this->id}";
+    }
+    
+    public function getCurrencyTypeIdAttribute()
+    {
+        return 'PEN';
+    }
 
 }

@@ -16,6 +16,7 @@ use App\Models\Tenant\{
 };
 use Modules\Sale\Models\ContractPayment;
 use Modules\Pos\Models\CashTransaction;
+use Modules\Sale\Models\TechnicalServicePayment;
 
 class GlobalPayment extends ModelTenant
 {
@@ -91,8 +92,14 @@ class GlobalPayment extends ModelTenant
     {
         return $this->belongsTo(CashTransaction::class, 'payment_id')
                     ->wherePaymentType(CashTransaction::class);
-    }  
+    } 
 
+    public function tec_serv_payment()
+    {
+        return $this->belongsTo(TechnicalServicePayment::class, 'payment_id')
+                    ->wherePaymentType(TechnicalServicePayment::class);
+    }   
+    
     public function getDestinationDescriptionAttribute()
     {
         return $this->destination_type === Cash::class ? 'CAJA GENERAL': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
@@ -114,6 +121,7 @@ class GlobalPayment extends ModelTenant
             ContractPayment::class => 'contract',
             IncomePayment::class => 'income',
             CashTransaction::class => 'cash_transaction',
+            TechnicalServicePayment::class => 'technical_service',
         ];
 
         return $instance_type[$this->payment_type];
@@ -149,7 +157,9 @@ class GlobalPayment extends ModelTenant
             case 'cash_transaction':
                 $description = 'INGRESO';
                 break;
-             
+            case 'technical_service':
+                $description = 'SERVICIO TÉCNICO';
+                break;
         } 
 
         return $description;
@@ -168,6 +178,7 @@ class GlobalPayment extends ModelTenant
             case 'contract':
             case 'income':
             case 'cash_transaction':
+            case 'technical_service':
                 $type = 'input';
                 break;
             case 'purchase':
@@ -192,6 +203,7 @@ class GlobalPayment extends ModelTenant
             case 'sale_note':
             case 'quotation':
             case 'contract':
+            case 'technical_service':
                 $person['name'] = $record->customer->name;
                 $person['number'] = $record->customer->number;
                 break;
@@ -269,6 +281,13 @@ class GlobalPayment extends ModelTenant
                 })
                 ->OrWhereHas('cas_transaction', function($q) use($params){
                     $q->whereBetween('date', [$params->date_start, $params->date_end]);
+                })
+                ->OrWhereHas('tec_serv_payment', function($q) use($params){
+                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                        ->whereHas('associated_record_payment', function($p){
+                            $p->whereTypeUser();
+                        });
+
                 });
 
     }
