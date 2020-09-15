@@ -70,6 +70,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                 $doc = Document::where([['series',$series],['number',$number]])->first();
                 if($doc){
                     $doc->was_deducted_prepayment = false;
+                    $doc->pending_amount_prepayment += $row->total;
                     $doc->save();
                 }
             }
