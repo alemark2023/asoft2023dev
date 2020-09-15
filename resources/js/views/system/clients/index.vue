@@ -13,7 +13,7 @@
       </ol>
     </header>
     <div class="row">
-      <div class="col-lg-8 mb-3">
+      <div class="col-lg-8">
         <div class="card">
           <div class="card-body p-0">
             <div class="row">
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="col-lg-4">
-        <div class="row mb-3">
+        <div class="row">
           <div class="col-md-12">
             <section class="card card-horizontal">
               <header class="card-header bg-success">
@@ -51,7 +51,7 @@
               </div>
             </section>
           </div>
-          <div class="col-md-12">
+          <div class="col-md-12 mb-0">
             <section class="card card-horizontal">
               <header class="card-header bg-info">
                 <div class="card-header-icon">
@@ -65,6 +65,138 @@
             </section>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <section class="card card-featured-left card-featured-primary mb-4">
+          <div class="card-body">
+            <div class="widget-summary widget-summary-md">
+              <div class="widget-summary-col widget-summary-col-icon">
+                <div class="summary-icon text-secondary">
+                  <div class="progress1 mx-auto" :data-value='discUsed'>
+                    <span class="progress1-left">
+                      <span class="progress1-bar border-primary"></span>
+                    </span>
+                    <span class="progress1-right">
+                      <span class="progress1-bar border-primary"></span>
+                    </span>
+                    <div class="progress1-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                      <div class="font-weight-bold">{{discUsed}}<small class="small">%</small></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-summary-col">
+                <div class="summary">
+                  <h4 class="title"><!-- Disco <br> Duro --></h4>
+                  <div class="info">
+                    <strong class="amount">Disco Duro</strong><br>
+                    <!-- <span class="text-warning" v-if="discUsed == 0">no se pudo obtener</span> -->
+                  </div>
+                </div>
+                <div class="summary-footer d-block">
+                  <a href="https://docs.google.com/document/d/1hpEQUs9OFha_35yyLb1cMKeluD-dEku5lQsQ3TJFib8/edit" target="BLANK" class="text-muted text-uppercase">Incrementar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-md-3">
+        <section class="card card-featured-left card-featured-primary mb-4">
+          <div class="card-body">
+            <div class="widget-summary widget-summary-md">
+              <div class="widget-summary-col widget-summary-col-icon">
+                <div class="summary-icon text-secondary">
+                  <div class="progress1 mx-auto" :data-value='iUsed'>
+                    <span class="progress1-left">
+                      <span class="progress1-bar border-primary"></span>
+                    </span>
+                    <span class="progress1-right">
+                      <span class="progress1-bar border-primary"></span>
+                    </span>
+                    <div class="progress1-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                      <div class="font-weight-bold">{{iUsed}}<small class="small">%</small></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-summary-col">
+                <div class="summary">
+                  <h4 class="title"><!-- Disco <br> Duro --></h4>
+                  <div class="info">
+                    <strong class="amount">Inodes</strong>
+                    <!-- <span class="text-primary">(14 unread)</span> -->
+                  </div>
+                </div>
+                <div class="summary-footer d-block">
+                  <a href="https://drive.google.com/open?id=1foPKDI3V3Z9uKTjRc2SPSoztVSOBevPAluT2BqFbfxA" target="BLANK" class="text-muted text-uppercase">Limpiar</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-md-3">
+        <section class="card card-featured-left card-featured-primary mb-4">
+          <div class="card-body">
+            <div class="widget-summary widget-summary-md">
+              <div class="widget-summary-col widget-summary-col-icon">
+                <div class="summary-icon text-secondary">
+                  <div class="progress1 mx-auto" data-value='100'>
+                    <span class="progress1-left">
+                      <span class="progress1-bar border-tertiary"></span>
+                    </span>
+                    <span class="progress1-right">
+                      <span class="progress1-bar border-tertiary"></span>
+                    </span>
+                    <div class="progress1-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                      <div class="font-weight-bold">{{storageSize}}<small class="small">M</small></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="widget-summary-col">
+                <div class="summary">
+                  <h4 class="title"><!-- Disco <br> Duro --></h4>
+                  <div class="info">
+                    <strong class="amount">Archivos <br> Generados</strong>
+                    <!-- <span class="text-primary">(14 unread)</span> -->
+                  </div>
+                </div>
+                <div class="summary-footer">
+                  <!-- <a class="text-muted text-uppercase">(view all)</a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="col-md-3">
+        <section class="card card-featured-left card-featured-primary mb-4">
+          <div class="card-body">
+            <div class="widget-summary widget-summary-md">
+              <div class="widget-summary-col widget-summary-col-icon">
+                <div class="summary-icon" style="background-color: #292961">
+                  <i class="fab fa-gitlab"></i>
+                </div>
+              </div>
+              <div class="widget-summary-col">
+                <div class="summary">
+                  <h4 class="title"><!-- Disco <br> Duro --></h4>
+                  <div class="info">
+                    <strong class="amount">Versión</strong><br>
+                    <span class="text-primary">{{version}}</span>
+                  </div>
+                </div>
+                <div class="summary-footer">
+                  <!-- <a class="text-muted text-uppercase">(view all)</a> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
 
@@ -290,7 +422,7 @@ import AccountStatus from "./partials/account_status.vue";
 
 export default {
   mixins: [deletable, changeable],
-  props: ['deletePermission'],
+  props: ['deletePermission', 'discUsed', 'iUsed', 'storageSize', 'version'],
   components: { CompaniesForm, ChartLine, ClientPayments, AccountStatus },
   data() {
     return {

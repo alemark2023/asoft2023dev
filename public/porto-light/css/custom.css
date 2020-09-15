@@ -300,6 +300,76 @@ html.dark .el-switch__label *,
   color:#FFF;
   border-radius:50px;
   text-align:center;
-  font-size:30px;
   z-index:100;
+}
+
+.progress1 {
+  width: 70px;
+  height: 70px;
+  background: none;
+  position: relative;
+}
+
+.progress1::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress1>span {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+.progress1 .progress1-left {
+  left: 0;
+}
+
+.progress1 .progress1-bar {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border-width: 6px;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+.progress1 .progress1-left .progress1-bar {
+  left: 100%;
+  border-top-right-radius: 80px;
+  border-bottom-right-radius: 80px;
+  border-left: 0;
+  -webkit-transform-origin: center left;
+  transform-origin: center left;
+}
+
+.progress1 .progress1-right {
+  right: 0;
+}
+
+.progress1 .progress1-right .progress1-bar {
+  left: -100%;
+  border-top-left-radius: 80px;
+  border-bottom-left-radius: 80px;
+  border-right: 0;
+  -webkit-transform-origin: center right;
+  transform-origin: center right;
+}
+
+.progress1 .progress1-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1rem;
+  font-weight: bold;
 }

@@ -18,13 +18,13 @@ class UpdateController extends Controller
 
     public function version()
     {
-        $id = new Process('git show HEAD~0 --pretty=format:"%h" --no-patch');
+        $id = new Process('git describe --tags');
         $id->run();
         $res_id = $id->getOutput();
-        $tag = new Process('git tag | sort -V | tail -1');
-        $tag->run();
-        $res_tag = $tag->getOutput();
-        return json_encode($res_tag.' - '.$res_id);
+        // $tag = new Process('git tag | sort -V | tail -1');
+        // $tag->run();
+        // $res_tag = $tag->getOutput();
+        return json_encode($res_id);
     }
 
     public function branch()
