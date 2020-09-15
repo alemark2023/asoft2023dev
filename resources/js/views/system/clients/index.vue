@@ -82,7 +82,7 @@
                       <span class="progress1-bar border-primary"></span>
                     </span>
                     <div class="progress1-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                      <div class="font-weight-bold">{{discUsed}}<small class="small">%</small></div>
+                      <div class="font-weight-bold">{{discUsed}}<small class="small"></small></div>
                     </div>
                   </div>
                 </div>
@@ -117,7 +117,7 @@
                       <span class="progress1-bar border-primary"></span>
                     </span>
                     <div class="progress1-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                      <div class="font-weight-bold">{{iUsed}}<small class="small">%</small></div>
+                      <div class="font-weight-bold">{{iUsed}}<small class="small"></small></div>
                     </div>
                   </div>
                 </div>
@@ -152,7 +152,7 @@
                       <span class="progress1-bar border-tertiary"></span>
                     </span>
                     <div class="progress1-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                      <div class="font-weight-bold">{{storageSize}}<small class="small">M</small></div>
+                      <div class="font-weight-bold">{{storageSize}}<small class="small"></small></div>
                     </div>
                   </div>
                 </div>
