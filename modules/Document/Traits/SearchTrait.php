@@ -39,7 +39,7 @@ trait SearchTrait
                     })
                     ->OrWhereJsonContains('attributes', ['value' => $request->input])
                     ->whereWarehouse()
-                    ->whereNotIsSet()
+                    // ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get();

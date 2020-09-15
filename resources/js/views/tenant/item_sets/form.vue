@@ -417,20 +417,21 @@
                     this.form.individual_items.push(row)
                 }
 
-                console.log(row)
+                // console.log(row)
                 this.changeIndividualItems()
             },
             changeIndividualItems(){
 
-                let acum_sale_unit_price = 0
+                // let acum_sale_unit_price = 0
 
-                this.form.individual_items.forEach(row => {
-                    // let individual_item = _.find(this.individual_items,{'id':id})
-                    acum_sale_unit_price += parseFloat(row.sale_unit_price) * parseFloat(row.quantity)
-                });
+                // this.form.individual_items.forEach(row => {
+                //     // let individual_item = _.find(this.individual_items,{'id':id})
+                //     acum_sale_unit_price += parseFloat(row.sale_unit_price) * parseFloat(row.quantity)
+                // });
 
-                this.form.sale_unit_price = acum_sale_unit_price
-                this.form.sale_unit_price_set = acum_sale_unit_price
+                // this.form.sale_unit_price = acum_sale_unit_price
+                // this.form.sale_unit_price_set = acum_sale_unit_price
+
             },
             initForm() {
                 this.loading_submit = false,
@@ -596,6 +597,7 @@
                 if(this.form.individual_items.length < 2)
                     return this.$message.error('Al menos debe elegir 2 productos')
 
+                this.form.sale_unit_price_set = this.form.sale_unit_price
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
