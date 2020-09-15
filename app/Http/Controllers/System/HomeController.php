@@ -15,10 +15,10 @@ class HomeController extends Controller
         $clients = Client::get();
         $delete_permission = config('tenant.admin_delete_client');
 
-        $avail = new Process('df -m -h --output=pcent /');
+        $avail = new Process('df -m -h --output=pcent / | tail -n 1');
         $avail->run();
-        $disc_used = $avail->getOutput();
-        $disc_used = $disc_used != "" ? substr($disc_used, 0, -1) : 0;
+        $discused = $avail->getOutput();
+        $disc_used = $discused != "" ? substr($discused, 0, -1) : 0;
 
         $i_used = '';
         if ($disc_used != 0) {
