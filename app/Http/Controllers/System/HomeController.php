@@ -22,7 +22,7 @@ class HomeController extends Controller
 
         $i_used = '';
         if ($disc_used != 0) {
-            $inodes = new Process("df -i | awk '$NF == / { print $5 }'");
+            $inodes = new Process("df -i / | awk '{print $5}' | tail -n 1");
             $inodes->run();
             $i_used = $inodes->getOutput();
         }
