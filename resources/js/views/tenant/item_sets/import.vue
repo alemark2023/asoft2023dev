@@ -4,14 +4,14 @@
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="/formats/items.xlsx" target="_new">Descargar formato</a>
+                        <a href="/formats/item_sets.xlsx" target="_new">Descargar formato</a>
                     </div>
                     <div class="col-md-12 mt-4">
                         <div class="form-group text-center" :class="{'has-danger': errors.file}">
                             <el-upload
                                     ref="upload"
                                     :headers="headers"
-                                    action="/items/import"
+                                    action="/items/import/item-sets"
                                     :show-file-list="true"
                                     :auto-upload="false"
                                     :multiple="false"
@@ -59,7 +59,7 @@
                 }
             },
             create() {
-                this.titleDialog = 'Importar Productos'
+                this.titleDialog = 'Importar Productos Compuestos'
             },
             async submit() {
                 this.loading_submit = true
