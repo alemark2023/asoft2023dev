@@ -6,6 +6,13 @@
                 <li class="active"><span>Productos</span></li>
             </ol>
             <div class="right-wrapper pull-right">
+                <div class="btn-group flex-wrap">
+                    <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2 dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-upload"></i> Importar <span class="caret"></span></button>
+                    <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+                        <a class="dropdown-item text-1" href="#" @click.prevent="clickImportSet()">1. Productos compuestos</a>
+                        <a class="dropdown-item text-1" href="#" @click.prevent="clickImportSetIndividual()">2. Detalle productos compuestos</a>
+                    </div>
+                </div>
                 <template v-if="typeUser === 'admin'">
                     <!-- <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickImport()"><i class="fa fa-upload"></i> Importar</button> -->
                     <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
@@ -59,7 +66,9 @@
             <items-form :showDialog.sync="showDialog"
                         :recordId="recordId"></items-form>
 
-            <items-import :showDialog.sync="showImportDialog"></items-import>
+            <items-import :showDialog.sync="showImportSetDialog"></items-import>
+
+            <items-import-set-individual :showDialog.sync="showImportSetIndividualDialog"></items-import-set-individual>
 
             <warehouses-detail 
                 :showDialog.sync="showWarehousesDetail"
@@ -76,15 +85,17 @@
     import ItemsImport from './import.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
+    import ItemsImportSetIndividual from './partials/import_set_individual.vue'
 
     export default {
         props:['typeUser'],
         mixins: [deletable],
-        components: {ItemsForm, ItemsImport, DataTable, WarehousesDetail},
+        components: {ItemsForm, ItemsImport, DataTable, WarehousesDetail, ItemsImportSetIndividual},
         data() {
             return {
                 showDialog: false,
-                showImportDialog: false,
+                showImportSetDialog: false,
+                showImportSetIndividualDialog: false,
                 showWarehousesDetail: false,
                 resource: 'item-sets',
                 recordId: null,
@@ -94,6 +105,9 @@
         created() {
         },
         methods: {
+            clickImportSetIndividual() {
+                this.showImportSetIndividualDialog = true
+            },
             clickWarehouseDetail(warehouses){
                 this.warehousesDetail = warehouses
                 this.showWarehousesDetail = true
@@ -102,8 +116,8 @@
                 this.recordId = recordId
                 this.showDialog = true
             },
-            clickImport() {
-                this.showImportDialog = true
+            clickImportSet() {
+                this.showImportSetDialog = true
             },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>

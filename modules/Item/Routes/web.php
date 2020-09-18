@@ -43,6 +43,10 @@ if($hostname) {
 
             });
 
+            Route::post('items/import/item-sets', 'ItemSetController@importItemSets');
+            Route::post('items/import/item-sets-individual', 'ItemSetController@importItemSetsIndividual');
+
+
         });
     });
 }
