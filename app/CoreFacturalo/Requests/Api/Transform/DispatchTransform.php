@@ -112,7 +112,7 @@ class DispatchTransform
                     'item_type_id' => Functions::valueKeyInArray($row, 'codigo_tipo_item', '01'),
                     'item_code' => Functions::valueKeyInArray($row, 'codigo_producto_sunat'),
                     'item_code_gs1' => Functions::valueKeyInArray($row, 'codigo_producto_gsl'),
-                    'unit_type_id' => Functions::valueKeyInArray($row, 'unidad_de_medida'), 
+                    'unit_type_id' => Functions::valueKeyInArray($row, 'unidad_de_medida'),
                     'currency_type_id' => 'PEN',
 
                     'quantity' => Functions::valueKeyInArray($row, 'cantidad'),

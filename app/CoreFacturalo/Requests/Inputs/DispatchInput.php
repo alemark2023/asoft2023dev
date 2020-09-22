@@ -79,7 +79,7 @@ class DispatchInput
     {
         if(array_key_exists('origin', $inputs)) {
             $origin = $inputs['origin'];
-            $location_id = $origin['location_id'][2];
+            $location_id = $origin['location_id'][2] == '0' ? $origin['location_id'] : $origin['location_id'][2];
             $address = $origin['address'];
 
             return [
@@ -94,7 +94,7 @@ class DispatchInput
     {
         if(array_key_exists('delivery', $inputs)) {
             $delivery = $inputs['delivery'];
-            $location_id = $delivery['location_id'][2];
+            $location_id = $delivery['location_id'][2] == '0' ? $delivery['location_id'] : $delivery['location_id'][2];
             $address = $delivery['address'];
 
             return [
@@ -163,7 +163,7 @@ class DispatchInput
         }
         return null;
     }
-    
+
     private static function secondary_license_plates($inputs)
     {
 

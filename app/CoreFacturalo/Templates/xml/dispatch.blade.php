@@ -117,7 +117,7 @@
                 <cbc:ID>{{ $document->license_plate }}</cbc:ID>
                 <cac:TransportEquipment>
                     <cbc:ID>{{ $secondary_license_plates->semitrailer }}</cbc:ID>
-                </cac:TransportEquipment> 
+                </cac:TransportEquipment>
             </cac:TransportHandlingUnit>
             @endif
         @endif
