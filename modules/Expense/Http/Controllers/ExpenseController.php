@@ -42,8 +42,8 @@ class ExpenseController extends Controller
     public function columns()
     {
         return [
-            'number' => 'Número',
             'date_of_issue' => 'Fecha de emisión',
+            'number' => 'Número',
         ];
     }
 
