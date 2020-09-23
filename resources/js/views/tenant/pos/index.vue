@@ -1,5 +1,5 @@
 <template >
-  <div class="container-fluid">
+  <div class="container-fluid p-0">
     <div class="row page-header pr-0" style="height:auto">
       <Keypress key-event="keyup" :key-code="112" @success="handleFn112" />
      <!-- <Keypress key-event="keyup" :key-code="113" @success="handleFn113" /> -->
@@ -11,28 +11,28 @@
         <h2 class="text-sm">{{user.name}}</h2>
       </div> -->
         <div class="col-md-4">
-          <h2 class="text-sm">POS</h2>
+          <!-- <h2 class="text-sm">POS</h2> -->
           <h2><el-switch v-model="search_item_by_barcode" active-text="Buscar por código de barras" @change="changeSearchItemBarcode"></el-switch></h2>
         </div>
         <div class="col-md-4">
             <h2>
                 <el-tooltip class="item" effect="dark" content="Todas las categorías" placement="top-start">
-                    <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-border-all"></i></button>
+                    <button type="button" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"><i class="fa fa-border-all"></i></button>
                 </el-tooltip>
             </h2>
             <h2>
                 <el-tooltip class="item" effect="dark" content="Categorías y productos" placement="top-start">
-                    <button type="button" :disabled="place == 'cat2'" @click="setView('cat2')"  class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-bars"></i></button>
+                    <button type="button" :disabled="place == 'cat2'" @click="setView('cat2')"  class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"><i class="fa fa-bars"></i></button>
                 </el-tooltip>
             </h2>
             <h2>
                 <el-tooltip class="item" effect="dark" content="Listado de todos los productos" placement="top-start">
-                    <button type="button" :disabled="place == 'cat3'"  @click="setView('cat3')" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fas fa-list-ul"></i></i></button>
+                    <button type="button" :disabled="place == 'cat3'"  @click="setView('cat3')" class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"><i class="fas fa-list-ul"></i></i></button>
                 </el-tooltip>
             </h2>
             <h2>
                 <el-tooltip class="item" effect="dark" content="Regresar" placement="top-start">
-                    <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-undo"></i></button>
+                    <button type="button" :disabled="place== 'cat'" @click="back()" class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"><i class="fa fa-undo"></i></button>
                 </el-tooltip>
             </h2>
 
