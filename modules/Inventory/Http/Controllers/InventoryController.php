@@ -16,6 +16,7 @@ use Modules\Inventory\Models\Warehouse;
 use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Inventory\Models\InventoryKardex;
 
 
 class InventoryController extends Controller
@@ -367,5 +368,28 @@ class InventoryController extends Controller
         $this->initializeInventory();
     }
 
+    
+    public function regularize_stock()
+    {
+
+        DB::connection('tenant')->transaction(function () {
+
+            $item_warehouses = ItemWarehouse::get();
+
+            foreach ($item_warehouses as $it_warehouse) {
+
+                $inv_kardex = InventoryKardex::where([['item_id', $it_warehouse->item_id], ['warehouse_id', $it_warehouse->warehouse_id]])->sum('quantity');
+                $it_warehouse->stock = $inv_kardex;
+                $it_warehouse->save();
+
+            }
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Stock regularizado'
+        ];
+    }
 
 }

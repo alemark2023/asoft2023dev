@@ -32,6 +32,7 @@ if($hostname) {
 
                 Route::post('remove', 'InventoryController@remove');
                 Route::get('initialize', 'InventoryController@initialize');
+                Route::get('regularize_stock', 'InventoryController@regularize_stock');
             });
 
             Route::prefix('reports')->group(function () {
