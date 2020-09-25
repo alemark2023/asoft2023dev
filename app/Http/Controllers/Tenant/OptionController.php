@@ -114,13 +114,13 @@ class OptionController extends Controller
 
     private function updateStockAfterDelete(){
 
-        if($this->delete_quantity > 0){
+        // if($this->delete_quantity > 0){
 
-            ItemWarehouse::latest()->update([
-                'stock' => 0
-            ]);
+        //     ItemWarehouse::latest()->update([
+        //         'stock' => 0
+        //     ]);
 
-        }
+        // }
 
     }
 
