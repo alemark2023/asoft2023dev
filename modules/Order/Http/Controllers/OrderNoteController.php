@@ -39,6 +39,7 @@ use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
 use Modules\Finance\Traits\FinanceTrait;
+use App\Models\Tenant\Configuration;
 
 
 class OrderNoteController extends Controller
@@ -485,8 +486,9 @@ class OrderNoteController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->order_note->filename;
 
-        $base_template = config('tenant.pdf_template');
-
+        // $base_template = config('tenant.pdf_template');
+        $base_template = Configuration::first()->formats;
+        
         $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
         if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80') {
