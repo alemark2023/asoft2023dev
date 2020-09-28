@@ -341,7 +341,7 @@ export default {
         document_id: null,
         date_of_payment: moment().format("YYYY-MM-DD"),
         payment_method_type_id: "01",
-        payment_destination_id:'cash',
+        payment_destination_id:null,
         reference: null,
         payment: 0
       });
@@ -439,10 +439,29 @@ export default {
         this.document_types.length > 0 ? this.document_types[0].id : null;
       this.changeDocumentType();
     },
-    submit() {
-      this.loading_submit = true;
-      this.assignDocument();
+    validatePaymentDestination(){
 
+        let error_by_item = 0
+
+        this.document.payments.forEach((item)=>{
+            if(item.payment_destination_id == null) error_by_item++;
+        })
+
+        return  {
+            error_by_item : error_by_item,
+        }
+
+    },
+    async submit() {
+      await this.assignDocument();
+
+      let validate_payment_destination = await this.validatePaymentDestination()
+
+      if(validate_payment_destination.error_by_item > 0) {
+          return this.$message.error('El destino del pago es obligatorio');
+      }
+
+      this.loading_submit = true;
       if (this.document.document_type_id === "80") {
         this.document.prefix = "NV";
         this.resource_documents = "sale-notes";

@@ -488,7 +488,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id:null,
                     payment: 0,
                 });
             },   
@@ -806,12 +806,31 @@
                 
                 
             },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.form.payments.forEach((item)=>{
+                    if(item.payment_destination_id == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
 
                 
                 let validate = await this.validate_payments()
                 if(!validate.success) {
                     return this.$message.error(validate.message);
+                }
+
+                let validate_payment_destination = await this.validatePaymentDestination()
+
+                if(validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
                 }
 
                 this.loading_submit = true

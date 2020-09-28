@@ -201,7 +201,11 @@
                                             <tr width="100%">
                                                 <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
                                                 <template v-if="enabled_payments">
-                                                    <th v-if="form.payments.length>0" class="pb-2">Destino</th>
+                                                    <th v-if="form.payments.length>0" class="pb-2">Destino
+                                                        <el-tooltip class="item" effect="dark" content="Aperture caja o cuentas bancarias" placement="top-start">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </el-tooltip>
+                                                    </th>
                                                     <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
                                                     <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                                     <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -1113,13 +1117,14 @@ import moment from 'moment'
 
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     document_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id: null,
                     payment: 0,
 
                 });
@@ -1605,6 +1610,23 @@ import moment from 'moment'
                     message: 'Los items deben tener tipo de afectación igual al seleccionado en el anticipo'
                 }
             },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.form.payments.forEach((item)=>{
+
+                    if(!['05', '08', '09'].includes(item.payment_method_type_id)){
+                        if(item.payment_destination_id == null) error_by_item++;
+                    }
+
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
 
                 if(this.form.has_prepayment || this.prepayment_deduction){
@@ -1621,6 +1643,13 @@ import moment from 'moment'
                     if(validate.acum_total > parseFloat(this.form.total) || validate.error_by_item > 0) {
                         return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                     }
+
+                    let validate_payment_destination = await this.validatePaymentDestination()
+
+                    if(validate_payment_destination.error_by_item > 0) {
+                        return this.$message.error('El destino del pago es obligatorio');
+                    }
+
                 }
 
                 await this.deleteInitGuides()

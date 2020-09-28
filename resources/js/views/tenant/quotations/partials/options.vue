@@ -361,7 +361,7 @@ export default {
                 document_id: null,
                 date_of_payment: moment().format("YYYY-MM-DD"),
                 payment_method_type_id: "01",
-                payment_destination_id: "cash",
+                payment_destination_id: null,
                 reference: null,
                 payment: 0,
             });
@@ -461,13 +461,34 @@ export default {
                     : null;
             this.changeDocumentType();
         },
+        validatePaymentDestination(){
+
+            let error_by_item = 0
+
+            this.document.payments.forEach((item)=>{
+                if(item.payment_destination_id == null) error_by_item++;
+            })
+
+            return  {
+                error_by_item : error_by_item,
+            }
+
+        },
         async submit() {
+            
             let validate_items = await this.validateQuantityandSeries();
             if (!validate_items.success)
                 return this.$message.error(validate_items.message);
 
+            await this.assignDocument();
+
+            let validate_payment_destination = await this.validatePaymentDestination()
+
+            if(validate_payment_destination.error_by_item > 0) {
+                return this.$message.error('El destino del pago es obligatorio');
+            }
+
             this.loading_submit = true;
-            this.assignDocument();
 
             if (this.document.document_type_id === "nv") {
                 this.document.prefix = "NV";

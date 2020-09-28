@@ -28,8 +28,11 @@ trait FinanceTrait
         $cash = $this->getCash();
 
         // dd($cash);
+        if($cash){
+            return collect($bank_accounts)->push($cash);
+        }
 
-        return collect($bank_accounts)->push($cash);
+        return $bank_accounts;
 
     }
 
@@ -59,28 +62,31 @@ trait FinanceTrait
                 'description' => ($cash->reference_number) ? "CAJA GENERAL - {$cash->reference_number}" : "CAJA GENERAL",
             ];
 
-        }else{
-            
-            $cash_create = Cash::create([
-                                    'user_id' => auth()->user()->id,
-                                    'date_opening' => date('Y-m-d'),
-                                    'time_opening' => date('H:i:s'),
-                                    'date_closed' => null,
-                                    'time_closed' => null,
-                                    'beginning_balance' => 0,
-                                    'final_balance' => 0,
-                                    'income' => 0,
-                                    'state' => true,
-                                    'reference_number' => null
-                                ]);
-
-            return [
-                'id' => 'cash',
-                'cash_id' => $cash_create->id,
-                'description' => "CAJA GENERAL"
-            ];
-
         }
+        // else{
+            
+        //     $cash_create = Cash::create([
+        //                             'user_id' => auth()->user()->id,
+        //                             'date_opening' => date('Y-m-d'),
+        //                             'time_opening' => date('H:i:s'),
+        //                             'date_closed' => null,
+        //                             'time_closed' => null,
+        //                             'beginning_balance' => 0,
+        //                             'final_balance' => 0,
+        //                             'income' => 0,
+        //                             'state' => true,
+        //                             'reference_number' => null
+        //                         ]);
+
+        //     return [
+        //         'id' => 'cash',
+        //         'cash_id' => $cash_create->id,
+        //         'description' => "CAJA GENERAL"
+        //     ];
+
+        // }
+
+        return null;
 
     }
 
