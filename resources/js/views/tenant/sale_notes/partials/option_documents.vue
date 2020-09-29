@@ -183,7 +183,7 @@
                     document_id: null,
                     date_of_payment: moment().format("YYYY-MM-DD"),
                     payment_method_type_id: "01",
-                    payment_destination_id: "cash",
+                    payment_destination_id: null,
                     reference: null,
                     payment: 0,
                 });
@@ -251,6 +251,19 @@
                 this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.changeDocumentType()
             },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.document.payments.forEach((item)=>{
+                    if(item.payment_destination_id == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
                 
                 if(this.generate_dispatch){
@@ -258,6 +271,13 @@
                         return this.$message.error('Debe seleccionar una guía base')
                     }
                 }
+                
+                let validate_payment_destination = await this.validatePaymentDestination()
+
+                if(validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
+                }
+
                 this.loading_submit = true;
 
                 this.document.exchange_rate_sale = 1;

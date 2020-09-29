@@ -281,6 +281,7 @@
                         if (error.response.status === 422) {
                             this.records[index].errors = error.response.data;
                         } else {
+                            this.$message.error(error.response.data.message)
                             console.log(error);
                         }
                     })

@@ -129,7 +129,11 @@
                                     <thead>
                                         <tr width="100%">
                                             <th v-if="form.payments.length>0" class="pb-2">Método de pago</th>
-                                            <th v-if="form.payments.length>0" class="pb-2">Destino</th>
+                                            <th v-if="form.payments.length>0" class="pb-2">Destino
+                                                <el-tooltip class="item" effect="dark" content="Aperture caja o cuentas bancarias" placement="top-start">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </th>
                                             <th v-if="form.payments.length>0" class="pb-2">Referencia</th>
                                             <th v-if="form.payments.length>0" class="pb-2">Monto</th>
                                             <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
@@ -376,7 +380,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id:null,
                     payment: 0,
 
                 });
@@ -613,6 +617,19 @@
                 }
 
             },
+            validatePaymentDestination(){
+
+                let error_by_item = 0
+
+                this.form.payments.forEach((item)=>{
+                    if(item.payment_destination_id == null) error_by_item++;
+                })
+
+                return  {
+                    error_by_item : error_by_item,
+                }
+
+            },
             async submit() {
                 // await this.changePaymentMethodType(false)
 
@@ -621,6 +638,11 @@
                     return this.$message.error('Los montos ingresados superan al monto a pagar o son incorrectos');
                 }
 
+                let validate_payment_destination = await this.validatePaymentDestination()
+
+                if(validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
+                }
                 // if(this.form.date_of_issue > this.form.date_of_due)
                 //     return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
 
