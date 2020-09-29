@@ -1,3 +1,71 @@
+## 3.4.1
+
+### docs
+2020-09-04 : docs | token apiperu desde panel admin .env.example<br>
+2020-08-25 : docs | changelog<br>
+
+
+### fixed
+2020-09-25 : fixed | i-466 | Ajuste opcion inicializa stock - se agrega funcion regularizar stock<br>
+2020-09-25 : fixed | i-429 | Ajuste serie y numero nota de venta en kardex<br>
+2020-09-23 : fixed | i-403 | Modifica filtro principal en gastos<br>
+2020-09-15 : fixed | i-240 | Ajuste anticipos parciales - reintegrar total anulado/rechazado<br>
+2020-09-14 : fixed | i-402 | Ajuste facturas anticipadas con monto total 0 gravadas - exoneradas<br>
+2020-09-11 : fixed | i-415 | Ajuste form lotes en nv<br>
+2020-09-10 : fixed | i-415 | Se agrega lote en items crear/editar compra<br>
+2020-09-08 : fixed | Se modifica flujo de validacion de respuesta sunat - registra cpe con pendientes de regularizacion<br>
+2020-09-07 : fixed | i-401 | Bloquear peticion envio cpe - pos<br>
+2020-09-07 : fixed | i-355 | Inhabilitar edicion de permisos del usuario admin tenant<br>
+2020-09-04 : fixed | i-408 | Ajuste nuevo cpe - tipo afectacion 13,14<br>
+2020-09-04 : fixed | i-406 | Ajuste reporte kardex - error descuento al generar cpe desde nv<br>
+2020-09-03 : fixed | i-362 | Ajuste textos en reporte punto venta<br>
+2020-09-03 : fixed | i-398 | Ajuste edicion items en nuevo cpe<br>
+2020-09-02 : fixed | i-384 | Ajuste kardex valorizado - agrega tipos de cliente<br>
+2020-09-01 : fixed | i-279 | Modificacion de filtros - reporte pagos<br>
+2020-08-31 : fixed | i-379 | Se agrega filtro de busqueda lotes nuevo cpe - ajustes de validacion stock<br>
+2020-08-28 : fixed | i-381 | Ajuste sobrecarga lotes en cotizacion/generar comprobante - ajuste filtro componente lotes<br>
+2020-08-28 : fixed | i-314 | Modificar template internal_code_contact para contrato y cotizacion - retiran pagos contratos y finanzas - ajuste formatos anticipos<br>
+2020-08-27 : fixed | i-381 | Se modifica el componente para ingreso de lotes - filtro de items en compras - nv - indices en lotes compra venta - focus compras<br>
+2020-08-27 : fixed | i-381 | Se modifica busqueda remota en items - nota venta - prueba venta lotes<br>
+2020-08-26 : fixed | i-381 | Modificacion componente para seleccionar lotes en nuevo cpe y nv<br>
+
+
+### feature
+2020-09-29 : feature | cantidad de caracteres para el campo descripcion de producto<br>
+2020-09-28 : feature | i-449 | Se elimina apertura automatica caja chica<br>
+2020-09-28 : feature | i-470 | Se agrega formato para visualizar lugar de despacho - nueo cpe, nv, pedidos<br>
+2020-09-25 : feature | i-324 | Se agrega tipo de documento recibo por honorario en compras<br>
+2020-09-23 : feature | diseño POS<br>
+2020-09-18 : feature | i-435 | importacion conjuntos/packs - integracion conjuntos en nuevo cpe<br>
+2020-09-15 : feature | i-414 | Integracion conjuntos/pack en formulario nuevo cpe  - elimina campo autocalculado en form conjuntos<br>
+2020-09-14 : feature | widgets system<br>
+2020-09-14 : feature | notion | system dashboard hd, inodes<br>
+2020-09-14 : feature | i-351 | Suma totales reporte pagos - agrega pagos a soporte tecnico y reportes modulo finanzas<br>
+2020-09-14 : feature | i-340 | Se agrega productos de nv a reporte caja - agrega formato xls<br>
+2020-09-11 : feature | i-403 | Se agrega reporte de movimientos - finanzas<br>
+2020-09-11 : feature | i-403 | Se enlaza saldo inicial caja chica pos con caja general finanzas<br>
+2020-09-10 : feature | i-310 | Se agrega nv a caja chica pos<br>
+2020-09-10 : feature | emparejando archivos de plantillas pdf<br>
+2020-09-10 : feature | i-365 | Se agrega listado de series - edicion - exportal xls<br>
+2020-09-10 : feature | i-403 | Requerimientos GR<br>
+2020-09-09 : feature | i-403 | Avance requerimientos<br>
+2020-09-08 : feature |i-334| Busqueda por atributos nueo cpe<br>
+2020-09-07 : feature | i-351 | Se agrega sumatoria en pagos - finanzas<br>
+2020-09-07 : feature | i-355 | Se separa los permisos del modulo usuario - establecimientos de configuracion<br>
+2020-09-04 : feature | i-405 | Se habilita tipo de operacion 0401<br>
+2020-09-04 : feature | Se agrega funcionalidad para asignar cantidad en conjuntos/promociones pos<br>
+2020-09-03 : feature | i-374 | Se agrega destino de pago offline<br>
+2020-09-03 : feature | i-374 | Se agrega pagos en modo offline<br>
+2020-09-02 : feature | i-321 | Se agrega configuracion en establecimiento para seleccionar cliente por defecto en nuevo cpe<br>
+2020-09-02 : feature | i-313 | Se agrega seleccion de almacen en pedidos<br>
+2020-09-01 : feature | i-313 | Avance seleccion de almacen en items - nota venta<br>
+2020-09-01 : feature | i-356 | Exportacion masiva de documentos - pdf<br>
+2020-08-31 : feature | i-356 | Avance descarga masiva de documentos - totales<br>
+2020-08-28 : feature | i-381 | Se agrega busqueda por codigo de barras en series<br>
+2020-08-27 : feature | n | espacios tabla producto crear comprobante<br>
+2020-08-25 : feature | style ecommerce<br>
+
+
 ## 3.4.0
 
 ### docs
