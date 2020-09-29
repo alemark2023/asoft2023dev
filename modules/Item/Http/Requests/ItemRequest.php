@@ -22,7 +22,7 @@ class ItemRequest extends FormRequest
             ],
             'description' => [
                 'required',
-            ], 
+            ],
             'unit_type_id' => [
                 'required',
             ],
@@ -48,8 +48,8 @@ class ItemRequest extends FormRequest
             ],
             'purchase_affectation_igv_type_id' => [
                 'required'
-            ],
-            
+            ]
+
         ];
     }
 
