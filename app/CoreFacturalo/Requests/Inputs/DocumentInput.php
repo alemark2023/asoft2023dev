@@ -137,7 +137,7 @@ class DocumentInput
                 $items[] = [
                     'item_id' => $item->id,
                     'item' => [
-                        'description' => $item->description,
+                        'description' => trim($item->description),
                         'item_type_id' => $item->item_type_id,
                         'internal_id' => $item->internal_id,
                         'item_code' => trim($item->item_code),
