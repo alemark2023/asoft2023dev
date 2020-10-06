@@ -34,6 +34,7 @@ class ItemSetImport implements ToCollection
                 $sale_unit_price = $row[5];
                 $sale_affectation_igv_type_id = $row[6];
 
+
                 $affectation_igv_types_exonerated_unaffected = ['20','21','30','31','32','33','34','35','36','37'];
 
                 if(in_array($sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
@@ -57,6 +58,8 @@ class ItemSetImport implements ToCollection
                     $item = null;
                 }
 
+                $name = $row[9];
+                $second_name = $row[10];
 
                 if(!$item) {
 
@@ -64,6 +67,8 @@ class ItemSetImport implements ToCollection
                     $brand = Brand::updateOrCreate(['name' => $brand_name]);
 
                     Item::create([
+                        'name' => $name,
+                        'second_name' => $second_name,
                         'description' => $description,
                         'item_type_id' => $item_type_id,
                         'internal_id' => $internal_id,
