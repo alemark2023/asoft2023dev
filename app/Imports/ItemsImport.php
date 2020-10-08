@@ -53,6 +53,10 @@ class ItemsImport implements ToCollection
                 $category_name = $row[12];
                 $brand_name = $row[13];
 
+                $name = $row[14];
+                $second_name = $row[15];
+
+
 
                 if($internal_id) {
                     $item = Item::where('internal_id', $internal_id)
@@ -86,6 +90,8 @@ class ItemsImport implements ToCollection
                         'stock_min' => $stock_min,
                         'category_id' => $category->id,
                         'brand_id' => $brand->id,
+                        'name' => $name,
+                        'second_name' => $second_name,
                         // 'warehouse_id' => $warehouse->id
                     ]);
 
@@ -106,6 +112,8 @@ class ItemsImport implements ToCollection
                         'purchase_unit_price' => $purchase_unit_price,
                         'purchase_affectation_igv_type_id' => $purchase_affectation_igv_type_id,
                         'stock_min' => $stock_min,
+                        'name' => $name,
+                        'second_name' => $second_name,
                     ]);
 
                     $registered += 1;
