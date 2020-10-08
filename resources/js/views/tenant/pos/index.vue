@@ -736,9 +736,17 @@
             form_pos = JSON.parse(form_pos)
             if (form_pos) {
               this.form = form_pos
+              this.initDateTimeIssue()
               // this.calculateTotal()
             }
 
+          },
+          initDateTimeIssue(){
+            
+              this.form.date_of_issue = moment().format("YYYY-MM-DD")
+              this.form.time_of_issue = moment().format("HH:mm:ss")
+              this.form.date_of_due = moment().format("YYYY-MM-DD")
+              
           },
           setFormPosLocalStorage(form_param = null){
 

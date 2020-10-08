@@ -791,6 +791,10 @@
             async clickPayment(){
                 // if(this.has_card && !this.form_payment.card_brand_id) return this.$message.error('Seleccione una tarjeta');
 
+                if(!moment(moment().format("YYYY-MM-DD")).isSame(this.form.date_of_issue)){
+                   return this.$message.error('La fecha de emisión no coincide con la del día actual');
+                }
+
                 if(!this.form.series_id)
                 {
                    return this.$message.warning('El establecimiento no tiene series disponibles para el comprobante');
