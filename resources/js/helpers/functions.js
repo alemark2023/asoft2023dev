@@ -103,6 +103,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     let total_value_partial = unit_value * row.quantity
 
+
     /* Discounts */
     let discount_base = 0
     let discount_no_base = 0
@@ -121,20 +122,40 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
 
     row.discounts.forEach((discount, index) => {
 
-        if(discount.is_amount){
-
-            discount.base = _.round(total_value_partial, 2)            
-            //amount and percentage are equals in input
-            discount.amount = _.round(discount.percentage, 2)
-            
-            discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
-
-            discount.factor = _.round(discount.percentage / 100, 2)
+        if(discount.is_amount){ 
 
             if (discount.discount_type.base) {
+
+                discount.base = _.round(total_value_partial, 2) 
+                //amount and percentage are equals in input
+                discount.amount = _.round(discount.percentage, 2)
+                
+                discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
+
+                discount.factor = _.round(discount.percentage / 100, 2)
+
                 discount_base += discount.amount
+
             } else {
-                discount_no_base += discount.amount
+
+                let aux_total_line = row.unit_price * row.quantity
+                let affectation_igv_type_exonerated = ['20','21','30','31','32','33','34','35','36','37']
+
+                if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
+                    total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)  
+                }else{
+                    total_value_partial = aux_total_line - discount.percentage  
+                }
+
+                discount.base = _.round(aux_total_line, 2) 
+                //amount and percentage are equals in input
+                discount.amount = _.round(discount.percentage, 2)
+                
+                discount.percentage =  _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)),2)
+
+                discount.factor = _.round(discount.percentage / 100, 2)
+
+                // discount_no_base += discount.amount
             }
 
         }else{
@@ -185,6 +206,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     let total_charge = charge_base + charge_no_base
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
+
+    // console.log(total_base_igv, total_value)
 
     let total_igv = 0
 
