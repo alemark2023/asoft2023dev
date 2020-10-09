@@ -39,6 +39,14 @@ class ReportValuedKardexCollection extends ResourceCollection
                 'total_sales' => number_format($total_sales,2, ".", ""),
                 'item_cost' => number_format($item_cost,2, ".", ""),
                 'valued_unit' => number_format($valued_unit,2, ".", ""),
+                'warehouses' => $row->warehouses->transform(function($row, $key){
+                    return [
+                        'id' => $row->id,
+                        'stock' => $row->stock,
+                        'warehouse_description' => $row->warehouse->description,
+                        'description' => "{$row->warehouse->description} - {$row->stock}",
+                    ];
+                }),
 
             ];
         });

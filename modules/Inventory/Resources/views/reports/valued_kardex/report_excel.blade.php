@@ -57,6 +57,7 @@
                                 <th class="text-center">Valor de ventas</th>
                                 <th class="text-center">Costo de producto</th>
                                 <th class="text-center">Unidad valorizada</th>
+                                <th >Stock</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,6 +73,11 @@
                                 <td class="text-center">{{ $value['total_sales'] }}</td>
                                 <td class="text-center">{{ $value['item_cost'] }}</td>
                                 <td class="text-center">{{ $value['valued_unit'] }}</td>
+                                <td>
+                                    @foreach($value['warehouses'] as $item)
+                                    <span>{{$item['description']}}</span><br>
+                                    @endforeach
+                                </td>
 
                             </tr>
                             @endforeach
