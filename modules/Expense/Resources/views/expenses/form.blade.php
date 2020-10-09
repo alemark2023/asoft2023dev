@@ -2,6 +2,6 @@
 
 @section('content')
 
-    <tenant-expenses-form></tenant-expenses-form>
+    <tenant-expenses-form :id="{{ json_encode($id) }}"></tenant-expenses-form>
 
 @endsection

@@ -43,6 +43,12 @@
                         <td class="text-right">{{ row.total }}</td>
 
                         <td class="text-center">
+
+                            <button type="button" v-if="row.state_type_id != '11'" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
+                                    @click.prevent="clickCreate(row.id)">
+                                    <i class="fa fa-pen"></i>
+                            </button>
+
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickPayment(row.id)">
                                     <i class="fa fa-search"></i>
@@ -96,6 +102,9 @@
         created() {
         },
         methods: {
+            clickCreate(id = '') {
+                location.href = `/${this.resource}/create/${id}`
+            },
             clickExpensePayment(recordId) {
                 this.recordId = recordId;
                 this.showDialogExpensePayments = true
