@@ -159,7 +159,30 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Seleccionar boleta por defecto
+                                    <el-tooltip class="item" effect="dark" content="Disponible POS" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.default_document_type_03}">
+                                    <el-switch v-model="form.default_document_type_03" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.default_document_type_03" v-text="errors.default_document_type_03[0]"></small>
+                                </div>
+                            </div>
                             
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Mostrar leyenda en footer - pdf
+                                    <el-tooltip class="item" effect="dark" content="Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma, disponible para facturas y boletas" placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div class="form-group" :class="{'has-danger': errors.legend_footer}">
+                                    <el-switch v-model="form.legend_footer" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.legend_footer" v-text="errors.legend_footer[0]"></small>
+                                </div>
+                            </div>
+
                             <div class="col-md-6 mt-4">
                                 <div class="form-group">
                                     <label class="control-label">Imágen para encabezado - pdf
@@ -180,17 +203,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Mostrar leyenda en footer - pdf
-                                    <el-tooltip class="item" effect="dark" content="Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma, disponible para facturas y boletas" placement="top-start">
-                                        <i class="fa fa-info-circle"></i>
-                                    </el-tooltip>
-                                </label>
-                                <div class="form-group" :class="{'has-danger': errors.legend_footer}">
-                                    <el-switch v-model="form.legend_footer" active-text="Si" inactive-text="No" @change="submit"></el-switch>
-                                    <small class="form-control-feedback" v-if="errors.legend_footer" v-text="errors.legend_footer[0]"></small>
-                                </div>
-                            </div>
 
                         </div>
                     </div>
@@ -288,6 +300,7 @@
                     terms_condition:null,
                     header_image: null,
                     legend_footer: false,
+                    default_document_type_03: false,
                 };
             },
             submit() {
