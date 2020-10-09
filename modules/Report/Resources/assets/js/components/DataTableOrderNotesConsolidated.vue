@@ -119,9 +119,10 @@
                         </tbody> 
                         <tfoot v-if="resource == 'reports/order-notes-consolidated' || resource == 'reports/sales-consolidated'">
                             <tr>
-                                <td></td>
+                                <td :colspan="resource == 'reports/order-notes-consolidated' ? 3:0"></td>
                                 <td ><strong>Total</strong></td>
                                 <td class="text-center">{{totals}}</td>
+                                <td class="text-center">S/ {{totals_amount}}</td>
                             </tr> 
                         </tfoot>
                     </table>
@@ -177,7 +178,8 @@
                         return this.form.date_start > time
                     }
                 },
-                totals:0
+                totals:0,
+                totals_amount:0
             }
         },
         computed: {
@@ -261,7 +263,7 @@
                     person_id: null,
                     document_type_id: null,
                     date_range_type_id: 'date_of_issue',
-                    order_state_type_id: 'all_states',
+                    order_state_type_id: 'pending',
                     type_person:null,
                     seller_id:null,
                     date_start: moment().startOf('month').format('YYYY-MM-DD'), 
@@ -280,18 +282,26 @@
 
                 this.loading_submit = await true
                 await this.getRecords()
-                await this.getTotals()
+                // await this.getTotals()
                 this.loading_submit = await false
 
             },
             getTotals(){
                 this.totals = _.sumBy(this.records, (it) => parseFloat(it.item_quantity));
+                this.totals_amount = _.sumBy(this.records, (it) => parseFloat(it.total));
             },
             getRecords() {
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                    this.records = response.data.data
+
+                    if(this.resource == 'reports/order-notes-consolidated'){
+                        this.records = _.orderBy(response.data.data, ['user'], ['asc'])
+                    }else{
+                        this.records = response.data.data
+                    }
+
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
+                    this.getTotals()
                     this.loading_submit = false
                 });
 
