@@ -191,6 +191,7 @@
         <order-note-form-item :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
+                           :typeUser="typeUser"
                            @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"

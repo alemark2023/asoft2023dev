@@ -84,7 +84,7 @@ class ReportOrderNoteConsolidatedController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = $this->getRecordsOrderNotes($request->all(), OrderNoteItem::class)->get();
+        $records = $this->getRecordsOrderNotes($request->all(), OrderNoteItem::class)->get()->sortBy(function($row){return $row->order_note->user->name;});
         $params = $request->all();
 
         $pdf = PDF::loadView('report::order_notes_consolidated.report_pdf', compact("records", "company", "establishment", "params"));

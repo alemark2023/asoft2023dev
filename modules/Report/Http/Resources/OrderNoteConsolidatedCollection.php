@@ -19,11 +19,20 @@ class OrderNoteConsolidatedCollection extends ResourceCollection
              
             return [
                 'id' => $row->id,
+                'user' => $row->order_note->user->name,  
+                'customer' => $row->order_note->customer->name,  
                 'delivery_date' => $row->order_note->delivery_date,  
                 'item_description' => $row->item->description,  
                 'item_quantity' => $row->quantity,  
+                'total' => number_format(self::calculateTotalCurrencyType($row->order_note, $row->total),2, ".", ""),  
             ];
         });
+    }
+
+    
+    public static function calculateTotalCurrencyType($record, $total)
+    {
+        return ($record->currency_type_id === 'USD') ? $total * $record->exchange_rate_sale : $total;
     }
     
 }

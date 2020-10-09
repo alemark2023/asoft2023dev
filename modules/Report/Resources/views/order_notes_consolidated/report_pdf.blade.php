@@ -84,31 +84,43 @@
                 <div class=" ">
                     @php 
                         $acum_total=0; 
+                        $acum_total_amount=0; 
                     @endphp
                     <table class="">
                         <thead>
                             <tr>
                                 <th class="">#</th>
+                                <th  class="text-left">Vendedor</th>
+                                <th  class="text-left">Cliente</th>
                                 <th  class="text-left">Producto</th>
                                 <th  class="text-center">Cantidad</th>
+                                <th  class="text-center">Monto</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
+                                @php
+                                    $total_item = ($value->order_note->currency_type_id === 'USD') ? $value->total * $value->order_note->exchange_rate_sale : $value->total;
+                                @endphp
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
+                                    <td  class="celda">{{$value->order_note->user->name}}</td>
+                                    <td  class="celda">{{$value->order_note->customer->name}}</td>
                                     <td class="celda">{{$value->item->description}}</td>
                                     <td class="celda">{{$value->quantity}}</td> 
+                                    <td class="celda">S/ {{ $total_item }}</td>
                                 </tr> 
 
                                 @php
                                     $acum_total += $value->quantity;
+                                    $acum_total_amount +=  $total_item;
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="1"></td>
+                                <td class="celda" colspan="3"></td>
                                 <td class="celda" ><strong>Total</strong></td>
                                 <td class="celda">{{$acum_total}}</td>
+                                <td class="celda">S/ {{$acum_total_amount}}</td>
                             </tr> 
                         </tbody>
                     </table>
