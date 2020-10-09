@@ -621,7 +621,8 @@
             filterSuppliers() {
 
                 if(this.form.document_type_id === '01') {
-                    this.suppliers = _.filter(this.all_suppliers, {'identity_document_type_id': '6'})
+                    // this.suppliers = _.filter(this.all_suppliers, {'identity_document_type_id': '6'})
+                    this.suppliers = _.filter(this.all_suppliers, (item) => { return ['6', '0'].includes(item.identity_document_type_id)})
                     this.selectSupplier()
 
                 } else {
