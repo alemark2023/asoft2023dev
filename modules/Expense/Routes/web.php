@@ -14,7 +14,7 @@ if($current_hostname) {
                 Route::get('columns', 'ExpenseController@columns');
                 Route::get('records', 'ExpenseController@records');
                 Route::get('records/expense-payments/{expense}', 'ExpenseController@recordsExpensePayments');
-                Route::get('create', 'ExpenseController@create')->name('tenant.expenses.create');
+                Route::get('create/{id?}', 'ExpenseController@create')->name('tenant.expenses.create');
                 Route::get('tables', 'ExpenseController@tables');
                 Route::get('table/{table}', 'ExpenseController@table');
                 Route::post('', 'ExpenseController@store');

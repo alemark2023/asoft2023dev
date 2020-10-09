@@ -10,7 +10,7 @@
             </template>
             <template v-else>
                 <el-button @click="clickFinalize">Ir al listado</el-button>
-                <el-button type="primary" @click="clickNewDocument">Nuevo gasto</el-button>
+                <el-button type="primary" @click="clickNewDocument">{{ isUpdate ? 'Continuar' : 'Nuevo gasto'}}</el-button>
             </template>
         </span>
     </el-dialog>
@@ -19,7 +19,7 @@
 <script>
 
     export default {
-        props: ['showDialog', 'recordId', 'showClose'],
+        props: ['showDialog', 'recordId', 'showClose', 'isUpdate'],
         data() {
             return {
                 titleDialog: null,
@@ -47,7 +47,7 @@
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
-                        this.titleDialog = 'Gasto registrado: '+this.form.number
+                        this.titleDialog = ((this.isUpdate) ? 'Gasto actualizado: ':'Gasto registrado: ')+this.form.number
                     })
             },
           

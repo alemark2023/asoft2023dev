@@ -169,7 +169,7 @@
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <el-button type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">Generar</el-button>
+                    <el-button type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0">{{ (id) ? 'Actualizar':'Generar'}}</el-button>
                 </div>
             </form>
         </div>
@@ -185,6 +185,7 @@
 
         <expense-options :showDialog.sync="showDialogOptions"
                           :recordId="expenseNewId"
+                          :isUpdate="id ? true:false"
                           :showClose="false"></expense-options>
     </div>
 </template>
@@ -198,6 +199,7 @@
 
 
     export default {
+        props: ['id'],
         components: {ExpenseFormItem, PersonForm, ExpenseOptions},
         mixins: [functions, exchangeRate],
         data() {
@@ -221,9 +223,9 @@
                 expenseNewId: null
             }
         },
-        created() {
-            this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
+        async created() {
+            await this.initForm()
+            await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
 
                     this.expense_reasons = response.data.expense_reasons
@@ -243,11 +245,24 @@
                     this.changeCurrencyType()
                 })
 
-            this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
+            await this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
                 this.reloadDataSuppliers(supplier_id)
-           })
+            })
+
+            await this.isUpdate()
         },
         methods: {
+            async isUpdate(){
+
+                if (this.id) {
+
+                    await this.$http.get(`/${this.resource}/record/${this.id}`)
+                        .then(response => {
+                            this.form = response.data.data.expense
+                        })
+                }
+
+            },
             changeExpenseMethodType(index = 0){
 
                 this.form.payments[index].payment_destination_id = (this.payment_destinations.length>0 && this.form.payments[index].expense_method_type_id != 1) ? this.payment_destinations[0].id:null
@@ -264,6 +279,7 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    id: null,
                     establishment_id: null,
                     expense_type_id: null,
                     expense_reason_id: null,
@@ -384,6 +400,7 @@
                             this.resetForm()
                             this.expenseNewId = response.data.data.id
                             this.showDialogOptions = true
+                            this.isUpdate()
                         } else {
                             this.$message.error(response.data.message)
                         }

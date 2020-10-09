@@ -34,9 +34,9 @@ class ExpenseController extends Controller
     }
 
 
-    public function create()
+    public function create($id = null)
     {
-        return view('expense::expenses.form');
+        return view('expense::expenses.form', compact('id'));
     }
 
     public function columns()
@@ -81,15 +81,23 @@ class ExpenseController extends Controller
 
     public function store(ExpenseRequest $request)
     {
+
         $data = self::merge_inputs($request);
+        // dd($data);
 
         $expense = DB::connection('tenant')->transaction(function () use ($data) {
 
-            $doc = Expense::create($data);
+            // $doc = Expense::create($data);
+            $doc = Expense::updateOrCreate(['id' => $data['id']], $data);
+
+            $doc->items()->delete();
+
             foreach ($data['items'] as $row)
             {
                 $doc->items()->create($row);
             }
+
+            $this->deleteAllPayments($doc->payments);
 
             foreach ($data['payments'] as $row)
             {
@@ -120,9 +128,9 @@ class ExpenseController extends Controller
 
         $values = [
             'user_id' => auth()->id(),
-            'state_type_id' => '05',
+            'state_type_id' => $inputs['id'] ? $inputs['state_type_id'] : '05',
             'soap_type_id' => $company->soap_type_id,
-            'external_id' => Str::uuid()->toString(),
+            'external_id' => $inputs['id'] ? $inputs['external_id'] : Str::uuid()->toString(),
             'supplier' => PersonInput::set($inputs['supplier_id']),
         ];
 
