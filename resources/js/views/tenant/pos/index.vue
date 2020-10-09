@@ -603,6 +603,8 @@
               document.querySelector('.sidebar-toggle').click()
           }
 
+          await this.selectDefaultCustomer()
+
         },
 
         computed:{
@@ -918,13 +920,17 @@
           },
           changeCustomer() {
 
-            console.log('clien 13')
-
+            // console.log('clien 13')
 
             let customer = _.find(this.all_customers, { id: this.form.customer_id });
             this.customer = customer;
-            // this.form.document_type_id = customer.identity_document_type_id == "1" ? "03" : "01";
-            this.form.document_type_id = "03";
+
+            if(this.configuration.default_document_type_03){
+              this.form.document_type_id = "03";
+            }else{
+              this.form.document_type_id = customer.identity_document_type_id == "6" ? "01":"03";
+            }
+
             this.setLocalStorageIndex('customer', this.customer)
             this.setFormPosLocalStorage()
 
@@ -960,6 +966,7 @@
               this.initForm();
               this.changeExchangeRate()
               this.cancelFormPosLocalStorage()
+              this.selectDefaultCustomer()
               this.$nextTick(() => {
                 this.initFocus();
               });
@@ -1307,6 +1314,14 @@
               this.changeDateOfIssue();
               this.changeExchangeRate()
             });
+          },
+          selectDefaultCustomer(){
+
+              if(this.establishment.customer_id && !this.form.customer_id){
+                  this.form.customer_id = this.establishment.customer_id
+                  this.changeCustomer()
+              }
+
           },
           renderCategories(source)
           {

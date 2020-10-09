@@ -36,6 +36,7 @@ class ConfigurationResource extends JsonResource
             'include_igv' => (bool) $this->include_igv,
             'product_only_location' => (bool) $this->product_only_location,
             'legend_footer' => (bool) $this->legend_footer,
+            'default_document_type_03' => (bool) $this->default_document_type_03,
             'header_image' => $this->header_image,
         ];
     }
