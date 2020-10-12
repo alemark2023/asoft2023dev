@@ -10,7 +10,6 @@ require('./bootstrap');
 // window.Vue = require('vue');
 import Vue from 'vue'
 import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css';
 import Axios from 'axios'
 
 import lang from 'element-ui/lib/locale/lang/es'
