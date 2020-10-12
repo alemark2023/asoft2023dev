@@ -173,7 +173,8 @@
 
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Mostrar leyenda en footer - pdf
-                                    <el-tooltip class="item" effect="dark" content="Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma, disponible para facturas, boletas y notas" placement="top-start">
+                                    <el-tooltip class="item" effect="dark" placement="top-start">
+                                        <div slot="content">Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma<br/>Disponible para facturas, boletas, notas y cotizaciones</div>
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>

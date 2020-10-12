@@ -684,7 +684,12 @@ class QuotationController extends Controller
                 $html_footer = $template->pdfFooter($base_template,$this->quotation);
                 $html_footer_term_condition = ($document->terms_condition) ? $template->pdfFooterTermCondition($base_template, $document):"";
 
-                $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer);
+                $html_footer_legend = "";
+                if($configuration->legend_footer){
+                    $html_footer_legend = $template->pdfFooterLegend($base_template, $this->quotation);
+                }
+
+                $pdf->SetHTMLFooter($html_footer_term_condition.$html_footer.$html_footer_legend);
             }
             //$html_footer = $template->pdfFooter();
             //$pdf->SetHTMLFooter($html_footer);
