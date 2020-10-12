@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" width="50%"  :visible="showDialog"  @open="create"  :close-on-click-modal="false" :close-on-press-escape="false" append-to-body :show-close="false">
+    <el-dialog :title="titleDialog" width="70%"  :visible="showDialog"  @open="create"  :close-on-click-modal="false" :close-on-press-escape="false" append-to-body :show-close="false">
 
         <div class="form-body">
             <div class="row" >
@@ -244,7 +244,7 @@
 
                 this.loading = true
 
-                return this.$http.get(`/${this.resource}`).then((response) => {
+                return this.$http.get(`/${this.resource}?${this.getQueryParameters()}`).then((response) => {
                                     this.records = response.data.data
                                     this.pagination = response.data.meta
                                     this.pagination.per_page = parseInt(response.data.meta.per_page)
@@ -264,7 +264,7 @@
             },
             verifyOrderNote(row){
 
-                let record = _.find(this.documents, {id:row.id})
+                let record = _.find(this.documents, {index_id:row.index_id})
                 
                 return record ? true : false
 
@@ -277,7 +277,7 @@
             },
             async create(){
                 await this.initForm()
-                await this.getRecords()
+                await this.getRecords(true)
             },
             initForm(){
 

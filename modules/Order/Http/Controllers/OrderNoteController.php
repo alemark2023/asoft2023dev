@@ -115,7 +115,7 @@ class OrderNoteController extends Controller
     }
 
     
-    public function documents()
+    public function documents(Request $request)
     {
 
         $records = OrderNote::doesntHave('documents')
