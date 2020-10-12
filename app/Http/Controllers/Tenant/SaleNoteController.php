@@ -592,7 +592,11 @@ class SaleNoteController extends Controller
                 } else {
                     $html_footer = $template->pdfFooter('default',$this->document);
                 }
-                $pdf->SetHTMLFooter($html_footer);
+                $html_footer_legend = "";
+                if($this->configuration->legend_footer){
+                    $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
+                }
+                $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
             // }
         }
 
@@ -702,7 +706,7 @@ class SaleNoteController extends Controller
         }
     }
 
-    
+
     public function searchItems(Request $request)
     {
 
@@ -746,7 +750,7 @@ class SaleNoteController extends Controller
                     ];
                 }),
                 'item_unit_types' => $row->item_unit_types,
-                'lots' => [], 
+                'lots' => [],
                 'lots_group' => collect($row->lots_group)->transform(function($row){
                     return [
                         'id'  => $row->id,
@@ -765,7 +769,7 @@ class SaleNoteController extends Controller
 
     }
 
-    
+
     public function searchItemById($id)
     {
 
@@ -809,7 +813,7 @@ class SaleNoteController extends Controller
                     ];
                 }),
                 'item_unit_types' => $row->item_unit_types,
-                'lots' => [], 
+                'lots' => [],
                 'lots_group' => collect($row->lots_group)->transform(function($row){
                     return [
                         'id'  => $row->id,

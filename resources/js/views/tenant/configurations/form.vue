@@ -170,10 +170,10 @@
                                     <small class="form-control-feedback" v-if="errors.default_document_type_03" v-text="errors.default_document_type_03[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Mostrar leyenda en footer - pdf
-                                    <el-tooltip class="item" effect="dark" content="Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma, disponible para facturas y boletas" placement="top-start">
+                                    <el-tooltip class="item" effect="dark" content="Leyenda: Bienes transferidos y/o servicios prestados en la Amazonía para ser consumidos en la misma, disponible para facturas, boletas y notas" placement="top-start">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
@@ -252,7 +252,7 @@
         },
         methods: {
             events(){
-                
+
                 this.$eventHub.$on('submitFormConfigurations', (form) => {
                     this.form = form
                     this.submit()
@@ -269,7 +269,7 @@
                 }
             },
             async getRecord(){
-                
+
                 await this.$http.get(`/${this.resource}/record`) .then(response => {
                     if (response.data !== ''){
                     this.form = response.data.data;
