@@ -34,12 +34,19 @@ use App\Models\Tenant\PaymentMethodType;
 use Modules\Order\Models\OrderNote;
 use Modules\Order\Models\OrderNoteItem;
 use Modules\Order\Http\Resources\OrderNoteCollection;
+use Modules\Order\Http\Resources\OrderNoteDocumentCollection;
 use Modules\Order\Http\Resources\OrderNoteResource;
 use Modules\Order\Http\Resources\OrderNoteResource2;
 use Modules\Order\Http\Requests\OrderNoteRequest;
 use Modules\Order\Mail\OrderNoteEmail;
 use Modules\Finance\Traits\FinanceTrait;
-use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Configuration; 
+use App\Http\Controllers\Tenant\SaleNoteController;
+use App\CoreFacturalo\Requests\Inputs\DocumentInput;
+use App\CoreFacturalo\Requests\Web\Validation\DocumentValidation;
+use App\Http\Requests\Tenant\SaleNoteRequest;
+use App\Http\Requests\Tenant\DocumentRequest;
+use App\Http\Controllers\Tenant\DocumentController;
 
 
 class OrderNoteController extends Controller
@@ -106,6 +113,59 @@ class OrderNoteController extends Controller
 
         return $records;
     }
+
+    
+    public function documents()
+    {
+
+        $records = OrderNote::doesntHave('documents')
+                            ->doesntHave('sale_notes')
+                            ->whereTypeUser()
+                            ->latest();
+
+        return new OrderNoteDocumentCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+
+    public function document_tables()
+    {
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id',$establishment->id)->get();
+        // $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+
+        return compact('series', 'establishment');
+    }
+
+
+    public function generateDocuments(Request $request) {
+
+        DB::connection('tenant')->transaction(function () use ($request) {
+
+            foreach ($request->documents as $row) {
+
+                if($row['document_type_id'] === "80"){
+
+                    app(SaleNoteController::class)->store(new SaleNoteRequest($row));
+
+                }else{
+
+                    $data_val = DocumentValidation::validation($row);
+
+                    app(DocumentController::class)->store(new DocumentRequest(DocumentInput::set($data_val)));
+
+                }
+
+            }
+
+        });
+
+        return [
+            'success' => true,
+            'message' => 'Comprobantes generados'
+        ];
+
+    }
+ 
 
     public function searchCustomers(Request $request)
     {

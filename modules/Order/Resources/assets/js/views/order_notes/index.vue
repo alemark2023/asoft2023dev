@@ -23,7 +23,7 @@
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :typeUser="typeUser" :soapCompany="soapCompany" >
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center">Fecha Emisión</th>
@@ -115,7 +115,7 @@
 
     import QuotationOptions from './partials/options.vue'
     import QuotationOptionsPdf from './partials/options_pdf.vue'
-    import DataTable from '@components/DataTable.vue'
+    import DataTable from '../../components/DataTable.vue'
     import {deletable} from '@mixins/deletable'
 
     export default {
