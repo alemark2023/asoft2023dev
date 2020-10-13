@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\WebPlatform;
 
 
 class ItemSetImport implements ToCollection
@@ -60,11 +61,13 @@ class ItemSetImport implements ToCollection
 
                 $name = $row[9];
                 $second_name = $row[10];
+                $web_platform_name = $row[11];
 
                 if(!$item) {
 
                     $category = Category::updateOrCreate(['name' => $category_name]);
                     $brand = Brand::updateOrCreate(['name' => $brand_name]);
+                    $web_platform = WebPlatform::updateOrCreate(['name' => $web_platform_name]);
 
                     Item::create([
                         'name' => $name,
@@ -84,6 +87,7 @@ class ItemSetImport implements ToCollection
                         'stock_min' => 0,
                         'category_id' => $category->id,
                         'brand_id' => $brand->id,
+                        'web_platform_id' => $web_platform->id,
                         'is_set' => true,
                     ]);
 
