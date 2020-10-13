@@ -90,6 +90,23 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Impuesto incluido en registro de productos</label>
+                                <div class="form-group" :class="{'has-danger': errors.include_igv}">
+                                    <el-switch v-model="form.include_igv" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.include_igv" v-text="errors.include_igv[0]"></small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Caja General seleccionada por defecto</label>
+                                <div class="form-group" :class="{'has-danger': errors.destination_sale}">
+                                    <el-switch v-model="form.destination_sale" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.destination_sale" v-text="errors.destination_sale[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -144,13 +161,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6 mt-4">
-                                <label class="control-label">Impuesto incluido en registro de productos</label>
-                                <div class="form-group" :class="{'has-danger': errors.include_igv}">
-                                    <el-switch v-model="form.include_igv" active-text="Si" inactive-text="No" @change="submit"></el-switch>
-                                    <small class="form-control-feedback" v-if="errors.include_igv" v-text="errors.include_igv[0]"></small>
-                                </div>
-                            </div>
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Productos de una ubicación</label>
                                 <div class="form-group" :class="{'has-danger': errors.product_only_location}">
@@ -302,6 +312,7 @@
                     header_image: null,
                     legend_footer: false,
                     default_document_type_03: false,
+                    destination_sale: false,
                 };
             },
             submit() {

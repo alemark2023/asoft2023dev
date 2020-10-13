@@ -36,6 +36,7 @@ class Configuration extends ModelTenant
         'header_image',
         'legend_footer',
         'default_document_type_03',
+        'destination_sale',
     ];
 
     public function setPlanAttribute($value)
