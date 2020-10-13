@@ -47,6 +47,17 @@ if($hostname) {
             Route::post('items/import/item-sets-individual', 'ItemSetController@importItemSetsIndividual');
 
 
+            Route::prefix('web-platforms')->group(function () {
+                
+                Route::get('', 'WebPlatformController@index');
+                Route::get('/records', 'WebPlatformController@records');
+                Route::get('/record/{brand}', 'WebPlatformController@record');
+                Route::post('', 'WebPlatformController@store');
+                Route::delete('/{record}', 'WebPlatformController@destroy');
+
+            });
+
+
         });
     });
 }

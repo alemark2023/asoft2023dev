@@ -90,7 +90,8 @@ class ItemResource extends JsonResource
                     'quantity' => (float) $row->quantity, 
                 ];
             }),
-
+            'web_platform_id' => $this->web_platform_id,
+            
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [
             //         'warehouse_description' => $row->warehouse->description,

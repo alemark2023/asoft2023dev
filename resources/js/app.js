@@ -203,9 +203,13 @@ Vue.component('tenant-contracts-index', require('@viewsModuleSale/contracts/inde
 Vue.component('tenant-contracts-form', require('@viewsModuleSale/contracts/form.vue'));
 Vue.component('tenant-production-orders-index', require('@viewsModuleSale/production_orders/index.vue'));
 
+//Item
+Vue.component('tenant-web-platforms-index', require('@viewsModuleItem/web-platforms/index.vue'));
+
 //technical Services
 Vue.component('tenant-technical-services-index', require('@viewsModuleSale/technical-services/index.vue'));
 Vue.component('tenant-user-commissions-index', require('@viewsModuleSale/user-commissions/index.vue'));
+
 //Purchase
 
 Vue.component('tenant-fixed-asset-items-index', require('@viewsModulePurchase/fixed_asset_items/index.vue'));

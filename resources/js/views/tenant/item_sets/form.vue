@@ -83,6 +83,16 @@
                         </div>
                     </div>
                     
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.web_platform_id}">
+                            <label class="control-label">Plataforma</label>
+                            <el-select v-model="form.web_platform_id">
+                                <el-option v-for="option in web_platforms" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.web_platform_id" v-text="errors.web_platform_id[0]"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-3 mt-4">
                         <el-button type="primary" icon="el-icon-plus" @click.prevent="showDialogAddItem = true">Agregar productos</el-button>
                     </div>
@@ -368,6 +378,7 @@
                 accounts: [],
                 show_has_igv:true,
                 have_account:false,
+                web_platforms: [],
                 item_unit_type:{
                     id:null,
                     unit_type_id:null,
@@ -391,6 +402,7 @@
                     this.affectation_igv_types = response.data.affectation_igv_types
                     // this.individual_items = response.data.individual_items
                     this.warehouses = response.data.warehouses
+                    this.web_platforms = response.data.web_platforms
 
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
@@ -470,6 +482,7 @@
                     is_set: true,
                     sale_unit_price_set: 0,
                     date_of_due:null,
+                    web_platform_id:null,
                     individual_items:[]
                 }
                 this.show_has_igv = true
