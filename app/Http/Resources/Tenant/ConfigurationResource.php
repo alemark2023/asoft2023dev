@@ -38,6 +38,7 @@ class ConfigurationResource extends JsonResource
             'legend_footer' => (bool) $this->legend_footer,
             'default_document_type_03' => (bool) $this->default_document_type_03,
             'header_image' => $this->header_image,
+            'destination_sale' => (bool) $this->destination_sale,
         ];
     }
 }
