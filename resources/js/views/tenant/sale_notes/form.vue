@@ -359,36 +359,47 @@
             },
             async clickDeleteSNItem(id, index){
 
-                await this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
-                    .then(res => {
-                        this.clickRemoveItem(index)
-                        this.$eventHub.$emit('reloadDataItems', null)
+                this.$confirm('¿Desea eliminar el item?', 'Eliminar', {
+                    confirmButtonText: 'Eliminar',
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
 
-                    })
-                    .catch(error => {
-                        if (error.response.status === 500) {
-                            this.$message.error('Error al intentar eliminar');
-                        } else {
-                            console.log(error.response.data.message)
-                        }
-                    })
+                    this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
+                        .then(res => {
+                            
+                            this.clickRemoveItem(index)
+                            this.$eventHub.$emit('reloadDataItems', null)
 
-                await this.$http.post(`/${this.resource}`, this.form).then(response => {
-                    if (response.data.success) {
-                        this.isUpdate()
-                    }
-                    else {
-                        this.$message.error(response.data.message);
-                    }
+                            this.$http.post(`/${this.resource}`, this.form).then(response => {
+                                if (response.data.success) {
+                                    this.isUpdate()
+                                }
+                                else {
+                                    this.$message.error(response.data.message);
+                                }
+                            }).catch(error => {
+                                if (error.response.status === 422) {
+                                    this.errors = error.response.data;
+                                }
+                                else {
+                                    this.$message.error(error.response.data.message);
+                                }
+                            })
+
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar eliminar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+
+
                 }).catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    }
-                    else {
-                        this.$message.error(error.response.data.message);
-                    }
-                })
-
+                    console.log(error)
+                });
 
             },
             getFormatUnitPriceRow(unit_price){
