@@ -47,9 +47,11 @@ class ReportKardexCollection extends ResourceCollection
                     'type_transaction' => ($row->quantity < 0) ? "Venta":"Anulación Venta",
                     'number' => optional($row->inventory_kardexable)->series.'-'.optional($row->inventory_kardexable)->number,
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  (isset($row->inventory_kardexable->sale_note_id) ? "-" : $row->quantity):"-",
-                    'balance' => isset($row->inventory_kardexable->sale_note_id) ? self::$balance+=0 : self::$balance+= $row->quantity,
-                    'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
+                    'output' => ($row->quantity < 0) ?  (isset($row->inventory_kardexable->sale_note_id)|| isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-",
+                    'balance' => (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id)) ? self::$balance+=0 : self::$balance+= $row->quantity,
+                    'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->number_full:"-",
+                    'order_note_asoc' => isset($row->inventory_kardexable->order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full:"-",
+                    // 'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
                     'doc_asoc' => isset($row->inventory_kardexable->note) ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-'
                 ];
 
@@ -65,6 +67,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'order_note_asoc' => '-',
                     'doc_asoc' => '-'
                 ];
 
@@ -81,6 +84,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'order_note_asoc' => '-',
                     'doc_asoc' => '-'
 
                 ];
@@ -120,6 +124,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => $output,
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'order_note_asoc' => '-',
                     'doc_asoc' => '-'
                 ];
             }
@@ -137,6 +142,7 @@ class ReportKardexCollection extends ResourceCollection
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
+                    'order_note_asoc' => '-',
                     'doc_asoc' => '-'
                 ];
 
@@ -204,14 +210,17 @@ class ReportKardexCollection extends ResourceCollection
 
                 }
 
-                $data = InventoryKardex::select('quantity')
+                $data = InventoryKardex::with(['inventory_kardexable'])
+                                        // ->select('quantity')
                                         ->where([['warehouse_id', $warehouse->id],['item_id',$request->item_id]])
                                         ->whereBetween('date_of_issue', [$request->date_start, $request->date_end])
                                         ->limit(($request->page*20)-20)->get();
                                         
 
                 for($i=0;$i<=count($data)-1;$i++) {
-                    self::$restante += $data[$i]->quantity;
+
+                    self::$restante+= (isset($data[$i]->inventory_kardexable->sale_note_id) || isset($data[$i]->inventory_kardexable->order_note_id)) ? 0 : $data[$i]->quantity;
+                    // self::$restante += $data[$i]->quantity;
                 }
 
                 self::$restante += $quantityOld->quantity;
@@ -223,7 +232,9 @@ class ReportKardexCollection extends ResourceCollection
                     ->limit(($request->page*20)-20)->get();
 
                 for($i=0;$i<=count($data)-1;$i++) {
-                    self::$restante+=$data[$i]->quantity;
+
+                    self::$restante+= (isset($data[$i]->inventory_kardexable->sale_note_id) || isset($data[$i]->inventory_kardexable->order_note_id)) ? 0 : $data[$i]->quantity;
+                    // self::$restante+=$data[$i]->quantity;
                 }
             }
 

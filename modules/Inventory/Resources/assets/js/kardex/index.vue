@@ -13,6 +13,7 @@
                             <th>Tipo transacción</th>
                             <th>Número</th>
                             <th>NV. Asociada</th>
+                            <th>Pedido</th>
                             <th>Doc. Asociado</th>
                             <th>Feha emisión</th>
                             <th>Entrada</th>
@@ -27,6 +28,7 @@
                             <td>{{row.type_transaction}}</td>
                             <td>{{row.number}}</td>
                             <td>{{row.sale_note_asoc}}</td>
+                            <td>{{row.order_note_asoc}}</td>
                             <td>{{row.doc_asoc}}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.input}}</td>
