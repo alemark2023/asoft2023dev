@@ -806,7 +806,7 @@ import moment from 'moment'
 
             },
             changeDestinationSale() {
-                if(this.configuration.destination_sale) {
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
                     this.form.payment_destination_id = this.payment_destinations[0].id
                     this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
                     // console.log('log', this.form.payments[index].payment_destination_id)
