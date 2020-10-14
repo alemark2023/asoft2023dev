@@ -122,14 +122,28 @@
                             <small class="form-control-feedback" v-if="errors.affectation_igv_type_id" v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+
+                    <!-- <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
-                            <!-- <el-input-number v-model="form.quantity" :min="0.01" :disabled="(form.item) ? ((form.item.hasOwnProperty('calculate_quantity')) ? form.item.calculate_quantity:false):false"></el-input-number> -->
                             <el-input-number v-model="form.quantity" :min="0.01" :disabled="form.item.calculate_quantity"></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
                         </div>
+                    </div> -->
+
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group" :class="{'has-danger': errors.quantity}">
+
+                            <label class="control-label">Cantidad</label>
+                            <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" >
+                                <el-button slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
+                                <el-button slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
+                            </el-input>
+                            <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
+
+                        </div>
                     </div>
+
                     <div class="col-md-3 col-sm-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
@@ -605,6 +619,44 @@
             })
         },
         methods: {
+            validateQuantity(){
+
+                if(!this.form.quantity){
+                    this.setMinQuantity()
+                }
+
+                if (isNaN(Number(this.form.quantity))) {
+                    this.setMinQuantity()
+                }
+
+                if (typeof parseFloat(this.form.quantity) !== 'number'){
+                    this.setMinQuantity()
+                }
+
+                if(this.form.quantity <= this.getMinQuantity()){
+                    this.setMinQuantity()
+                }
+                // console.log(isNaN(Number(this.form.quantity)))
+            },
+            getMinQuantity(){
+                return 0.01
+            },
+            setMinQuantity(){
+                this.form.quantity = this.getMinQuantity()
+            },
+            clickDecrease(){
+
+                this.form.quantity = parseInt(this.form.quantity-1)
+                
+                if(this.form.quantity <= this.getMinQuantity()){
+                    this.setMinQuantity()
+                    return
+                }
+
+            },
+            clickIncrease(){
+                this.form.quantity = parseInt(this.form.quantity + 1)
+            },
             async searchRemoteItems(input) {
                 // console.log(input)
 
@@ -869,13 +921,15 @@
             },
             async clickAddItem() {
 
+                // if(this.form.quantity < this.getMinQuantity()){
+                //     return this.$message.error(`La cantidad no puede ser inferior a ${this.getMinQuantity()}`);
+                // }
+                this.validateQuantity()
 
                 if(this.form.item.lots_enabled){
                     if(!this.form.IdLoteSelected)
                         return this.$message.error('Debe seleccionar un lote.');
                 }
-
-
 
 
                 if (this.validateTotalItem().total_item) return;
