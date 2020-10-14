@@ -45,9 +45,21 @@
                         <!-- <small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
 
                     </div>
-                    <!-- <div class="col-md-1">    
-                    </div> -->
-                    <div class="col-md-6">  
+
+                    <div class="col-md-6">   
+                        <el-input v-model="form.customer_telephone">
+                            <template slot="prepend">+51</template>
+                                <el-button slot="append" @click="clickSendWhatsapp" >Enviar
+                                    <el-tooltip class="item" effect="dark"  content="Es necesario tener aperturado Whatsapp web" placement="top-start">
+                                        <i class="fab fa-whatsapp" ></i>
+                                    </el-tooltip>
+                                </el-button>
+                        </el-input>
+                    </div>
+
+                    <div class="col-md-6 mt-4">    
+                    </div>
+                    <div class="col-md-6 mt-4">  
                         <el-button  type="primary"  class="float-right" @click="clickNewSale">Nueva venta</el-button>                             
                     </div>
                 </div>
@@ -82,6 +94,15 @@
         mounted(){
         },
         methods: {
+            clickSendWhatsapp() {
+                
+                if(!this.form.customer_telephone){
+                    return this.$message.error('El número es obligatorio')
+                }
+
+                window.open(`https://wa.me/51${this.form.customer_telephone}?text=${this.form.message_text}`, '_blank');
+            
+            },
             someMethod(response){
 
                 if(!this.showDialog)
@@ -145,6 +166,8 @@
                     print_ticket: null,
                     external_id: null,
                     number: null, 
+                    customer_telephone:null,
+                    message_text:null,
                     id: null
                 } 
             },
