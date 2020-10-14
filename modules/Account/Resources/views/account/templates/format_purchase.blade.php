@@ -114,7 +114,11 @@ $col_span = 25;
         <td>05</td>
         <td>{{ $loop->iteration }}</td>
         <td>{{ $row['date_of_issue'] }}</td>
-        <td></td>
+        <td>
+            @if($row['document_type_id'] == '14')
+                {{ $row['date_of_due'] }}
+            @endif
+        </td>
         <td>{{ $row['document_type_id'] }}</td>
         <td>{{ $row['series'] }}</td>
         <td></td>
