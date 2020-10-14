@@ -502,9 +502,9 @@
                 this.form.trade_name = (this.form.identity_document_type_id === '6')?data.nombre_o_razon_social:'';
                 this.form.location_id = data.ubigeo;
                 this.form.address = data.direccion;
-                this.form.department_id = (data.ubigeo) ? data.ubigeo[0]:null;
-                this.form.province_id = (data.ubigeo) ? data.ubigeo[1]:null;
-                this.form.district_id = (data.ubigeo) ? data.ubigeo[2]:null;
+                this.form.department_id = (data.ubigeo) ? (data.ubigeo[0] != '-' ? data.ubigeo[0] : null) : null;
+                this.form.province_id = (data.ubigeo) ? (data.ubigeo[1] != '-' ? data.ubigeo[1] : null) : null;
+                this.form.district_id = (data.ubigeo) ? (data.ubigeo[2] != '-' ? data.ubigeo[2] : null) : null;
                 this.form.condition = data.condicion;
                 this.form.state = data.estado;
 
