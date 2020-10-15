@@ -175,13 +175,13 @@
 </table>
 <div style="border: 1px solid #000;height: 48%;padding-left: -1px;width:85.5%;position: absolute;display: table;">
 </div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:7%;position: absolute;display: table;">
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:8.6%;position: absolute;display: table;">
 </div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:13.4%;position: absolute;display: table;">
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:17%;position: absolute;display: table;">
 </div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:46%;position: absolute;display: table;">
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:44%;position: absolute;display: table;">
 </div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:52.5%;position: absolute;display: table;">
+<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:52%;position: absolute;display: table;">
 </div>
 <div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:59%;position: absolute;display: table;">
 </div>
@@ -194,11 +194,11 @@
 <table class="full-width mt-0 mb-0">
     <thead >
         <tr class="">
-            <th class="border-top-bottom text-center py-1 desc" width="7%">CÓDIGO</th>
-            <th class="border-top-bottom text-center py-1 desc" width="9%">MARCA</th>
-            <th class="border-top-bottom text-center py-1 desc" width="35%">DESCRIPCIÓN</th>
-            <th class="border-top-bottom text-center py-1 desc" width="8%">CANT.</th>
-            <th class="border-top-bottom text-center py-1 desc" width="6%">U.M.</th>
+            <th class="border-top-bottom text-center py-1 desc" width="10%">CÓDIGO</th>
+            <th class="border-top-bottom text-center py-1 desc" width="10%">MARCA</th>
+            <th class="border-top-bottom text-center py-1 desc" width="30%">DESCRIPCIÓN</th>
+            <th class="border-top-bottom text-center py-1 desc" width="10%">CANT.</th>
+            <th class="border-top-bottom text-center py-1 desc" width="10%">U.M.</th>
             <th class="border-top-bottom text-center py-1 desc" width="10%">P.U</th>
             <th class="border-top-bottom text-center py-1 desc" width="10%">DESC</th>
             <th class="border-top-bottom text-center py-1 desc" width="10%">IMPORTE</th>
