@@ -18,7 +18,7 @@ class GeneralItemCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
-                //'internal_id' => $row->item->internal_id ?? $row->item->item_code,
+                'internal_id' => $row->relation_item->internal_id,
                 'description' => $row->item->description,
 
                 'lot_has_sale' => self::getLotsHasSale($row),
@@ -30,6 +30,8 @@ class GeneralItemCollection extends ResourceCollection
                 'series' => $resource['series'],
                 'alone_number' => $resource['alone_number'],
                 'quantity' => number_format($row->quantity,2),
+
+                'unit_value' => number_format($row->unit_value,2),
 
                 'total' => number_format($row->total,2),
                 'document_type_description' => $resource['document_type_description'],

@@ -433,4 +433,62 @@ trait FinanceTrait
         ];
 
     }
+
+
+
+    //cash transaction
+    
+    public function getCashTransaction($user_id){
+
+        $cash =  Cash::where([['user_id', $user_id],['state',true]])->first();
+
+        if($cash){
+            
+            return [
+                'id' => 'cash',
+                'cash_id' => $cash->id,
+                'description' => ($cash->reference_number) ? "CAJA GENERAL - {$cash->reference_number}" : "CAJA GENERAL",
+            ];
+
+        } 
+
+        return null;
+
+    }
+
+    public function createGlobalPaymentTransaction($model, $row){
+
+        $destination = $this->getDestinationRecordTransaction($row); 
+        $company = Company::active();
+
+        $model->global_payment()->create([
+            'user_id' => auth()->id(),
+            'soap_type_id' => $company->soap_type_id,
+            'destination_id' => $destination['destination_id'],
+            'destination_type' => $destination['destination_type'],
+        ]);
+
+    }
+
+    public function getDestinationRecordTransaction($row){
+        
+        if($row['payment_destination_id'] === 'cash'){
+
+            $destination_id = $this->getCashTransaction($row['user_id'])['cash_id'];
+            $destination_type = Cash::class;
+
+        }else{
+
+            $destination_id = $row['payment_destination_id'];
+            $destination_type = BankAccount::class;
+
+        }
+
+        return [
+            'destination_id' => $destination_id,
+            'destination_type' => $destination_type,
+        ];
+    }
+
+
 }

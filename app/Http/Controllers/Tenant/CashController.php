@@ -142,11 +142,12 @@ class CashController extends Controller
             'payment_method_type_id' => '01',  
             'payment' => $request->beginning_balance,  
             'payment_destination_id' => 'cash',  
+            'user_id' => $request->user_id,  
         ];
 
         $cash_transaction = $cash->cash_transaction()->create($data);
 
-        $this->createGlobalPayment($cash_transaction, $data);
+        $this->createGlobalPaymentTransaction($cash_transaction, $data);
 
     }
 
