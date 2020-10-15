@@ -14,11 +14,12 @@
                             <th class="">Número</th>
                             <th class="">N° Documento</th>
                             <th class="">Cliente</th>
-                            <!-- <th class="">Cod. Interno</th> -->
+                            <th class="">Cod. Interno</th>
                             <th class="">Descripción</th>
                             <!-- <th class="">U. Medida</th> -->
                             <th class="">Cantidad</th>
                             <th>Series</th>
+                            <th class="">Valor unitario</th>
                             <th class="">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
@@ -29,13 +30,14 @@
                             <td>{{row.alone_number}}</td>
                             <td>{{row.customer_number}}</td>
                             <td>{{row.customer_name}}</td>
-                            <!-- <td>{{row.internal_id}}</td> -->
+                            <td>{{row.internal_id}}</td>
                             <td>{{row.description}}</td>
                             <!-- <td>{{row.unit_type_id}}</td> -->
                             <td>{{row.quantity}}</td>
                             <td>
                                 {{ row.lot_has_sale | filterLots }}
                             </td>
+                            <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
                         </tr>
 
