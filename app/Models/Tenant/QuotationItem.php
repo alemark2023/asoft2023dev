@@ -43,7 +43,10 @@ class QuotationItem extends ModelTenant
 
         'attributes',
         'charges',
-        'discounts'
+        'discounts',
+
+        'extra_attr_name',
+        'extra_attr_value'
     ];
 
     public function getItemAttribute($value)
