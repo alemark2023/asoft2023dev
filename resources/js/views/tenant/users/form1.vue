@@ -55,6 +55,7 @@
             </div>
           </div>
           <div class="col-md-12" v-show="form.id">
+
             <div class="form-group" :class="{ 'has-danger': errors.api_token }">
               <label class="control-label">Api Token</label>
               <el-input
@@ -111,9 +112,9 @@
               ></small>
             </div>
           </div>
-          <div class="col-md-12" v-if="typeUser != 'integrator'">
+          <div class="col-md-8" v-if="typeUser != 'integrator'">
             <div class="form-comtrol">
-              <label class="control-label">Módulos</label>
+              <label class="control-label">Permisos Módulos</label>
 
               <div id="app">
                 <div class="control_wrapper">
@@ -381,14 +382,17 @@ export default {
 @import "../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
 .control_wrapper {
   display: block;
-  max-width: 350px;
   max-height: 350px;
-  margin: auto;
   overflow: auto;
   border: 1px solid #dddddd;
   border-radius: 3px;
 }
 .e-checkbox-wrapper .e-frame.e-check, .e-css.e-checkbox-wrapper .e-frame.e-check {
+    background-color: #0088CC;
+    border-color: transparent;
+    color: #fff;
+}
+.e-checkbox-wrapper:hover .e-frame.e-check, .e-css.e-checkbox-wrapper:hover .e-frame.e-check {
     background-color: #0088CC;
     border-color: transparent;
     color: #fff;

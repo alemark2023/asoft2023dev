@@ -15,7 +15,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        $all_modules = Module::orderBy('description')->get();
+        $all_modules = Module::orderBy('order_menu')->get();
         $modules_in_user = $this->modules->pluck('id')->toArray();
         $levels_in_user = $this->levels->pluck('id')->toArray();
         $modules = [];
