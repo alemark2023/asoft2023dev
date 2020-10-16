@@ -743,6 +743,7 @@
                     attributes: [],
                     series_enabled: false,
                     purchase_has_igv: true,
+                    web_platform_id:null,
                 }
                 this.show_has_igv = true
                 this.purchase_show_has_igv = true

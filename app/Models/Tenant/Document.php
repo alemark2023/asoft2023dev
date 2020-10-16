@@ -6,6 +6,8 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
+use Modules\Order\Models\OrderNote;
+
 
 class Document extends ModelTenant
 {
@@ -395,4 +397,8 @@ class Document extends ModelTenant
         return  $query->where('state_type_id', '01')->where('regularize_shipping', true);
     }
 
+    public function order_note()
+    {
+        return $this->belongsTo(OrderNote::class);
+    }
 }

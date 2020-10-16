@@ -16,6 +16,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\Establishment;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Modules\Pos\Models\CashTransaction;
 
 class MovementController extends Controller
 { 
@@ -43,13 +44,35 @@ class MovementController extends Controller
         $data_of_period = $this->getDatesOfPeriod($request);
         $payment_type = $request['payment_type'];
         $destination_type = $request['destination_type'];
-        
+        $last_cash_opening = $request['last_cash_opening'];
+
         $params = (object)[
             'date_start' => $data_of_period['d_start'],
             'date_end' => $data_of_period['d_end'],
         ];
+
         
         $records = $model::whereFilterPaymentType($params);
+
+        if($last_cash_opening == 'true'){
+            
+            $cash =  Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
+
+            if($cash){
+
+                $last_cash = GlobalPayment::wherePaymentType(CashTransaction::class)
+                                            ->whereDestinationType(Cash::class)
+                                            ->where('destination_id', $cash->id)
+                                            ->latest()
+                                            ->first();
+
+                return $records->whereDestinationType(Cash::class)
+                                ->where('destination_id', $cash->id)->latest();
+
+            }
+
+
+        }
 
         return $records->latest();
     }

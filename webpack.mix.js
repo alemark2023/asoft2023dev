@@ -29,6 +29,7 @@ mix.webpackConfig({
             '@viewsModuleExpense': path.resolve(__dirname, 'modules/Expense/Resources/assets/js/views'),
             '@viewsModuleOrder': path.resolve(__dirname, 'modules/Order/Resources/assets/js/views'),
             '@viewsModuleAccount': path.resolve(__dirname, 'modules/Account/Resources/assets/js/views'),
+            '@viewsModuleItem': path.resolve(__dirname, 'modules/Item/Resources/assets/js/views'),
 
         }
     }

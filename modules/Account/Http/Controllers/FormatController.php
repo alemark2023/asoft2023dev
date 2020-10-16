@@ -120,13 +120,14 @@ class FormatController extends Controller
     {
         return Purchase::query()
             ->whereBetween('date_of_issue', [$d_start, $d_end])
-            ->whereIn('document_type_id', ['01', '03'])
+            ->whereIn('document_type_id', ['01', '03', '14'])
             ->whereIn('currency_type_id', ['PEN'])
             ->orderBy('series')
             ->orderBy('number')
             ->get()->transform(function($row) {
                 return [
                     'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                    'date_of_due' => $row->date_of_due->format('d/m/Y'),
                     'state_type_id' => $row->state_type_id,
                     'document_type_id' => $row->document_type_id,
                     'series' => $row->series,

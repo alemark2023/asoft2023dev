@@ -25,6 +25,7 @@ use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Item\Models\WebPlatform;
 
 
 
@@ -66,11 +67,12 @@ class ItemSetController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
+        $web_platforms = WebPlatform::get();
         // $warehouses = Warehouse::all();
         // $accounts = Account::all();
         // $tags = Tag::all(); 
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types');
+        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types', 'affectation_igv_types', 'web_platforms');
     }
 
 

@@ -11,6 +11,7 @@ use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
+use Modules\Item\Models\WebPlatform;
 
 
 class Item extends ModelTenant
@@ -65,6 +66,7 @@ class Item extends ModelTenant
         'line',
         'series_enabled',
         'purchase_has_igv',
+        'web_platform_id',
         // 'warehouse_id'
     ];
 
@@ -301,6 +303,11 @@ class Item extends ModelTenant
     public function scopeWhereHasInternalId($query)
     {
         return $query->where('internal_id','!=', null);
+    }
+    
+    public function web_platform()
+    {
+        return $this->belongsTo(WebPlatform::class);
     }
     
 }

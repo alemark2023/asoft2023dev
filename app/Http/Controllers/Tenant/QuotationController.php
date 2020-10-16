@@ -520,6 +520,7 @@ class QuotationController extends Controller
             $payments     = $document->payments()->count() * 5;
             $discount_global = 0;
             $terms_condition = $document->terms_condition ? 15 : 0;
+            $contact = $document->contact ? 15 : 0;
 
             foreach ($document->items as $it) {
                 if ($it->discounts) {
@@ -548,6 +549,7 @@ class QuotationController extends Controller
                     $payments +
                     $total_exonerated +
                     $terms_condition +
+                    $contact +
                     $total_taxed],
                 'margin_top' => 2,
                 'margin_right' => 5,

@@ -1203,6 +1203,8 @@
               duration: 700
             });
 
+            this.cleanInput()
+            this.initFocus()
 
             // console.log(this.row)
             // console.log(this.form.items)
