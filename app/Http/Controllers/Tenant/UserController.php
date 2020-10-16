@@ -27,17 +27,17 @@ class UserController extends Controller
 
     public function tables()
     {
-        $modules = Module::orderBy('description')->get();
+        $modules = Module::orderBy('order_menu')->get();
         $datasource = [];
         $children = array();
 
         for ($i = 0; $i < count($modules); $i++) {
             $hasChild = false;
             $expanded = false;
-            $isChecked = false;
+            $isChecked = true;
             if (count($modules[$i]->levels) > 0) :
                 for ($j = 0; $j < count($modules[$i]->levels); $j++) {
-                    array_push($datasource, ['id' => $modules[$i]->id . '-' . $modules[$i]->levels[$j]->id, 'pid' => $modules[$i]->id, 'name' => $modules[$i]->levels[$j]->description]);
+                    array_push($datasource, ['id' => $modules[$i]->id . '-' . $modules[$i]->levels[$j]->id, 'pid' => $modules[$i]->id, 'name' => $modules[$i]->levels[$j]->description, 'isChecked' => $isChecked]);
                 }
             endif;
             /*if (count($modules[$i]->levels) > 0) {
