@@ -273,7 +273,7 @@ export default {
       } else {
 
         this.$http.get(`/${this.resource}/tables`).then((response) => {
-          //this.options = response.data.datasource;
+
 
           this.fields = {
             dataSource: response.data.datasource,
@@ -388,8 +388,9 @@ export default {
   border: 1px solid #dddddd;
   border-radius: 3px;
 }
-.vue-treeselect__control {
-  visibility: hidden;
-  width: 1px !important;
+.e-checkbox-wrapper .e-frame.e-check, .e-css.e-checkbox-wrapper .e-frame.e-check {
+    background-color: #0088CC;
+    border-color: transparent;
+    color: #fff;
 }
 </style>
