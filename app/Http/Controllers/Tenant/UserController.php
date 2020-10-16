@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
@@ -27,27 +28,64 @@ class UserController extends Controller
     public function tables()
     {
         $modules = Module::orderBy('description')->get();
-        $establishments = Establishment::orderBy('description')->get();
-        $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'seller', 'description'=>'Vendedor']];
+        $datasource = [];
+        $children = array();
 
-        return compact('modules', 'establishments','types');
+        for ($i = 0; $i < count($modules); $i++) {
+            $hasChild = false;
+            $expanded = false;
+            $isChecked = false;
+            if (count($modules[$i]->levels) > 0) :
+                for ($j = 0; $j < count($modules[$i]->levels); $j++) {
+                    array_push($datasource, ['id' => $modules[$i]->id . '-' . $modules[$i]->levels[$j]->id, 'pid' => $modules[$i]->id, 'name' => $modules[$i]->levels[$j]->description]);
+                }
+            endif;
+            /*if (count($modules[$i]->levels) > 0) {
+                for ($j = 0; $j < count($modules[$i]->levels); $j++) {
+                    array_push($children, ['id'=>$modules[$i]->levels[$j]->id.'-'.$modules[$i]->levels[$j]->description,'label'=>$modules[$i]->levels[$j]->description]);
+                }
+            }*/
+
+            /*if (count($modules[$i]->levels) > 0) :
+                $datasource_1 = [
+                    'id' => $modules[$i]->id,
+                    'label' => $modules[$i]->description,
+                    'children' => $children
+                ];
+            else :
+                $datasource_1 = [
+                    'id' => $modules[$i]->id,
+                    'label' => $modules[$i]->description
+                ];
+            endif;*/
+            if (count($modules[$i]->levels) > 0) :
+                $hasChild = true;
+                $expanded = true;
+                $isChecked = false;
+            endif;
+            array_push($datasource,  ['id' => $modules[$i]->id, 'name' => $modules[$i]->description, 'hasChild' => $hasChild, 'expanded' => $expanded, 'isChecked' => $isChecked]);
+        }
+
+        $establishments = Establishment::orderBy('description')->get();
+        //dd($datasource);
+        $types = [['type' => 'admin', 'description' => 'Administrador'], ['type' => 'seller', 'description' => 'Vendedor']];
+
+        return compact('modules', 'establishments', 'types', 'datasource');
     }
 
     public function store(UserRequest $request)
     {
         $id = $request->input('id');
 
-        if(!$id)  //VALIDAR EMAIL DISPONIBLE
+        if (!$id)  //VALIDAR EMAIL DISPONIBLE
         {
             $verify = User::where('email', $request->input('email'))->first();
-            if($verify)
-            {
+            if ($verify) {
                 return [
                     'success' => false,
                     'message' => 'Email no disponible. Ingrese otro Email'
                 ];
             }
-
         }
 
         $user = User::firstOrNew(['id' => $id]);
@@ -58,8 +96,7 @@ class UserController extends Controller
         if (!$id) {
             $user->api_token = str_random(50);
             $user->password = bcrypt($request->input('password'));
-        }
-        elseif ($request->has('password')) {
+        } elseif ($request->has('password')) {
             if (config('tenant.password_change')) {
                 $user->password = bcrypt($request->input('password'));
             }
@@ -68,14 +105,17 @@ class UserController extends Controller
 
         $first_user = User::select('id')->first();
 
-        if($first_user->id != $id){
+        if ($first_user->id != $id) {
 
             $modules = collect($request->input('modules'))->where('checked', true)->pluck('id')->toArray();
+
             $user->modules()->sync($modules);
-            
+
+
             $levels = collect($request->input('levels'))->where('checked', true)->pluck('id')->toArray();
             $user->levels()->sync($levels);
-            
+
+
         }
 
         // dd($user->getModules()->transform(function($row, $key) {
@@ -83,14 +123,14 @@ class UserController extends Controller
         //         'id' => $row->id,
         //         'privot_id' => $row->pivot,
         //         'privot_user' => $row->pivot->user_id,
-        //         'privot_module' => $row->pivot->module_id, 
+        //         'privot_module' => $row->pivot->module_id,
 
         //     ];
         // }));
 
         return [
             'success' => true,
-            'message' => ($id)?'Usuario actualizado':'Usuario registrado'
+            'message' => ($id) ? 'Usuario actualizado' : 'Usuario registrado'
         ];
     }
 

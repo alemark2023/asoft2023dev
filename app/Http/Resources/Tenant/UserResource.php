@@ -20,9 +20,26 @@ class UserResource extends JsonResource
         $levels_in_user = $this->levels->pluck('id')->toArray();
         $modules = [];
         $levels = [];
+        $dataSource=[];
 
         foreach ($all_modules as $module)
         {
+            $check = false;
+            if(in_array($module->id, $modules_in_user)){
+
+                if(count($module->levels)>0){
+                    $check = false;
+                }else{
+                    $check = true;
+                }
+            }
+            $dataSource[]=[
+                'id' => $module->id,
+                'description' => $module->description,
+                'isChecked' => (bool)  $check,
+                'hasChild'=> (bool) in_array($module->id, $modules_in_user),
+                'expanded'=>(bool) in_array($module->id, $modules_in_user)
+            ];
             $modules[] = [
                 'id' => $module->id,
                 'description' => $module->description,
@@ -30,8 +47,14 @@ class UserResource extends JsonResource
             ];
 
             if(in_array($module->id, $modules_in_user)){
-                
+
                 foreach ($module->levels as $level) {
+                    $dataSource[]=[
+                        'id' =>$module->id.'-'.   $level->id,
+                        'pid'=>$module->id,
+                        'description' => $level->description,
+                        'isChecked' => (bool) in_array($level->id, $levels_in_user)
+                    ];
                     $levels[] = [
                         'id' => $level->id,
                         'description' => $level->description,
@@ -51,6 +74,7 @@ class UserResource extends JsonResource
             'modules' => $modules,
             'levels' => $levels,
             'locked' => (bool) $this->locked,
+            'dataSource'=>$dataSource
 
         ];
     }
