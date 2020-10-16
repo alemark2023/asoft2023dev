@@ -259,9 +259,9 @@ class DocumentController extends Controller
             });
             return $prepayment_documents;
         }
-        
+
         if ($table === 'payment_method_types') {
-            
+
             $payment_method_types = PaymentMethodType::whereNotIn('id', ['05', '08', '09'])->get();
             $end_payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get(); //by requirement
 
@@ -290,7 +290,7 @@ class DocumentController extends Controller
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => round($row->sale_unit_price, 2),
+                    'sale_unit_price' => number_format($row->sale_unit_price, 4, ".",""),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,

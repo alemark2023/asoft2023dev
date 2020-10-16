@@ -647,7 +647,7 @@
             clickDecrease(){
 
                 this.form.quantity = parseInt(this.form.quantity-1)
-                
+
                 if(this.form.quantity <= this.getMinQuantity()){
                     this.setMinQuantity()
                     return
