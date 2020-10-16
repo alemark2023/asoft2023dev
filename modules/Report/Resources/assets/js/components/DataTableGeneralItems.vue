@@ -19,7 +19,7 @@
                         <div class="col-md-3" >
                             <div class="form-group">
                                 <label class="control-label">Tipo</label>
-                                <el-select v-model="form.type" >
+                                <el-select v-model="form.type" @change="changeType">
                                     <el-option v-for="option in types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                             </div>
@@ -83,6 +83,39 @@
                                 </el-select>
                             </div>
                         </div> -->
+
+                        
+
+                        <div class="col-lg-5 col-md-5" >
+                            <div class="form-group">
+                                <label class="control-label">
+                                    {{(form.type == 'sale') ? 'Clientes':'Proveedores'}}
+                                </label>
+
+                                <el-select v-model="form.person_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Nombre o número de documento"
+                                    :remote-method="searchRemotePersons"
+                                    :loading="loading_search">
+                                    <el-option v-for="option in persons" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5 col-md-5" >
+                            <div class="form-group"> 
+                                <label class="control-label">Productos
+                                </label>
+                                
+                                <el-select v-model="form.item_id" filterable remote  popper-class="el-select-customers"  clearable
+                                    placeholder="Código interno o nombre"
+                                    :remote-method="searchRemoteItems"
+                                    :loading="loading_search_items" >
+                                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+ 
+                            </div>
+                        </div>
 
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
@@ -170,6 +203,13 @@
                         return this.form.month_start > time
                     }
                 },
+                persons: [],
+                all_customers: [],
+                all_suppliers: [],
+                loading_search:false,
+                items: [],
+                all_items: [],
+                loading_search_items:false,
             }
         },
         computed: {
@@ -185,10 +225,83 @@
             await this.$http.get(`/${this.resource}/filter`)
                 .then(response => {
                     this.document_types = response.data.document_types;
+                    this.all_customers = response.data.customers
+                    this.all_suppliers = response.data.suppliers
+                    this.all_items = response.data.items
                 });
 
+                
+            await this.filterItems()
+            await this.filterPersons()
+            // await this.getTotals()
+            this.form.type_person = this.form.type == 'sale' ? 'customers':'suppliers'
+
         },
-        methods: {
+        methods: { 
+            searchRemoteItems(input) {  
+                
+                if (input.length > 0) { 
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+                    
+
+                    this.$http.get(`/reports/data-table/items/?${parameters}`)
+                            .then(response => { 
+                                this.items = response.data.items
+                                this.loading_search = false
+                                
+                                if(this.items.length == 0){
+                                    this.filterItems()
+                                }
+                            })  
+                } else {
+                    this.filterItems()
+                }
+
+            },
+            filterItems() { 
+                this.items = this.all_items
+            }, 
+            changeType(){
+                this.filterPersons()
+            },
+            searchRemotePersons(input) {
+
+                if (input.length > 0) {
+
+                    this.loading_search = true
+                    let parameters = `input=${input}`
+
+                    this.form.type_person = this.form.type == 'sale' ? 'customers':'suppliers'
+
+                    this.$http.get(`/reports/data-table/persons/${this.form.type_person}?${parameters}`)
+                            .then(response => {
+                                this.persons = response.data.persons
+                                this.loading_search = false
+
+                                if(this.persons.length == 0){
+                                    this.filterPersons()
+                                }
+                            })
+                } else {
+                    this.filterPersons()
+                }
+
+            },
+            filterPersons() {
+                // this.persons = this.all_persons
+                this.form.person_id = null
+
+                if(this.form.type == 'sale'){
+                    this.persons = this.all_customers
+                    this.form.type_person = 'customers'
+                }else{
+                    this.persons = this.all_suppliers
+                    this.form.type_person = 'suppliers'
+                }
+
+            },
             clickDownload(type) {
                 let query = queryString.stringify({
                     ...this.form
@@ -200,8 +313,11 @@
                 this.form = {
                     type: 'sale',
                     document_type_id:null,
+                    item_id: null,
                     period: 'month',
                     user: null,
+                    person_id: null,
+                    type_person:null,
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),

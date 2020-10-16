@@ -28,9 +28,13 @@ class ReportGeneralItemController extends Controller
 
     public function filter() {
 
+        $customers = $this->getPersons('customers'); 
+        $suppliers = $this->getPersons('suppliers'); 
+        $items = $this->getItems('items');
+
         $document_types = DocumentType::whereIn('id', ['01', '03', '80'])->get();
 
-        return compact('document_types');
+        return compact('document_types', 'suppliers', 'customers', 'items');
     }
 
 
@@ -59,20 +63,26 @@ class ReportGeneralItemController extends Controller
         $d_start = $data_of_period['d_start'];
         $d_end = $data_of_period['d_end'];
 
+        $person_id = $request['person_id'];
+        $type_person = $request['type_person'];
+        $item_id = $request['item_id'];
+
         $user = $request['user'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user);
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user, $person_id, $type_person, $item_id);
 
         return $records;
 
     }
 
 
-    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user)
+    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user, $person_id, $type_person, $item_id)
     {
 
         if( $document_type_id && $document_type_id == '80' )
         {
+            $relation = 'sale_note';
+
             $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end){
                 $query
                 ->whereBetween('date_of_issue', [$date_start, $date_end])
@@ -94,10 +104,25 @@ class ReportGeneralItemController extends Controller
                             ->latest()
                             ->whereTypeUser();
                         })
-                        ->whereHas('document.user', function($query) use($user){
+                        ->whereHas($relation.'.user', function($query) use($user){
                             $query->where('name', 'like', "%{$user}%");
                         });
 
+        }
+
+        
+        if($person_id && $type_person){
+
+            $column = ($type_person == 'customers') ? 'customer_id':'supplier_id';
+            
+            $data =  $data->whereHas($relation, function($query) use($column, $person_id){
+                                $query->where($column, $person_id);
+                            });
+
+        }
+
+        if($item_id){
+            $data =  $data->where('item_id', $item_id);
         }
 
         return $data;
