@@ -31,177 +31,17 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
-@if($document->state_type->id == '11')
-    <div class="company_logo_box" style="position: absolute; text-align: center; top:30%;">
-        <img src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
-    </div>
-@else
-    <div class="company_logo_box" style="position: absolute; left: 40%; top:40%;">
-        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="logo" class="" style="opacity: 0.1;">
-    </div>
-@endif
-<table class="full-width">
-    <tr>
-        <td width="60%" class="text-center pr-2">
-            @if($company->logo)
-                <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 100px;">
-                </div>
-            @endif
-            <br>
-            <h5 class="font-bold text-upp">{{ $company->name }}</h5>
-            <hr>
-            <h6 style="text-transform: uppercase;">
-                {{ ($establishment->address !== '-')? $establishment->address.',' : '' }}
-                {{ ($establishment->district_id !== '-')? $establishment->district->description : '' }}
-                {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
-                {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-            </h6>
-
-            @isset($establishment->trade_address)
-                <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-            @endisset
-
-            <h6>{{ ($establishment->telephone !== '-')? 'Telf. '.$establishment->telephone : '' }}</h6>
-
-            <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
-
-            @isset($establishment->web_address)
-                <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
-            @endisset
-
-            @isset($establishment->aditional_information)
-                <h6>{{ ($establishment->aditional_information !== '-')? $establishment->aditional_information : '' }}</h6>
-            @endisset
-        </td>
-        <td width="40%" class="border-box py-2 px-2 text-center">
-            <h3 class="font-bold">{{ 'RUC '.$company->number }}</h3>
-            <h3 class="text-center font-bold">{{ $document->document_type->description }}</h3>
-            <br>
-            <h3 class="text-center">{{ $document_number }}</h3>
-        </td>
-    </tr>
-</table>
-<table class="full-width mt-2">
-    <tr>
-        <td width="95%" class="border-box pl-3">
-            <table class="full-width">
-                <tr>
-                    <td colspan="2" class="font-xlg">
-                        <strong>SEÑOR(ES): </strong>
-                        {{ $customer->name }}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="font-xlg">
-                        <strong>DIRECCIÓN: </strong>
-                        @if ($customer->address !== '')
-                            <span style="text-transform: uppercase;">
-                                {{ $customer->address }}
-                                {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-                                {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-                                {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
-                            </span>
-                        @endif
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"  class="font-xlg">
-                        <strong>RUC: </strong>
-                        {{$customer->number}}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"  class="font-xlg">
-                        <strong>MONEDA: </strong>
-                        <span class="text-upp">{{ $document->currency_type->description }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td  class="font-xlg">
-                        <strong>FECHA: </strong>
-                        {{$document->date_of_issue->format('Y-m-d')}}
-                    </td>
-                    <td  class="font-xlg">
-                        @if($invoice)
-                            <strong>FECHA VENC.:</strong>
-                            {{$invoice->date_of_due->format('Y-m-d')}}
-                        @endif
-                    </td>
-                </tr>
-            </table>
-        </td>
-        <td width="5%" class="p-0 m-0">
-            <img src="data:image/png;base64, {{ $document->qr }}" class="p-0 m-0" style="width: 120px;" />
-        </td>
-    </tr>
-</table>
-<table class="full-width my-4 text-center" border="1">
-    <tr>
-        <td width="16.6%" class="desc">UBIGEO</td>
-        <td width="16.6%" class="desc">O/C</td>
-        <td width="16.6%" class="desc">CONDICIONES DE PAGO</td>
-        <td width="16.6%" class="desc">VENDEDOR</td>
-        <td width="16.6%" class="desc">GUIA DE REMOSIÓN</td>
-        <td width="16.6%" class="desc">AGENCIA DE TRANSPORTE</td>
-    </tr>
-    <tr>
-        <td class="desc"></td>
-        <td class="desc"></td>
-        <td class="desc">
-            @php
-                $payment = 0;
-            @endphp
-            @foreach($payments as $row)
-                {{ $row->payment_method_type->description }}
-            @endforeach
-        </td>
-        <td class="desc">{{ $document->user->name }}</td>
-        <td class="desc">
-            @if ($document->guides)
-                @foreach($document->guides as $guide)
-                    {{ $guide->number }}
-                @endforeach
-            @endif
-
-            @if ($document->reference_guides)
-                @foreach($document->reference_guides as $guide)
-                    {{ $guide->number }}
-                @endforeach
-            @endif
-        </td>
-        <td class="desc"></td>
-    </tr>
-</table>
-<div style="border: 1px solid #000;height: 48%;padding-left: -1px;width:85.5%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:8.6%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:17%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:44%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:52%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:59%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:68.5%;position: absolute;display: table;">
-</div>
-<div style="border-right: 1px solid #000;height: 48.1%;padding-left: -1px;width:76%;position: absolute;display: table;">
-</div>
-
 
 <table class="full-width mt-0 mb-0">
     <thead >
         <tr class="">
-            <th class="border-top-bottom text-center py-1 desc" width="10%">CÓDIGO</th>
-            <th class="border-top-bottom text-center py-1 desc" width="10%">MARCA</th>
-            <th class="border-top-bottom text-center py-1 desc" width="30%">DESCRIPCIÓN</th>
-            <th class="border-top-bottom text-center py-1 desc" width="10%">CANT.</th>
-            <th class="border-top-bottom text-center py-1 desc" width="10%">U.M.</th>
-            <th class="border-top-bottom text-center py-1 desc" width="10%">P.U</th>
-            <th class="border-top-bottom text-center py-1 desc" width="10%">DESC</th>
-            <th class="border-top-bottom text-center py-1 desc" width="10%">IMPORTE</th>
+            <th class="border-bottom text-center py-1 desc" width="10%">CÓDIGO</th>
+            <th class="border-bottom text-center py-1 desc" width="10%">MARCA</th>
+            <th class="border-bottom text-center py-1 desc" width="">DESCRIPCIÓN</th>
+            <th class="border-bottom text-center py-1 desc" width="10%">CANT.</th>
+            <th class="border-bottom text-center py-1 desc" width="10%">U.M.</th>
+            <th class="border-bottom text-center py-1 desc" width="10%">P.U</th>
+            <th class="border-bottom text-center py-1 desc" width="10%">IMPORTE</th>
         </tr>
     </thead>
     <tbody class="">
@@ -244,17 +84,6 @@
                 </td>
                 <td class="p-1 text-center align-top desc">{{ $row->item->unit_type_id }}</td>
                 <td class="p-1 text-right align-top desc">{{ number_format($row->unit_price, 2) }}</td>
-                <td class="p-1 text-right align-top desc">
-                    @if($row->discounts)
-                        @php
-                            $total_discount_line = 0;
-                            foreach ($row->discounts as $disto) {
-                                $total_discount_line = $total_discount_line + $disto->amount;
-                            }
-                        @endphp
-                        {{ number_format($total_discount_line, 2) }}
-                    @endif
-                </td>
                 <td class="p-1 text-right align-top desc">{{ number_format($row->total, 2) }}</td>
             </tr>
         @endforeach

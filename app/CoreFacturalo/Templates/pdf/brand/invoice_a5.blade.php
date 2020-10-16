@@ -509,7 +509,7 @@
             <td>
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     </table>
 @endif
 @if($payments->count())
