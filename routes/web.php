@@ -628,6 +628,9 @@ if ($hostname) {
             Route::get('backup/files', 'System\BackupController@files')->name('system.backup.files');
             Route::post('backup/upload', 'System\BackupController@upload')->name('system.backup.upload');
 
+            Route::get('backup/last-backup', 'System\BackupController@mostRecent');
+            Route::get('backup/download/{filename}', 'System\BackupController@download');
+
         });
     });
 }

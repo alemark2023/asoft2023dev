@@ -32,9 +32,9 @@
                 Enviar por FTP último backup generado
             </div>
             <div class="card-body">
-                <p v-if="lastZip !== ''">Ultimo Backup generado: {{lastZip.name}}</p>
+                <p v-if="newLastZip !== ''">Ultimo Backup generado: {{newLastZip.name}}</p>
                 <small class="text-muted">Por seguridad sus datos FTP no son guardados</small>
-                <form v-if="lastZip !== ''">
+                <form v-if="newLastZip !== ''">
                     <div class="form-group" :class="{'has-danger': errors.host}">
                         <label class="control-label">Host/IP</label>
                         <el-input v-model="form.host"></el-input>
@@ -51,8 +51,10 @@
                         <label class="control-label">Contraseña</label>
                         <el-input v-model="form.password"></el-input>
                     </div>
-                    <div v-if="lastZip !== ''" class="form-group">
+                    <div v-if="newLastZip !== ''" class="form-group">
                         <el-button @click.prevent="uploadFtp()" :loading="loading_upload">Enviar</el-button>
+
+                        <el-button @click.prevent="clickDownload()" >Descargar</el-button>
                     </div>
                 </form>
             </div>
@@ -82,12 +84,16 @@
                     content: '',
                     status: '',
                 },
+                newLastZip: ''
             }
         },
         created() {
             this.initForm()
         },
         methods: {
+            clickDownload() {
+                window.open(`/${this.resource}/download/${this.newLastZip.name}`, '_blank');
+            },
             initForm(){
 
                 this.form = {
@@ -96,6 +102,8 @@
                     username: null,
                     password: null,
                 }
+
+                this.newLastZip = this.lastZip
 
             },
             async start() {
@@ -137,6 +145,7 @@
                             this.files.content = response.data
                             if (response.status === 200) {
                                 this.files.status = 'success'
+                                this.mostRecent()
                             }
                             this.loading_submit = false
                         }
@@ -149,6 +158,23 @@
                         }
                     })
 
+            },
+            mostRecent(){
+                
+                this.$http.get(`/${this.resource}/last-backup`)
+                    .then(response => {
+                        if (response.data !== '') {
+                            // console.log(response)
+                            this.newLastZip = response.data
+                            this.loading_submit = false
+                        }
+                    }).catch(error => {
+                        if (error.response.status !== 200) {
+                            this.files.error = error.response.data.message
+                        } else {
+                            console.log(error)
+                        }
+                    })
             },
             uploadFtp() {
                 this.loading_upload = true
