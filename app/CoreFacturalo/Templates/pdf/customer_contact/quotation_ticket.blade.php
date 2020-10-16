@@ -179,7 +179,7 @@
     @endif
     @if ($document->description)
         <tr>
-            <td class="align-top"><p class="desc">Descripción:</p></td>
+            <td class="align-top"><p class="desc">Observación:</p></td>
             <td><p class="desc">{{ $document->description }}</p></td>
         </tr>
     @endif
