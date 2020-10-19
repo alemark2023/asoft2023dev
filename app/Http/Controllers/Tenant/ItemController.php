@@ -36,7 +36,10 @@ use Modules\Item\Models\ItemLotsGroup;
 use Carbon\Carbon;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
+use App\Exports\ItemExportBarCode;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
 
 
 class ItemController extends Controller
@@ -567,6 +570,36 @@ class ItemController extends Controller
         return (new ItemExportWp)
                 ->records($records)
                 ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV);
+
+    }
+
+    public function exportBarCode(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "5000000");
+
+         $date = $request->month_start.'-01';
+        $start_date = Carbon::parse($date);
+        $end_date = Carbon::parse($date)->addMonth()->subDay();
+        // dd($start_date.' - '.$end_date);
+
+        $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    104.1,
+                    101.6
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode', compact('records'))->render();
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_'.$start_date->format('Y_m_d').'_'.$end_date->format('Y_m_d').'.pdf', 'D');
 
     }
 

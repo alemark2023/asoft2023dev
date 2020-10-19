@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemUnitType;
-use Illuminate\Routing\Controller; 
+use Illuminate\Routing\Controller;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Modules\Item\Imports\ItemListPriceImport;
 use Maatwebsite\Excel\Excel;
@@ -18,11 +18,11 @@ class ItemController extends Controller
     {
 
         $item = Item::findOrFail($id);
-        
+
         $colour = [150,150,150];
 
         $generator = new BarcodeGeneratorPNG();
-        
+
         $temp = tempnam(sys_get_temp_dir(), 'item_barcode');
 
         file_put_contents($temp, $generator->getBarcode($item->internal_id, $generator::TYPE_CODE_128, 5, 70, $colour));
@@ -35,7 +35,7 @@ class ItemController extends Controller
 
     }
 
- 
+
     public function importItemPriceLists(Request $request)
     {
         if ($request->hasFile('file')) {
