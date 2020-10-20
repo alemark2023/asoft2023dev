@@ -260,7 +260,13 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
-
+                            'warehouses' => collect($row->warehouses)->transform(function($row) {
+                                return [
+                                    'warehouse_description' => $row->warehouse->description,
+                                    'stock' => $row->stock,
+                                    'warehouse_id' => $row->warehouse_id,
+                                ];
+                            }),
                         ];
                     });
 
