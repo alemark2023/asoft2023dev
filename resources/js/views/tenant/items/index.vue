@@ -12,6 +12,7 @@
                         <div class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
                             <a class="dropdown-item text-1" href="#" @click.prevent="clickExport()">Listado</a>
                             <a class="dropdown-item text-1" href="#" @click.prevent="clickExportWp()">Woocommerce</a>
+                            <a class="dropdown-item text-1" href="#" @click.prevent="clickExportBarcode()">Etiquetas</a>
                         </div>
                     </div>
                     <div class="btn-group flex-wrap">
@@ -96,6 +97,7 @@
             <items-import :showDialog.sync="showImportDialog"></items-import>
             <items-export :showDialog.sync="showExportDialog"></items-export>
             <items-export-wp :showDialog.sync="showExportWpDialog"></items-export-wp>
+            <items-export-barcode :showDialog.sync="showExportBarcodeDialog"></items-export-barcode>
 
             <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
@@ -115,19 +117,21 @@
     import ItemsImportListPrice from './partials/import_list_price.vue'
     import ItemsExport from './partials/export.vue'
     import ItemsExportWp from './partials/export_wp.vue'
+    import ItemsExportBarcode from './partials/export_barcode.vue'
     import DataTable from '../../../components/DataTable.vue'
     import {deletable} from '../../../mixins/deletable'
 
     export default {
         props:['typeUser'],
         mixins: [deletable],
-        components: {ItemsForm, ItemsImport, ItemsExport, ItemsExportWp, DataTable, WarehousesDetail, ItemsImportListPrice},
+        components: {ItemsForm, ItemsImport, ItemsExport, ItemsExportWp, ItemsExportBarcode, DataTable, WarehousesDetail, ItemsImportListPrice},
         data() {
             return {
                 showDialog: false,
                 showImportDialog: false,
                 showExportDialog: false,
                 showExportWpDialog: false,
+                showExportBarcodeDialog: false,
                 showImportListPriceDialog: false,
                 showWarehousesDetail: false,
                 resource: 'items',
@@ -174,6 +178,9 @@
             },
             clickExportWp() {
                 this.showExportWpDialog = true
+            },
+            clickExportBarcode() {
+                this.showExportBarcodeDialog = true
             },
             clickImportListPrice() {
                 this.showImportListPriceDialog = true
