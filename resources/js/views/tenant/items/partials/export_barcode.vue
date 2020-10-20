@@ -1,12 +1,22 @@
 <template>
-    <el-dialog title="Exportar Productos" :visible="showDialog" @close="close" class="dialog-import">
+    <el-dialog title="Codigo de barras" :visible="showDialog" @close="close" class="dialog-import">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-12">
                         <template>
-                            <label class="control-label">Mes</label>
-                            <el-date-picker v-model="form.month_start" type="month" value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
+                            <label class="control-label">
+                                Seleccione rango de impresión
+                                <el-tooltip class="item" effect="dark" content="Generar una cantidad muy alta puede causar lentitud en el servidor" placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+                            <el-slider
+                              v-model="form.range"
+                              range
+                              :min="1"
+                              :max="max_item.data">
+                            </el-slider>
                         </template>
                     </div>
                 </div>
@@ -30,13 +40,10 @@
                 headers: headers_token,
                 resource: 'items',
                 errors: {},
-                form: {},
-                pickerOptionsMonths: {
-                    disabledDate: (time) => {
-                        time = moment(time).format('YYYY-MM')
-                        return this.form.month_start > time
-                    }
+                form: {
+                    range: [1, 100]
                 },
+                max_item: 1
             }
         },
         created() {
@@ -44,10 +51,8 @@
         },
         methods: {
             initForm() {
+                this.lastItem()
                 this.errors = {}
-                this.form = {
-                    month_start: moment().format('YYYY-MM'),
-                }
             },
             close() {
                 this.$emit('update:showDialog', false)
@@ -57,13 +62,19 @@
                 this.loading_submit = true
 
                 let query = queryString.stringify({
-                    ...this.form
+                    ...this.form.range
                 });
                 window.open(`/${this.resource}/export/barcode/?${query}`, '_blank');
 
                 this.loading_submit = false
                 this.$emit('update:showDialog', false)
                 this.initForm()
+            },
+            lastItem() {
+                this.$http.get(`${this.resource}/export/barcode/last`)
+                .then(response => {
+                    this.max_item = response.data
+                })
             }
         }
     }

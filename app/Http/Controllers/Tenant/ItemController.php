@@ -575,14 +575,12 @@ class ItemController extends Controller
 
     public function exportBarCode(Request $request)
     {
-        ini_set("pcre.backtrack_limit", "5000000");
+        ini_set("pcre.backtrack_limit", "50000000");
 
-         $date = $request->month_start.'-01';
-        $start_date = Carbon::parse($date);
-        $end_date = Carbon::parse($date)->addMonth()->subDay();
-        // dd($start_date.' - '.$end_date);
+        $start = $request[0];
+        $end = $request[1];
 
-        $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
+        $records = Item::whereBetween('id', [$start, $end])->get();
 
         $pdf = new Mpdf([
                 'mode' => 'utf-8',
@@ -599,8 +597,14 @@ class ItemController extends Controller
 
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
-        $pdf->output('etiquetas_'.$start_date->format('Y_m_d').'_'.$end_date->format('Y_m_d').'.pdf', 'D');
+        $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
 
+    }
+
+    public function itemLast()
+    {
+        $record = Item::latest()->first();
+        return json_encode(['data' => $record->id]);
     }
 
 
