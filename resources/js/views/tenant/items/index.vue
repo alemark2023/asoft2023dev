@@ -85,6 +85,8 @@
 
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickBarcode(row)">Cod. Barras</button>
 
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickPrintBarcode(row)">Etiquetas</button>
+
                             </template>
                         </td>
                     </tr>
@@ -208,6 +210,13 @@
                 }
 
                 window.open(`/${this.resource}/barcode/${row.id}`)
+            },
+            clickPrintBarcode(row) {
+                if(!row.internal_id){
+                    return this.$message.error('Para generar el código de barras debe registrar el código interno.')
+                }
+
+                window.open(`/${this.resource}/export/barcode/print?id=${row.id}`)
             }
         }
     }
