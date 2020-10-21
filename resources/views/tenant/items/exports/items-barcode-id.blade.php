@@ -3,7 +3,7 @@
     <head>
     </head>
     <body>
-        @if(!empty($records))
+        @if(!empty($record))
             <div class="">
                 <div class=" ">
                     <table class="table" width="100%">
@@ -35,27 +35,21 @@
                                 return $return;
                             }
                         @endphp
-                        @foreach($records as $key => $value)
-                            @if($loop->iteration % 3 === 1)
-                                <tr>
-                            @endif
+                        <tr>
+                        @for($i=0; $i < 3; $i++)
                             <td class="celda" width="33%" style="text-align: center; padding-top: 10px; padding-bottom: 10px; font-size: 9px; vertical-align: top;">
-                                <p>{{withoutRounding($value->sale_unit_price, 2)}} {{$value->currency_type->symbol}}</p>
+                                <p>{{withoutRounding($record->sale_unit_price, 2)}} {{$record->currency_type->symbol}}</p>
                                 <p>
                                     @php
-                                        if ($value->internal_id) {
-                                            $colour = [0,0,0];
-                                            $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-                                            echo '<img style="width:110px; max-height: 30px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($value->internal_id, $generator::TYPE_CODE_128, 1, 60, $colour)) . '">';
-                                        }
+                                        $colour = [0,0,0];
+                                        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+                                        echo '<img style="width:110px; max-height: 40px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($record->internal_id, $generator::TYPE_CODE_128, 1, 60, $colour)) . '">';
                                     @endphp
                                 </p>
-                                <p>{{$value->internal_id}}</p>
+                                <p>{{$record->internal_id}}</p>
                             </td>
-                            @if($loop->iteration % 3 === 0)
-                                </tr>
-                            @endif
-                        @endforeach
+                        @endfor
+                        </tr>
                     </table>
                 </div>
             </div>

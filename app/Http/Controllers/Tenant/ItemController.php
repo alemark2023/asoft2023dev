@@ -601,6 +601,33 @@ class ItemController extends Controller
 
     }
 
+    public function printBarCode(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+
+        $id = $request->id;
+
+        $record = Item::find($id);
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    104.1,
+                    24
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode-id', compact('record'))->render();
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
     public function itemLast()
     {
         $record = Item::latest()->first();
