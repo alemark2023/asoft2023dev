@@ -25,6 +25,7 @@ if($current_hostname) {
                 Route::get('consult_cdr/{document}', 'DocumentController@consultCdr');
 
                 Route::get('item-lots', 'DocumentController@searchLots');
+                Route::get('regularize-lots/{document_item_id}', 'DocumentController@regularizeLots');
 
             });
 

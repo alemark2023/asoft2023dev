@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\DocumentItem;
 use Modules\Document\Http\Resources\DocumentNotSentCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Establishment;
@@ -352,13 +353,41 @@ class DocumentController extends Controller
 
         $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
 
-        $records = ItemLot::where('series','like', "%{$request->input}%")
-                                ->where('item_id', $request->item_id)
-                                ->where('has_sale', false)
-                                ->where('warehouse_id', $warehouse->id)
+        if($request->document_item_id){
+
+            //proccess credit note
+            $document_item = DocumentItem::findOrFail($request->document_item_id);
+
+            $records = ItemLot::where('series','like', "%{$request->input}%")
+                                ->whereIn('id', collect($document_item->item->lots)->pluck('id')->toArray())
+                                ->where('has_sale', true)
                                 ->latest();
 
+        }else{
+
+            $records = ItemLot::where('series','like', "%{$request->input}%")
+                                    ->where('item_id', $request->item_id)
+                                    ->where('has_sale', false)
+                                    ->where('warehouse_id', $warehouse->id)
+                                    ->latest();
+        }
+
+
         return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
+
+    }
+
+
+    public function regularizeLots(Request $request)
+    {
+
+        $document_item = DocumentItem::findOrFail($request->document_item_id);
+
+        return ItemLot::where('series','like', "%{$request->input}%")
+                                        ->whereIn('id', collect($document_item->item->lots)->pluck('id')->toArray())
+                                        ->where('has_sale', true)
+                                        ->get();
+        
 
     }
 
