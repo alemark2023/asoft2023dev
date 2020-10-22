@@ -176,6 +176,8 @@
         <document-form-item :showDialog.sync="showDialogAddItem"
                             :recordItem="recordItem"
                             :isEditItemNote="isEditItemNote"
+                            :documentTypeId="form.document_type_id"
+                            :noteCreditOrDebitTypeId="form.note_credit_or_debit_type_id"
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
                             :user="user"
@@ -310,6 +312,11 @@
             },
             ediItem(row, index)
             {
+
+                if(this.form.document_type_id == '07' && !this.form.note_credit_or_debit_type_id){
+                    return this.$message.error('Elija una opción del campo Tipo nota de crédito');
+                }
+
                 row.indexi = index
                 this.recordItem = row
                 this.isEditItemNote = true
