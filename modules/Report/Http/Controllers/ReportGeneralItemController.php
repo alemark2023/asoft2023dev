@@ -31,10 +31,11 @@ class ReportGeneralItemController extends Controller
         $customers = $this->getPersons('customers'); 
         $suppliers = $this->getPersons('suppliers'); 
         $items = $this->getItems('items');
+        $web_platforms = $this->getWebPlatforms();
 
         $document_types = DocumentType::whereIn('id', ['01', '03', '80'])->get();
 
-        return compact('document_types', 'suppliers', 'customers', 'items');
+        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms');
     }
 
 
@@ -68,15 +69,16 @@ class ReportGeneralItemController extends Controller
         $item_id = $request['item_id'];
 
         $user = $request['user'];
+        $web_platform_id = $request['web_platform_id'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user, $person_id, $type_person, $item_id);
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user, $person_id, $type_person, $item_id, $web_platform_id);
 
         return $records;
 
     }
 
 
-    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user, $person_id, $type_person, $item_id)
+    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user, $person_id, $type_person, $item_id, $web_platform_id)
     {
 
         if( $document_type_id && $document_type_id == '80' )
@@ -125,6 +127,10 @@ class ReportGeneralItemController extends Controller
             $data =  $data->where('item_id', $item_id);
         }
 
+        if($web_platform_id){
+            $data = $data->whereHas('relation_item', function($q) use($web_platform_id){$q->where('web_platform_id', $web_platform_id);});
+        }
+        
         return $data;
 
     }

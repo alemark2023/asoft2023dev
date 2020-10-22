@@ -36,6 +36,7 @@ class GeneralItemCollection extends ResourceCollection
                 'total' => number_format($row->total,2),
                 'document_type_description' => $resource['document_type_description'],
                 'document_type_id' => $resource['document_type_id'],
+                'web_platform_name' => optional($row->relation_item->web_platform)->name,   
             ];
         });
     }

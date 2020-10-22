@@ -41,6 +41,7 @@
                                 <th class="">ISC</th>
                                 <th class="">IMPUESTO BOLSAS</th>
                                 <th class="">TOTAL</th>
+                                <th class="">PLATAFORMA</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -95,6 +96,7 @@
                                             <td class="celda">{{$value->total_plastic_bag_taxes}}</td>
 
                                             <td class="celda">{{$value->total}}</td>
+                                            <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
 
                                         </tr>
                                     @endforeach
@@ -148,6 +150,7 @@
                                         <td class="celda">{{$value->total_plastic_bag_taxes}}</td>
 
                                         <td class="celda">{{$value->total}}</td>
+                                        <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
 
                                     </tr>
                                     @endforeach
@@ -196,6 +199,7 @@
                                     <td class="celda">{{$value->total_plastic_bag_taxes}}</td>
 
                                     <td class="celda">{{$value->total}}</td>
+                                    <td class="celda"></td>
 
                                 </tr>
                                 @endforeach
