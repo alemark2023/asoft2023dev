@@ -230,6 +230,7 @@
                                                 <th class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -244,6 +245,7 @@
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
@@ -253,7 +255,7 @@
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="8"></td></tr>
+                                            <tr><td colspan="9"></td></tr>
                                         </tbody>
                                     </table>
                                 </div>
