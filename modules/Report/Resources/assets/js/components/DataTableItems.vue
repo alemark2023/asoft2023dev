@@ -62,7 +62,16 @@
                                                 value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                             </div>
                         </template>
-                        
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Plataforma</label>
+                                <el-select v-model="form.web_platform_id" clearable>
+                                    <el-option v-for="option in web_platforms" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+
                         <!-- <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label">Establecimiento</label>
@@ -152,6 +161,7 @@
                 totals: {}, 
                 establishment: null,
                 establishments: [],       
+                web_platforms: [],       
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -183,6 +193,7 @@
                     this.establishments = response.data.establishments;
                     this.all_items = response.data.items
                     this.document_types = response.data.document_types;
+                    this.web_platforms = response.data.web_platforms
                 });
 
 
@@ -231,6 +242,7 @@
                     item_id: null,
                     document_type_id:null,
                     period: 'month',
+                    web_platform_id: null,
                     date_start: moment().format('YYYY-MM-DD'),
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),

@@ -11,6 +11,7 @@ use App\Models\Tenant\Person;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\User;
 use App\Models\Tenant\StateType;
+use Modules\Item\Models\WebPlatform;
 
 
 trait ReportTrait
@@ -316,4 +317,11 @@ trait ReportTrait
         });
 
     }
+    
+    public function getWebPlatforms(){
+ 
+        return WebPlatform::get();
+
+    }
+
 }

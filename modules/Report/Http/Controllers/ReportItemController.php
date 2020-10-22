@@ -25,8 +25,9 @@ class ReportItemController extends Controller
         $document_types = [];
         $items = $this->getItems('items');
         $establishments = [];
+        $web_platforms = $this->getWebPlatforms();
 
-        return compact('document_types','establishments','items');
+        return compact('document_types','establishments','items','web_platforms');
     }
 
 
@@ -55,6 +56,7 @@ class ReportItemController extends Controller
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
         $item_id = $request['item_id'];
+        $web_platform_id = $request['web_platform_id'];
 
         $d_start = null;
         $d_end = null;
@@ -80,14 +82,14 @@ class ReportItemController extends Controller
                 break;
         }
 
-        $records = $this->dataItems($document_type_id, $establishment_id, $d_start, $d_end, $item_id, $model);
+        $records = $this->dataItems($document_type_id, $establishment_id, $d_start, $d_end, $item_id, $model, $web_platform_id);
 
         return $records;
 
     }
 
 
-    private function dataItems($document_type_id, $establishment_id, $date_start, $date_end, $item_id, $model)
+    private function dataItems($document_type_id, $establishment_id, $date_start, $date_end, $item_id, $model, $web_platform_id)
     {
 
         $data = $model::where('item_id', $item_id)
@@ -99,6 +101,15 @@ class ReportItemController extends Controller
                             ->latest()
                             ->whereTypeUser();
                         });
+
+
+        if($web_platform_id){
+
+            $data = $data->whereHas('relation_item', function($q) use($web_platform_id){
+                            $q->where('web_platform_id', $web_platform_id);
+                        });
+                        
+        }
 
         return $data;
 

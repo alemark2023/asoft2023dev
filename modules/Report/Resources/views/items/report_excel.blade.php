@@ -80,6 +80,7 @@
                                 <th class="">Número</th>
                                 <th class="">N° Documento</th>
                                 <th class="">Cliente</th>
+                                <th class="">Plataforma</th>
                                 <th class="">Cantidad</th>
                                 <th class="">Monto</th>
                             </tr>
@@ -94,6 +95,7 @@
                                 <td class="celda">{{$value->document->number}}</td>
                                 <td class="celda">{{$value->document->customer->number}}</td>
                                 <td class="celda">{{$value->document->customer->name}}</td>
+                                <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
                                 <td class="celda">{{$value->quantity}}</td>
                                 <td class="celda">{{$value->total}}</td>
                                
@@ -136,7 +138,7 @@
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="6"></td> 
+                                <td colspan="7"></td> 
                                 <td >TOTALES</td>
                                 <td>{{$acum_quantity}}</td>
                                 <td>{{$acum_total}}</td>

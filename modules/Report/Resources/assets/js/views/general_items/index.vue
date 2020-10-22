@@ -19,6 +19,7 @@
                             <!-- <th class="">U. Medida</th> -->
                             <th class="">Cantidad</th>
                             <th>Series</th>
+                            <th class="">Plataforma</th>
                             <th class="">Valor unitario</th>
                             <th class="">Total</th>
                         <tr>
@@ -37,6 +38,7 @@
                             <td>
                                 {{ row.lot_has_sale | filterLots }}
                             </td>
+                            <td>{{row.web_platform_name}}</td>
                             <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
                         </tr>
