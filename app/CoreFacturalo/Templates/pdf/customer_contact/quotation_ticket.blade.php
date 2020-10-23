@@ -172,7 +172,7 @@
     @if($document->person->contact != null)
         @if($document->person->contact->full_name)
         <tr>
-            <td><p class="desc">Contacto: </p></td>
+            <td><p class="desc">Contacto cliente: </p></td>
             <td><p class="desc">{{$document->person->contact->full_name}}, telf.: {{$document->person->contact->phone}} </p></td>
         </tr>
         @endif
@@ -183,6 +183,20 @@
             <td><p class="desc">{{ $document->description }}</p></td>
         </tr>
     @endif
+    
+    @if ($document->contact)
+        <tr>
+            <td class="align-top"><p class="desc">Contacto:</p></td>
+            <td><p class="desc">{{ $document->contact }}</p></td>
+        </tr>
+    @endif
+    @if ($document->phone)
+        <tr>
+            <td class="align-top"><p class="desc">Telf. Contacto:</p></td>
+            <td><p class="desc">{{ $document->phone }}</p></td>
+        </tr>
+    @endif
+
     @if ($document->purchase_order)
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>
