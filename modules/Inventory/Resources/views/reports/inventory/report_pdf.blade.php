@@ -83,6 +83,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Descripción</th>
+                                <th>Categoria</th>
                                 <th>Inventario actual</th>
                                 <th>Costo</th>
                                 <th>Costo Total</th>
@@ -102,6 +103,7 @@
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->item->description ?? ''}}</td>
+                                    <td class="celda">{{optional($value->item->category)->name}}</td>
                                     <td class="celda">{{$value->stock}}</td>
                                     <td class="celda">{{$value->item->purchase_unit_price}}</td>
                                     <td class="celda">{{number_format($total_line, 6)}}</td>
@@ -110,7 +112,7 @@
                                 </tr>
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="4" style="text-align: right;">Costo Total de Inventario</td>
+                                <td class="celda" colspan="5" style="text-align: right;">Costo Total de Inventario</td>
                                 <td class="celda">{{number_format($total, 6)}}</td>
                                 <td class="celda"></td>
                                 <td class="celda"></td>
