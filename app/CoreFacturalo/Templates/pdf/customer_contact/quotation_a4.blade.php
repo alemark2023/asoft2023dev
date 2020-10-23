@@ -132,11 +132,29 @@
     @if($document->person->contact != null)
         @if($document->person->contact->full_name)
         <tr>
-            <td>Contacto: </td>
+            <td>Contacto cliente: </td>
             <td colspan="3">{{$document->person->contact->full_name}}, telf.: {{$document->person->contact->phone}} </td>
         </tr>
         @endif
     @endif
+    
+    @if ($document->contact)
+    <tr>
+        <td class="align-top">Contacto:</td>
+        <td colspan="3">
+            {{ $document->contact }}
+        </td>
+    </tr>
+    @endif 
+    @if ($document->phone)
+    <tr>
+        <td class="align-top">Telf. Contacto:</td>
+        <td colspan="3">
+            {{ $document->phone }}
+        </td>
+    </tr>
+    @endif 
+
 </table>
 
 <table class="full-width mt-3">
