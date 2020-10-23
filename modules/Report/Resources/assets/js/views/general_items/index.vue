@@ -22,6 +22,10 @@
                             <th class="">Plataforma</th>
                             <th class="">Valor unitario</th>
                             <th class="">Total</th>
+                            <template v-if="type == 'sale'">
+                                <th class="">Total compra</th>
+                                <th class="">Ganancia</th>
+                            </template>
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
@@ -41,6 +45,10 @@
                             <td>{{row.web_platform_name}}</td>
                             <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
+                            <template v-if="type == 'sale'">
+                                <td>{{row.total_item_purchase}}</td>
+                                <td>{{row.utility_item}}</td>
+                            </template>
                         </tr>
 
                     </data-table>
@@ -62,7 +70,7 @@
             return {
                 resource: 'reports/general-items',
                 form: {},
-
+                type: "sale",
             }
         },
         filters:{
@@ -86,6 +94,11 @@
             }
         },
         async created() {
+
+            this.$eventHub.$on('typeTransaction', (type) => {
+                this.type = type
+            })
+
         },
         methods: {
 
