@@ -50,6 +50,7 @@
                                 <th>#</th>
                                 <th>Cod. Interno</th>
                                 <th>Descripción</th>
+                                <th>Categoria</th>
                                 <th>Inventario actual</th>
                                 <th>Costo</th>
                                 <th>Costo Total</th>
@@ -70,6 +71,7 @@
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$value->item->internal_id ?? ''}}</td>
                                     <td>{{$value->item->description ?? ''}}</td>
+                                    <td >{{optional($value->item->category)->name}}</td>
                                     <td>{{$value->stock}}</td>
                                     <td>{{$value->item->purchase_unit_price}}</td>
                                     <td>{{number_format($total_line, 6)}}</td>
@@ -78,7 +80,7 @@
                                 </tr>
                             @endforeach
                             <tr>
-                                <td colspan="4" style="text-align: right;">Costo Total de Inventario</td>
+                                <td colspan="6" style="text-align: right;">Costo Total de Inventario</td>
                                 <td>{{number_format($total, 6)}}</td>
                                 <td></td>
                                 <td></td>
