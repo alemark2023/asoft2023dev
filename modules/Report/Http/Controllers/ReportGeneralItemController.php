@@ -48,7 +48,7 @@ class ReportGeneralItemController extends Controller
     public function records(Request $request)
     {
 
-        $records = $this->getRecordsItems($request->all());
+        $records = $this->getRecordsItems($request->all())->latest('id');
 
 
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
@@ -153,9 +153,25 @@ class ReportGeneralItemController extends Controller
         return $data;
     }
 
+
+    public function pdf(Request $request) {
+
+        $records = $this->getRecordsItems($request->all())->latest('id')->get();
+        $type_name = ($request->type == 'sale') ? 'Ventas_':'Compras_';
+        $type = $request->type;
+        $document_type_id = $request['document_type_id'];
+
+        $pdf = PDF::loadView('report::general_items.report_pdf', compact("records", "type", "document_type_id"))->setPaper('a4', 'landscape');
+
+        $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now().'.xlsx';
+
+        return $pdf->download($filename.'.pdf');
+    }
+
+
     public function excel(Request $request) {
 
-        $records = $this->getRecordsItems($request->all())->get();
+        $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $document_type_id = $request['document_type_id'];
 
