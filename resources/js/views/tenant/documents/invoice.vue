@@ -809,9 +809,20 @@ import moment from 'moment'
 
             },
             changeDestinationSale() {
+
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
-                    this.form.payment_destination_id = this.payment_destinations[0].id
-                    this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    if(cash){
+                    
+                        this.form.payments[0].payment_destination_id = cash.id
+                    
+                    }else{
+
+                        this.form.payment_destination_id = this.payment_destinations[0].id
+                        this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+                    }
                     // console.log('log', this.form.payments[index].payment_destination_id)
                     // console.log('aqui', this.payment_destinations[0].id)
                 }
@@ -1137,10 +1148,23 @@ import moment from 'moment'
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id: null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
-
                 });
+                
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -1276,7 +1300,7 @@ import moment from 'moment'
                 this.changeDocumentType()
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
-                this.changeDestinationSale()
+                // this.changeDestinationSale()
 
             },
             async changeOperationType() {
