@@ -225,7 +225,8 @@
                                                     <td>
                                                         <div class="form-group mb-2 mr-2">
                                                             <el-select v-model="row.payment_destination_id" filterable >
-                                                                <el-option v-for="option in payment_destinations" @change="changeDestinationSale(index)" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                <!-- <el-option v-for="option in payment_destinations" @change="changeDestinationSale(index)" :key="option.id" :value="option.id" :label="option.description"></el-option> -->
                                                             </el-select>
                                                         </div>
                                                     </td>
@@ -1136,6 +1137,7 @@ import moment from 'moment'
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
+                    payment_destination_id: null,
                     payment: 0,
 
                 });
@@ -1274,6 +1276,8 @@ import moment from 'moment'
                 this.changeDocumentType()
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
+                this.changeDestinationSale()
+
             },
             async changeOperationType() {
                 this.form.customer_id = null
