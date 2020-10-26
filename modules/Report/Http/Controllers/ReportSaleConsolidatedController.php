@@ -117,5 +117,19 @@ class ReportSaleConsolidatedController extends Controller
     }
 
 
+    public function pdfTotals(Request $request) {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $records = $this->totalsByItem($request)->sortBy('item_id');
+        $params = $request->all();
+
+        $pdf = PDF::loadView('report::sales_consolidated.report_pdf_totals', compact("records", "company", "establishment", "params"));
+
+        $filename = 'Reporte_Consolidado_Items_Ventas_Totales_'.date('YmdHis');
+
+        return $pdf->download($filename.'.pdf');
+    }
+
 
 }
