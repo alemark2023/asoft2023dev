@@ -55,41 +55,25 @@
         @if(!empty($records))
             <div class="">
                 <div class=" ">
-                    <table class="">
+                    <table class="" style="table-layout:fixed;">
                         <thead>
-                            <tr>
-                                <th class="">FECHA DE EMISIÓN</th>
-                                <th class="">TIPO DOCUMENTO</th>
-                                {{-- <th class="">ID TIPO</th> --}}
-                                <th class="">SERIE</th>
-                                <th class="">NÚMERO</th>
-                                {{-- <th class="">ANULADO</th> --}}
-                                {{-- <th class="">DOC ENTIDAD TIPO DNI RUC</th> --}}
-                                <th class="">DOC ENTIDAD NÚMERO</th>
-                                <th class="">DENOMINACIÓN ENTIDAD</th>
-                                <th class="">MONEDA</th>
-                                {{-- <th class="">TIPO DE CAMBIO</th> --}}
-                                <th class="">UNIDAD DE MEDIDA</th>
-                                {{-- <th class="">CÓDIGO INTERNO</th> --}}
-                                <th class="">DESCRIPCIÓN</th>
-                                <th class="">CANTIDAD</th>
-                                {{-- <th class="">SERIES</th> --}}
-                                {{-- <th class="">COSTO UNIDAD</th> --}}
-                                {{-- <th class="">VALOR UNITARIO</th> --}}
-                                <th class="">PRECIO UNITARIO</th>
-                                {{-- <th class="">DESCUENTO</th> --}}
-                                {{-- <th class="">SUBTOTAL</th> --}}
-                                {{-- <th class="">TIPO DE IGV</th> --}}
-                                {{-- <th class="">IGV</th> --}}
-                                {{-- <th class="">TIPO DE ISC</th> --}}
-                                {{-- <th class="">ISC</th> --}}
-                                {{-- <th class="">IMPUESTO BOLSAS</th> --}}
-                                <th class="">TOTAL</th>
+                            <tr width="100%">
+                                <th  style="width:6%;" >FECHA DE EMISIÓN</th>
+                                <th  style="width:6%;">SERIE</th>
+                                <th  style="width:6%;">NÚMERO</th>
+                                <th  style="width:6%;">DOC ENTIDAD TIPO DNI RUC</th>
+                                <th  style="width:8%;">DOC ENTIDAD NÚMERO</th>
+                                <th  style="width:11%;">DENOMINACIÓN ENTIDAD</th>
+                                <th  style="width:6%;">MONEDA</th>
+                                <th  style="width:5%;">UNIDAD DE MEDIDA</th>
+                                <th  style="width:12%;">DESCRIPCIÓN</th>
+                                <th  style="width:8%;">CANTIDAD</th>
+                                <th  style="width:7%;">PRECIO UNITARIO</th>
+                                <th  style="width:6%;">TOTAL</th>
                                 @if($type == 'sale')
-                                <th class="">TOTAL COMPRA</th>
-                                <th class="">GANANCIA</th>
+                                <th  style="width:6%;">TOTAL COMPRA</th>
+                                <th  style="width:7%;">GANANCIA</th>
                                 @endif
-                                {{-- <th class="">PLATAFORMA</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -122,44 +106,19 @@
                                         @endphp
                                         <tr>
                                             <td class="celda">{{$value->sale_note->date_of_issue->format('Y-m-d')}}</td>
-                                            <td class="celda">NOTA DE VENTA</td>
-                                            {{-- <td class="celda">80</td> --}}
                                             <td class="celda">{{$value->sale_note->series}}</td>
                                             <td class="celda">{{$value->sale_note->number}}</td>
-                                            {{-- <td class="celda">{{$value->sale_note->state_type_id == '11' ? 'SI':'NO'}}</td> --}}
-                                            {{-- <td class="celda">{{$value->sale_note->customer->identity_document_type->description}}</td> --}}
+                                            <td class="celda">{{$value->sale_note->customer->identity_document_type_id}}</td>
                                             <td class="celda">{{$value->sale_note->customer->number}}</td>
                                             <td class="celda">{{$value->sale_note->customer->name}}</td>
                                             <td class="celda">{{$value->sale_note->currency_type_id}}</td>
-                                            {{-- <td class="celda">{{$value->sale_note->exchange_rate_sale}}</td> --}}
-                                            <td class="celda">{{$value->sale_note->unit_type_id}}</td>
-                                            {{-- <td class="celda">{{$value->relation_item->internal_id}}</td> --}}
+                                            <td class="celda">{{$value->item->unit_type_id}}</td>
                                             <td class="celda">{{$value->item->description}}</td>
                                             <td class="celda">{{$value->quantity}}</td>
-
-                                            {{-- <td class="celda">{{$series}}</td>
-
-                                            <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
-
-                                            <td class="celda">{{$value->unit_value}}</td> --}}
                                             <td class="celda">{{$value->unit_price}}</td>
-
-                                            {{-- <td class="celda">{{$value->total_discount}}</td> --}}
-
-                                            {{-- <td class="celda">{{$value->total_value}}</td> --}}
-                                            {{-- <td class="celda">{{$value->affectation_igv_type_id}}</td> --}}
-                                            {{-- <td class="celda">{{$value->total_igv}}</td> --}}
-                                            {{-- <td class="celda">{{$value->system_isc_type_id}}</td> --}}
-                                            {{-- <td class="celda">{{$value->total_isc}}</td> --}}
-                                            {{-- <td class="celda">{{$value->total_plastic_bag_taxes}}</td> --}}
-
                                             <td class="celda">{{$value->total}}</td>
-
                                             <td class="celda">{{number_format($total_item_purchase,2)}}</td>
                                             <td class="celda">{{number_format( $utility_item,2) }}</td>
-
-                                            {{-- <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td> --}}
-
                                         </tr>
                                     @endforeach
 
@@ -189,46 +148,22 @@
                                         @endphp
 
                                     <tr>
+                                        
                                         <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td>
-                                        {{-- <td class="celda">{{$value->document->document_type->description}}</td> --}}
-                                        {{-- <td class="celda">{{$value->document->document_type_id}}</td> --}}
                                         <td class="celda">{{$value->document->series}}</td>
                                         <td class="celda">{{$value->document->number}}</td>
-                                        {{-- <td class="celda">{{$value->document->state_type_id == '11' ? 'SI':'NO'}}</td> --}}
-                                        <td class="celda">{{$value->document->customer->identity_document_type->description}}</td>
+                                        <td class="celda">{{$value->document->customer->identity_document_type_id}}</td>
                                         <td class="celda">{{$value->document->customer->number}}</td>
                                         <td class="celda">{{$value->document->customer->name}}</td>
                                         <td class="celda">{{$value->document->currency_type_id}}</td>
-                                        {{-- <td class="celda">{{$value->document->exchange_rate_sale}}</td> --}}
                                         <td class="celda">{{$value->item->unit_type_id}}</td>
-                                        {{-- <td class="celda">{{$value->item->internal_id}}</td> --}}
-                                        <td class="celda">{{$value->item->description}}</td>
+                                        {{-- <td  class="celda" >{{ $value->item->description}}</td> --}}
+                                        <td  class="celda" >{{ (strlen($value->item->description) > 50) ? substr($value->item->description,0,50):$value->item->description}}</td>
                                         <td class="celda">{{$value->quantity}}</td>
-
-                                        {{-- <td class="celda">{{$series}}</td>
-
-
-                                        <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
-
-                                        <td class="celda">{{$value->unit_value}}</td> --}}
                                         <td class="celda">{{$value->unit_price}}</td>
-
-                                        {{-- <td class="celda">{{$value->total_discount}}</td> --}}
-
-                                        {{-- <td class="celda">{{$value->total_value}}</td> --}}
-                                        {{-- <td class="celda">{{$value->affectation_igv_type_id}}</td> --}}
-                                        {{-- <td class="celda">{{$value->total_igv}}</td> --}}
-                                        {{-- <td class="celda">{{$value->system_isc_type_id}}</td> --}}
-                                        {{-- <td class="celda">{{$value->total_isc}}</td> --}}
-                                        {{-- <td class="celda">{{$value->total_plastic_bag_taxes}}</td> --}}
-
                                         <td class="celda">{{$value->total}}</td>
-                                        
                                         <td class="celda">{{ number_format($total_item_purchase,2) }}</td>
                                         <td class="celda">{{ number_format($utility_item ,2) }}</td>
-
-                                        {{-- <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td> --}}
-
                                     </tr>
                                     @endforeach
 
@@ -245,7 +180,7 @@
                                     <td class="celda">{{$value->purchase->series}}</td>
                                     <td class="celda">{{$value->purchase->number}}</td>
                                     {{-- <td class="celda">{{$value->purchase->state_type_id == '11' ? 'SI':'NO'}}</td> --}}
-                                    <td class="celda">{{$value->purchase->supplier->identity_document_type->description}}</td>
+                                    <td class="celda">{{$value->purchase->supplier->identity_document_type_id}}</td>
                                     <td class="celda">{{$value->purchase->supplier->number}}</td>
                                     <td class="celda">{{$value->purchase->supplier->name}}</td>
                                     <td class="celda">{{$value->purchase->currency_type_id}}</td>
