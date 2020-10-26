@@ -20,12 +20,12 @@ class DispatchRequest extends FormRequest
             'unit_type_id' => [
                 'required',
             ],
-            'transfer_reason_description' => [
-                'required',
-            ],
-            'observations' => [
-                'required',
-            ],
+            // 'transfer_reason_description' => [
+            //     'required',
+            // ],
+            // 'observations' => [
+            //     'required',
+            // ],
             'delivery.address'=> [
                 'required',
                
