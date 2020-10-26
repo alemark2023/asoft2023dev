@@ -304,6 +304,7 @@
                         :readonly="item.item.calculate_quantity"
                         class
                         @input="clickAddItem(item,index,true)"
+                        @keyup.enter.native="keyupEnterQuantity"
                       ></el-input>
                       <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                     </td>
@@ -645,7 +646,9 @@
             }
         },
         methods: {
-
+            keyupEnterQuantity(){
+              this.initFocus()
+            },
             handleFn112(response)
             {
               this.search_item_by_barcode = !this.search_item_by_barcode
@@ -1204,7 +1207,10 @@
             });
 
             this.cleanInput()
-            this.initFocus()
+
+            if(!input){
+              this.initFocus()
+            }
 
             // console.log(this.row)
             // console.log(this.form.items)
