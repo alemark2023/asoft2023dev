@@ -89,7 +89,7 @@
 
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.transfer_reason_description}">
-                                <label class="control-label">Descripción de motivo de traslado<span class="text-danger"> *</span></label>
+                                <label class="control-label">Descripción de motivo de traslado</label>
                                 <el-input type="textarea" :rows="3" placeholder="Descripción de motivo de traslado..." v-model="form.transfer_reason_description" maxlength="100"></el-input>
                                 <small class="form-control-feedback" v-if="errors.transfer_reason_description" v-text="errors.transfer_reason_description[0]"></small>
                             </div>
@@ -128,7 +128,7 @@
                         </div> -->
                         <div class="col-lg-6">
                             <div class="form-group" :class="{'has-danger': errors.observations}">
-                                <label class="control-label">Observaciones<span class="text-danger"> *</span></label>
+                                <label class="control-label">Observaciones</label>
                                 <el-input type="textarea" :rows="3" placeholder="Observaciones..." v-model="form.observations" maxlength="250"></el-input>
                                 <small class="form-control-feedback" v-if="errors.observations" v-text="errors.observations[0]"></small>
                             </div>
