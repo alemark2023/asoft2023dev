@@ -86,7 +86,7 @@
                         </tbody>                         
                         <tfoot>
                             <tr>
-                                <td colspan="6"></td>
+                                <td colspan="7"></td>
                                 <td>S/{{totals.total_input}}</td>
                                 <td>S/{{totals.total_output}}</td>
                                 <td>S/{{totals.total_balance}}</td>

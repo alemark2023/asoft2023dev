@@ -11,6 +11,11 @@
                             <th class="">Fecha</th>
                             <th class="">Adquiriente</th>
                             <th class="">Documento/Transacción</th>
+                            <th class="">Detalle
+                                <el-tooltip class="item" effect="dark" content="Aplica a Ingresos/Gastos" placement="top-start">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </th>
                             <th class="">Moneda</th>
                             <th class="">Tipo</th>
                             <th class="">Ingresos</th>
@@ -25,6 +30,11 @@
                             <td>
                                 {{row.number_full}}<br/>
                                 <small v-text="row.document_type_description"></small>
+                            </td>
+                            <td>
+                                <template v-for="(item, index) in row.items">
+                                    <label :key="index">- {{item.description}}</label></br>
+                                </template>
                             </td>
                             <td>{{row.currency_type_id}}</td>
                             <td>{{row.instance_type_description}}</td>
