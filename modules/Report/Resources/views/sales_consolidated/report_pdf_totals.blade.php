@@ -24,6 +24,12 @@
                 border: 0.1px solid black;
             }
             
+            .celda-item {
+                text-align: left;
+                padding: 5px;
+                border: 0.1px solid black;
+            }
+
             th {
                 padding: 5px;
                 text-align: center;
@@ -92,14 +98,16 @@
                     <table class="">
                         <thead>
                             <tr>
-                                <th  class="text-left">Producto</th>
+                                <th  class="text-center">#</th>
+                                <th  class="celda-item">Producto</th>
                                 <th  class="text-center">Cantidad Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
                                 <tr>
-                                    <td class="celda">{{$value['item_description']}}</td>
+                                    <td class="celda">{{ $loop->iteration }}</td>
+                                    <td class="celda-item">{{$value['item_description']}}</td>
                                     <td class="celda">{{$value['quantity']}}</td> 
                                 </tr> 
                             @endforeach 
