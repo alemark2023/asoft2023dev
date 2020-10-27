@@ -372,6 +372,7 @@
                 payment_method_types: [],
                 activePanel: 0,
                 payment_destinations:  [],
+                configuration: {},
                 loading_search:false
             }
         },
@@ -389,12 +390,14 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
+                    this.configuration = response.data.configuration
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
                     this.changeCurrencyType()
                     this.allCustomers()
                     this.initRecord()
+                    this.selectDestinationSale()
                    
                 })
             this.loading_form = true
@@ -407,6 +410,34 @@
 
         },
         methods: {
+            selectDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+                    this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
+                }
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
+            setTotalDefaultPayment(){
+
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
+            },
             changeTermsCondition(){
 
                 if(this.form.active_terms_condition){
@@ -418,16 +449,20 @@
                 }
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     document_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
 
                 });
+
+                this.setTotalDefaultPayment()
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -640,6 +675,9 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+
+                this.setTotalDefaultPayment()
+
             },
             validate_payments(){
 

@@ -319,6 +319,7 @@
                 all_series: [],
                 is_contingency: false,
                 payment_destinations:  [],
+                configuration: {},
 
             }
         },
@@ -340,10 +341,12 @@
                     this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
                     this.all_series = response.data.series
                     this.payment_destinations = response.data.payment_destinations
+                    this.configuration = response.data.configuration
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
                     this.allCustomers()
+                    this.selectDestinationSale()
                 })
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -354,6 +357,34 @@
 
         },
         methods: {
+            selectDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+                    this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
+                }
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
+            setTotalDefaultPayment(){
+
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
+            },
             filterSeries() {
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id, 'document_type_id': '80', 'contingency': this.is_contingency});
@@ -428,9 +459,12 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
                 });
+
+                this.setTotalDefaultPayment()
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -600,6 +634,7 @@
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
                 this.form_payment.payment = this.form.total
+                this.setTotalDefaultPayment()
             },
             async saveCashDocument(sale_note_id){
 
