@@ -839,7 +839,29 @@
 
                 if(this.enabled_percentage_of_profit) this.form.sale_unit_price = (this.form.purchase_unit_price * (100 + parseFloat(this.form.percentage_of_profit))) / 100
             },
+            validateItemUnitTypes(){
+
+                let error_by_item = 0
+
+                if(this.form.item_unit_types.length > 0){
+                    
+                    this.form.item_unit_types.forEach(item => {
+
+                        if(parseFloat(item.quantity_unit) < 0.0001){
+                            error_by_item++
+                        }
+
+                    })
+
+                }
+
+                return error_by_item
+
+            },
             async submit() {
+
+                if(this.validateItemUnitTypes() > 0) return this.$message.error('El campo factor no puede ser menor a 0.0001');
+
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
                 // if(!this.has_percentage_perception) this.form.percentage_perception = null
 
