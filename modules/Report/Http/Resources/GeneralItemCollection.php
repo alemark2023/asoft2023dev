@@ -27,6 +27,7 @@ class GeneralItemCollection extends ResourceCollection
                 'unit_type_id' => $row->item->unit_type_id,
                 'internal_id' => $row->relation_item->internal_id,
                 'description' => $row->item->description,
+                'currency_type_id' => $resource['currency_type_id'],
 
                 'lot_has_sale' => self::getLotsHasSale($row),
 
@@ -102,6 +103,7 @@ class GeneralItemCollection extends ResourceCollection
             $data['alone_number'] =  $row->document->number;
             $data['document_type_description'] = $row->document->document_type->description;
             $data['document_type_id'] = $row->document->document_type->id;
+            $data['currency_type_id'] = $row->document->currency_type_id;
 
         }
         else if($row->purchase)
@@ -113,6 +115,7 @@ class GeneralItemCollection extends ResourceCollection
             $data['alone_number'] =  $row->purchase->number;
             $data['document_type_description'] = $row->purchase->document_type->description;
             $data['document_type_id'] = $row->purchase->document_type->id;
+            $data['currency_type_id'] = $row->purchase->currency_type_id;
 
         }
         else if($row->sale_note)
@@ -124,6 +127,7 @@ class GeneralItemCollection extends ResourceCollection
             $data['alone_number'] =  $row->sale_note->number;
             $data['document_type_description'] = 'NOTA DE VENTA';
             $data['document_type_id'] = 80;
+            $data['currency_type_id'] = $row->sale_note->currency_type_id;
         }
 
         return $data;

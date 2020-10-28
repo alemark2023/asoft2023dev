@@ -20,6 +20,7 @@
                             <th class="">Cantidad</th>
                             <th>Series</th>
                             <th class="">Plataforma</th>
+                            <th class="">Moneda</th>
                             <th class="">Valor unitario</th>
                             <th class="">Total</th>
                             <template v-if="type == 'sale'">
@@ -43,6 +44,7 @@
                                 {{ row.lot_has_sale | filterLots }}
                             </td>
                             <td>{{row.web_platform_name}}</td>
+                            <td>{{row.currency_type_id}}</td>
                             <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
                             <template v-if="type == 'sale'">
