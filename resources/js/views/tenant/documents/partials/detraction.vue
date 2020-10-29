@@ -71,6 +71,64 @@
                             </div> 
                         </div>
                     </div> 
+
+                    <template v-if="operationTypeId == '1004'">
+                        <h6>DETALLE - SERVICIOS DE TRANSPORTE DE CARGA</h6>
+                        <div class="row"> 
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Ubigeo origen<span class="text-danger"> *</span></label>
+                                    <el-cascader :options="locations" v-model="detraction.origin_location_id" filterable></el-cascader>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Dirección origen<span class="text-danger"> *</span></label>
+                                    <el-input v-model="detraction.origin_address"></el-input>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Ubigeo destino<span class="text-danger"> *</span></label>
+                                    <el-cascader :options="locations" v-model="detraction.delivery_location_id" filterable></el-cascader>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Dirección destino<span class="text-danger"> *</span></label>
+                                    <el-input v-model="detraction.delivery_address"></el-input>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Valor referencial servicio de transporte<span class="text-danger"> *</span></label>
+                                    <el-input-number v-model="detraction.reference_value_service" :precision="2" :step="1" :min="0.01"></el-input-number>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Valor referencia carga efectiva<span class="text-danger"> *</span></label>
+                                    <el-input-number v-model="detraction.reference_value_effective_load" :precision="2" :step="1" :min="0.01"></el-input-number>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Valor referencial carga útil<span class="text-danger"> *</span></label>
+                                    <el-input-number v-model="detraction.reference_value_payload" :precision="2" :step="1" :min="0.01"></el-input-number>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Detalle del viaje<span class="text-danger"> *</span></label>
+                                    <el-input v-model="detraction.trip_detail" type="textarea"></el-input>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
  
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="clickCancel()">Cancelar</el-button>
@@ -83,7 +141,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'exchangeRateSale'],
+        props: ['showDialog', 'detraction','total', 'currencyTypeIdActive', 'operationTypeId', 'exchangeRateSale'],
         data() {
             return {
                 headers: headers_token,
@@ -96,14 +154,17 @@
                 cat_payment_method_types: [],
                 payment_method_type: null,
                 detraction_types: [],
+                locations: [],
+                all_detraction_types: [],
             }
         },
         async created(){
             
             await this.$http.get(`/${this.resource}/detraction/tables`)
                 .then(response => {
-                    this.detraction_types = response.data.detraction_types
+                    this.all_detraction_types = response.data.detraction_types
                     this.cat_payment_method_types = response.data.cat_payment_method_types
+                    this.locations = response.data.locations
                 })
 
             this.initForm()
@@ -143,7 +204,33 @@
                 if(!detraction.bank_account)
                     return {success:false, message:'El campo cuenta bancaria es obligatorio'}
 
+                if(this.operationTypeId == '1004'){
+                    
+                    if(!detraction.origin_location_id)
+                        return {success:false, message:'El campo Ubigeo origen es obligatorio'}
 
+                    if(!detraction.origin_address)
+                        return {success:false, message:'El campo Dirección origen es obligatorio'}
+ 
+                    if(!detraction.delivery_location_id)
+                        return {success:false, message:'El campo Ubigeo destino es obligatorio'}
+
+                    if(!detraction.delivery_address)
+                        return {success:false, message:'El campo Dirección destino es obligatorio'}
+
+                    if(!detraction.reference_value_service)
+                        return {success:false, message:'El campo Valor referencial servicio de transporte es obligatorio'}
+
+                    if(!detraction.reference_value_effective_load)
+                        return {success:false, message:'El campo Valor referencia carga efectiva es obligatorio'}
+                        
+                    if(!detraction.reference_value_payload)
+                        return {success:false, message:'El campo Valor referencial carga útil es obligatorio'}
+
+                    if(!detraction.trip_detail)
+                        return {success:false, message:'El campo Detalle del viaje es obligatorio'}
+
+                }
 
                 return {success:true}
 
@@ -162,9 +249,13 @@
             },   
             create(){
                 this.$message.warning('Sujeta a detracción');
+                this.filterDetractionTypes()
                 // console.log(this.$refs.select_payment.$el.getElementsByTagName('input')[0])
                 // this.$refs.select_payment.$el.getElementsByTagName('input')[0].value = "001"
             }, 
+            filterDetractionTypes(){
+                this.detraction_types = _.filter(this.all_detraction_types, {operation_type_id: this.operationTypeId})
+            },
             initForm(){
                 this.form = { 
                     image: null,

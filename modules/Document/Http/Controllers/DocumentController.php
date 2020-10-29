@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\Catalogs\DetractionType;
+use App\Models\Tenant\Catalogs\Department;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Traits\OfflineTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
@@ -172,7 +173,35 @@ class DocumentController extends Controller
         $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         $detraction_types = DetractionType::whereActive()->get();
 
-        return compact( 'detraction_types', 'cat_payment_method_types');
+        $locations = [];
+        $departments = Department::whereActive()->get();
+        foreach ($departments as $department)
+        {
+            $children_provinces = [];
+            foreach ($department->provinces as $province)
+            {
+                $children_districts = [];
+                foreach ($province->districts as $district)
+                {
+                    $children_districts[] = [
+                        'value' => $district->id,
+                        'label' => $district->description
+                    ];
+                }
+                $children_provinces[] = [
+                    'value' => $province->id,
+                    'label' => $province->description,
+                    'children' => $children_districts
+                ];
+            }
+            $locations[] = [
+                'value' => $department->id,
+                'label' => $department->description,
+                'children' => $children_provinces
+            ];
+        }
+
+        return compact( 'detraction_types', 'cat_payment_method_types', 'locations');
 
     }
 
