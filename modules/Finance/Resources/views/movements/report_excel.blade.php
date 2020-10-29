@@ -53,6 +53,7 @@
                                 <th class="">N° Doc. Identidad</th>
                                 <th class="">Tipo documento</th>
                                 <th class="">Documento/Transacción</th>
+                                <th class="">Detalle</th>
                                 <th class="">Moneda</th>
                                 <th class="">Tipo</th>
                                 <th class="">Ingresos</th>
@@ -72,6 +73,7 @@
                                     @php 
                                         $data_person = $value->data_person;
                                         $document_type = '';
+                                        $items = [];
 
                                         if($value->payment->associated_record_payment->document_type){
 
@@ -95,6 +97,15 @@
                                         $total_input += ($value->type_movement == 'input') ? $value->payment->payment : 0;
                                         $total_output += ($value->type_movement == 'output') ? $value->payment->payment : 0;
 
+                                        if(in_array($value->instance_type, ['expense', 'income'])){
+
+                                            $items = $value->payment->associated_record_payment->items->transform(function($row, $key) {
+                                                return [
+                                                    'description' => $row->description 
+                                                ];
+                                            });
+                                        }
+
                                     @endphp
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->payment->date_of_payment->format('Y-m-d')}}</td> 
@@ -102,6 +113,11 @@
                                     <td class="celda">{{$data_person->number}}</td>
                                     <td class="celda">{{ $document_type }}</td>
                                     <td class="celda">{{$value->payment->associated_record_payment->number_full}}</td>
+                                    <td class="celda">
+                                        @foreach ($items as $item)
+                                            <p>- {{ $item['description'] }}</p>
+                                        @endforeach
+                                    </td>
                                     <td class="celda">{{$value->payment->associated_record_payment->currency_type_id}}</td>
                                     <td class="celda">{{$value->instance_type_description}}</td>
 
@@ -115,7 +131,7 @@
                         </tbody>            
                         <tfoot>
                             <tr>
-                                <td colspan="8" class="celda"></td>
+                                <td colspan="9" class="celda"></td>
                                 <td class="celda">S/{{$total_input}}</td>
                                 <td class="celda">S/{{$total_output}}</td>
                                 <td class="celda">S/{{$total_input - $total_output}}</td>

@@ -41,12 +41,15 @@
                                 <th class="">ISC</th>
                                 <th class="">IMPUESTO BOLSAS</th>
                                 <th class="">TOTAL</th>
+                                @if($type == 'sale')
+                                <th class="">TOTAL COMPRA</th>
+                                <th class="">GANANCIA</th>
+                                @endif
+                                <th class="">PLATAFORMA</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if($type == 'sale')
-
-
 
                                 @if($document_type_id == '80')
 
@@ -59,6 +62,18 @@
                                                 $series_data =  collect($value->item->lots)->where('has_sale', 1)->pluck('series')->toArray();
                                                 $series = implode(" - ", $series_data);
                                             }
+
+                                            $purchase_unit_price = 0;
+
+                                            if($value->relation_item->purchase_unit_price > 0){
+                                                $purchase_unit_price = $value->relation_item->purchase_unit_price;
+                                            }else{
+                                                $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
+                                                $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
+                                            }
+
+                                            $total_item_purchase = $purchase_unit_price * $value->quantity;
+                                            $utility_item = $value->total - $total_item_purchase;
 
                                         @endphp
                                         <tr>
@@ -96,6 +111,11 @@
 
                                             <td class="celda">{{$value->total}}</td>
 
+                                            <td class="celda">{{ number_format($total_item_purchase,2) }}</td>
+                                            <td class="celda">{{ number_format($utility_item ,2) }}</td>
+
+                                            <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
+
                                         </tr>
                                     @endforeach
 
@@ -111,6 +131,17 @@
                                                 $series = implode(" - ", $series_data);
                                             }
 
+                                            $purchase_unit_price = 0;
+
+                                            if($value->relation_item->purchase_unit_price > 0){
+                                                $purchase_unit_price = $value->relation_item->purchase_unit_price;
+                                            }else{
+                                                $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
+                                                $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
+                                            }
+
+                                            $total_item_purchase = $purchase_unit_price * $value->quantity;
+                                            $utility_item = $value->total - $total_item_purchase;
                                         @endphp
 
                                     <tr>
@@ -148,6 +179,11 @@
                                         <td class="celda">{{$value->total_plastic_bag_taxes}}</td>
 
                                         <td class="celda">{{$value->total}}</td>
+                                        
+                                        <td class="celda">{{ number_format($total_item_purchase,2) }}</td>
+                                        <td class="celda">{{ number_format($utility_item ,2) }}</td>
+
+                                        <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
 
                                     </tr>
                                     @endforeach
@@ -178,6 +214,7 @@
                                     <td class="celda">{{$value->quantity}}</td>
 
                                     <td class="celda"></td>
+                                    <td class="celda"></td>
 
                                     <td class="celda">{{$value->unit_value}}</td>
                                     <td class="celda">{{$value->unit_price}}</td>
@@ -196,6 +233,7 @@
                                     <td class="celda">{{$value->total_plastic_bag_taxes}}</td>
 
                                     <td class="celda">{{$value->total}}</td>
+                                    <td class="celda"></td>
 
                                 </tr>
                                 @endforeach

@@ -28,9 +28,14 @@ class ReportGeneralItemController extends Controller
 
     public function filter() {
 
+        $customers = $this->getPersons('customers'); 
+        $suppliers = $this->getPersons('suppliers'); 
+        $items = $this->getItems('items');
+        $web_platforms = $this->getWebPlatforms();
+
         $document_types = DocumentType::whereIn('id', ['01', '03', '80'])->get();
 
-        return compact('document_types');
+        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms');
     }
 
 
@@ -43,7 +48,7 @@ class ReportGeneralItemController extends Controller
     public function records(Request $request)
     {
 
-        $records = $this->getRecordsItems($request->all());
+        $records = $this->getRecordsItems($request->all())->latest('id');
 
 
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
@@ -59,20 +64,27 @@ class ReportGeneralItemController extends Controller
         $d_start = $data_of_period['d_start'];
         $d_end = $data_of_period['d_end'];
 
-        $user = $request['user'];
+        $person_id = $request['person_id'];
+        $type_person = $request['type_person'];
+        $item_id = $request['item_id'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user);
+        $user = $request['user'];
+        $web_platform_id = $request['web_platform_id'];
+
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user, $person_id, $type_person, $item_id, $web_platform_id);
 
         return $records;
 
     }
 
 
-    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user)
+    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user, $person_id, $type_person, $item_id, $web_platform_id)
     {
 
         if( $document_type_id && $document_type_id == '80' )
         {
+            $relation = 'sale_note';
+
             $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end){
                 $query
                 ->whereBetween('date_of_issue', [$date_start, $date_end])
@@ -94,12 +106,31 @@ class ReportGeneralItemController extends Controller
                             ->latest()
                             ->whereTypeUser();
                         })
-                        ->whereHas('document.user', function($query) use($user){
+                        ->whereHas($relation.'.user', function($query) use($user){
                             $query->where('name', 'like', "%{$user}%");
                         });
 
         }
 
+        
+        if($person_id && $type_person){
+
+            $column = ($type_person == 'customers') ? 'customer_id':'supplier_id';
+            
+            $data =  $data->whereHas($relation, function($query) use($column, $person_id){
+                                $query->where($column, $person_id);
+                            });
+
+        }
+
+        if($item_id){
+            $data =  $data->where('item_id', $item_id);
+        }
+
+        if($web_platform_id){
+            $data = $data->whereHas('relation_item', function($q) use($web_platform_id){$q->where('web_platform_id', $web_platform_id);});
+        }
+        
         return $data;
 
     }
@@ -122,9 +153,25 @@ class ReportGeneralItemController extends Controller
         return $data;
     }
 
+
+    public function pdf(Request $request) {
+
+        $records = $this->getRecordsItems($request->all())->latest('id')->get();
+        $type_name = ($request->type == 'sale') ? 'Ventas_':'Compras_';
+        $type = $request->type;
+        $document_type_id = $request['document_type_id'];
+
+        $pdf = PDF::loadView('report::general_items.report_pdf', compact("records", "type", "document_type_id"))->setPaper('a4', 'landscape');
+
+        $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now().'.xlsx';
+
+        return $pdf->download($filename.'.pdf');
+    }
+
+
     public function excel(Request $request) {
 
-        $records = $this->getRecordsItems($request->all())->get();
+        $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $document_type_id = $request['document_type_id'];
 

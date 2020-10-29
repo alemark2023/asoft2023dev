@@ -130,8 +130,9 @@ class PurchaseController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $customers = $this->getPersons('customers');
+        $configuration = Configuration::first();
 
-        return compact('suppliers', 'establishment','currency_types', 'discount_types',
+        return compact('suppliers', 'establishment','currency_types', 'discount_types', 'configuration',
                     'charge_types', 'document_types_invoice','company','payment_method_types', 'payment_destinations', 'customers');
     }
 

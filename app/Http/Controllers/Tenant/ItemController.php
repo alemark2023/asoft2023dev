@@ -36,7 +36,10 @@ use Modules\Item\Models\ItemLotsGroup;
 use Carbon\Carbon;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
+use App\Exports\ItemExportBarCode;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
 
 
 class ItemController extends Controller
@@ -568,6 +571,67 @@ class ItemController extends Controller
                 ->records($records)
                 ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV);
 
+    }
+
+    public function exportBarCode(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+
+        $start = $request[0];
+        $end = $request[1];
+
+        $records = Item::whereBetween('id', [$start, $end])->get();
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    104.1,
+                    101.6
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode', compact('records'))->render();
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
+    public function printBarCode(Request $request)
+    {
+        ini_set("pcre.backtrack_limit", "50000000");
+
+        $id = $request->id;
+
+        $record = Item::find($id);
+
+        $pdf = new Mpdf([
+                'mode' => 'utf-8',
+                'format' => [
+                    104.1,
+                    24
+                    ],
+                'margin_top' => 2,
+                'margin_right' => 2,
+                'margin_bottom' => 0,
+                'margin_left' => 2
+            ]);
+        $html = view('tenant.items.exports.items-barcode-id', compact('record'))->render();
+
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
+        $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
+
+    }
+
+    public function itemLast()
+    {
+        $record = Item::latest()->first();
+        return json_encode(['data' => $record->id]);
     }
 
 

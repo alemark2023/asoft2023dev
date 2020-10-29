@@ -172,8 +172,9 @@ class SaleNoteController extends Controller
             ];
         });
         $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::select('destination_sale')->first();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types',
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
                          'charge_types','company','payment_method_types', 'series', 'payment_destinations');
     }
 

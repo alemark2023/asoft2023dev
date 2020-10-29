@@ -440,6 +440,11 @@ class Facturalo
 
         } else {
 
+            if ($base_pdf_template === 'brand') {
+                $pdf_margin_top = 100;
+                $pdf_margin_bottom = 74;
+            }
+
             $pdf_font_regular = config('tenant.pdf_name_regular');
             $pdf_font_bold = config('tenant.pdf_name_bold');
 
@@ -468,7 +473,7 @@ class Facturalo
                     'margin_top' => $pdf_margin_top,
                     'margin_right' => $pdf_margin_right,
                     'margin_bottom' => $pdf_margin_bottom,
-                    'margin_left' => $pdf_margin_left
+                    'margin_left' => $pdf_margin_left,
                 ]);
 
             } else {
@@ -488,8 +493,11 @@ class Facturalo
 
         $stylesheet = file_get_contents($path_css);
 
-        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        if ($base_pdf_template === 'brand') {
+
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+            $pdf->SetHTMLHeader($html_header);
+        }
 
         if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
@@ -508,6 +516,10 @@ class Facturalo
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
         }
+
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
     }
 

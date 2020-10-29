@@ -132,12 +132,28 @@
             {{ $document->user->name }}
         </td>
     </tr>
+    @if ($document->contact)
+    <tr>
+        <td class="align-top">Contacto:</td>
+        <td colspan="3">
+            {{ $document->contact }}
+        </td>
+    </tr>
+    @endif 
+    @if ($document->phone)
+    <tr>
+        <td class="align-top">Telf. Contacto:</td>
+        <td colspan="3">
+            {{ $document->phone }}
+        </td>
+    </tr>
+    @endif 
 </table>
 
 <table class="full-width mt-3">
     @if ($document->description)
         <tr>
-            <td width="15%" class="align-top">Descripción: </td>
+            <td width="15%" class="align-top">Observación: </td>
             <td width="85%">{{ $document->description }}</td>
         </tr>
     @endif

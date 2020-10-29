@@ -92,7 +92,7 @@
     import queryString from 'query-string'
 
     export default {
-        props: ['showDialog', 'lots', 'stock','itemId'],
+        props: ['showDialog', 'lots', 'stock','itemId', 'documentItemId'],
         data() {
             return {
                 titleDialog: 'Series',
@@ -220,7 +220,8 @@
 
                 this.search = {
                     input: null,
-                    item_id: null
+                    item_id: null,
+                    document_item_id: this.documentItemId,
                 }
 
             },

@@ -524,6 +524,7 @@
             :showDialog.sync="showDialogSelectLots"
             :lots="lots"
             :itemId="form.item_id"
+            :documentItemId="form.document_item_id"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
@@ -550,7 +551,8 @@
     import VueCkeditor from 'vue-ckeditor5'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 'isEditItemNote', 'configuration'],
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 
+                'isEditItemNote', 'configuration', 'documentTypeId', 'noteCreditOrDebitTypeId'],
         components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm, 'vue-ckeditor': VueCkeditor.component},
         data() {
             return {
@@ -647,7 +649,7 @@
             clickDecrease(){
 
                 this.form.quantity = parseInt(this.form.quantity-1)
-                
+
                 if(this.form.quantity <= this.getMinQuantity()){
                     this.setMinQuantity()
                     return
@@ -747,7 +749,8 @@
                     has_plastic_bag_taxes:false,
                     warehouse_id:null,
                     lots_group: [],
-                    IdLoteSelected: null
+                    IdLoteSelected: null,
+                    document_item_id: null,
                 };
 
                 this.activePanel = 0;
@@ -780,14 +783,57 @@
                     if(this.isEditItemNote){
                         this.form.item.currency_type_id = this.currencyTypeIdActive
                         this.form.item.currency_type_symbol = (this.currencyTypeIdActive == 'PEN') ? 'S/':'$'
+
+                        if(this.documentTypeId == '07' && this.noteCreditOrDebitTypeId == '07'){
+
+                            this.form.document_item_id =  this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
+                            this.form.item.lots = this.recordItem.item.lots
+                            await this.regularizeLots()
+                            this.lots = this.form.item.lots
+                            // console.log(this.lots)
+                        }
+
                     }
 
-                    this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    if(this.recordItem.name_product_pdf){
+                        this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    }
 
 
                     this.calculateQuantity()
                 }else{
                     this.isUpdateWarehouseId = null
+                }
+
+            },
+            async regularizeLots(){
+
+                if(this.form.document_item_id && this.form.item.lots.length > 0){
+
+                    await this.$http.get(`/${this.resource}/regularize-lots/${this.form.document_item_id}`).then((response) => {
+    
+                                        let all_lots = this.form.item.lots
+                                        let available_lots = response.data
+                                        
+                                        all_lots.forEach((lot, index)  => {
+    
+                                            let exist_lot = _.find(available_lots, (it) =>{
+                                                return it.id == lot.id
+                                            })
+    
+                                            if(!exist_lot){
+                                                this.form.item.lots.splice(index, 1)
+                                            } 
+                                        
+                                        })
+    
+                                        // console.log(response)
+                                    })
+                                    .catch(error => {
+                                    })
+                                    .then(() => {
+                                    })
+                                    
                 }
 
             },
@@ -944,15 +990,19 @@
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
 
                 let IdLoteSelected = this.form.IdLoteSelected
+                let document_item_id = this.form.document_item_id
 
                 // console.log(this.form)
                 // return
                 // console.log
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+                // console.log(this.row, this.form)
 
 
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
                 let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
+
+                // console.log(select_lots.length)
 
                 if(this.form.item.series_enabled){
                     if(select_lots.length != this.form.quantity)
@@ -969,6 +1019,7 @@
                 }
 
                 this.row.IdLoteSelected = IdLoteSelected
+                this.row.document_item_id = document_item_id
 
                 this.$emit('add', this.row);
 

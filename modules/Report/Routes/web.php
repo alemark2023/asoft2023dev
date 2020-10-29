@@ -92,6 +92,7 @@ if($current_hostname) {
 
                 Route::get('general-items', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
                 Route::get('general-items/excel', 'ReportGeneralItemController@excel');
+                Route::get('general-items/pdf', 'ReportGeneralItemController@pdf');
                 Route::get('general-items/filter', 'ReportGeneralItemController@filter');
                 Route::get('general-items/records', 'ReportGeneralItemController@records');
 
@@ -106,6 +107,7 @@ if($current_hostname) {
                 Route::get('sales-consolidated/filter', 'ReportSaleConsolidatedController@filter');
                 Route::get('sales-consolidated/records', 'ReportSaleConsolidatedController@records');
                 Route::get('sales-consolidated/totals-by-item', 'ReportSaleConsolidatedController@totalsByItem');
+                Route::get('sales-consolidated/pdf-totals', 'ReportSaleConsolidatedController@pdfTotals');
 
 
                 Route::prefix('user-commissions')->group(function () {

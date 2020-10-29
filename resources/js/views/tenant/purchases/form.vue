@@ -198,6 +198,7 @@
                                         <th>Lote</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-right">Cantidad</th>
+                                        <th class="text-right">Valor Unitario</th>
                                         <th class="text-right">Precio Unitario</th>
                                         <th class="text-right">Descuento</th>
                                         <th class="text-right">Cargo</th>
@@ -213,6 +214,7 @@
                                         <td class="text-left">{{ row.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
+                                        <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
@@ -355,7 +357,8 @@
                 currency_type: {},
                 loading_search: false,
                 purchaseNewId: null,
-                showDialogLots: false
+                showDialogLots: false,
+                configuration: {},
             }
         },
         async created() {
@@ -373,6 +376,7 @@
                     this.all_customers = response.data.customers
 
                     this.charges_types = response.data.charges_types
+                    this.configuration = response.data.configuration
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                     this.form.establishment_id = (this.establishment.id) ? this.establishment.id:null
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
@@ -530,16 +534,34 @@
                 this.form.payments.splice(index, 1);
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     purchase_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
                 });
+                
+                this.setTotalDefaultPayment()
+
             },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
+
             initInputPerson(){
                 this.input_person = {
                     number:'',

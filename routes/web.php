@@ -148,6 +148,9 @@ if ($hostname) {
             Route::get('items/images/delete/{id}', 'Tenant\ItemController@delete_images');
             Route::get('items/export', 'Tenant\ItemController@export')->name('tenant.items.export');
             Route::get('items/export/wp', 'Tenant\ItemController@exportWp')->name('tenant.items.export.wp');
+            Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
+            Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
+            Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
 
             //Persons
             Route::get('persons/columns', 'Tenant\PersonController@columns');
@@ -627,6 +630,9 @@ if ($hostname) {
             Route::get('backup/db', 'System\BackupController@db')->name('system.backup.db');
             Route::get('backup/files', 'System\BackupController@files')->name('system.backup.files');
             Route::post('backup/upload', 'System\BackupController@upload')->name('system.backup.upload');
+
+            Route::get('backup/last-backup', 'System\BackupController@mostRecent');
+            Route::get('backup/download/{filename}', 'System\BackupController@download');
 
         });
     });

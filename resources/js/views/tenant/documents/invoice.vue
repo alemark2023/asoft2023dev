@@ -225,7 +225,8 @@
                                                     <td>
                                                         <div class="form-group mb-2 mr-2">
                                                             <el-select v-model="row.payment_destination_id" filterable >
-                                                                <el-option v-for="option in payment_destinations" @change="changeDestinationSale(index)" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                <!-- <el-option v-for="option in payment_destinations" @change="changeDestinationSale(index)" :key="option.id" :value="option.id" :label="option.description"></el-option> -->
                                                             </el-select>
                                                         </div>
                                                     </td>
@@ -464,6 +465,7 @@
                                                 <th width="30%" class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -480,6 +482,7 @@
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.quantity"></el-input-number> </td> -->
 
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_price)}}</td>
                                                 <!--<td class="text-right" v-else ><el-input-number :min="0.01" v-model="row.unit_price"></el-input-number> </td> -->
 
@@ -493,7 +496,7 @@
 
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="8"></td></tr>
+                                            <tr><td colspan="9"></td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -806,9 +809,20 @@ import moment from 'moment'
 
             },
             changeDestinationSale() {
+
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
-                    this.form.payment_destination_id = this.payment_destinations[0].id
-                    this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    if(cash){
+                    
+                        this.form.payments[0].payment_destination_id = cash.id
+                    
+                    }else{
+
+                        this.form.payment_destination_id = this.payment_destinations[0].id
+                        this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+                    }
                     // console.log('log', this.form.payments[index].payment_destination_id)
                     // console.log('aqui', this.payment_destinations[0].id)
                 }
@@ -1134,9 +1148,23 @@ import moment from 'moment'
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
-
                 });
+                
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -1272,6 +1300,8 @@ import moment from 'moment'
                 this.changeDocumentType()
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
+                // this.changeDestinationSale()
+
             },
             async changeOperationType() {
                 this.form.customer_id = null

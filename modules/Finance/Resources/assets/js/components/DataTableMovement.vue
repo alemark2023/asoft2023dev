@@ -51,6 +51,10 @@
                             </div>
                         </template> 
 
+                        <div class="col-md-3 mt-4">
+                            <el-checkbox v-model="form.last_cash_opening" @change="getRecordsByFilter">Última apertura de caja</el-checkbox>
+                        </div>
+
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
 
@@ -82,7 +86,7 @@
                         </tbody>                         
                         <tfoot>
                             <tr>
-                                <td colspan="6"></td>
+                                <td colspan="7"></td>
                                 <td>S/{{totals.total_input}}</td>
                                 <td>S/{{totals.total_output}}</td>
                                 <td>S/{{totals.total_balance}}</td>
@@ -195,6 +199,7 @@
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
+                    last_cash_opening: false,
                 }
 
             }, 

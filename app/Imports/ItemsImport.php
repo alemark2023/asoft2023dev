@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 
 class ItemsImport implements ToCollection
@@ -56,6 +57,8 @@ class ItemsImport implements ToCollection
                 $name = $row[14];
                 $second_name = $row[15];
 
+                $lot_code = $row[16];
+                $date_of_due = $row[17];
 
 
                 if($internal_id) {
@@ -70,30 +73,72 @@ class ItemsImport implements ToCollection
 
                 if(!$item) {
 
-                    $category = Category::updateOrCreate(['name' => $category_name]);
-                    $brand = Brand::updateOrCreate(['name' => $brand_name]);
+                    $category = $category_name ? Category::updateOrCreate(['name' => $category_name]):null;
+                    $brand = $brand_name ? Brand::updateOrCreate(['name' => $brand_name]):null;
+                    // dd($row, $lot_code ,$date_of_due, $category, $brand);
 
+                    if($lot_code && $date_of_due){
 
-                    Item::create([
-                        'description' => $description,
-                        'item_type_id' => $item_type_id,
-                        'internal_id' => $internal_id,
-                        'item_code' => $item_code,
-                        'unit_type_id' => $unit_type_id,
-                        'currency_type_id' => $currency_type_id,
-                        'sale_unit_price' => $sale_unit_price,
-                        'sale_affectation_igv_type_id' => $sale_affectation_igv_type_id,
-                        'has_igv' => $has_igv,
-                        'purchase_unit_price' => $purchase_unit_price,
-                        'purchase_affectation_igv_type_id' => $purchase_affectation_igv_type_id,
-                        'stock' => $stock,
-                        'stock_min' => $stock_min,
-                        'category_id' => $category->id,
-                        'brand_id' => $brand->id,
-                        'name' => $name,
-                        'second_name' => $second_name,
-                        // 'warehouse_id' => $warehouse->id
-                    ]);
+                        $_date_of_due = Date::excelToDateTimeObject($date_of_due)->format('Y-m-d');
+                        
+                        // dd($lot_code, $date_of_due, $x);
+
+                        $new_item = Item::create([
+                            'description' => $description,
+                            'item_type_id' => $item_type_id,
+                            'internal_id' => $internal_id,
+                            'item_code' => $item_code,
+                            'unit_type_id' => $unit_type_id,
+                            'currency_type_id' => $currency_type_id,
+                            'sale_unit_price' => $sale_unit_price,
+                            'sale_affectation_igv_type_id' => $sale_affectation_igv_type_id,
+                            'has_igv' => $has_igv,
+                            'purchase_unit_price' => $purchase_unit_price,
+                            'purchase_affectation_igv_type_id' => $purchase_affectation_igv_type_id,
+                            'stock' => $stock,
+                            'stock_min' => $stock_min,
+                            'category_id' => optional($category)->id,
+                            'brand_id' => optional($brand)->id,
+                            'name' => $name,
+                            'second_name' => $second_name,
+    
+                            'lots_enabled' => true,
+                            'lot_code' => $lot_code,
+                            'date_of_due' => $_date_of_due,
+                            // 'warehouse_id' => $warehouse->id
+                        ]);
+                        
+                        $new_item->lots_group()->create([
+                            'code'  => $lot_code,
+                            'quantity'  => $stock,
+                            'date_of_due'  => $_date_of_due,
+                        ]);
+
+                    }else{
+
+                        Item::create([
+                            'description' => $description,
+                            'item_type_id' => $item_type_id,
+                            'internal_id' => $internal_id,
+                            'item_code' => $item_code,
+                            'unit_type_id' => $unit_type_id,
+                            'currency_type_id' => $currency_type_id,
+                            'sale_unit_price' => $sale_unit_price,
+                            'sale_affectation_igv_type_id' => $sale_affectation_igv_type_id,
+                            'has_igv' => $has_igv,
+                            'purchase_unit_price' => $purchase_unit_price,
+                            'purchase_affectation_igv_type_id' => $purchase_affectation_igv_type_id,
+                            'stock' => $stock,
+                            'stock_min' => $stock_min,
+                            'category_id' => optional($category)->id,
+                            'brand_id' => optional($brand)->id,
+                            'name' => $name,
+                            'second_name' => $second_name,
+                            // 'warehouse_id' => $warehouse->id
+                        ]);
+
+                    }
+
 
                     $registered += 1;
 

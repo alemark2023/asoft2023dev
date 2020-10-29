@@ -54,7 +54,7 @@
                         {{ ($path[0] === 'user-commissions')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'regularize-shipping')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'item-lots')?'nav-active nav-expanded':'' }}
-                        
+
                         ">
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice" aria-hidden="true"></i>
@@ -98,13 +98,13 @@
                                         </a>
                                     </li>
                                 @endif
-
+                                @if(in_array('regularize_shipping', $vc_module_levels))
                                 <li class="{{ ($path[0] === 'documents' && $path[1] === 'regularize-shipping')?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.documents.regularize_shipping')}}">
                                         CPE pendientes de rectificación
                                     </a>
                                 </li>
-
+                                @endif
                             @endif
 
                             @if(auth()->user()->type != 'integrator' && in_array('documents', $vc_modules) )
@@ -592,7 +592,7 @@
                         </a>
                         <ul class="nav nav-children" style="">
 
-                            
+
                             <li class="nav-parent {{  ($path[0] === 'reports' &&
                                     in_array($path[1], ['purchases', 'fixed-asset-purchases'])) ? 'nav-active nav-expanded' : ''}}">
 
@@ -605,13 +605,13 @@
                                         <a class="nav-link" href="{{route('tenant.reports.purchases.index')}}">
                                             Compras totales
                                         </a>
-                                    </li> 
+                                    </li>
 
                                     <li class="{{(($path[0] === 'reports') && ($path[1] === 'fixed-asset-purchases')) ? 'nav-active' : ''}}">
                                         <a class="nav-link" href="{{route('tenant.reports.fixed-asset-purchases.index')}}">
                                             Activos fijos
                                         </a>
-                                    </li> 
+                                    </li>
                                 </ul>
                             </li>
 

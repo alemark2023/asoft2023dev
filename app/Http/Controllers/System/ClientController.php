@@ -239,6 +239,7 @@ class ClientController extends Controller
                             ['module_level_id' => 11, 'user_id' => 1],
                             ['module_level_id' => 12, 'user_id' => 1],
                             ['module_level_id' => 13, 'user_id' => 1],
+                            ['module_level_id' => 14, 'user_id' => 1],
                         ]);
                     }
                 }
@@ -430,6 +431,7 @@ class ClientController extends Controller
                             ['module_level_id' => 11, 'user_id' => $user_id],
                             ['module_level_id' => 12, 'user_id' => $user_id],
                             ['module_level_id' => 13, 'user_id' => $user_id],
+                            ['module_level_id' => 14, 'user_id' => $user_id],
                         ]);
                     }
                 }

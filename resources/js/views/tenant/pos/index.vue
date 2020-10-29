@@ -304,6 +304,7 @@
                         :readonly="item.item.calculate_quantity"
                         class
                         @input="clickAddItem(item,index,true)"
+                        @keyup.enter.native="keyupEnterQuantity"
                       ></el-input>
                       <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                     </td>
@@ -645,7 +646,9 @@
             }
         },
         methods: {
-
+            keyupEnterQuantity(){
+              this.initFocus()
+            },
             handleFn112(response)
             {
               this.search_item_by_barcode = !this.search_item_by_barcode
@@ -1098,12 +1101,14 @@
           async clickAddItem(item, index, input = false) {
             this.loading = true;
             let exchangeRateSale = this.form.exchange_rate_sale;
+            
+            // console.log(item.unit_type_id)
+            // console.log(exist_item)
+
             let exist_item = _.find(this.form.items, { item_id: item.item_id, unit_type_id: item.unit_type_id });
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
 
-            // console.log(item.calculate_quantity)
-            // console.log(exist_item)
 
             if (exist_item) {
               if (input) {
@@ -1188,7 +1193,9 @@
               );
               // console.log(this.row)
 
-              this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
+              // this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : 'NIU';
+
+              this.row['unit_type_id'] = item.presentation ? item.presentation.unit_type_id : this.form_item.item.unit_type_id;
 
               this.form.items.push(this.row);
               item.aux_quantity = 1;
@@ -1204,7 +1211,10 @@
             });
 
             this.cleanInput()
-            this.initFocus()
+
+            if(!input){
+              this.initFocus()
+            }
 
             // console.log(this.row)
             // console.log(this.form.items)

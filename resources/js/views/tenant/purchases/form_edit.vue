@@ -193,6 +193,7 @@
                                         <th>Lote</th>
                                         <th class="text-center">Unidad</th>
                                         <th class="text-right">Cantidad</th>
+                                        <th class="text-right">Valor Unitario</th>
                                         <th class="text-right">Precio Unitario</th>
                                         <th class="text-right">Descuento</th>
                                         <th class="text-right">Cargo</th>
@@ -209,6 +210,7 @@
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
                                         <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                        <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
@@ -348,6 +350,7 @@
                 series: [],
                 loading_search: false,
                 currency_type: {},
+                configuration: {},
                 purchaseNewId: null
             }
         },
@@ -364,6 +367,7 @@
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
                     this.all_customers = response.data.customers
+                    this.configuration = response.data.configuration
 
                     this.charges_types = response.data.charges_types
                     this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
@@ -482,16 +486,40 @@
                 this.form.payments.splice(index, 1);
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     purchase_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
                 });
+
+                this.setTotalDefaultPayment()
+
             },   
+            setTotalDefaultPayment(){
+
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
             initInputPerson(){
                 this.input_person = {
                     number:'',
@@ -767,6 +795,8 @@
                 this.form.total = _.round(total, 2)
 
                 this.calculatePerception()
+                this.setTotalDefaultPayment()
+
             },
             calculatePerception(){
                 

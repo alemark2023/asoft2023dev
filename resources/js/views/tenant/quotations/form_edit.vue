@@ -178,13 +178,55 @@
 
                             </div>
                             
-                            <div class="col-lg-4  mt-2">
+                            <!-- <div class="col-lg-4  mt-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Descripcion
                                     </label>
                                     <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                 </div>
+                            </div> -->
+                        </div>
+
+                        
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <el-collapse v-model="activePanel" accordion>
+                                    <el-collapse-item name="1" >
+                                        <template slot="title">
+                                            <i class="fa fa-plus text-info"></i> &nbsp; Información Adicional<i class="header-icon el-icon-information"></i>
+                                        </template>
+                                        <div class="row mt-2">
+
+                                            <div class="col-lg-4">
+                                                <div class="form-group" >
+                                                    <label class="control-label">Contacto
+                                                    </label>
+                                                    <el-input v-model="form.contact"></el-input>
+                                                    <small class="form-control-feedback" v-if="errors.account_number" v-text="errors.account_number[0]"></small>
+                                                </div>
+                                            </div>
+  
+                                            <div class="col-lg-2">
+                                                <div class="form-group" >
+                                                    <label class="control-label">Teléfono
+                                                    </label>
+                                                    <el-input v-model="form.phone"></el-input>
+                                                    <small class="form-control-feedback" v-if="errors.account_number" v-text="errors.account_number[0]"></small>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6">
+                                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                                    <label class="control-label">Observación
+                                                    </label>
+                                                    <el-input  type="textarea"  :rows="3" v-model="form.description"></el-input>
+                                                    <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </el-collapse-item>
+                                </el-collapse>
                             </div>
                         </div>
                         
@@ -198,6 +240,7 @@
                                                 <th class="font-weight-bold">Descripción</th>
                                                 <th class="text-center font-weight-bold">Unidad</th>
                                                 <th class="text-right font-weight-bold">Cantidad</th>
+                                                <th class="text-right font-weight-bold">Valor Unitario</th>
                                                 <th class="text-right font-weight-bold">Precio Unitario</th>
                                                 <th class="text-right font-weight-bold">Subtotal</th>
                                                 <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -212,6 +255,7 @@
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-right">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
+                                                <td class="text-right">{{currency_type.symbol}} {{getFormatUnitPriceRow(row.unit_value)}}</td>
                                                 <td class="text-right">{{ currency_type.symbol }} {{ getFormatUnitPriceRow(row.unit_price) }}</td>
 
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
@@ -221,7 +265,7 @@
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="8"></td></tr>
+                                            <tr><td colspan="9"></td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -328,6 +372,7 @@
                 payment_method_types: [],
                 activePanel: 0,
                 payment_destinations:  [],
+                configuration: {},
                 loading_search:false
             }
         },
@@ -345,12 +390,14 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
+                    this.configuration = response.data.configuration
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
                     this.changeCurrencyType()
                     this.allCustomers()
                     this.initRecord()
+                    this.selectDestinationSale()
                    
                 })
             this.loading_form = true
@@ -363,6 +410,34 @@
 
         },
         methods: {
+            selectDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+                    this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
+                }
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
+            setTotalDefaultPayment(){
+
+                if(this.form.payments.length > 0){
+
+                    this.form.payments[0].payment = this.form.total
+                }
+            },
             changeTermsCondition(){
 
                 if(this.form.active_terms_condition){
@@ -374,16 +449,20 @@
                 }
             },
             clickAddPayment() {
+
                 this.form.payments.push({
                     id: null,
                     document_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:null,
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
 
                 });
+
+                this.setTotalDefaultPayment()
+
             },
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
@@ -499,7 +578,9 @@
                     payments: [],
                     actions: {
                         format_pdf:'a4',
-                    }
+                    },
+                    contact:null,
+                    phone:null,
                 }
 
                 this.clickAddPayment()
@@ -594,6 +675,9 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+
+                this.setTotalDefaultPayment()
+
             },
             validate_payments(){
 

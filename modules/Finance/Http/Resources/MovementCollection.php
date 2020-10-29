@@ -56,10 +56,27 @@ class MovementCollection extends ResourceCollection
                 'input' => ($row->type_movement == 'input') ? number_format($row->payment->payment, 2, ".", "") : '-', 
                 'output' => ($row->type_movement == 'output') ? number_format($row->payment->payment, 2, ".", "") : '-',
                 'balance' => number_format(self::$balance, 2, ".", ""),
+                'items' => $this->getItems($row), 
+
 
             ];
         });
 
+    }
+
+    public function getItems($row){
+
+        if(in_array($row->instance_type, ['expense', 'income'])){
+
+            return $row->payment->associated_record_payment->items->transform(function($row, $key) {
+                return [
+                    'description' => $row->description 
+                ];
+            });
+        }
+
+        return [];
+        
     }
 
 

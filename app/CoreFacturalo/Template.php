@@ -34,6 +34,13 @@ class Template
         return view('pdf.'.$base_template.'.partials.footer', compact('document'))->render();
     }
 
+    public function pdfHeader($base_template, $company, $document = null)
+    {
+        view()->addLocation(__DIR__.'/Templates');
+
+        return view('pdf.'.$base_template.'.partials.header', compact('company', 'document'))->render();
+    }
+
     public function validate_template($base_template, $template, $format_pdf)
     {
         $path_app_template = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates');

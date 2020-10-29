@@ -14,6 +14,7 @@
                             <th class="">Número</th>
                             <th class="">N° Documento</th>
                             <th class="">Cliente</th>
+                            <th class="">Plataforma</th>
                             <th class="">Cantidad</th>
                             <th class="">Monto</th>
                         <tr>
@@ -25,6 +26,7 @@
                             <td>{{row.alone_number}}</td>
                             <td>{{row.customer_number}}</td>
                             <td>{{row.customer_name}}</td>
+                            <td>{{row.web_platform_name}}</td>
                             <td>{{row.quantity}}</td>
                             <td>{{ (row.document_type_id == '07') ? ( (row.total == 0) ? '0.00': '-'+row.total) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total) }}</td> 
                         </tr>

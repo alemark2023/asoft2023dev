@@ -147,6 +147,8 @@
     @endforeach
     </tbody>
 </table>
+
+@if($document->observations)
 <table class="full-width border-box mt-10 mb-10">
     <tr>
         <td class="text-bold border-bottom font-bold">OBSERVACIONES</td>
@@ -155,6 +157,8 @@
         <td>{{ $document->observations }}</td>
     </tr>
 </table>
+@endif
+
 @if ($document->reference_document)
 <table class="full-width border-box">
     @if($document->reference_document)

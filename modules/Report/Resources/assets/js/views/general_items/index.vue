@@ -14,12 +14,19 @@
                             <th class="">Número</th>
                             <th class="">N° Documento</th>
                             <th class="">Cliente</th>
-                            <!-- <th class="">Cod. Interno</th> -->
+                            <th class="">Cod. Interno</th>
                             <th class="">Descripción</th>
                             <!-- <th class="">U. Medida</th> -->
                             <th class="">Cantidad</th>
                             <th>Series</th>
+                            <th class="">Plataforma</th>
+                            <th class="">Moneda</th>
+                            <th class="">Valor unitario</th>
                             <th class="">Total</th>
+                            <template v-if="type == 'sale'">
+                                <th class="">Total compra</th>
+                                <th class="">Ganancia</th>
+                            </template>
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
@@ -29,14 +36,21 @@
                             <td>{{row.alone_number}}</td>
                             <td>{{row.customer_number}}</td>
                             <td>{{row.customer_name}}</td>
-                            <!-- <td>{{row.internal_id}}</td> -->
+                            <td>{{row.internal_id}}</td>
                             <td>{{row.description}}</td>
                             <!-- <td>{{row.unit_type_id}}</td> -->
                             <td>{{row.quantity}}</td>
                             <td>
                                 {{ row.lot_has_sale | filterLots }}
                             </td>
+                            <td>{{row.web_platform_name}}</td>
+                            <td>{{row.currency_type_id}}</td>
+                            <td>{{row.unit_value}}</td>
                             <td>{{row.total}}</td>
+                            <template v-if="type == 'sale'">
+                                <td>{{row.total_item_purchase}}</td>
+                                <td>{{row.utility_item}}</td>
+                            </template>
                         </tr>
 
                     </data-table>
@@ -58,7 +72,7 @@
             return {
                 resource: 'reports/general-items',
                 form: {},
-
+                type: "sale",
             }
         },
         filters:{
@@ -82,6 +96,11 @@
             }
         },
         async created() {
+
+            this.$eventHub.$on('typeTransaction', (type) => {
+                this.type = type
+            })
+
         },
         methods: {
 

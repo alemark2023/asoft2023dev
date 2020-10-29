@@ -68,6 +68,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>Descripción</th>
+                                        <th>Categoria</th>
                                         <th>Inventario actual</th>
                                         <th>Precio de venta</th>
                                         <th>Costo</th>
@@ -79,6 +80,7 @@
                                     <tr>
                                         <td class="celda">{{$loop->iteration}}</td>
                                         <td class="celda">{{$value->item->internal_id ?? ''}} {{$value->item->internal_id ? '-':''}} {{$value->item->description ?? ''}}</td>
+                                        <td class="celda">{{optional($value->item->category)->name}}</td>
                                         <td class="celda">{{$value->stock}}</td>
                                         <td class="celda">{{$value->item->sale_unit_price}}</td>
                                         <td class="celda">{{$value->item->purchase_unit_price}}</td>
