@@ -441,7 +441,7 @@ class Facturalo
         } else {
 
             if ($base_pdf_template === 'brand') {
-                $pdf_margin_top = 100;
+                $pdf_margin_top = 93.7;
                 $pdf_margin_bottom = 74;
             }
 
