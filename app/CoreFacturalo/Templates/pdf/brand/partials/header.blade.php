@@ -74,13 +74,13 @@
         <td width="95%" class="border-box pl-3">
             <table class="full-width">
                 <tr>
-                    <td colspan="2" class="font-xlg">
+                    <td colspan="2" class="font-lg">
                         <strong>SEÑOR(ES): </strong>
                         {{ $customer->name }}
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="font-xlg">
+                    <td colspan="2" class="font-lg">
                         <strong>DIRECCIÓN: </strong>
                         @if ($customer->address !== '')
                             <span style="text-transform: uppercase;">
@@ -93,23 +93,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2"  class="font-xlg">
+                    <td colspan="2"  class="font-lg">
                         <strong>RUC: </strong>
                         {{$customer->number}}
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2"  class="font-xlg">
+                    <td colspan="2"  class="font-lg">
                         <strong>MONEDA: </strong>
                         <span class="text-upp">{{ $document->currency_type->description }}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td  class="font-xlg">
+                    <td  class="font-lg">
                         <strong>FECHA: </strong>
                         {{$document->date_of_issue->format('Y-m-d')}}
                     </td>
-                    <td  class="font-xlg">
+                    <td  class="font-lg">
                         @if($invoice)
                             <strong>FECHA VENC.:</strong>
                             {{$invoice->date_of_due->format('Y-m-d')}}
@@ -123,7 +123,7 @@
         </td>
     </tr>
 </table>
-<table class="full-width my-4 text-center" border="1">
+<table class="full-width my-3 text-center" border="1">
     <tr>
         <td width="16.6%" class="desc">UBIGEO</td>
         <td width="16.6%" class="desc">O/C</td>
