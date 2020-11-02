@@ -44,7 +44,7 @@ class ItemSetImport implements ToCollection
 
                 }else{
 
-                    $has_igv = (strtoupper($row[7]) === 'SI')?true:false;
+                    $has_igv = (strtoupper($row[12]) === 'SI')?true:false;
 
                 }
  
