@@ -591,7 +591,10 @@ class DocumentController extends Controller
 
     public function getIdentityDocumentTypeId($document_type_id, $operation_type_id){
 
-        if($operation_type_id === '0101' || $operation_type_id === '1001') {
+        // if($operation_type_id === '0101' || $operation_type_id === '1001') {
+
+        if(in_array($operation_type_id, ['0101', '1001', '1004'])) {
+            
             if($document_type_id == '01'){
                 $identity_document_type_id = [6];
             }else{

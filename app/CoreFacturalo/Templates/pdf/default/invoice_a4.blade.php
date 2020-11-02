@@ -164,6 +164,49 @@
         </tr>
         @endif
     @endif
+
+    @if($document->detraction && $invoice->operation_type_id == '1004')
+    <tr>
+        <td colspan="4"><strong>DETALLE - SERVICIOS DE TRANSPORTE DE CARGA</strong></td>
+    </tr>
+    <tr>
+        <td class="align-top">Ubigeo origen</td>
+        <td>:</td>
+        <td>{{ $document->detraction->origin_location_id[2] }}</td>
+
+        <td width="120px">Dirección origen</td>
+        <td width="8px">:</td>
+        <td>{{ $document->detraction->origin_address }}</td>
+    </tr>
+    <tr>
+        <td class="align-top">Ubigeo destino</td>
+        <td>:</td>
+        <td>{{ $document->detraction->delivery_location_id[2] }}</td>
+
+        <td width="120px">Dirección destino</td>
+        <td width="8px">:</td>
+        <td>{{ $document->detraction->delivery_address }}</td>
+    </tr>
+    <tr>
+        <td class="align-top" width="170px">Valor referencial servicio de transporte</td>
+        <td>:</td>
+        <td>{{ $document->detraction->reference_value_service }}</td>
+
+        <td width="170px">Valor referencia carga efectiva</td>
+        <td width="8px">:</td>
+        <td>{{ $document->detraction->reference_value_effective_load }}</td>
+    </tr>
+    <tr>
+        <td class="align-top">Valor referencial carga útil</td>
+        <td>:</td>
+        <td>{{ $document->detraction->reference_value_payload }}</td>
+
+        <td width="120px">Detalle del viaje</td>
+        <td width="8px">:</td>
+        <td>{{ $document->detraction->trip_detail }}</td>
+    </tr>
+    @endif
+
 </table>
 
 {{--<table class="full-width mt-3">--}}

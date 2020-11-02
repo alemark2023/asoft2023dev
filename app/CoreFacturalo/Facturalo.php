@@ -321,6 +321,7 @@ class Facturalo
             $total_taxed       = $this->document->total_taxed != '' ? '10' : '0';
             $perception       = $this->document->perception != '' ? '10' : '0';
             $detraction       = $this->document->detraction != '' ? '50' : '0';
+            $detraction       += ($this->document->detraction && $this->document->invoice->operation_type_id == '1004') ? 45 : 0;
 
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;

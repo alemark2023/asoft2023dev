@@ -378,6 +378,31 @@ class DocumentInput
                 $payment_method_id = $detraction['payment_method_id'];
                 $bank_account = $detraction['bank_account'];
 
+
+                //detraction transport
+                $reference_value_service = null;
+                $reference_value_effective_load = null;
+                $reference_value_payload = null;
+                $origin_location_id = [];
+                $origin_address = null;
+                $delivery_location_id = [];
+                $delivery_address = null;
+                $trip_detail = null;
+
+                if($inputs['operation_type_id'] === '1004'){
+
+                    $reference_value_service = $detraction['reference_value_service'];
+                    $reference_value_effective_load = $detraction['reference_value_effective_load'];
+                    $reference_value_payload = $detraction['reference_value_payload'];
+                    $origin_location_id = $detraction['origin_location_id'];
+                    $origin_address = $detraction['origin_address'];
+                    $delivery_location_id = $detraction['delivery_location_id'];
+                    $delivery_address = $detraction['delivery_address'];
+                    $trip_detail = $detraction['trip_detail'];
+
+                }
+                //detraction transport
+
                 $pay_constancy = array_key_exists('pay_constancy', $detraction) ? $detraction['pay_constancy']:null;
                 $set_image_pay_constancy = null;
                 $image_pay_constancy = array_key_exists('image_pay_constancy', $detraction) ? $detraction['image_pay_constancy']:null;
@@ -404,6 +429,14 @@ class DocumentInput
                     'bank_account' => $bank_account,
                     'pay_constancy' => $pay_constancy,
                     'image_pay_constancy' => $set_image_pay_constancy,
+                    'reference_value_service' => $reference_value_service, 
+                    'reference_value_effective_load' => $reference_value_effective_load, 
+                    'reference_value_payload' => $reference_value_payload, 
+                    'origin_location_id' => $origin_location_id, 
+                    'origin_address' => $origin_address, 
+                    'delivery_location_id' => $delivery_location_id, 
+                    'delivery_address' => $delivery_address, 
+                    'trip_detail' => $trip_detail, 
                 ];
             }
         }
