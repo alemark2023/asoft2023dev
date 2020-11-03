@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<div class="item_watermark" style="position: absolute; text-align: center; top:30%;">
+<div class="item_watermark" style="position: absolute; text-align: center; top:29%;">
     <img style="width: 100%" height="230px" src="data:{{mime_content_type(public_path("watermark".DIRECTORY_SEPARATOR."item_brand.jpg"))}};base64, {{base64_encode(file_get_contents(public_path("watermark".DIRECTORY_SEPARATOR."item_brand.jpg")))}}" alt="anulado" class="" style="opacity: 0.3;width: 95%">
 </div>
 

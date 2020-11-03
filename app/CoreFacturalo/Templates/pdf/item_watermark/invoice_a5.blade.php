@@ -28,11 +28,9 @@
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
 </head>
 <body>
-@if($document->state_type->id == '11')
-    <div class="company_logo_box" style="position: absolute; text-align: center; top:50%;">
-        <img src="data:{{mime_content_type(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png"))}};base64, {{base64_encode(file_get_contents(public_path("status_images".DIRECTORY_SEPARATOR."anulado.png")))}}" alt="anulado" class="" style="opacity: 0.6;">
-    </div>
-@endif
+<div class="item_watermark" style="position: absolute; text-align: center; top:45%;">
+    <img style="width: 100%" height="230px" src="data:{{mime_content_type(public_path("watermark".DIRECTORY_SEPARATOR."item_brand.jpg"))}};base64, {{base64_encode(file_get_contents(public_path("watermark".DIRECTORY_SEPARATOR."item_brand.jpg")))}}" alt="anulado" class="" style="opacity: 0.3;width: 95%">
+</div>
 <table class="full-width">
     <tr>
         @if($company->logo)
