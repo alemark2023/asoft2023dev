@@ -15,6 +15,8 @@ use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\DocumentItem;
 use Illuminate\Support\Facades\DB;
+use Modules\Report\Exports\SaleConsolidatedExport;
+use Modules\Report\Exports\SaleConsolidatedTotalExport;
 
 
 class ReportSaleConsolidatedController extends Controller
@@ -55,6 +57,8 @@ class ReportSaleConsolidatedController extends Controller
         return $records->map(function($row, $key){
             return [
                 'item_id' => $key,
+                'item_internal_id' => $row->first()->relation_item->internal_id,  
+                'item_unit_type_id' => $row->first()->relation_item->unit_type_id,
                 'item_description' => $row->first()->item->description,
                 'quantity' => number_format($row->sum('quantity'), 4, ".", ""),
             ];
@@ -117,6 +121,25 @@ class ReportSaleConsolidatedController extends Controller
     }
 
 
+    public function excel(Request $request) {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
+        $records = $this->getRecordsSalesConsolidated($request->all())->get();
+        $params = $request->all();
+        $filename = 'Reporte_Consolidado_Items_Ventas_'.date('YmdHis');
+
+        return (new SaleConsolidatedExport)
+                ->records($records)
+                ->company($company)
+                ->establishment($establishment)
+                ->params($params)
+                ->download($filename.'.xlsx');
+
+    }
+
+
     public function pdfTotals(Request $request) {
 
         $company = Company::first();
@@ -132,4 +155,21 @@ class ReportSaleConsolidatedController extends Controller
     }
 
 
+    public function excelTotals(Request $request) {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $records = $this->totalsByItem($request)->sortBy('item_id');
+        $params = $request->all();
+        $filename = 'Reporte_Consolidado_Items_Ventas_Totales_'.date('YmdHis');
+
+        return (new SaleConsolidatedTotalExport)
+                ->records($records)
+                ->company($company)
+                ->establishment($establishment)
+                ->params($params)
+                ->download($filename.'.xlsx');
+
+    }
+    
 }

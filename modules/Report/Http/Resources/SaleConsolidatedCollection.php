@@ -19,6 +19,8 @@ class SaleConsolidatedCollection extends ResourceCollection
              
             return [
                 'id' => $row->id,
+                'item_internal_id' => $row->relation_item->internal_id,  
+                'item_unit_type_id' => $row->relation_item->unit_type_id,  
                 'item_description' => $row->item->description,  
                 'item_quantity' => $row->quantity,  
                 'series' => $row->series ?? 'NV',

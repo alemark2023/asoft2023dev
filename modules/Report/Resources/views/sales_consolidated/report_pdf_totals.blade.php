@@ -99,7 +99,9 @@
                         <thead>
                             <tr>
                                 <th  class="text-center">#</th>
+                                <th  class="text-center">Cod. Interno</th>
                                 <th  class="celda-item">Producto</th>
+                                <th  class="text-center">Unidad</th>
                                 <th  class="text-center">Cantidad Total</th>
                             </tr>
                         </thead>
@@ -107,7 +109,9 @@
                             @foreach($records as $key => $value)
                                 <tr>
                                     <td class="celda">{{ $loop->iteration }}</td>
+                                    <td class="celda">{{$value['item_internal_id']}}</td>
                                     <td class="celda-item">{{$value['item_description']}}</td>
+                                    <td class="celda">{{$value['item_unit_type_id']}}</td>
                                     <td class="celda">{{$value['quantity']}}</td> 
                                 </tr> 
                             @endforeach 

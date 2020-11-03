@@ -94,7 +94,7 @@
                             
                             <template v-if="records.length>0"> 
 
-                                <!-- <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button> -->
+                                <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
                                 <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
 
                                 <template v-if="resource == 'reports/sales-consolidated'"> 
@@ -123,7 +123,7 @@
                         </tbody> 
                         <tfoot v-if="resource == 'reports/order-notes-consolidated' || resource == 'reports/sales-consolidated'">
                             <tr>
-                                <td colspan="2"></td>
+                                <td colspan="4"></td>
                                 <td class="text-center"><strong>Total</strong></td>
                                 <td class="text-center">{{totals}}</td>
                             </tr> 
@@ -289,9 +289,9 @@
             }, 
             async getRecordsByFilter(){
                 
-                if(!this.form.person_id &&  !this.form.seller_id){
-                    return this.$message.error('Debe seleccionar un cliente o vendedor')
-                }
+                // if(!this.form.person_id &&  !this.form.seller_id){
+                //     return this.$message.error('Debe seleccionar un cliente o vendedor')
+                // }
 
                 this.loading_submit = await true
                 await this.getRecords()
