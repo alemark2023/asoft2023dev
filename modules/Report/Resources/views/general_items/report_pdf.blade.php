@@ -91,16 +91,16 @@
                                                 $series = implode(" - ", $series_data);
                                             }
 
-                                            $purchase_unit_price = 0;
+                                            // $purchase_unit_price = 0;
 
-                                            if($value->relation_item->purchase_unit_price > 0){
-                                                $purchase_unit_price = $value->relation_item->purchase_unit_price;
-                                            }else{
-                                                $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
-                                                $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
-                                            }
+                                            // if($value->relation_item->purchase_unit_price > 0){
+                                            //     $purchase_unit_price = $value->relation_item->purchase_unit_price;
+                                            // }else{
+                                            //     $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
+                                            //     $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
+                                            // }
 
-                                            $total_item_purchase = $purchase_unit_price * $value->quantity;
+                                            $total_item_purchase = \Modules\Report\Http\Resources\GeneralItemCollection::getPurchaseUnitPrice($value);
                                             $utility_item = $value->total - $total_item_purchase;
 
                                         @endphp
@@ -134,16 +134,17 @@
                                                 $series = implode(" - ", $series_data);
                                             }
 
-                                            $purchase_unit_price = 0;
+                                            // $purchase_unit_price = 0;
 
-                                            if($value->relation_item->purchase_unit_price > 0){
-                                                $purchase_unit_price = $value->relation_item->purchase_unit_price;
-                                            }else{
-                                                $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
-                                                $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
-                                            }
+                                            // if($value->relation_item->purchase_unit_price > 0){
+                                            //     $purchase_unit_price = $value->relation_item->purchase_unit_price;
+                                            // }else{
+                                            //     $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
+                                            //     $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
+                                            // }
 
-                                            $total_item_purchase = $purchase_unit_price * $value->quantity;
+                                            $total_item_purchase = \Modules\Report\Http\Resources\GeneralItemCollection::getPurchaseUnitPrice($value);
+                                            // $total_item_purchase = $purchase_unit_price * $value->quantity;
                                             $utility_item = $value->total - $total_item_purchase;
                                         @endphp
 

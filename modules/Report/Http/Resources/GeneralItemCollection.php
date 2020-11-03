@@ -18,7 +18,7 @@ class GeneralItemCollection extends ResourceCollection
 
             $resource = self::getDocument($row);
 
-            $total_item_purchase = self::getPurchaseUnitPrice($row) * $row->quantity;
+            $total_item_purchase = self::getPurchaseUnitPrice($row);
             $utility_item = $row->total - $total_item_purchase;
 
 
@@ -58,6 +58,26 @@ class GeneralItemCollection extends ResourceCollection
 
         $purchase_unit_price = 0;
 
+        if($record->relation_item->is_set){
+
+            foreach ($record->relation_item->sets as $item_set) {
+                $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set) * $item_set->quantity) * $record->quantity ;
+            }
+
+        }else{
+
+            $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record) * $record->quantity;
+
+        }
+
+        return $purchase_unit_price;
+    }
+
+    
+    public static function getIndividualPurchaseUnitPrice($record){
+
+        $purchase_unit_price = 0;
+    
         if($record->relation_item->purchase_unit_price > 0){
 
             $purchase_unit_price = $record->relation_item->purchase_unit_price;
@@ -69,10 +89,9 @@ class GeneralItemCollection extends ResourceCollection
 
         }
 
-
         return $purchase_unit_price;
     }
-    
+
 
     public static function getLotsHasSale($row)
     {
