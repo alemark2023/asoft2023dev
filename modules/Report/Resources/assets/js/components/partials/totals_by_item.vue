@@ -5,6 +5,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
+                        <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
                     </div>
                     <div class="col-md-12 mt-2"> 
                         <div class="table-responsive">
@@ -12,14 +13,18 @@
                                 <thead>
                                     <tr>
                                         <!-- <th class="">#</th> -->
+                                        <th  class="text-center">Cod. Interno</th>
                                         <th  class="text-left">Producto</th>
+                                        <th  class="text-center">Unidad</th>
                                         <th  class="text-center">Cantidad Total</th>
                                     </tr>
                                 </thead>
                                 <tbody> 
                                     <tr v-for="(row, index) in records" :key="index">
                                         <!-- <td>{{ index+1  }}</td>  -->
+                                        <td  class="text-center">{{row.item_internal_id}}</td>
                                         <td  class="text-left">{{row.item_description}}</td>
+                                        <td  class="text-center">{{row.item_unit_type_id}}</td>
                                         <td  class="text-center">{{row.quantity}}</td>
                                     </tr>
                                 </tbody>  

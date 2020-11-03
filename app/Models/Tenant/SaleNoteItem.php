@@ -137,15 +137,20 @@ class SaleNoteItem extends ModelTenant
         }
 
         
-        return $query->whereHas('sale_note', function($q) use($params){
+        $data = $query->whereHas('sale_note', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
-                        ->where('user_id', $params['seller_id'])
+                        // ->where('user_id', $params['seller_id'])
                         ->whereTypeUser();
                 })
                 ->join('sale_notes', 'sale_note_items.sale_note_id', '=', 'sale_notes.id')
                 ->select($db_raw)
                 ->latest('id');
 
+        if($params['seller_id']){
+            $data = $data->whereHas('sale_note', function($q) use($params){$q->where('user_id', $params['seller_id']);});
+        }
+
+        return $data;
     }
 
     public function warehouse()
