@@ -125,7 +125,7 @@
                                 </div>
                             </div>
 
-                            <!-- <div class="col-lg-8 mt-2" >
+                            <div class="col-lg-8 mt-2" >
 
                                 <table>
                                     <thead>
@@ -174,7 +174,7 @@
                                 </table>
 
 
-                            </div> -->
+                            </div>
                             
                             <div class="col-lg-4">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
@@ -318,6 +318,7 @@
                 currency_type: {},
                 contractNewId: null,
                 payment_destinations:  [],
+                configuration: {},
                 activePanel: 0,
                 loading_search:false
             }
@@ -336,11 +337,13 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null 
                     this.payment_method_types = response.data.payment_method_types
                     this.payment_destinations = response.data.payment_destinations
+                    this.configuration = response.data.configuration
 
                     this.changeEstablishment()
                     this.changeDateOfIssue() 
                     this.changeCurrencyType()
                     this.allCustomers()
+                    this.selectDestinationSale()
                 })
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -351,6 +354,27 @@
             await this.generateFromQuotation()
         },
         methods: {
+            selectDestinationSale() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+                    this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
+                }
+
+            },
+            getPaymentDestinationId() {
+
+                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+
+                    let cash = _.find(this.payment_destinations, {id : 'cash'})
+
+                    return (cash) ? cash.id : this.payment_destinations[0].id
+
+                }
+
+                return null
+
+            },
             async generateFromQuotation(){
 
                 if(this.quotationId){
@@ -413,7 +437,7 @@
                     date_of_payment:  moment().format('YYYY-MM-DD'),
                     payment_method_type_id: '01',
                     reference: null,
-                    payment_destination_id:'cash',
+                    payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
 
                 });
@@ -507,7 +531,7 @@
                     quotation_id:null,
                 }
 
-                // this.clickAddPayment()
+                this.clickAddPayment()
 
             },
             resetForm() {
