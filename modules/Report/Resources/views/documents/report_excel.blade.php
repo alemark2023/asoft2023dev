@@ -99,6 +99,14 @@
                                 <th>Total Gravado</th>
                                 <th>Total IGV</th>
                                 <th>Total</th>
+
+                                @foreach ($categories as $category)
+                                    <th>{{$category->name}}</th>
+                                @endforeach
+
+                                @foreach ($categories_services as $category)
+                                    <th>{{$category->name}}</th>
+                                @endforeach
                             </tr>
                         </thead>
                         <tbody>
@@ -168,8 +176,38 @@
 
                                 @endif
                                 
-                                
-                                
+                                @foreach ($categories as $category)
+
+                                    @php
+                                        $amount = 0;
+                                        // dd($item->relation_item->category_id);
+
+                                        foreach ($value->items as $item) {
+                                            if($item->relation_item->category_id == $category->id){
+                                                $amount += $item->total;
+                                            }
+                                        }
+                                    @endphp
+                                        
+                                    <td>{{$amount}}</td>
+                                @endforeach
+
+
+                                @foreach ($categories_services as $category)
+
+                                    @php
+                                        $quantity = 0;
+
+                                        foreach ($value->items as $item) {
+                                            if($item->relation_item->category_id == $category->id){
+                                                $quantity += $item->quantity;
+                                            }
+                                        }
+                                    @endphp
+                                        
+                                    <td>{{$quantity}}</td>
+                                @endforeach
+
                                 @php
                                 
                                     $value->total_exonerated = (in_array($value->document_type_id,['01','03']) && in_array($value->state_type_id,['09','11'])) ? 0 : $value->total_exonerated;
