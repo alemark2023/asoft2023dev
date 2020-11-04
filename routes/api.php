@@ -19,6 +19,7 @@ if ($hostname) {
             Route::post('person', 'Tenant\Api\MobileController@person');
             Route::get('document/search-items', 'Tenant\Api\MobileController@searchItems');
             Route::get('document/search-customers', 'Tenant\Api\MobileController@searchCustomers');
+            Route::post('sale-note/email', 'Tenant\Api\SaleNoteController@email');
 
             Route::get('report', 'Tenant\Api\MobileController@report');
 

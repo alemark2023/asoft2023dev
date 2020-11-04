@@ -20,6 +20,9 @@ if ($hostname) {
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
         Route::get('/exchange_rate/ecommence/{date}', 'Tenant\Api\ServiceController@exchangeRateTest');
 
+        Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+        Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function() {
 
 
@@ -349,7 +352,7 @@ if ($hostname) {
             Route::get('purchases/anular/{id}', 'Tenant\PurchaseController@anular');
             Route::get('purchases/delete/{id}', 'Tenant\PurchaseController@delete');
             Route::post('purchases/import', 'Tenant\PurchaseController@import');
-            Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
+            // Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
             Route::get('purchases/search-items', 'Tenant\PurchaseController@searchItems');
             Route::get('purchases/search/item/{item}', 'Tenant\PurchaseController@searchItemById');
             // Route::get('purchases/item_resource/{id}', 'Tenant\PurchaseController@itemResource');
@@ -409,7 +412,7 @@ if ($hostname) {
             Route::get('sale-notes/item/tables', 'Tenant\SaleNoteController@item_tables');
             Route::get('sale-notes/search/customers', 'Tenant\SaleNoteController@searchCustomers');
             Route::get('sale-notes/search/customer/{id}', 'Tenant\SaleNoteController@searchCustomerById');
-            Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
+            // Route::get('sale-notes/print/{external_id}/{format?}', 'Tenant\SaleNoteController@toPrint');
             Route::get('sale-notes/record2/{salenote}', 'Tenant\SaleNoteController@record2');
             Route::get('sale-notes/option/tables', 'Tenant\SaleNoteController@option_tables');
             Route::get('sale-notes/changed/{salenote}', 'Tenant\SaleNoteController@changed');
