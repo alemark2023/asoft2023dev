@@ -295,6 +295,7 @@
     </tr>
 </table>
 <br>
+@if(!$document->quotation)
 <table class="full-width">
 <tr>
     <td>
@@ -312,5 +313,7 @@
     </tr>
 
 </table>
+@endif
+
 </body>
 </html>

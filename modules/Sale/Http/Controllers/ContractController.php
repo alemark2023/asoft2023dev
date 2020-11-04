@@ -60,14 +60,17 @@ class ContractController extends Controller
     public function create($id = null)
     {
         $quotationId = null;
-        return view('sale::contracts.form', compact('id', 'quotationId'));
+        $showPayments = true;
+        
+        return view('sale::contracts.form', compact('id', 'quotationId', 'showPayments'));
     }
 
     public function generateContract($quotationId)
     {
         $id = null;
+        $showPayments = false;
 
-        return view('sale::contracts.form', compact('id', 'quotationId'));
+        return view('sale::contracts.form', compact('id', 'quotationId', 'showPayments'));
     }
 
     public function columns()
