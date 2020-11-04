@@ -295,7 +295,8 @@
     </tr>
 </table>
 <br>
-{{-- <table class="full-width">
+@if(!$document->quotation)
+<table class="full-width">
 <tr>
     <td>
     <strong>PAGOS:</strong> </td></tr>
@@ -311,6 +312,8 @@
         <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
     </tr>
 
-</table> --}}
+</table>
+@endif
+
 </body>
 </html>

@@ -60,14 +60,17 @@ class ContractController extends Controller
     public function create($id = null)
     {
         $quotationId = null;
-        return view('sale::contracts.form', compact('id', 'quotationId'));
+        $showPayments = true;
+        
+        return view('sale::contracts.form', compact('id', 'quotationId', 'showPayments'));
     }
 
     public function generateContract($quotationId)
     {
         $id = null;
+        $showPayments = false;
 
-        return view('sale::contracts.form', compact('id', 'quotationId'));
+        return view('sale::contracts.form', compact('id', 'quotationId', 'showPayments'));
     }
 
     public function columns()
@@ -147,8 +150,9 @@ class ContractController extends Controller
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
+        $configuration = Configuration::select('destination_sale')->first();
 
-        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types',
+        return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
                         'company', 'document_type_03_filter','payment_method_types', 'payment_destinations');
 
     }
