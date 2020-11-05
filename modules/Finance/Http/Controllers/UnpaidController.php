@@ -95,4 +95,19 @@ class UnpaidController extends Controller
 
     }
 
+    
+    public function pdf(Request $request) {
+
+        $records = $this->transformRecords((new DashboardView())->getUnpaidFilterUser($request->all())->get());
+
+        $company = Company::first();
+        
+        $pdf = PDF::loadView('finance::unpaid.reports.report_pdf', compact("records", "company"));
+
+        $filename = 'Reporte_Cuentas_Por_Cobrar_'.date('YmdHis');
+
+        return $pdf->download($filename.'.pdf');
+
+    }
+
 }

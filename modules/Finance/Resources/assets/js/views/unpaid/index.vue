@@ -158,6 +158,14 @@
                                         </el-button>
                                     </el-tooltip>
 
+                                    <el-button
+                                        v-if="records.length > 0"
+                                        class="submit"
+                                        type="danger"
+                                        @click.prevent="clickDownload('pdf')"
+                                        >
+                                        <i class="fa fa-file-pdf"></i> Exportar PDF
+                                    </el-button>
                                 </div>
                                 <div class="col-md-1 mt-5 text-right">
                                 </div>
@@ -556,6 +564,11 @@
                 let query = queryString.stringify({
                     ...this.form
                 });
+
+                if(type == 'pdf'){
+                    return window.open(`/${this.resource}/${type}/?${query}`, "_blank");
+                }
+
                 window.open(`/reports/no_paid/${type}/?${query}`, "_blank");
             },
             clickDownloadPaymentMethod() {

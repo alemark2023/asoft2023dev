@@ -106,4 +106,19 @@ class ToPayController extends Controller
     }
 
 
+    public function pdf(Request $request) {
+
+        $records = (new ToPay())->getToPay($request->all());
+
+        $company = Company::first();
+        
+        $pdf = PDF::loadView('finance::to_pay.report_pdf', compact("records", "company"));
+
+        $filename = 'Reporte_Cuentas_Por_Pagar_'.date('YmdHis');
+
+        return $pdf->download($filename.'.pdf');
+
+    }
+
+
 }

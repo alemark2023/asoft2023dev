@@ -121,6 +121,14 @@
                                         </el-button>
                                     </el-tooltip>
 
+                                    <el-button
+                                        v-if="records.length > 0"
+                                        class="submit"
+                                        type="danger"
+                                        @click.prevent="clickDownload('pdf')"
+                                        >
+                                        <i class="fa fa-file-pdf"></i> Exportar PDF
+                                    </el-button>
                                 </div>
                             </div>
                             <div class="row mt-5 mb-3 text-right">
@@ -416,7 +424,8 @@
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
-                    supplier_id: null
+                    supplier_id: null,
+                    user: null,
                 };
             },
             filter() {
@@ -453,6 +462,11 @@
                 let query = queryString.stringify({
                     ...this.form
                 });
+                
+                if(type == 'pdf'){
+                    return window.open(`/${this.resource}/${type}?${query}`, "_blank");
+                }
+
                 window.open(`/${this.resource}/to-pay/?${query}`, "_blank");
             },
             clickOpen(){
