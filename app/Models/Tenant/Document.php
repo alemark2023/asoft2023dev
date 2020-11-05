@@ -84,6 +84,7 @@ class Document extends ModelTenant
         'payment_method_type_id',
         'regularize_shipping',
         'response_regularize_shipping',
+        'seller_id',
 
     ];
 
@@ -381,17 +382,17 @@ class Document extends ModelTenant
     {
         return $query->where('affectation_type_prepayment', $type);
     }
-    
+
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
-    
+
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
     }
-    
+
     public function scopeWhereRegularizeShipping($query)
     {
         return  $query->where('state_type_id', '01')->where('regularize_shipping', true);
@@ -400,5 +401,10 @@ class Document extends ModelTenant
     public function order_note()
     {
         return $this->belongsTo(OrderNote::class);
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class);
     }
 }

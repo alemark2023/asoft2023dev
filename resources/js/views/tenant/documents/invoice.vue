@@ -100,7 +100,7 @@
                             </div>
                         </div>
                         <div class="row mt-1">
-                            <div class="col-lg-6 pb-2">
+                            <div :class="seller_class">
                                 <div class="form-group" :class="{'has-danger': errors.customer_id}">
                                     <label class="control-label font-weight-bold text-info">
                                         Cliente
@@ -123,6 +123,14 @@
                                     <label class="control-label font-weight-bold text-info">Dirección</label>
                                     <el-select v-model="form.customer_address_id">
                                         <el-option v-for="option in customer_addresses" :key="option.id" :value="option.id" :label="option.address"></el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                            <div v-if="typeUser == 'admin'" class="col-lg-2">
+                                <div class="form-group">
+                                    <label class="control-label">Vendedor</label>
+                                    <el-select v-model="form.seller_id">
+                                        <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                     </el-select>
                                 </div>
                             </div>
@@ -711,6 +719,7 @@
                 form_payment: {},
                 document_types_guide: [],
                 customers: [],
+                sellers: [],
                 company: null,
                 document_type_03_filter: null,
                 operation_types: [],
@@ -740,6 +749,7 @@
                 form_cash_document: {},
                 enabled_payments: true,
                 readonly_date_of_due: false,
+                seller_class: 'col-lg-6 pb-2',
             }
         },
         async created() {
@@ -754,6 +764,7 @@
                     this.operation_types = response.data.operation_types
                     this.all_series = response.data.series
                     this.all_customers = response.data.customers
+                    this.sellers = response.data.sellers
                     this.discount_types = response.data.discount_types
                     this.charges_types = response.data.charges_types
                     this.payment_method_types = response.data.payment_method_types
@@ -766,11 +777,14 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
+                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
                     // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
                     // this.all_detraction_types = response.data.detraction_types;
                     this.payment_destinations = response.data.payment_destinations
+
+                    this.seller_class = (this.user == 'admin')?'col-lg-4 pb-2':'col-lg-6 pb-2';
 
                     this.selectDocumentType()
 
@@ -816,9 +830,9 @@
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
 
                     if(cash){
-                    
+
                         this.form.payments[0].payment_destination_id = cash.id
-                    
+
                     }else{
 
                         this.form.payment_destination_id = this.payment_destinations[0].id
@@ -1152,7 +1166,7 @@
                     payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
                 });
-                
+
             },
             getPaymentDestinationId() {
 
@@ -1211,6 +1225,7 @@
                     establishment_id: null,
                     document_type_id: null,
                     series_id: null,
+                    seller_id: null,
                     number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
@@ -1296,6 +1311,7 @@
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
                 this.selectDocumentType()
                 this.changeEstablishment()
                 this.changeDocumentType()

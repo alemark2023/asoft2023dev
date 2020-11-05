@@ -1,3 +1,84 @@
+## 3.4.2
+
+### docs
+2020-10-16 : fixed | Ajustes docs global<br>
+2020-09-29 : docs | changelog<br>
+
+
+### fixed
+2020-11-05 : fixed | i-581 | Ajuste m. pago credito - nota venta<br>
+2020-11-04 : fixed | Ajustes envio correo - whatsap app movil<br>
+2020-11-02 : fixed | i-582 | Ajustes conjuntos - pos - reportes productos - etc<br>
+2020-10-28 : fixed | i-569 | Ajuste error al agregar item con diferente unidad - pos<br>
+2020-10-28 : fixed | i-571 | Se agrega validacion para cantidad mayor a 0 en listado de precios - productos<br>
+2020-10-27 : fixed | i-498 | Alineacion columna -  n° item - reporte consolidado items<br>
+2020-10-26 : fixed | i-555 | Error al digitar cantidad en pos - se agrega funcion para ir a barra busqueda<br>
+2020-10-26 : fixed | i-520 | Ajustes ancho de la tabla pdf - reporte productos<br>
+2020-10-23 : fixed | i-560 | Ajuste caja por defecto nuevo cpe - agrega caja por defecto compras<br>
+2020-10-23 : fixed | i-545 | Ajuste caja por defecto y seleccion de destino pago<br>
+2020-10-22 : fixed | i-517 | Error n credito por devolucion de item - lotes<br>
+2020-10-16 : fixed | Ajustes docs global<br>
+2020-10-14 : fixed | i-496 | Se agrega fecha vencimiento reporte contabilidad compras<br>
+2020-10-14 : fixed | i-499 | Modificar componente cantidad - nuevo cpe item<br>
+2020-10-13 : fixed | i-500 | Ajuste kardex pedidos - nota venta - eliminacion items nv/pedido<br>
+2020-10-12 : fixed | i-468 | Ajuste teclado en movil cliente<br>
+2020-10-12 : fixed | i-468 | Ajuste teclado en movil cliente<br>
+2020-10-08 : fixed | i-492 | Ajuste para inconsistencia fechas pos - validacion<br>
+2020-10-08 : fixed | i-475 | Se agrega campos nombre - nombre secundario importacion productos<br>
+2020-10-08 : fixed | i-484 | Ajuste items - descuento que no afecta a la base imponible<br>
+2020-10-06 : fixed | Elimina espacios al inicio y final de descripcion item xml<br>
+
+
+### feature
+2020-11-05 : feature | i-533 | campo seleccion de vendedor en form de venta (para seleccion de usuarios vendedores, por defecto se asigna el usuario actual)<br>
+2020-11-05 : feature | i-561 | Se agrega formatos pdf en reporte cuentas por cobrar/pagar<br>
+2020-11-04 : feature | i-488 | Se agrega categorias al reporte documentos<br>
+2020-11-04 : feature | i-461 | Se agrega pagos a contratos<br>
+2020-11-03 : feature | i-582 | Se agrega funcionalidad para actualizar conjuntos desde excel<br>
+2020-11-03 : feature | i-444 | Se agrega filtro vendedor opcional - exportar excel - columnas reporte consolidado items<br>
+2020-11-03 : feature | i-503 | Se agrega plantilla item_watermark<br>
+2020-11-02 : feature | i-460 | Se agrega op. detraccion para transporte<br>
+2020-10-29 : feature | i-460 | Se agrega funcionalidad para tipo de detraccion transporte - xml<br>
+2020-10-28 : feature | i-558 | Agregar columna moneda repore productos<br>
+2020-10-27 : feature | i-557 | Se agrega columna detalle de transaccion ingresos/gastos reporte movimientos finanzas<br>
+2020-10-27 : feature | i-565 | Se agrega destino pago por defecto y monto pago en cotizacion y n venta<br>
+2020-10-26 : feature | i-498 | Se agrega reporte pdf en consolidado de items totales<br>
+2020-10-26 : feature | i-531 | Se modifica validaciones para campos opcionales en guia<br>
+2020-10-23 : feature | i-527 | Se agrega columna categoria reporte inventario<br>
+2020-10-23 : feature | i-521 | Se agrega funcion incluye igv - orden de compra<br>
+2020-10-23 : feature | i-520 | Se agrega campos ganancia y formato pdf en reporte productos<br>
+2020-10-23 : feature | i-462 | Se agrega olumna v. unitario compras - contacto formato customer contact<br>
+2020-10-22 : feature | i-448 | Se agrega filtro plataforma en reporte productos - productos busqueda individual<br>
+2020-10-22 : feature  | i-462 | Agrega columna v. unitario nv, cot, cnt<br>
+2020-10-21 : feature | i-512 | boton de etiquetas independiente por producto<br>
+2020-10-20 : feature | i-523 | Visualizar asatock productos por api<br>
+2020-10-20 : feature | i-512 | rango de seleccion para imprimir etiquetas<br>
+2020-10-19 : feature | i-512 | reporte pdf para exportar e imprimir etiquetas con codigos de barras de productos<br>
+2020-10-16 : feature | i-502 | Se agrega boton para descargar backup<br>
+2020-10-16 : feature | i_346  | Cambio de control de permisos por tree<br>
+2020-10-16 : feature | i_346  | Cambio de control de permisos por tree<br>
+2020-10-16 : feature | i-510 | Se añade lote a la importacion productos - ajuste importacion marca y categoria nula<br>
+2020-10-16 : feature | i_346  | Cambio de control de permisos por tree<br>
+2020-10-16 : feature | i-462 | Filtros clientes productos en reporte general productos - ajuste busqueda usuario compras<br>
+2020-10-16 : feature | i_346  | Cambio de control de permisos por tree<br>
+2020-10-15 : feature | i-462 | filtros movimientos finanzas - campos cotizacion - etc<br>
+2020-10-15 : feature | i-491 | campos  cotizacion, campo pdf factura (marca)<br>
+2020-10-14 : feature | i-433 | Limpiar input busqueda pos - consulta documento cliente eliminar (-) - whatsap en opciones pos<br>
+2020-10-14 : feature | i-491 | template brand<br>
+2020-10-13 : feature | i-506 | caja general mediante configuracion avanzada<br>
+2020-10-13 : feature | i-448 | Se agrega plataformas en packs/pos<br>
+2020-10-13 : feature | i-496 | Se agrega servicios publicos tipo de documento - añade a reporte compras<br>
+2020-10-12 : feature | i-468 | Generar comprobantes de forma masiva desde pedidos<br>
+2020-10-12 : feature | i-505 | template footer amazonas cotizaciones<br>
+2020-10-12 : feature | tamplate footer amazonas en notas de venta<br>
+2020-10-09 : feature | i-468 | Ajustes reporte pedidos - modificar precio vendedor form pedido<br>
+2020-10-09 : feature | i-463 |  Se agrega a configuracion seleccion cliente y tipo documento - pos<br>
+2020-10-09 : feature | i-496 | Se agrega edicion en gastos<br>
+2020-10-09 : feature | i-494 | se agrega columna stock en kardex valorizado<br>
+2020-10-09 : feature | templates footer_term_condition<br>
+2020-10-06 : feature | i-475 | Ajustes importacion masiva kits<br>
+
+
 ## 3.4.1
 
 ### docs
