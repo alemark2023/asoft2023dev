@@ -33,6 +33,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Warehouse;
+use App\Models\Tenant\User;
 use Exception;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
@@ -165,6 +166,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $user = auth()->user()->type;
+        $sellers = User::whereIn('type', ['seller'])->orWhere('id', auth()->user()->id)->get();
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');
@@ -196,7 +198,7 @@ class DocumentController extends Controller
         return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
                         'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
                         'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user','payment_method_types','enabled_discount_global',
+                        'document_types_guide', 'user', 'sellers','payment_method_types','enabled_discount_global',
                         'business_turns','is_client','select_first_document_type_03', 'payment_destinations');
 
     }
@@ -594,7 +596,7 @@ class DocumentController extends Controller
         // if($operation_type_id === '0101' || $operation_type_id === '1001') {
 
         if(in_array($operation_type_id, ['0101', '1001', '1004'])) {
-            
+
             if($document_type_id == '01'){
                 $identity_document_type_id = [6];
             }else{
