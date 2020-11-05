@@ -81,47 +81,51 @@
                                     <thead>
                                         <tr width="100%">
                                             <th v-if="form.payments.length>0">Método de pago</th>
-                                            <th v-if="form.payments.length>0">Destino
-                                                <el-tooltip class="item" effect="dark" content="Aperture caja o cuentas bancarias" placement="top-start">
-                                                    <i class="fa fa-info-circle"></i>
-                                                </el-tooltip>
-                                            </th>
-                                            <th v-if="form.payments.length>0">Referencia</th>
-                                            <th v-if="form.payments.length>0">Monto</th>
-                                            <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                            <template v-if="enabled_payments">
+                                                <th v-if="form.payments.length>0">Destino
+                                                    <el-tooltip class="item" effect="dark" content="Aperture caja o cuentas bancarias" placement="top-start">
+                                                        <i class="fa fa-info-circle"></i>
+                                                    </el-tooltip>
+                                                </th>
+                                                <th v-if="form.payments.length>0">Referencia</th>
+                                                <th v-if="form.payments.length>0">Monto</th>
+                                                <th width="15%"><a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a></th>
+                                            </template>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="(row, index) in form.payments" :key="index">
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_method_type_id">
+                                                    <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
                                                         <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                     </el-select>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_destination_id" filterable >
-                                                        <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2"  >
-                                                    <el-input v-model="row.reference"></el-input>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2" >
-                                                    <el-input v-model="row.payment"></el-input>
-                                                </div>
-                                            </td>
-                                            <td class="series-table-actions text-center">
-                                                <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
+                                            <template v-if="enabled_payments">
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_destination_id" filterable >
+                                                            <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2"  >
+                                                        <el-input v-model="row.reference"></el-input>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2" >
+                                                        <el-input v-model="row.payment"></el-input>
+                                                    </div>
+                                                </td>
+                                                <td class="series-table-actions text-center">
+                                                    <button  type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </template>
                                             <br>
                                         </tr>
                                     </tbody>
@@ -318,6 +322,7 @@
                 series: [],
                 all_series: [],
                 is_contingency: false,
+                enabled_payments: true,
                 payment_destinations:  [],
                 configuration: {},
 
@@ -357,6 +362,27 @@
 
         },
         methods: {
+            changePaymentMethodType(index){
+
+                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
+                
+                if(payment_method_type.id == '09'){
+
+                    this.form.payment_method_type_id = payment_method_type.id
+                    this.form.date_of_due = this.form.date_of_issue
+                    // this.form.payments = []
+                    this.enabled_payments = false
+
+                }else{
+
+                    this.form.date_of_due = this.form.date_of_issue
+                    this.readonly_date_of_due = false
+                    this.form.payment_method_type_id = null
+                    this.enabled_payments = true
+
+                }
+
+            },
             selectDestinationSale() {
 
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
@@ -532,10 +558,12 @@
                     automatic_date_of_issue:null,
                     enabled_concurrency:false,
                     license_plate: null,
+                    payment_method_type_id:null,
                     paid: false
                 }
 
                 this.clickAddPayment()
+                this.enabled_payments = true
 
             },
             resetForm() {
@@ -663,7 +691,9 @@
                 let error_by_item = 0
 
                 this.form.payments.forEach((item)=>{
-                    if(item.payment_destination_id == null) error_by_item++;
+                    if(!['05', '08', '09'].includes(item.payment_method_type_id)){
+                        if(item.payment_destination_id == null) error_by_item++;
+                    }
                 })
 
                 return  {
@@ -698,6 +728,9 @@
                     return this.$message.error('El destino del pago es obligatorio');
                 }
 
+                if(!this.enabled_payments){
+                    this.form.payments = []
+                }
 
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form).then(response => {

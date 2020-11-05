@@ -199,6 +199,18 @@
 
 
 </table>
+
+@if($document->payment_method_type_id && $payments->count() == 0)
+<table class="full-width">
+    <tr>
+    <td class="desc pt-5">
+        <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+    </td>
+</tr> 
+</table>
+@endif
+
+@if($payments->count())
 <table class="full-width">
     <tr><td><strong>PAGOS:</strong> </td></tr>
     @php
@@ -212,5 +224,6 @@
     @endforeach
     <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td></tr>
 </table>
+@endif
 </body>
 </html>
