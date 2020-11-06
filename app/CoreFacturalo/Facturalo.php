@@ -593,7 +593,11 @@ class Facturalo
         }
         if($code === 'HTTP') {
 //            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
-            // throw new Exception("Code: {$code}; Description: {$message}");
+
+            if(in_array($this->type, ['retention'])){
+                throw new Exception("Code: {$code}; Description: {$message}");
+            }
+
             $this->updateRegularizeShipping($code, $message);
             return;
         }
@@ -603,7 +607,11 @@ class Facturalo
         }
         if((int)$code < 2000) {
             //Excepciones
-            // throw new Exception("Code: {$code}; Description: {$message}");
+            
+            if(in_array($this->type, ['retention'])){
+                throw new Exception("Code: {$code}; Description: {$message}");
+            }
+
             $this->updateRegularizeShipping($code, $message);
             return;
 
