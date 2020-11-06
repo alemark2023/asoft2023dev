@@ -77,7 +77,7 @@ class DocumentInput
             'date_of_issue' => $inputs['date_of_issue'],
             'time_of_issue' => $inputs['time_of_issue'],
             'customer_id' => $inputs['customer_id'],
-            'seller_id' => $inputs['seller_id'],
+            'seller_id' => Functions::valueKeyInArray($inputs, 'seller_id'),
             'customer' => $customer,
             'currency_type_id' => $inputs['currency_type_id'],
             'purchase_order' => $inputs['purchase_order'],
