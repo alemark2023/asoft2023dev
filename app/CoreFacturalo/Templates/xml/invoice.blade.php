@@ -268,6 +268,18 @@
                 </cac:TaxScheme>
             </cac:TaxCategory>
         </cac:TaxSubtotal>
+        @elseif(collect($document->prepayments)->count() > 0 && collect($document->discounts)->where('discount_type_id', '06')->count() === 1 && $document->total_unaffected >= 0)
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_unaffected }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">0</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cac:TaxScheme>
+                    <cbc:ID>9998</cbc:ID>
+                    <cbc:Name>INA</cbc:Name>
+                    <cbc:TaxTypeCode>FRE</cbc:TaxTypeCode>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
         @endif
         @if($document->total_exonerated > 0)
         <cac:TaxSubtotal>

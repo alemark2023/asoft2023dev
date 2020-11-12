@@ -26,10 +26,10 @@
                                 <!-- <el-checkbox v-model="form.has_prepayment" :disabled="prepayment_deduction">¿Es un pago anticipado?</el-checkbox>
                                 <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" :disabled="form.has_prepayment">Deducción de los pagos anticipados</el-checkbox> -->
 
-                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment">¿Es un pago anticipado?</el-checkbox>
-                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment">Deducción de los pagos anticipados</el-checkbox>
+                                <el-checkbox v-model="form.has_prepayment" v-if="!prepayment_deduction" @change="changeHasPrepayment" class="full">¿Es un pago anticipado?</el-checkbox>
+                                <el-checkbox v-model="prepayment_deduction" @change="changePrepaymentDeduction" v-if="!form.has_prepayment" class="full">Deducción de los pagos anticipados</el-checkbox>
 
-                                <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
+                                <!-- <el-switch v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment"
                                         @change="changeAffectationTypePrepayment"
                                         active-color="#409EFF"
                                         inactive-color="#409EFF"
@@ -37,7 +37,19 @@
                                         inactive-text="Gravado"
                                         :active-value="20"
                                         :inactive-value="10">
-                                </el-switch>
+                                </el-switch> -->
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <el-select v-if="form.has_prepayment || prepayment_deduction" v-model="form.affectation_type_prepayment" @change="changeAffectationTypePrepayment" class="border-left rounded-left border-info mb-2">
+                                            <el-option :key="10" :value="10" label="Gravado"></el-option>
+                                            <el-option :key="20" :value="20" label="Exonerado"></el-option>
+                                            <el-option :key="30" :value="30" label="Inafecto"></el-option>
+                                        </el-select>
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                </div>
+
 
                             </template>
                         </div>
@@ -936,7 +948,21 @@
                     global_discount += parseFloat(item.amount)
                 })
 
-                let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
+                // let base = (this.form.affectation_type_prepayment == 10) ? parseFloat(this.form.total_taxed):parseFloat(this.form.total_exonerated)
+                let base = 0
+
+                switch (this.form.affectation_type_prepayment) {
+                    case 10:
+                        base = parseFloat(this.form.total_taxed)
+                        break;
+                    case 20:
+                        base = parseFloat(this.form.total_exonerated)
+                        break;
+                    case 30:
+                        base = parseFloat(this.form.total_unaffected)
+                        break;
+                }
+
                 let amount = _.round(parseFloat(global_discount), 2)
                 let factor = _.round(amount/base, 4)
 
@@ -986,7 +1012,7 @@
 
                     }
 
-                }else{
+                }else if(this.form.affectation_type_prepayment == 20){
 
                     let exonerated_discount = _.find(this.form.discounts,{'discount_type_id':'05'})
 
@@ -1010,6 +1036,40 @@
                     }else{
 
                         let position = this.form.discounts.indexOf(exonerated_discount);
+
+                        if(position > -1){
+
+                            this.form.discounts[position].base = base
+                            this.form.discounts[position].amount = amount
+                            this.form.discounts[position].factor = factor
+
+                        }
+
+                    }
+
+                }else if(this.form.affectation_type_prepayment == 30){
+
+                    let unaffected_discount = _.find(this.form.discounts,{'discount_type_id':'06'})
+
+                    this.form.total_discount =  _.round(amount,2)
+                    this.form.total_unaffected =  _.round(base - amount,2)
+                    this.form.total_value =  this.form.total_unaffected
+                    this.form.total =  this.form.total_value
+
+                    if(global_discount>0 && !unaffected_discount){
+
+                        // console.log("gl 0")
+                        this.form.discounts.push({
+                                discount_type_id: '06',
+                                description: 'Descuentos globales por anticipos inafectos',
+                                factor: factor,
+                                amount: amount,
+                                base: base
+                            })
+
+                    }else{
+
+                        let position = this.form.discounts.indexOf(unaffected_discount);
 
                         if(position > -1){
 
@@ -1068,12 +1128,12 @@
                     await this.getDocumentsPrepayment()
 
                 }
-                // else{
+                else{
 
                     // this.form.total_prepayment = 0
                     // await this.deletePrepaymentDiscount()
-
-                // }
+                    this.cleanValueATPrepayment()
+                }
 
             },
             setPendingAmount(){
@@ -1112,10 +1172,10 @@
 
                 let discount = await _.find(this.form.discounts, {'discount_type_id':'04'})
                 let discount_exonerated = await _.find(this.form.discounts, {'discount_type_id':'05'})
+                let discount_unaffected = await _.find(this.form.discounts, {'discount_type_id':'06'})
 
                 let pos = this.form.discounts.indexOf(discount)
                 if (pos > -1) {
-                    // console.log(' ya existe en la colección de verduras.');
                     this.form.discounts.splice(pos, 1)
                     this.changeTotalPrepayment()
                 }
@@ -1125,6 +1185,13 @@
                     this.form.discounts.splice(pos_exonerated, 1)
                     this.changeTotalPrepayment()
                 }
+                
+                let pos_unaffected = this.form.discounts.indexOf(discount_unaffected)
+                if (pos_unaffected > -1) {
+                    this.form.discounts.splice(pos_unaffected, 1)
+                    this.changeTotalPrepayment()
+                }
+                
             },
             getDocumentsPrepayment(){
                 this.$http.get(`/${this.resource}/prepayments/${this.form.affectation_type_prepayment}`).then((response) => {

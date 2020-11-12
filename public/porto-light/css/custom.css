@@ -56,6 +56,10 @@ ul.nav-main li .nav-children li.nav-active > a {
   opacity: 0;
 }
 
+.full{
+  width: 100%;
+}
+
 .warning-demo{
     color: red;
     font-weight: bold;
