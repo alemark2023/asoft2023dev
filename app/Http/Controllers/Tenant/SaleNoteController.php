@@ -48,7 +48,7 @@ use Modules\Item\Models\ItemLotsGroup;
 use App\Models\Tenant\Configuration;
 use Modules\Inventory\Traits\InventoryTrait;
 use Modules\Document\Traits\SearchTrait;
-
+use App\Models\Tenant\BankAccount;
 
 class SaleNoteController extends Controller
 {
@@ -123,9 +123,9 @@ class SaleNoteController extends Controller
             $records = $records->where('series', 'like', '%' . $request->series . '%');
         }
 
-        if($request->paid != null)
+        if($request->total_canceled != null)
         {
-            $records = $records->where('paid', $request->paid);
+            $records = $records->where('total_canceled', $request->total_canceled);
         }
 
         return $records;
@@ -463,7 +463,7 @@ class SaleNoteController extends Controller
                 }
             }
             $legends = $this->document->legends != '' ? '10' : '0';
-
+            $bank_accounts = BankAccount::count() * 6;
 
             $pdf = new Mpdf([
                 'mode' => 'utf-8',
@@ -481,6 +481,7 @@ class SaleNoteController extends Controller
                     $customer_address +
                     $p_order +
                     $legends +
+                    $bank_accounts +
                     $total_exportation +
                     $total_free +
                     $total_unaffected +

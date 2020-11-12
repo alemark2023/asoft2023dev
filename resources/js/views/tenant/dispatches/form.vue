@@ -356,7 +356,7 @@
     import DispatchOptions from './partials/options.vue'
 
     export default {
-        props: ['document', 'typeDocument', 'dispatch'],
+        props: ['document', 'typeDocument', 'dispatch', 'sale_note'],
         components: {PersonForm, Items, DispatchOptions},
         data() {
             return {
@@ -394,6 +394,7 @@
             }
         },
         async created() {
+
             this.initForm();
             await this.$http.post(`/${this.resource}/tables`).then(response => {
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
@@ -462,6 +463,7 @@
                     reference_document_id: this.typeDocument == 'i' ?  this.document.id : null,
                     reference_quotation_id: this.typeDocument == 'q' ?  this.document.id : null,
                     reference_order_note_id: this.typeDocument == 'on' ?  this.document.id : null,
+                    reference_sale_note_id: this.sale_note ?  this.sale_note.id : null,
                     establishment_id: null,
                     document_type_id: '09',
                     series_id: null,

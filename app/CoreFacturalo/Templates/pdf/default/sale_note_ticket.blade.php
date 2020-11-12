@@ -5,6 +5,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $payments = $document->payments;
+    $accounts = \App\Models\Tenant\BankAccount::all();
 
 @endphp
 <html>
@@ -71,10 +72,10 @@
             <td class="align-top"><p class="desc">Dirección:</p></td>
             <td>
                 <p class="desc">
-                    {{ $customer->address }}
-                    {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-                    {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-                    {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+                    {{ strtoupper($customer->address) }}
+                    {{ ($customer->district_id !== '-')? ', '.strtoupper($customer->district->description) : '' }}
+                    {{ ($customer->province_id !== '-')? ', '.strtoupper($customer->province->description) : '' }}
+                    {{ ($customer->department_id !== '-')? '- '.strtoupper($customer->department->description) : '' }}
                 </p>
             </td>
         </tr>
@@ -89,6 +90,12 @@
         <tr>
             <td><p class="desc">Orden de Compra:</p></td>
             <td><p class="desc">{{ $document->purchase_order }}</p></td>
+        </tr>
+    @endif
+    @if ($document->observation)
+        <tr>
+            <td><p class="desc">Observación:</p></td>
+            <td><p class="desc">{{ $document->observation }}</p></td>
         </tr>
     @endif
 </table>
@@ -197,6 +204,21 @@
         @endforeach
     </tr>
 
+    <tr>
+        <td class="desc pt-3">
+            <br>
+            @foreach($accounts as $account)
+                <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
+                <br>
+                <span class="font-bold">N°:</span> {{$account->number}}
+                @if($account->cci)
+                - <span class="font-bold">CCI:</span> {{$account->cci}}
+                @endif
+                <br>
+            @endforeach
+
+        </td>
+    </tr>
 
 </table>
 
