@@ -54,7 +54,7 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 [Documentación](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 
-[Colección para Postman](https://drive.google.com/file/d/18u_2U8z4tADIlZ0DbWg8-wg3JYYnT_t9/view?usp=sharing "Clic")
+[Colección para Postman](https://drive.google.com/file/d/1NgCuU6jZ3DfVyePIxL5Z3AAlbSiMmazW/view?usp=sharing "Clic")
 
 ## Pruebas online
 
