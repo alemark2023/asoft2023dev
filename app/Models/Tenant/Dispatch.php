@@ -60,6 +60,7 @@ class Dispatch extends ModelTenant
         'reference_order_note_id',
         'reference_order_form_id',
         'secondary_license_plates',
+        'reference_sale_note_id',
     ];
 
     protected $casts = [
@@ -231,6 +232,11 @@ class Dispatch extends ModelTenant
     {
         $user = auth()->user();
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
+    }
+    
+    public function sale_note()
+    {
+        return $this->belongsTo(SaleNote::class, 'reference_sale_note_id');
     }
     
 }

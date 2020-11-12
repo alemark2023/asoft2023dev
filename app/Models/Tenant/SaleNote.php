@@ -62,6 +62,7 @@ class SaleNote extends ModelTenant
         'paid',
         'payment_method_type_id',
         'license_plate',
+        'observation',
         'plate_number'
     ];
 

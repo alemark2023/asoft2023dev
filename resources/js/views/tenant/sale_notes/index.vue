@@ -159,10 +159,16 @@
 
                             <!-- <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)">Opciones</button> -->
-                            <template v-for="(document,i) in row.documents" >
-                                <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
-                                    v-if="row.changed" :key="i"><i class="fas fa-file-alt"></i></a>
-                            </template>
+                            <el-tooltip class="item" effect="dark" content="Generar guía desde CPE" placement="top-start">
+                                <template v-for="(document,i) in row.documents" >
+                                    <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                        v-if="row.changed" :key="i"><i class="fas fa-file-alt"></i></a>
+                                </template>
+                            </el-tooltip>
+
+                            <el-tooltip class="item" effect="dark" content="Generar guía desde Nota Venta" placement="top-start">
+                                <a :href="`/dispatches/generate/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2"><i class="fas fa-file-alt"></i></a>
+                            </el-tooltip>
 
                             <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickGenerate(row.id)" v-if="!row.changed && row.state_type_id != '11' ">Generar comprobante</button> -->

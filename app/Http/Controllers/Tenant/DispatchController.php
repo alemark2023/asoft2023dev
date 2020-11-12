@@ -22,6 +22,7 @@ use App\Models\Tenant\{
     Person,
     Series,
     Company,
+    SaleNote,
     Item
 };
 use App\Models\Tenant\Document;
@@ -79,8 +80,22 @@ class DispatchController extends Controller
         }
 
         $dispatch = Dispatch::find($dispatch_id);
+        $sale_note = null;
 
-        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch'));
+        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'sale_note'));
+    }
+
+
+    public function generate($sale_note_id)
+    { 
+
+        $sale_note = SaleNote::findOrFail($sale_note_id);
+        $type = null;
+        $document = $sale_note;
+        $dispatch = null;
+
+        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'sale_note'));
+
     }
 
 

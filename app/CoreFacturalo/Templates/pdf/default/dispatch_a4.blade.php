@@ -57,13 +57,14 @@
     </tr>
     <tr>
         <td>RUC: {{ $customer->number }}
-                 {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-                 {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-                 {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
     </tr>
     <tr>
-        <td>Dirección: {{ $customer->address }}</td>
+        <td>Dirección: {{ $customer->address }}
+            {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
+            {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
+            {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+        </td>
     </tr>
     </tbody>
 </table>
@@ -185,5 +186,17 @@
 </table>
 @endif
 
+@if ($document->reference_sale_note_id)
+<table class="full-width border-box">
+    @if($document->sale_note)
+    <tr>
+        <td class="text-bold border-bottom font-bold">NOTA DE VENTA</td>
+    </tr>
+    <tr>
+        <td>{{ ($document->sale_note) ? $document->sale_note->number_full : "" }}</td>
+    </tr>
+    @endif
+</table>
+@endif
 </body>
 </html>

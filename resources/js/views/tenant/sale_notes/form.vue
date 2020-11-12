@@ -182,6 +182,14 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Observación
+                                    </label>
+                                    <el-input  type="textarea"  v-model="form.observation"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -559,7 +567,8 @@
                     enabled_concurrency:false,
                     license_plate: null,
                     payment_method_type_id:null,
-                    paid: false
+                    paid: false,
+                    observation: null,
                 }
 
                 this.clickAddPayment()
