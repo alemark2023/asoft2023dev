@@ -432,6 +432,24 @@
             ]
             this.form.delivery.address = this.document.customer.address
 
+            this.form.packages_number = _.sumBy(this.document.items, (o) => { return parseFloat(o.quantity) })
+
+            let total_weight = 0
+
+            this.form.items.forEach(element => {
+                if(element.attributes){
+
+                    Object.values(element.attributes).forEach(attr => {
+                        if(attr.attribute_type_id === '5032'){
+                            total_weight += parseFloat(attr.value) * parseFloat(element.quantity)  
+                        }
+                    });
+                }
+            })
+
+            this.form.total_weight = total_weight
+
+
             if(this.dispatch){
 
                 this.form.transfer_reason_description = this.dispatch.transfer_reason_description

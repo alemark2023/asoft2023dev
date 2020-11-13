@@ -147,6 +147,7 @@ class DispatchController extends Controller
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                    'attributes' => $row->attributes ? $row->attributes : [],
                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id
                 ];
             });
