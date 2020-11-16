@@ -27,7 +27,7 @@
     //calculate items
     $allowed_items = 100;
     $quantity_items = $document->items()->count();
-    $cycle_items = $allowed_items - $quantity_items;
+    $cycle_items = $allowed_items - ($quantity_items * 3);
     $total_weight = 0;
 
 @endphp
