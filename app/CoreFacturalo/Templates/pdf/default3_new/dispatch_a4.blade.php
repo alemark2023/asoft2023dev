@@ -9,7 +9,7 @@
 
     $allowed_items = 90;
     $quantity_items = $document->items()->count();
-    $cycle_items = $allowed_items - $quantity_items;
+    $cycle_items = $allowed_items - ($quantity_items * 5);
     $total_weight = 0;
 
 @endphp
@@ -265,9 +265,8 @@
                 </tr> 
             </table>
         </td>
-        <td width="5%"></td>
 
-        <td width="20%" class="pl-3">
+        <td width="25%" class="pl-3">
             <table class="full-width">
                 <tr>
                     <td ><strong>PESO TOTAL:</strong> KGM: {{$total_weight}}</td>
