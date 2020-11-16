@@ -163,9 +163,14 @@ class DocumentItem extends ModelTenant
                 ->join('documents', 'document_items.document_id', '=', 'documents.id')
                 ->select($db_raw)
                 ->latest('id');
+        
 
-        if($params['seller_id']){
-            $data = $data->whereHas('document', function($q) use($params){$q->where('user_id', $params['seller_id']);});
+        $sellers = json_decode($params['sellers']);
+
+        // dd($sellers, count($sellers));
+
+        if(count($sellers) > 0){
+            $data = $data->whereHas('document', function($q) use($params, $sellers){$q->whereIn('user_id', $sellers);});
         }
 
         return $data;

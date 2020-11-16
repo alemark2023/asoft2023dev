@@ -55,6 +55,7 @@ class ReportSaleConsolidatedController extends Controller
         $records = $this->getRecordsSalesConsolidated($request->all())->get()->groupBy('item_id');
 
         return $records->map(function($row, $key){
+
             return [
                 'item_id' => $key,
                 'item_internal_id' => $row->first()->relation_item->internal_id,  
