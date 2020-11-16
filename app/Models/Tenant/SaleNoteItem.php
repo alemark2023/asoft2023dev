@@ -146,8 +146,11 @@ class SaleNoteItem extends ModelTenant
                 ->select($db_raw)
                 ->latest('id');
 
-        if($params['seller_id']){
-            $data = $data->whereHas('sale_note', function($q) use($params){$q->where('user_id', $params['seller_id']);});
+        
+        $sellers = json_decode($params['sellers']);
+
+        if(count($sellers) > 0){
+            $data = $data->whereHas('sale_note', function($q) use($params, $sellers){$q->whereIn('user_id', $sellers);});
         }
 
         return $data;
