@@ -382,6 +382,11 @@
                  @endforeach
                  {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
                 @endif
+                
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
             </td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')

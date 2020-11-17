@@ -344,6 +344,10 @@
                  {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
                 @endif
 
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right desc-9 align-top">{{ number_format($row->total, 2) }}</td>
