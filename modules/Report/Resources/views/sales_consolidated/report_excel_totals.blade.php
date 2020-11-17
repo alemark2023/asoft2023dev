@@ -28,11 +28,21 @@
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                     @inject('reportService', 'Modules\Report\Services\ReportService')
-                    @if($params['seller_id'])
-                    <td>
-                        <p><strong>Usuario: </strong>{{$reportService->getUserName($params['seller_id'])}}</p>
-                    </td>
-                    @endif 
+                    
+                    @if($params['sellers'])
+                        @php
+                            $sellers = json_decode($params['sellers']);
+                        @endphp
+                        @if(count($sellers) > 0)
+                        <td>
+                            <p><strong>Usuario(s): </strong>
+                            @foreach ($sellers as $seller_id)
+                            - {{$reportService->getUserName($seller_id)}}
+                            @endforeach
+                            </p>
+                        </td>
+                        @endif 
+                    @endif
                     @if($params['person_id'])
                     <td>
                         <p><strong>Cliente: </strong>{{$reportService->getPersonName($params['person_id'])}}</p>
