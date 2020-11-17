@@ -129,7 +129,25 @@
                             </span>
                         @endif
                     </td>
-                </tr>  
+                </tr> 
+                
+                @if(!is_null($document_base))
+                <tr>
+                    <td class="font-sm font-bold" width="80px">Doc. Afectado</td>
+                    <td class="font-sm" width="8px">:</td>
+                    <td class="font-sm">{{ $affected_document_number }}</td>
+                </tr>
+                <tr>
+                    <td class="font-sm font-bold" width="80px">Tipo de nota</td>
+                    <td class="font-sm">:</td>
+                    <td class="font-sm">{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
+                </tr>
+                <tr>
+                    <td class="font-sm font-bold" width="80px">Descripción</td>
+                    <td class="font-sm">:</td>
+                    <td class="font-sm">{{ $document_base->note_description }}</td>
+                </tr>
+                @endif 
             </table>
         </td>
         <td width="3%"></td>
