@@ -149,11 +149,14 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
-
+ 
                 @if($row->item->is_set == 1)
+
                  <br>
                  @inject('itemSet', 'App\Services\ItemSetService')
-                    {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
+                 @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                     {{$item}}<br>
+                 @endforeach
                 @endif
 
             </td>
