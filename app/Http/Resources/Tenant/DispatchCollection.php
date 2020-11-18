@@ -16,6 +16,12 @@ class DispatchCollection extends ResourceCollection
     {
         return $this->collection->transform(function($row, $key) {
 
+            $has_cdr = false;
+
+            if (in_array($row->state_type_id, ['05', '07'])) {
+                $has_cdr = true;
+            }
+
             return [
                 'id' => $row->id,
                 'external_id' => $row->external_id,
@@ -30,7 +36,8 @@ class DispatchCollection extends ResourceCollection
                 'state_type_description' => $row->state_type->description,
                 'has_xml' => $row->has_xml,
                 'has_pdf' => $row->has_pdf,
-                'has_cdr' => $row->has_cdr,
+                // 'has_cdr' => $row->has_cdr,
+                'has_cdr' => $has_cdr,
                 'download_external_xml' => $row->download_external_xml,
                 'download_external_pdf' => $row->download_external_pdf,
                 'download_external_cdr' => $row->download_external_cdr,
