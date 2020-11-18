@@ -1471,11 +1471,13 @@ export default {
 
             // console.log(item.unit_type_id)
             // console.log(exist_item)
+            console.log(item)
 
             let exist_item = _.find(this.form.items, {
                 item_id: item.item_id,
                 unit_type_id: item.unit_type_id
             });
+            
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
 
