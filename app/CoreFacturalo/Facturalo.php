@@ -594,7 +594,7 @@ class Facturalo
         if($code === 'HTTP') {
 //            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
 
-            if(in_array($this->type, ['retention'])){
+            if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
@@ -608,7 +608,7 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
             
-            if(in_array($this->type, ['retention'])){
+            if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 

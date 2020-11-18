@@ -61,6 +61,7 @@ class Dispatch extends ModelTenant
         'reference_order_form_id',
         'secondary_license_plates',
         'reference_sale_note_id',
+        'soap_shipping_response',
     ];
 
     protected $casts = [
@@ -138,6 +139,16 @@ class Dispatch extends ModelTenant
         $this->attributes['legends'] = (is_null($value))?null:json_encode($value);
     }
 
+    public function getSoapShippingResponseAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setSoapShippingResponseAttribute($value)
+    {
+        $this->attributes['soap_shipping_response'] = (is_null($value))?null:json_encode($value);
+    }
+    
     public function user()
     {
         return $this->belongsTo(User::class);
