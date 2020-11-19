@@ -128,6 +128,10 @@
                                             @case($models[4])
                                                 {{($value->quantity < 0) ? "Pedido":"Anulación pedido"}}
                                                 @break
+
+                                            @case($models[5])
+                                                {{"Devolución"}}                                                    
+                                                @break  
                                         @endswitch
 
                                         
@@ -152,7 +156,11 @@
 
                                             @case($models[4])
                                                 {{  optional($value->inventory_kardexable)->prefix."-".optional($value->inventory_kardexable)->id }}                                                    
-                                                @break  
+                                                @break 
+
+                                            @case($models[5])
+                                                {{  optional($value->inventory_kardexable)->number_full }}                                                    
+                                                @break   
                                         @endswitch
 
                                     </td>
@@ -200,6 +208,9 @@
                                             @case($models[4])
                                                 {{"-"}}                                                 
                                                 @break
+                                            @case($models[5])
+                                                {{"-"}}                                                 
+                                                @break
                                         @endswitch
 
                                     </td>
@@ -220,6 +231,9 @@
                                                 {{"-"}}                                                 
                                                 @break  
                                             @case($models[4])
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                @break
+                                            @case($models[5])
                                                 {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                 @break
                                         @endswitch
@@ -270,6 +284,10 @@
                                                 {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
                                                 @break
 
+                                            @case($models[5])
+                                                {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
+                                                @break
+
                                             @default
                                                 {{"-"}}                                                 
                                                 @break  
@@ -310,7 +328,11 @@
                                             @case($models[4])
                                                 {{ ($value->quantity < 0) ?  $value->quantity:"-"}}                                                    
                                                 @break     
-                                                
+
+                                            @case($models[5])
+                                                {{  ($value->quantity < 0) ?  $value->quantity:"-" }}  
+                                                @break   
+
                                             @default
                                                 {{"-"}}                                                 
                                                 @break  
