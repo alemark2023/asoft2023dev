@@ -8,6 +8,8 @@ use Modules\Inventory\Models\InventoryKardex;
 use Modules\Inventory\Models\Warehouse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Modules\Inventory\Models\Devolution;
+
 
 class ReportKardexCollection extends ResourceCollection
 {
@@ -33,7 +35,8 @@ class ReportKardexCollection extends ResourceCollection
             "App\Models\Tenant\Purchase",
             "App\Models\Tenant\SaleNote",
             "Modules\Inventory\Models\Inventory",
-            "Modules\Order\Models\OrderNote"
+            "Modules\Order\Models\OrderNote",
+            Devolution::class
         ];
 
         switch ($row->inventory_kardexable_type) {
@@ -147,6 +150,22 @@ class ReportKardexCollection extends ResourceCollection
                     'doc_asoc' => '-'
                 ];
 
+            case $models[5]: // Devolution
+                return [
+                    'id' => $row->id,
+                    'item_name' => $row->item->description,
+                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+                    'type_transaction' => "Devolución",
+                    'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
+                    'number' => optional($row->inventory_kardexable)->number_full,
+                    'input' => ($row->quantity > 0) ?  $row->quantity:"-",
+                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
+                    'balance' => self::$balance+= $row->quantity,
+                    'sale_note_asoc' => '-',
+                    'order_note_asoc' => '-',
+                    'doc_asoc' => '-'
+
+                ];
         }
 
 
