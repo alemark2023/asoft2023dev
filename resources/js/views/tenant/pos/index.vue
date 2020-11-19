@@ -589,6 +589,19 @@
                                         <td width="20%">
                                             <el-input
                                                 v-model="item.item.aux_quantity"
+                                                @input="
+                                                    clickAddItem(
+                                                        item,
+                                                        index,
+                                                        true
+                                                    )
+                                                "
+                                                @keyup.enter.native="
+                                                    keyupEnterQuantity
+                                                "
+                                            ></el-input>
+                                            <!-- <el-input
+                                                v-model="item.item.aux_quantity"
                                                 :readonly="
                                                     item.item.calculate_quantity
                                                 "
@@ -603,7 +616,7 @@
                                                 @keyup.enter.native="
                                                     keyupEnterQuantity
                                                 "
-                                            ></el-input>
+                                            ></el-input> -->
                                             <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                                         </td>
                                         <td width="20%">
@@ -1270,11 +1283,17 @@ export default {
             //  this.clickAddItem(this.form.items[index],index, true)
         },
         blurCalculateQuantity(index) {
+
             this.row = calculateRowItem(
                 this.form.items[index],
                 this.form.currency_type_id,
                 1
             );
+            
+            // console.log(this.form.items[index])
+
+            this.row["unit_type_id"] = this.form.items[index].unit_type_id;
+
             this.form.items[index] = this.row;
             this.calculateTotal();
             this.setFormPosLocalStorage();
@@ -1471,7 +1490,7 @@ export default {
 
             // console.log(item.unit_type_id)
             // console.log(exist_item)
-            console.log(item)
+            // console.log(item)
 
             let exist_item = _.find(this.form.items, {
                 item_id: item.item_id,
@@ -1482,7 +1501,9 @@ export default {
             let response = null;
 
             if (exist_item) {
+
                 if (input) {
+                    
                     response = await this.getStatusStock(
                         item.item_id,
                         exist_item.item.aux_quantity
@@ -1495,6 +1516,7 @@ export default {
 
                     exist_item.quantity = exist_item.item.aux_quantity;
                 } else {
+                    
                     response = await this.getStatusStock(
                         item.item_id,
                         parseFloat(exist_item.item.aux_quantity) + 1
@@ -1512,6 +1534,7 @@ export default {
                 let search_item_bd = await _.find(this.items, {
                     item_id: item.item_id
                 });
+
                 if (search_item_bd) {
                     exist_item.item.unit_price = parseFloat(
                         search_item_bd.sale_unit_price
@@ -1530,10 +1553,12 @@ export default {
                     exchangeRateSale
                 );
 
+
                 this.row["unit_type_id"] = item.unit_type_id;
 
                 this.form.items[pos] = this.row;
             } else {
+
                 response = await this.getStatusStock(
                     item.item_id,
                     item.presentation
