@@ -99,7 +99,19 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de productos3</h3>
+                <h3 class="my-0">Listado de productos</h3>
+            </div>
+            <div class="data-table-visible-columns">
+                <el-dropdown :hide-on-click="false">
+                    <el-button type="primary">
+                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </div>
             <div class="card-body">
                 <data-table :resource="resource">
@@ -108,15 +120,15 @@
                         <th>Cód. Interno</th>
                         <th>Unidad</th>
                         <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Cód. SUNAT</th>
+                        <th v-if="columns.description.visible">Descripción</th>
+                        <th v-if="columns.item_code.visible">Cód. SUNAT</th>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
-                        <th v-if="typeUser != 'seller'" class="text-right">
+                        <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
                             P.Unitario (Compra)
                         </th>
                         <th class="text-center">Tiene Igv (Venta)</th>
-                        <th class="text-center">Tiene Igv (Compra)</th>
+                        <th class="text-center" v-if="columns.purchase_has_igv_description.visible">Tiene Igv (Compra)</th>
                         <th class="text-right">Acciones</th>
                     </tr>
 
@@ -129,8 +141,8 @@
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
-                        <td>{{ row.name }}</td>
-                        <td>{{ row.item_code }}</td>
+                        <td v-if="columns.description.visible">{{ row.name }}</td>
+                        <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td>
                             <div v-if="config.product_only_location == true">
                                 {{ row.stock }}
@@ -153,7 +165,7 @@
                                         type="button"
                                         class="btn waves-effect waves-light btn-xs btn-info"
                                         @click.prevent="
-                                            clickWarehouseDetail(row.warehouses)
+                                            clickWarehouseDetail(row.warehouses, row.item_unit_types)
                                         "
                                     >
                                         <i class="fa fa-search"></i>
@@ -167,13 +179,13 @@
                             <!-- <br/>Mín:{{ row.stock_min }} -->
                         </td>
                         <td class="text-right">{{ row.sale_unit_price }}</td>
-                        <td v-if="typeUser != 'seller'" class="text-right">
+                        <td v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
                             {{ row.purchase_unit_price }}
                         </td>
                         <td class="text-center">
                             {{ row.has_igv_description }}
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" v-if="columns.purchase_has_igv_description.visible">
                             {{ row.purchase_has_igv_description }}
                         </td>
                         <td class="text-right">
@@ -255,6 +267,7 @@
             <warehouses-detail
                 :showDialog.sync="showWarehousesDetail"
                 :warehouses="warehousesDetail"
+                :item_unit_types="item_unit_types"
             >
             </warehouses-detail>
 
@@ -301,6 +314,26 @@ export default {
             recordId: null,
             warehousesDetail: [],
             config: {},
+            columns: {
+                description: {
+                    title: 'Descripción',
+                    visible: false
+                }, 
+                item_code: {
+                    title: 'Cód. SUNAT',
+                    visible: false
+                }, 
+                purchase_unit_price: {
+                    title: 'P.Unitario (Compra)',
+                    visible: false
+                }, 
+                purchase_has_igv_description: {
+                    title: 'Tiene Igv (Compra)',
+                    visible: false
+                }, 
+
+            },
+            item_unit_types: [],
         };
     },
     created() {
@@ -325,8 +358,9 @@ export default {
                 .catch((error) => {});
             this.$eventHub.$emit("reloadData");
         },
-        clickWarehouseDetail(warehouses) {
+        clickWarehouseDetail(warehouses, item_unit_types) {
             this.warehousesDetail = warehouses;
+            this.item_unit_types = item_unit_types
             this.showWarehousesDetail = true;
         },
         clickCreate(recordId = null) {
