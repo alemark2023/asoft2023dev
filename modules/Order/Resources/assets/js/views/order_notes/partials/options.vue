@@ -323,6 +323,7 @@ export default {
       is_document_type_invoice: true,
       loading_search: false,
       payment_destinations:  [],
+      form_cash_document: {},
       payment_method_types: []
     };
   },
@@ -356,6 +357,12 @@ export default {
         date_of_issue: null,
         order_note: null
       };
+      
+      this.form_cash_document = {
+          document_id: null,
+          sale_note_id: null
+      }
+
     },
     getCustomer() {
       this.$http
@@ -477,10 +484,13 @@ export default {
             this.documentNewId = response.data.data.id;
             // console.log(this.document.document_type_id)
             if (this.document.document_type_id === "80") {
+              this.form_cash_document.sale_note_id = response.data.data.id;
               this.showDialogSaleNoteOptions = true;
             } else {
+              this.form_cash_document.document_id = response.data.data.id;
               this.showDialogDocumentOptions = true;
             }
+            this.saveCashDocument();
 
             this.$eventHub.$emit("reloadData");
             this.resetDocument();
@@ -500,6 +510,19 @@ export default {
         .then(() => {
           this.loading_submit = false;
         });
+    },
+    saveCashDocument(){
+        this.$http.post(`/cash/cash_document`, this.form_cash_document)
+            .then(response => {
+                if (response.data.success) {
+                    // console.log(response)
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
     },
     assignDocument() {
       let q = this.form.order_note;
