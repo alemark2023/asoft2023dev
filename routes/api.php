@@ -49,7 +49,7 @@ if ($hostname) {
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
 
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
-
+        Route::post('configurations/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {

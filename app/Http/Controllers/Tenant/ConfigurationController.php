@@ -14,12 +14,111 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use App\CoreFacturalo\Template;
+use App\Models\Tenant\Company;
 
 class ConfigurationController extends Controller
 {
     public function create() {
         return view('tenant.configurations.form');
     }
+
+    public function generateDispatch(Request $request)
+    {
+        $template = new Template();
+        $pdf = new Mpdf();
+        $pdf_margin_top = 93.7;
+        $pdf_margin_bottom = 74;
+        // $pdf_margin_top = 15;
+        $pdf_margin_right = 15;
+        // $pdf_margin_bottom = 15;
+        $pdf_margin_left = 15;
+
+        $pdf_font_regular = config('tenant.pdf_name_regular');
+        $pdf_font_bold = config('tenant.pdf_name_bold');
+
+        if ($pdf_font_regular != false) {
+            $defaultConfig = (new ConfigVariables())->getDefaults();
+            $fontDirs = $defaultConfig['fontDir'];
+
+            $defaultFontConfig = (new FontVariables())->getDefaults();
+            $fontData = $defaultFontConfig['fontdata'];
+
+            $pdf = new Mpdf([
+                'fontDir' => array_merge($fontDirs, [
+                    app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'pdf'.
+                                             DIRECTORY_SEPARATOR.$base_pdf_template.
+                                             DIRECTORY_SEPARATOR.'font')
+                ]),
+                'fontdata' => $fontData + [
+                    'custom_bold' => [
+                        'R' => $pdf_font_bold.'.ttf',
+                    ],
+                    'custom_regular' => [
+                        'R' => $pdf_font_regular.'.ttf',
+                    ],
+                ],
+                'margin_top' => $pdf_margin_top,
+                'margin_right' => $pdf_margin_right,
+                'margin_bottom' => $pdf_margin_bottom,
+                'margin_left' => $pdf_margin_left,
+            ]);
+
+        } else {
+            $pdf = new Mpdf([
+                'margin_top' => $pdf_margin_top,
+                'margin_right' => $pdf_margin_right,
+                'margin_bottom' => $pdf_margin_bottom,
+                'margin_left' => $pdf_margin_left
+            ]);
+        }
+        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                             DIRECTORY_SEPARATOR.'preprinted_pdf'.
+                                             DIRECTORY_SEPARATOR.$request->base_pdf_template.
+                                             DIRECTORY_SEPARATOR.'style.css');
+
+        $stylesheet = file_get_contents($path_css);
+        
+        // $actions = array_key_exists('actions', $request->inputs)?$request->inputs['actions']:[];
+        $actions = [];
+        $html = $template->preprintedpdf($request->base_pdf_template, "dispatch", Company::active(), "a4");
+        $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
+        $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
+        $pdf->output('', 'D');
+        return $pdf;
+    }
+
+    // public function dispatch(Request $request) {
+    //     dd($request);
+    //     return 'prueba';
+        
+    //     $fact = DB::connection('tenant')->transaction(function () use($request) {
+    //         $facturalo = new Facturalo();
+    //         $facturalo->save($request->all());
+    //         $facturalo->createXmlUnsigned();
+    //         $facturalo->signXmlUnsigned();
+    //         $facturalo->createPdf();
+    //         $facturalo->senderXmlSignedBill();
+
+    //         return $facturalo;
+    //     });
+
+    //     $document = $fact->getDocument();
+    //     $response = $fact->getResponse();
+
+    //     return [
+    //         'success' => true,
+    //         'message' => "Se creo la guía de remisión {$document->series}-{$document->number}",
+    //         'data' => [
+    //             'id' => $document->id,
+    //         ],
+    //     ];
+    // }
 
     public function addSeeder(){
         $reiniciar =  DB::connection('tenant')
@@ -55,6 +154,40 @@ class ConfigurationController extends Controller
         ];
     }
 
+    public function addPreprintedSeeder(){
+        $reiniciar =  DB::connection('tenant')
+                        ->table('preprinted_format_templates')
+                        ->truncate();
+        $archivos = Storage::disk('core')->allDirectories('Templates/preprinted_pdf');
+        $colection = array();
+        $valor = array();
+        foreach($archivos as $valor){
+            $lina = explode( '/', $valor);
+            if(count($lina) <= 3){
+                array_push($colection, $lina);
+            }
+        }
+
+        foreach ($colection as $insertar) {
+           $insertar =  DB::connection('tenant')
+            ->table('preprinted_format_templates')
+            ->insert(['formats' => $insertar[2] ]);
+        }
+
+        // revisión custom
+        $exists = Storage::disk('core')->exists('Templates/preprinted_pdf/custom/style.css');
+        if (!$exists) {
+            Storage::disk('core')->copy('Templates/preprinted_pdf/default/style.css', 'Templates/preprinted_pdf/custom/style.css');
+            Storage::disk('core')->copy('Templates/preprinted_pdf/default/invoice_a4.blade.php', 'Templates/preprinted_pdf/custom/invoice_a4.blade.php');
+            Storage::disk('core')->copy('Templates/preprinted_pdf/default/partials/footer.blade.php', 'Templates/preprinted_pdf/custom/partials/footer.blade.php');
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Configuración actualizada'
+        ];
+    }
+
     public function changeFormat(Request $request){
         $format = Configuration::first();
         $format->fill($request->all());
@@ -76,8 +209,17 @@ class ConfigurationController extends Controller
          return $formats;
     }
 
+    public function getPreprintedFormats(){
+        $formats = DB::connection('tenant')->table('preprinted_format_templates')->get();
+        return $formats;
+    }
+
     public function pdfTemplates(){
         return view('tenant.advanced.pdf_templates');
+    }
+
+    public function pdfPreprintedTemplates(){
+        return view('tenant.advanced.pdf_preprinted_templates');
     }
 
     public function record() {

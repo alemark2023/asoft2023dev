@@ -289,7 +289,7 @@ class Facturalo
             $pdf_margin_bottom = 5;
             $pdf_margin_left = 5;
         }
-
+        
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $this->document, $format_pdf);
 
         if (($format_pdf === 'ticket') OR
