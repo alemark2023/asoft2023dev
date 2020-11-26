@@ -83,6 +83,7 @@ if ($hostname) {
             Route::get('configurations/pdf_preprinted_templates', 'Tenant\ConfigurationController@pdfPreprintedTemplates')->name('tenant.advanced.pdf_preprinted_templates');
             Route::post('configurations/uploads', 'Tenant\ConfigurationController@uploadFile');
             Route::post('configurations/preprinted/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
+            Route::get('configurations/preprinted/{template}', 'Tenant\ConfigurationController@show');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');

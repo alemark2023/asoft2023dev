@@ -31,8 +31,8 @@ class ConfigurationController extends Controller
     {
         $template = new Template();
         $pdf = new Mpdf();
-        $pdf_margin_top = 93.7;
-        $pdf_margin_bottom = 74;
+        $pdf_margin_top = 15;
+        $pdf_margin_bottom = 15;
         // $pdf_margin_top = 15;
         $pdf_margin_right = 15;
         // $pdf_margin_bottom = 15;
@@ -83,20 +83,26 @@ class ConfigurationController extends Controller
                                              DIRECTORY_SEPARATOR.'style.css');
 
         $stylesheet = file_get_contents($path_css);
-        
+
         // $actions = array_key_exists('actions', $request->inputs)?$request->inputs['actions']:[];
         $actions = [];
         $html = $template->preprintedpdf($request->base_pdf_template, "dispatch", Company::active(), "a4");
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
-        $pdf->output('', 'D');
-        return $pdf;
+
+        Storage::put('preprintedpdf'.DIRECTORY_SEPARATOR.$request->base_pdf_template.'.pdf',$pdf->output('', 'S'));
+
+        return $request->base_pdf_template;
+    }
+
+    public function show ($template) {
+        return response()->file(storage_path('app'.DIRECTORY_SEPARATOR.'preprintedpdf'.DIRECTORY_SEPARATOR.$template.'.pdf'));
     }
 
     // public function dispatch(Request $request) {
     //     dd($request);
     //     return 'prueba';
-        
+
     //     $fact = DB::connection('tenant')->transaction(function () use($request) {
     //         $facturalo = new Facturalo();
     //         $facturalo->save($request->all());

@@ -122,7 +122,8 @@ export default {
                 base_pdf_template: template
             }
             this.$http.post(`/${this.resource}/preprinted/generateDispatch`,body).then(response => {
-            console.log(response)
+                window.open(`/${this.resource}/preprinted/`+response.data, '_blank');
+
             });
         },
         changeFormat(value) {
