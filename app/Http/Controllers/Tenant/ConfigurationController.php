@@ -80,6 +80,10 @@ class ConfigurationController extends Controller
         return view('tenant.advanced.pdf_templates');
     }
 
+    public function pdfGuideTemplates(){
+        return view('tenant.advanced.pdf_guide_templates');
+    }
+
     public function record() {
         $configuration = Configuration::first();
         $record = new ConfigurationResource($configuration);

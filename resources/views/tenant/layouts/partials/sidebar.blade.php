@@ -885,6 +885,11 @@
                                     Plantillas PDF
                                 </a>
                             </li>
+                            <li class="{{($path[1] === 'pdf_guide_templates') ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.advanced.pdf_guide_templates')}}">
+                                    Plantillas PDF Guía de remisión
+                                </a>
+                            </li>
                             @if($vc_company->soap_type_id != '03')
                             <li class="{{($path[0] === 'offline-configurations') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.offline_configurations.index')}}">
