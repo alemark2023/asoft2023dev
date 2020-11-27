@@ -608,7 +608,7 @@ class ItemController extends Controller
         $id = $request->id;
 
         $record = Item::find($id);
-
+        
         $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [

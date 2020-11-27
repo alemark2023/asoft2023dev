@@ -35,8 +35,9 @@
                                 return $return;
                             }
                         @endphp
+                        @for($i=0; $i < $record->stock; $i+=3)
                         <tr>
-                        @for($i=0; $i < 3; $i++)
+                            @for($j=0; $j < 3; $j++)
                             <td class="celda" width="33%" style="text-align: center; padding-top: 10px; padding-bottom: 10px; font-size: 9px; vertical-align: top;">
                                 <p>{{withoutRounding($record->sale_unit_price, 2)}} {{$record->currency_type->symbol}}</p>
                                 <p>
@@ -48,8 +49,9 @@
                                 </p>
                                 <p>{{$record->internal_id}}</p>
                             </td>
-                        @endfor
+                            @endfor
                         </tr>
+                        @endfor
                     </table>
                 </div>
             </div>
