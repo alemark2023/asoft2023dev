@@ -68,7 +68,9 @@ if ($hostname) {
 
             //Configurations
             Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
+            Route::get('configurations/preprinted/addSeeder', 'Tenant\ConfigurationController@addPreprintedSeeder');
             Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
+            Route::get('configurations/preprinted/getFormats', 'Tenant\ConfigurationController@getPreprintedFormats');
             Route::get('configurations/create', 'Tenant\ConfigurationController@create')->name('tenant.configurations.create');
             Route::get('configurations/record', 'Tenant\ConfigurationController@record');
             Route::post('configurations', 'Tenant\ConfigurationController@store');
@@ -79,7 +81,10 @@ if ($hostname) {
             Route::post('configurations/visual_settings', 'Tenant\ConfigurationController@visualSettings')->name('visual-settings');
             Route::get('configurations/pdf_templates', 'Tenant\ConfigurationController@pdfTemplates')->name('tenant.advanced.pdf_templates');
             Route::get('configurations/pdf_guide_templates', 'Tenant\ConfigurationController@pdfGuideTemplates')->name('tenant.advanced.pdf_guide_templates');
+            Route::get('configurations/pdf_preprinted_templates', 'Tenant\ConfigurationController@pdfPreprintedTemplates')->name('tenant.advanced.pdf_preprinted_templates');
             Route::post('configurations/uploads', 'Tenant\ConfigurationController@uploadFile');
+            Route::post('configurations/preprinted/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
+            Route::get('configurations/preprinted/{template}', 'Tenant\ConfigurationController@show');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');

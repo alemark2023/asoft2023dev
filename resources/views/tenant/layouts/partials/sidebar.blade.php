@@ -885,9 +885,16 @@
                                     Plantillas PDF
                                 </a>
                             </li>
+
                             <li class="{{($path[1] === 'pdf_guide_templates') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.advanced.pdf_guide_templates')}}">
                                     Plantillas PDF Guía de remisión
+                                </a>
+                            </li>
+
+                            <li class="{{($path[1] === 'pdf_preprinted_templates') ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.advanced.pdf_preprinted_templates')}}">
+                                    Formatos Pre Impresos
                                 </a>
                             </li>
                             @if($vc_company->soap_type_id != '03')
