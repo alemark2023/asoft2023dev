@@ -60,7 +60,7 @@ class DispatchController extends Controller
 
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
     }
-     
+
 
     public function create($document_id = null, $type = null, $dispatch_id = null)
     {
@@ -87,7 +87,7 @@ class DispatchController extends Controller
 
 
     public function generate($sale_note_id)
-    { 
+    {
 
         $sale_note = SaleNote::findOrFail($sale_note_id);
         $type = null;
@@ -224,7 +224,7 @@ class DispatchController extends Controller
         $series = Series::all();
         $company = Company::select('number')->first();
 
-        return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 
+        return compact('establishments', 'customers', 'series', 'transportModeTypes', 'transferReasonTypes', 'unitTypes',
                         'countries', 'departments', 'provinces', 'districts', 'identityDocumentTypes', 'items','locations', 'company');
     }
 
@@ -252,7 +252,7 @@ class DispatchController extends Controller
         return $this->downloadStorage($retention->filename, $folder);
     }
 
-    
+
     public function record($id)
     {
         $record = new DispatchResource(Dispatch::findOrFail($id));
