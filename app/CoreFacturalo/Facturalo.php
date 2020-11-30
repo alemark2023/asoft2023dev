@@ -289,7 +289,7 @@ class Facturalo
             $pdf_margin_bottom = 5;
             $pdf_margin_left = 5;
         }
-        if ($base_pdf_template === 'blank') {
+        if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
             $pdf_margin_top = 15;
             $pdf_margin_right = 5;
             $pdf_margin_bottom = 15;
@@ -451,7 +451,7 @@ class Facturalo
                 $pdf_margin_top = 93.7;
                 $pdf_margin_bottom = 74;
             }
-            if ($base_pdf_template === 'blank') {
+            if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
                 $pdf_margin_top = 110;
                 $pdf_margin_bottom = 125;
             }
