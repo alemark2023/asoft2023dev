@@ -330,13 +330,16 @@ export default {
   created() {
     this.initForm();
     this.initDocument();
-    this.clickAddPayment()
+    // this.clickAddPayment()
   },
   methods: {
      clickCancel(index) {
                 this.document.payments.splice(index, 1);
       },
     clickAddPayment() {
+
+      let payment = (this.document.payments.length == 0) ? this.form.order_note.total : 0
+
       this.document.payments.push({
         id: null,
         document_id: null,
@@ -344,7 +347,7 @@ export default {
         payment_method_type_id: "01",
         payment_destination_id:null,
         reference: null,
-        payment: 0
+        payment: payment
       });
     },
     initForm() {
@@ -584,6 +587,9 @@ export default {
           let type = this.type == "edit" ? "editado" : "registrado";
           this.titleDialog = `Pedido ${type}: ` + this.form.identifier;
         });
+
+      await this.clickAddPayment()
+      
     },
     changeDocumentType() {
       // this.filterSeries()
