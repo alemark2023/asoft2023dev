@@ -528,12 +528,12 @@ class Facturalo
 //            $pdf->SetHTMLFooter($html_footer);
         }
 
-        if ($base_pdf_template == 'blank' && in_array($this->document->document_type_id, ['09'])) {
+        if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
 
             $html_header = $template->pdfHeader($base_pdf_template, $this->company, $this->document);
             $pdf->SetHTMLHeader($html_header);
 
-            $html_footer_blank = $template->pdfFooterBlank($base_pdf_template, $document);
+            $html_footer_blank = $template->pdfFooterBlank($base_pdf_template, $this->document);
             $pdf->SetHTMLFooter($html_footer_blank);
         }
 

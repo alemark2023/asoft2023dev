@@ -9,7 +9,7 @@
 <table class="full-width">
     <tr>
         <td class="text-bold font-bold">OBSERVACIONES</td>
-        <td class="text-bold font-bold">N° DE BULTOS: {{ $document->packages_number }}</td>
+        <td class="text-bold font-bold">N° DE BULTOS: {{ $document->packages_number == null ? $document->packages_number : '' }}</td>
     </tr>
     <tr colspan="2">
         <td>{{ $document->observations ? $document->observations : '-' }}</td>
