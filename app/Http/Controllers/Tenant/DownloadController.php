@@ -48,11 +48,11 @@ class DownloadController extends Controller
 
         //borrar despues
         // solo desarrollo
-        $this->reloadPDF($document, 'dispatch', 'a4');
-        $temp = tempnam(sys_get_temp_dir(), 'pdf');
-        file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));
+        // $this->reloadPDF($document, 'dispatch', 'a4');
+        // $temp = tempnam(sys_get_temp_dir(), 'pdf');
+        // file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));
 
-        return response()->file($temp);
+        // return response()->file($temp);
         //borrar antes
         return $this->downloadStorage($document->filename, $folder);
     }
