@@ -25,13 +25,13 @@
         <td>{{ $row['customer_identity_document_type_id'] }}</td>
         <td>{{ $row['customer_number'] }}</td>
         <td>{{ $row['customer_name'] }}</td>
-        <td>{{ $row['total_exportation'] }}</td>
+        {{-- <td>{{ $row['total_exportation'] }}</td> --}}
         <td>{{ $row['total_taxed'] }}</td>
-        <td>{{ $row['total_exonerated'] }}</td>
-        <td>{{ $row['total_unaffected'] }}</td>
-        <td>{{ $row['total_isc'] }}</td>
         <td>{{ $row['total_igv'] }}</td>
+        {{-- <td>{{ $row['total_unaffected'] }}</td> --}}
+        {{-- <td>{{ $row['total_isc'] }}</td> --}}
         <td>{{ $row['total_plastic_bag_taxes'] }}</td>
+        <td>{{ $row['total_exonerated'] }}</td>
         <td>{{ $row['total_retention'] }}</td>
         <td>{{ $row['total'] }}</td>
     </tr>
