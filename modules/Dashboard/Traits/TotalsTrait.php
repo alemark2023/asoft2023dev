@@ -112,11 +112,13 @@ trait TotalsTrait
     {
 
         if($date_start && $date_end){
-            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+            $sale_notes = SaleNote::query()->whereStateTypeAccepted()
+                                           ->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
                                            ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
         }else{
-            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+            $sale_notes = SaleNote::query()->whereStateTypeAccepted()
+                                           ->where('establishment_id', $establishment_id)
                                            ->where('changed', false)->get();
         }
 
