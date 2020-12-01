@@ -1,3 +1,50 @@
+## 3.4.3
+
+### docs
+2020-11-17 : docs | composer.lock<br>
+2020-11-05 : docs | changelog<br>
+
+
+### fixed
+2020-11-30 : fixed | i-644 | Se habilita tipo doc 7 al generar boleta mayor 700<br>
+2020-11-30 : fixed | i-631 | Ajuste consulta interna dni<br>
+2020-11-20 : fixed | Se agregan tags xml Signature - error envio guia ose<br>
+2020-11-20 : fixed | i-636 | Ajuste registro cpe generado desde pedido - caja<br>
+2020-11-20 : fixed | i-614 | validacion datos pdf - pagos contratos<br>
+2020-11-18 : fixed | i-515 | Se agrega validacion codigo respuesta sunat - gestiona codigos para mensaje error guia remision<br>
+2020-11-18 : fixed | i-629 | Ajuste error anulacion nota venta - lista precios<br>
+2020-11-17 : fixed | i-443 | Ajuste para visualizar datos de notas en pdf<br>
+2020-11-17 : fixed | i-417 | Se agrega texto para pago anticipado pdf<br>
+2020-11-13 : fixed | i-602 | Ajustes inventario<br>
+2020-11-12 : fixed | i-602 | Ajuste inventario anulacion cpe a partir de nv<br>
+2020-11-12 : fixed | i-563 | Se realizaron ajustes n venta -guia y agrego funcionalidad generar guia desde n venta<br>
+2020-11-11 : fixed | i-532 | Se agrega descripcion pack nv, cot, guia<br>
+2020-11-10 : fixed | i-532 | Se agrega nueva plantilla - modifica cantidad caracteres descripcion cotizacion - formato pdf conjuntos/packs<br>
+
+
+### feature
+2020-12-01 : feature | i-630 | direccion completa en template blank (guias)<br>
+2020-11-30 : feature | i-628 | Se agrega columna f. venc productos - formato internal code<br>
+2020-11-30 : feature | se agrega monto por defecto al generar cpe desde pedido<br>
+2020-11-30 : feature | i-630 | template blank distpach<br>
+2020-11-27 :  feature | i_610 | etiquetas de productos igual a stock<br>
+2020-11-27 : feature | i-619 | Diseño factura<br>
+2020-11-27 : feature | i-648 | plantilla guia de remision<br>
+2020-11-20 : feature | i-627 | mostrar/ocultar columnas productos - l. precios config decimales - ajustes visualizacion<br>
+2020-11-19 : feature | i-250 | Se agrega devoluciones de productos - modulo inventario<br>
+2020-11-19 : feature | i-622 | Agrega funcionalidad para editar cantidad - cantidad por precio pos<br>
+2020-11-18 : feature | i618 | precio de compra<br>
+2020-11-18 : feature | i-534 | Se agrega detalle pack/conjuntos pdf<br>
+2020-11-17 : feature | i-579 | tenant/pos/index<br>
+2020-11-13 : feature | i-443 | Se agrega nuevo formato factura - guia - autocompleta datos para crear guia<br>
+2020-11-12 : feature | i-490 | Nuevo Formato Guía de Remisión<br>
+2020-11-12 : feature | i-417 | Se agrega item infaecto para anticipos<br>
+2020-11-11 : feature | i-599 | ACTUALIZACION API<br>
+2020-11-10 : feature | template pdf - trade_name<br>
+2020-11-06 : feature | i-524 | Se agregan validaciones en form retenciones - validacion codigo respuesta - gestion de cdr<br>
+2020-11-05 : feature | i-566 | Se agrega funcionalidad regularizar documentos en validador<br>
+
+
 ## 3.4.2
 
 ### docs
