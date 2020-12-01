@@ -126,6 +126,7 @@ class DocumentInput
             'payments' => Functions::valueKeyInArray($inputs, 'payments', []),
             'send_server' => false,
             'payment_method_type_id' => Functions::valueKeyInArray($inputs, 'payment_method_type_id'),
+            'reference_data' => Functions::valueKeyInArray($inputs, 'reference_data'),
         ];
     }
 

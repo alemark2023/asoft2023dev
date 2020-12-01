@@ -91,6 +91,12 @@
         <td colspan="3">{{ $document->observation }}</td>
     </tr>
     @endif
+    @if ($document->reference_data)
+        <tr> 
+            <td class="align-top">D. Referencia:</td>
+            <td colspan="3">{{ $document->reference_data }}</td>
+        </tr>
+    @endif
 </table>
 
 @if ($document->guides)

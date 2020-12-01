@@ -118,6 +118,17 @@
         </tr>
     @endif
 
+    @if ($document->reference_data)
+        <tr>
+            <td class="align-top"><p class="desc-9">D. Referencia:</p></td>
+            <td>
+                <p class="desc-9">
+                    {{ $document->reference_data }} 
+                </p>
+            </td>
+        </tr>
+    @endif
+
     
     @if ($document->detraction)
         <tr>

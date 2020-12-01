@@ -28,6 +28,6 @@ class TenantCreatePreprintedFormatTemplatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('devolution_items');
+        Schema::dropIfExists('preprinted_format_templates');
     }
 }
