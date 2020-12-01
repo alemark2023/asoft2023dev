@@ -63,7 +63,8 @@ class SaleNote extends ModelTenant
         'payment_method_type_id',
         'license_plate',
         'observation',
-        'plate_number'
+        'reference_data',
+        'plate_number',
     ];
 
     protected $casts = [

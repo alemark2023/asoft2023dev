@@ -85,6 +85,7 @@ class Document extends ModelTenant
         'regularize_shipping',
         'response_regularize_shipping',
         'seller_id',
+        'reference_data',
 
     ];
 

@@ -1423,7 +1423,8 @@ export default {
                 additional_information: null,
                 actions: {
                     format_pdf: "a4"
-                }
+                },
+                reference_data: null
             };
 
             this.initFormItem();

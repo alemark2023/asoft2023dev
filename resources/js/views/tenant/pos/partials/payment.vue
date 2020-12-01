@@ -165,6 +165,23 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-lg-8">
+                    <div class="card card-default">
+                        <div class="card-body text-center">
+                            <div class="row col-lg-12">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Datos de referencia</label>
+                                        <el-input type="textarea" v-model="form.reference_data"></el-input>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
                 <div class="col-lg-8">
                     <div class="card card-default">
                         <div class="card-body">

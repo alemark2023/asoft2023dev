@@ -153,6 +153,15 @@
         @endif
     </tr>
     @endif
+    
+    @if ($document->reference_data)
+        <tr> 
+            <td width="120px">D. REFERENCIA</td>
+            <td width="8px">:</td>
+            <td>{{ $document->reference_data}}</td>
+        </tr>
+    @endif
+
     @if ($document->detraction)
         @if($document->detraction->pay_constancy)
         <tr>
