@@ -54,13 +54,19 @@
         <td width="10%">
             <br><br><br><br>
         </td>
-        <td width="40%" class="align-top">
-            {{ $document->origin->location_id }} - {{ $document->origin->address }}
+        <td width="40%" class="align-top" style="text-transform: uppercase;">
+            @php
+                $district = \App\Models\Tenant\Catalogs\District::find($document->origin->location_id);
+            @endphp
+            {{ $document->origin->location_id }} - {{ $document->origin->address }}. {{ $district->description }}, {{ $district->province->description }} {{ $district->province->department->description }}
         </td>
         <td width="10%">
         </td>
-        <td width="40%" class="align-top">
-            {{ $document->delivery->location_id }} - {{ $document->delivery->address }}
+        <td width="40%" class="align-top" style="text-transform: uppercase;">
+            @php
+                $district = \App\Models\Tenant\Catalogs\District::find($document->delivery->location_id);
+            @endphp
+            {{ $document->delivery->location_id }} - {{ $document->delivery->address }}. {{ $district->description }}, {{ $district->province->description }} {{ $district->province->department->description }}
         </td>
     </tr>
 </table>
