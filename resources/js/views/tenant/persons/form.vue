@@ -416,6 +416,8 @@
                 });
             },
             validateDigits(){
+
+                const pattern_number = new RegExp('^[0-9]+$', 'i');
                 
                 if (this.form.identity_document_type_id === '6') {
                     
@@ -425,7 +427,16 @@
                             message: `El campo número debe tener 11 dígitos.`
                         }
                     }
+
+                    if(!pattern_number.test(this.form.number)){
+                        return {
+                            success: false,
+                            message: `El campo número debe contener solo números`
+                        }
+                    } 
+
                 }
+
 
                 if (this.form.identity_document_type_id === '1') {
 
@@ -435,7 +446,29 @@
                             message: `El campo número debe tener 8 dígitos.`
                         }
                     }
+                    
+                    if(!pattern_number.test(this.form.number)){
+                        return {
+                            success: false,
+                            message: `El campo número debe contener solo números`
+                        }
+                    } 
                 }
+
+
+                if(['4', '7', '0'].includes(this.form.identity_document_type_id)){
+                    
+                    const pattern = new RegExp('^[A-Z0-9\-]+$', 'i');
+
+                    if(!pattern.test(this.form.number)){
+                        return {
+                            success: false,
+                            message: `El campo número no cumple con el formato establecido`
+                        }
+                    }
+
+                }
+
 
                 return {
                     success: true
