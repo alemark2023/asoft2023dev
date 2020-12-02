@@ -289,15 +289,33 @@
                 }).then(() => {
                     this.$http.delete(`/${this.resource}/destroy_order_note_item/${id}`)
                         .then(res => {
+
                             if(res.data.success) {
+
                                 this.$message.success(res.data.message)
                                 this.clickRemoveItem(index)
                                 this.$eventHub.$emit('reloadDataItems', null)
-                                this.isUpdate() 
+
+                                this.$http.post(`/${this.resource}/update`, this.form).then(response => {
+                                    if (response.data.success) {                                
+                                        this.isUpdate() 
+                                    }
+                                    else {
+                                        this.$message.error(response.data.message);
+                                    }
+                                }).catch(error => {
+                                    if (error.response.status === 422) {
+                                        this.errors = error.response.data;
+                                    }
+                                    else {
+                                        this.$message.error(error.response.data.message);
+                                    }
+                                })
 
                             }else{
                                 this.$message.error(res.data.message)
                             }
+
                         })
                         .catch(error => {
                             if (error.response.status === 500) {
