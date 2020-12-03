@@ -82,10 +82,13 @@ class DashboardData
         if($date_start && $date_end){
             $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
+                                           ->whereStateTypeAccepted()
                                            ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
         }else{
             $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
-                                           ->where('changed', false)->get();
+                                           ->where('changed', false)
+                                           ->whereStateTypeAccepted()
+                                           ->get();
         }
 
         //PEN
@@ -245,13 +248,17 @@ class DashboardData
         if($date_start && $date_end){
             $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
-                                           ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+                                           ->whereBetween('date_of_issue', [$date_start, $date_end])
+                                           ->whereStateTypeAccepted()
+                                           ->get();
 
             $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
 
         }else{
             $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
-                                           ->where('changed', false)->get();
+                                           ->where('changed', false)
+                                           ->whereStateTypeAccepted()
+                                           ->get();
 
             $documents = Document::query()->where('establishment_id', $establishment_id)->get();
         }
