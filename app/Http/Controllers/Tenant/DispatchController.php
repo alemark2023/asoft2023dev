@@ -100,19 +100,34 @@ class DispatchController extends Controller
 
 
     public function store(DispatchRequest $request) {
-        $fact = DB::connection('tenant')->transaction(function () use($request) {
-            $facturalo = new Facturalo();
-            $facturalo->save($request->all());
-            $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
-            $facturalo->createPdf();
-            $facturalo->senderXmlSignedBill();
 
-            return $facturalo;
-        });
+        if ($request->series[0] == 'T') {
+            $fact = DB::connection('tenant')->transaction(function () use($request) {
+                $facturalo = new Facturalo();
+                $facturalo->save($request->all());
+                $facturalo->createXmlUnsigned();
+                $facturalo->signXmlUnsigned();
+                $facturalo->createPdf();
+                $facturalo->senderXmlSignedBill();
 
-        $document = $fact->getDocument();
-        $response = $fact->getResponse();
+                return $facturalo;
+            });
+
+            $document = $fact->getDocument();
+            $response = $fact->getResponse();
+        } else {
+            $fact = DB::connection('tenant')->transaction(function () use($request) {
+                $facturalo = new Facturalo();
+                $facturalo->save($request->all());
+                $facturalo->createPdf();
+
+                return $facturalo;
+            });
+
+            $document = $fact->getDocument();
+            // $response = $fact->getResponse();
+        }
+
 
         return [
             'success' => true,
