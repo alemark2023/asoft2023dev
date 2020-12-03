@@ -43,7 +43,7 @@
 <table class="p-0">
     <tr>
         <td>
-            <p>Fecha de emision:</p>
+            <p>Fecha de emisión:</p>
             <p>{{ $document->date_of_issue->format('Y-m-d') }}</p>
         </td>
     </tr>
@@ -58,7 +58,7 @@
             @php
                 $district = \App\Models\Tenant\Catalogs\District::find($document->origin->location_id);
             @endphp
-            {{ $document->origin->location_id }} - {{ $document->origin->address }}. {{ $district->description }}, {{ $district->province->description }} {{ $district->province->department->description }}
+            {{ $document->origin->location_id }} - {{ $document->origin->address }}. {{ $district->description }}, {{ $district->province->description }}, {{ $district->province->department->description }}.
         </td>
         <td width="10%">
         </td>
@@ -66,7 +66,7 @@
             @php
                 $district = \App\Models\Tenant\Catalogs\District::find($document->delivery->location_id);
             @endphp
-            {{ $document->delivery->location_id }} - {{ $document->delivery->address }}. {{ $district->description }}, {{ $district->province->description }} {{ $district->province->department->description }}
+            {{ $document->delivery->location_id }} - {{ $document->delivery->address }}. {{ $district->description }}, {{ $district->province->description }}, {{ $district->province->department->description }}.
         </td>
     </tr>
 </table>
