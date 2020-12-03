@@ -131,26 +131,33 @@
                         </div>
                     </div> -->
 
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-4 col-sm-4">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
 
                             <label class="control-label">Cantidad</label>
                             <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" >
-                                <el-button slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
-                                <el-button slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
+                                <el-button style="padding-right: 5px ;padding-left: 12px" slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
+                                <el-button style="padding-right: 5px ;padding-left: 12px" slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.quantity" v-text="errors.quantity[0]"></small>
 
                         </div>
                     </div>
 
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-4 col-sm-4">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="typeUser === ''">
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Total</label>
+                            <el-input v-model="readonly_total" @input="calculateTotal" readonly></el-input>
                         </div>
                     </div>
 
@@ -551,7 +558,7 @@
     import VueCkeditor from 'vue-ckeditor5'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser', 
+        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser',
                 'isEditItemNote', 'configuration', 'documentTypeId', 'noteCreditOrDebitTypeId'],
         components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm, 'vue-ckeditor': VueCkeditor.component},
         data() {
@@ -590,7 +597,8 @@
                 editors: {
                   classic: ClassicEditor
                 },
-                value1: 'hello'
+                value1: 'hello',
+                readonly_total: 0
                 //item_unit_type: {}
             }
         },
@@ -655,9 +663,12 @@
                     return
                 }
 
+                this.calculateTotal()
+
             },
             clickIncrease(){
                 this.form.quantity = parseInt(this.form.quantity + 1)
+                this.calculateTotal()
             },
             async searchRemoteItems(input) {
                 // console.log(input)
@@ -811,29 +822,29 @@
                 if(this.form.document_item_id && this.form.item.lots.length > 0){
 
                     await this.$http.get(`/${this.resource}/regularize-lots/${this.form.document_item_id}`).then((response) => {
-    
+
                                         let all_lots = this.form.item.lots
                                         let available_lots = response.data
-                                        
+
                                         all_lots.forEach((lot, index)  => {
-    
+
                                             let exist_lot = _.find(available_lots, (it) =>{
                                                 return it.id == lot.id
                                             })
-    
+
                                             if(!exist_lot){
                                                 this.form.item.lots.splice(index, 1)
-                                            } 
-                                        
+                                            }
+
                                         })
-    
+
                                         // console.log(response)
                                     })
                                     .catch(error => {
                                     })
                                     .then(() => {
                                     })
-                                    
+
                 }
 
             },
@@ -961,6 +972,10 @@
                     //console.log('entro')
                     this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
                 }
+                this.calculateTotal()
+            },
+            calculateTotal() {
+                this.readonly_total = _.round((this.form.quantity * this.form.unit_price_value), 4)
             },
             cleanTotalItem(){
                 this.total_item = null
