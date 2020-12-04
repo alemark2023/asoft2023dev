@@ -28,15 +28,16 @@
 
 <body>
 <br>
-<table class="full-width mt-1 pb-0">
+<table class="full-width pb-0">
     <tr>
         <td width="60%" class=""></td>
-        <td width="40%" class="px-4 pt-5 pb-0 text-center">
+        <td width="40%" class="px-4 pb-0 text-center" style="padding-top: 30px;">
             <br>
             <br>
             <br>
             <br>
-            <p class="text-center">{{ $document_number }}</p>
+            <br>
+            <div class="text-center">{{ $document_number }}</div>
         </td>
     </tr>
 </table>
@@ -54,7 +55,7 @@
         <td width="10%">
             <br><br><br><br>
         </td>
-        <td width="40%" class="align-top" style="text-transform: uppercase;">
+        <td width="40%" class="align-top" style="text-transform: uppercase; line-height: 20px;">
             @php
                 $district = \App\Models\Tenant\Catalogs\District::find($document->origin->location_id);
             @endphp
@@ -62,7 +63,7 @@
         </td>
         <td width="10%">
         </td>
-        <td width="40%" class="align-top" style="text-transform: uppercase;">
+        <td width="40%" class="align-top" style="text-transform: uppercase; line-height: 20px;">
             @php
                 $district = \App\Models\Tenant\Catalogs\District::find($document->delivery->location_id);
             @endphp
@@ -75,10 +76,10 @@
         <td width="15%">
             <br><br>
         </td>
-        <td width="40%" class="align-top">
+        <td width="40%" class="align-top pt-3">
             {{ $document->date_of_shipping->format('Y-m-d') }}
         </td>
-        <td width="35%" colspan="2" class="align-top">
+        <td width="35%" colspan="2" class="align-top pt-2">
             <br>
             <p>{{ $customer->name }}</p>
         </td>

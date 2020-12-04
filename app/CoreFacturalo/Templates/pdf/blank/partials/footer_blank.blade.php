@@ -6,13 +6,13 @@
 </head>
 <body>
 
-<table class="full-width">
+<table class="full-width pt-5">
     <tr>
         <td class="text-bold font-bold">OBSERVACIONES</td>
         <td class="text-bold font-bold">N° DE BULTOS: {{ $document->packages_number != null ? $document->packages_number : '' }}</td>
     </tr>
     <tr colspan="2">
-        <td>{{ $document->observations ? $document->observations : '-' }}</td>
+        <td style="line-height: 20px;">{{ $document->observations ? $document->observations : '-' }}</td>
     </tr>
 </table>
 <table class="full-width">
@@ -25,7 +25,7 @@
                 @endif
             @endif
         </td>
-        <td class="text-bold font-bold">
+        <td class="text-bold font-bold" style="line-height: 20px;">
             PESO BRUTO TOTAL ({{ $document->unit_type_id }}):{{ $document->total_weight }}
         </td>
     </tr>
