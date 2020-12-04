@@ -135,7 +135,7 @@
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
 
                             <label class="control-label">Cantidad</label>
-                            <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" >
+                            <el-input v-model="form.quantity" :disabled="form.item.calculate_quantity" @blur="validateQuantity" @input.native="changeValidateQuantity">
                                 <el-button style="padding-right: 5px ;padding-left: 12px" slot="prepend" icon="el-icon-minus" @click="clickDecrease" :disabled="form.quantity < 0.01 || form.item.calculate_quantity"></el-button>
                                 <el-button style="padding-right: 5px ;padding-left: 12px" slot="append" icon="el-icon-plus" @click="clickIncrease"  :disabled="form.item.calculate_quantity"></el-button>
                             </el-input>
@@ -646,7 +646,12 @@
                 if(this.form.quantity <= this.getMinQuantity()){
                     this.setMinQuantity()
                 }
+
+                this.calculateTotal()
                 // console.log(isNaN(Number(this.form.quantity)))
+            },
+            changeValidateQuantity(event) {
+                this.calculateTotal()
             },
             getMinQuantity(){
                 return 0.01
