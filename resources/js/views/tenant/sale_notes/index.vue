@@ -144,8 +144,15 @@
                             <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)" v-if="row.btn_generate && row.state_type_id != '11'">Editar</button> -->
 
-                            <button data-toggle="tooltip" data-placement="top" title="Editar" type="button" class="btn waves-effect waves-light btn-xs btn-primary"
-                                    @click.prevent="clickCreate(row.id)" v-if="row.btn_generate && row.state_type_id != '11'"><i class="fas fa-file-signature"></i></button>
+                            <button data-toggle="tooltip"
+                                    data-placement="top"
+                                    title="Editar"
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    @click.prevent="clickCreate(row.id)"
+                                    v-if="row.btn_generate && row.state_type_id != '11' && typeUser != 'seller'">
+                                        <i class="fas fa-file-signature"></i>
+                            </button>
 
                             <button data-toggle="tooltip"
                                     data-placement="top"
@@ -207,7 +214,7 @@
     import {deletable} from '../../../mixins/deletable'
 
     export default {
-        props: ['soapCompany'],
+        props: ['soapCompany','typeUser'],
         mixins: [deletable],
         components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate},
         data() {
