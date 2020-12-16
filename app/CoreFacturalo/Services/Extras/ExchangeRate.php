@@ -21,53 +21,46 @@ class ExchangeRate
 
     private function search($month, $year)
     {
-        // $client = new  Client(['base_uri' => 'http://www.sunat.gob.pe/cl-at-ittipcam/', 'verify' => false]);
-        // try {
-        //     $response = $client->request('GET', "tcS01Alias?mes={$month}&anho={$year}", ['http_errors' => true, 'timeout' => 4]);
-        // } catch (ClientException $e) {
-        //     dd($e);
-        //     return $e->getResponse();
-
-        // } catch (RequestException $e) {
-        //     dd($e);
-        //     return $e->getResponse();
-
-        // }
 
         try {
 
-            // $url = "http://www.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
-            $url = "https://e-consulta.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
+            // $url = "https://e-consulta.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
+            $url = 'http://www.sunat.gob.pe/a/txt/tipoCambio.txt';
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL,$url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             $response = curl_exec ($ch);
             curl_close ($ch);
-            // dd($response);
 
-            //dd($response->getStatusCode());
-            // if ($response->getStatusCode() == 200 && $response != "") {
             if ($response != "") {
-                // $html = $response->getBody()->getContents();
                 $html = $response;
-                $xp = new DiDom($html);
-                $sub_headings = $xp->find('form table');
-                $trs = $sub_headings[1]->find('tr');
-                $values = [];
 
-                for($i = 1; $i < count($trs); $i++)
-                {
-                    $tr = $trs[$i];
-                    $tds = $tr->find('td');
+                $values[] = [
+                    (int)substr($html,0,2),
+                    substr($html,11,5),
+                    substr($html,17,5)
+                ];
+                return collect($values)->toArray();
 
-                    foreach($tds as $td)
-                    {
-                        $values[] = trim(preg_replace("/[\t|\n|\r]+/", '', $td->text()));
-                    }
-                }
 
-                return collect($values)->chunk(3)->toArray();
+                // $xp = new DiDom($html);
+                // $sub_headings = $xp->find('form table');
+                // $trs = $sub_headings[1]->find('tr');
+                // $values = [];
+
+                // for($i = 1; $i < count($trs); $i++)
+                // {
+                //     $tr = $trs[$i];
+                //     $tds = $tr->find('td');
+
+                //     foreach($tds as $td)
+                //     {
+                //         $values[] = trim(preg_replace("/[\t|\n|\r]+/", '', $td->text()));
+                //     }
+                // }
+
+                // return collect($values)->chunk(3)->toArray();
             }
 
         } catch (Exception $e) {
@@ -95,6 +88,7 @@ class ExchangeRate
         $res = $this->searchByDay($date);
         $date = $date->addDay(-1);
 
+        // porque se repite tanto?
         if(!$res){
             $res = $this->searchByDay($date);
             $date = $date->addDay(-1);
