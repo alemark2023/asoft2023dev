@@ -36,10 +36,12 @@ class ExchangeRate
             if ($response != "") {
                 $html = $response;
 
+                $explode = explode('|', $html);
+
                 $values[] = [
                     (int)substr($html,0,2),
-                    substr($html,11,5),
-                    substr($html,17,5)
+                    $explode[1],
+                    $explode[2]
                 ];
                 return collect($values)->toArray();
 
