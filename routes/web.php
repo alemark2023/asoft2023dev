@@ -402,6 +402,10 @@ if ($hostname) {
             Route::get('quotations/record2/{quotation}', 'Tenant\QuotationController@record2');
             Route::get('quotations/changed/{quotation}', 'Tenant\QuotationController@changed');
 
+            Route::get('quotations/search-items', 'Tenant\QuotationController@searchItems');
+            Route::get('quotations/search/item/{item}', 'Tenant\QuotationController@searchItemById');
+
+
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');
             Route::get('sale-notes/columns', 'Tenant\SaleNoteController@columns');
