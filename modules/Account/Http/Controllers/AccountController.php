@@ -102,6 +102,7 @@ class AccountController extends Controller
                 'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
                 'document_type_id' => $row->document_type_id,
+                'state_type_id' => $row->state_type_id,
                 'series' => $row->series,
                 'number' => str_pad($row->number, 7, '0', STR_PAD_LEFT),
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
