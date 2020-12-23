@@ -863,6 +863,7 @@
             :showDialog.sync="showWarehousesDetail"
             :warehouses="warehousesDetail"
             :unit_type="unittypeDetail"
+            :item_unit_types="[]"
         >
         </warehouses-detail>
     </div>
