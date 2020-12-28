@@ -1,6 +1,3 @@
-@php
-    // dd($records);
-@endphp
 
 <table>
     <thead>
@@ -60,7 +57,7 @@
             <td>Debe existir en el Plan de Cuentas</td>
             <td>Si Cuenta Contable tiene seleccionado Tipo de Anexo, debe existir en la tabla de Anexos</td>
             <td>Si Cuenta Contable tiene habilitado C. Costo, Ver T.G. 05</td>
-            <td> 'D' ó 'H'</td>
+            <td>'D' ó 'H'</td>
             <td>Importe original de la cuenta contable. Obligatorio, debe estar entre >=0 y <=99999999999.99</td>
             <td>Importe de la Cuenta Contable en Dólares. Obligatorio si Flag de Conversión de Moneda esta en 'N', debe estar entre >=0 y <=99999999999.99</td>
             <td>Importe de la Cuenta Contable en Soles. Obligatorio si Flag de Conversión de Moneda esta en 'N', debe estra entre >=0 y <=99999999999.99</td>
@@ -88,7 +85,6 @@
             <td>Especificar solo si Tipo Conversión es 'F'. Se permite 'M' Compra y 'V' Venta.</td>
             <td>Especificar solo para comprobantes de compras con IGV sin derecho de crédito Fiscal. Se detalle solo en la cuenta 42xxxx</td>
         </tr>
-
 
         <tr>
             <td>Tamaño/Formato</td>
@@ -122,7 +118,7 @@
             <td>20 Caracteres</td>
             <td>Numérico 14,2</td>
             <td>Numérico 14,2</td>
-            <td> 'MQ'</td>
+            <td>'MQ'</td>
             <td>15 caracteres</td>
             <td>dd/mm/aaaa</td>
             <td>5 Caracteres</td>
@@ -133,15 +129,14 @@
             <td>Numérico 14,2</td>
         </tr>
     </thead>
-</table>
 
-{{-- <table>
-    @foreach($records as $row)
+    <tbody> 
+        @foreach($records as $row)
         <tr>
-            @for($i = 65; $i <= 87; $i++)
-            @php($col = 'col_'.chr($i))
-            <td>{{ $row[$col] }}</td>
-            @endfor
+            @foreach ($row as $item)
+                <td>{{ $item }}</td>
+            @endforeach
         </tr>
-    @endforeach
-</table> --}}
+        @endforeach
+    </tbody>
+</table>
