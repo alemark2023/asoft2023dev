@@ -2,7 +2,6 @@
 <table>
     <thead>
         <tr>
-            <td>Campo</td>
             <td>Sub Diario</td>
             <td>Número de Comprobante</td>
             <td>Fecha de Comprobante</td>
@@ -43,7 +42,7 @@
             <td>Tipo Cambio para 'F'</td>
             <td>Importe de IGV sin derecho crédito fiscal</td> 
         </tr>
-        <tr>
+        {{-- <tr>
             <td>Restricciones</td>
             <td>Ver T.G. 02</td>
             <td>Los dos primeros dígitos son el mes y los otros 4 siguientes un correlativo</td>
@@ -127,7 +126,7 @@
             <td>Numérico 14,2</td>
             <td>1 Caracter</td>
             <td>Numérico 14,2</td>
-        </tr>
+        </tr> --}}
     </thead>
 
     <tbody> 
