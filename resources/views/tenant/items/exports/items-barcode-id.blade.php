@@ -35,7 +35,7 @@
                                 return $return;
                             }
                         @endphp
-                        @for($i=0; $i < $record->stock; $i+=3)
+                        @for($i=0; $i < $stock; $i+=3)
                         <tr>
                             @for($j=0; $j < 3; $j++)
                             <td class="celda" width="33%" style="text-align: center; padding-top: 10px; padding-bottom: 10px; font-size: 9px; vertical-align: top;">
