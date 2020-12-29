@@ -905,6 +905,12 @@ export default {
       this.loadDataUtilities();
       //this.loadCustomer();
       this.loadCompany();
+      this.changeStock()
+    },
+    changeStock(){
+
+        this.$eventHub.$emit('changeStock', this.form.establishment_id)
+
     },
     loadCompany() {
       this.$http.get(`/companies/record`).then(response => {

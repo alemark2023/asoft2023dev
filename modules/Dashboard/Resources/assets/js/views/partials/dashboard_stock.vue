@@ -8,7 +8,7 @@
 
             <div v-show="!loader">
                 <h2 class="card-title">Productos por agotarse
-                    <el-tooltip class="item" effect="dark" content="No aplica filtros" placement="top-start">
+                    <el-tooltip class="item" effect="dark" content="Aplica filtro por establecimiento" placement="top-start">
                         <i class="fa fa-info-circle"></i>
                     </el-tooltip>
                 </h2>
@@ -61,7 +61,7 @@
         }, 
         mounted(){
             this.events()
-
+ 
         },
         created() { 
         }, 
@@ -70,10 +70,15 @@
                 this.$eventHub.$on('recordsSkeletonLoader', (status) => {
                     this.loader = status                
                 }) 
+ 
+                this.$eventHub.$on('changeStock', (establishment_id) => {
+                    this.$eventHub.$emit('reloadSimpleDataTable', establishment_id)
+                    // console.log(establishment_id)         
+                }) 
             },
             clickProvision(){
                 window.open('/purchases/create')
-            }
+            },
         }
     }
 </script>
