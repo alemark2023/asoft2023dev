@@ -34,13 +34,18 @@
             return { 
                 columns: [],
                 records: [],
-                pagination: {}
+                pagination: {},
+                form: {}
             }
         },
         computed: {
         },
         created() {
-            this.$eventHub.$on('reloadSimpleDataTable', () => {
+
+            this.initForm()
+
+            this.$eventHub.$on('reloadSimpleDataTable', (establishment_id) => {
+                this.form.establishment_id = establishment_id
                 this.getRecords()                
             }) 
         },
@@ -49,21 +54,31 @@
 
         },
         methods: {
+            initForm(){
+                this.form = {
+                    establishment_id: null
+                }
+            },
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },
             getRecords() {
-                return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                    this.records = response.data.data
-                    this.pagination = response.data.meta
-                    this.pagination.per_page = parseInt(response.data.meta.per_page)
-                    this.$eventHub.$emit('recordsSkeletonLoader', false)
-                });
+
+                if(this.form.establishment_id){
+                    return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
+                        this.records = response.data.data
+                        this.pagination = response.data.meta
+                        this.pagination.per_page = parseInt(response.data.meta.per_page)
+                        this.$eventHub.$emit('recordsSkeletonLoader', false)
+                    });
+                    
+                }
             },
             getQueryParameters() {
                 return queryString.stringify({
                     page: this.pagination.current_page,
-                    limit: this.limit
+                    limit: this.limit,
+                    ...this.form
                 })
             } 
         }
