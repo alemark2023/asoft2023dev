@@ -28,13 +28,25 @@
 <table class="full-width">
     <thead>
         <tr>
-            <th class="text-left">DATOS DEL TRASLADO</th>
+            <th class="text-left" ></th>
+        </tr>
+        <tr>
+            <th class="text-left" ></th>
+        </tr>
+        <tr>
+            <th class="text-left" style="text-decoration: underline;">DATOS DEL TRASLADO</th>
+        </tr>
+        <tr>
+            <th class="text-left" ></th>
+        </tr>
+        <tr>
+            <th class="text-left" ></th>
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Fecha de emisión: {{ $document->date_of_issue->format('Y-m-d') }}</td>
-            <td>Fecha de traslado: {{ $document->date_of_shipping->format('Y-m-d') }}</td>
+        <tr class=" mt-10">
+            <td>Fecha de emisión: {{ $document->date_of_issue->format('d/m/Y') }}</td>
+            <td>Fecha de traslado: {{ $document->date_of_shipping->format('d/m/Y') }}</td>
         </tr>
         <tr>
             <td>Motivo de traslado: {{ $document->transfer_reason_type->description }}</td>
@@ -42,14 +54,30 @@
         </tr>
         <tr>
             <td>Peso Bruto Total de la Guía: ({{ $document->unit_type_id }}) {{ $document->total_weight }} </td>
-            <td>Documento: {{ $document_number }}</td>
+            <td>Documento: 
+                @if ($document->reference_document)
+                    {{$document->reference_document->document_type->description}} {{ $document->reference_document->number_full }}
+                @endif
+            </td>
         </tr>
     </tbody>
 </table>
 <table class="full-width">
     <thead>
         <tr>
-            <th class="text-left">DATOS DEL DESTINATARIO</th>
+            <th class="text-left" ></th>
+        </tr>
+        <tr>
+            <th class="text-left" ></th>
+        </tr>
+        <tr>
+            <th class="text-left" style="text-decoration: underline;">DATOS DEL DESTINATARIO</th>
+        </tr>
+        <tr>
+            <th class="text-left" ></th>
+        </tr>
+        <tr>
+            <th class="text-left" ></th>
         </tr>
     </thead>
     <tbody>
@@ -58,6 +86,18 @@
         </tr>
         <tr>
             <td>R.U.C. / DNI: {{ $customer->number }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
         </tr>
         <tr>
             <td>Punto de partida: </td>
@@ -72,24 +112,23 @@
 <table class="full-width mt-10">
     <thead>
         <tr>
-            <th class="text-left">DATOS DEL TRANSPORTE</th>
-            <th class="text-left">DATOS DEL CONDUCTOR</th>
-            <th class="text-left">DATOS DEL TRANSPORTISTA</th>
+            <th class="text-left"  style="text-decoration: underline;">DATOS DEL TRANSPORTE</th>
+            <th class="text-left"  style="text-decoration: underline;">DATOS DEL CONDUCTOR</th>
+            <th class="text-left" style="text-decoration: underline;">DATOS DEL TRANSPORTISTA</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td class="border-box">Placa: {{ $document->license_plate }}</td>
-            @if($document->driver->license)
+            {{-- @if($document->driver->license) --}}
             <td class="border-box">Licencia: {{ $document->driver->license }}</td>
-            @else
-            <td class="border-box"></td>
-             @endif
-            <td class="border-box">Empresa: </td>
+            {{-- @else --}}
+             {{-- @endif --}}
+            <td class="border-box">Empresa: {{ $document->dispatcher->name }}</td>
         </tr>
         <tr>
-            <td class="border-box"></td>
-            <td class="border-box">Conductor: {{ $document->driver->number }}</td>
+            <td class="border-box">Marca:</td>
+            <td class="border-box">Conductor: {{ $document_type_driver->description }} {{ $document->driver->number }}</td>
             <td class="border-box">{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
         </tr>
     </tbody>
@@ -106,6 +145,9 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        @php
+            $total_weight_line = 0;
+        @endphp
         <tr>
             <td class="text-center">{{ $row->item->internal_id }}</td>
             <td class="text-left">{{ $row->item->description }}</td>
@@ -117,7 +159,20 @@
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center">0.000</td>
+            @if($row->relation_item->attributes)
+                @foreach($row->relation_item->attributes as $attr)
+                    @if($attr->attribute_type_id === '5032')
+                    @php
+                        $total_weight_line += $attr->value * $row->quantity;  
+                    @endphp
+                    @endif
+                @endforeach
+            @endif
+            <td class="text-center">{{$total_weight_line}}</td>
+        </tr>
+        <tr>
+            <td class="text-center"></td>
+            <td class="text-left" colspan="4">{{ $row->relation_item->name }}</td> 
         </tr>
     @endforeach
     </tbody>
@@ -127,13 +182,42 @@
         <td width="60%">
             <h5 class="font-bold">OBSERVACION</h5>
             <h5>{{ $document->observations }}</h5>
-            <h5 class="text-center">________________________________________________________</h5>
+            <h5 class="text-center">_________________________________________________________________________________________</h5>
         </td>
-        <td width="40%" class="border-box p-4 text-center">
+        <td width="40%" class="border-box p-4 text-center" rowspan="2">
             <h4 class="text-center">___________________________________</h4>
             <h4>___________________________________</h4>
             <h5 class="text-center">CONFORMIDAD DEL CLIENTE</h5>
             <h5>DNI ______________________________________</h5>
+        </td>
+    </tr>
+    <tr>
+        <td width="60%">
+            <h5>El documento electrónico ha sido aceptado</h5>
+            <h5></h5>
+            <h5 class="text-center">_________________________________________________________________________________________</h5>
+        </td>
+    </tr>
+    <tr>
+        <td width="60%">
+            <h5>Representación impresa de la Guía de Remisión Electrónica Remitente</h5>
+            <h5></h5>
+            <h5 class="text-center">_________________________________________________________________________________________</h5>
+        </td>
+    </tr>
+</table>
+<table class="full-width mt-10 mb-10">
+    <tr>
+        <td width="30%">
+            Usuario: {{ $document->user->name }}
+        </td>
+        <td width="20%">
+            Fecha: {{ date('d-m-Y')}}
+        </td>
+        <td width="20%">
+            Hora: {{ date('H:i:s')}}
+        </td>
+        <td width="30%">
         </td>
     </tr>
 </table>
