@@ -544,12 +544,31 @@ class ItemController extends Controller
 
     public function export(Request $request)
     {
-        $date = $request->month_start.'-01';
-        $start_date = Carbon::parse($date);
-        $end_date = Carbon::parse($date)->addMonth()->subDay();
-        // dd($start_date.' - '.$end_date);
 
-        $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
+        // dd($request->all());
+        $d_start = null;
+        $d_end = null;
+        $period = $request->period;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($request->month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($request->month_start.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($request->month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($request->month_end.'-01')->endOfMonth()->format('Y-m-d');
+                break; 
+        }
+
+        // $date = $request->month_start.'-01';
+        // $start_date = Carbon::parse($date);
+        // $end_date = Carbon::parse($date)->addMonth()->subDay();
+        // dd($d_start.' - '.$d_end, $period);
+
+        $items = Item::whereTypeUser()->whereNotIsSet();
+        
+        $records = ($period == 'all') ? $items->get() : $items->whereBetween('created_at', [$d_start, $d_end])->get();
         // dd(new ItemCollection($records));
 
         return (new ItemExport)
