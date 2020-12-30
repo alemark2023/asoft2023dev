@@ -19,6 +19,25 @@ table {
     font-weight: bold;
 }
 
+.cell-solid{
+  border: 1px solid black;
+}
+
+.cell-solid-rl{
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+}
+
+.cell-solid-bottom{
+  border-bottom: 1px solid black;
+}
+
+.cell-solid-offtop{
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+}
+
 .company_logo {
   max-height: 100px;
 }
