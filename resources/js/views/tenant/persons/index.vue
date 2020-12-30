@@ -55,7 +55,8 @@
             <persons-import :showDialog.sync="showImportDialog"
                             :type="type"></persons-import>
 
-            <persons-export :showDialog.sync="showExportDialog"></persons-export>
+            <persons-export :showDialog.sync="showExportDialog"
+                            :type="type"></persons-export>
 
         </div>
     </div>

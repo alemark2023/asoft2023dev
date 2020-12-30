@@ -9,7 +9,7 @@
     </head>
     <body>
         <div>
-            <h3 align="center" class="title"><strong>Reporte Clientes</strong></h3>
+            <h3 align="center" class="title"><strong>{{ ($type == 'customers') ? 'Reporte Clientes':'Reporte Proveedores' }}</strong></h3>
 
         </div>
         <br>
