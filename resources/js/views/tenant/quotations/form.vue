@@ -41,12 +41,19 @@
                                         dusk="customer_id"
                                         placeholder="Escriba el nombre o número de documento del cliente"
                                         :remote-method="searchRemoteCustomers"
-                                        :loading="loading_search">
+                                        :loading="loading_search"
+                                        @change="changeCustomer">
 
                                         <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
 
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+                                </div>
+                                <div v-if="customer_addresses.length > 0" class="form-group">
+                                    <label class="control-label font-weight-bold text-info">Dirección</label>
+                                    <el-select v-model="form.customer_address_id">
+                                        <el-option v-for="option in customer_addresses" :key="option.id" :value="option.id" :label="option.address"></el-option>
+                                    </el-select>
                                 </div>
                             </div>
                             <div class="col-lg-2">
@@ -352,6 +359,7 @@
                 quotationNewId: null,
                 payment_destinations:  [],
                 activePanel: 0,
+                customer_addresses:  [],
                 configuration: {},
                 loading_search:false
             }
@@ -386,6 +394,25 @@
             await this.createQuotationFromSO()
         },
         methods: {
+            changeCustomer() {
+
+                this.customer_addresses = [];
+                let customer = _.find(this.customers, {'id': this.form.customer_id});
+                this.customer_addresses = customer.addresses;
+
+                if(customer.address)
+                {
+
+                    if(_.find(this.customer_addresses, {id:null})) return
+
+                    this.customer_addresses.unshift({
+                        id:null,
+                        address: customer.address
+                    })
+
+                }
+ 
+            },
             changeTermsCondition(){
 
                 if(this.form.active_terms_condition){
@@ -554,6 +581,7 @@
                     attributes: [],
                     guides: [],
                     payment_method_type_id:'10',
+                    customer_address_id:null,
                     additional_information:null,
                     shipping_address:null,
                     account_number:null,
@@ -580,6 +608,8 @@
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
                 this.allCustomers()
+                this.customer_addresses = [];
+
             },
             changeEstablishment() {
                 this.establishment = _.find(this.establishments, {'id': this.form.establishment_id})
