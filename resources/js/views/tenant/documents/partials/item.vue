@@ -929,6 +929,7 @@
                 this.lots = this.form.item.lots
 
                 this.form.has_igv = this.form.item.has_igv;
+                this.form.has_plastic_bag_taxes = this.form.item.has_plastic_bag_taxes;
                 this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
                 this.form.quantity = 1;
                 this.cleanTotalItem();

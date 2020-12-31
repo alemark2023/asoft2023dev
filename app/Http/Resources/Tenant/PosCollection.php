@@ -16,7 +16,9 @@ class PosCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function ($row, $key) {
+
             $configuration = Configuration::first();
+
             return [
                 'stock' => $row->getStockByWarehouse(),
                 'id' => $row->id,
@@ -54,6 +56,8 @@ class PosCollection extends ResourceCollection
                 'unit_type' => $row->item_unit_types,
                 'category' => ($row->category) ? $row->category->name : null,
                 'brand' => ($row->brand) ? $row->brand->name : null,
+                'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
+                'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
             ];
         });
     }
