@@ -311,7 +311,7 @@
     <tbody>
     @foreach($document->items as $row)
         <tr>
-            <td class="text-center desc-9 align-top">
+            <td class="text-center desc-9 align-top font-bold">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
@@ -319,7 +319,7 @@
                 @endif
             </td>
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left desc-9 align-top">
+            <td class="text-left desc-9 align-top font-bold">
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
@@ -361,7 +361,7 @@
                 @endif
             </td>
             <td class="text-right desc-9 align-top">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right desc-9 align-top">{{ number_format($row->total, 2) }}</td>
+            <td class="text-right desc-9 align-top font-bold">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
             <td colspan="5" class="border-bottom"></td>

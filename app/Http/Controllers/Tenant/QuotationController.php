@@ -145,7 +145,9 @@ class QuotationController extends Controller
                                     'name' => $row->name,
                                     'number' => $row->number,
                                     'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code
+                                    'identity_document_type_code' => $row->identity_document_type->code,
+                                    'addresses' => $row->addresses,
+                                    'address' =>  $row->address
                                 ];
                             });
 
@@ -258,14 +260,15 @@ class QuotationController extends Controller
          DB::connection('tenant')->transaction(function () use ($request) {
            // $data = $this->mergeData($request);
            // return $request['id'];
-           $configuration = Configuration::select('terms_condition')->first();
-           $request['terms_condition'] = $this->getTermsCondition();
+            $configuration = Configuration::select('terms_condition')->first();
+            $request['terms_condition'] = $this->getTermsCondition();
 
-           $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
-           $this->quotation->fill($request->all());
-           $this->quotation->items()->delete();
+            $this->quotation = Quotation::firstOrNew(['id' => $request['id']]);
+            $this->quotation->fill($request->all());
+            $this->quotation->customer = PersonInput::set($request['customer_id'], isset($request['customer_address_id']) ? $request['customer_address_id']: null  );
+            $this->quotation->items()->delete();
 
-           $this->deleteAllPayments($this->quotation->payments);
+            $this->deleteAllPayments($this->quotation->payments);
 
             foreach ($request['items'] as $row) {
 
@@ -345,7 +348,7 @@ class QuotationController extends Controller
         $values = [
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),
-            'customer' => PersonInput::set($inputs['customer_id']),
+            'customer' => PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id']: null  ),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
             'soap_type_id' => $this->company->soap_type_id,
             'state_type_id' => '01'
@@ -379,7 +382,9 @@ class QuotationController extends Controller
                         'name' => $row->name,
                         'number' => $row->number,
                         'identity_document_type_id' => $row->identity_document_type_id,
-                        'identity_document_type_code' => $row->identity_document_type->code
+                        'identity_document_type_code' => $row->identity_document_type->code,
+                        'addresses' => $row->addresses,
+                        'address' =>  $row->address
                     ];
                 });
                 return $customers;
