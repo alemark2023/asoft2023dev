@@ -603,6 +603,11 @@
                                         <td>:</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ form.total_igv }}</td>
                                     </tr>
+                                    <tr v-if="form.total_plastic_bag_taxes > 0">
+                                        <td>ICBPER</td>
+                                        <td>:</td>
+                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                                    </tr>
 
                                 </table>
 

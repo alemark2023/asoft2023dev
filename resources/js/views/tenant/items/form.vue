@@ -131,6 +131,14 @@
                             <small class="form-control-feedback" v-if="errors.has_igv" v-text="errors.has_igv[0]"></small>
                         </div>
                     </div>
+
+                    <div class="col-md-3 center-el-checkbox">
+                        <div class="form-group" :class="{'has-danger': errors.has_plastic_bag_taxes}">
+                            <el-checkbox v-model="form.has_plastic_bag_taxes">Impuesto a la Bolsa Plástica</el-checkbox><br>
+                            <small class="form-control-feedback" v-if="errors.has_plastic_bag_taxes" v-text="errors.has_plastic_bag_taxes[0]"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.internal_id}">
                             <label class="control-label">Código Interno
@@ -744,6 +752,7 @@
                     series_enabled: false,
                     purchase_has_igv: true,
                     web_platform_id:null,
+                    has_plastic_bag_taxes: false,
                 }
                 this.show_has_igv = true
                 this.purchase_show_has_igv = true

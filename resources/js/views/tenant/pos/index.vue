@@ -764,6 +764,17 @@
                                         {{ form.total_igv }}
                                     </td>
                                 </tr>
+                                <tr
+                                    v-if="form.total_plastic_bag_taxes > 0"
+                                    class="font-weight-semibold  m-0"
+                                >
+                                    <td class="font-weight-semibold">ICBPER</td>
+                                    <td class="font-weight-semibold">:</td>
+                                    <td class="text-right text-blue">
+                                        {{ currency_type.symbol }}
+                                        {{ form.total_plastic_bag_taxes }}
+                                    </td>
+                                </tr>
                             </table>
                         </div>
 
@@ -1409,6 +1420,7 @@ export default {
                 total_isc: 0,
                 total_base_other_taxes: 0,
                 total_other_taxes: 0,
+                total_plastic_bag_taxes: 0,
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
@@ -1456,7 +1468,8 @@ export default {
                 charges: [],
                 discounts: [],
                 attributes: [],
-                has_igv: false
+                has_igv: false,
+                has_plastic_bag_taxes:false,
             };
         },
         async clickPayment() {
@@ -1498,6 +1511,8 @@ export default {
                 item_id: item.item_id,
                 unit_type_id: item.unit_type_id
             });
+            
+            console.log(exist_item)
             
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1549,6 +1564,8 @@ export default {
                 // exist_item.unit_price = unit_price
                 exist_item.item.unit_price = unit_price;
 
+                exist_item.has_plastic_bag_taxes = exist_item.item.has_plastic_bag_taxes;
+
                 this.row = calculateRowItem(
                     exist_item,
                     this.form.currency_type_id,
@@ -1575,6 +1592,7 @@ export default {
                 this.form_item.item = item;
                 this.form_item.unit_price_value = this.form_item.item.sale_unit_price;
                 this.form_item.has_igv = this.form_item.item.has_igv;
+                this.form_item.has_plastic_bag_taxes = this.form_item.item.has_plastic_bag_taxes;
                 this.form_item.affectation_igv_type_id = this.form_item.item.sale_affectation_igv_type_id;
                 this.form_item.quantity = 1;
                 this.form_item.aux_quantity = 1;
@@ -1656,6 +1674,7 @@ export default {
         },
 
         calculateTotal() {
+
             let total_discount = 0;
             let total_charge = 0;
             let total_exportation = 0;
@@ -1666,6 +1685,8 @@ export default {
             let total_igv = 0;
             let total_value = 0;
             let total = 0;
+            let total_plastic_bag_taxes = 0
+
             this.form.items.forEach(row => {
                 total_discount += parseFloat(row.total_discount);
                 total_charge += parseFloat(row.total_charge);
@@ -1698,6 +1719,8 @@ export default {
                     total += parseFloat(row.total);
                 }
                 total_value += parseFloat(row.total_value);
+                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+
             });
 
             this.form.total_exportation = _.round(total_exportation, 2);
@@ -1713,7 +1736,10 @@ export default {
             this.form.total_igv = _.round(total_igv, 2);
             this.form.total_value = _.round(total_value, 2);
             this.form.total_taxes = _.round(total_igv, 2);
-            this.form.total = _.round(total, 2);
+            this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+            // this.form.total = _.round(total, 2);
+            this.form.total = _.round(total + this.form.total_plastic_bag_taxes, 2)
+
         },
         changeDateOfIssue() {
             // this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
