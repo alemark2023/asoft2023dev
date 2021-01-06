@@ -190,7 +190,7 @@ return [
         'quantity' => 'cantidad',
         'category_id' => 'categoría',
         'brand_id' => 'marca',
-        
+
         'room_type' => 'tipo de habitación',
         'ocupation' => 'ocupación',
         'sex' => 'sexo',
@@ -262,6 +262,6 @@ return [
         'initial_balance' => 'saldo inicial',
         'devolution_reason_id' => 'motivo',
         'observation' => 'observación',
-
+        'model' => 'modelo',
     ],
 ];

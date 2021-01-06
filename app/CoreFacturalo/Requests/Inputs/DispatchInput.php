@@ -150,6 +150,7 @@ class DispatchInput
                     'item_id' => $item->id,
                     'item' => [
                         'description' => $item->description,
+                        'model' => $item->model,
                         'item_type_id' => $item->item_type_id,
                         'internal_id' => $item->internal_id,
                         'item_code' => $item->item_code,

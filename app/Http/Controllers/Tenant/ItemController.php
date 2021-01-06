@@ -61,6 +61,7 @@ class ItemController extends Controller
         return [
             'description' => 'Nombre',
             'internal_id' => 'Código interno',
+            'model' => 'Modelo',
             'brand' => 'Marca',
             'date_of_due' => 'Fecha vencimiento',
             'lot_code' => 'Código lote',
@@ -558,7 +559,7 @@ class ItemController extends Controller
             case 'between_months':
                 $d_start = Carbon::parse($request->month_start.'-01')->format('Y-m-d');
                 $d_end = Carbon::parse($request->month_end.'-01')->endOfMonth()->format('Y-m-d');
-                break; 
+                break;
         }
 
         // $date = $request->month_start.'-01';
@@ -567,7 +568,7 @@ class ItemController extends Controller
         // dd($d_start.' - '.$d_end, $period);
 
         $items = Item::whereTypeUser()->whereNotIsSet();
-        
+
         $records = ($period == 'all') ? $items->get() : $items->whereBetween('created_at', [$d_start, $d_end])->get();
         // dd(new ItemCollection($records));
 
@@ -646,7 +647,7 @@ class ItemController extends Controller
         }
 
         $stock = $item_warehouse->stock;
-        
+
         $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
