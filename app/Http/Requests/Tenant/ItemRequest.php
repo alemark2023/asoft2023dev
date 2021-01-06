@@ -66,6 +66,7 @@ class ItemRequest extends FormRequest
             // 'brand_id' => [
             //     'required_if:is_set,false',
             // ],
+            'model' => 'max:100'
 
         ];
     }

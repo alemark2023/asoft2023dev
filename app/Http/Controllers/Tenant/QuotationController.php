@@ -153,7 +153,7 @@ class QuotationController extends Controller
 
         return compact('customers');
     }
-    
+
 
     public function tables() {
 
@@ -406,6 +406,7 @@ class QuotationController extends Controller
                         'id' => $row->id,
                         'full_description' => $full_description,
                         'description' => $row->description,
+                        'model' => $row->model,
                         'currency_type_id' => $row->currency_type_id,
                         'currency_type_symbol' => $row->currency_type->symbol,
                         'sale_unit_price' => $row->sale_unit_price,
@@ -448,7 +449,7 @@ class QuotationController extends Controller
         }
     }
 
- 
+
 
     public function searchItems(Request $request)
     {
@@ -505,7 +506,7 @@ class QuotationController extends Controller
                                     })
                                 ];
                         });
-        
+
         return compact('items');
 
     }
@@ -557,7 +558,7 @@ class QuotationController extends Controller
                                     })
                                 ];
                         });
-        
+
         return compact('items');
 
     }

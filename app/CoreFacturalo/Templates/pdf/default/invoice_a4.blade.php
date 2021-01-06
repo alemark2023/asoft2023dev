@@ -153,9 +153,9 @@
         @endif
     </tr>
     @endif
-    
+
     @if ($document->reference_data)
-        <tr> 
+        <tr>
             <td width="120px">D. REFERENCIA</td>
             <td width="8px">:</td>
             <td>{{ $document->reference_data}}</td>
@@ -345,6 +345,7 @@
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-left py-2">MODELO</th>
         <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
         <th class="border-top-bottom text-center py-2" width="8%">SERIE</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
@@ -391,12 +392,13 @@
                  @endforeach
                  {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
                 @endif
-                
+
                 @if($document->has_prepayment)
                     <br>
                     *** Pago Anticipado ***
                 @endif
             </td>
+            <td class="text-left align-top">{{ $row->item->model }}</td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
@@ -610,7 +612,7 @@
             <td>
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     </table>
 @endif
 

@@ -22,6 +22,7 @@ class Item extends ModelTenant
         'name',
         'second_name',
         'description',
+        'model',
         'technical_specifications',
         'item_type_id',
         'internal_id',
@@ -253,7 +254,7 @@ class Item extends ModelTenant
     {
         return $this->hasMany(SaleNoteItem::class, 'item_id');
     }
-    
+
     public function scopeWhereFilterValuedKardex($query, $params)
     {
 
@@ -300,15 +301,15 @@ class Item extends ModelTenant
     {
         return $query->where('active', false);
     }
-    
+
     public function scopeWhereHasInternalId($query)
     {
         return $query->where('internal_id','!=', null);
     }
-    
+
     public function web_platform()
     {
         return $this->belongsTo(WebPlatform::class);
     }
-    
+
 }
