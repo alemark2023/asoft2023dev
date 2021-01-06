@@ -25,13 +25,31 @@ class ExchangeRate
         try {
 
             // $url = "https://e-consulta.sunat.gob.pe/cl-at-ittipcam/tcS01Alias?mes={$month}&anho={$year}";
-            $url = 'http://www.sunat.gob.pe/a/txt/tipoCambio.txt';
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,$url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $response = curl_exec ($ch);
-            curl_close ($ch);
+            // $url = 'http://www.sunat.gob.pe/a/txt/tipoCambio.txt';
+            // $ch = curl_init();
+            // curl_setopt($ch, CURLOPT_URL,$url);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            // $response = curl_exec ($ch);
+            // curl_close ($ch);
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'http://www.sunat.gob.pe/a/txt/tipoCambio.txt',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'GET',
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+
 
             if ($response != "") {
                 $html = $response;
@@ -43,6 +61,9 @@ class ExchangeRate
                     $explode[1],
                     $explode[2]
                 ];
+
+                // dd($response, $explode, $values);
+
                 return collect($values)->toArray();
 
 
@@ -66,7 +87,7 @@ class ExchangeRate
             }
 
         } catch (Exception $e) {
-
+            // dd($e);
             Log::info("Error consulta T/C: ".$e->getMessage());
             return false;
 
@@ -88,9 +109,10 @@ class ExchangeRate
         $date = Carbon::parse($date);
 
         $res = $this->searchByDay($date);
+        // dd($res);
+
         $date = $date->addDay(-1);
 
-        // porque se repite tanto?
         if(!$res){
             $res = $this->searchByDay($date);
             $date = $date->addDay(-1);
@@ -120,6 +142,7 @@ class ExchangeRate
             foreach ($exchange_rates as $row)
             {
                 $new_row = array_values($row);
+
                 if ($new_row[0] == (int)$day) {
                     return [
                         'date_data' => $date->format('Y-m-d'),
