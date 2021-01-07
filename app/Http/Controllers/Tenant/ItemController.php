@@ -219,7 +219,7 @@ class ItemController extends Controller
             }
         }
 
-        if(!$id){
+        if (!$id) {
 
             // $item->lots()->delete();
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
@@ -241,12 +241,8 @@ class ItemController extends Controller
                     'state' => $lot['state'],
                 ]);
             }
-
-
             $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
-
-            if($lots_enabled)
-            {
+            if ($lots_enabled) {
                 ItemLotsGroup::create([
                     'code'  => $request->lot_code,
                     'quantity'  => $request->stock,
@@ -254,36 +250,22 @@ class ItemController extends Controller
                     'item_id' => $item->id
                 ]);
             }
-
-
-        }
-        else{
-
-             // $item->lots()->delete();
-            /* $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
-             //$warehouse = WarehouseModule::find(auth()->user()->establishment_id);
-
-             $v_lots = isset($request->lots) ? $request->lots:[];
-
-             foreach ($v_lots as $lot) {
-
-                if($lot['deleted'] == true){
-
+        } else {
+            $item->lots()->delete();
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+            $v_lots = isset($request->lots) ? $request->lots:[];
+            foreach ($v_lots as $lot) {
+                if ($lot['deleted'] == true) {
                     ItemLot::find($lot['id'])->delete();
-                }
-                else{
-
-                    if( isset( $lot['id'] ))
-                    {
+                } else {
+                    if ( isset( $lot['id'] )) {
                         ItemLot::find($lot['id'])->update([
                             'date' => $lot['date'],
                             'series' => $lot['series'],
                             'state' => $lot['state'],
                         ]);
-
-                    }else{
-
+                    } else {
                         $item->lots()->create([
                             'date' => $lot['date'],
                             'series' => $lot['series'],
@@ -293,25 +275,33 @@ class ItemController extends Controller
                             'state' => $lot['state'],
                         ]);
                     }
-
                 }
-            }*/
+            }
 
-
+            $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
+            if ($lots_enabled) {
+                ItemLotsGroup::where('item_id', $item->id)->delete();
+                ItemLotsGroup::create([
+                    'code'  => $request->lot_code,
+                    'quantity'  => $request->stock,
+                    'date_of_due'  => $request->date_of_due,
+                    'item_id' => $item->id
+                ]);
+            }
         }
 
-            $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
+        $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
 
-            $multi_images = isset($request->multi_images) ? $request->multi_images:[];
+        $multi_images = isset($request->multi_images) ? $request->multi_images:[];
 
-            foreach ($multi_images as $im) {
+        foreach ($multi_images as $im) {
 
-                $file_name = $im['filename'];
-                $file_content = file_get_contents($im['temp_path']);
-                Storage::put($directory.$file_name, $file_content);
+            $file_name = $im['filename'];
+            $file_content = file_get_contents($im['temp_path']);
+            Storage::put($directory.$file_name, $file_content);
 
-                ItemImage::create(['item_id'=> $item->id, 'image' => $file_name]);
-            }
+            ItemImage::create(['item_id'=> $item->id, 'image' => $file_name]);
+        }
 
         $item->update();
 
@@ -545,8 +535,6 @@ class ItemController extends Controller
 
     public function export(Request $request)
     {
-
-        // dd($request->all());
         $d_start = null;
         $d_end = null;
         $period = $request->period;
@@ -565,12 +553,10 @@ class ItemController extends Controller
         // $date = $request->month_start.'-01';
         // $start_date = Carbon::parse($date);
         // $end_date = Carbon::parse($date)->addMonth()->subDay();
-        // dd($d_start.' - '.$d_end, $period);
 
         $items = Item::whereTypeUser()->whereNotIsSet();
 
         $records = ($period == 'all') ? $items->get() : $items->whereBetween('created_at', [$d_start, $d_end])->get();
-        // dd(new ItemCollection($records));
 
         return (new ItemExport)
                 ->records($records)
@@ -583,10 +569,8 @@ class ItemController extends Controller
         $date = $request->month_start.'-01';
         $start_date = Carbon::parse($date);
         $end_date = Carbon::parse($date)->addMonth()->subDay();
-        // dd($start_date.' - '.$end_date);
 
         $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
-        // dd(new ItemCollection($records));
 
         return (new ItemExportWp)
                 ->records($records)
