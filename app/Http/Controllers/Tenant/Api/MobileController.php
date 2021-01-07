@@ -203,6 +203,13 @@ class MobileController extends Controller
     public function person(PersonRequest $request)
     {
         $row = new Person();
+		if ($request->department_id === '-') {
+			$request->merge([
+				'department_id' => null,
+				'province_id'   => null,
+				'district_id'   => null
+			]);
+		}
         $row->fill($request->all());
         $row->save();
 
