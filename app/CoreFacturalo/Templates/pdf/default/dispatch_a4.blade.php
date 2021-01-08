@@ -137,7 +137,7 @@
             <td class="text-center">{{ $loop->iteration }}</td>
             <td class="text-center">{{ $row->item->internal_id }}</td>
             <td class="text-left">{{ $row->item->description }}</td>
-            <td class="text-left">{{ $row->item->model }}</td>
+            <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-right">
                 @if(((int)$row->quantity != $row->quantity))
