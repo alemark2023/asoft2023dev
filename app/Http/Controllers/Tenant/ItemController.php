@@ -149,6 +149,11 @@ class ItemController extends Controller
     public function store(ItemRequest $request) {
         //return 'no';
         $id = $request->input('id');
+        if (!$request->barcode) {
+            if ($request->internal_id) {
+                $request->merge(['barcode' => $request->internal_id]);
+            }
+        }
         $item = Item::firstOrNew(['id' => $id]);
         $item->item_type_id = '01';
         $item->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
@@ -301,6 +306,10 @@ class ItemController extends Controller
             Storage::put($directory.$file_name, $file_content);
 
             ItemImage::create(['item_id'=> $item->id, 'image' => $file_name]);
+        }
+
+        if (!$item->barcode) {
+            $item->barcode = str_pad($item->id, 12, '0', STR_PAD_LEFT);
         }
 
         $item->update();
@@ -609,12 +618,11 @@ class ItemController extends Controller
     public function printBarCode(Request $request)
     {
         ini_set("pcre.backtrack_limit", "50000000");
-
         $id = $request->id;
 
         $record = Item::find($id);
-
-        $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()->establishment->warehouse->id]])->first();
+        $item_warehouse = ItemWarehouse::where([['item_id', $id], ['warehouse_id', auth()->user()
+            ->establishment->warehouse->id]])->first();
 
         if(!$item_warehouse){
             return [
@@ -643,7 +651,6 @@ class ItemController extends Controller
                 'margin_bottom' => 0,
                 'margin_left' => 2
             ]);
-
         $html = view('tenant.items.exports.items-barcode-id', compact('record', 'stock'))->render();
 
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);

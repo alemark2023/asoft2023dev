@@ -44,10 +44,10 @@
                                     @php
                                         $colour = [0,0,0];
                                         $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-                                        echo '<img style="width:110px; max-height: 40px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($record->internal_id, $generator::TYPE_CODE_128, 1, 60, $colour)) . '">';
+                                        echo '<img style="width:110px; max-height: 40px;" src="data:image/png;base64,' . base64_encode($generator->getBarcode($record->barcode, $generator::TYPE_CODE_128, 1, 60, $colour)) . '">';
                                     @endphp
                                 </p>
-                                <p>{{$record->internal_id}}</p>
+                                <p>{{$record->barcode}}</p>
                             </td>
                             @endfor
                         </tr>

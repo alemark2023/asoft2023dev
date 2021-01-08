@@ -318,19 +318,19 @@ export default {
                 description: {
                     title: 'Descripción',
                     visible: false
-                }, 
+                },
                 item_code: {
                     title: 'Cód. SUNAT',
                     visible: false
-                }, 
+                },
                 purchase_unit_price: {
                     title: 'P.Unitario (Compra)',
                     visible: false
-                }, 
+                },
                 purchase_has_igv_description: {
                     title: 'Tiene Igv (Compra)',
                     visible: false
-                }, 
+                },
 
             },
             item_unit_types: [],
@@ -398,18 +398,18 @@ export default {
             );
         },
         clickBarcode(row) {
-            if (!row.internal_id) {
+            if (!row.barcode) {
                 return this.$message.error(
-                    "Para generar el código de barras debe registrar el código interno."
+                    "Para generar el código de barras debe registrar el código de barras."
                 );
             }
 
             window.open(`/${this.resource}/barcode/${row.id}`);
         },
         clickPrintBarcode(row) {
-            if (!row.internal_id) {
+            if (!row.barcode) {
                 return this.$message.error(
-                    "Para generar el código de barras debe registrar el código interno."
+                    "Para generar el código de barras debe registrar el código de barras."
                 );
             }
 

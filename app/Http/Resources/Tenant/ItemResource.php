@@ -21,6 +21,7 @@ class ItemResource extends JsonResource
             'name' => $this->name,
             'second_name' => $this->second_name,
             'model' => $this->model,
+            'barcode' => $this->barcode,
             'warehouse_id' => $this->warehouse_id,
             'internal_id' => $this->internal_id,
             'item_code' => $this->item_code,
