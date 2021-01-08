@@ -267,7 +267,7 @@ class Facturalo
         $template = new Template();
         $pdf = new Mpdf();
 
-        $format_pdf = $this->actions['format_pdf'];
+        $format_pdf = $this->actions['format_pdf'] ?? null;
 
         $this->document = ($document != null) ? $document : $this->document;
         $format_pdf = ($format != null) ? $format : $format_pdf;
