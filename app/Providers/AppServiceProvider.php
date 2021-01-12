@@ -9,12 +9,15 @@ use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function boot() {
-        if (config('tenant.force_https')) URL::forceScheme('https');
-        Document::observe(DocumentObserver::class);
-    }
-    
-    public function register() {
-        
-    }
+	public function boot()
+	{
+		if (config('tenant.force_https')) {
+			URL::forceScheme('https');
+		}
+		Document::observe(DocumentObserver::class);
+	}
+
+	public function register()
+	{
+	}
 }

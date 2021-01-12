@@ -60,7 +60,11 @@ class PosController extends Controller
         $configuration =  Configuration::first();
 
         $items = Item::where('description','like', "%{$request->input_item}%")
-                            ->orWhere('internal_id','like', "%{$request->input_item}%")
+                            // ->orWhere('internal_id','like', "%{$request->input_item}%")
+                            ->orWhere(function ($query) use ($request) {
+                                $query->where('internal_id','like', "%{$request->input_item}%")
+                                    ->orWhere('barcode', "{$request->input_item}");
+                            })
                             ->orWhereHas('category', function($query) use($request) {
                                 $query->where('name', 'like', '%' . $request->input_item . '%');
                             })

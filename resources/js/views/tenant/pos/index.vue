@@ -18,7 +18,7 @@
                 <h2>
                     <el-switch
                         v-model="search_item_by_barcode"
-                        active-text="Buscar por código de barras"
+                        active-text="Buscar con escaner de código de barras"
                         @change="changeSearchItemBarcode"
                     ></el-switch>
                 </h2>
@@ -1301,7 +1301,7 @@ export default {
                 this.form.currency_type_id,
                 1
             );
-            
+
             // console.log(this.form.items[index])
 
             this.row["unit_type_id"] = this.form.items[index].unit_type_id;
@@ -1511,16 +1511,16 @@ export default {
                 item_id: item.item_id,
                 unit_type_id: item.unit_type_id
             });
-            
+
             console.log(exist_item)
-            
+
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
 
             if (exist_item) {
 
                 if (input) {
-                    
+
                     response = await this.getStatusStock(
                         item.item_id,
                         exist_item.item.aux_quantity
@@ -1533,7 +1533,7 @@ export default {
 
                     exist_item.quantity = exist_item.item.aux_quantity;
                 } else {
-                    
+
                     response = await this.getStatusStock(
                         item.item_id,
                         parseFloat(exist_item.item.aux_quantity) + 1
