@@ -164,9 +164,6 @@ class ReportKardexController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function pdf(Request $request) {
-
-        // dd($request->all());
-
         $balance = 0;
         $company = Company::first();
         $establishment = Establishment::first();
@@ -197,8 +194,8 @@ class ReportKardexController extends Controller
         }
 
         $models = $this->models;
-
-        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_id"));
+        $userWarehouse = auth()->user()->establishment_id;
+        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_id", 'userWarehouse'));
         $filename = 'Reporte_Kardex'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
