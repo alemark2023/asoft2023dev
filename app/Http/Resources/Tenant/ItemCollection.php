@@ -43,6 +43,8 @@ class ItemCollection extends ResourceCollection
                 'description' => $row->description,
                 'name' => $row->name,
                 'second_name' => $row->second_name,
+                'model' => $row->model,
+                'barcode' => $row->barcode,
                 'warehouse_id' => $row->warehouse_id,
                 'internal_id' => $row->internal_id,
                 'item_code' => $row->item_code,

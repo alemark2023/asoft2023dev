@@ -69,6 +69,7 @@ class Item extends ModelTenant
         'purchase_has_igv',
         'web_platform_id',
         'has_plastic_bag_taxes',
+        'barcode',
         // 'warehouse_id'
     ];
 

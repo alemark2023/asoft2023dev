@@ -60,6 +60,7 @@ class ItemsImport implements ToCollection
 
                 $lot_code = $row[17];
                 $date_of_due = $row[18];
+                $barcode = $row[19] ?? null;
 
 
                 if($internal_id) {
@@ -68,12 +69,10 @@ class ItemsImport implements ToCollection
                 } else {
                     $item = null;
                 }
-
                 // $establishment_id = auth()->user()->establishment->id;
                 // $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
 
                 if(!$item) {
-
                     $category = $category_name ? Category::updateOrCreate(['name' => $category_name]):null;
                     $brand = $brand_name ? Brand::updateOrCreate(['name' => $brand_name]):null;
                     // dd($row, $lot_code ,$date_of_due, $category, $brand);
@@ -107,6 +106,7 @@ class ItemsImport implements ToCollection
                             'lots_enabled' => true,
                             'lot_code' => $lot_code,
                             'date_of_due' => $_date_of_due,
+                            'barcode' => $barcode,
                             // 'warehouse_id' => $warehouse->id
                         ]);
 
@@ -137,6 +137,7 @@ class ItemsImport implements ToCollection
                             'brand_id' => optional($brand)->id,
                             'name' => $name,
                             'second_name' => $second_name,
+                            'barcode' => $barcode,
                             // 'warehouse_id' => $warehouse->id
                         ]);
 
@@ -146,7 +147,6 @@ class ItemsImport implements ToCollection
                     $registered += 1;
 
                 }else{
-
                     $item->update([
                         'description' => $description,
                         'model' => $model,
@@ -163,6 +163,7 @@ class ItemsImport implements ToCollection
                         'stock_min' => $stock_min,
                         'name' => $name,
                         'second_name' => $second_name,
+                        'barcode' => $barcode,
                     ]);
 
                     $registered += 1;
