@@ -61,6 +61,7 @@ class ItemController extends Controller
         return [
             'description' => 'Nombre',
             'internal_id' => 'Código interno',
+            'barcode' => 'Código de barras',
             'model' => 'Modelo',
             'brand' => 'Marca',
             'date_of_due' => 'Fecha vencimiento',

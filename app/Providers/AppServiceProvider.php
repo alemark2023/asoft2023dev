@@ -15,10 +15,6 @@ class AppServiceProvider extends ServiceProvider
 			URL::forceScheme('https');
 		}
 		Document::observe(DocumentObserver::class);
-
-		\DB::listen(function ($query) {
-			logger()->info($query->sql . print_r($query->bindings, true));
-		});
 	}
 
 	public function register()
