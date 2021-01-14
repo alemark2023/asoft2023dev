@@ -141,6 +141,13 @@
                             <small class="form-control-feedback" v-if="errors.extra_attr_value" v-text="errors.extra_attr_value[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-12 col-sm-12 mt-2">
+                        <div class="form-group">
+                            <label class="control-label">Nombre producto en PDF</label>
+                            <!-- <el-input v-model="form.name_product_pdf"></el-input> -->
+                            <vue-ckeditor type="classic" v-model="form.name_product_pdf" :editors="editors"></vue-ckeditor>
+                        </div>
+                    </div>
                     <div class="col-md-12 mt-3">
                         <section class="card mb-2 card-transparent card-collapsed" id="card-section">
                                 <header class="card-header hoverable bg-light border-top rounded-0 py-1" data-card-toggle style="cursor: pointer;" id="card-click">
@@ -277,14 +284,15 @@
 }
 </style>
 <script>
-
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
     import WarehousesDetail from './warehouses.vue'
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+    import VueCkeditor from 'vue-ckeditor5'
 
     export default {
         props: ['showDialog', 'currencyTypeIdActive', 'exchangeRateSale'],
-        components: {itemForm, WarehousesDetail},
+        components: {itemForm, WarehousesDetail, 'vue-ckeditor': VueCkeditor.component},
         data() {
             return {
                 titleDialog: 'Agregar Producto o Servicio',
@@ -308,7 +316,10 @@
                 warehousesDetail:[],
                 loading_search:false,
                 item_unit_types: [],
-                item_unit_type: {}
+                item_unit_type: {},
+                editors: {
+                  classic: ClassicEditor
+                },
             }
         },
         created() {
@@ -578,7 +589,7 @@
                 return this.errors
             },
             reloadDataItems(item_id) {
-                
+
                 if(!item_id){
 
                     this.$http.get(`/${this.resource}/table/items`).then((response) => {
@@ -598,7 +609,7 @@
 
                     })
                 }
- 
+
             },
         }
     }

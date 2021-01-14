@@ -202,7 +202,7 @@
                                                     <small class="form-control-feedback" v-if="errors.account_number" v-text="errors.account_number[0]"></small>
                                                 </div>
                                             </div>
-  
+
                                             <div class="col-lg-2">
                                                 <div class="form-group" >
                                                     <label class="control-label">Teléfono
@@ -411,7 +411,7 @@
                     })
 
                 }
- 
+
             },
             changeTermsCondition(){
 
