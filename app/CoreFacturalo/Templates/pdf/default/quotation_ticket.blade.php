@@ -203,7 +203,7 @@
     @endif
 </table>
 
-<table class="full-width mt-10 mb-10">
+<table class="full-width mt-10 mb-10 ticket">
     <thead class="">
     <tr>
         <th class="border-top-bottom desc-9 text-left">CANT.</th>
@@ -225,7 +225,12 @@
             </td>
             <td class="text-center desc-9 align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left desc-9 align-top">
-                {!!$row->item->description!!} @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                @if($row->item->name_product_pdf ?? false)
+                    {!!$row->item->name_product_pdf ?? ''!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/>{!! $attr->description !!} : {{ $attr->value }}
