@@ -548,15 +548,14 @@
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
-
+                this.row.item.name_product_pdf = this.row.name_product_pdf || '';
+                console.log(this.row.item);
                 this.initForm();
-
                 // this.initializeFields()
                 this.$emit('add', this.row);
                 this.setFocusSelectItem()
             },
             focusSelectItem(){
-                // console.log("foc")
                 this.$refs.select_item.$el.getElementsByTagName('input')[0].focus()
             },
             setFocusSelectItem(){
