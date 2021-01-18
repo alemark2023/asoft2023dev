@@ -109,6 +109,10 @@ Migración servidor: [Guía](https://docs.google.com/document/d/1HjAoa2d6mPDVY5l
 Manual de configuración offline: [Guía](https://drive.google.com/open?id=1s9VE08nVjqyKGQ2BiupfQ0yODVBfTfhkSjjZuZLyv38 "Clic")<br>
 Habilitar puertos en Google Cloud: [Manual](https://docs.google.com/document/d/1pbCXJyRyR4VOaQ2BE3aJp-3_vhFIp-b6RXnT_6rtw1o/edit?usp=sharing "clic")<br>
 
+### Funcionalidades
+
+ICBPER en POS: [Guía](https://docs.google.com/document/d/1laSobotFxZy7FlKfALxCoIz7OOT_xiid-QuQP2HD68g/edit?usp=sharing "Clic")<br>
+
 ### Laragon
 Acceso red local - laragon: [Guía](https://docs.google.com/document/d/13kOE5N5LJtCJIr3hswrfNgBYxi9wx07YwUCrAfgyCoQ/edit "Clic")<br>
 
@@ -120,7 +124,6 @@ Recreación de documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_Iyv
 Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
 Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
 Proyecto Espejo (Mirror/Fork) (Por actualizar): [Guía](https://docs.google.com/document/d/1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98/edit "Clic")<br>
-Migracion Jira-Issues(Gitlab): [Guía](https://docs.google.com/document/d/156wEGBlBiM35aFWbbnEi6HTWhag2TWtUMHkz_aoP7Lg/edit?usp=sharing "Clic")<br>
 
 ## Soporte
 
