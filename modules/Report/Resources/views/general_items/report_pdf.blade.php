@@ -11,38 +11,38 @@
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: center;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -58,21 +58,22 @@
                     <table class="" style="table-layout:fixed;">
                         <thead>
                             <tr width="100%">
-                                <th  style="width:6%;" >FECHA DE EMISIÓN</th>
-                                <th  style="width:6%;">SERIE</th>
-                                <th  style="width:6%;">NÚMERO</th>
-                                <th  style="width:6%;">DOC ENTIDAD TIPO DNI RUC</th>
-                                <th  style="width:8%;">DOC ENTIDAD NÚMERO</th>
-                                <th  style="width:11%;">DENOMINACIÓN ENTIDAD</th>
-                                <th  style="width:6%;">MONEDA</th>
-                                <th  style="width:5%;">UNIDAD DE MEDIDA</th>
-                                <th  style="width:12%;">DESCRIPCIÓN</th>
-                                <th  style="width:8%;">CANTIDAD</th>
-                                <th  style="width:7%;">PRECIO UNITARIO</th>
-                                <th  style="width:6%;">TOTAL</th>
+                                <th style="width:6%;" >FECHA DE EMISIÓN</th>
+                                <th style="width:6%;">SERIE</th>
+                                <th style="width:6%;">NÚMERO</th>
+                                <th style="width:6%;">DOC ENTIDAD TIPO DNI RUC</th>
+                                <th style="width:8%;">DOC ENTIDAD NÚMERO</th>
+                                <th style="width:11%;">DENOMINACIÓN ENTIDAD</th>
+                                <th style="width:6%;">MONEDA</th>
+                                <th style="width:5%;">UNIDAD DE MEDIDA</th>
+                                <th style="width:5%;">MARCA</th>
+                                <th style="width:12%;">DESCRIPCIÓN</th>
+                                <th style="width:8%;">CANTIDAD</th>
+                                <th style="width:7%;">PRECIO UNITARIO</th>
+                                <th style="width:6%;">TOTAL</th>
                                 @if($type == 'sale')
-                                <th  style="width:6%;">TOTAL COMPRA</th>
-                                <th  style="width:7%;">GANANCIA</th>
+                                <th style="width:6%;">TOTAL COMPRA</th>
+                                <th style="width:7%;">GANANCIA</th>
                                 @endif
                             </tr>
                         </thead>
@@ -113,6 +114,7 @@
                                             <td class="celda">{{$value->sale_note->customer->name}}</td>
                                             <td class="celda">{{$value->sale_note->currency_type_id}}</td>
                                             <td class="celda">{{$value->item->unit_type_id}}</td>
+                                            <td class="celda">{{$value->relation_item->brand->name}}</td>
                                             <td class="celda">{{$value->item->description}}</td>
                                             <td class="celda">{{$value->quantity}}</td>
                                             <td class="celda">{{$value->unit_price}}</td>
@@ -149,7 +151,7 @@
                                         @endphp
 
                                     <tr>
-                                        
+
                                         <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td>
                                         <td class="celda">{{$value->document->series}}</td>
                                         <td class="celda">{{$value->document->number}}</td>
@@ -158,6 +160,7 @@
                                         <td class="celda">{{$value->document->customer->name}}</td>
                                         <td class="celda">{{$value->document->currency_type_id}}</td>
                                         <td class="celda">{{$value->item->unit_type_id}}</td>
+                                        <td class="celda">{{$value->relation_item->brand->name}}</td>
                                         {{-- <td  class="celda" >{{ $value->item->description}}</td> --}}
                                         <td  class="celda" >{{ (strlen($value->item->description) > 50) ? substr($value->item->description,0,50):$value->item->description}}</td>
                                         <td class="celda">{{$value->quantity}}</td>
