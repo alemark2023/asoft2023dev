@@ -203,7 +203,7 @@ class PersonController extends Controller
 
     public function export($type, Request $request)
     {
-        
+
         // dd($request->all(), $type);
         $d_start = null;
         $d_end = null;
@@ -217,16 +217,16 @@ class PersonController extends Controller
             case 'between_months':
                 $d_start = Carbon::parse($request->month_start.'-01')->format('Y-m-d');
                 $d_end = Carbon::parse($request->month_end.'-01')->endOfMonth()->format('Y-m-d');
-                break; 
+                break;
         }
 
         // $date = $request->month_start.'-01';
         // $d_start = Carbon::parse($date);
         // $d_end = Carbon::parse($date)->addMonth()->subDay();
         // dd($d_start.' - '.$d_end);
-        
+
         $records = ($period == 'all') ? Person::where('type', $type)->get() : Person::where('type', $type)->whereBetween('created_at', [$d_start, $d_end])->get();
-        
+
         $filename = ($type == 'customers') ? 'Reporte_Clientes_':'Reporte_Proveedores_';
 
         return (new ClientExport)
