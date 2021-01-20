@@ -1,14 +1,23 @@
 <?php
 
-namespace Modules\Document\Traits; 
+namespace Modules\Document\Traits;
 
 use App\Models\Tenant\Item;
 
 trait SearchTrait
-{ 
+{
 
-    public function getItemsServices($request){
-
+    public function getItemsServices($request)
+    {
+        if ($request->search_by_barcode == 1) {
+            return Item::with(['item_lots'])
+                ->where('unit_type_id','ZZ')
+                ->whereNotIsSet()
+                ->whereIsActive()
+                ->where('barcode', $request->input)
+                ->limit(1)
+                ->get();
+        }
         return Item::where('description','like', "%{$request->input}%")
                     ->orWhere('internal_id','like', "%{$request->input}%")
                     ->orWhereHas('category', function($query) use($request) {
@@ -24,11 +33,16 @@ trait SearchTrait
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get();
-
     }
-    
-    public function getItemsNotServices($request){
 
+    public function getItemsNotServices($request)
+    {
+        if ($request->search_by_barcode == 1) {
+            return Item::where('barcode', $request->input)
+                ->whereIsActive()
+                ->limit(1)
+                ->get();
+        }
         return Item::where('description','like', "%{$request->input}%")
                     ->orWhere('internal_id','like', "%{$request->input}%")
                     ->orWhereHas('category', function($query) use($request) {
@@ -39,14 +53,13 @@ trait SearchTrait
                     })
                     ->OrWhereJsonContains('attributes', ['value' => $request->input])
                     ->whereWarehouse()
-                    // ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get();
 
     }
 
-    
+
     public function getItemsServicesById($id){
 
         return Item::where('id', $id)
@@ -56,7 +69,7 @@ trait SearchTrait
                     ->get();
 
     }
-    
+
     public function getItemsNotServicesById($id){
 
         return Item::where('id', $id)
@@ -86,7 +99,7 @@ trait SearchTrait
                     $warehouse_stock = number_format($wr->stock, 2);
                 }
             }
-              
+
             $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
         }
         else{
