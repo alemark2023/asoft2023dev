@@ -38,6 +38,18 @@
                     </td>
                     <td align="center">{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</td>
                 </tr>
+                <tr>
+                    <td>
+                        <p><strong>Producto: </strong></p>
+                    </td>
+                    <td align="center">
+                        <p> {{$item->internal_id ? $item->internal_id.' - '.$item->description : $item->description}}</p>
+                    </td>
+                    <td>
+                    </td>
+                    <td align="center">
+                    </td>
+                </tr>
             </table>
         </div>
         <br>
