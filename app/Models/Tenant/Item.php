@@ -243,7 +243,6 @@ class Item extends ModelTenant
         return $this->hasMany(ItemLotsGroup::class, 'item_id');
     }
 
-
     public function scopeWhereNotService($query)
     {
         return $query->where('unit_type_id','!=', 'ZZ');

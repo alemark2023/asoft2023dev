@@ -2,11 +2,11 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\PriceType;
-use App\Models\Tenant\Catalogs\SystemIscType;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Warehouse;
+use App\Models\Tenant\Catalogs\PriceType;
+use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
 
 class DocumentItem extends ModelTenant
 {
@@ -116,12 +116,12 @@ class DocumentItem extends ModelTenant
     {
         return $this->belongsTo(Document::class);
     }
-    
+
     public function relation_item()
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
-    
+
     public function getAdditionalInformationAttribute($value)
     {
         // if($value){
@@ -137,7 +137,7 @@ class DocumentItem extends ModelTenant
     public function scopeWhereDefaultDocumentType($query, $params)
     {
 
-        $db_raw = DB::raw("document_items.id as id, documents.series as series, documents.number as number, 
+        $db_raw = DB::raw("document_items.id as id, documents.series as series, documents.number as number,
                             document_items.item as item, document_items.quantity as quantity, document_items.item_id as item_id,
                             documents.date_of_issue as date_of_issue");
 
@@ -151,10 +151,10 @@ class DocumentItem extends ModelTenant
                         ->join('documents', 'document_items.document_id', '=', 'documents.id')
                         ->select($db_raw)
                         ->latest('id');
-                        
+
         }
 
-        
+
         $data = $query->whereHas('document', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         // ->where('user_id', $params['seller_id'])
@@ -163,7 +163,7 @@ class DocumentItem extends ModelTenant
                 ->join('documents', 'document_items.document_id', '=', 'documents.id')
                 ->select($db_raw)
                 ->latest('id');
-        
+
 
         $sellers = json_decode($params['sellers']);
 
