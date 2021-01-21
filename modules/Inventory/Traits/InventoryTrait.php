@@ -420,4 +420,14 @@ trait InventoryTrait
         }
     }
 
+    private function updateStockPurchase($item_id, $quantity, $warehouse_id) {
+
+        $inventory_configuration = InventoryConfiguration::firstOrFail();
+
+        $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
+        $item_warehouse->stock = $item_warehouse->stock + $quantity;
+
+        $item_warehouse->save();
+    }
+
 }
