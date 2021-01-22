@@ -344,14 +344,30 @@ class DashboardData
 
         $total = $sale_notes_total + $documents_total;
 
+        // dd($period, $month_start, $month_end);
 
-        if(in_array($period, ['month', 'between_months'])) {
-            if($month_start === $month_end) {
-                $data_array = $this->getDocumentsByDays($sale_notes, $documents, $date_start, $date_end);
-            } else {
-                $data_array = $this->getDocumentsByMonths($sale_notes, $documents, $month_start, $month_end);
-            }
-        } else {
+        // if(in_array($period, ['month', 'between_months'])) {
+        //     if($month_start === $month_end) {
+        //         $data_array = $this->getDocumentsByDays($sale_notes, $documents, $date_start, $date_end);
+        //     } else {
+        //         $data_array = $this->getDocumentsByMonths($sale_notes, $documents, $month_start, $month_end);
+        //     }
+        // } 
+        
+        if($period == 'month')
+        {
+            $data_array = $this->getDocumentsByDays($sale_notes, $documents, $date_start, $date_end);
+        }
+        else if($period == 'between_months' && $month_start === $month_end)
+        {
+            $data_array = $this->getDocumentsByDays($sale_notes, $documents, $date_start, $date_end);
+        }
+        else if($period == 'between_months')
+        {
+            $data_array = $this->getDocumentsByMonths($sale_notes, $documents, $month_start, $month_end);
+        }
+        else 
+        {
             if($date_start === $date_end) {
                 $data_array = $this->getDocumentsByHours($sale_notes, $documents);
             } else {
