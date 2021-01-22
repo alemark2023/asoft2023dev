@@ -126,8 +126,8 @@ class ClientController extends Controller
             $tenancy->tenant($row->hostname->website);
             for($i = 1; $i <= 12; $i++)
             {
-                $date_initial = Carbon::parse('2020-'.$i.'-1');
-                $date_final = Carbon::parse('2020-'.$i.'-'.cal_days_in_month(CAL_GREGORIAN, $i, 2019));
+                $date_initial = Carbon::parse(date('Y').'-'.$i.'-1');
+                $date_final = Carbon::parse(date('Y').'-'.$i.'-'.cal_days_in_month(CAL_GREGORIAN, $i, 2019));
                 $count_documents[] = [
                     'client' => $row->number,
                     'month' => $i,
