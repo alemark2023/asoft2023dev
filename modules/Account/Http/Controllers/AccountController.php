@@ -633,6 +633,8 @@ class AccountController extends Controller
         return $documents->transform(function($row) {
             $company_account = CompanyAccount::first();
             $document_base = ($row->note) ? $row->note : null;
+            $payment_condition = '';
+            $payment_method = '';
 
             if($row->payments->count() > 0){
                 if($row->payments[0]->payment_method_type_id == '01') {
@@ -650,6 +652,7 @@ class AccountController extends Controller
                 'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
                 'document_type_id' => $row->document_type_id,
+                'state_type_id' => $row->state_type_id,
                 'series' => '00'.$row->series,
                 'number' => str_pad($row->number, 13, '0', STR_PAD_LEFT),
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
