@@ -73,6 +73,13 @@
                         <p><strong>Establecimiento: </strong>{{$establishment->address}} - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <p><strong>Producto: </strong>{{$item->internal_id ? $item->internal_id.' - '.$item->description : $item->description}}</p>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
             </table>
         </div>
         @if(!empty($reports))

@@ -48,6 +48,12 @@ class KardexExport implements  FromView, ShouldAutoSize
         return $this;
     }
 
+    public function item($item) {
+        $this->item = $item;
+
+        return $this;
+    }
+
     public function view(): View {
         $userWarehouse = auth()->user()->establishment_id;
         return view('inventory::reports.kardex.report_excel', [
@@ -57,6 +63,7 @@ class KardexExport implements  FromView, ShouldAutoSize
             'models'=> $this->models,
             'company' => $this->company,
             'establishment'=>$this->establishment,
+            'item'=> $this->item,
             'userWarehouse' => $userWarehouse
         ]);
     }

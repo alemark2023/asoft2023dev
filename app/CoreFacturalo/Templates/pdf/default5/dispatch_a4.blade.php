@@ -145,11 +145,12 @@
 <table class="full-width mt-10 mb-10">
     <thead class="">
         <tr>
-            <th class="border-top-bottom text-center" class="cell-solid">Código</th>
-            <th class="border-top-bottom text-left" class="cell-solid">Descripción del Articulo</th>
-            <th class="border-top-bottom text-center" class="cell-solid">Unidad de medida</th>
-            <th class="border-top-bottom text-right" class="cell-solid">Cantidad</th>
-            <th class="border-top-bottom text-center" class="cell-solid">Peso Total</th>
+            <th class="border-top-bottom text-center" class="cell-solid" width="10%" >Código</th>
+            <th class="border-top-bottom text-left" class="cell-solid" width="60%">Descripción del Articulo</th>
+            <th class="border-top-bottom text-center" class="cell-solid" width="10%">Unidad</th>
+            {{-- <th class="border-top-bottom text-center" class="cell-solid" width="10%">Unidad de medida</th> --}}
+            <th class="border-top-bottom text-right" class="cell-solid" width="10%">Cantidad</th>
+            <th class="border-top-bottom text-center" class="cell-solid" width="10%">Peso Total</th>
         </tr>
     </thead>
     <tbody>
@@ -162,7 +163,7 @@
             <tr>
                 <td class="text-center" class="cell-solid" align="center" style="padding: 3px !important; margin-left: 5px !important">{{ $row->item->internal_id }}</td>
                 <td class="text-left" class="cell-solid" style="padding: 3px !important; margin-left: 5px !important">{{ $row->item->description }}</td>
-                <td class="text-left" class="cell-solid" style="padding: 3px !important; margin-left: 5px !important">{{ $row->item->unit_type_id }}</td>
+                <td class="text-left" class="cell-solid" align="center" style="padding: 3px !important; margin-left: 5px !important">{{ $row->item->unit_type_id }}</td>
                 <td class="text-right" class="cell-solid" align="right" style="padding: 3px !important; margin-left: 5px !important">
                     @if(((int)$row->quantity != $row->quantity))
                         {{ $row->quantity }}

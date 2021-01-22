@@ -1,3 +1,51 @@
+## 3.4.5
+
+### fixed
+2021-01-07 : fixed | i-750 | Se resolvió el issue ahora ya se pueden crear clientes con ruc 10 desde la app<br>
+2021-01-07 : fixed | i-741 | El lote ya se puede editar<br>
+2021-01-06 : fixed | i-550 | Se arreglo el issue cambiando las consultas sql, y se arreglaron los totales de los comprobantes anulados<br>
+2021-01-06 : fixed | i-678 | Se agrego el campo modelo al formulario de registro de productos, al excel de importación de productos y a los reportes de boletas y facturas, cotizaciones y guías de remisión<br>
+2020-12-30 : fixed | i-648 | Ajustes template default5 guia<br>
+2020-12-30 : fixed | i-643 | validacion caracteres guia - api<br>
+2020-12-29 : fixed | i-722 | Ajuste etiquetas productos<br>
+2020-12-28 : fixed | i-710 | Ajuste reporte concar<br>
+2020-12-24 : fixed | i-695 | Ajuste actualizacion de estado - consulta cdr<br>
+2020-12-23 : fixed | i-698 | Ajuste calculo nc anulada - dashboard<br>
+2020-12-23 : fixed | i-679 | Ajustes reporte foxcont<br>
+2020-12-23 : fixed | Ajuste visualizar stock en pos<br>
+2020-12-23 : fixed | location | nuevo distrito<br>
+2020-12-22 : fixed | i-705 | Se modifica busqueda productos en cotizacion<br>
+2020-12-17 : fixed | tc | explode al tipo de cambio<br>
+2020-12-16 : fixed | tc | tasa de cambio (solucion temporal en base al txt de sunat)<br>
+2020-12-04 : fixed | i-620 | total cambia al ingresar monto<br>
+2020-12-03 : fixed | i-672 | Ajuste error n venta anuladas dashboard<br>
+2020-12-02 : fixed | i-645 | Ajuste suma al editar pedido<br>
+2020-12-01 : fixed | i-638 | Ajuste dashboard balance - n venta anuladas<br>
+2020-12-01 : fixed | i-646 | Ajuste guardar descripcion anulacion boleta<br>
+2020-12-01 : fixed | i-640 | Ajuste valores reporte foxcont<br>
+
+
+### feature
+2021-01-18 : feature | i-749 | Se agrego el campo marca al filtro en el reporte general de productos, y tambien en los pdfs y xlxs, compilando el js<br>
+2021-01-18 : feature | i-749 | Se agrego el campo marca al filtro en el reporte general de productos, y tambien en los pdfs y xlxs<br>
+2021-01-18 : feature | i-534 | Se agrego la sección de detalles para los productos en pack a los modelos de pdf default_2, model1, con_valor_unitario y font_sm<br>
+2021-01-18 : feature | i-777 | Se modificó la columna name y second_name para que acepten 600 caracteres<br>
+2021-01-15 : feature | i-774 | Se agregó el campo para agregar un alias al producto y solo mostrarlo en los pdfs, todo esto en las cotizaciones<br>
+2021-01-14 : feature | i-774 | Front listo, se agregó el editor wysiwyg al formulario de agregar productos a las cotizaciones<br>
+2021-01-08 : feature | i-754 | Se agregó el input para ingresar el código de barras al formulario de registro de productos, tambien se agregó la columna para subir los productos de forma masiva desde el excel items.xlsx<br>
+2021-01-05 : feature | i-737 | se agrega m.pago reporte documentos<br>
+2020-12-31 : feature | i-714 | Se agrega multidirecciones en cotizacion<br>
+2020-12-31 : feature | i-723 | Se agrega icbper en pos - configuracion en productos - ajustes form nuevo cpe<br>
+2020-12-30 : feature | i-728 | Se agrega filtros - ajustes exportacion xls clientes/proveedores - productos<br>
+2020-12-29 : feature | i-685 | Se agrega filtro establecimiento productos por agotarse - dashboard<br>
+2020-12-14 : feature | i-676 | restriccion de edicion para nota de venta con usuarios vendedores<br>
+2020-12-03 : feature | i-652 | Modificacion descripcion guia<br>
+2020-12-03 : feature | i-630 | si la serie no inicia con T, no se enviarán a sunat las guias de remision (pueden usarlo como doc interno para impresion de algun formato interno)<br>
+2020-12-03 : feature | i-620 | espacio en campos ventana items, se agrega campo total de solo visualización<br>
+2020-12-01 : feature | i-385 | Se agrega campos datos referencia en pos<br>
+2020-12-01 : feature | i-633 | Se agregan validaciones al registrar cliente - campo numero<br>
+
+
 ## 3.4.3
 
 ### docs

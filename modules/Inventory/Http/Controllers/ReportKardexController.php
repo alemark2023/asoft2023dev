@@ -170,6 +170,7 @@ class ReportKardexController extends Controller
         $d = $request->date_start;
         $a = $request->date_end;
         $item_id = $request->item_id;
+        $item = Item::findOrFail($request->item_id);
 
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
@@ -195,7 +196,7 @@ class ReportKardexController extends Controller
 
         $models = $this->models;
         $userWarehouse = auth()->user()->establishment_id;
-        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_id", 'userWarehouse'));
+        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact("reports", "company", "establishment", "balance","models", 'a', 'd',"item_id", 'userWarehouse', 'item'));
         $filename = 'Reporte_Kardex'.date('YmdHis');
 
         return $pdf->download($filename.'.pdf');
@@ -214,6 +215,7 @@ class ReportKardexController extends Controller
         $d = $request->date_start;
         $a = $request->date_end;
         $item_id = $request->item_id;
+        $item = Item::findOrFail($request->item_id);
 
         $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
@@ -246,6 +248,7 @@ class ReportKardexController extends Controller
             ->models($models)
             ->company($company)
             ->establishment($establishment)
+            ->item($item)
             ->download('ReporteKar'.Carbon::now().'.xlsx');
     }
 

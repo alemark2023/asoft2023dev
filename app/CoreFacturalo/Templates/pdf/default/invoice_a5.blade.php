@@ -384,17 +384,14 @@
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
-            <td class="text-center align-top">
-                1
-            </td>
+            <td class="text-center align-top">1</td>
             <td class="text-center align-top">NIU</td>
             <td class="text-left align-top">
                 ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
             </td>
+            <td class="text-right align-top"></td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-            <td class="text-right align-top">
-                0
-            </td>
+            <td class="text-right align-top">0</td>
             <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
         </tr>
         <tr>
