@@ -110,9 +110,15 @@
 
     @endif
     <tr>
-        <td>CLIENTE:</td>
-        <td>:</td>
-        <td>{{ $customer->name }}</td>
+        <td style="vertical-align: top;">CLIENTE</td>
+        <td style="vertical-align: top;">:</td>
+        <td style="vertical-align: top;">
+            {{ $customer->name }}
+            @if ($customer->internal_code ?? false)
+            <br>
+            <small>{{ $customer->internal_code ?? '' }}</small>
+            @endif
+        </td>
 
         @if ($document->detraction)
             <td width="120px">MÉTODO DE PAGO</td>
@@ -544,8 +550,16 @@
 
     </table>
 @endif
-
-
-
+@if ($document->terms_condition)
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
 </body>
 </html>

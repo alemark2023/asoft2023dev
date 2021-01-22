@@ -95,6 +95,7 @@
                             <el-option key="siscont" value="siscont" label="SISCONT"></el-option>
                             <el-option key="foxcont" value="foxcont" label="FOXCONT"></el-option>
                             <el-option key="contasis" value="contasis" label="CONTASIS"></el-option>
+                            <el-option key="adsoft" value="adsoft" label="ADSOFT"></el-option>
                         </el-select>
                     </div>
                 </div>

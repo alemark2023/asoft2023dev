@@ -1,16 +1,17 @@
 <?php
 namespace Modules\Account\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Tenant\Item;
+use Illuminate\Http\Request;
+use App\Models\Tenant\Document;
+use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
+use Modules\Account\Models\CompanyAccount;
+use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
-use App\Http\Controllers\Controller;
-use App\Models\Tenant\Document;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\Configuration;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Modules\Account\Models\CompanyAccount;
 
 class AccountController extends Controller
 {
@@ -31,11 +32,7 @@ class AccountController extends Controller
         $filename = 'Reporte_'.ucfirst($type).'_Ventas_'.date('YmdHis');
 
         switch ($type) {
-
             case 'concar':
-
-                // libxml_use_internal_errors(true);
-
                 $data = [
                     'records' => $this->getStructureConcar($this->getAllDocuments($d_start, $d_end)),
                 ];
@@ -43,8 +40,6 @@ class AccountController extends Controller
                 $report = (new ReportAccountingConcarExport)
                             ->data($data)
                             ->download($filename.'.xlsx');
-
-                // libxml_use_internal_errors(false);
 
                 return $report;
 
@@ -83,9 +78,56 @@ class AccountController extends Controller
                     ->data($data)
                     ->download($filename.'.xlsx');
 
+            case 'adsoft':
 
+                $data = [
+                    'records' => $this->getStructureAdsoft($records),
+                ];
+
+                return (new ReportAccountingAdsoftExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
         }
+    }
 
+    private function getStructureAdsoft($documents)
+    {
+        $rows = [];
+        foreach ($documents as $row)
+        {
+            $rows[] = [
+                'serie' => $row->series,
+                'numero' => $row->number,
+                'fecfac' => Carbon::parse($row->date_of_issue)->format('d/m/Y'),
+                'fecven' => Carbon::parse($row->invoice->date_of_due)->format('d/m/Y'),
+                'nro_ruc' => $row->customer->identity_document_type_id === '6' ? $row->customer->number : '',
+                'nombre' => $row->customer->name,
+                'tipdoc' => $row->document_type_id,
+                'tipmon' => strtoupper($row->currency_type->description),
+                'detrac' => '',
+                'imp_vta' => $row->state_type_id == '11' ? 0 : number_format($row->total, 2, '.', ''),
+                'isc' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
+                'icbper' => '',
+                'imp_ina' => 0,
+                'imp_exo' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
+                'imp_exp' => '',
+                'recargo' => '',
+                'imp_igv' => 0,
+                'imp_tot' => $row->state_type_id == '11' ? 0 : number_format($row->total, 2, '.', ''),
+                'st' => $row->state_type_id === '11' ? 'A' : '',
+                'ser_dqm' => '',
+                'nro_dqm' => '',
+                'fec_dqm' => '',
+                'tip_dqm' => '',
+                'serie_fin' => '',
+                'numero_fin' => '',
+                'nro_dni' => $row->customer->identity_document_type_id === '1' ? $row->customer->number : '',
+                'pasaporte' => '',
+                'cta_vta' => '',
+                'tip_cam' => '',
+            ];
+        }
+        return $rows;
     }
 
     private function getDocuments($d_start, $d_end)
@@ -145,16 +187,16 @@ class AccountController extends Controller
         $document_type = "";
 
         switch ($document_type_id) {
-            case '01': 
+            case '01':
                 $document_type = 'FT';
                 break;
-            case '03': 
+            case '03':
                 $document_type = 'BV';
                 break;
-            case '07': 
+            case '07':
                 $document_type = 'NA';
                 break;
-            case '08': 
+            case '08':
                 $document_type = 'ND';
                 break;
         }
@@ -226,7 +268,7 @@ class AccountController extends Controller
                         'col_U' => $date_of_due,
                         'col_V' => '',
                         'col_W' => $document_type_id.'-'.$row->number_full,
-                        // 'col_W' => $detail, 
+                        // 'col_W' => $detail,
                         'col_X' => '',
                         'col_Y' => '',
                         'col_Z' => $reference_document_type_id,
@@ -245,7 +287,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -290,7 +332,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -366,7 +408,7 @@ class AccountController extends Controller
                         'col_U' => $date_of_due,
                         'col_V' => '',
                         'col_W' => $document_type_id.'-'.$row->number_full,
-                        // 'col_W' => $detail, 
+                        // 'col_W' => $detail,
                         'col_X' => '',
                         'col_Y' => '',
                         'col_Z' => $reference_document_type_id,
@@ -385,7 +427,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
@@ -430,7 +472,7 @@ class AccountController extends Controller
                         'col_AM' => '',
                         'col_AN' => '',
                     ];
-    
+
                     $rows[] = [
                         // 'col_A' => '',
                         'col_B' => '05',
