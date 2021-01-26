@@ -30,7 +30,7 @@ mix.webpackConfig({
             '@viewsModuleOrder': path.resolve(__dirname, 'modules/Order/Resources/assets/js/views'),
             '@viewsModuleAccount': path.resolve(__dirname, 'modules/Account/Resources/assets/js/views'),
             '@viewsModuleItem': path.resolve(__dirname, 'modules/Item/Resources/assets/js/views'),
-
+            '@viewsModuleHotel': path.resolve(__dirname, 'modules/Hotel/Resources/assets/js/views'),
         }
     }
 }).sourceMaps()
