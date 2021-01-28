@@ -8,6 +8,8 @@ class HotelRoom extends ModelTenant
 {
 	protected $table = 'hotel_rooms';
 
+	public static $status = ['DISPONIBLE', 'MANTENIMIENTO', 'OCUPADO', 'LIMPIEZA'];
+
 	protected $fillable = ['name', 'hotel_category_id', 'hotel_floor_id', 'active', 'description'];
 
 	public function category()

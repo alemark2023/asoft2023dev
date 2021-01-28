@@ -252,6 +252,8 @@ Vue.component('tenant-hotel-categories', require('@viewsModuleHotel/categories/L
 Vue.component('tenant-hotel-floors', require('@viewsModuleHotel/floors/List.vue'));
 // Hoteles :: Habitaciones
 Vue.component('tenant-hotel-rooms', require('@viewsModuleHotel/rooms/List.vue'));
+// Hoteles :: Recepción
+Vue.component('tenant-hotel-reception', require('@viewsModuleHotel/rooms/Reception.vue'));
 
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
@@ -286,6 +288,11 @@ Vue.component('system-configuration-culqi', require('./views/system/configuratio
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
 Vue.mixin({
+    filters: {
+        toDecimals(number, decimal = 2) {
+            return Number(number).toFixed(decimal);
+        }
+    },
     methods: {
         axiosError(error) {
             const response = error.response;

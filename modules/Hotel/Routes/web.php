@@ -29,6 +29,15 @@ if ($hostname) {
 				Route::post('rooms/store', 'HotelRoomController@store');
 				Route::put('rooms/{id}/update', 'HotelRoomController@update');
 				Route::delete('rooms/{id}/delete', 'HotelRoomController@destroy');
+				Route::post('rooms/{id}/change-status', 'HotelRoomController@changeRoomStatus');
+
+				Route::get('rooms/tables', 'HotelRoomController@tables');
+
+				Route::get('rooms/{id}/rates', 'HotelRoomController@myRates');
+				Route::post('rooms/{id}/rates/store', 'HotelRoomController@addRateToRoom');
+				Route::delete('rooms/{id}/rates/{rateId}/delete', 'HotelRoomController@deleteRoomRate');
+
+				Route::get('reception', 'HotelRoomController@myRates');
 			});
 	});
 }

@@ -264,5 +264,7 @@ return [
 		'internal_code'                    => 'código interno',
 		'hotel_category_id'                => 'categoría',
 		'hotel_floor_id'                   => 'piso',
+		'hotel_rate_id'                    => 'tarifa',
+		'price'                            => 'precio'
 	],
 ];
