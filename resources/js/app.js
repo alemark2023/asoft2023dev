@@ -256,6 +256,8 @@ Vue.component('tenant-hotel-rooms', require('@viewsModuleHotel/rooms/List.vue'))
 Vue.component('tenant-hotel-reception', require('@viewsModuleHotel/rooms/Reception.vue'));
 // Hoteles :: Rentar habitación
 Vue.component('tenant-hotel-rent', require('@viewsModuleHotel/rooms/Rent.vue'));
+// Hoteles :: Agregar producto a la habitación rentada
+Vue.component('tenant-hotel-rent-add-product', require('@viewsModuleHotel/rooms/AddProductToRoom.vue'));
 
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));

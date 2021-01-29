@@ -62,6 +62,13 @@ class HotelRentController extends Controller
 		], 200);
 	}
 
+	public function showFormAddProduct($rentId)
+	{
+		$rent = HotelRent::findOrFail($rentId);
+		
+		return view('hotel::rooms.add-product-to-room', compact('rent'));
+	}
+
 	private function customers()
 	{
 		$customers = Person::with('addresses')

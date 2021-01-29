@@ -178,7 +178,7 @@
                 :class="{ 'has-danger': errors.rate_price }"
                 v-if="rate"
               >
-                <label for="rate">Tarifa</label>
+                <label for="rate">Precio</label>
                 <el-input-number
                   v-model="form.rate_price"
                   controls-position="right"
@@ -371,9 +371,7 @@ export default {
         output_time: "12:00",
         output_date: null,
       },
-      rate: {
-        price: 1,
-      },
+      rate: null,
       loading: false,
       showDialogNewPerson: false,
       input_person: {},
@@ -384,8 +382,7 @@ export default {
   },
   async mounted() {
     await this.onFetchTables();
-    const outputDate = moment().format("YYYY-MM-DD");
-    this.form.output_date = outputDate;
+    this.onUpdateOutputDate();
   },
   async created() {
     await this.$eventHub.$on("reloadDataPersons", (customerId) => {
@@ -421,6 +418,11 @@ export default {
     },
     onUpdateTotalToPay() {
       this.form.total_to_pay = this.form.rate_price * this.form.duration;
+      this.onUpdateOutputDate();
+    },
+    onUpdateOutputDate() {
+      const newDate = moment().add(this.form.duration, "days");
+      this.form.output_date = newDate.format("YYYY-MM-DD");
     },
     onSelectedRate() {
       const rate = this.room.rates
