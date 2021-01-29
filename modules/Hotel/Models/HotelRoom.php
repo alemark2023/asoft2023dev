@@ -17,6 +17,11 @@ class HotelRoom extends ModelTenant
 		return $this->belongsTo(HotelCategory::class, 'hotel_category_id')->select('id', 'description');
 	}
 
+	public function rates()
+	{
+		return $this->hasMany(HotelRoomRate::class);
+	}
+
 	public function floor()
 	{
 		return $this->belongsTo(HotelFloor::class, 'hotel_floor_id')->select('id', 'description');

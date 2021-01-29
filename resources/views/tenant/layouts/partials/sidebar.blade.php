@@ -953,6 +953,9 @@
                             <span>Hoteles</span>
                         </a>
                         <ul class="nav nav-children">
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'reception')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/reception') }}">Recepción</a>
+                            </li>
                             <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rates')) ? 'nav-active' : '' }}">
                                 <a class="nav-link" href="{{ url('hotels/rates') }}">Tarifas</a>
                             </li>

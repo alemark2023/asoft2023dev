@@ -254,6 +254,8 @@ Vue.component('tenant-hotel-floors', require('@viewsModuleHotel/floors/List.vue'
 Vue.component('tenant-hotel-rooms', require('@viewsModuleHotel/rooms/List.vue'));
 // Hoteles :: Recepción
 Vue.component('tenant-hotel-reception', require('@viewsModuleHotel/rooms/Reception.vue'));
+// Hoteles :: Rentar habitación
+Vue.component('tenant-hotel-rent', require('@viewsModuleHotel/rooms/Rent.vue'));
 
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));

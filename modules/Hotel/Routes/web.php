@@ -37,7 +37,11 @@ if ($hostname) {
 				Route::post('rooms/{id}/rates/store', 'HotelRoomController@addRateToRoom');
 				Route::delete('rooms/{id}/rates/{rateId}/delete', 'HotelRoomController@deleteRoomRate');
 
-				Route::get('reception', 'HotelRoomController@myRates');
+				Route::get('reception', 'HotelReceptionController@index');
+				Route::get('reception/tables', 'HotelRentController@tables');
+				Route::get('reception/tables/customers', 'HotelRentController@searchCustomers');
+				Route::get('reception/{roomId}/rent', 'HotelRentController@rent');
+				Route::post('reception/{roomId}/rent/store', 'HotelRentController@store');
 			});
 	});
 }
