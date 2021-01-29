@@ -244,6 +244,19 @@ Vue.component('system-companies-form', require('./views/system/companies/form.vu
 
 Vue.component('system-accounting-index', require('@viewsModuleAccount/system/accounting/index.vue'));
 
+// Hoteles :: Tarifas
+Vue.component('tenant-hotel-rates', require('@viewsModuleHotel/rates/List.vue'));
+// Hoteles :: Categorías
+Vue.component('tenant-hotel-categories', require('@viewsModuleHotel/categories/List.vue'));
+// Hoteles :: Pisos
+Vue.component('tenant-hotel-floors', require('@viewsModuleHotel/floors/List.vue'));
+// Hoteles :: Habitaciones
+Vue.component('tenant-hotel-rooms', require('@viewsModuleHotel/rooms/List.vue'));
+// Hoteles :: Recepción
+Vue.component('tenant-hotel-reception', require('@viewsModuleHotel/rooms/Reception.vue'));
+// Hoteles :: Rentar habitación
+Vue.component('tenant-hotel-rent', require('@viewsModuleHotel/rooms/Rent.vue'));
+
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
@@ -276,6 +289,28 @@ Vue.component('system-configuration-culqi', require('./views/system/configuratio
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
+Vue.mixin({
+    filters: {
+        toDecimals(number, decimal = 2) {
+            return Number(number).toFixed(decimal);
+        }
+    },
+    methods: {
+        axiosError(error) {
+            const response = error.response;
+            const status = response.status;
+            if (status === 422) {
+                this.errors = response.data
+            }
+            if (status === 500) {
+                this.$message({
+                    type: 'info',
+                    message: response.data.message
+                  });          
+            }
+        }
+    }
+})
 const app = new Vue({
     el: '#main-wrapper'
 });

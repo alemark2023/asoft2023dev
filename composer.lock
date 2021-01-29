@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a170207a94e57bd9066ee9ebff7227a2",
+    "content-hash": "7c5570c6e86f51b45282db2359ae0153",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6225,6 +6225,45 @@
             "time": "2020-07-14T17:54:18+00:00"
         },
         {
+            "name": "yoelcerna/hotels",
+            "version": "dev-i-667",
+            "dist": {
+                "type": "path",
+                "url": "packages/yoelcerna/hotels",
+                "reference": "f768e6f90e2747f14602c8953607d43d2154cb0b"
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "YoelCerna\\Hotels\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "YoelCerna\\Hotels\\Tests\\": "tests"
+                }
+            },
+            "license": [
+                "GPL"
+            ],
+            "authors": [
+                {
+                    "name": "Juan Yoel Cerna Torres",
+                    "email": "joel_20_10@hotmail.com"
+                }
+            ],
+            "description": "Implemente el m\u0000dulo de hoteles al pro3",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "zanysoft/laravel-zip",
             "version": "1.0.3",
             "source": {
@@ -8179,11 +8218,14 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "yoelcerna/hotels": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.1.3"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }
