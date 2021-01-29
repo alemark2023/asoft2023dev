@@ -41,15 +41,15 @@
         <hr>
         <div class="row">
           <div class="col-6 col-md-3 mb-4" v-for="ro in items" :key="ro.id">
-            <el-card :class="onGetColorStatus(ro.status)">
+            <el-card :class="onGetColorStatus(ro.status)" style="min-height: 160px;">
               <div slot="header" class="d-flex align-items-center justify-content-between">
-                <span>{{ ro.name }}</span>
-                <!-- <el-button v-if="ro.status !== 'MANTENIMIENTO'" style="float: right; padding: 3px 0" type="text"
+                <span>{{ ro.status }}: {{ ro.name }}</span>
+                <el-button v-if="ro.status === 'OCUPADO'" style="float: right;" type="primary"
                   >
-                  <i class="fa fa-arrow-left"></i>
+                  <i class="fa fa-arrow-circle-right"></i>
                   </el-button
-                > -->
-                <el-button v-if="ro.status === 'DISPONIBLE'" style="float: right;" type="primary" @click="onToRent(ro.id)"
+                >
+                <el-button v-if="ro.status === 'DISPONIBLE'" style="float: right;" type="primary" @click="onToRent(ro)"
                   >
                   <i class="fa fa-arrow-circle-left"></i>
                   </el-button
@@ -59,16 +59,31 @@
                 <i class="fa fa-bed fa-2x mt-2"></i>
                 <span class="h3 ml-3">{{ ro.name }}</span>
               </div>
+              <div class="d-flex justify-content-center align-items-center" v-if="ro.status === 'OCUPADO'">
+                <i class="fa fa-user-tie fa-2x"></i>
+                <span class="h6 ml-3">{{ ro.customer.customer.name }}</span>
+              </div>
             </el-card>
           </div>
         </div>
       </div>
     </div>
+    <ModalRoomRates
+      :room="room"
+      :visible.sync="openModalRoomRates"
+      @onAddRoomRate="onAddRoomRate"
+      @onDeleteRate="onDeleteRate"
+    ></ModalRoomRates>
   </div>
 </template>
 
 <script>
+import ModalRoomRates from "./RoomRates";
+
 export default {
+  components: {
+    ModalRoomRates,
+  },
   props: {
     roomStatus: {
       type: Array,
@@ -88,7 +103,9 @@ export default {
     return {
       hotel_floor_id: "",
       loading: false,
-      items: []
+      items: [],
+      room: null,
+      openModalRoomRates: false,
     };
   },
   mounted() {
@@ -100,8 +117,19 @@ export default {
     }
   },
   methods: {
-    onToRent(roomId) {
-      window.location.href = `/hotels/reception/${roomId}/rent`;
+    onDeleteRate(rateId) {
+      this.room.rates = this.room.rates.filter(r => r.id !== rateId);
+    },
+    onAddRoomRate(rate) {
+      this.room.rates.push(rate);
+    },
+    onToRent(room) {
+      if (room.rates.length > 0) {
+        window.location.href = `/hotels/reception/${room.id}/rent`;
+      } else {
+        this.room = room;
+        this.openModalRoomRates = true;
+      }
     },
     onFilterByStatus(status = '') {
       this.loading = true;

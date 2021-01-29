@@ -115,7 +115,10 @@ export default {
       title: "",
       loading: false,
       errors: {},
-      form: {},
+      form: {
+        hotel_rate_id: "",
+        price: 0,
+      },
       roomRates: [],
       addMode: false,
     };
@@ -140,6 +143,7 @@ export default {
                 message: response.data.message,
               });
               this.roomRates = this.roomRates.filter((r) => r.id !== rate.id);
+              this.$emit("onDeleteRate", rate.id);
             })
             .catch((error) => {
               this.axiosError(error);
@@ -165,6 +169,11 @@ export default {
         .post(`/hotels/rooms/${this.room.id}/rates/store`, this.form)
         .then((response) => {
           this.roomRates.push(response.data.room_rate);
+          this.form = {
+            hotel_rate_id: "",
+            price: 0,
+          };
+          this.$emit("onAddRoomRate", response.data.room_rate);
         })
         .catch((error) => {
           this.axiosError(error);

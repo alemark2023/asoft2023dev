@@ -5,29 +5,20 @@ namespace Modules\Hotel\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Modules\Hotel\Models\HotelRoom;
 use Modules\Hotel\Models\HotelFloor;
+use Modules\Hotel\Models\HotelRent;
 
 class HotelReceptionController extends Controller
 {
 	public function index()
 	{
-		$rooms = HotelRoom::with('category', 'floor');
+		$rooms = $this->getRooms();
 
 		if (request()->ajax()) {
-			if (request('hotel_floor_id')) {
-				$rooms = $rooms->where('hotel_floor_id', request('hotel_floor_id'));
-			}
-			if (request('status')) {
-				$rooms = $rooms->where('status', request('status'));
-			}
-
 			return response()->json([
 				'success' => true,
-				'rooms'   => $rooms->get(),
+				'rooms'   => $rooms,
 			], 200);
 		}
-
-		$rooms = $rooms->get();
-
 		$floors = HotelFloor::where('active', true)
 				->orderBy('description')
 				->get();
@@ -35,5 +26,31 @@ class HotelReceptionController extends Controller
 		$roomStatus = HotelRoom::$status;
 
 		return view('hotel::rooms.reception', compact('rooms', 'floors', 'roomStatus'));
+	}
+
+	private function getRooms()
+	{
+		$rooms = HotelRoom::with('category', 'floor', 'rates');
+
+		if (request('hotel_floor_id')) {
+			$rooms = $rooms->where('hotel_floor_id', request('hotel_floor_id'));
+		}
+		if (request('status')) {
+			$rooms = $rooms->where('status', request('status'));
+		}
+
+		$rooms = $rooms->get()->each(function ($room) {
+			if ($room->status === 'OCUPADO') {
+				$client = HotelRent::where('hotel_room_id', $room->id)
+					->first();
+				$room->customer = $client;
+			} else {
+				$room->customer = [];
+			}
+
+			return $room;
+		});
+
+		return $rooms;
 	}
 }
