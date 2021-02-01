@@ -121,6 +121,7 @@ class HotelRentController extends Controller
 	{
 		$rent = HotelRent::with('room', 'room.category')
 			->findOrFail($rentId);
+		$room = $rent;
 
 		return view('hotel::rooms.checkout', compact('rent'));
 	}

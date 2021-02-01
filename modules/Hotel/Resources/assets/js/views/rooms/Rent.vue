@@ -342,6 +342,8 @@ export default {
         total_to_pay: 0,
         output_time: "12:00",
         output_date: null,
+        payment_status: 'PAID',
+        quantity_persons: 2,
       },
       rate: null,
       loading: false,

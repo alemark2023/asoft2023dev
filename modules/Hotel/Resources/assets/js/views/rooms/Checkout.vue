@@ -64,6 +64,29 @@
               </li>
             </ul>
           </div>
+          <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th colspan="5">Costo del alojamiento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#</td>
+                            <td>Costo por tarifa</td>
+                            <td>Cant. noches</td>
+                            <td>Carga por salir tarde</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+              </div>
+          </div>
           <div class="col-12 pt-3">
               <el-button :loading="loading" :disabled="loading" type="primary">
                   <i class="fa fa-save"></i>
