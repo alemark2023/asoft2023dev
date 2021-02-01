@@ -56,7 +56,7 @@
               >
                 <span>{{ ro.status }}: {{ ro.name }}</span>
                 <template v-if="ro.status === 'OCUPADO'">
-                  <el-button style="margin-left: auto;" type="primary" title="Crear comprobante">
+                  <el-button style="margin-left: auto;" type="primary" title="Ir al checkout" @click="onGoToCheckout(ro)">
                     <i class="fa fa-arrow-circle-right"></i>
                   </el-button>
                   <el-button style="margin-left: .5rem" type="primary" title="Agregar productos" @click="onGoToAddProducts(ro)">
@@ -83,7 +83,7 @@
                 v-if="ro.status === 'OCUPADO'"
               >
                 <i class="fa fa-user-tie fa-2x"></i>
-                <span class="h6 ml-3">{{ ro.customer.customer.name }}</span>
+                <span class="h6 ml-3">{{ ro.rent.customer.name }}</span>
               </div>
             </el-card>
           </div>
@@ -139,8 +139,11 @@ export default {
     },
   },
   methods: {
+    onGoToCheckout(room) {
+      window.location.href = `/hotels/reception/${room.rent.id}/rent/checkout`;
+    },
     onGoToAddProducts(room) {
-      window.location.href = `/hotels/reception/${room.id}/rent/products`;
+      window.location.href = `/hotels/reception/${room.rent.id}/rent/products`;
     },
     onDeleteRate(rateId) {
       this.room.rates = this.room.rates.filter((r) => r.id !== rateId);

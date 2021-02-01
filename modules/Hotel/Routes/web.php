@@ -43,6 +43,8 @@ if ($hostname) {
 				Route::get('reception/{roomId}/rent', 'HotelRentController@rent');
 				Route::post('reception/{roomId}/rent/store', 'HotelRentController@store');
 				Route::get('reception/{id}/rent/products', 'HotelRentController@showFormAddProduct');
+				Route::post('reception/{id}/rent/products/store', 'HotelRentController@addProductsToRoom');
+				Route::get('reception/{id}/rent/checkout', 'HotelRentController@showFormChekout');
 			});
 	});
 }

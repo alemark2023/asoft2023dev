@@ -258,6 +258,8 @@ Vue.component('tenant-hotel-reception', require('@viewsModuleHotel/rooms/Recepti
 Vue.component('tenant-hotel-rent', require('@viewsModuleHotel/rooms/Rent.vue'));
 // Hoteles :: Agregar producto a la habitación rentada
 Vue.component('tenant-hotel-rent-add-product', require('@viewsModuleHotel/rooms/AddProductToRoom.vue'));
+// Hoteles :: Checkout
+Vue.component('tenant-hotel-rent-checkout', require('@viewsModuleHotel/rooms/Checkout.vue'));
 
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
@@ -291,10 +293,27 @@ Vue.component('system-configuration-culqi', require('./views/system/configuratio
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
+import moment from 'moment';
+
 Vue.mixin({
     filters: {
         toDecimals(number, decimal = 2) {
             return Number(number).toFixed(decimal);
+        },
+        toDate(date) {
+            if (date) {
+                return moment(date).format('DD/MM/YYYY');
+            }
+            return '';
+        },
+        toTime(time) {
+            if (time) {
+                if (time.length === 5) {
+                    return moment(time + ':00', 'HH:mm:ss').format('HH:mm:ss');
+                }
+                return moment(time, 'HH:mm:ss').format('HH:mm:ss');
+            }
+            return '';
         }
     },
     methods: {
@@ -308,7 +327,7 @@ Vue.mixin({
                 this.$message({
                     type: 'info',
                     message: response.data.message
-                  });          
+                  });
             }
         }
     }
