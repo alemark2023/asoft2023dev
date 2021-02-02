@@ -56,15 +56,32 @@
               >
                 <span>{{ ro.status }}: {{ ro.name }}</span>
                 <template v-if="ro.status === 'LIMPIEZA'">
-                  <el-button style="margin-left: auto;" type="primary" title="Ir al checkout">
-                    <i class="fa fa-arrow-circle-right"></i>
+                  <el-button
+                    style="margin-left: auto"
+                    type="primary"
+                    title="Ir al checkout"
+                    :loading="loading"
+                    :disabled="loading"
+                    @click="onFinalizeClean(ro)"
+                  >
+                    <i class="fa fa-broom"></i>
                   </el-button>
                 </template>
                 <template v-if="ro.status === 'OCUPADO'">
-                  <el-button style="margin-left: auto;" type="primary" title="Ir al checkout" @click="onGoToCheckout(ro)">
+                  <el-button
+                    style="margin-left: auto"
+                    type="primary"
+                    title="Ir al checkout"
+                    @click="onGoToCheckout(ro)"
+                  >
                     <i class="fa fa-arrow-circle-right"></i>
                   </el-button>
-                  <el-button style="margin-left: .5rem" type="primary" title="Agregar productos" @click="onGoToAddProducts(ro)">
+                  <el-button
+                    style="margin-left: 0.5rem"
+                    type="primary"
+                    title="Agregar productos"
+                    @click="onGoToAddProducts(ro)"
+                  >
                     <i class="fa fa-plus-circle"></i>
                   </el-button>
                 </template>
@@ -144,6 +161,37 @@ export default {
     },
   },
   methods: {
+    onFinalizeClean(room) {
+      const text = `Está a punto de terminar la limpieza de la habitación ${room.name}`;
+      this.$confirm(text, "Atención", {
+        confirmButtonText: "Si",
+        cancelButtonText: "No",
+        type: "warning",
+      })
+        .then(() => {
+          this.loading = true;
+          const payload = {
+            status: "DISPONIBLE",
+          };
+          this.$http
+            .post(`/hotels/rooms/${room.id}/change-status`, payload)
+            .then((response) => {
+              room.status = "DISPONIBLE";
+              this.items = this.items.map((r) => {
+                if (r.id === room.id) {
+                  return room;
+                }
+                return r;
+              });
+              this.$message({
+                type: "success",
+                message: response.data.message,
+              });
+            })
+            .finally(() => (this.loading = false));
+        })
+        .catch();
+    },
     onGoToCheckout(room) {
       window.location.href = `/hotels/reception/${room.rent.id}/rent/checkout`;
     },
