@@ -11,7 +11,7 @@
 
     if($config->formats == "citec")
     {
-        $miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'pape_membretado.jpg');
+        $miimage = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'citec'.DIRECTORY_SEPARATOR.'papel_membretado.jpg');
     }
 
 
