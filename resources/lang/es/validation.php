@@ -273,5 +273,6 @@ return [
 		'quantity_persons'                         => 'cantidad de personas',
 		'payment_status'                           => 'estado de pago',
 		'output_time'                              => 'hora de salida',
+		'products'                                 => 'productos',
 	],
 ];

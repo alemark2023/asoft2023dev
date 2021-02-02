@@ -17,10 +17,10 @@ class HotelRent extends ModelTenant
 		'duration',
 		'quantity_persons',
 		'payment_status',
-		'payment_type',
-		'payment_number_operation',
 		'output_date',
 		'output_time',
+		'input_date',
+		'input_time',
 	];
 
 	public function getCustomerAttribute($value)
@@ -31,5 +31,15 @@ class HotelRent extends ModelTenant
 	public function setCustomerAttribute($value)
 	{
 		$this->attributes['customer'] = (is_null($value)) ? null : json_encode($value);
+	}
+
+	public function room()
+	{
+		return $this->belongsTo(HotelRoom::class, 'hotel_room_id');
+	}
+
+	public function items()
+	{
+		return $this->hasMany(HotelRentItem::class, 'hotel_rent_id');
 	}
 }

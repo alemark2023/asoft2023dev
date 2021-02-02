@@ -178,7 +178,7 @@
                 :class="{ 'has-danger': errors.rate_price }"
                 v-if="rate"
               >
-                <label for="rate">Tarifa</label>
+                <label for="rate">Precio</label>
                 <el-input-number
                   v-model="form.rate_price"
                   controls-position="right"
@@ -255,39 +255,6 @@
               </div>
               <div
                 class="col-6 col-md-3 form-group"
-                :class="{ 'has-danger': errors.payment_type }"
-                v-if="form.payment_status === 'PAID'"
-              >
-                <label>Medio de pago</label>
-                <el-select v-model="form.payment_type">
-                  <el-option value="CASH" label="Efectivo"></el-option>
-                  <el-option value="CARD" label="Tarjeta"></el-option>
-                  <el-option value="DEPOSIT" label="Depósito"></el-option>
-                </el-select>
-                <small
-                  class="form-control-feedback"
-                  v-if="errors.payment_type"
-                  v-text="errors.payment_type[0]"
-                ></small>
-              </div>
-              <div
-                class="col-6 col-md-3 form-group"
-                :class="{ 'has-danger': errors.payment_number_operation }"
-                v-if="
-                  form.payment_type === 'CARD' ||
-                  form.payment_type === 'DEPOSIT'
-                "
-              >
-                <label>Nro operación </label>
-                <el-input v-model="form.payment_number_operation"></el-input>
-                <small
-                  class="form-control-feedback"
-                  v-if="errors.payment_number_operation"
-                  v-text="errors.payment_number_operation[0]"
-                ></small>
-              </div>
-              <div
-                class="col-6 col-md-3 form-group"
                 :class="{ 'has-danger': errors.output_date }"
               >
                 <label>Fecha de salida</label>
@@ -344,6 +311,7 @@
 <script>
 import PersonForm from "../../../../../../../resources/js/views/tenant/persons/form.vue";
 import moment from "moment";
+import { calculateRowItem } from "../../../../../../../resources/js/helpers/functions";
 
 export default {
   components: {
@@ -354,6 +322,10 @@ export default {
       type: Object,
       required: true,
       default: {},
+    },
+    affectationIgvTypes: {
+      type: Array,
+      required: true,
     },
   },
   data() {
@@ -370,10 +342,10 @@ export default {
         total_to_pay: 0,
         output_time: "12:00",
         output_date: null,
+        payment_status: 'PAID',
+        quantity_persons: 2,
       },
-      rate: {
-        price: 1,
-      },
+      rate: null,
       loading: false,
       showDialogNewPerson: false,
       input_person: {},
@@ -384,8 +356,7 @@ export default {
   },
   async mounted() {
     await this.onFetchTables();
-    const outputDate = moment().format("YYYY-MM-DD");
-    this.form.output_date = outputDate;
+    this.onUpdateOutputDate();
   },
   async created() {
     await this.$eventHub.$on("reloadDataPersons", (customerId) => {
@@ -393,23 +364,57 @@ export default {
     });
   },
   methods: {
-    onSubmit() {
+    async onSubmit() {
       this.loading = true;
-      this.$http
-        .post(`/hotels/reception/${this.room.id}/rent/store`, this.form)
+      await this.$http
+        .get(`/documents/search/item/${this.room.item_id}`)
         .then((response) => {
-          this.$message({
-            message: response.data.message,
-            type: "success",
+          const payload = {};
+          const item = response.data.items[0];
+          payload.item = item;
+          payload.discounts = [];
+          payload.charges = [];
+          payload.attributes = [];
+          payload.item_unit_types = item.item_unit_types;
+          payload.unit_price_value = this.form.rate_price;
+          payload.has_igv = item.has_igv;
+          payload.has_plastic_bag_taxes = item.has_plastic_bag_taxes;
+          payload.affectation_igv_type_id = item.sale_affectation_igv_type_id;
+          payload.quantity = this.form.duration;
+          const unit_price = item.has_igv
+            ? payload.unit_price_value
+            : payload.unit_price_value * 1.18;
+          payload.input_unit_price_value = payload.unit_price_value;
+          payload.unit_price = unit_price;
+          payload.item.unit_price = unit_price;
+          payload.affectation_igv_type = _.find(this.affectationIgvTypes, {
+            id: payload.affectation_igv_type_id,
           });
-          this.onToBackPage();
+          const currencyTypeIdActive = "PEN";
+          const exchangeRateSale = 0;
+          const product = calculateRowItem(
+            payload,
+            currencyTypeIdActive,
+            exchangeRateSale
+          );
+          this.form.product = product;
+          this.$http
+            .post(`/hotels/reception/${this.room.id}/rent/store`, this.form)
+            .then((response) => {
+              this.$message({
+                message: response.data.message,
+                type: "success",
+              });
+              this.onToBackPage();
+            })
+            .catch((error) => {
+              this.axiosError(error);
+            })
+            .finally(() => {
+              this.loading = false;
+            });
         })
-        .catch((error) => {
-          this.axiosError(error);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+        .finally(() => (this.loading = false));
     },
     onToBackPage() {
       window.location.href = "/hotels/reception";
@@ -421,6 +426,11 @@ export default {
     },
     onUpdateTotalToPay() {
       this.form.total_to_pay = this.form.rate_price * this.form.duration;
+      this.onUpdateOutputDate();
+    },
+    onUpdateOutputDate() {
+      const newDate = moment().add(this.form.duration, "days");
+      this.form.output_date = newDate.format("YYYY-MM-DD");
     },
     onSelectedRate() {
       const rate = this.room.rates

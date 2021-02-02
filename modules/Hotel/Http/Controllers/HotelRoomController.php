@@ -67,7 +67,7 @@ class HotelRoomController extends Controller
 	 */
 	public function store(HotelRoomRequest $request)
 	{
-		$room = HotelRoom::create($request->only('description', 'active', 'name', 'hotel_category_id', 'hotel_floor_id'));
+		$room = HotelRoom::create($request->only('description', 'active', 'name', 'hotel_category_id', 'hotel_floor_id', 'item_id'));
 		$room->status = 'DISPONIBLE';
 		$room->load('category', 'floor');
 

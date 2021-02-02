@@ -5,9 +5,13 @@ namespace Modules\Hotel\Http\Controllers;
 use App\Models\Tenant\Person;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\Hotel\Http\Requests\HotelRentRequest;
 use Modules\Hotel\Models\HotelRent;
 use Modules\Hotel\Models\HotelRoom;
+use App\Models\Tenant\Configuration;
+use Modules\Hotel\Models\HotelRentItem;
+use Modules\Hotel\Http\Requests\HotelRentRequest;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use Modules\Hotel\Http\Requests\HotelRentItemRequest;
 
 class HotelRentController extends Controller
 {
@@ -16,7 +20,9 @@ class HotelRentController extends Controller
 		$room = HotelRoom::with('category', 'rates.rate')
 			->findOrFail($roomId);
 
-		return view('hotel::rooms.rent', compact('room'));
+		$affectation_igv_types = AffectationIgvType::whereActive()->get();
+
+		return view('hotel::rooms.rent', compact('room', 'affectation_igv_types'));
 	}
 
 	public function store(HotelRentRequest $request, $roomId)
@@ -32,10 +38,22 @@ class HotelRentController extends Controller
 			}
 
 			$request->merge(['hotel_room_id' => $roomId]);
-			HotelRent::create($request->only('customer_id', 'customer', 'notes', 'towels', 'hotel_room_id', 'duration', 'quantity_persons', 'payment_status', 'payment_type', 'payment_number_operation', 'output_date', 'output_time'));
+			$now = now();
+			$request->merge(['input_date' => $now->format('Y-m-d')]);
+			$request->merge(['input_time' => $now->format('H:i:s')]);
+			$rent = HotelRent::create($request->only('customer_id', 'customer', 'notes', 'towels', 'hotel_room_id', 'duration', 'quantity_persons', 'payment_status', 'output_date', 'output_time', 'input_date', 'input_time'));
 
 			$room->status = 'OCUPADO';
 			$room->save();
+
+			// Agregando la habitación a la lista de productos
+			$item = new HotelRentItem();
+			$item->type = 'HAB';
+			$item->hotel_rent_id = $rent->id;
+			$item->item_id = $request->product['item_id'];
+			$item->item = $request->product;
+			$item->payment_status = $request->payment_status;
+			$item->save();
 
 			DB::connection('tenant')->commit();
 
@@ -59,6 +77,76 @@ class HotelRentController extends Controller
 
 		return response()->json([
 			'customers' => $customers,
+		], 200);
+	}
+
+	public function showFormAddProduct($rentId)
+	{
+		$rent = HotelRent::with('room')
+			->findOrFail($rentId);
+
+		$configuration = Configuration::first();
+
+		$products = HotelRentItem::where('hotel_rent_id', $rentId)
+			->where('type', 'PRO')
+			->get();
+
+		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products'));
+	}
+
+	public function addProductsToRoom(HotelRentItemRequest $request, $rentId)
+	{
+		foreach ($request->products as $product) {
+			$item = HotelRentItem::where('hotel_rent_id', $rentId)
+				->where('item_id', $product['item_id'])
+				->first();
+			if (!$item) {
+				$item = new HotelRentItem();
+				$item->type = 'PRO';
+				$item->hotel_rent_id = $rentId;
+				$item->item_id = $product['item_id'];
+			}
+			$item->item = $product;
+			$item->payment_status = $product['payment_status'];
+			$item->save();
+		}
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Información actualizada.'
+		], 200);
+	}
+
+	public function showFormChekout($rentId)
+	{
+		$rent = HotelRent::with('room', 'room.category', 'items')
+			->findOrFail($rentId);
+
+		$token = auth()->user()->api_token;
+
+		$room = $rent->items->firstWhere('type', 'HAB');
+
+		$customer = Person::withOut('department', 'province', 'district')
+			->findOrFail($rent->customer_id);
+
+		return view('hotel::rooms.checkout', compact('rent', 'room', 'token', 'customer'));
+	}
+
+	public function finalizeRent($rentId)
+	{
+		$rent = HotelRent::findOrFail($rentId);
+		$rent->update([
+			'arrears' => request('arrears'),
+			'status'  => 'FINALIZADO'
+		]);
+		HotelRoom::where('id', $rent->hotel_room_id)
+			->update([
+				'status' => 'LIMPIEZA'
+			]);
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Información procesada de forma correcta.'
 		], 200);
 	}
 
