@@ -129,7 +129,7 @@ class HotelRoomController extends Controller
 
 		return response()->json([
 			'success' => true,
-			'message' => 'Información actualizada'
+			'message' => 'La habitación cambió su estado a DISPONIBLE',
 		], 200);
 	}
 

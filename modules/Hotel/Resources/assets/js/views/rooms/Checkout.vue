@@ -282,7 +282,7 @@ export default {
       const items = itemsHard.map((i) => {
         const description =
           i.type === "HAB"
-            ? `${i.item.item.description} x ${this.room.item.quantity}`
+            ? `${i.item.item.description} x ${this.room.item.quantity} noche(s)`
             : i.item.item.description;
         return {
           codigo_interno: i.item.item.internal_id || "",
