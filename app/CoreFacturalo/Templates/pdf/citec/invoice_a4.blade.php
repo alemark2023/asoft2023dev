@@ -35,7 +35,7 @@
 <div style="z-index: 1; position: absolute;width: 280px; left: 410px;">
         <div class="pb-4 pt-2 px-3 text-center" style="background-color: rgb(40,87,165);">
                 <h3 style="color:white;font-weight:bold" class="text-center">R.U.C. {{$company->number }}</h3>
-                <h3  style="color:white;font-weight:bold" class="text-center">{{ $document->document_type->description }}</h3>
+                <h3  style="color:white;font-weight:bold;{{$document->document_type->id == '03' ? 'font-size: 14px;' : ''}}" class="text-center">{{ $document->document_type->description }}</h3>
                 <h3  style="color:white;font-weight:bold" class="text-center">{{ $document_number }}</h3>
         </div>
 </div>
