@@ -37,4 +37,9 @@ class HotelRent extends ModelTenant
 	{
 		return $this->belongsTo(HotelRoom::class, 'hotel_room_id');
 	}
+
+	public function items()
+	{
+		return $this->hasMany(HotelRentItem::class, 'hotel_rent_id');
+	}
 }

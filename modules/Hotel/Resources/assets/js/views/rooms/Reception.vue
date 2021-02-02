@@ -55,6 +55,11 @@
                 class="d-flex align-items-center justify-content-between"
               >
                 <span>{{ ro.status }}: {{ ro.name }}</span>
+                <template v-if="ro.status === 'LIMPIEZA'">
+                  <el-button style="margin-left: auto;" type="primary" title="Ir al checkout">
+                    <i class="fa fa-arrow-circle-right"></i>
+                  </el-button>
+                </template>
                 <template v-if="ro.status === 'OCUPADO'">
                   <el-button style="margin-left: auto;" type="primary" title="Ir al checkout" @click="onGoToCheckout(ro)">
                     <i class="fa fa-arrow-circle-right"></i>

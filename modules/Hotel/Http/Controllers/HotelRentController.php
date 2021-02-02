@@ -119,11 +119,35 @@ class HotelRentController extends Controller
 
 	public function showFormChekout($rentId)
 	{
-		$rent = HotelRent::with('room', 'room.category')
+		$rent = HotelRent::with('room', 'room.category', 'items')
 			->findOrFail($rentId);
-		$room = $rent;
 
-		return view('hotel::rooms.checkout', compact('rent'));
+		$token = auth()->user()->api_token;
+
+		$room = $rent->items->firstWhere('type', 'HAB');
+
+		$customer = Person::withOut('department', 'province', 'district')
+			->findOrFail($rent->customer_id);
+
+		return view('hotel::rooms.checkout', compact('rent', 'room', 'token', 'customer'));
+	}
+
+	public function finalizeRent($rentId)
+	{
+		$rent = HotelRent::findOrFail($rentId);
+		$rent->update([
+			'arrears' => request('arrears'),
+			'status'  => 'FINALIZADO'
+		]);
+		HotelRoom::where('id', $rent->hotel_room_id)
+			->update([
+				'status' => 'LIMPIEZA'
+			]);
+
+		return response()->json([
+			'success' => true,
+			'message' => 'Información procesada de forma correcta.'
+		], 200);
 	}
 
 	private function customers()

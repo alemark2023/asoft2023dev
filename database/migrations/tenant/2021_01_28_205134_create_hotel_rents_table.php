@@ -22,6 +22,8 @@ class CreateHotelRentsTable extends Migration
 			$table->unsignedInteger('hotel_room_id');
 			$table->integer('duration')->default(1);
 			$table->integer('quantity_persons')->default(1);
+			$table->string('payment_type', 10)->nullable();
+			$table->string('payment_number_operation', 20)->nullable();
 			$table->string('payment_status', 10);
 			$table->date('output_date');
 			$table->string('output_time', 8);

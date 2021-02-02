@@ -261,7 +261,6 @@ Vue.component('tenant-hotel-rent-add-product', require('@viewsModuleHotel/rooms/
 // Hoteles :: Checkout
 Vue.component('tenant-hotel-rent-checkout', require('@viewsModuleHotel/rooms/Checkout.vue'));
 
-
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
