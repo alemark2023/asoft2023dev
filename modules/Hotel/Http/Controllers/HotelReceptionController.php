@@ -41,11 +41,12 @@ class HotelReceptionController extends Controller
 
 		$rooms = $rooms->get()->each(function ($room) {
 			if ($room->status === 'OCUPADO') {
-				$client = HotelRent::where('hotel_room_id', $room->id)
+				$rent = HotelRent::where('hotel_room_id', $room->id)
+					->orderBy('id', 'DESC')
 					->first();
-				$room->customer = $client;
+				$room->rent = $rent;
 			} else {
-				$room->customer = [];
+				$room->rent = [];
 			}
 
 			return $room;

@@ -28,8 +28,11 @@
             id="category"
             class="form-control"
             v-model="form.hotel_category_id"
-            :class="{ 'is-invalid': errors.hotel_category_id }">
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.description }}</option>
+            :class="{ 'is-invalid': errors.hotel_category_id }"
+          >
+            <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+              {{ cat.description }}
+            </option>
           </select>
           <div v-if="errors.hotel_category_id" class="invalid-feedback">
             {{ errors.hotel_category_id[0] }}
@@ -42,8 +45,11 @@
             id="floor"
             class="form-control"
             v-model="form.hotel_floor_id"
-            :class="{ 'is-invalid': errors.hotel_floor_id }">
-            <option v-for="flo in floors" :key="flo.id" :value="flo.id">{{ flo.description }}</option>
+            :class="{ 'is-invalid': errors.hotel_floor_id }"
+          >
+            <option v-for="flo in floors" :key="flo.id" :value="flo.id">
+              {{ flo.description }}
+            </option>
           </select>
           <div v-if="errors.hotel_floor_id" class="invalid-feedback">
             {{ errors.hotel_floor_id[0] }}
@@ -52,12 +58,13 @@
         <div class="form-group">
           <label for="description">Detalles</label>
           <textarea
-          rows="3"
+            rows="3"
             type="text"
             id="description"
             class="form-control"
             v-model="form.description"
-            :class="{ 'is-invalid': errors.description }">
+            :class="{ 'is-invalid': errors.description }"
+          >
           </textarea>
           <div v-if="errors.description" class="invalid-feedback">
             {{ errors.description[0] }}
@@ -102,11 +109,11 @@ export default {
     },
     categories: {
       type: Array,
-      required: true
+      required: true,
     },
     floors: {
       type: Array,
-      required: true
+      required: true,
     },
   },
   data() {
@@ -136,19 +143,71 @@ export default {
     },
     onStore() {
       this.loading = true;
+      const payload = {
+        account_id: null,
+        attributes: [],
+        brand_id: null,
+        calculate_quantity: false,
+        category_id: null,
+        currency_type_id: "PEN",
+        date_of_due: null,
+        description: "Habitación " + this.form.name,
+        has_igv: true,
+        has_isc: false,
+        has_perception: false,
+        has_plastic_bag_taxes: false,
+        id: null,
+        image: null,
+        image_url: null,
+        internal_id: null,
+        is_set: false,
+        item_code: null,
+        item_code_gs1: null,
+        item_type_id: "01",
+        item_unit_types: [],
+        line: null,
+        lot_code: null,
+        lots: [],
+        lots_enabled: false,
+        name: "Habitación " + this.form.name,
+        percentage_isc: 0,
+        percentage_of_profit: 0,
+        percentage_perception: 0,
+        purchase_affectation_igv_type_id: "10",
+        purchase_has_igv: false,
+        purchase_unit_price: 0,
+        sale_affectation_igv_type_id: "10",
+        sale_unit_price: "20",
+        second_name: "Habitación " + this.form.name,
+        series_enabled: false,
+        stock: 0,
+        stock_min: 1,
+        suggested_price: 0,
+        system_isc_type_id: null,
+        temp_path: null,
+        unit_type_id: "ZZ",
+        web_platform_id: null,
+      };
       this.$http
-        .post("/hotels/rooms/store", this.form)
+        .post("/items", payload)
         .then((response) => {
-          this.$emit("onAddItem", response.data.data);
-          this.onClose();
+          this.form.item_id = response.data.id;
+          this.$http
+            .post("/hotels/rooms/store", this.form)
+            .then((response) => {
+              this.$emit("onAddItem", response.data.data);
+              this.onClose();
+            })
+            .finally(() => {
+              this.loading = false;
+              this.errors = {};
+            })
+            .catch((error) => {
+              this.axiosError(error);
+            });
         })
-        .finally(() => {
-          this.loading = false;
-          this.errors = {};
-        })
-        .catch((error) => {
-          this.axiosError(error);
-        });
+        .catch((error) => this.axiosError(error))
+        .finally(() => (this.loading = false));
     },
     onSubmit() {
       if (this.room) {
