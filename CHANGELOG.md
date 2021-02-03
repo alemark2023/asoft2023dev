@@ -1,3 +1,39 @@
+## 3.5.0
+
+### docs
+2021-01-20 : docs | chagelog<br>
+
+
+### fixed
+2021-02-03 : fixed | add update git checkout (error composer.lock)<br>
+2021-02-03 : fixed | template internal_code_2<br>
+2021-01-27 : fixed | i-752 | Ajuste simbolo moneda detraccion template item_desc<br>
+2021-01-26 : fixed | Ajuste validador de documentos<br>
+2021-01-22 : fixed | i-783 | Ajuste anulador reporte contasis<br>
+2021-01-22 : fixed | i-745 | Ajuste filtro dashboard tenant - admin<br>
+2021-01-21 : fixed | i-648 | Ajuste tamaños formato guia<br>
+2021-01-20 : fixed | i-781 | ajuste validacion stock compra<br>
+
+
+### feature
+2021-02-03 : feature | i-534 | Se modificó la forma de mostrar los productos que conforman un pack en la plantilla citect y default, actualizado con master y compilado<br>
+2021-02-03 : feature | i-534 | Se modificó la forma de mostrar los productos que conforman un pack en la plantilla citect y default<br>
+2021-02-02 : feature | i-667 | Módulo de hoteles finalizado, botón Limpieza habilitado<br>
+2021-02-02 : feature | i-667 | Módulo de hoteles finalizado<br>
+2021-02-02 : feature | i-826 | factura sin lote ni vencimiento en tabla<br>
+2021-02-02 : feature | i-826 | factura sin lote ni vencimiento en tabla<br>
+2021-02-01 : feature | i-657 | Se agrego las plantillas dispatch_place_2 en donde se separaron los despachos a su propia columna<br>
+2021-02-01 : feature | i-816 | membrete template citec<br>
+2021-01-29 : feature | i-667 | Modulo de hoteles al 90%<br>
+2021-01-26 : feature | i-667 | El módulo de hoteles al 60%<br>
+2021-01-22 : feature | i-720 | Requerimientos pdf excel email - caja pos<br>
+2021-01-21 : feature | i-628 | Se agregó el campo lote a los pdfs de los comprobantes de venta en el modelo internal_code<br>
+2021-01-21 : feature | i-733 | Se agrega producto en reporte kardex<br>
+2021-01-20 : feature | i-534 | Se agregó los items de producto con pack a la plantilla pdf citec<br>
+2021-01-20 : feature | i-730 | Ya se puede usar la opción de buscar por código de barras<br>
+2021-01-19 : feature | i-755 | Se agrego el campo código interno para los clientes y proveedores<br>
+
+
 ## 3.4.5
 
 ### fixed
