@@ -152,10 +152,11 @@
 
                 @if($row->item->is_set == 1)
                  <br>
-                @inject('itemSet', 'App\Services\ItemSetService')
-                    {{join( "-", $itemSet->getItemsSet($row->item_id) )}}
+                    @inject('itemSet', 'App\Services\ItemSetService')
+                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                        {{$item}}<br>
+                    @endforeach
                 @endif
-
             </td>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
