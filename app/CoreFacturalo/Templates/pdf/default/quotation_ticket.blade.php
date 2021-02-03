@@ -248,7 +248,6 @@
                         {{$item}}<br>
                     @endforeach
                 @endif
-
                 @if($row->item->extra_attr_value != '')
                     <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif

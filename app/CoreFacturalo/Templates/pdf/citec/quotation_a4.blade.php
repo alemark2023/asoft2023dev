@@ -149,7 +149,6 @@
                         <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                     @endforeach
                 @endif
-
                 @if($row->item->is_set == 1)
                  <br>
                     @inject('itemSet', 'App\Services\ItemSetService')
