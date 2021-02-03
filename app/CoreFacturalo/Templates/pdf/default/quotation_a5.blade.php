@@ -234,6 +234,10 @@
                         {{$item}}<br>
                     @endforeach
                 @endif
+
+                @if($row->item->extra_attr_value != '')
+                    <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
+                @endif
             </td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>

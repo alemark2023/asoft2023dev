@@ -124,6 +124,8 @@
               @yield('content')
               @include('tenant.layouts.partials.sidebar_styles')
             </section>
+            
+            @yield('package-contents')
         </div>
     </section>
     @if($show_ws)

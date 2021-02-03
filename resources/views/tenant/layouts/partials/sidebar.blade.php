@@ -945,6 +945,31 @@
                         </ul>
                     </li>
                     @endif
+                    <li class=" nav-parent
+                        {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <span class="float-right badge badge-red badge-danger mr-3">Nuevo</span>
+                            <i class="fas fa-building" aria-hidden="true"></i>
+                            <span>Hoteles</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'reception')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/reception') }}">Recepción</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rates')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/rates') }}">Tarifas</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'floors')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/floors') }}">Pisos</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'categories')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/categories') }}">Categorías</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rooms')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ url('hotels/rooms') }}">Habitaciones</a>
+                            </li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
         </div>
