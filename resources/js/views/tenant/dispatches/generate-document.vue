@@ -589,7 +589,32 @@ export default {
       this.document.actions = {
         format_pdf: "a4",
       };
-      this.document.dispatch_id = this.form.id;
+      this.document.dispatch_id = this.form.dispatch.id;
+      const item = {
+        IdLoteSelected: null,
+        affectation_igv_type: null,
+        affectation_igv_type_id: null,
+        attributes: null,
+        charges: null,
+        discounts: null,
+        document_item_id: null,
+        has_igv: null,
+        has_isc: null,
+        has_plastic_bag_taxes: null,
+        input_unit_price_value: null,
+        item: null,
+        item_id: null,
+        item_unit_type_id: null,
+        item_unit_types: null,
+        lots_group: null,
+        percentage_isc: null,
+        quantity: null,
+        suggested_price: null,
+        system_isc_type_id: null,
+        unit_price: null,
+        unit_price_value: null,
+        warehouse_id: null,
+      }
     },
     async create() {
       await this.$http

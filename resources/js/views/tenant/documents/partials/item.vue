@@ -959,6 +959,7 @@
                 let IdLoteSelected = this.form.IdLoteSelected
                 let document_item_id = this.form.document_item_id
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+                console.log(this.row);
 
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
                 let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})
