@@ -27,14 +27,14 @@
             <el-button @click.prevent="close">Cerrar</el-button>
             <el-button type="primary" @click="clickAddItem">Agregar</el-button>
         </span>
-        
+
         <item-form :showDialog.sync="showDialogNewItem" :external="true"></item-form>
     </el-dialog>
 </template>
 
 <script>
     import itemForm from '../items/form.vue';
-    
+
     export default {
         components: {itemForm},
         props: ['dialogVisible'],
@@ -53,7 +53,7 @@
                 this.$http.post(`/${this.resource}/tables`).then(response => {
                     this.items = response.data.items;
                 });
-                
+
                 this.form = {};
             },
             close() {
@@ -61,20 +61,20 @@
             },
             clickAddItem() {
                 this.errors = {};
-                
+
                 if ((this.form.item != null) && (this.form.quantity != null)) {
                     this.$emit('addItem', {
                         item: this.items.find((item) => item.id == this.form.item),
                         quantity: this.form.quantity
                     });
-                    
+
                     this.form = {};
-                    
+
                     return;
                 }
-                
+
                 if (this.form.item == null) this.$set(this.errors, 'items', ['Seleccione el producto']);
-                
+
                 if (this.form.quantity == null) this.$set(this.errors, 'quantity', ['Digite la cantidad']);
             }
         }

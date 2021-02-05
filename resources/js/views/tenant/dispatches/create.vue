@@ -579,7 +579,6 @@
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-                // console.log(form)
                 let exist = this.form.items.find((item) => item.id == form.item.id);
 
                 let attributes = null
@@ -605,8 +604,8 @@
                 });
             },
             decrementValueAttr(form){
-                
-                this.form.packages_number -= parseFloat(form.quantity) 
+
+                this.form.packages_number -= parseFloat(form.quantity)
 
                 let total_weight = 0
 
@@ -614,7 +613,7 @@
 
                     form.attributes.forEach(attr => {
                         if(attr.attribute_type_id === '5032'){
-                            total_weight -= parseFloat(attr.value) * parseFloat(form.quantity)  
+                            total_weight -= parseFloat(attr.value) * parseFloat(form.quantity)
                         }
                     });
                 }
@@ -622,8 +621,8 @@
                 this.form.total_weight += total_weight
             },
             incrementValueAttr(form){
-                
-                this.form.packages_number += parseFloat(form.quantity) 
+
+                this.form.packages_number += parseFloat(form.quantity)
 
                 let total_weight = 0
 
@@ -631,7 +630,7 @@
 
                     form.item.attributes.forEach(attr => {
                         if(attr.attribute_type_id === '5032'){
-                            total_weight += parseFloat(attr.value) * parseFloat(form.quantity)  
+                            total_weight += parseFloat(attr.value) * parseFloat(form.quantity)
                         }
                     });
                 }
@@ -639,7 +638,7 @@
                 this.form.total_weight += total_weight
             },
             clickRemoveItem(index) {
-                
+
                 // console.log(this.form.items[index])
                 this.decrementValueAttr(this.form.items[index])
                 this.form.items.splice(index, 1);
