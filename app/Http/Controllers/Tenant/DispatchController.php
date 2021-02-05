@@ -24,12 +24,14 @@ use App\Models\Tenant\Catalogs\District;
 use App\Models\Tenant\Catalogs\Province;
 use App\Models\Tenant\Catalogs\UnitType;
 use App\Models\Tenant\PaymentMethodType;
+use Modules\Document\Traits\SearchTrait;
 use Modules\Finance\Traits\FinanceTrait;
 use App\Models\Tenant\Catalogs\Department;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Requests\Tenant\DispatchRequest;
 use App\Http\Resources\Tenant\DispatchCollection;
 use App\Models\Tenant\Catalogs\TransportModeType;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use Modules\Order\Http\Resources\DispatchResource;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
@@ -38,7 +40,7 @@ use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 
 class DispatchController extends Controller
 {
-	use StorageDocument, FinanceTrait;
+	use StorageDocument, FinanceTrait, SearchTrait;
 
 	public function __construct()
 	{
@@ -303,14 +305,9 @@ class DispatchController extends Controller
 		$establishment_id = $establishment->id;
 		$warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
-		return $dispatch->items;
-		$items_u = Item::whereWarehouse()->whereIsActive()->orderBy('description')->take(20)->get();
-		$items_s = Item::where('unit_type_id', 'ZZ')->whereIsActive()->orderBy('description')->take(10)->get();
-		$items = $items_u->merge($items_s);
-
-		return collect($items)->transform(function ($row) use ($warehouse) {
+		$itemsId = $dispatch->items->pluck('item_id')->all();
+		$items = Item::whereIn('id', $itemsId)->get()->transform(function ($row) use ($warehouse) {
 			$detail = $this->getFullDescription($row, $warehouse);
-
 			return [
 				'id'                               => $row->id,
 				'full_description'                 => $detail['full_description'],
@@ -372,8 +369,7 @@ class DispatchController extends Controller
 		$document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
 		$payment_method_types = PaymentMethodType::all();
 		$payment_destinations = $this->getPaymentDestinations();
-
-		// return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types','company', 'document_type_03_filter','payment_method_types');
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
 		return response()->json([
 			'dispatch'               => $dispatch,
@@ -382,7 +378,9 @@ class DispatchController extends Controller
 			'payment_destinations'   => $payment_destinations,
 			'series'                 => $series,
 			'success'                => true,
-			'payment_method_types'   => $payment_method_types
+			'payment_method_types'   => $payment_method_types,
+			'items'                  => $items,
+			'affectation_igv_types'                  => $affectation_igv_types,
 		], 200);
 	}
 }

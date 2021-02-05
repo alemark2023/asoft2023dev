@@ -319,7 +319,7 @@
 <script>
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
-import { calculateRowItem } from '../../../helpers/functions';
+import { calculateRowItem } from "../../../helpers/functions";
 
 export default {
   components: { DocumentOptions, SaleNoteOptions },
@@ -357,6 +357,9 @@ export default {
       payment_destinations: [],
       form_cash_document: {},
       payment_method_types: [],
+      items: [],
+      affectation_igv_types: [],
+      affectation_igv_type: null,
     };
   },
   created() {
@@ -556,6 +559,34 @@ export default {
           console.log(error);
         });
     },
+    onGetItems(item) {
+      const it = {
+        IdLoteSelected: null,
+        affectation_igv_type: this.affectation_igv_type,
+        affectation_igv_type_id: '10',
+        attributes: [],
+        charges: [],
+        discounts: [],
+        document_item_id: null,
+        has_igv: item.has_igv,
+        has_isc: false,
+        has_plastic_bag_taxes: false,
+        input_unit_price_value: item.sale_unit_price,
+        item: item,
+        item_id: item.id,
+        item_unit_type_id: null,
+        item_unit_types: [],
+        lots_group: [],
+        percentage_isc: 0,
+        quantity: null,
+        suggested_price: 0,
+        system_isc_type_id: null,
+        unit_price: null,
+        unit_price_value: null,
+        warehouse_id: null,
+      };
+      return calculateRowItem(it, this.currencyTypeIdActive, this.exchangeRateSale);
+    },
     assignDocument() {
       let q = this.form.dispatch;
       this.document.establishment_id = q.establishment_id;
@@ -590,31 +621,8 @@ export default {
         format_pdf: "a4",
       };
       this.document.dispatch_id = this.form.dispatch.id;
-      const item = {
-        IdLoteSelected: null,
-        affectation_igv_type: null,
-        affectation_igv_type_id: null,
-        attributes: null,
-        charges: null,
-        discounts: null,
-        document_item_id: null,
-        has_igv: null,
-        has_isc: null,
-        has_plastic_bag_taxes: null,
-        input_unit_price_value: null,
-        item: null,
-        item_id: null,
-        item_unit_type_id: null,
-        item_unit_types: null,
-        lots_group: null,
-        percentage_isc: null,
-        quantity: null,
-        suggested_price: null,
-        system_isc_type_id: null,
-        unit_price: null,
-        unit_price_value: null,
-        warehouse_id: null,
-      }
+      const items = this.onGetItems(this.document.dispatch_id);
+      console.log(items);
     },
     async create() {
       await this.$http
@@ -624,7 +632,12 @@ export default {
           this.all_series = response.data.series;
           this.payment_destinations = response.data.payment_destinations;
           this.payment_method_types = response.data.payment_method_types;
+          this.affectation_igv_types = response.data.affectation_igv_types;
+          this.affectation_igv_type = response.data.affectation_igv_types.filter(a => a.id == '10').reduce(a => a);
           this.form.dispatch = response.data.dispatch;
+          console.log(this.form.dispatch);
+          this.items = response.data.items;
+          this.onGetItems();
           this.getCustomer();
           this.validateIdentityDocumentType();
           let type = this.type == "edit" ? "editado" : "registrado";
@@ -632,38 +645,6 @@ export default {
         });
       await this.clickAddPayment();
     },
-    setItems() {
-      let unit_price =
-        this.form.item.has_igv == 1
-          ? this.form.item.sale_unit_price
-          : this.form.item.sale_unit_price * 1.18;
-
-      this.form.item.input_unit_price_value = this.form.item.sale_unit_price;
-
-      this.form.unit_price = unit_price;
-      this.form.item.unit_price = unit_price;
-      this.form.item.presentation = null;
-      this.form.affectation_igv_type = _.find(this.affectation_igv_types, {
-        id: this.form.affectation_igv_type_id,
-      });
-      const it = {
-        item_id: form.item.id,
-        item: form.item,
-        currency_type_id: form.itemcurrency_type_id,
-        quantity: form.quantity,
-        affectation_igv_type_id: "10",
-        affectation_igv_type: {},
-        system_isc_type_id: null,
-        price_type_id: "01",
-        unit_price: form.item.unit_price,
-        input_unit_price_value: form.item.unit_price,
-        attributes: [],
-        charges: [],
-        discounts: [],
-        warehouse_id: null,
-        IdLoteSelected: null,
-        document_item_id: null,
-      };
     },
     changeDocumentType() {
       // this.filterSeries()
@@ -741,6 +722,5 @@ export default {
           this.loading = false;
         });
     },
-  },
 };
 </script>
