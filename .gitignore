@@ -1,6 +1,7 @@
 /node_modules
 /public/hot
 /public/downloads
+public/cookie.txt
 /public/storage
 /public/padron_extract/*
 /public/padron_rar/*
