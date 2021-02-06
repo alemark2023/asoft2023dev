@@ -320,10 +320,12 @@
 import DocumentOptions from "@views/documents/partials/options.vue";
 import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 import { calculateRowItem } from "../../../helpers/functions";
+import { exchangeRate } from "../../../mixins/functions";
+import moment from "moment";
 
 export default {
   components: { DocumentOptions, SaleNoteOptions },
-
+  mixins: [exchangeRate],
   props: [
     "showDialog",
     "recordId",
@@ -360,6 +362,8 @@ export default {
       items: [],
       affectation_igv_types: [],
       affectation_igv_type: null,
+      currencyTypeIdActive: "PEN",
+      exchangeRateSale: 1,
     };
   },
   created() {
@@ -435,7 +439,7 @@ export default {
         date_of_issue: moment().format("YYYY-MM-DD"),
         time_of_issue: null,
         customer_id: null,
-        currency_type_id: null,
+        currency_type_id: "PEN",
         purchase_order: null,
         exchange_rate_sale: 0,
         total_prepayment: 0,
@@ -456,6 +460,7 @@ export default {
         total: 0,
         operation_type_id: null,
         date_of_due: moment().format("YYYY-MM-DD"),
+        delivery_date: moment().format("YYYY-MM-DD"),
         items: [],
         charges: [],
         discounts: [],
@@ -482,10 +487,10 @@ export default {
         this.document_types.length > 0 ? this.document_types[0].id : null;
       this.changeDocumentType();
     },
-    validatePaymentDestination() {
+    async validatePaymentDestination() {
       let error_by_item = 0;
 
-      this.document.payments.forEach((item) => {
+      await this.document.payments.forEach((item) => {
         if (item.payment_destination_id == null) error_by_item++;
       });
 
@@ -493,8 +498,75 @@ export default {
         error_by_item: error_by_item,
       };
     },
+    onCalculateTotals() {
+      let total_exportation = 0;
+      let total_taxed = 0;
+      let total_exonerated = 0;
+      let total_unaffected = 0;
+      let total_free = 0;
+      let total_igv = 0;
+      let total_value = 0;
+      let total = 0;
+      let total_plastic_bag_taxes = 0;
+      let total_discount = 0;
+      let total_charge = 0;
+      this.document.items.forEach((row) => {
+        total_discount += parseFloat(row.total_discount);
+        total_charge += parseFloat(row.total_charge);
+
+        if (row.affectation_igv_type_id === "10") {
+          total_taxed += parseFloat(row.total_value);
+        }
+        if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
+          total_free += parseFloat(row.total_value);
+        }
+        if (
+          ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
+        ) {
+          total_igv += parseFloat(row.total_igv);
+          total += parseFloat(row.total);
+        }
+        total_value += parseFloat(row.total_value);
+        total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
+
+        if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
+          let unit_value =
+            row.total_value / row.quantity / (1 + row.percentage_igv / 100);
+          let total_value_partial = unit_value * row.quantity;
+          row.total_taxes = row.total_value - total_value_partial;
+          row.total_igv = row.total_value - total_value_partial;
+          row.total_base_igv = total_value_partial;
+          total_value -= row.total_value;
+        }
+      });
+
+      this.document.total_exportation = _.round(total_exportation, 2);
+      this.document.total_taxed = _.round(total_taxed, 2);
+      this.document.total_exonerated = _.round(total_exonerated, 2);
+      this.document.total_unaffected = _.round(total_unaffected, 2);
+      this.document.total_free = _.round(total_free, 2);
+      this.document.total_igv = _.round(total_igv, 2);
+      this.document.total_value = _.round(total_value, 2);
+      this.document.total_taxes = _.round(total_igv, 2);
+      this.document.total_plastic_bag_taxes = _.round(
+        total_plastic_bag_taxes,
+        2
+      );
+      this.document.total = _.round(
+        total + this.document.total_plastic_bag_taxes,
+        2
+      );
+
+      this.setTotalDefaultPayment();
+    },
+    setTotalDefaultPayment() {
+      if (this.document.payments.length > 0) {
+        this.document.payments[0].payment = this.document.total;
+      }
+    },
     async submit() {
-      await this.assignDocument();
+      this.assignDocument();
+      this.onCalculateTotals();
 
       let validate_payment_destination = await this.validatePaymentDestination();
 
@@ -563,7 +635,7 @@ export default {
       const it = {
         IdLoteSelected: null,
         affectation_igv_type: this.affectation_igv_type,
-        affectation_igv_type_id: '10',
+        affectation_igv_type_id: "10",
         attributes: [],
         charges: [],
         discounts: [],
@@ -578,22 +650,24 @@ export default {
         item_unit_types: [],
         lots_group: [],
         percentage_isc: 0,
-        quantity: null,
+        quantity: item.quantity,
         suggested_price: 0,
         system_isc_type_id: null,
-        unit_price: null,
-        unit_price_value: null,
+        unit_price: item.sale_unit_price,
+        unit_price_value: item.sale_unit_price,
         warehouse_id: null,
       };
-      return calculateRowItem(it, this.currencyTypeIdActive, this.exchangeRateSale);
+      return calculateRowItem(
+        it,
+        this.currencyTypeIdActive,
+        this.exchangeRateSale
+      );
     },
     assignDocument() {
       let q = this.form.dispatch;
       this.document.establishment_id = q.establishment_id;
       this.document.time_of_issue = moment().format("HH:mm:ss");
-      this.document.currency_type_id = q.currency_type_id;
       this.document.purchase_order = null;
-      this.document.exchange_rate_sale = q.exchange_rate_sale;
       this.document.total_prepayment = q.total_prepayment;
       this.document.total_charge = q.total_charge;
       this.document.total_discount = q.total_discount;
@@ -621,30 +695,47 @@ export default {
         format_pdf: "a4",
       };
       this.document.dispatch_id = this.form.dispatch.id;
-      const items = this.onGetItems(this.document.dispatch_id);
-      console.log(items);
+      this.document.items = this.items;
     },
     async create() {
-      await this.$http
-        .get(`/${this.resource}/record/${this.recordId}/tables`)
-        .then((response) => {
-          this.all_document_types = response.data.document_types_invoice;
-          this.all_series = response.data.series;
-          this.payment_destinations = response.data.payment_destinations;
-          this.payment_method_types = response.data.payment_method_types;
-          this.affectation_igv_types = response.data.affectation_igv_types;
-          this.affectation_igv_type = response.data.affectation_igv_types.filter(a => a.id == '10').reduce(a => a);
-          this.form.dispatch = response.data.dispatch;
-          console.log(this.form.dispatch);
-          this.items = response.data.items;
-          this.onGetItems();
-          this.getCustomer();
-          this.validateIdentityDocumentType();
-          let type = this.type == "edit" ? "editado" : "registrado";
-          this.titleDialog = `Guía ${type}: ` + this.form.identifier;
-        });
+      const response = await this.$http.get(
+        `/${this.resource}/record/${this.recordId}/tables`
+      );
+      const data = response.data;
+      this.all_document_types = await data.document_types_invoice;
+      this.all_series = await data.series;
+      this.payment_destinations = await data.payment_destinations;
+      this.payment_method_types = await data.payment_method_types;
+      this.affectation_igv_types = await data.affectation_igv_types;
+      this.affectation_igv_type = await data.affectation_igv_types
+        .filter((a) => a.id == "10")
+        .reduce((a) => a);
+      this.form.dispatch = await data.dispatch;
+
+      const items = await data.items.map((i) => {
+        const it = this.form.dispatch.items
+          .filter((ite) => ite.item_id == i.id)
+          .reduce((ite) => ite);
+        i.quantity = it.quantity;
+        i.unit_price = i.sale_unit_price;
+        return i;
+      });
+
+      this.items = items.map((item) => this.onGetItems(item));
+      await this.getCustomer();
+      await this.validateIdentityDocumentType();
+      const date = moment(this.form.dispatch.date_of_issue).format(
+        "YYYY-MM-DD"
+      );
+      await this.searchExchangeRateByDate(date).then((res) => {
+        this.document.exchange_rate_sale = res;
+      });
+      this.document.items = this.items;
+      let type = this.type == "edit" ? "editado" : "registrado";
+      this.titleDialog = `Guía ${type}: ` + this.form.identifier;
+
       await this.clickAddPayment();
-    },
+      this.onCalculateTotals();
     },
     changeDocumentType() {
       // this.filterSeries()
@@ -722,5 +813,6 @@ export default {
           this.loading = false;
         });
     },
+  },
 };
 </script>
