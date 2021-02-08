@@ -160,12 +160,12 @@
                 <td class="text-right font-bold desc">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_taxed > 0)
+        {{-- @if($document->total_taxed > 0)
             <tr>
                 <td colspan="4" class="text-right font-bold desc">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold desc">{{ number_format($document->total_taxed, 2) }}</td>
             </tr>
-        @endif
+        @endif --}}
         @if($document->total_discount > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
@@ -208,7 +208,7 @@
     <td class="desc pt-5">
         <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
     </td>
-</tr> 
+</tr>
 </table>
 @endif
 

@@ -141,7 +141,7 @@
                 @endif
             </td>
             <td class="text-left">
-                @if ($row->warehouse) <br> <b>Despacho: {!!$row->warehouse->description!!}</b> @endif
+                @if ($row->warehouse)<b>{!!$row->warehouse->description!!}</b> @endif
             </td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">

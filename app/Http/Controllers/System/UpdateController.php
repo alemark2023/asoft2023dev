@@ -43,6 +43,9 @@ class UpdateController extends Controller
         $chown = new Process('chown -R ssh/');
         $chown->run();
 
+        $checkout = new Process('git checkout .');
+        $checkout->run();
+
         $process = new Process('git pull origin '.$branch);
         $process->run();
         if (!$process->isSuccessful()) {
