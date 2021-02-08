@@ -12,6 +12,7 @@ use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
+use Modules\Account\Exports\ReportAccountingSumeriusExport;
 
 class AccountController extends Controller
 {
@@ -87,7 +88,52 @@ class AccountController extends Controller
                 return (new ReportAccountingAdsoftExport)
                     ->data($data)
                     ->download($filename.'.xlsx');
+            case 'sumerius':
+
+                $data = [
+                    'records' => $this->getStructureSumerius($records),
+                ];
+
+                return (new ReportAccountingSumeriusExport)
+                    ->data($data)
+                    ->download($filename.'.xlsx');
         }
+    }
+
+    private function getStructureSumerius($documents)
+    {
+        return $documents->transform(function($row) {
+            return [
+                'col_A' => number_format($row->id, 2, ".", ""),
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'document_type_id' => $row->document_type_id,
+                'series' => $row->series,
+                'number' => str_pad($row->number, 7, '0', STR_PAD_LEFT),
+                'col_G' => '',
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'total_isc' => number_format($row->total_isc, 2, ".", ""),
+                'total_exportation' => number_format($row->total_exportation, 2, ".", ""),
+                'total_unaffected' => number_format($row->total_unaffected, 2, ".", ""),
+                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
+                'total_igv' => number_format($row->total_igv, 2, ".", ""),
+                'total_plastic_bag_taxes' => number_format($row->total_plastic_bag_taxes, 2, ".", ""),
+                'total' => number_format($row->total, 2, ".", ""),
+                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
+                'total_retention' => number_format(0, 2, ".", ""),
+                'col_S' => '',
+                'col_T' => '',
+                'col_U' => '',
+                'col_V' => '70121',
+                'col_W' => '',
+                'col_X' => '',
+                'col_Y' => '401112',
+                'col_Z' => '1212',
+                'col_AA' => 'VENTA NACIONAL',
+            ];
+        });
     }
 
     private function getStructureAdsoft($documents)
