@@ -141,7 +141,7 @@
             <td><p class="desc-9">{{ $document->quotation->sale_opportunity->number_full}}</p></td>
         </tr>
     @endisset
-    
+
     @if($document->person->contact != null)
         <tr>
             <td><p class="desc-9">Contacto:</p></td>
@@ -252,7 +252,7 @@
             <td colspan="5" class="border-bottom"></td>
         </tr>
     @endforeach
-    
+
     @if ($document->prepayments)
         @foreach($document->prepayments as $p)
         <tr>
@@ -362,7 +362,7 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p>
+                    <p class="desc">
                     <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
                     <span class="font-bold">N°:</span> {{$account->number}}
                     @if($account->cci)
@@ -386,7 +386,7 @@
             <td class="desc pt-5">
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     @endif
     @if($payments->count())
         <tr>
@@ -400,6 +400,19 @@
             </tr>
         @endforeach
     @endif
+
+    <tr>
+        <td class="desc pt-5">
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td class="desc">{{ $document->seller->name }}</td>
+        @else
+            <td class="desc">{{ $document->user->name }}</td>
+        @endif
+    </tr>
 
     <tr>
         <td class="text-center desc pt-5">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>

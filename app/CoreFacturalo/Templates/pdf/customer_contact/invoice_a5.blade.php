@@ -161,7 +161,7 @@
         @endif
     </tr>
     @endif
-    
+
     @if($document->person->contact != null)
         <tr>
             <td>CONTACTO</td>
@@ -520,7 +520,7 @@
             <td>
                 <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
-        </tr> 
+        </tr>
     </table>
 @endif
 @if($payments->count())
@@ -541,7 +541,21 @@
     </table>
 @endif
 
-
+<br>
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td>{{ $document->seller->name }}</td>
+        @else
+            <td>{{ $document->user->name }}</td>
+        @endif
+    </tr>
+</table>
 
 </body>
 </html>
