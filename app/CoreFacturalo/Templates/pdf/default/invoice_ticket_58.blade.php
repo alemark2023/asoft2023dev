@@ -464,6 +464,18 @@
             </tr>
         @endforeach
     @endif
+    <tr>
+        <td class="desc">
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td class="desc">{{ $document->seller->name }}</td>
+        @else
+            <td class="desc">{{ $document->user->name }}</td>
+        @endif
+    </tr>
     @if ($document->terms_condition)
         <tr>
             <td class="desc">

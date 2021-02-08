@@ -436,7 +436,7 @@
             <br>
             @if(in_array($document->document_type->id,['01','03']))
                 @foreach($accounts as $account)
-                    <p>
+                    <p class="desc">
                     <span class="font-bold">{{$account->bank->description}}</span> {{$account->currency_type->description}}
                     <span class="font-bold">N°:</span> {{$account->number}}
                     @if($account->cci)
@@ -474,6 +474,18 @@
             </tr>
         @endforeach
     @endif
+    <tr>
+        <td class="desc">
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        @if ($document->seller)
+            <td class="desc">{{ $document->seller->name }}</td>
+        @else
+            <td class="desc">{{ $document->user->name }}</td>
+        @endif
+    </tr>
     @if ($document->terms_condition)
         <tr>
             <td class="desc">
