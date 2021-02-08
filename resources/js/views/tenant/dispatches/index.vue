@@ -37,7 +37,7 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-center">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
+                            <button v-if="!row.document_id" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>
                     </tr>
@@ -48,7 +48,12 @@
                               :recordId="recordId"
                               :showClose="true"></dispatch-options>
 
-        <FormGenerateDocument :showDialog.sync="showDialogGenerateDocument" :recordId="recordId" :showClose="true" :showGenerate="true"></FormGenerateDocument>
+        <FormGenerateDocument
+            :showDialog.sync="showDialogGenerateDocument"
+            :recordId="recordId"
+            :showClose="true"
+            :showGenerate="true"
+        ></FormGenerateDocument>
     </div>
 </template>
 

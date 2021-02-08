@@ -588,7 +588,6 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.documentNewId = response.data.data.id;
-            // console.log(this.document.document_type_id)
             if (this.document.document_type_id === "80") {
               this.form_cash_document.sale_note_id = response.data.data.id;
               this.showDialogSaleNoteOptions = true;
@@ -596,9 +595,11 @@ export default {
               this.form_cash_document.document_id = response.data.data.id;
               this.showDialogDocumentOptions = true;
             }
+            this.clickClose();
             this.saveCashDocument();
 
             this.$eventHub.$emit("reloadData");
+            this.onUpdateDispatchWithDocumentId(response.data.data.id);
             this.resetDocument();
             this.document.customer_id = this.form.dispatch.customer_id;
             this.changeCustomer();
@@ -617,18 +618,23 @@ export default {
           this.loading_submit = false;
         });
     },
+    onUpdateDispatchWithDocumentId(documentId) {
+        this.loading_submit = true;
+        const payload = {
+            document_id: documentId
+        }
+        this.$http.post(`dispatches/record/${this.recordId}/set-document-id`, payload).finally(() => this.loading_submit = true)
+    },
     saveCashDocument() {
       this.$http
         .post(`/cash/cash_document`, this.form_cash_document)
         .then((response) => {
-          if (response.data.success) {
-            // console.log(response)
-          } else {
+          if (!response.data.success) {
             this.$message.error(response.data.message);
           }
         })
         .catch((error) => {
-          console.log(error);
+          this.axiosError(error)
         });
     },
     onGetItems(item) {
@@ -731,8 +737,7 @@ export default {
         this.document.exchange_rate_sale = res;
       });
       this.document.items = this.items;
-      let type = this.type == "edit" ? "editado" : "registrado";
-      this.titleDialog = `Guía ${type}: ` + this.form.identifier;
+      this.titleDialog = `Guía ${this.form.dispatch.series}-${this.form.dispatch.number}: Crear comprobante`;
 
       await this.clickAddPayment();
       this.onCalculateTotals();

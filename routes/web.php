@@ -269,6 +269,7 @@ if ($hostname) {
 			Route::post('dispatches/email', 'Tenant\DispatchController@email');
             Route::get('dispatches/generate/{sale_note}', 'Tenant\DispatchController@generate');
             Route::get('dispatches/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
+            Route::post('dispatches/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
 
 			Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
 			Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');

@@ -383,4 +383,17 @@ class DispatchController extends Controller
 			'affectation_igv_types'                  => $affectation_igv_types,
 		], 200);
 	}
+
+    public function setDocumentId($id)
+    {
+        request()->validate(['document_id' => 'required|exists:tenant.documents,id']);
+
+        Dispatch::where('id', $id)
+            ->update(request()->only(['document_id']));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Información actualiza'
+        ], 200);
+    }
 }
