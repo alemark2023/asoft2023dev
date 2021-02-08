@@ -37,6 +37,7 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-center">
+                            <button v-if="!row.document_id" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>
                     </tr>
@@ -46,25 +47,36 @@
             <dispatch-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
                               :showClose="true"></dispatch-options>
+
+        <FormGenerateDocument
+            :showDialog.sync="showDialogGenerateDocument"
+            :recordId="recordId"
+            :showClose="true"
+            :showGenerate="true"
+        ></FormGenerateDocument>
     </div>
 </template>
 
 <script>
     import DataTable from '../../../components/DataTable.vue'
     import DispatchOptions from './partials/options.vue'
+    import FormGenerateDocument from "./generate-document";
 
     export default {
-
-        components: {DataTable, DispatchOptions},
+        components: {DataTable, DispatchOptions, FormGenerateDocument},
         data() {
             return {
                 resource: 'dispatches',
                 showDialogOptions: false,
                 recordId: null,
+                showDialogGenerateDocument: false
             }
         },
-        created() {},
         methods: {
+            onGenerateDocument(dispatchId) {
+                this.recordId = dispatchId;
+                this.showDialogGenerateDocument = true;
+            },
             clickOptions(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptions = true
