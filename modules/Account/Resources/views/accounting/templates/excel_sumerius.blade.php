@@ -83,9 +83,40 @@
         <td>CTA4</td>
         <td>CTA5</td>
         <td>CLOSA</td>
-
     </tr>
     @foreach($records as $row)
+    @if($row['state_type_id'] == '11')
+    <tr>
+        <td>{{ $row['col_A'] }}</td>
+        <td>{{ $row['date_of_issue'] }}</td>
+        <td>{{ $row['date_of_due'] }}</td>
+        <td>{{ $row['document_type_id'] }}</td>
+        <td>{{ $row['series'] }}</td>
+        <td>{{ $row['number'] }}</td>
+        <td>{{ $row['col_G'] }}</td>
+        <td>0</td>
+        <td>0</td>
+        <td>ANULADA</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>{{ $row['col_S'] }}</td>
+        <td>{{ $row['col_T'] }}</td>
+        <td>{{ $row['col_U'] }}</td>
+        <td>{{ $row['col_V'] }}</td>
+        <td>{{ $row['col_W'] }}</td>
+        <td>{{ $row['col_X'] }}</td>
+        <td>{{ $row['col_Y'] }}</td>
+        <td>{{ $row['col_Z'] }}</td>
+        <td>ANULADA</td>
+
+    </tr>
+    @else
     <tr>
         <td>{{ $row['col_A'] }}</td>
         <td>{{ $row['date_of_issue'] }}</td>
@@ -114,6 +145,8 @@
         <td>{{ $row['col_Y'] }}</td>
         <td>{{ $row['col_Z'] }}</td>
         <td>{{ $row['col_AA'] }}</td>
+
     </tr>
+    @endif
     @endforeach
 </table>
