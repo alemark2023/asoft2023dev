@@ -142,7 +142,7 @@ class AccountController extends Controller
         $rows = [];
         foreach ($documents as $row)
         {
-            $rows[] = [
+            $document = [
                 'serie' => $row->series,
                 'numero' => $row->number,
                 'fecfac' => Carbon::parse($row->date_of_issue)->format('d/m/Y'),
@@ -152,15 +152,11 @@ class AccountController extends Controller
                 'tipdoc' => $row->document_type_id,
                 'tipmon' => strtoupper($row->currency_type->description),
                 'detrac' => '',
-                'imp_vta' => $row->state_type_id == '11' ? 0 : number_format($row->total, 2, '.', ''),
                 'isc' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
                 'icbper' => '',
                 'imp_ina' => 0,
-                'imp_exo' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
                 'imp_exp' => '',
                 'recargo' => '',
-                'imp_igv' => 0,
-                'imp_tot' => $row->state_type_id == '11' ? 0 : number_format($row->total, 2, '.', ''),
                 'st' => $row->state_type_id === '11' ? 'A' : '',
                 'ser_dqm' => '',
                 'nro_dqm' => '',
@@ -173,6 +169,25 @@ class AccountController extends Controller
                 'cta_vta' => '',
                 'tip_cam' => '',
             ];
+			if ($row->state_type_id === '11') {
+                $document['imp_exo'] = 0;
+                $document['imp_vta'] = 0;
+                $document['imp_tot'] = 0;
+                $document['imp_igv'] = 0;
+            } else {
+                if ($row->total_exonerated == 0) {
+                    $document['imp_exo'] = 0;
+                    $document['imp_vta'] = number_format($row->total_value, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total, 2, '.', '');
+                    $document['imp_igv'] = number_format($row->total_igv, 2, '.', '');
+                } else {
+                    $document['imp_exo'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_vta'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_tot'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_igv'] = 0;
+                }
+            }
+            array_push($rows, $document);
         }
         return $rows;
     }
