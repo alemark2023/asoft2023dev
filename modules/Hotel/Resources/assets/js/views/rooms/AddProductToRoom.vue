@@ -39,7 +39,7 @@
                   <th class="text-center">Cant.</th>
                   <th class="text-center">Precio</th>
                   <th class="text-right">Importe</th>
-                  <th class="text-center">Estado del pado</th>
+                  <th class="text-center">Estado del pago</th>
                   <th class="text-right"></th>
                 </tr>
               </thead>
