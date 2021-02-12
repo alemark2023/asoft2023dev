@@ -61,6 +61,7 @@ class ClientController extends Controller
             $tenancy->tenant($row->hostname->website);
             // $row->count_doc = DB::connection('tenant')->table('documents')->count();
             $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
+            $row->soap_type = DB::connection('tenant')->table('companies')->first()->soap_type_id;
             $row->count_user = DB::connection('tenant')->table('users')->count();
 
             if($row->start_billing_cycle)
