@@ -3,18 +3,25 @@
 namespace Modules\Hotel\Http\Controllers;
 
 use App\Models\Tenant\Person;
+use App\Models\Tenant\Series;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Hotel\Models\HotelRent;
 use Modules\Hotel\Models\HotelRoom;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
 use Modules\Hotel\Models\HotelRentItem;
+use App\Models\Tenant\PaymentMethodType;
+use Modules\Finance\Traits\FinanceTrait;
+use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\Hotel\Http\Requests\HotelRentRequest;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use Modules\Hotel\Http\Requests\HotelRentItemRequest;
 
 class HotelRentController extends Controller
 {
+    use FinanceTrait;
+
 	public function rent($roomId)
 	{
 		$room = HotelRoom::with('category', 'rates.rate')
@@ -129,7 +136,15 @@ class HotelRentController extends Controller
 		$customer = Person::withOut('department', 'province', 'district')
 			->findOrFail($rent->customer_id);
 
-		return view('hotel::rooms.checkout', compact('rent', 'room', 'token', 'customer'));
+        $payment_method_types = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations();
+        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        $series = Series::where('establishment_id', $establishment->id)->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $user = auth()->user();
+        $warehouse_id = $user->establishment_id;
+
+		return view('hotel::rooms.checkout', compact('rent', 'room', 'token', 'customer', 'payment_method_types', 'payment_destinations', 'series', 'document_types_invoice', 'warehouse_id'));
 	}
 
 	public function finalizeRent($rentId)

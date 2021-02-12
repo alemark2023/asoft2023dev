@@ -160,6 +160,164 @@
               </table>
             </div>
           </div>
+          <div class="col-lg-3">
+            <div
+              class="form-group"
+              :class="{ 'has-danger': errors.document_type_id }"
+            >
+              <label class="control-label">Tipo comprobante</label>
+              <el-select
+                v-model="document.document_type_id"
+                @change="changeDocumentType"
+                popper-class="el-select-document_type"
+                dusk="document_type_id"
+                class="border-left rounded-left border-info"
+              >
+                <el-option
+                  v-for="option in document_types"
+                  :key="option.id"
+                  :value="option.id"
+                  :label="option.description"
+                ></el-option>
+              </el-select>
+              <small
+                class="form-control-feedback"
+                v-if="errors.document_type_id"
+                v-text="errors.document_type_id[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <div class="form-group" :class="{ 'has-danger': errors.series_id }">
+              <label class="control-label">Serie</label>
+              <el-select v-model="document.series_id">
+                <el-option
+                  v-for="option in series"
+                  :key="option.id"
+                  :value="option.id"
+                  :label="option.number"
+                ></el-option>
+              </el-select>
+              <small
+                class="form-control-feedback"
+                v-if="errors.series_id"
+                v-text="errors.series_id[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <div
+              class="form-group"
+              :class="{ 'has-danger': errors.date_of_issue }"
+            >
+              <label class="control-label">Fecha de emisión</label>
+              <el-date-picker
+                readonly
+                v-model="document.date_of_issue"
+                type="date"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+                @change="changeDateOfIssue"
+              ></el-date-picker>
+              <small
+                class="form-control-feedback"
+                v-if="errors.date_of_issue"
+                v-text="errors.date_of_issue[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <div
+              class="form-group"
+              :class="{ 'has-danger': errors.date_of_issue }"
+            >
+              <label class="control-label">Fecha de vencimiento</label>
+              <el-date-picker
+                v-model="document.date_of_due"
+                type="date"
+                value-format="yyyy-MM-dd"
+                :clearable="false"
+              ></el-date-picker>
+              <small
+                class="form-control-feedback"
+                v-if="errors.date_of_due"
+                v-text="errors.date_of_due[0]"
+              ></small>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <table class="table">
+              <thead>
+                <tr width="100%">
+                  <th v-if="document.payments.length > 0">M. Pago</th>
+                  <th v-if="document.payments.length > 0">Destino</th>
+                  <th v-if="document.payments.length > 0">Referencia</th>
+                  <th v-if="document.payments.length > 0">Monto</th>
+                  <th width="15%">
+                    <a
+                      href="#"
+                      @click.prevent="clickAddPayment"
+                      class="text-center font-weight-bold text-info"
+                      >[+ Agregar]</a
+                    >
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, index) in document.payments" :key="index">
+                  <td>
+                    <div class="form-group mb-2 mr-2">
+                      <el-select v-model="row.payment_method_type_id">
+                        <el-option
+                          v-for="option in paymentMethodTypes"
+                          :key="option.id"
+                          :value="option.id"
+                          :label="option.description"
+                        ></el-option>
+                      </el-select>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group mb-2 mr-2">
+                      <el-select
+                        v-model="row.payment_destination_id"
+                        filterable
+                        :disabled="row.payment_destination_disabled"
+                      >
+                        <el-option
+                          v-for="option in paymentDestinations"
+                          :key="option.id"
+                          :value="option.id"
+                          :label="option.description"
+                        ></el-option>
+                      </el-select>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group mb-2 mr-2">
+                      <el-input v-model="row.reference"></el-input>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-group mb-2 mr-2">
+                      <el-input v-model="row.payment"></el-input>
+                    </div>
+                  </td>
+                  <td class="series-table-actions text-center">
+                    <button
+                      type="button"
+                      class="btn waves-effect waves-light btn-xs btn-danger"
+                      @click.prevent="clickCancel(index)"
+                    >
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                  <br />
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div class="col-12 pt-3">
             <el-button
               :loading="loading"
@@ -174,31 +332,26 @@
         </div>
       </div>
     </div>
-    <el-dialog
-      title="Operación realizada"
-      :visible="showDialogOptions"
-      width="30%"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :show-close="false"
-      append-to-body
-    >
-      <template v-if="showDialogOptions">
-        <h6>Se ha creado el comprobante de la operación</h6>
-        <el-link :href="response.links.pdf">Ver el PDF</el-link>
-        <div class="text-center">
-          <el-button type="primary" @click="onExitPage">Cerrar</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    <document-options
+      :showDialog.sync="showDialogDocumentOptions"
+      :recordId="documentNewId"
+      :isContingency="false"
+      :showClose="true"
+    ></document-options>
   </div>
 </template>
 
 <script>
 import moment from "moment";
+import DocumentOptions from "@views/documents/partials/options.vue";
 import { calculateRowItem } from "../../../../../../../resources/js/helpers/functions";
+import { exchangeRate } from "../../../../../../../resources/js/mixins/functions";
 
 export default {
+  components: {
+    DocumentOptions,
+  },
+  mixins: [exchangeRate],
   props: {
     rent: {
       type: Object,
@@ -216,10 +369,29 @@ export default {
       type: Object,
       required: true,
     },
+    paymentMethodTypes: {
+      type: Array,
+      required: true,
+    },
+    paymentDestinations: {
+      type: Array,
+      required: true,
+    },
+    allSeries: {
+      type: Array,
+      required: true,
+    },
+    documentTypesInvoice: {
+      type: Array,
+      required: true,
+    },
+    warehouseId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      showDialogOptions: false,
       title: "",
       arrears: 0,
       total: 0,
@@ -227,12 +399,34 @@ export default {
       totalPaid: 0,
       totalDebt: 0,
       response: {},
+      document: {
+        payments: [],
+      },
+      errors: {},
+      series: [],
+      document_types: [],
+      all_document_types: [],
+      resource_documents: "documents",
+      showDialogDocumentOptions: false,
+      documentNewId: null,
+      form_cash_document: {},
     };
   },
-  mounted() {
+  async mounted() {
+    this.initForm();
+    this.initDocument();
+    this.all_document_types = this.documentTypesInvoice;
     this.title = `Checkout: Habitación ${this.rent.room.name}`;
     this.total = this.room.item.total;
+    this.document.items = this.rent.items.map((i) => i.item);
     this.onCalculateTotals();
+    this.onCalculatePaidAndDebts();
+    this.clickAddPayment();
+    this.validateIdentityDocumentType();
+    const date = moment().format("YYYY-MM-DD");
+    await this.searchExchangeRateByDate(date).then((res) => {
+      this.document.exchange_rate_sale = res;
+    });
   },
   watch: {
     arrears(value) {
@@ -242,133 +436,150 @@ export default {
       if (value >= 0) {
         const total = parseFloat(this.room.item.total) + parseFloat(value);
         this.total = total;
-        this.onCalculateTotals();
+        this.onCalculatePaidAndDebts();
       }
     },
   },
   methods: {
+    validateIdentityDocumentType() {
+      let identity_document_types = ["0", "1"];
+      let customer = this.document.customer;
+      if (
+        identity_document_types.includes(customer.identity_document_type_id)
+      ) {
+        this.document_types = _.filter(this.all_document_types, { id: "03" });
+      } else {
+        this.document_types = this.all_document_types;
+      }
+
+      this.document.document_type_id =
+        this.document_types.length > 0 ? this.document_types[0].id : null;
+      this.changeDocumentType();
+    },
+    changeDateOfIssue() {
+      this.document.date_of_due = this.document.date_of_issue;
+    },
+    changeDocumentType() {
+      this.document.series_id = null;
+      this.series = _.filter(this.allSeries, {
+        document_type_id: this.document.document_type_id,
+      });
+      this.document.series_id =
+        this.series.length > 0 ? this.series[0].id : null;
+    },
+    clickAddPayment() {
+      const payment =
+        this.document.payments.length == 0 ? this.document.total : 0;
+
+      this.document.payments.push({
+        id: null,
+        document_id: null,
+        date_of_payment: moment().format("YYYY-MM-DD"),
+        payment_method_type_id: "01",
+        payment_destination_id: null,
+        reference: null,
+        payment: payment,
+      });
+    },
     onExitPage() {
       window.location.href = "/hotels/reception";
     },
-    onCalculateNewPriceRoom() {
-      const old = this.rent.items
-        .filter((i) => i.type === "HAB")
-        .reduce((i) => i);
+    validatePaymentDestination() {
+      let error_by_item = 0;
 
-      const roomItem = { ...old };
-      const oldItem = roomItem.item;
-      delete roomItem.item;
-      oldItem.quantity = 1;
-      const newTotal = parseFloat(oldItem.total) + parseFloat(this.arrears);
-      oldItem.input_unit_price_value = parseFloat(newTotal);
-      oldItem.item.unit_price = parseFloat(newTotal);
-      oldItem.unit_value = parseFloat(newTotal);
-      const newItem = calculateRowItem(oldItem, "PEN", 3);
-      roomItem.item = newItem;
-      const items = this.rent.items.map((i) => {
-        if (i.type === "HAB") {
-          return roomItem;
-        }
-        return i;
+      this.document.payments.forEach((item) => {
+        if (item.payment_destination_id == null) error_by_item++;
       });
-      return items;
+
+      return {
+        error_by_item: error_by_item,
+      };
     },
-    onGoToInvoice() {
-      const config = {
-        headers: { Authorization: `Bearer ${this.token}` },
+    initForm() {
+      this.form_cash_document = {
+        document_id: null,
+        sale_note_id: null,
       };
-      const date = moment();
-      const itemsHard = this.onCalculateNewPriceRoom();
-      const items = itemsHard.map((i) => {
-        const description =
-          i.type === "HAB"
-            ? `${i.item.item.description} x ${this.room.item.quantity} noche(s)`
-            : i.item.item.description;
-        return {
-          codigo_interno: i.item.item.internal_id || "",
-          descripcion: description,
-          codigo_producto_sunat: "",
-          unidad_de_medida: i.item.item.unit_type_id,
-          cantidad: i.item.quantity,
-          valor_unitario: i.item.unit_price,
-          codigo_tipo_precio: i.item.price_type_id,
-          precio_unitario: i.item.unit_price,
-          codigo_tipo_afectacion_igv: i.item.affectation_igv_type_id,
-          total_base_igv: i.item.total_value,
-          porcentaje_igv: 18,
-          total_igv: 18,
-          total_impuestos: i.item.total_igv,
-          total_valor_item: i.item.total_value,
-          total_item: i.item.total,
-        };
-      });
-      const totalOpeGravada = itemsHard
-        .map((i) => i.item.total_value)
-        .reduce((a, b) => a + b, 0);
-      const totalVenta = itemsHard
-        .map((i) => i.item.total)
-        .reduce((a, b) => a + b, 0);
-      const tipoDoc =
-        this.customer.identity_document_type_id == "1" ? "03" : "01";
-      const serie =
-        this.customer.identity_document_type_id == "1" ? "B001" : "F001";
-      const payload = {
-        serie_documento: serie,
-        numero_documento: "#",
-        fecha_de_emision: date.format("YYYY-MM-DD"),
-        hora_de_emision: date.format("HH:mm:ss"),
-        codigo_tipo_operacion: "0101",
-        codigo_tipo_documento: tipoDoc,
-        codigo_tipo_moneda: "PEN",
-        fecha_de_vencimiento: date.format("YYYY-MM-DD"),
-        numero_orden_de_compra: "",
-        datos_del_cliente_o_receptor: {
-          codigo_tipo_documento_identidad: this.customer
-            .identity_document_type_id,
-          numero_documento: this.customer.number,
-          apellidos_y_nombres_o_razon_social: this.customer.name,
-          codigo_pais: this.customer.country_id,
-          ubigeo: this.customer.district_id || "",
-          direccion: this.customer.address || "",
-          correo_electronico: this.customer.email || "",
-          telefono: this.customer.telephone || "",
-        },
-        totales: {
-          total_exportacion: 0.0,
-          total_operaciones_gravadas: totalOpeGravada,
-          total_operaciones_inafectas: 0.0,
-          total_operaciones_exoneradas: 0.0,
-          total_operaciones_gratuitas: 0.0,
-          total_igv: 18.0,
-          total_impuestos: 18.0,
-          total_valor: totalOpeGravada,
-          total_venta: totalVenta,
-        },
-        items,
-        informacion_adicional: "Forma de pago: Efectivo|Caja: 1",
-      };
+    },
+    async onGoToInvoice() {
+      this.onUpdateItemsWithExtras();
+      this.onCalculateTotals();
+      let validate_payment_destination = this.validatePaymentDestination();
+
+      if (validate_payment_destination.error_by_item > 0) {
+        return this.$message.error("El destino del pago es obligatorio");
+      }
       this.loading = true;
       this.$http
-        .post("/api/documents", payload, config)
+        .post(`/${this.resource_documents}`, this.document)
         .then((response) => {
-          const payloadFinalizedRent = {
-            arrears: this.arrears,
-          };
-          this.loading = true;
-          this.$http
-            .post(
-              `/hotels/reception/${this.rent.id}/rent/finalized`,
-              payloadFinalizedRent
-            )
-            .then(() => {
-              this.response = response.data;
-              this.showDialogOptions = true;
-            })
-            .finally(() => (this.loading = false));
+          if (response.data.success) {
+            this.documentNewId = response.data.data.id;
+            this.form_cash_document.document_id = response.data.data.id;
+            this.showDialogDocumentOptions = true;
+            this.$emit("update:showDialog", false);
+            this.saveCashDocument();
+
+            const payloadFinalizedRent = {
+              arrears: this.arrears,
+            };
+            this.loading = true;
+            this.$http
+              .post(
+                `/hotels/reception/${this.rent.id}/rent/finalized`,
+                payloadFinalizedRent
+              )
+              .then(() => {
+                this.response = response.data;
+              })
+              .finally(() => (this.loading = false));
+          } else {
+            this.$message.error(response.data.message);
+          }
         })
-        .finally(() => (this.loading = false));
+        .catch((error) => {
+          if (error.response.status === 422) {
+            this.errors = error.response.data;
+          } else {
+            this.$message.error(error.response.data.message);
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
-    onCalculateTotals() {
+    onUpdateItemsWithExtras() {
+      this.document.items = this.document.items.map((it) => {
+        if (it.item_id === this.room.item_id) {
+          const name = `${this.room.item.item.description} x ${this.room.item.quantity} noche(s)`;
+          it.item.description = name;
+          it.item.full_description = name;
+          it.name_product_pdf = name;
+          it.quantity = 1;
+          const newTotal =
+            parseFloat(this.room.item.total) + parseFloat(this.arrears);
+          it.input_unit_price_value = parseFloat(newTotal);
+          it.item.unit_price = parseFloat(newTotal);
+          it.unit_value = parseFloat(newTotal);
+          const newItem = calculateRowItem(it, "PEN", 3);
+          return newItem;
+        }
+        return it;
+      });
+    },
+    saveCashDocument() {
+      this.$http
+        .post(`/cash/cash_document`, this.form_cash_document)
+        .then((response) => {
+          if (!response.data.success) {
+            this.$message.error(response.data.message);
+          }
+        })
+        .catch((error) => {
+          this.axiosError(error);
+        });
+    },
+    onCalculatePaidAndDebts() {
       this.totalPaid = this.rent.items
         .map((i) => {
           if (i.payment_status === "PAID") {
@@ -387,8 +598,115 @@ export default {
         .reduce((a, b) => a + b, 0);
       this.totalDebt = totalDebt + parseFloat(this.arrears);
     },
+    initDocument() {
+      this.document = {
+        customer_id: this.rent.customer_id,
+        customer: this.rent.customer,
+        document_type_id: null,
+        series_id: null,
+        establishment_id: this.warehouseId,
+        number: "#",
+        date_of_issue: moment().format("YYYY-MM-DD"),
+        time_of_issue: moment().format("HH:mm:ss"),
+        currency_type_id: "PEN",
+        purchase_order: null,
+        exchange_rate_sale: 0,
+        total_prepayment: 0,
+        total_charge: 0,
+        total_discount: 0,
+        total_exportation: 0,
+        total_free: 0,
+        total_taxed: 0,
+        total_unaffected: 0,
+        total_exonerated: 0,
+        total_igv: 0,
+        total_base_isc: 0,
+        total_isc: 0,
+        total_base_other_taxes: 0,
+        total_other_taxes: 0,
+        total_taxes: 0,
+        total_value: 0,
+        total: 0,
+        operation_type_id: "0101",
+        date_of_due: moment().format("YYYY-MM-DD"),
+        delivery_date: moment().format("YYYY-MM-DD"),
+        items: [],
+        charges: [],
+        discounts: [],
+        attributes: [],
+        guides: [],
+        additional_information: null,
+        actions: {
+          format_pdf: "a4",
+        },
+        dispatch_id: null,
+        dispatch: null,
+        is_receivable: false,
+        payments: [],
+        hotel: {},
+      };
+    },
     onGotoBack() {
       window.location.href = "/hotels/reception";
+    },
+    onCalculateTotals() {
+      let total_exportation = 0;
+      let total_taxed = 0;
+      let total_exonerated = 0;
+      let total_unaffected = 0;
+      let total_free = 0;
+      let total_igv = 0;
+      let total_value = 0;
+      let total = 0;
+      let total_plastic_bag_taxes = 0;
+      let total_discount = 0;
+      let total_charge = 0;
+      this.document.items.forEach((row) => {
+        total_discount += parseFloat(row.total_discount);
+        total_charge += parseFloat(row.total_charge);
+
+        if (row.affectation_igv_type_id === "10") {
+          total_taxed += parseFloat(row.total_value);
+        }
+        if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) < 0) {
+          total_free += parseFloat(row.total_value);
+        }
+        if (
+          ["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1
+        ) {
+          total_igv += parseFloat(row.total_igv);
+          total += parseFloat(row.total);
+        }
+        total_value += parseFloat(row.total_value);
+        total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes);
+
+        if (["13", "14", "15"].includes(row.affectation_igv_type_id)) {
+          let unit_value =
+            row.total_value / row.quantity / (1 + row.percentage_igv / 100);
+          let total_value_partial = unit_value * row.quantity;
+          row.total_taxes = row.total_value - total_value_partial;
+          row.total_igv = row.total_value - total_value_partial;
+          row.total_base_igv = total_value_partial;
+          total_value -= row.total_value;
+        }
+      });
+
+      this.document.total_exportation = _.round(total_exportation, 2);
+      this.document.total_taxed = _.round(total_taxed, 2);
+      this.document.total_exonerated = _.round(total_exonerated, 2);
+      this.document.total_unaffected = _.round(total_unaffected, 2);
+      this.document.total_free = _.round(total_free, 2);
+      this.document.total_igv = _.round(total_igv, 2);
+      this.document.total_value = _.round(total_value, 2);
+      this.document.total_taxes = _.round(total_igv, 2);
+      this.document.total_plastic_bag_taxes = _.round(
+        total_plastic_bag_taxes,
+        2
+      );
+      this.document.total = _.round(
+        total + this.document.total_plastic_bag_taxes,
+        2
+      );
     },
   },
 };
