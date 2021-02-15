@@ -32,7 +32,7 @@ $montserrat: "Montserrat", sans-serif;
         margin-bottom: 0.25rem;
     }
     .form-group {
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         position: relative;
     }
     p {
@@ -66,13 +66,12 @@ $montserrat: "Montserrat", sans-serif;
     height: 100%;
     position: relative;
     background-position: center;
-    background-size: 75% auto;
+    background-size: auto;
     background-repeat: no-repeat;
 }
 .auth__form {
     height: 100%;
-    width: 100%;
-    max-width: 450px;
+    width: 33%;
     background-color: #fff;
     padding: 4rem;
     display: flex;
@@ -98,7 +97,7 @@ $montserrat: "Montserrat", sans-serif;
 }
 .auth__logo {
     position: absolute;
-    max-width: 150px;
+    max-width: 90px;
     $distance: 30px;
     &.top-left {
         left: $distance;
@@ -144,6 +143,14 @@ $montserrat: "Montserrat", sans-serif;
         }
     }
 }
+@media (max-width: 1024px) {
+    .auth__image {
+        background-size: contain;
+    }
+    .auth__form {
+        width: 45%;
+    }
+}
 @media (max-width: 800px) {
     .auth__image {
         display: none;
@@ -154,8 +161,9 @@ $montserrat: "Montserrat", sans-serif;
         min-height: 500px;
         overflow-y: auto;
         max-width: 100%;
+        width: 100%;
     }
-    .auth__logo-form{
+    .auth__logo-form {
         display: block;
     }
 }

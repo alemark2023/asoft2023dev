@@ -96,6 +96,21 @@
                     </div>
                 </div>
 
+                <div class="pt-3">
+                    <h5>Barra de navegación</h5>
+                    <div :class="{'has-danger': errors.navbar}">
+                        <el-radio-group v-model="form.navbar">
+                            <el-radio label="floating">Flotante</el-radio>
+                            <el-radio label="fixed">Fijo</el-radio>
+                            <el-radio label="static">Estático</el-radio>
+                            <el-radio label="hidden">Oculto</el-radio>
+                        </el-radio-group>
+                        <small class="form-control-feedback" v-if="errors.navbar" v-text="errors.navbar[0]"></small>
+                        <br>
+                        <small class="form-control-feedback">Cambia la forma de la barra de navegación superior</small>
+                    </div>
+                </div>
+
             </div>
         </form>
 

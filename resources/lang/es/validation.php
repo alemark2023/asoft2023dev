@@ -274,5 +274,7 @@ return [
 		'payment_status'                           => 'estado de pago',
 		'output_time'                              => 'hora de salida',
 		'products'                                 => 'productos',
+        'position_logo'                            => 'posición del logo',
+        'position_form'                            => 'posición del formulario'
 	],
 ];

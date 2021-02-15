@@ -16,7 +16,7 @@ html {
 
 body {
     color: #777;
-    font-family: "Open Sans", Arial, sans-serif;
+    font-family: "Montserrat", sans-serif;
     line-height: 22px;
     margin: 0;
     font-size: 13px;
@@ -44,7 +44,7 @@ a:active {
 /* Layout Base - Header */
 .header {
     height: 60px;
-    left: 0;
+    left: 300px;
     position: absolute;
     right: 0;
     top: 0;
@@ -259,6 +259,7 @@ a:active {
         position: fixed;
         /* top: 60px; */
         top: 0;
+        box-shadow: 0 0 15px 0 rgb(34 41 47 / 5%);
     }
 
     html.fixed .sidebar-left .nano-content {
@@ -409,6 +410,7 @@ a:active {
     float: left;
     width: 300px;
     padding: 3px 16px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -489,7 +491,7 @@ a:active {
         position: fixed;
         overflow: hidden;
         top: 0;
-        z-index: 98 !important;
+        z-index: 108 !important;
     }
 
     .sidebar-right {
@@ -1368,15 +1370,18 @@ a:active {
 /* Sidebar Left */
 .sidebar-left {
     background: #1d2127;
-    z-index: 1010;
+    z-index: 1021;
 }
 
 .sidebar-left .sidebar-header {
     position: relative;
     color: #777;
-    height: 50px;
+    height: 60px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 3px 15px;
+    margin-bottom: 1rem;
 }
 
 .sidebar-left .sidebar-header .sidebar-title {
@@ -1486,7 +1491,6 @@ html.mobile-device .sidebar-left {
         -webkit-box-shadow: -5px 0 0 #2f3139 inset;
         box-shadow: -5px 0 0 #2f3139 inset;
     } */
-
     html.sidebar-left-collapsed .sidebar-left .sidebar-title {
         margin-left: -300px;
         opacity: 0;
@@ -1658,6 +1662,9 @@ html.sidebar-light:not(.dark).sidebar-left-collapsed .sidebar-left .nano {
 }
 
 @media only screen and (max-width: 767px) {
+    .sidebar-toggle {
+        display: none;
+    }
     html.sidebar-light .sidebar-left {
         background: #fff;
     }
@@ -1968,7 +1975,7 @@ html.mobile-device.sidebar-light .sidebar-left {
         box-shadow: 2px 0 0 #0088cc inset;
         border-radius: 0 !important;
         margin: 0;
-        color: #0088CC !important;
+        color: #0088cc !important;
     }
 
     html.sidebar-left-big-icons.sidebar-light
@@ -4615,12 +4622,11 @@ html.dark .inner-menu .inner-menu-toggle-inside:after {
 
 .header .logo {
     float: left;
-    height: 60px;
 }
 
 .header .logo img {
     color: transparent;
-    height: 100%;
+    height: 54px;
     width: auto;
 }
 
@@ -4692,8 +4698,9 @@ html.has-left-sidebar-half .header {
     .header .logo-container .logo {
         float: none;
         display: inline-block;
-        line-height: 57px;
-        margin-top: 0;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        height: 54px !important;
     }
 
     .header .search,
@@ -11409,7 +11416,7 @@ h6.text-shadow {
 /* Lightboxes */
 .mfp-close,
 .mfp-close-btn-in .mfp-close {
-    font-family: "Open Sans", Arial, sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-weight: 600;
     font-size: 22px;
     color: #838383;
@@ -13826,7 +13833,7 @@ body .ui-pnotify.icon-nb .notification .ui-pnotify-icon > span {
     border: 0;
     background: #666;
     color: #fff;
-    font-family: "Open Sans", Arial, sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-size: 600;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -16387,7 +16394,7 @@ p.drop-caps.drop-caps-style-2:first-letter {
 
 /* Default Font Style */
 .default-font {
-    font-family: "Open Sans", Arial, sans-serif;
+    font-family: "Montserrat", sans-serif;
 }
 
 /* Alternative Font Style */
@@ -20663,15 +20670,15 @@ ul.nav-main li .nav-children li a:before {
 html.dark ul.nav-main li a {
     color: #d0d2d6;
 }
-html.dark ul.nav-main li a::before{
+html.dark ul.nav-main li a::before {
     border: 1px solid #d0d2d6;
 }
 html.dark ul.nav-main li.nav-expanded > a,
 html.dark ul.nav-main li .nav-children li a:hover {
-    background-color: #161d31!important;
-    color: #d0d2d6!important;
+    background-color: #161d31 !important;
+    color: #d0d2d6 !important;
 }
 html.dark ul.nav-main li.nav-expanded > a::after,
 html.dark ul.nav-main li a:hover::after {
-    color: #d0d2d6!important;
+    color: #d0d2d6 !important;
 }
