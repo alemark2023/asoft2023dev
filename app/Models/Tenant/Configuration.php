@@ -37,7 +37,8 @@ class Configuration extends ModelTenant
         'legend_footer',
         'default_document_type_03',
         'destination_sale',
-        'terms_condition_sale'
+        'terms_condition_sale',
+        'login'
     ];
 
     public function setPlanAttribute($value)
@@ -60,4 +61,13 @@ class Configuration extends ModelTenant
         return (is_null($value))?null:(object) json_decode($value);
     }
 
+    public function setLoginAttribute($value)
+    {
+        $this->attributes['login'] = is_null($value) ? null : json_encode($value);
+    }
+
+    public function getLoginAttribute($value)
+    {
+        return is_null($value) ? null : (object) json_decode($value);
+    }
 }

@@ -8,6 +8,10 @@
                 <img src="{{asset('logo/700x300.jpg')}}" alt="Logo" />
             @endif
         </a>
+        <div class="sidebar-toggle" data-toggle-class="sidebar-left-collapsed" data-target="html"
+             data-fire-event="sidebar-left-toggle">
+            <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
+        </div>
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>

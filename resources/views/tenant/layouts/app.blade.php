@@ -23,7 +23,7 @@
     {{--<link rel="dns-prefetch" href="https://fonts.gstatic.com">--}}
     {{--<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">--}}
 
-    <link async href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link async href="{{ mix('css/app.css') }}" rel="stylesheet">
 
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -78,22 +78,22 @@
             color:black;
             padding:5px;
         }
-        .header .logo {
+        /* .header .logo {
             height: 100%;
             margin-top: 5px;
-        }
+        } */
 
-        .header .logo img {
+        /* .header .logo img {
             height: 45px;
-        }
+        } */
 
-        html.sidebar-light:not(.dark) ul.nav-main > li.nav-active > a {
+        /* html.sidebar-light:not(.dark) ul.nav-main > li.nav-active > a {
             color: #0088CC;
-        }
+        } */
 
-        ul.nav-main > li.nav-active > a {
+        /* ul.nav-main > li.nav-active > a {
             box-shadow: 2px 0 0 #0088CC inset;
-        }
+        } */
         .el-checkbox__label {
             font-size: 13px;
         }
@@ -106,11 +106,12 @@
         }
 
     </style>
-
-    <script defer src="{{ asset('js/app.js') }}"></script>
+    
     @if ($vc_company->favicon)
     <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
     @endif
+    <script defer src="{{ mix('js/app.js') }}"></script>
+
 </head>
 <body class="pr-0">
 
@@ -182,7 +183,6 @@
 
     <script src="{{ asset('js/manifest.js') }}"></script>
     <script src="{{ asset('js/vendor.js') }}"></script>
-    {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
 
@@ -199,7 +199,5 @@
 
     </script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
-
-
 </body>
 </html>

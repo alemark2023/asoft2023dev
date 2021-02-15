@@ -292,6 +292,9 @@ Vue.component('system-configuration-culqi', require('./views/system/configuratio
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
+// Configuración del login
+Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
+
 import moment from 'moment';
 
 Vue.mixin({

@@ -7,15 +7,7 @@
 @endphp
 
 <aside id="sidebar-left" class="sidebar-left">
-    <div class="sidebar-header">
-        <div class="sidebar-title">
-            Menu
-        </div>
-        <div class="sidebar-toggle d-none d-md-block" data-toggle-class="sidebar-left-collapsed" data-target="html"
-             data-fire-event="sidebar-left-toggle">
-            <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
-        </div>
-    </div>
+    <div class="sidebar-header"></div>
     <div class="nano">
         <div class="nano-content">
             <nav id="menu" class="nav-main" role="navigation">
@@ -845,7 +837,7 @@
                     @endif
 
                     @if(in_array('configuration', $vc_modules))
-                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts','bussiness_turns','offline-configurations','series-configurations','configurations']) ? 'nav-active nav-expanded' : ''}}">
+                    <li class="nav-parent {{in_array($path[0], ['companies', 'catalogs', 'advanced', 'tasks', 'inventories','company_accounts','bussiness_turns','offline-configurations','series-configurations','configurations', 'login-page']) ? 'nav-active nav-expanded' : ''}}">
                         <a class="nav-link" href="#">
                             <i class="fas fa-cogs" aria-hidden="true"></i>
                             <span>Configuración</span>
@@ -917,7 +909,9 @@
                                 <a class="nav-link" href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
                             </li>
                             @endif
-
+                            <li class="{{($path[0] === 'login-page') ? 'nav-active' : ''}}">
+                                <a class="nav-link" href="{{route('tenant.login_page')}}">Login</a>
+                            </li>
                         </ul>
                     </li>
                     @endif
