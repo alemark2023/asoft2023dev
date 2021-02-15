@@ -127,6 +127,11 @@ class ViewServiceProvider extends ServiceProvider
             'App\Http\ViewComposers\Tenant\ConfigurationVisualViewComposer'
         );
 
+        view()->composer(
+            'tenant.layouts.app',
+            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
+        );
+
        /*view()->composer(
             'ecommerce',
             'Modules\Ecommerce\Http\ViewComposers\TakeProductoViewComposer'
