@@ -337,14 +337,13 @@ export default {
                 this.document.payments.splice(index, 1);
       },
     clickAddPayment() {
-
       let payment = (this.document.payments.length == 0) ? this.form.order_note.total : 0
 
       this.document.payments.push({
         id: null,
         document_id: null,
         date_of_payment: moment().format("YYYY-MM-DD"),
-        payment_method_type_id: "01",
+        payment_method_type_id: this.form.order_note.payment_method_type_id,
         payment_destination_id:null,
         reference: null,
         payment: payment
@@ -360,7 +359,7 @@ export default {
         date_of_issue: null,
         order_note: null
       };
-      
+
       this.form_cash_document = {
           document_id: null,
           sale_note_id: null
@@ -589,7 +588,7 @@ export default {
         });
 
       await this.clickAddPayment()
-      
+
     },
     changeDocumentType() {
       // this.filterSeries()
