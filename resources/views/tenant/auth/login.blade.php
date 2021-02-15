@@ -11,7 +11,7 @@
             <p>Ingresa a tu cuenta</p>
             <div class="form-group">
                 <label for="email">Correo electrónico</label>
-                <input type="email" name="email" id="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" value="{{ old('email') }}">
+                <input type="email" name="email" id="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" value="{{ old('email') }}" autofocus>
                 @if ($errors->has('email'))
                 <div class="invalid-feedback">{{ $errors->first('email') }}</div>
                 @endif
@@ -19,13 +19,13 @@
             <div class="form-group">
                 <div class="d-flex justify-content-between">
                     <label for="password">Contraseña</label>
-                    <a href="{{ url('password/reset') }}">¿Has olvidado tu contraseña?</a>
+                    <a href="{{ url('password/reset') }}" tabindex="5">¿Has olvidado tu contraseña?</a>
                 </div>
                 <input type="password" name="password" id="password" class="form-control hide-password {{ $errors->has('password') ? 'is-invalid' : '' }}">
                 @if ($errors->has('password'))
                 <div class="invalid-feedback">{{ $errors->first('password') }}</div>
                 @endif
-                <button type="button" class="btn btn-eye" id="btnEye">
+                <button type="button" class="btn btn-eye" id="btnEye" tabindex="4">
                     <i class="fa fa-eye"></i>
                 </button>
             </div>

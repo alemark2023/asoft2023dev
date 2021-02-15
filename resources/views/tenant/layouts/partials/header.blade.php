@@ -1,13 +1,13 @@
 <header class="header">
     <div class="logo-container">
-        <a href="{{route('tenant.dashboard.index')}}" class="logo pt-2 pt-md-0">
+        {{-- <a href="{{route('tenant.dashboard.index')}}" class="logo pt-2 pt-md-0">
 
             @if($vc_company->logo)
                 <img src="{{ asset('storage/uploads/logos/'.$vc_company->logo) }}" alt="Logo" />
             @else
                 <img src="{{asset('logo/700x300.jpg')}}" alt="Logo" />
             @endif
-        </a>
+        </a> --}}
         <div class="sidebar-toggle" data-toggle-class="sidebar-left-collapsed" data-target="html"
              data-fire-event="sidebar-left-toggle">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>

@@ -33,6 +33,7 @@
                     label="Derecha"
                   ></el-option>
                 </el-select>
+                <small class="form-control-feedback" v-if="errors.position_form" v-text="errors.position_form[0]"></small>
               </div>
               <div class="form-group">
                 <label>Mostrar logo en el formulario</label>
@@ -62,6 +63,7 @@
                     label="Inferior derecha"
                   ></el-option>
                 </el-select>
+                <small class="form-control-feedback" v-if="errors.position_logo" v-text="errors.position_logo[0]"></small>
               </div>
             </div>
             <div class="col-12 col-md-4">
@@ -122,6 +124,7 @@ export default {
     return {
       form: {},
       loading: false,
+      errors: {}
     };
   },
   methods: {
