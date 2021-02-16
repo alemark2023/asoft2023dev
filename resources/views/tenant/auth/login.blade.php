@@ -21,13 +21,15 @@
                     <label for="password">Contraseña</label>
                     <a href="{{ url('password/reset') }}" tabindex="5">¿Has olvidado tu contraseña?</a>
                 </div>
-                <input type="password" name="password" id="password" class="form-control hide-password {{ $errors->has('password') ? 'is-invalid' : '' }}">
+                <div class="position-relative">
+                    <input type="password" name="password" id="password" class="form-control hide-password {{ $errors->has('password') ? 'is-invalid' : '' }}">
+                    <button type="button" class="btn btn-eye" id="btnEye" tabindex="4">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
                 @if ($errors->has('password'))
                 <div class="invalid-feedback">{{ $errors->first('password') }}</div>
                 @endif
-                <button type="button" class="btn btn-eye" id="btnEye" tabindex="4">
-                    <i class="fa fa-eye"></i>
-                </button>
             </div>
             <button type="submit" class="btn btn-signin btn-block">INICIAR SESIÓN</button>
             @include('tenant.auth.partials.socials')

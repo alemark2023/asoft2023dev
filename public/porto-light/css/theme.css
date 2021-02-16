@@ -5,7 +5,7 @@ Theme Version: 	2.1.1
 */
 html,
 body {
-    background: #F8F8F8;
+    background: #f8f8f8;
     width: 100%;
 }
 
@@ -50,7 +50,9 @@ a:active {
     top: 0;
     transition: all 0.15s linear;
 }
-
+.sidebar-left-collapsed .header{
+    left: 92px !important;
+}
 .header-floating .header {
     left: 320px;
     top: 20px;
@@ -280,7 +282,7 @@ a:active {
     html.fixed.header-static .inner-wrapper {
         padding-top: 0;
     }
-    html.fixed.header-hidden .inner-wrapper{
+    html.fixed.header-hidden .inner-wrapper {
         padding-top: 50px;
     }
 
@@ -1419,7 +1421,7 @@ a:active {
     height: 60px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 3px 15px;
     margin-bottom: 1rem;
 }
@@ -2683,7 +2685,10 @@ html.sidebar-right-opened .page-header .sidebar-right-toggle i:before {
 
 /* Page Header - Mobile */
 @media only screen and (max-width: 767px) {
-    .header-static .header{
+    .sidebar-left .sidebar-header {
+        justify-content: space-between;
+    }
+    .header-static .header {
         margin-left: 0;
     }
     #main-wrapper {
@@ -20694,7 +20699,7 @@ ul.nav-main li .nav-children li a:before {
     transition: all 0.15s linear;
 }
 .sidebar-left .sidebar-header .logo img {
-    height: 58px;
+    height: 50px;
 }
 #btnOpenCloseMenu {
     width: 60px;

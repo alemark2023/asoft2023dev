@@ -127,6 +127,9 @@ export default {
       errors: {}
     };
   },
+  mounted() {
+      this.form = this.configuration.login;
+  },
   methods: {
     onSubmit() {
       delete this.form.type;

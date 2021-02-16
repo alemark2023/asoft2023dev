@@ -11,6 +11,7 @@
       ref="inputFile"
       class="hidden"
     />
+    <small class="form-control-feedback">Se recomienda una imagen de 747 x 547px con fondo transparente en formato PNG o SVG</small>
     <el-button type="primary" class="btn-block" @click="onShowFilePicker" :loading="loading" :disabled="loading"
       >Cambiar image de fondo</el-button
     >
