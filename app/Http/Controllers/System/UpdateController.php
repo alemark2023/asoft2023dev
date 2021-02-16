@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Artisan;
 
 class UpdateController extends Controller
@@ -125,5 +127,11 @@ class UpdateController extends Controller
 
 
         // return json_encode($output);
+    }
+
+    public function changelog() {
+
+        $file = File::get(base_path('CHANGELOG.md'));
+        return Markdown::convertToHtml($file);
     }
 }

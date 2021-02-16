@@ -610,16 +610,13 @@ if ($hostname) {
 			Route::get('auto-update', 'System\UpdateController@index')->name('system.update');
 			Route::get('auto-update/branch', 'System\UpdateController@branch')->name('system.update.branch');
 			Route::get('auto-update/pull/{branch}', 'System\UpdateController@pull')->name('system.update.pull');
-
 			Route::get('auto-update/artisan/migrate', 'System\UpdateController@artisanMigrate')->name('system.update.artisan.migrate');
 			Route::get('auto-update/artisan/migrate/tenant', 'System\UpdateController@artisanTenancyMigrate')->name('system.update.artisan.tenancy.migrate');
 			Route::get('auto-update/artisan/clear', 'System\UpdateController@artisanClear')->name('system.update.artisan.clear');
-
 			Route::get('auto-update/composer/install', 'System\UpdateController@composerInstall')->name('system.update.composer.install');
-
 			Route::get('auto-update/keygen', 'System\UpdateController@keygen')->name('system.update.keygen');
-
 			Route::get('auto-update/version', 'System\UpdateController@version')->name('system.update.version');
+			Route::get('auto-update/changelog', 'System\UpdateController@changelog')->name('system.changelog');
 
 			//Configuration
 
