@@ -5,7 +5,7 @@ Theme Version: 	2.1.1
 */
 html,
 body {
-    background: #ecedf0;
+    background: #F8F8F8;
     width: 100%;
 }
 
@@ -49,6 +49,21 @@ a:active {
     right: 0;
     top: 0;
     transition: all 0.15s linear;
+}
+
+.header-floating .header {
+    left: 320px;
+    top: 20px;
+    right: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 24px 0 rgb(34 41 47 / 10%);
+}
+.header-static .header {
+    position: static !important;
+    margin-left: 300px;
+}
+.header-hidden .header {
+    display: none;
 }
 
 /* Layout Base - Inner Wrapper */
@@ -102,8 +117,6 @@ a:active {
 .page-header {
     /* background: #171717; */
     border-bottom: none;
-    border-left: 1px solid #3a3a3a;
-    -webkit-box-shadow: 1px 3px 0 1px #cccccc;
     box-shadow: 1px 3px 0 1px #cccccc;
     height: 50px;
     margin: -40px -40px 12px -40px;
@@ -245,6 +258,30 @@ a:active {
         position: fixed;
         right: 0;
         top: 60px;
+    }
+
+    html.fixed.header-floating .page-header,
+    html.fixed.header-static .page-header {
+        position: static;
+    }
+    html.fixed.header-hidden .page-header {
+        top: 0;
+    }
+    .header-floating #main-wrapper,
+    .header-static #main-wrapper,
+    .header-hidden #main-wrapper {
+        padding: 0;
+    }
+    .header-floating #main-wrapper > div > .card,
+    .header-static #main-wrapper > div > .card,
+    .header-hidden #main-wrapper > div > .card {
+        margin: 40px;
+    }
+    html.fixed.header-static .inner-wrapper {
+        padding-top: 0;
+    }
+    html.fixed.header-hidden .inner-wrapper{
+        padding-top: 50px;
     }
 
     html.fixed.has-top-menu:not(.has-left-sidebar-half) .page-header {
@@ -1372,6 +1409,9 @@ a:active {
     background: #1d2127;
     z-index: 1021;
 }
+.dark .sidebar-left {
+    background-color: #283046;
+}
 
 .sidebar-left .sidebar-header {
     position: relative;
@@ -1382,6 +1422,9 @@ a:active {
     justify-content: space-between;
     padding: 3px 15px;
     margin-bottom: 1rem;
+}
+.dark .sidebar-left .sidebar-header {
+    background-color: #283046;
 }
 
 .sidebar-left .sidebar-header .sidebar-title {
@@ -1665,7 +1708,7 @@ html.sidebar-light:not(.dark).sidebar-left-collapsed .sidebar-left .nano {
     .sidebar-toggle {
         display: none;
     }
-    html.sidebar-light .sidebar-left {
+    html.sidebar-light:not(.dark) .sidebar-left {
         background: #fff;
     }
 }
@@ -2482,7 +2525,7 @@ html.no-overflowscrolling.sidebar-light:not(.dark) .inner-menu .nano {
 .page-header .breadcrumbs {
     display: inline-block;
     font-size: 0;
-    line-height: 50px;
+    line-height: 40px;
     margin: 0;
     padding: 0;
 }
@@ -2616,7 +2659,7 @@ html.header-dark .page-header {
 /* Sidebar Light- Page Header */
 html.sidebar-light:not(.dark) .page-header {
     border-left-color: #e6e6e6;
-    background: #f6f6f6;
+    background: #fff;
     -webkit-box-shadow: 1px 3px 0 1px #e2e3e6;
     box-shadow: 1px 3px 0 1px #e2e3e6;
 }
@@ -2640,8 +2683,18 @@ html.sidebar-right-opened .page-header .sidebar-right-toggle i:before {
 
 /* Page Header - Mobile */
 @media only screen and (max-width: 767px) {
+    .header-static .header{
+        margin-left: 0;
+    }
+    #main-wrapper {
+        padding-top: 65px;
+    }
     .page-header {
         padding-right: 80px;
+        position: absolute;
+        top: 0;
+        display: flex;
+        z-index: 2;
     }
 
     .page-header .breadcrumbs {
@@ -4760,23 +4813,13 @@ html.header-dark .header .separator {
     html.header-fixed .header {
         border-radius: 0;
         border-top-color: transparent;
-        left: 0;
-        position: fixed;
-        right: 0;
-        top: -3px;
-        z-index: 2000;
         margin: 0;
     }
 
     html.header-fixed .inner-wrapper {
-        padding-top: 0;
+        padding-top: 50px;
         margin-top: 60px;
     }
-}
-/* Header Nav Menu */
-.header.header-nav-menu {
-    /* Header Nav Main */
-    /* Header Nav Main Mobile */
 }
 
 @media only screen and (min-width: 768px) {

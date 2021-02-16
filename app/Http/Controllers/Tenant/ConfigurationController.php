@@ -313,6 +313,7 @@ class ConfigurationController extends Controller
 			'bg'       => $request->bg,
 			'header'   => $request->header,
 			'sidebars' => $request->sidebars,
+            'navbar' => $request->navbar
 		];
 
 		$configuration = Configuration::find(1);
