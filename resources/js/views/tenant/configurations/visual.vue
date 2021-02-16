@@ -99,7 +99,7 @@
                 <div class="pt-3">
                     <h5>Barra de navegación</h5>
                     <div :class="{'has-danger': errors.navbar}">
-                        <el-radio-group v-model="form.navbar">
+                        <el-radio-group v-model="visuals.navbar" @change="submit">
                             <el-radio label="floating">Flotante</el-radio>
                             <el-radio label="fixed">Fijo</el-radio>
                             <el-radio label="static">Estático</el-radio>
@@ -142,7 +142,7 @@
                     compact_sidebar: true,
                     colums_grid_item: 4,
                     enable_whatsapp: true,
-                    phone_whatsapp: ''
+                    phone_whatsapp: '',
                 }
             },
             getRecords() {

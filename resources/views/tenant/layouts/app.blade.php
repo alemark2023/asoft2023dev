@@ -6,6 +6,7 @@
         {{$visual->header == 'dark' ? 'header-dark' : ''}}
         {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}}
         {{$visual->bg == 'dark' ? 'dark' : ''}}
+        header-{{$visual->navbar ?? 'fixed'}}
         ">
 <head>
     <meta charset="utf-8">
