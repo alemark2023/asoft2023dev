@@ -378,3 +378,10 @@ html.dark .el-switch__label *,
   font-size: 1rem;
   font-weight: bold;
 }
+
+.sidebar-left-collapsed.header-static .header {
+    margin-left: 74px !important;
+}
+.sidebar-left-collapsed.header-fixed .header {
+    left: 74px !important;
+}

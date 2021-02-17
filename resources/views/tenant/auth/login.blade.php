@@ -6,9 +6,11 @@
     <article class="auth__form">
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            @include('tenant.auth.partials.form_logo')
-            <h1 class="auth__title">Bienvenido a<br>{{ $company->trade_name }}</h1>
-            <p>Ingresa a tu cuenta</p>
+            <div class="text-center">
+                @include('tenant.auth.partials.form_logo')
+                <h1 class="auth__title">Bienvenido a<br>{{ $company->trade_name }}</h1>
+                <p>Ingresa a tu cuenta</p>
+            </div>
             <div class="form-group">
                 <label for="email">Correo electrónico</label>
                 <input type="email" name="email" id="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" value="{{ old('email') }}" autofocus>
