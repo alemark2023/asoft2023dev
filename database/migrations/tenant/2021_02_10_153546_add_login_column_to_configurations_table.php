@@ -19,20 +19,22 @@ class AddLoginColumnToConfigurationsTable extends Migration
         });
 
         $configuration = Configuration::first();
-        $login = [
-            'type' => 'image',
-            'image' => asset('images/login-v2.svg'),
-            'position_form' => 'right',
-            'show_logo_in_form' => false,
-            'position_logo' => 'top-left',
-            'show_socials' => false,
-            'facebook' => null,
-            'twitter' => null,
-            'instagram' => null,
-            'linkedin' => null,
-        ];
-        $configuration->login = $login;
-        $configuration->save();
+        if ($configuration) {
+			$login = [
+				'type'              => 'image',
+				'image'             => asset('images/login-v2.svg'),
+				'position_form'     => 'right',
+				'show_logo_in_form' => false,
+				'position_logo'     => 'top-left',
+				'show_socials'      => false,
+				'facebook'          => null,
+				'twitter'           => null,
+				'instagram'         => null,
+				'linkedin'          => null,
+			];
+			$configuration->login = $login;
+			$configuration->save();
+		}
     }
 
     /**
