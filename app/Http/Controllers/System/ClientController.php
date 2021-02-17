@@ -362,7 +362,19 @@ class ClientController extends Controller
             'plan' => json_encode($plan),
             'date_time_start' =>  date('Y-m-d H:i:s'),
             'quantity_documents' =>  0,
-            'config_system_env' => $request->config_system_env
+            'config_system_env' => $request->config_system_env,
+            'login' => json_encode([
+                'type' => 'image',
+                'image' => asset('images/login-v2.svg'),
+                'position_form' => 'right',
+                'show_logo_in_form' => false,
+                'position_logo' => 'top-left',
+                'show_socials' => false,
+                'facebook' => null,
+                'twitter' => null,
+                'instagram' => null,
+                'linkedin' => null,
+            ])
         ]);
 
 
