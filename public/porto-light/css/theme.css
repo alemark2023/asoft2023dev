@@ -1408,7 +1408,7 @@ a:active {
 }
 /* Sidebar Left */
 .sidebar-left {
-    background: #1d2127;
+    background: #283046;
     z-index: 1021;
 }
 .dark .sidebar-left {
@@ -20661,6 +20661,11 @@ ul.nav-main > li {
 ul.nav-main > li a {
     transition: all 0.15s linear;
     border-radius: 6px;
+    margin: 0 15px;
+}
+html:not(.sidebar-light) ul.nav-main li.nav-expanded > a {
+    background-color: #0C102A;
+    color: #FFF;
 }
 ul.nav-main > li a:hover {
     padding-left: 20px !important;
@@ -20717,6 +20722,7 @@ ul.nav-main li .nav-children li a:before {
 }
 html.dark ul.nav-main li a {
     color: #d0d2d6;
+    margin: 0 15px;
 }
 html.dark ul.nav-main li a::before {
     border: 1px solid #d0d2d6;
