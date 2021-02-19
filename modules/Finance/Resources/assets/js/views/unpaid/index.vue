@@ -127,7 +127,7 @@
 
                             <div class="row" v-loading="loading">
 
-                                
+
                                 <div class="col-md-12" style="margin-top:29px">
                                     <el-button
                                         class="submit"
@@ -208,7 +208,7 @@
                                             <th>Cliente</th>
                                             <th>Usuario</th>
                                             <th>Días de retraso</th>
-
+                                            <th>Penalidad</th>
                                             <th>Guías</th>
 
                                             <th>Ver Cartera</th>
@@ -230,7 +230,14 @@
                                                     <td>{{ row.username }}</td>
 
                                                     <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
-
+                                                    <td>
+                                                        <el-popover placement="right" width="200" trigger="click">
+                                                            <strong>Penalidad: {{ row.arrears }}</strong>
+                                                            <el-button slot="reference">
+                                                                <i class="fa fa-eye"></i>
+                                                            </el-button>
+                                                        </el-popover>
+                                                    </td>
                                                     <td>
                                                         <template>
                                                         <el-popover placement="right" width="400" trigger="click">
@@ -273,17 +280,17 @@
 
                                                     <td>
                                                         <el-popover placement="right" width="300" trigger="click">
-                                                        <p>
-                                                            Saldo actual:
-                                                            <span class="custom-badge">{{ row.total_to_pay }}</span>
-                                                        </p>
-                                                        <p>
-                                                            Fecha ultimo pago:
-                                                            <span
-                                                            class="custom-badge"
-                                                            >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
-                                                        </p>
-        
+                                                            <p>
+                                                                Saldo actual:
+                                                                <span class="custom-badge">{{ row.total_to_pay }}</span>
+                                                            </p>
+                                                            <p>
+                                                                Fecha ultimo pago:
+                                                                <span
+                                                                class="custom-badge"
+                                                                >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
+                                                            </p>
+
                                                         <el-button icon="el-icon-view" slot="reference"></el-button>
                                                         </el-popover>
                                                     </td>
@@ -307,7 +314,7 @@
                                                             @click.prevent="clickSaleNotePayment(row.id)"
                                                         >Pagos</button>
                                                         </template>
-        
+
                                                     </td>
                                                 </tr>
                                             </template>
@@ -497,7 +504,7 @@
                 this.loadUnpaid()
             },
             initForm() {
-                
+
                 this.form = {
                     establishment_id: null,
                     period: 'between_dates',
@@ -530,9 +537,17 @@
                                 this.records = response.data.data
                                 this.pagination = response.data.meta
                                 this.pagination.per_page = parseInt(response.data.meta.per_page)
-                                
+                                const setting = response.data.configuration;
                                 this.records.sort(function(a, b) {
                                     return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
+                                });
+                                this.records = this.records.map(r => {
+                                    if (setting.apply_arrears) {
+                                        r.arrears = parseFloat(r.delay_payment * setting.arrears_amount).toFixed(2);
+                                    } else {
+                                        r.arrears = 0;
+                                    }
+                                    return r;
                                 });
                             })
                             .catch(error => {
@@ -540,7 +555,7 @@
                             .then(() => {
                                 this.loading = false
                             })
- 
+
             },
             getQueryParameters() {
                 return queryString.stringify({

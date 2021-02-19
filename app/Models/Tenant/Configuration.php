@@ -38,7 +38,8 @@ class Configuration extends ModelTenant
         'default_document_type_03',
         'destination_sale',
         'terms_condition_sale',
-        'login'
+        'login',
+        'finances'
     ];
 
     public function setPlanAttribute($value)
@@ -69,5 +70,15 @@ class Configuration extends ModelTenant
     public function getLoginAttribute($value)
     {
         return is_null($value) ? null : (object) json_decode($value);
+    }
+
+    public function setFinancesAttribute($value)
+    {
+        $this->attributes['finances'] = (is_null($value))?null:json_encode($value);
+    }
+
+    public function getFinancesAttribute($value)
+    {
+        return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object) json_decode($value);
     }
 }
