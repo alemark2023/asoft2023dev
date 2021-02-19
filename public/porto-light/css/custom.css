@@ -172,7 +172,7 @@
 #switcher-top {
   border-right: 20px solid transparent;
   border-left: 20px solid transparent;
-  border-top: 20px solid #03c9a9;
+  border-top: 20px solid #7367F0;
   position: fixed;
   z-index: 1031;
   left: 50%;
@@ -186,7 +186,7 @@
   transition: all 0.5s ease-in-out;
 }
 #switcher-top.active {
-  border-top: 45px solid #03c9a9;
+  border-top: 45px solid #7367F0;
   -webkit-transition: all 0.5s ease-in-out;
   -moz-transition: all 0.5s ease-in-out;
   -ms-transition: all 0.5s ease-in-out;
@@ -241,7 +241,7 @@
   margin-top: -35px;
 }
 #switcher-list .row a:hover {
-  color: #03c9a9;
+  color: #FFF;
   text-decoration: none;
 }
 
