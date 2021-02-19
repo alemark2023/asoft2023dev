@@ -219,6 +219,25 @@
 
 
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3 class="separator-title">Finanzas</h3>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label>Aplicar penalidad a los pagos vencidos</label>
+                                    <el-switch v-model="form.finances.apply_arrears" @change="submit" active-text="Si" inactive-text="No" ></el-switch>
+                                </div>
+                                <div class="form-group" v-if="form.finances.apply_arrears" style="max-width: 300px;">
+                                    <label>Cantidad a aplicar por día</label>
+                                    <el-input placeholder="Please input" v-model="form.finances.arrears_amount" class="input-with-select">
+                                        <el-button slot="append" @click="submit">
+                                            <i class="fa fa-save"></i>
+                                        </el-button>
+                                    </el-input>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -250,7 +269,9 @@
                 loading_submit: false,
                 resource: 'configurations',
                 errors: {},
-                form: {},
+                form: {
+                    finances: {}
+                },
                 affectation_igv_types: [],
                 placeholder:'',
 
@@ -321,6 +342,7 @@
                     legend_footer: false,
                     default_document_type_03: false,
                     destination_sale: false,
+                    finances: {}
                 };
             },
             submit() {
