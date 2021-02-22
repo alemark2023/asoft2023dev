@@ -1731,17 +1731,17 @@ html.sidebar-light:not(.dark) .sidebar-left .sidebar-header .sidebar-toggle i {
     color: #333;
 }
 
-html.sidebar-light:not(.dark) .sidebar-left .nano {
-    /* -webkit-box-shadow: -5px 0 0 #f6f6f6 inset;
-    box-shadow: -5px 0 0 #f6f6f6 inset; */
+/* html.sidebar-light:not(.dark) .sidebar-left .nano {
+    -webkit-box-shadow: -5px 0 0 #f6f6f6 inset;
+    box-shadow: -5px 0 0 #f6f6f6 inset;
     background: #fff;
-}
+} */
 
-html.sidebar-light:not(.dark).sidebar-left-collapsed .sidebar-left .nano {
-    /* -webkit-box-shadow: -5px 0 0 #f6f6f6 inset;
-    box-shadow: -5px 0 0 #f6f6f6 inset; */
+/* html.sidebar-light:not(.dark).sidebar-left-collapsed .sidebar-left .nano {
+    -webkit-box-shadow: -5px 0 0 #f6f6f6 inset;
+    box-shadow: -5px 0 0 #f6f6f6 inset;
     background: #fff;
-}
+} */
 
 @media only screen and (max-width: 767px) {
     .sidebar-toggle {
