@@ -96,21 +96,6 @@
                     </div>
                 </div>
 
-                <div class="pt-3">
-                    <h5>Barra de navegación</h5>
-                    <div :class="{'has-danger': errors.navbar}">
-                        <el-radio-group v-model="visuals.navbar" @change="submit">
-                            <el-radio label="floating">Flotante</el-radio>
-                            <el-radio label="fixed">Fijo</el-radio>
-                            <el-radio label="static">Estático</el-radio>
-                            <el-radio label="hidden">Oculto</el-radio>
-                        </el-radio-group>
-                        <small class="form-control-feedback" v-if="errors.navbar" v-text="errors.navbar[0]"></small>
-                        <br>
-                        <small class="form-control-feedback">Cambia la forma de la barra de navegación superior</small>
-                    </div>
-                </div>
-
             </div>
         </form>
 
@@ -158,6 +143,7 @@
                 });
             },
             submit() {
+                this.visuals.navbar = 'fixed';
                 this.$http.post(`/${this.resource}/visual_settings`, this.visuals).then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);

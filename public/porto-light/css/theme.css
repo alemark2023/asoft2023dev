@@ -448,14 +448,14 @@ a:active {
 .header .logo-container {
     float: left;
     width: 300px;
-    padding: 0 16px;
+    padding: 0;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 .header .logo-container .topbar-links {
-    padding: 0 1rem;
+    padding: 0 1.15rem;
     height: 100%;
     font-size: 13px;
     display: inline-flex;
@@ -465,6 +465,9 @@ a:active {
     color: #777;
     font-weight: 600;
     line-height: 1;
+}
+.header .logo-container .topbar-links:hover {
+    background-color: rgba(0, 0, 0, .05);
 }
 .header .logo-container .topbar-links i{
     font-size: 12px;
@@ -1446,6 +1449,7 @@ a:active {
     justify-content: center;
     padding: 3px 15px;
     margin-bottom: 1rem;
+    box-shadow: 0 0 12px rgba(0, 0, 0, .1);
 }
 .dark .sidebar-left .sidebar-header {
     background-color: #283046;
@@ -1461,9 +1465,14 @@ a:active {
 .sidebar-toggle {
     border-right: 1px solid #f3f3f3;
     height: 100%;
-    padding-right: 1rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
     display: flex;
     align-items: center;
+    cursor: pointer;
+}
+.sidebar-toggle:hover {
+    background-color: rgba(0, 0, 0, .05);
 }
 .sidebar-left .sidebar-header .sidebar-toggle {
     position: absolute;
@@ -1706,17 +1715,17 @@ html.mobile-device .sidebar-left {
     }
 }
 
-html.sidebar-light:not(.dark) .sidebar-left {
+/* html.sidebar-light:not(.dark) .sidebar-left {
     background: #fff;
-}
+} */
 
-html.sidebar-light:not(.dark) .sidebar-left .sidebar-header .sidebar-title {
+/* html.sidebar-light:not(.dark) .sidebar-left .sidebar-header .sidebar-title {
     background: #fff;
-}
+} */
 
-html.sidebar-light:not(.dark) .sidebar-left .sidebar-header .sidebar-toggle {
+/* html.sidebar-light:not(.dark) .sidebar-left .sidebar-header .sidebar-toggle {
     background: #f6f6f6;
-}
+} */
 
 html.sidebar-light:not(.dark) .sidebar-left .sidebar-header .sidebar-toggle i {
     color: #333;
@@ -6959,8 +6968,8 @@ ul.nav-main li a {
     color: #abb4be;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 12.8px;
-    font-size: 0.8rem;
+    font-size: 15px;
+    /* font-size: 0.8rem; */
 }
 
 ul.nav-main li a span.badge {
