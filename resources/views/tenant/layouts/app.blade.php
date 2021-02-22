@@ -5,6 +5,7 @@
         {{$vc_compact_sidebar->compact_sidebar == true ? 'sidebar-left-collapsed' : ''}}
         {{$visual->header == 'dark' ? 'header-dark' : ''}}
         {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}}
+        sidebar-{{$visual->sidebar_theme ?? ''}}
         {{$visual->bg == 'dark' ? 'dark' : ''}}
         header-{{$visual->navbar ?? 'fixed'}}
         ">

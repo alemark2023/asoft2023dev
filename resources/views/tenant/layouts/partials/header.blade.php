@@ -15,6 +15,24 @@
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
+
+        <a class="topbar-links" href="{{ route('tenant.documents.create') }}" title="Nueva factura">
+            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+            <span>FA</span>
+        </a>
+        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="Nueva boleta">
+            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+            <span>BO</span>
+        </a>
+        <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Nueva empresa">
+            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+            <span>EM</span>
+        </a>
+        <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento">
+            <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
+            <span>ES</span>
+        </a>
+
     </div>
     <div class="header-right">
         @if($vc_company->soap_type_id == "01")
@@ -58,7 +76,7 @@
             <li class="open">
 
                 <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-bell text-secondary"></i>
+                    <i class="far fa-bell text-secondary"></i>
                     <span class="badge badge-red">{{ $vc_document }}</span>
                 </a>
                 <div class="dropdown-menu notification-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
@@ -99,19 +117,19 @@
         <span class="separator"></span>
         <div id="userbox" class="userbox">
             <a href="#" data-toggle="dropdown">
-                <figure class="profile-picture">
-                    {{-- <img src="{{asset('img/%21logged-user.jpg')}}" alt="Profile" class="rounded-circle" data-lock-picture="img/%21logged-user.jpg" /> --}}
-                    <div class="border rounded-circle text-center" style="width: 25px;"><i class="fas fa-user"></i></div>
-                </figure>
                 <div class="profile-info" data-lock-name="{{ $vc_user->email }}" data-lock-email="{{ $vc_user->email }}">
                     <span class="name">{{ $vc_user->name }}</span>
                     <span class="role">{{ $vc_user->email }}</span>
                 </div>
-                <i class="fa custom-caret"></i>
+                <figure class="profile-picture">
+                    {{-- <img src="{{asset('img/%21logged-user.jpg')}}" alt="Profile" class="rounded-circle" data-lock-picture="img/%21logged-user.jpg" /> --}}
+                    <div class="border rounded-circle text-center" style="width: 25px;"><i class="fas fa-user"></i></div>
+                </figure>
+                {{-- <i class="fa custom-caret"></i> --}}
             </a>
             <div class="dropdown-menu">
-                <ul class="list-unstyled mb-2">
-                    <li class="divider"></li>
+                <ul class="list-unstyled mb-0">
+                    {{-- <li class="divider"></li> --}}
                     <li>
                         {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}
                         <a role="menuitem" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -126,7 +144,7 @@
         </div>
     </div>
 </header>
-
+{{--
 <div class="container d-none d-sm-block">
     <div id="switcher-top" class="d-flex justify-content-center switcher-hover">
         <span class="text-white py-0 px-5 text-center"><i class="fas fa-plus fa-fw"></i>Acceso Rápido</span>
@@ -142,4 +160,4 @@
             <div class="px-3"><a class="py-3" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}"><i class="fas fa-fw fa-warehouse" aria-hidden="true"></i> Establecimientos</a></div>
         </div>
     </div>
-</div>
+</div> --}}
