@@ -260,6 +260,7 @@ a:active {
         position: fixed;
         right: 0;
         top: 60px;
+        background-color: #fff;
     }
 
     html.fixed.header-floating .page-header,
@@ -6956,7 +6957,8 @@ ul.nav-main li a {
     color: #abb4be;
     white-space: nowrap;
     text-overflow: ellipsis;
-    font-size: 15px;
+    font-size: 14px;
+    font-weight: 600;
     /* font-size: 0.8rem; */
 }
 
@@ -20775,20 +20777,44 @@ html.dark ul.nav-main li.nav-expanded > a::after,
 html.dark ul.nav-main li a:hover::after {
     color: #d0d2d6 !important;
 }
+
+html.fixed.sidebar-blue .sidebar-left a svg {
+    width: 22px;
+    height: 22px;
+    margin-right: .5rem;
+}
 /* fondo azul */
-html.fixed.sidebar-blue .sidebar-left {
+html.fixed.sidebar-blue .sidebar-left,
+html.fixed.sidebar-blue .sidebar-left .nano {
     background-color: #7367f0!important;
 }
 html.fixed.sidebar-blue .sidebar-left a{
     color: #fff;
+}
+html.fixed.sidebar-blue .sidebar-left a::after{
+    color: #fff;
+}
+html.fixed.sidebar-blue .sidebar-left a::before{
+    border-color: #fff;
 }
 html.fixed.sidebar-blue .sidebar-left a:hover,
 html.fixed.sidebar-blue .sidebar-left a:active,
 html.fixed.sidebar-blue .sidebar-left a:focus {
     color: #4b4b4b;
 }
+html.fixed.sidebar-blue .sidebar-left a:hover::before,
+html.fixed.sidebar-blue .sidebar-left a:active::before,
+html.fixed.sidebar-blue .sidebar-left a:focus::before {
+    border-color: #4b4b4b;
+}
+html.fixed.sidebar-blue .sidebar-left a:hover::after,
+html.fixed.sidebar-blue .sidebar-left a:active::after,
+html.fixed.sidebar-blue .sidebar-left a:focus::after {
+    color: #4b4b4b;
+}
 /* fondo gris */
-html.fixed.sidebar-gray .sidebar-left {
+html.fixed.sidebar-gray .sidebar-left,
+html.fixed.sidebar-gray .sidebar-left .nano {
     background-color: #82868b!important;
 }
 html.fixed.sidebar-gray .sidebar-left a{
@@ -20799,8 +20825,30 @@ html.fixed.sidebar-gray .sidebar-left a:active,
 html.fixed.sidebar-gray .sidebar-left a:focus {
     color: #4b4b4b;
 }
+html.fixed.sidebar-gray .sidebar-left a::after{
+    color: #fff;
+}
+html.fixed.sidebar-gray .sidebar-left a::before{
+    border-color: #fff;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover,
+html.fixed.sidebar-gray .sidebar-left a:active,
+html.fixed.sidebar-gray .sidebar-left a:focus {
+    color: #4b4b4b;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover::before,
+html.fixed.sidebar-gray .sidebar-left a:active::before,
+html.fixed.sidebar-gray .sidebar-left a:focus::before {
+    border-color: #4b4b4b;
+}
+html.fixed.sidebar-gray .sidebar-left a:hover::after,
+html.fixed.sidebar-gray .sidebar-left a:active::after,
+html.fixed.sidebar-gray .sidebar-left a:focus::after {
+    color: #4b4b4b;
+}
 /* fondo verde */
-html.fixed.sidebar-green .sidebar-left {
+html.fixed.sidebar-green .sidebar-left,
+html.fixed.sidebar-green .sidebar-left .nano {
     background-color: #28c76f!important;
 }
 html.fixed.sidebar-green .sidebar-left a{
@@ -20811,8 +20859,30 @@ html.fixed.sidebar-green .sidebar-left a:active,
 html.fixed.sidebar-green .sidebar-left a:focus {
     color: #4b4b4b;
 }
+html.fixed.sidebar-green .sidebar-left a::after{
+    color: #fff;
+}
+html.fixed.sidebar-green .sidebar-left a::before{
+    border-color: #fff;
+}
+html.fixed.sidebar-green .sidebar-left a:hover,
+html.fixed.sidebar-green .sidebar-left a:active,
+html.fixed.sidebar-green .sidebar-left a:focus {
+    color: #4b4b4b;
+}
+html.fixed.sidebar-green .sidebar-left a:hover::before,
+html.fixed.sidebar-green .sidebar-left a:active::before,
+html.fixed.sidebar-green .sidebar-left a:focus::before {
+    border-color: #4b4b4b;
+}
+html.fixed.sidebar-green .sidebar-left a:hover::after,
+html.fixed.sidebar-green .sidebar-left a:active::after,
+html.fixed.sidebar-green .sidebar-left a:focus::after {
+    color: #4b4b4b;
+}
 /* fondo rojo */
-html.fixed.sidebar-red .sidebar-left {
+html.fixed.sidebar-red .sidebar-left,
+html.fixed.sidebar-red .sidebar-left .nano {
     background-color: #ea5455!important;
 }
 html.fixed.sidebar-red .sidebar-left a{
@@ -20823,8 +20893,30 @@ html.fixed.sidebar-red .sidebar-left a:active,
 html.fixed.sidebar-red .sidebar-left a:focus {
     color: #4b4b4b;
 }
+html.fixed.sidebar-red .sidebar-left a::after{
+    color: #fff;
+}
+html.fixed.sidebar-red .sidebar-left a::before{
+    border-color: #fff;
+}
+html.fixed.sidebar-red .sidebar-left a:hover,
+html.fixed.sidebar-red .sidebar-left a:active,
+html.fixed.sidebar-red .sidebar-left a:focus {
+    color: #4b4b4b;
+}
+html.fixed.sidebar-red .sidebar-left a:hover::before,
+html.fixed.sidebar-red .sidebar-left a:active::before,
+html.fixed.sidebar-red .sidebar-left a:focus::before {
+    border-color: #4b4b4b;
+}
+html.fixed.sidebar-red .sidebar-left a:hover::after,
+html.fixed.sidebar-red .sidebar-left a:active::after,
+html.fixed.sidebar-red .sidebar-left a:focus::after {
+    color: #4b4b4b;
+}
 /* fondo naranja */
-html.fixed.sidebar-warning .sidebar-left {
+html.fixed.sidebar-warning .sidebar-left,
+html.fixed.sidebar-warning .sidebar-left .nano {
     background-color: #ff9f43!important;
 }
 html.fixed.sidebar-warning .sidebar-left a{
@@ -20835,8 +20927,30 @@ html.fixed.sidebar-warning .sidebar-left a:active,
 html.fixed.sidebar-warning .sidebar-left a:focus {
     color: #4b4b4b;
 }
+html.fixed.sidebar-warning .sidebar-left a::after{
+    color: #fff;
+}
+html.fixed.sidebar-warning .sidebar-left a::before{
+    border-color: #fff;
+}
+html.fixed.sidebar-warning .sidebar-left a:hover,
+html.fixed.sidebar-warning .sidebar-left a:active,
+html.fixed.sidebar-warning .sidebar-left a:focus {
+    color: #4b4b4b;
+}
+html.fixed.sidebar-warning .sidebar-left a:hover::before,
+html.fixed.sidebar-warning .sidebar-left a:active::before,
+html.fixed.sidebar-warning .sidebar-left a:focus::before {
+    border-color: #4b4b4b;
+}
+html.fixed.sidebar-warning .sidebar-left a:hover::after,
+html.fixed.sidebar-warning .sidebar-left a:active::after,
+html.fixed.sidebar-warning .sidebar-left a:focus::after {
+    color: #4b4b4b;
+}
 /* fondo celeste */
-html.fixed.sidebar-ligth-blue .sidebar-left {
+html.fixed.sidebar-ligth-blue .sidebar-left,
+html.fixed.sidebar-ligth-blue .sidebar-left .nano {
     background-color: #00cfe8!important;
 }
 html.fixed.sidebar-ligth-blue .sidebar-left a{
@@ -20847,8 +20961,30 @@ html.fixed.sidebar-ligth-blue .sidebar-left a:active,
 html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
     color: #4b4b4b;
 }
+html.fixed.sidebar-ligth-blue .sidebar-left a::after{
+    color: #fff;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a::before{
+    border-color: #fff;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus {
+    color: #4b4b4b;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover::before,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active::before,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus::before {
+    border-color: #4b4b4b;
+}
+html.fixed.sidebar-ligth-blue .sidebar-left a:hover::after,
+html.fixed.sidebar-ligth-blue .sidebar-left a:active::after,
+html.fixed.sidebar-ligth-blue .sidebar-left a:focus::after {
+    color: #4b4b4b;
+}
 /* fondo blanco */
-html.fixed.sidebar-white .sidebar-left {
+html.fixed.sidebar-white .sidebar-left,
+html.fixed.sidebar-white .sidebar-left .nano {
     background-color: #fff!important;
 }
 html.fixed.sidebar-white .sidebar-left a{
@@ -20858,4 +20994,32 @@ html.fixed.sidebar-white .sidebar-left a:hover,
 html.fixed.sidebar-white .sidebar-left a:active,
 html.fixed.sidebar-white .sidebar-left a:focus {
     color: #4b4b4b;
+}
+html.sidebar-left-collapsed .sidebar-left .nav-main > li > a{
+    padding-left: 8px;
+    padding-right: 8px;
+}
+/* fondo dark */
+html.fixed.sidebar-dark .sidebar-left,
+html.fixed.sidebar-dark .sidebar-left .nano {
+    background-color: #283046!important;
+}
+/* Superadmin */
+html.sidebar-left-big-icons .sidebar-left {
+    background-color: #FFFFFF !important;
+}
+html.sidebar-left-big-icons .sidebar-left a{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    font-weight: 400 !important;
+}
+html.sidebar-left-big-icons .sidebar-left .sidebar-header .sidebar-title {
+    background-color: #ffffff;
+}
+html.sidebar-left-big-icons .sidebar-left .sidebar-header {
+    box-shadow: none !important;
 }
