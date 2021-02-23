@@ -530,10 +530,14 @@ html.dark .header .logo-container .topbar-links {
 
     .header .header-right {
         background: #fff;
-        float: none !important;
+        /* float: none !important; */
         height: 60px;
         margin-top: 60px;
         width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
     }
 
     .inner-wrapper {
@@ -1453,7 +1457,6 @@ html.dark .header .logo-container .topbar-links {
     justify-content: center;
     padding: 3px 15px;
     margin-bottom: 1rem;
-    box-shadow: 0 0 12px rgba(0, 0, 0, .1);
 }
 .dark .sidebar-left .sidebar-header {
     background-color: #283046;
@@ -2737,6 +2740,7 @@ html.sidebar-right-opened .page-header .sidebar-right-toggle i:before {
         top: 0;
         display: flex;
         z-index: 2;
+        width: 100%;
     }
 
     .page-header .breadcrumbs {
@@ -7066,14 +7070,14 @@ html.sidebar-light:not(.dark) ul.nav-main {
     margin-top: 3px;
 }
 
-html.sidebar-light:not(.dark) ul.nav-main li a {
+/* html.sidebar-light:not(.dark) ul.nav-main li a {
     color: #777;
-}
+} */
 
-html.sidebar-light:not(.dark) ul.nav-main > li > a:hover,
+/* html.sidebar-light:not(.dark) ul.nav-main > li > a:hover,
 html.sidebar-light:not(.dark) ul.nav-main > li > a:focus {
     background-color: #fafafa;
-}
+} */
 
 /* html.sidebar-light:not(.dark) ul.nav-main > li.nav-expanded > a {
     background: #fafafa;
@@ -13292,9 +13296,13 @@ html.header-dark .notifications > li .notification-icon i {
 
 /* Notifications Mobile */
 @media only screen and (max-width: 767px) {
+    .btn-demo{
+        margin-right: auto;
+    }
     .notifications {
-        float: right;
-        margin: 16px 8px 0 0;
+        /* float: right; */
+        /* margin: 16px 8px 0 0; */
+        margin-right: 8px;
     }
 
     .notifications > li {
@@ -21077,6 +21085,22 @@ html.sidebar-left-big-icons .sidebar-left .sidebar-header {
     color: #6c757d;
     display: inline-block;
     transform: translateY(2px);
+}
+.btn-demo.btn-demo-prod{
+    position: relative;
+    color: #222;
+}
+.btn-demo.btn-demo-prod::before{
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 24px;
+    height: 14px;
+    margin-top: -7px;
+    border-radius: 7px;
+    background-color: #28c76f;
+    z-index: -1;
 }
 .btn-demo span{
     transform: translateY(2px);
