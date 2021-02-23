@@ -81,6 +81,7 @@ if ($hostname) {
 			Route::post('configurations/uploads', 'Tenant\ConfigurationController@uploadFile');
 			Route::post('configurations/preprinted/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
 			Route::get('configurations/preprinted/{template}', 'Tenant\ConfigurationController@show');
+            Route::get('configurations/change-mode', 'Tenant\ConfigurationController@changeMode')->name('settings.change_mode');
 
 			//Certificates
 			Route::get('certificates/record', 'Tenant\CertificateController@record');

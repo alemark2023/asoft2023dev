@@ -17,19 +17,19 @@
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
         </div>
 
-        <a class="topbar-links" href="{{ route('tenant.documents.create') }}" title="Nueva factura">
+        <a class="topbar-links" href="{{ route('tenant.documents.create') }}" title="Nueva factura" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>FA</span>
         </a>
-        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="Nueva boleta">
+        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="Nueva boleta" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>BO</span>
         </a>
-        <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Nueva empresa">
+        <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Nueva empresa" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>EM</span>
         </a>
-        <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento">
+        <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>ES</span>
         </a>
@@ -37,40 +37,62 @@
     </div>
     <div class="header-right">
         @if($vc_company->soap_type_id == "01")
-        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
-        <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
-            <div class="ios-switch off">
-                <div class="on-background background-fill"></div>
-                <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #fff;">DEMO</span></div>
-                <div class="handle"></div>
-            </div>
-            <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
-        </div>
+        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif" class="btn-demo" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración" data-toggle="tooltip">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>
+            <span class="ml-1">DEMO</span>
+            {{-- <div class="switch switch-sm switch-primary" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE DEMOSTRACIÓN, pulse para ir a configuración">
+                <div class="ios-switch off">
+                    <div class="on-background background-fill"></div>
+                    <div class="state-background background-fill">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 9px; position: absolute; color: #fff;">DEMO</span></div>
+                    <div class="handle"></div>
+                </div>
+                <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
+            </div> --}}
         </a>
         @elseif($vc_company->soap_type_id == "02")
-        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
-        <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
-            <div class="ios-switch on">
-                <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
-                <div class="state-background background-fill"></div>
-                <div class="handle"></div>
-            </div>
-            <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
-        </div>
+        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif" data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración" class="btn-demo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>
+            <span class="ml-1">PROD</span>
+            {{-- <div class="switch switch-sm switch-success"  data-toggle="tooltip" data-placement="bottom" title="SUNAT: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
+                <div class="ios-switch on">
+                    <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;PROD.</span></div>
+                    <div class="state-background background-fill"></div>
+                    <div class="handle"></div>
+                </div>
+                <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
+            </div> --}}
         </a>
         @else
-        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif">
-        <div class="switch switch-sm switch-info"  data-toggle="tooltip" data-placement="bottom" title="INTERNO: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
-            <div class="ios-switch on">
-                <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;INTERNO</span></div>
-                <div class="state-background background-fill"></div>
-                <div class="handle"></div>
-            </div>
-            <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
-        </div>
+        <a href="@if(in_array('configuration', $vc_modules)){{route('tenant.companies.create')}}@else # @endif" data-toggle="tooltip" data-placement="bottom" title="INTERNO: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración" class="btn-demo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>
+            <span class="ml-1">INTERNO</span>
+            {{-- <div class="switch switch-sm switch-info"  data-toggle="tooltip" data-placement="bottom" title="INTERNO: ENTORNO DE PRODUCCIÓN, pulse para ir a configuración">
+                <div class="ios-switch on">
+                    <div class="on-background background-fill"><span class="text-white ml-1" style="font-size: 9px;">&nbsp;&nbsp;INTERNO</span></div>
+                    <div class="state-background background-fill"></div>
+                    <div class="handle"></div>
+                </div>
+                <input type="checkbox" name="switch" data-plugin-ios-switch="" checked="checked" style="display: none;">
+            </div> --}}
         </a>
         @endif
 
+        <span class="separator"></span>
+        <ul class="notifications">
+            <li>
+                <a href="{{ route('settings.change_mode') }}" class="notification-icon text-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </a>
+            </li>
+        </ul>
+        <span class="separator"></span>
+        <ul class="notifications">
+            <li>
+                <a href="{{ route('tenant_orders_index') }}" class="notification-icon text-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </a>
+            </li>
+        </ul>
         @if($vc_document > 0)
         <span class="separator"></span>
         <ul class="notifications">

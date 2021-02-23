@@ -382,4 +382,15 @@ class ConfigurationController extends Controller
 			'message' => __('app.actions.upload.error'),
 		];
 	}
+
+    public function changeMode()
+    {
+		$configuration = Configuration::first();
+		$visual = $configuration->visual;
+        $visual->bg = $visual->bg === 'dark' ? 'light' : 'dark';
+        $configuration->visual = $visual;
+		$configuration->save();
+
+		return redirect()->back();
+    }
 }

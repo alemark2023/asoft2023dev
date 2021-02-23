@@ -14,7 +14,7 @@
             </div>
             <div v-if="typeUser != 'integrator'">
 
-                <h5>Fondo oscuro</h5>
+                <!-- <h5>Fondo oscuro</h5>
                 <el-switch
                     v-model="visuals.bg"
                     active-text="Dark"
@@ -24,9 +24,9 @@
                     active-color="#383f48"
                     inactive-color="#ccc"
                     @change="submit">
-                </el-switch>
+                </el-switch> -->
 
-                <div class="hidden-on-dark pt-3">
+                <!-- <div class="hidden-on-dark pt-3">
                     <h5>Encabezado</h5>
                     <el-switch
                         v-model="visuals.header"
@@ -38,7 +38,7 @@
                         inactive-color="#ccc"
                         @change="submit">
                     </el-switch>
-                </div>
+                </div> -->
 
                 <div class="pt-3">
                     <h5>Color de fondo del sidebar</h5>
