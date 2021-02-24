@@ -4,21 +4,33 @@
         $customer = $document->customer;
         $invoice = $document->invoice;
         $document_base = ($document->note) ? $document->note : null;
+
         //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
         $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+
         if($document_base) {
+
             $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
+
         } else {
+
             $affected_document_number = null;
         }
+
         $payments = $document->payments;
+
         // $document->load('reference_guides');
+
         if ($document->payments) {
             $total_payment = $document->payments->sum('payment');
             $balance = ($document->total - $total_payment) - $document->payments->sum('change');
         }
+
+
     }
+
     $accounts = \App\Models\Tenant\BankAccount::all();
+
     $path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 @endphp
 <head>
@@ -91,13 +103,13 @@
         </tr>
     </table>
     <table class="full-width border-box my-2">
-                <tr>
-                    <th class="p-1" width="25%">BANCO</th>
-                    <th class="p-1" width="20%">MONEDA</th>
-                    <th class="p-1" width="30%">CÓDIGO DE CUENTA INTERBANCARIA</th>
-                    <th class="p-1" width="25%">CÓDIGO DE CUENTA</th>
-                </tr>
             @foreach($accounts as $account)
+                <tr>
+                    <th class="p-1">Banco</th>
+                    <th class="p-1">Moneda</th>
+                    <th class="p-1">Código de Cuenta Interbancaria</th>
+                    <th class="p-1">Código de Cuenta</th>
+                </tr>
                 <tr>
                     <td class="text-center">{{$account->bank->description}}</td>
                     <td class="text-center text-upp">{{$account->currency_type->description}}</td>
@@ -111,7 +123,7 @@
             @endforeach
     </table>
 @endif
-<table class="full-width mb-4">
+<table class="full-width">
     <tr>
         <td class="text-center desc">Representación Impresa de {{ isset($document->document_type) ? $document->document_type->description : 'Comprobante Electrónico'  }} {{ isset($document->hash) ? 'Código Hash: '.$document->hash : '' }} <br>Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
     </tr>

@@ -35,250 +35,137 @@
 @endif
 <table class="full-width">
     <tr>
-        @if($company->logo)
-            <td width="20%">
+        <td width="60%" class="text-center pr-2">
+            @if($company->logo)
                 <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 100px;">
                 </div>
-            </td>
-        @else
-            <td width="20%">
-                {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
-            </td>
-        @endif
-        <td width="50%" class="pl-3">
-            <div class="text-left">
-                <h4 class="">{{ $company->name }}</h4>
-                <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6 style="text-transform: uppercase;">
-                    {{ ($establishment->address !== '-')? $establishment->address : '' }}
-                    {{ ($establishment->district_id !== '-')? ', '.$establishment->district->description : '' }}
-                    {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
-                    {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-                </h6>
+            @endif
+            <br>
+            <h5 class="font-bold text-upp">{{ $company->name }}</h5>
+            <hr>
+            <h6 style="text-transform: uppercase;">
+                {{ ($establishment->address !== '-')? $establishment->address.',' : '' }}
+                {{ ($establishment->district_id !== '-')? $establishment->district->description : '' }}
+                {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
+                {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
+            </h6>
 
-                @isset($establishment->trade_address)
-                    <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
-                @endisset
+            @isset($establishment->trade_address)
+                <h6>{{ ($establishment->trade_address !== '-')? 'D. Comercial: '.$establishment->trade_address : '' }}</h6>
+            @endisset
 
-                <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
+            <h6>{{ ($establishment->telephone !== '-')? 'Telf. '.$establishment->telephone : '' }}</h6>
 
-                <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
+            <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
 
-                @isset($establishment->web_address)
-                    <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
-                @endisset
+            @isset($establishment->web_address)
+                <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
+            @endisset
 
-                @isset($establishment->aditional_information)
-                    <h6>{{ ($establishment->aditional_information !== '-')? $establishment->aditional_information : '' }}</h6>
-                @endisset
-            </div>
+            @isset($establishment->aditional_information)
+                <h6>{{ ($establishment->aditional_information !== '-')? $establishment->aditional_information : '' }}</h6>
+            @endisset
         </td>
-        <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">{{ $document->document_type->description }}</h5>
+        <td width="40%" class="border-box py-2 px-2 text-center">
+            <h3 class="font-bold">{{ 'RUC '.$company->number }}</h3>
+            <h3 class="text-center font-bold">{{ $document->document_type->description }}</h3>
+            <br>
             <h3 class="text-center">{{ $document_number }}</h3>
         </td>
     </tr>
 </table>
 <table class="full-width mt-2">
     <tr>
-        <td width="120px">FECHA DE EMISIÓN</td>
-        <td width="8px">:</td>
-        <td>{{$document->date_of_issue->format('Y-m-d')}}</td>
-
-        @if ($document->detraction)
-
-            <td width="120px">N. CTA DETRACCIONES</td>
-            <td width="8px" class="align-top">:</td>
-            <td class="align-top">{{ $document->detraction->bank_account}}</td>
-        @endif
-    </tr>
-
-    @if($invoice)
-        <tr>
-            <td width="120px">FECHA DE VENCIMIENTO</td>
-            <td width="8px" class="align-top"> :</td>
-            <td class="align-top">{{$invoice->date_of_due->format('Y-m-d')}}</td>
-        </tr>
-    @endif
-
-    @if ($document->detraction)
-        <td width="120px">B/S SUJETO A DETRACCIÓN</td>
-        <td width="8px">:</td>
-        @inject('detractionType', 'App\Services\DetractionTypeService')
-        <td width="220px">{{$document->detraction->detraction_type_id}} - {{ $detractionType->getDetractionTypeDescription($document->detraction->detraction_type_id ) }}</td>
-
-    @endif
-    <tr>
-        <td>CLIENTE:</td>
-        <td>:</td>
-        <td>{{ $customer->name }}</td>
-
-        @if ($document->detraction)
-            <td width="120px">MÉTODO DE PAGO</td>
-            <td width="8px">:</td>
-            <td width="220px">{{ $detractionType->getPaymentMethodTypeDescription($document->detraction->payment_method_id ) }}</td>
-        @endif
-    </tr>
-    <tr>
-        <td>{{ $customer->identity_document_type->description }}</td>
-        <td>:</td>
-        <td>{{$customer->number}}</td>
-
-
-        @if ($document->detraction)
-            <td width="120px">P. DETRACCIÓN</td>
-            <td width="8px">:</td>
-            <td>{{ $document->detraction->percentage}}%</td>
-        @endif
-    </tr>
-    @if ($customer->address !== '')
-    <tr>
-        <td class="align-top">DIRECCIÓN:</td>
-        <td>:</td>
-        <td>
-            {{ $customer->address }}
-            {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
-            {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-            {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+        <td width="95%" class="border-box pl-3">
+            <table class="full-width">
+                <tr>
+                    <td colspan="2" class="font-lg">
+                        <strong>SEÑOR(ES): </strong>
+                        {{ $customer->name }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="font-lg">
+                        <strong>DIRECCIÓN: </strong>
+                        @if ($customer->address !== '')
+                            <span style="text-transform: uppercase;">
+                                {{ $customer->address }}
+                                {{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}
+                                {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
+                                {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
+                            </span>
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"  class="font-lg">
+                        <strong>RUC: </strong>
+                        {{$customer->number}}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"  class="font-lg">
+                        <strong>MONEDA: </strong>
+                        <span class="text-upp">{{ $document->currency_type->description }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td  class="font-lg">
+                        <strong>FECHA: </strong>
+                        {{$document->date_of_issue->format('Y-m-d')}}
+                    </td>
+                    <td  class="font-lg">
+                        @if($invoice)
+                            <strong>FECHA VENC.:</strong>
+                            {{$invoice->date_of_due->format('Y-m-d')}}
+                        @endif
+                    </td>
+                </tr>
+            </table>
         </td>
-
-        @if ($document->detraction)
-            <td width="120px">MONTO DETRACCIÓN</td>
-            <td width="8px">:</td>
-            <td>S/ {{ $document->detraction->amount}}</td>
-        @endif
-        @if ($document->detraction)
-            @if($document->detraction->pay_constancy)
-            <tr>
-                <td colspan="3">
-                </td>
-                <td width="120px">C. PAGO</td>
-                <td width="8px">:</td>
-                <td>{{ $document->detraction->pay_constancy}}</td>
-            </tr>
-            @endif
-        @endif
+        <td width="5%" class="p-0 m-0">
+            <img src="data:image/png;base64, {{ $document->qr }}" class="p-0 m-0" style="width: 120px;" />
+        </td>
     </tr>
-    @endif
 </table>
-
-{{--<table class="full-width mt-3">--}}
-    {{--@if ($document->purchase_order)--}}
-        {{--<tr>--}}
-            {{--<td width="25%">Orden de Compra: </td>--}}
-            {{--<td>:</td>--}}
-            {{--<td class="text-left">{{ $document->purchase_order }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-    {{--@if ($document->quotation_id)--}}
-        {{--<tr>--}}
-            {{--<td width="15%">Cotización:</td>--}}
-            {{--<td class="text-left" width="85%">{{ $document->quotation->identifier }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-{{--</table>--}}
-
-@if ($document->guides)
-<br/>
-{{--<strong>Guías:</strong>--}}
-<table>
-    @foreach($document->guides as $guide)
-        <tr>
-            @if(isset($guide->document_type_description))
-            <td>{{ $guide->document_type_description }}</td>
-            @else
-            <td>{{ $guide->document_type_id }}</td>
-            @endif
-            <td>:</td>
-            <td>{{ $guide->number }}</td>
-        </tr>
-    @endforeach
-</table>
-@endif
-
-@if ($document->reference_guides)
-<br/>
-<strong>Guias de remisión</strong>
-<table>
-    @foreach($document->reference_guides as $guide)
-        <tr>
-            <td>{{ $guide->series }}</td>
-            <td>-</td>
-            <td>{{ $guide->number }}</td>
-        </tr>
-    @endforeach
-</table>
-@endif
-
-
-
-<table class="full-width mt-3">
-    @if ($document->prepayments)
-        @foreach($document->prepayments as $p)
-        <tr>
-            <td width="120px">ANTICIPO</td>
-            <td width="8px">:</td>
-            <td>{{$p->number}}</td>
-        </tr>
-        @endforeach
-    @endif
-    @if ($document->purchase_order)
-        <tr>
-            <td width="120px">ORDEN DE COMPRA</td>
-            <td width="8px">:</td>
-            <td>{{ $document->purchase_order }}</td>
-        </tr>
-    @endif
-    @if ($document->quotation_id)
-        <tr>
-            <td width="120px">COTIZACIÓN</td>
-            <td width="8px">:</td>
-            <td>{{ $document->quotation->identifier }}</td>
-            @isset($document->quotation->delivery_date)
-                    <td width="120px">T. ENTREGA</td>
-                    <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date}}</td>
-            @endisset
-        </tr>
-    @endif
-    @isset($document->quotation->sale_opportunity)
-        <tr>
-            <td width="120px">O. VENTA</td>
-            <td width="8px">:</td>
-            <td>{{ $document->quotation->sale_opportunity->number_full}}</td>
-        </tr>
-    @endisset
-    @if(!is_null($document_base))
+<table class="full-width my-3 text-center" border="1">
     <tr>
-        <td width="120px">DOC. AFECTADO</td>
-        <td width="8px">:</td>
-        <td>{{ $affected_document_number }}</td>
-
-        <td width="120px">TIPO DE NOTA</td>
-        <td width="8px">:</td>
-        <td>{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
+        <td width="16.6%" class="desc">UBIGEO</td>
+        <td width="16.6%" class="desc">O/C</td>
+        <td width="16.6%" class="desc">CONDICIONES DE PAGO</td>
+        <td width="16.6%" class="desc">VENDEDOR</td>
+        <td width="16.6%" class="desc">GUÍA DE REMISIÓN</td>
+        <td width="16.6%" class="desc">AGENCIA DE TRANSPORTE</td>
     </tr>
     <tr>
-        <td>DESCRIPCIÓN</td>
-        <td>:</td>
-        <td>{{ $document_base->note_description }}</td>
-    </tr>
-    @endif
-</table>
+        <td class="desc"></td>
+        <td class="desc"></td>
+        <td class="desc">
+            @php
+                $payment = 0;
+            @endphp
+            @foreach($payments as $row)
+                {{ $row->payment_method_type->description }}
+            @endforeach
+        </td>
+        <td class="desc">{{ $document->user->name }}</td>
+        <td class="desc">
+            @if ($document->guides)
+                @foreach($document->guides as $guide)
+                    {{ $guide->number }}
+                @endforeach
+            @endif
 
-{{--<table class="full-width mt-3">--}}
-    {{--<tr>--}}
-        {{--<td width="25%">Documento Afectado:</td>--}}
-        {{--<td width="20%">{{ $document_base->affected_document->series }}-{{ $document_base->affected_document->number }}</td>--}}
-        {{--<td width="15%">Tipo de nota:</td>--}}
-        {{--<td width="40%">{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>--}}
-    {{--</tr>--}}
-    {{--<tr>--}}
-        {{--<td class="align-top">Descripción:</td>--}}
-        {{--<td class="text-left" colspan="3">{{ $document_base->note_description }}</td>--}}
-    {{--</tr>--}}
-{{--</table>--}}
+            @if ($document->reference_guides)
+                @foreach($document->reference_guides as $guide)
+                    {{ $guide->number }}
+                @endforeach
+            @endif
+        </td>
+        <td class="desc"></td>
+    </tr>
+</table>
 
 <table class="full-width mt-10 mb-10">
     <thead class="">
@@ -497,7 +384,6 @@
             @endif
         </td>
         <td width="35%" class="text-right">
-            <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;" width="16%"/>
             <p style="font-size: 9px">Código Hash: {{ $document->hash }}</p>
         </td>
     </tr>

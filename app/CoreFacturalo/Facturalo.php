@@ -504,12 +504,6 @@ class Facturalo
 
         $stylesheet = file_get_contents($path_css);
 
-        if ($base_pdf_template === 'brand') {
-
-            $html_header = $template->pdfHeader($base_pdf_template, $this->company, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
-            $pdf->SetHTMLHeader($html_header);
-        }
-
         if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
             // dd($base_pdf_template);// = config(['tenant.pdf_template'=> $configuration]);
             if(config('tenant.pdf_template_footer')) {
@@ -526,6 +520,17 @@ class Facturalo
             }
 //            $html_footer = $template->pdfFooter();
 //            $pdf->SetHTMLFooter($html_footer);
+        }
+
+        if ($base_pdf_template === 'brand') {
+
+            $html_header = $template->pdfHeader($base_pdf_template, $this->company, in_array($this->document->document_type_id, ['09']) ? null : $this->document);
+            $pdf->SetHTMLHeader($html_header);
+
+            if (($format_pdf === 'ticket') || ($format_pdf === 'ticket_58') || ($format_pdf === 'ticket_50') || ($format_pdf === 'a5')) {
+                $pdf->SetHTMLHeader("");
+                $pdf->SetHTMLFooter("");
+            }
         }
 
         if ($base_pdf_template === 'blank' && in_array($this->document->document_type_id, ['09'])) {
