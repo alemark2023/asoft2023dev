@@ -11,11 +11,13 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-   .sass('resources/sass/style.scss', 'public/css/app.css')
-   .sass('resources/sass/auth.scss', 'public/css/auth.css')
-   .extract(['vue'])
-   .version();
+mix
+    .js('resources/js/superadmin.js', 'public/js')
+    .js('resources/js/clients.js', 'public/js')
+    .sass('resources/sass/style.scss', 'public/css/app.css')
+    .sass('resources/sass/auth.scss', 'public/css/auth.css')
+    .extract(['vue'])
+    .version();
 
 mix.webpackConfig({
     resolve: {

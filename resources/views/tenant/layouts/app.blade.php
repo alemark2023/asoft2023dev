@@ -22,16 +22,16 @@
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/bootstrap/css/bootstrap.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/animate/animate.css') }}" />
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/font-awesome/5.11/css/all.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2/css/select2.css') }}" />
-    <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css') }}" />
+    {{-- <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2/css/select2.css') }}" /> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css') }}" /> --}}
     <link rel="stylesheet" href="{{ asset('porto-light/vendor/datatables/media/css/dataTables.bootstrap4.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.26.29/sweetalert2.min.css" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css')}}" />
 
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-ui/jquery-ui.css')}}" />
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-ui/jquery-ui.theme.css')}}" />
-    <link rel="stylesheet" href="{{asset('porto-light/vendor/select2/css/select2.css')}}" />
-    <link rel="stylesheet" href="{{asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css')}}" />
+    {{-- <link rel="stylesheet" href="{{asset('porto-light/vendor/select2/css/select2.css')}}" /> --}}
+    {{-- <link rel="stylesheet" href="{{asset('porto-light/vendor/select2-bootstrap-theme/select2-bootstrap.min.css')}}" /> --}}
 
     <link href="{{ asset('porto-light/vendor/bootstrap-timepicker/css/bootstrap-timepicker.css') }}" rel="stylesheet">
     <link href="{{ asset('porto-light/vendor/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
@@ -80,7 +80,7 @@
     @if ($vc_company->favicon)
     <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
     @endif
-    <script defer src="{{ mix('js/app.js') }}"></script>
+    <script defer src="{{ mix('js/clients.js') }}"></script>
 
 </head>
 <body class="pr-0">
@@ -119,18 +119,18 @@
     <script src="{{ asset('porto-light/vendor/nanoscroller/nanoscroller.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/magnific-popup/jquery.magnific-popup.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/jquery-placeholder/jquery-placeholder.js')}}"></script>
-    <script src="{{ asset('porto-light/vendor/select2/js/select2.js') }}"></script>
+    {{-- <script src="{{ asset('porto-light/vendor/select2/js/select2.js') }}"></script> --}}
     <script src="{{ asset('porto-light/vendor/datatables/media/js/jquery.dataTables.min.js')}}"></script>
     <script src="{{ asset('porto-light/vendor/datatables/media/js/dataTables.bootstrap4.min.js')}}"></script>
 
     {{-- Specific Page Vendor --}}
     <script src="{{asset('porto-light/vendor/jquery-ui/jquery-ui.js')}}"></script>
     <script src="{{asset('porto-light/vendor/jqueryui-touch-punch/jqueryui-touch-punch.js')}}"></script>
-    <!--<script src="{{asset('porto-light/vendor/select2/js/select2.js')}}"></script>-->
+    {{-- <script src="{{asset('porto-light/vendor/select2/js/select2.js')}}"></script> --}}
 
     <script src="{{asset('porto-light/vendor/jquery-loading/dist/jquery.loading.js')}}"></script>
 
-    <!--<script src="assets/vendor/select2/js/select2.js"></script>-->
+    {{-- <script src="assets/vendor/select2/js/select2.js"></script> --}}
     {{--<script src="{{asset('porto-light/vendor/bootstrap-multiselect/bootstrap-multiselect.js')}}"></script>--}}
 
     <!-- Moment -->
