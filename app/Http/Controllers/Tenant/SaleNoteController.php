@@ -602,6 +602,14 @@ class SaleNoteController extends Controller
             // }
         }
 
+        if ($base_template === 'brand') {
+
+            if (($format_pdf === 'ticket') || ($format_pdf === 'ticket_58') || ($format_pdf === 'ticket_50')) {
+                $pdf->SetHTMLHeader("");
+                $pdf->SetHTMLFooter("");
+            }
+        }
+
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
