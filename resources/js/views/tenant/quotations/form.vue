@@ -21,11 +21,6 @@
                                 {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
                             </address>
                         </div>
-                        <div class="col-sm-4">
-
-                            <!-- <el-checkbox class="mt-3" v-model="form.active_terms_condition" @change="changeTermsCondition">Términos y condiciones del contrato</el-checkbox> -->
-
-                        </div>
                     </div>
                 </header>
                 <form autocomplete="off" @submit.prevent="submit">
@@ -58,7 +53,6 @@
                             </div>
                             <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                                    <!--<label class="control-label">Fecha de emisión</label>-->
                                     <label class="control-label">Fec. Emisión</label>
                                     <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
                                     <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
@@ -68,7 +62,6 @@
                                 <div class="form-group" :class="{'has-danger': errors.date_of_due}">
                                     <label class="control-label">Tiempo de Validez</label>
                                     <el-input v-model="form.date_of_due"></el-input>
-                                    <!-- <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker> -->
                                     <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
                                 </div>
                             </div>
@@ -76,7 +69,6 @@
                                 <div class="form-group" :class="{'has-danger': errors.delivery_date}">
                                     <label class="control-label">Tiempo de Entrega</label>
                                     <el-input v-model="form.delivery_date"></el-input>
-                                    <!-- <el-date-picker v-model="form.delivery_date" type="date" value-format="yyyy-MM-dd" :clearable="true"></el-date-picker> -->
                                     <small class="form-control-feedback" v-if="errors.delivery_date" v-text="errors.delivery_date[0]"></small>
                                 </div>
                             </div>
@@ -246,7 +238,7 @@
                                             </tr>
                                         </thead>
                                         <tbody v-if="form.items.length > 0">
-                                            <tr v-for="(row, index) in form.items">
+                                            <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
                                                 <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
@@ -259,6 +251,7 @@
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                                 <td class="text-right">
+                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
                                                     <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
                                                 </td>
                                             </tr>
@@ -269,7 +262,7 @@
                             </div>
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
-                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click.prevent="showDialogAddItem = true">+ Agregar Producto</button>
+                                    <button type="button" class="btn waves-effect waves-light btn-primary" @click="clickAddItem">+ Agregar Producto</button>
                                 </div>
                             </div>
 
@@ -303,6 +296,7 @@
         <quotation-form-item :showDialog.sync="showDialogAddItem"
                            :currency-type-id-active="form.currency_type_id"
                            :exchange-rate-sale="form.exchange_rate_sale"
+                           :recordItem="recordItem"
                            @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -361,7 +355,8 @@
                 activePanel: 0,
                 customer_addresses:  [],
                 configuration: {},
-                loading_search:false
+                loading_search:false,
+                recordItem: null
             }
         },
         async created() {
@@ -394,6 +389,15 @@
             await this.createQuotationFromSO()
         },
         methods: {
+            clickAddItem() {
+                this.recordItem = null;
+                this.showDialogAddItem = true;
+            },
+            ediItem(row, index) {
+                row.indexi = index
+                this.recordItem = row
+                this.showDialogAddItem = true
+            },
             changeCustomer() {
 
                 this.customer_addresses = [];
@@ -519,12 +523,6 @@
                         this.form.date_of_issue =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD');
                         this.changeDateOfIssue()
                     }
-                    // else{
-                    //     if(flag_submit){
-                    //         this.form.date_of_issue = moment().format('YYYY-MM-DD')
-                    //         this.changeDateOfIssue()
-                    //     }
-                    // }
                 }
             },
             searchRemoteCustomers(input) {
@@ -619,7 +617,6 @@
                 this.form.customer_id = null;
             },
             changeDateOfIssue() {
-                // this.form.date_of_due = this.form.date_of_issue > this.form.date_of_due ? this.form.date_of_issue:null
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.form.exchange_rate_sale = response
                 })
@@ -628,7 +625,12 @@
                 this.customers = this.all_customers
             },
             addRow(row) {
-                this.form.items.push(JSON.parse(JSON.stringify(row)));
+                if (this.recordItem) {
+                    this.form.items[this.recordItem.indexi] = row
+                    this.recordItem = null
+                } else {
+                    this.form.items.push(JSON.parse(JSON.stringify(row)));
+                }
 
                 this.calculateTotal();
             },
@@ -742,14 +744,8 @@
                 if(validate_payment_destination.error_by_item > 0) {
                     return this.$message.error('El destino del pago es obligatorio');
                 }
-                // if(this.form.date_of_issue > this.form.date_of_due)
-                //     return this.$message.error('La fecha de emisión no puede ser posterior a la de vencimiento');
-
-                // if(this.form.date_of_issue > this.form.delivery_date)
-                //     return this.$message.error('La fecha de emisión no puede ser posterior a la de entrega');
 
                 this.loading_submit = true
-                // await this.changePaymentMethodType(false)
                 await this.$http.post(`/${this.resource}`, this.form).then(response => {
                     if (response.data.success) {
                         this.resetForm();
