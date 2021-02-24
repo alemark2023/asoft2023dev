@@ -158,9 +158,10 @@ class DocumentController extends Controller
                 ->take(50)
                 ->get();
         } else {
-            $record = Document::whereBetween('date_of_issue', [$startDate, $endDate])->orderBy('date_of_issue', 'desc')->get();
+            $record = Document::whereBetween('date_of_issue', [$startDate, $endDate])
+                ->orderBy('date_of_issue', 'desc')
+                ->get();
         }
-
         $records = new DocumentCollection($record);
         return $records;
     }
