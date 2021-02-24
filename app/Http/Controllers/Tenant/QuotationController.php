@@ -513,7 +513,6 @@ class QuotationController extends Controller
 
     public function searchItemById($id)
     {
-
         $items = Item::where('id', $id)
                         ->whereIsActive()
                         ->get()
