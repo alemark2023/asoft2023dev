@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Productos</span></li>
+                <li class="active"><span>{{ titleTopBar }}</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <template v-if="typeUser === 'admin'">
@@ -99,7 +99,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de productos</h3>
+                <h3 class="my-0">{{ title }}</h3>
             </div>
             <div class="data-table-visible-columns">
                 <el-dropdown :hide-on-click="false">
@@ -114,7 +114,7 @@
                 </el-dropdown>
             </div>
             <div class="card-body">
-                <data-table :resource="resource">
+                <data-table :resource="resource" :productType="type">
                     <tr slot="heading" width="100%">
                         <th>#</th>
                         <th>Cód. Interno</th>
@@ -253,6 +253,7 @@
             <items-form
                 :showDialog.sync="showDialog"
                 :recordId="recordId"
+                :type="type"
             ></items-form>
 
             <items-import :showDialog.sync="showImportDialog"></items-import>
@@ -289,7 +290,7 @@ import DataTable from "../../../components/DataTable.vue";
 import { deletable } from "../../../mixins/deletable";
 
 export default {
-    props: ["typeUser"],
+    props: ["typeUser", "type"],
     mixins: [deletable],
     components: {
         ItemsForm,
@@ -334,9 +335,18 @@ export default {
 
             },
             item_unit_types: [],
+            titleTopBar: '',
+            title: ''
         };
     },
     created() {
+        if (this.type === 'ZZ') {
+            this.titleTopBar = 'Servicios';
+            this.title = 'Listado de servicios';
+        } else {
+            this.titleTopBar = 'Productos';
+            this.title = 'Listado de productos';
+        }
         this.$http.get(`/configurations/record`).then((response) => {
             this.config = response.data.data;
         });

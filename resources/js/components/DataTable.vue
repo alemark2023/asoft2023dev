@@ -86,11 +86,15 @@
 </template>
 
 <script>
-import moment from "moment";
 import queryString from "query-string";
 
 export default {
     props: {
+        productType: {
+            type: String,
+            required: false,
+            default: ''
+        },
         resource: String,
         applyFilter: {
             type: Boolean,
@@ -110,7 +114,6 @@ export default {
             loading_submit: false
         };
     },
-    computed: {},
     created() {
         this.$eventHub.$on("reloadData", () => {
             this.getRecords();
@@ -118,7 +121,6 @@ export default {
     },
     async mounted() {
         let column_resource = _.split(this.resource, "/");
-        // console.log(column_resource)
         await this.$http
             .get(`/${_.head(column_resource)}/columns`)
             .then(response => {
@@ -152,6 +154,9 @@ export default {
                 });
         },
         getQueryParameters() {
+            if (this.productType == 'ZZ') {
+                this.search.type = 'ZZ';
+            }
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,

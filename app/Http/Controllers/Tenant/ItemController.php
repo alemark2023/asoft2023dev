@@ -47,8 +47,13 @@ class ItemController extends Controller
 {
     public function index()
     {
-
         return view('tenant.items.index');
+    }
+
+    public function indexServices()
+    {
+        $type = 'ZZ';
+        return view('tenant.items.index', compact('type'));
     }
 
     public function index_ecommerce()
@@ -68,7 +73,6 @@ class ItemController extends Controller
             'lot_code' => 'Código lote',
             'active' => 'Habilitados',
             'inactive' => 'Inhabilitados',
-            // 'description' => 'Descripción'
         ];
     }
 
@@ -109,7 +113,9 @@ class ItemController extends Controller
                                 ->whereNotIsSet()
                                 ->where($request->column, 'like', "%{$request->value}%");
                 break;
-
+        }
+        if ($request->type) {
+            $records = $records->whereService();
         }
 
         return $records->orderBy('description');

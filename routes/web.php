@@ -136,6 +136,7 @@ if ($hostname) {
 
 			//Items
 			Route::get('items', 'Tenant\ItemController@index')->name('tenant.items.index')->middleware('redirect.level');
+			Route::get('services', 'Tenant\ItemController@indexServices')->name('tenant.services')->middleware('redirect.level');
 			Route::get('items/columns', 'Tenant\ItemController@columns');
 			Route::get('items/records', 'Tenant\ItemController@records');
 			Route::get('items/tables', 'Tenant\ItemController@tables');

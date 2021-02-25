@@ -39,6 +39,7 @@
                         nav-parent
                         {{ ($path[0] === 'documents')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'items')?'nav-active nav-expanded':'' }}
+                        {{ ($path[0] === 'services')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'summaries')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'voided')?'nav-active nav-expanded':'' }}
@@ -125,6 +126,7 @@
 
                                     <li class="nav-parent
                                         {{ ($path[0] === 'items')?'nav-active nav-expanded':'' }}
+                                        {{ ($path[0] === 'services')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'categories')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'brands')?'nav-active nav-expanded':'' }}
                                         {{ ($path[0] === 'item-lots')?'nav-active nav-expanded':'' }}
@@ -139,6 +141,11 @@
                                             <li class="{{ ($path[0] === 'items')?'nav-active':'' }}">
                                                 <a class="nav-link" href="{{route('tenant.items.index')}}">
                                                     Productos
+                                                </a>
+                                            </li>
+                                            <li class="{{ ($path[0] === 'services')?'nav-active':'' }}">
+                                                <a class="nav-link" href="{{route('tenant.services')}}">
+                                                    Servicios
                                                 </a>
                                             </li>
                                             <li class="{{ ($path[0] === 'categories')?'nav-active':'' }}">

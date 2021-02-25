@@ -248,6 +248,11 @@ class Item extends ModelTenant
         return $query->where('unit_type_id','!=', 'ZZ');
     }
 
+    public function scopeWhereService($query)
+    {
+        return $query->where('unit_type_id', 'ZZ');
+    }
+
     public  function document_items()
     {
         return $this->hasMany(DocumentItem::class, 'item_id');
