@@ -261,6 +261,11 @@ Vue.component('tenant-hotel-rent-add-product', require('@viewsModuleHotel/rooms/
 // Hoteles :: Checkout
 Vue.component('tenant-hotel-rent-checkout', require('@viewsModuleHotel/rooms/Checkout.vue'));
 
+// Trámite documentario
+Vue.component('tenant-documentary-offices', require('@viewsModuleDocumentary/offices/Offices.vue'));
+Vue.component('tenant-documentary-processes', require('@viewsModuleDocumentary/processes/Processes.vue'));
+Vue.component('tenant-documentary-documents', require('@viewsModuleDocumentary/documents/Documents.vue'));
+
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));
 
