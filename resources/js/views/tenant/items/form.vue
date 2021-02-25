@@ -545,7 +545,7 @@
     import LotsForm from './partials/lots.vue'
 
     export default {
-        props: ['showDialog', 'recordId', 'external'],
+        props: ['showDialog', 'recordId', 'external', 'type'],
         components: {LotsForm},
 
         data() {
@@ -814,9 +814,9 @@
                 this.setDefaultConfiguration()
             },
             create() {
-
-
-
+                if (this.type) {
+                    this.form.unit_type_id = 'ZZ';
+                }
                 this.titleDialog = (this.recordId)? 'Editar Producto':'Nuevo Producto'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
