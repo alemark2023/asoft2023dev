@@ -25,9 +25,9 @@
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>BO</span>
         </a>
-        <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Nueva empresa" data-toggle="tooltip" data-placement="bottom">
+        <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Mi empresa" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-            <span>EM</span>
+            <span>ME</span>
         </a>
         <a class="topbar-links" href="{{ in_array('establishments', $vc_modules) ? route('tenant.establishments.index') : '#' }}" title="Nuevo establecimiento" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
