@@ -961,6 +961,9 @@
 
                         </ul>
                     </li>
+                    <li class="navigation-header ">
+                        <span>MÓDULOS EXTRAS</span>
+                    </li>
                     @endif
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
@@ -1000,6 +1003,12 @@
                             </li>
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'documents')) ? 'nav-active' : '' }}">
                                 <a class="nav-link" href="{{ route('documentary.documents') }}">Tipos de Documento</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'actions')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.actions') }}">Acciones</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'files')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.files') }}">Expedientes</a>
                             </li>
                         </ul>
                     </li>
