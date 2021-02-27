@@ -961,6 +961,9 @@
 
                         </ul>
                     </li>
+                    <li class="navigation-header ">
+                        <span>MÓDULOS EXTRAS</span>
+                    </li>
                     @endif
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
@@ -983,6 +986,29 @@
                             </li>
                             <li class="{{ (($path[0] === 'hotels') && ($path[1] === 'rooms')) ? 'nav-active' : '' }}">
                                 <a class="nav-link" href="{{ url('hotels/rooms') }}">Habitaciones</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class=" nav-parent {{ ($path[0] === 'documentary-procedure') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <span>Trámite documentario</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'processes')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.processes') }}">Procesos</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'documents')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.documents') }}">Tipos de Documento</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'actions')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.actions') }}">Acciones</a>
+                            </li>
+                            <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'files')) ? 'nav-active' : '' }}">
+                                <a class="nav-link" href="{{ route('documentary.files') }}">Expedientes</a>
                             </li>
                         </ul>
                     </li>

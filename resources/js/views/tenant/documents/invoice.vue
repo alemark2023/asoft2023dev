@@ -1890,7 +1890,7 @@
                     this.form.customer_id = customer_id
                 })
             },
-             changeCustomer() {
+            changeCustomer() {
                 this.customer_addresses = [];
                 let customer = _.find(this.customers, {'id': this.form.customer_id});
                 this.customer_addresses = customer.addresses;

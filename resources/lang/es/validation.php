@@ -274,7 +274,13 @@ return [
 		'payment_status'                           => 'estado de pago',
 		'output_time'                              => 'hora de salida',
 		'products'                                 => 'productos',
-        'position_logo'                            => 'posición del logo',
-        'position_form'                            => 'posición del formulario'
+		'position_logo'                            => 'posición del logo',
+		'position_form'                            => 'posición del formulario',
+		'documentary_document_id'                  => 'tipo de documento',
+		'invoice'                                  => 'folio',
+		'date_register'                            => 'fecha de registro',
+		'time_register'                            => 'hora de registro',
+		'person_id'                                => 'remitente',
+		'documentary_process_id'                   => 'proceso',
 	],
 ];
