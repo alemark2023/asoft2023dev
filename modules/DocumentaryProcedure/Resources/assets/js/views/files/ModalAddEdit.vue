@@ -162,6 +162,9 @@
               {{ errors.documentary_process_id[0] }}
             </div>
           </div>
+          <div class="form-group">
+              <OfficesRows :offices="offices" :actions="actions" :form.sync="form"></OfficesRows>
+          </div>
           <div class="row text-center">
             <div class="col-6">
               <el-button
@@ -193,10 +196,12 @@
 <script>
 import moment from "moment";
 import PersonForm from "../../../../../../../resources/js/views/tenant/persons/form.vue";
+import OfficesRows from './Offices.vue';
 
 export default {
   components: {
     PersonForm,
+    OfficesRows
   },
   props: {
     visible: {
@@ -227,6 +232,8 @@ export default {
       currentYear: 0,
       attachFile: null,
       filename: "",
+      offices: [],
+      actions: []
     };
   },
   methods: {
@@ -380,6 +387,7 @@ export default {
       this.form = {
         date_register: date.format("YYYY-MM-DD"),
         time_register: date.format("H:mm:ss"),
+        offices: []
       };
       this.filename = "";
       this.attachFile = null;
@@ -407,6 +415,8 @@ export default {
           this.customers = data.customers;
           this.documentTypes = data.document_types;
           this.processes = data.processes;
+          this.offices = data.offices;
+          this.actions = data.actions;
         })
         .catch((error) => this.axiosError(error))
         .finally(() => (this.loading = false));

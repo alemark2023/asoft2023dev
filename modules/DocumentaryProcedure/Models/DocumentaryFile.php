@@ -37,4 +37,9 @@ class DocumentaryFile extends ModelTenant
 	{
 		$this->attributes['sender'] = (is_null($value)) ? null : json_encode($value);
 	}
+
+    public function offices()
+    {
+        return $this->belongsToMany(DocumentaryOffice::class);
+    }
 }

@@ -7,14 +7,17 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller;
 use Modules\DocumentaryProcedure\Models\DocumentaryFile;
 use Modules\DocumentaryProcedure\Http\Requests\FileRequest;
+use Modules\DocumentaryProcedure\Models\DocumentaryAction;
 use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
 use Modules\DocumentaryProcedure\Models\DocumentaryDocument;
+use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
 
 class DocumentaryFileController extends Controller
 {
 	public function index()
 	{
-		$files = DocumentaryFile::orderBy('id', 'DESC');
+		$files = DocumentaryFile::with('offices')
+            ->orderBy('id', 'DESC');
 		if (request()->ajax()) {
 			$filter = request('subject');
 			if ($filter) {
@@ -36,16 +39,17 @@ class DocumentaryFileController extends Controller
 		$path = 'storage/uploads/files/';
 		$fullpath = $path . $name;
 		$file->storeAs('public/uploads/files', $name);
-        return $fullpath;
+
+		return $fullpath;
 	}
 
 	public function store(FileRequest $request)
 	{
-        $sender = json_decode($request->person);
+		$sender = json_decode($request->person);
 		if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
+			$request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
 		}
-        $request->merge(['sender' => $sender]);
+		$request->merge(['sender' => $sender]);
 		$file = DocumentaryFile::create($request->only('documentary_document_id', 'documentary_process_id', 'number', 'year', 'invoice', 'date_register', 'time_register', 'person_id', 'sender', 'subject', 'attached_file', 'observation'));
 
 		return response()->json([
@@ -55,15 +59,20 @@ class DocumentaryFileController extends Controller
 		], 200);
 	}
 
+    private function addOfficesToFile(DocumentaryFile $file, array $data): void
+    {
+        $file->offices()->sync($data);
+    }
+
 	public function update(FileRequest $request, $id)
 	{
-        $sender = json_decode($request->person);
+		$sender = json_decode($request->person);
 		if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
+			$request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
 		}
-        $request->merge(['sender' => $sender]);
+		$request->merge(['sender' => $sender]);
 
-        $file = DocumentaryFile::findOrFail($id);
+		$file = DocumentaryFile::findOrFail($id);
 		$file->fill($request->only('documentary_document_id', 'documentary_process_id', 'number', 'year', 'invoice', 'date_register', 'time_register', 'person_id', 'sender', 'subject', 'attached_file', 'observation'));
 		$file->save();
 
@@ -105,6 +114,11 @@ class DocumentaryFileController extends Controller
 			->whereActive(true)
 			->get();
 
+		$actions = DocumentaryAction::select('id', 'name')
+			->orderBy('name')
+			->whereActive(true)
+			->get();
+
 		$customers = Person::with('addresses')
 			->whereIsEnabled()
 			->orderBy('name')
@@ -124,7 +138,10 @@ class DocumentaryFileController extends Controller
 				];
 			});
 
-		$lastId = DocumentaryFile::count();
+		$offices = DocumentaryOffice::select('id', 'name')
+			->orderBy('name')
+			->whereActive(true)
+			->get();
 
 		return response()->json([
 			'success' => true,
@@ -133,6 +150,8 @@ class DocumentaryFileController extends Controller
 				'document_types' => $documentTypes,
 				'processes'      => $processes,
 				'customers'      => $customers,
+				'offices'        => $offices,
+				'actions'        => $actions,
 			]
 		], 200);
 	}
