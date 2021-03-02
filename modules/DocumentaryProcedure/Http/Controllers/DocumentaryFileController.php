@@ -5,19 +5,20 @@ namespace Modules\DocumentaryProcedure\Http\Controllers;
 use App\Models\Tenant\Person;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\DocumentaryProcedure\Models\DocumentaryFile;
-use Modules\DocumentaryProcedure\Http\Requests\FileRequest;
 use Modules\DocumentaryProcedure\Models\DocumentaryAction;
+use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
+use Modules\DocumentaryProcedure\Http\Requests\FileRequest;
 use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
 use Modules\DocumentaryProcedure\Models\DocumentaryDocument;
-use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
 
 class DocumentaryFileController extends Controller
 {
 	public function index()
 	{
 		$files = DocumentaryFile::with('offices')
-            ->orderBy('id', 'DESC');
+			->orderBy('id', 'DESC');
 		if (request()->ajax()) {
 			$filter = request('subject');
 			if ($filter) {
@@ -45,24 +46,38 @@ class DocumentaryFileController extends Controller
 
 	public function store(FileRequest $request)
 	{
-		$sender = json_decode($request->person);
-		if ($request->hasFile('file') && $request->file('file')->isValid()) {
-			$request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
-		}
-		$request->merge(['sender' => $sender]);
-		$file = DocumentaryFile::create($request->only('documentary_document_id', 'documentary_process_id', 'number', 'year', 'invoice', 'date_register', 'time_register', 'person_id', 'sender', 'subject', 'attached_file', 'observation'));
+		DB::connection('tenant')->beginTransaction();
+		try {
+			$sender = json_decode($request->person);
+			if ($request->hasFile('file') && $request->file('file')->isValid()) {
+				$request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
+			}
+			$request->merge(['sender' => $sender]);
+			$file = DocumentaryFile::create($request->only('documentary_document_id', 'documentary_process_id', 'number', 'year', 'invoice', 'date_register', 'time_register', 'person_id', 'sender', 'subject', 'attached_file', 'observation'));
 
-		return response()->json([
-			'data'    => $file,
-			'message' => 'Expediente guardada de forma correcta.',
-			'succes'  => true,
-		], 200);
+			$offices = json_decode($request->offices, true);
+			$this->addOfficesToFile($file, $offices);
+
+			$file->load('offices');
+            DB::connection('tenant')->commit();
+			return response()->json([
+				'data'    => $file,
+				'message' => 'Expediente guardada de forma correcta.',
+				'succes'  => true,
+			], 200);
+		} catch (\Throwable $th) {
+            DB::connection('tenant')->rollBack();
+			return response()->json([
+				'message' => 'Ocurrió un error al procesar su petición. Detalles: ' . $th->getMessage(),
+				'succes'  => false,
+			], 500);
+		}
 	}
 
-    private function addOfficesToFile(DocumentaryFile $file, array $data): void
-    {
-        $file->offices()->sync($data);
-    }
+	private function addOfficesToFile(DocumentaryFile $file, array $data): void
+	{
+		$file->offices()->createMany($data);
+	}
 
 	public function update(FileRequest $request, $id)
 	{

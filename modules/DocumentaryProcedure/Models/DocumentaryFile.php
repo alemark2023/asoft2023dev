@@ -40,6 +40,6 @@ class DocumentaryFile extends ModelTenant
 
     public function offices()
     {
-        return $this->belongsToMany(DocumentaryOffice::class);
+        return $this->hasMany(DocumentaryFileOffice::class);
     }
 }

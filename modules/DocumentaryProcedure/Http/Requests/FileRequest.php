@@ -15,14 +15,15 @@ class FileRequest extends FormRequest
 	{
 		return [
 			'documentary_document_id' => 'required|numeric',
-            'number' => 'required|numeric|min:1',
-            'invoice' => 'required|string|max:15',
-            'date_register' => 'required|date',
-            'time_register' => 'required|date_format:G:i:s',
-            'person_id' => 'required|numeric|min:1',
-            'subject' => 'required|max:250',
-            'documentary_process_id' => 'required|numeric|min:1',
-            'person' => 'required'
+			'number'                  => 'required|numeric|min:1',
+			'invoice'                 => 'required|string|max:15',
+			'date_register'           => 'required|date',
+			'time_register'           => 'required|date_format:G:i:s',
+			'person_id'               => 'required|numeric|min:1',
+			'subject'                 => 'required|max:250',
+			'documentary_process_id'  => 'required|numeric|min:1',
+			'person'                  => 'required',
+			'offices'                 => 'required',
 		];
 	}
 }

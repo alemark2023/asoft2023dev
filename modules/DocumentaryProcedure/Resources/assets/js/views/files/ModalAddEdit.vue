@@ -236,6 +236,9 @@ export default {
       actions: []
     };
   },
+  mounted() {
+      this.onInitializeForm();
+  },
   methods: {
     onSearchFile() {
       this.$refs.inputFile.click();
@@ -263,6 +266,9 @@ export default {
       data.append("person_id", this.form.person_id);
       if (this.form.sender) {
         data.append("person", JSON.stringify(this.form.sender));
+      }
+      if (this.form.offices) {
+        data.append("offices", JSON.stringify(this.form.offices));
       }
       data.append("subject", this.form.subject || "");
       data.append("observation", this.form.observation || "");
@@ -403,9 +409,8 @@ export default {
         this.attachFile = null;
       } else {
         this.title = "Crear expediente";
-        this.form = {};
-        await this.onGetDataForNewFile();
         this.onInitializeForm();
+        await this.onGetDataForNewFile();
       }
       this.loading = true;
       await this.$http

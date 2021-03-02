@@ -19,6 +19,7 @@ class CreateDocumentaryFileOfficesTable extends Migration
             $table->unsignedInteger('documentary_office_id');
             $table->unsignedInteger('documentary_action_id');
             $table->string('observation', 300)->nullable();
+            $table->enum('status', ['POR DERIVAR', 'POR RECIBIR', 'EN PROCESO', 'FINALIZADO', 'ARCHIVADO'])->default('POR DERIVAR');
             $table->timestamps();
 
             $table->foreign('documentary_file_id')->on('documentary_files')->references('id')->onDelete('cascade');
