@@ -20674,6 +20674,15 @@ html.dark .pagination > li.active > span {
 html.dark .dropdown-menu {
     background-color: #282d36;
 }
+html.dark .dropdown-menu .dropdown-item {
+    color: #c3c3c3;
+}
+html.dark .dropdown-menu .dropdown-item:hover {
+    color: #16181b;
+}
+html.dark .separator-title{
+    color: #303133;
+}
 
 html.dark .dropdown-menu > li > a {
     color: #eee;
