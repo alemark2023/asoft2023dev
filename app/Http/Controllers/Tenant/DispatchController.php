@@ -145,6 +145,7 @@ class DispatchController extends Controller
 	public function tables(Request $request)
 	{
 		$items = Item::query()
+            ->with('lots_group')
 			->where('item_type_id', '01')
 			->orderBy('description')
 			->get()
@@ -165,7 +166,18 @@ class DispatchController extends Controller
 					'sale_affectation_igv_type_id'     => $row->sale_affectation_igv_type_id,
 					'attributes'                       => $row->attributes ? $row->attributes : [],
 					'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-					'has_igv'                          => $row->has_igv
+					'has_igv'                          => $row->has_igv,
+                    'lots_group' => $row->lots_group->each(function($lot){
+                        return [
+                            'id'  => $lot->id,
+                            'code' => $lot->code,
+                            'quantity' => $lot->quantity,
+                            'date_of_due' => $lot->date_of_due,
+                            'checked'  => false
+                        ];
+                    }),
+                    'lots' => [],
+                    'lots_enabled' => (bool) $row->lots_enabled,
 				];
 			});
 

@@ -347,7 +347,6 @@
                             :recordId="recordId"
                             :showClose="false"
                             :isUpdate="(order_form_id) ? true:false"></dispatch-options>
-
     </div>
 </template>
 
@@ -358,7 +357,7 @@
 
     export default {
         props: ['order_form_id'],
-        components: {PersonForm, Items, DispatchOptions},
+        components: {PersonForm, Items, DispatchOptions, },
         data() {
             return {
                 showDialogOptions: false,
