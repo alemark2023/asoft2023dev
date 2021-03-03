@@ -23,8 +23,7 @@ class ItemsImport implements ToCollection
             $total = count($rows);
             $registered = 0;
             unset($rows[0]);
-            foreach ($rows as $row)
-            {
+            foreach ($rows as $row) {
                 $description = $row[0];
                 $item_type_id = '01';
                 $internal_id = ($row[1])?:null;
@@ -61,6 +60,7 @@ class ItemsImport implements ToCollection
                 $lot_code = $row[17];
                 $date_of_due = $row[18];
                 $barcode = $row[19] ?? null;
+                $warehouse_id = request('warehouse_id');
 
 
                 if($internal_id) {
@@ -70,7 +70,6 @@ class ItemsImport implements ToCollection
                     $item = null;
                 }
                 // $establishment_id = auth()->user()->establishment->id;
-                // $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
 
                 if(!$item) {
                     $category = $category_name ? Category::updateOrCreate(['name' => $category_name]):null;
@@ -107,7 +106,7 @@ class ItemsImport implements ToCollection
                             'lot_code' => $lot_code,
                             'date_of_due' => $_date_of_due,
                             'barcode' => $barcode,
-                            // 'warehouse_id' => $warehouse->id
+                            'warehouse_id' => $warehouse_id,
                         ]);
 
                         $new_item->lots_group()->create([
@@ -138,7 +137,7 @@ class ItemsImport implements ToCollection
                             'name' => $name,
                             'second_name' => $second_name,
                             'barcode' => $barcode,
-                            // 'warehouse_id' => $warehouse->id
+                            'warehouse_id' => $warehouse_id,
                         ]);
 
                     }

@@ -5,7 +5,7 @@
       <el-button @click="onAddOffice">+ Agregar oficina</el-button>
     </div>
     <div class="row position-relative" v-for="(o, i) in form.offices" :key="i">
-      <el-button type="danger" class="btn-delete-office">
+      <el-button type="danger" class="btn-delete-office" @click="onDeleteOffice(i)">
         <i class="fa fa-trash"></i>
         <span class="ml-2">Eliminar</span>
       </el-button>
@@ -74,6 +74,9 @@ export default {
         observation: null,
       });
     },
+    onDeleteOffice(index) {
+        this.form.offices.splice(index, 1);
+    }
   },
 };
 </script>

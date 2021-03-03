@@ -95,7 +95,7 @@
             </div>
             </section>
         </div>
-        <div v-bind:class="[company.certificate_due != null ? 'col-xl-4': 'col-xl-6']" v-if="!disc.error">
+        <!-- <div v-bind:class="[company.certificate_due != null ? 'col-xl-4': 'col-xl-6']" v-if="!disc.error">
             <section class="card card-featured-left card-featured-secondary">
             <div class="card-body">
                 <div class="widget-summary">
@@ -109,28 +109,12 @@
                         <el-progress :percentage="disc.pcent"></el-progress>
                         </div>
                     </div>
-                    <!-- <div class="col-lg-4">
-                        <div class="summary">
-                        <h4 class="title">
-                            Disponible
-                        </h4>
-                        <el-progress :percentage="disc.avail"></el-progress>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="summary">
-                        <h4 class="title">
-                            Uso
-                        </h4>
-                        <el-progress :percentage="disc.used"></el-progress>
-                        </div>
-                    </div> -->
                     </div>
                 </div>
                 </div>
             </div>
             </section>
-        </div>
+        </div> -->
         <div class="col-xl-2" v-if="company.certificate_due">
             <section class="card card-featured-left card-featured-secondary">
             <div class="card-body">
@@ -143,6 +127,28 @@
                     <div class="col-lg-12 py-1">
                         <div class="summary">
                         Vence: {{company.certificate_due}}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </section>
+        </div>
+        <div class="col-xl-2">
+            <section class="card card-featured-left card-featured-info">
+            <div class="card-body">
+                <div class="widget-summary">
+                <div class="widget-summary-col">
+                    <div class="row no-gutters">
+                    <div class="col-md-12 m-b-10">
+                        <h4 class="card-title">Cantidad CPE Emitidos</h4>
+                    </div>
+                    <div class="col-lg-12 py-1">
+                        <div class="">
+                            <h3 class="mb-0 amount text-info">
+                                {{documents_quantity}}
+                            </h3>
                         </div>
                     </div>
                     </div>
@@ -754,8 +760,8 @@ export default {
         totals: {},
         graph: {}
       },
-      disc: [],
       form: {},
+      documents_quantity: 0,
       pickerOptionsDates: {
         disabledDate: time => {
           time = moment(time).format("YYYY-MM-DD");
@@ -956,6 +962,7 @@ export default {
       this.$http.post(`/${this.resource}/data`, this.form).then(response => {
 
         this.document = response.data.data.document;
+        this.documents_quantity = response.data.data.quantity;
         this.balance = response.data.data.balance;
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;
@@ -963,16 +970,6 @@ export default {
         this.items = response.data.data.items;
         this.hideLoadersLoadData()
 
-      });
-
-      this.$http.get(`/command/df`).then(response => {
-        if (response.data[0] != 'error'){
-          this.disc.used = Number(response.data[0].replace(/[^0-9\.]+/g,""));
-          this.disc.avail = Number(response.data[1].match(/\d/g).join(""));
-          this.disc.pcent = Number(response.data[2].match(/\d/g).join(""));
-        } else {
-          this.disc.error = true;
-        }
       });
 
     },

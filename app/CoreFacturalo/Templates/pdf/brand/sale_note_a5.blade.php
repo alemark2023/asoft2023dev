@@ -58,13 +58,20 @@
         <td width="100%" class="border-box pl-3">
             <table class="full-width">
                 <tr>
-                    <td colspan="2" class="font-lg">
+                    <td class="">
                         <strong>SEÑOR(ES): </strong>
                         {{ $customer->name }}
                     </td>
+                    <td class="">
+                    </td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="font-lg">
+                    <td  class="">
+                        <strong>RUC: </strong>
+                        {{$customer->number}}
+                    </td>s
+                    <td  class="">
+
                         <strong>DIRECCIÓN: </strong>
                         @if ($customer->address !== '')
                             <span style="text-transform: uppercase;">
@@ -77,31 +84,20 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2"  class="font-lg">
-                        <strong>RUC: </strong>
-                        {{$customer->number}}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"  class="font-lg">
-                        <strong>MONEDA: </strong>
-                        <span class="text-upp">{{ $document->currency_type->description }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td  class="font-lg">
+                    <td  class="">
                         <strong>FECHA: </strong>
                         {{$document->date_of_issue->format('Y-m-d')}}
                     </td>
-                    <td  class="font-lg">
-
+                    <td  class="">
+                        <strong>MONEDA: </strong>
+                        <span class="text-upp">{{ $document->currency_type->description }}</span>
                     </td>
                 </tr>
             </table>
         </td>
     </tr>
 </table>
-<table class="full-width my-3 text-center" border="1">
+<table class="full-width my-2 text-center" border="1">
     <tr>
         <td width="16.6%" class="desc">UBIGEO</td>
         <td width="16.6%" class="desc">O/C</td>

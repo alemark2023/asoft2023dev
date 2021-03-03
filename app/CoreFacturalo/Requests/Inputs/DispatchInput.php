@@ -156,6 +156,8 @@ class DispatchInput
                         'item_code' => $item->item_code,
                         'item_code_gs1' => $item->item_code_gs1,
                         'unit_type_id' => $item->unit_type_id,
+                        'IdLoteSelected' =>  $row['IdLoteSelected'] ?? null,
+                        'lot_group' => $row['lot_group'] ?? null,
                     ],
                     'quantity' => $row['quantity'],
                 ];

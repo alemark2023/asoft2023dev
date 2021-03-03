@@ -20647,9 +20647,9 @@ html.dark blockquote {
 }
 
 /* Dark - Helpers */
-html.dark .text-dark {
+/* html.dark .text-dark {
     color: #fff !important;
-}
+} */
 
 html.dark ul.nav-list.primary > li a {
     border-bottom-color: #282d36;
@@ -20673,6 +20673,15 @@ html.dark .pagination > li.active > span {
 
 html.dark .dropdown-menu {
     background-color: #282d36;
+}
+html.dark .dropdown-menu .dropdown-item {
+    color: #c3c3c3;
+}
+html.dark .dropdown-menu .dropdown-item:hover {
+    color: #16181b;
+}
+html.dark .separator-title{
+    color: #303133;
 }
 
 html.dark .dropdown-menu > li > a {
