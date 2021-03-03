@@ -390,7 +390,7 @@
 
             </td> --}}
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right align-top">
+            {{-- <td class="text-right align-top">
                 @if($row->discounts)
                     @php
                         $total_discount_line = 0;
@@ -402,7 +402,7 @@
                 @else
                 0
                 @endif
-            </td>
+            </td> --}}
             <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
