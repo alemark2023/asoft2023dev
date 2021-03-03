@@ -347,7 +347,6 @@
                             :recordId="recordId"
                             :showClose="false"
                             :isUpdate="(order_form_id) ? true:false"></dispatch-options>
-
     </div>
 </template>
 
@@ -358,7 +357,7 @@
 
     export default {
         props: ['order_form_id'],
-        components: {PersonForm, Items, DispatchOptions},
+        components: {PersonForm, Items, DispatchOptions, },
         data() {
             return {
                 showDialogOptions: false,
@@ -592,15 +591,20 @@
                     exist.quantity += form.quantity;
                     return;
                 }
-
+                let lot_group = null;
+                if (form.item.IdLoteSelected) {
+                    lot_group = form.item.lots_group.find(l => l.id == form.item.IdLoteSelected);
+                }
                 this.form.items.push({
-                    'attributes': attributes,
-                    'description': form.item.description,
-                    'internal_id': form.item.internal_id,
-                    'quantity': form.quantity,
-                    'item_id': form.item.id,
-                    'unit_type_id': form.item.unit_type_id,
-                    'id': form.item.id,
+                    attributes: attributes,
+                    description: form.item.description,
+                    internal_id: form.item.internal_id,
+                    quantity: form.quantity,
+                    item_id: form.item.id,
+                    unit_type_id: form.item.unit_type_id,
+                    id: form.item.id,
+                    IdLoteSelected: form.item.IdLoteSelected || '',
+                    lot_group: lot_group || null,
                 });
             },
             decrementValueAttr(form){
