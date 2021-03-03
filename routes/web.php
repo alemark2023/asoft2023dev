@@ -145,6 +145,7 @@ if ($hostname) {
 			Route::delete('items/{item}', 'Tenant\ItemController@destroy');
 			Route::delete('items/item-unit-type/{item}', 'Tenant\ItemController@destroyItemUnitType');
 			Route::post('items/import', 'Tenant\ItemController@import');
+			Route::get('items/import/tables', 'Tenant\ItemController@tablesImport');
 			Route::post('items/upload', 'Tenant\ItemController@upload');
 			Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
 			Route::post('items/duplicate', 'Tenant\ItemController@duplicate');

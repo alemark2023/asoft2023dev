@@ -20647,9 +20647,9 @@ html.dark blockquote {
 }
 
 /* Dark - Helpers */
-html.dark .text-dark {
+/* html.dark .text-dark {
     color: #fff !important;
-}
+} */
 
 html.dark ul.nav-list.primary > li a {
     border-bottom-color: #282d36;

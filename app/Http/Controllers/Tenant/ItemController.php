@@ -364,6 +364,9 @@ class ItemController extends Controller
 
     public function import(Request $request)
     {
+        $request->validate([
+            'warehouse_id' => 'required|numeric|min:1'
+        ]);
         if ($request->hasFile('file')) {
             try {
                 $import = new ItemsImport();
@@ -672,5 +675,16 @@ class ItemController extends Controller
         return json_encode(['data' => $record->id]);
     }
 
+    public function tablesImport()
+    {
+        $user = auth()->user();
+        $warehouses = Warehouse::select('id', 'description');
+        if ($user->type !== 'admin') {
+            $warehouses = $warehouses->where('id', $user->establishment_id);
+        }
 
+        return response()->json([
+            'warehouses' => $warehouses->get(),
+        ], 200);
+    }
 }
