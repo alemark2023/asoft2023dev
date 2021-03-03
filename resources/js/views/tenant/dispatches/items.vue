@@ -69,6 +69,7 @@
                 this.showDialogLots = true
             },
             onChangeItem() {
+                this.form.IdLoteSelected = null;
                 this.item = this.items.find(it => it.id == this.form.item);
             },
             addRowLotGroup(id) {
@@ -88,24 +89,28 @@
                 this.errors = {};
 
                 if(this.item.lots_enabled){
-                    if(!this.form.IdLoteSelected)
+                    if(! this.form.IdLoteSelected)
                         return this.$message.error('Debe seleccionar un lote.');
                 }
 
                 if ((this.form.item != null) && (this.form.quantity != null)) {
+                    const item = this.items.find((item) => item.id == this.form.item)
+                    item.IdLoteSelected = this.form.IdLoteSelected;
                     this.$emit('addItem', {
-                        item: this.items.find((item) => item.id == this.form.item),
-                        quantity: this.form.quantity
+                        item,
+                        quantity: this.form.quantity,
                     });
 
                     this.form = {};
-
+                    this.item = null;
                     return;
                 }
 
                 if (this.form.item == null) this.$set(this.errors, 'items', ['Seleccione el producto']);
 
                 if (this.form.quantity == null) this.$set(this.errors, 'quantity', ['Digite la cantidad']);
+
+                this.form.IdLoteSelected = null;
             }
         }
     }

@@ -126,6 +126,7 @@
         <th class="border-top-bottom text-center">Item</th>
         <th class="border-top-bottom text-center">Código</th>
         <th class="border-top-bottom text-left">Descripción</th>
+        <th class="border-top-bottom text-left">Lote</th>
         <th class="border-top-bottom text-left">Modelo</th>
         <th class="border-top-bottom text-center">Unidad</th>
         <th class="border-top-bottom text-right">Cantidad</th>
@@ -137,6 +138,11 @@
             <td class="text-center">{{ $loop->iteration }}</td>
             <td class="text-center">{{ $row->item->internal_id }}</td>
             <td class="text-left">{{ $row->item->description }}</td>
+            <td class="text-left">
+                @if ($row->item->IdLoteSelected ?? false)
+                    Cód: {{ $row->item->lot_group->code }} - F Venc: {{ $row->item->lot_group->date_of_due }}
+                @endif
+            </td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-right">
