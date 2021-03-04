@@ -61,7 +61,6 @@
 </template>
 
 <script>
-
     import DataTable from '../../components/DataTableGeneralItems.vue'
 
     export default {

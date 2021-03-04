@@ -396,7 +396,13 @@
             // this.clean();
             await this.initForm()
 
-            await this.$http.post(`/${this.resource}/tables`).then(response => {
+            const itemsFromSummary = localStorage.getItem('items');
+            const payload = {}
+            if (itemsFromSummary) {
+                const items = JSON.parse(itemsFromSummary);
+                payload.itemIds = items.map(i => i.id);
+            }
+            await this.$http.post(`/${this.resource}/tables`, payload).then(response => {
                 this.company = response.data.company;
                 this.identityDocumentTypes = response.data.identityDocumentTypes;
                 this.transferReasonTypes = response.data.transferReasonTypes;
@@ -410,6 +416,9 @@
                 this.countries = response.data.countries;
                 this.locations = response.data.locations;
                 this.seriesAll = response.data.series;
+                if (itemsFromSummary) {
+                    this.onLoadItemsFromSummary(response.data.itemsFromSummary, JSON.parse(itemsFromSummary));
+                }
             });
 
             await this.setDefaultCustomer()
@@ -417,6 +426,18 @@
             await this.createFromOrderForm()
         },
         methods: {
+            onLoadItemsFromSummary(items, itemsFromStorage) {
+                items.map(it => {
+                    const itemWithQuantity = itemsFromStorage.find(i => i.id == it.id);
+                    if (itemWithQuantity) {
+                        this.addItem({
+                            item: it,
+                            quantity: itemWithQuantity.quantity
+                        });
+                    }
+                });
+                localStorage.removeItem('items');
+            },
             setDefaultCustomer(){
 
                 let customer = _.find(this.customers, {number: this.company.number})
@@ -434,7 +455,6 @@
                         .then(response => {
 
                             let order_form = response.data.data.order_form
-                            // console.log(order_form)
                             // this.form = order_form
 
                             this.form.establishment_id = order_form.establishment_id
@@ -642,8 +662,6 @@
                 this.form.total_weight += total_weight
             },
             clickRemoveItem(index) {
-
-                // console.log(this.form.items[index])
                 this.decrementValueAttr(this.form.items[index])
                 this.form.items.splice(index, 1);
             },
@@ -665,7 +683,6 @@
                             this.initForm();
 
                             // this.$message.success(response.data.message)
-                            // console.log(response)
                             this.recordId = response.data.data.id
                             this.showDialogOptions = true
 
