@@ -144,6 +144,46 @@ class DispatchController extends Controller
 	 */
 	public function tables(Request $request)
 	{
+        $itemsFromSummary = null;
+        if ($request->itemIds) {
+            $itemsFromSummary = Item::query()
+            ->with('lots_group')
+            ->whereIn('id', $request->itemIds)
+			->where('item_type_id', '01')
+			->orderBy('description')
+			->get()
+			->transform(function ($row) {
+				$full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+
+				return [
+					'id'                               => $row->id,
+					'full_description'                 => $full_description,
+					'description'                      => $row->description,
+					'model'                            => $row->model,
+					'internal_id'                      => $row->internal_id,
+					'currency_type_id'                 => $row->currency_type_id,
+					'currency_type_symbol'             => $row->currency_type->symbol,
+					'sale_unit_price'                  => $row->sale_unit_price,
+					'purchase_unit_price'              => $row->purchase_unit_price,
+					'unit_type_id'                     => $row->unit_type_id,
+					'sale_affectation_igv_type_id'     => $row->sale_affectation_igv_type_id,
+					'attributes'                       => $row->attributes ? $row->attributes : [],
+					'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+					'has_igv'                          => $row->has_igv,
+                    'lots_group' => $row->lots_group->each(function($lot){
+                        return [
+                            'id'  => $lot->id,
+                            'code' => $lot->code,
+                            'quantity' => $lot->quantity,
+                            'date_of_due' => $lot->date_of_due,
+                            'checked'  => false
+                        ];
+                    }),
+                    'lots' => [],
+                    'lots_enabled' => (bool) $row->lots_enabled,
+				];
+			});
+        }
 		$items = Item::query()
             ->with('lots_group')
 			->where('item_type_id', '01')
@@ -262,7 +302,8 @@ class DispatchController extends Controller
 			'identityDocumentTypes',
 			'items',
 			'locations',
-			'company'
+			'company',
+            'itemsFromSummary'
 		);
 	}
 

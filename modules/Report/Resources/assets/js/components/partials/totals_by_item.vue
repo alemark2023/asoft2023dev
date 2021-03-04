@@ -6,8 +6,9 @@
                     <div class="col-md-12">
                         <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
                         <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
+                        <el-button class="submit" type="success" @click.prevent="onGenerateGuide"><i class="fa fa-file-excel" ></i>  Generar guía</el-button>
                     </div>
-                    <div class="col-md-12 mt-2"> 
+                    <div class="col-md-12 mt-2">
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -19,7 +20,7 @@
                                         <th  class="text-center">Cantidad Total</th>
                                     </tr>
                                 </thead>
-                                <tbody> 
+                                <tbody>
                                     <tr v-for="(row, index) in records" :key="index">
                                         <!-- <td>{{ index+1  }}</td>  -->
                                         <td  class="text-center">{{row.item_internal_id}}</td>
@@ -27,13 +28,13 @@
                                         <td  class="text-center">{{row.item_unit_type_id}}</td>
                                         <td  class="text-center">{{row.quantity}}</td>
                                     </tr>
-                                </tbody>  
-                            </table> 
+                                </tbody>
+                            </table>
                         </div>
 
-                    </div> 
+                    </div>
                 </div>
-  
+
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cerrar</el-button>
@@ -52,19 +53,28 @@
                 loading: false,
                 titleDialog: 'Totales por productos',
                 resource: 'reports/sales-consolidated',
-                records: [], 
+                records: [],
             }
         },
-        async created() {
-
-        }, 
-        methods: { 
-            clickDownload(type) {          
+        methods: {
+            onGenerateGuide() {
+                const items = [];
+                Object.keys(this.records).forEach((r) => {
+                    items.push({
+                        id: this.records[r].item_id,
+                        quantity: this.records[r].quantity
+                    })
+                });
+                localStorage.setItem('items', JSON.stringify(items));
+                const tab = window.open('/dispatches/create', '_BLANK');
+                tab.focus();
+            },
+            clickDownload(type) {
                 window.open(`/${this.resource}/${type}-totals/?${this.parameters}`, '_blank');
             },
             close() {
                 this.$emit('update:showDialog', false)
-            }, 
+            },
             create(){
                 this.getRecords()
             },
