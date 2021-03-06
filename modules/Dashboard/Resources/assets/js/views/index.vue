@@ -11,11 +11,11 @@
     <div class="card mb-0">
         <RowTop :company="company"></RowTop>
         <div class="row">
-            <div class="col-xl-6">
-              <section class="card card-featured-left card-featured-secondary">
+            <div class="col-12">
+              <section class="card card-dashboard">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-6 col-md-3">
                             <div class="form-group">
                             <label class="control-label">Establecimiento</label>
                             <el-select v-model="form.establishment_id" @change="loadAll">
@@ -28,7 +28,7 @@
                             </el-select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6 col-md-3">
                             <label class="control-label">Periodo</label>
                             <el-select v-model="form.period" @change="changePeriod">
                             <el-option key="all" value="all" label="Todos"></el-option>
@@ -39,7 +39,7 @@
                             </el-select>
                         </div>
                         <template v-if="form.period === 'month' || form.period === 'between_months'">
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-3">
                             <label class="control-label">Mes de</label>
                             <el-date-picker
                                 v-model="form.month_start"
@@ -52,7 +52,7 @@
                             </div>
                         </template>
                         <template v-if="form.period === 'between_months'">
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-3">
                             <label class="control-label">Mes al</label>
                             <el-date-picker
                                 v-model="form.month_end"
@@ -66,7 +66,7 @@
                             </div>
                         </template>
                         <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-3">
                             <label class="control-label">Fecha del</label>
                             <el-date-picker
                                 v-model="form.date_start"
@@ -79,7 +79,7 @@
                             </div>
                         </template>
                         <template v-if="form.period === 'between_dates'">
-                            <div class="col-md-6">
+                            <div class="col-6 col-md-3">
                             <label class="control-label">Fecha al</label>
                             <el-date-picker
                                 v-model="form.date_end"
@@ -117,7 +117,7 @@
             </div>
             </section>
         </div> -->
-        <div class="col-xl-2" v-if="company.certificate_due">
+        <!-- <div class="col-xl-2" v-if="company.certificate_due">
             <section class="card card-featured-left card-featured-secondary">
             <div class="card-body">
                 <div class="widget-summary">
@@ -136,8 +136,8 @@
                 </div>
             </div>
             </section>
-        </div>
-        <div class="col-xl-2">
+        </div> -->
+        <!-- <div class="col-xl-2">
             <section class="card card-featured-left card-featured-info">
             <div class="card-body">
                 <div class="widget-summary">
@@ -158,7 +158,7 @@
                 </div>
             </div>
             </section>
-        </div>
+        </div> -->
         </div>
         <div class="row">
         <div class="col-xl-12">
@@ -764,7 +764,7 @@ export default {
         graph: {}
       },
       form: {},
-      documents_quantity: 0,
+    //   documents_quantity: 0,
       pickerOptionsDates: {
         disabledDate: time => {
           time = moment(time).format("YYYY-MM-DD");
@@ -965,7 +965,7 @@ export default {
       this.$http.post(`/${this.resource}/data`, this.form).then(response => {
 
         this.document = response.data.data.document;
-        this.documents_quantity = response.data.data.quantity;
+        // this.documents_quantity = response.data.data.quantity;
         this.balance = response.data.data.balance;
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;

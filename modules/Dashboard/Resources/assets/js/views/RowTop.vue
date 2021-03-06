@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-6 col-md-2">
-      <div class="card">
+      <div class="card card-dashboard">
         <div class="card-body">
         <div class="card-title">Cantidad <br />CPE Emitidos</div>
           <span>{{ total_cpe }}</span>
@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="col-6 col-md-2" v-if="company.certificate_due">
-      <div class="card">
+      <div class="card card-dashboard">
         <div class="card-body">
         <div class="card-title">Fec venc del <br />Certificado</div>
           <span>{{ company.certificate_due }}</span>
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="col-6 col-md-2">
-      <div class="card">
+      <div class="card card-dashboard">
         <div class="card-body">
         <div class="card-title">Total <br />comprobantes</div>
           <span>{{ document_total_global }}</span>
@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="col-6 col-md-2">
-      <div class="card">
+      <div class="card card-dashboard">
         <div class="card-body">
         <div class="card-title">Total notas <br />de ventas</div>
           <span>{{ sale_note_total_global }}</span>
@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="col-6 col-md-2">
-      <div class="card">
+      <div class="card card-dashboard">
         <div class="card-body">
         <div class="card-title">Total <br />general</div>
           <span>{{ total }}</span>
@@ -70,25 +70,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss" scoped>
-.card {
-  box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
-  border-radius: 5px;
-  border: none;
-}
-.card-body {
-  font-size: 1rem;
-  font-weight: 600;
-}
-.card-title {
-  font-weight: 500;
-  font-size: 14px;
-  min-height: 60px;
-}
-html.dark {
-  .card {
-    color: #5bc0de;
-  }
-}
-</style>

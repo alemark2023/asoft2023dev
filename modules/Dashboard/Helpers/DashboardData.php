@@ -204,11 +204,17 @@ class DashboardData
     {
 
         if($date_start && $date_end){
-            $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            $documents = Document::query()
+                ->where('establishment_id', $establishment_id)
+                ->whereBetween('date_of_issue', [$date_start, $date_end])
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                ->get();
         }else{
-            $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+            $documents = Document::query()
+                ->where('establishment_id', $establishment_id)
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                ->get();
         }
-
         //PEN
         $document_total_pen = 0;
         $document_total_payment_pen = 0;
@@ -259,8 +265,6 @@ class DashboardData
 
         //TOTALS
         $document_total = $document_total_pen + $document_total_usd;
-        \Log::info($document_total_pen);
-        \Log::info($document_total_usd);
         $document_total_note_credit = $document_total_note_credit_pen + $document_total_note_credit_usd;
         $document_total_payment = $document_total_payment_pen + $document_total_payment_usd;
 
