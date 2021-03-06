@@ -113,3 +113,23 @@
 .el-cascader {
   width: 100%;
 }
+
+.card.card-dashboard {
+    box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
+    border-radius: 5px;
+    border: none;
+    .card-body {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .card-title {
+      font-weight: 500;
+      font-size: 14px;
+      min-height: 60px;
+    }
+  }
+  html.dark {
+    .card.card-dashboard {
+      color: #5bc0de;
+    }
+  }

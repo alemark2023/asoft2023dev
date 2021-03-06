@@ -9,92 +9,94 @@
       </div>
     </header>
     <div class="card mb-0">
+        <RowTop :company="company"></RowTop>
         <div class="row">
-        <div class="col-xl-6">
-            <section class="card card-featured-left card-featured-secondary">
-            <div class="card-body">
-                <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label class="control-label">Establecimiento</label>
-                    <el-select v-model="form.establishment_id" @change="loadAll">
-                        <el-option
-                        v-for="option in establishments"
-                        :key="option.id"
-                        :value="option.id"
-                        :label="option.name"
-                        ></el-option>
-                    </el-select>
+            <div class="col-12">
+              <section class="card card-dashboard">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 col-md-3">
+                            <div class="form-group">
+                            <label class="control-label">Establecimiento</label>
+                            <el-select v-model="form.establishment_id" @change="loadAll">
+                                <el-option
+                                v-for="option in establishments"
+                                :key="option.id"
+                                :value="option.id"
+                                :label="option.name"
+                                ></el-option>
+                            </el-select>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <label class="control-label">Periodo</label>
+                            <el-select v-model="form.period" @change="changePeriod">
+                            <el-option key="all" value="all" label="Todos"></el-option>
+                            <el-option key="month" value="month" label="Por mes"></el-option>
+                            <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
+                            <el-option key="date" value="date" label="Por fecha"></el-option>
+                            <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
+                            </el-select>
+                        </div>
+                        <template v-if="form.period === 'month' || form.period === 'between_months'">
+                            <div class="col-6 col-md-3">
+                            <label class="control-label">Mes de</label>
+                            <el-date-picker
+                                v-model="form.month_start"
+                                type="month"
+                                @change="changeDisabledMonths"
+                                value-format="yyyy-MM"
+                                format="MM/yyyy"
+                                :clearable="false"
+                            ></el-date-picker>
+                            </div>
+                        </template>
+                        <template v-if="form.period === 'between_months'">
+                            <div class="col-6 col-md-3">
+                            <label class="control-label">Mes al</label>
+                            <el-date-picker
+                                v-model="form.month_end"
+                                type="month"
+                                :picker-options="pickerOptionsMonths"
+                                @change="loadAll"
+                                value-format="yyyy-MM"
+                                format="MM/yyyy"
+                                :clearable="false"
+                            ></el-date-picker>
+                            </div>
+                        </template>
+                        <template v-if="form.period === 'date' || form.period === 'between_dates'">
+                            <div class="col-6 col-md-3">
+                            <label class="control-label">Fecha del</label>
+                            <el-date-picker
+                                v-model="form.date_start"
+                                type="date"
+                                @change="changeDisabledDates"
+                                value-format="yyyy-MM-dd"
+                                format="dd/MM/yyyy"
+                                :clearable="false"
+                            ></el-date-picker>
+                            </div>
+                        </template>
+                        <template v-if="form.period === 'between_dates'">
+                            <div class="col-6 col-md-3">
+                            <label class="control-label">Fecha al</label>
+                            <el-date-picker
+                                v-model="form.date_end"
+                                type="date"
+                                :picker-options="pickerOptionsDates"
+                                @change="loadAll"
+                                value-format="yyyy-MM-dd"
+                                format="dd/MM/yyyy"
+                                :clearable="false"
+                            ></el-date-picker>
+                            </div>
+                        </template>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="control-label">Periodo</label>
-                    <el-select v-model="form.period" @change="changePeriod">
-                    <el-option key="all" value="all" label="Todos"></el-option>
-                    <el-option key="month" value="month" label="Por mes"></el-option>
-                    <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
-                    <el-option key="date" value="date" label="Por fecha"></el-option>
-                    <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
-                    </el-select>
-                </div>
-                <template v-if="form.period === 'month' || form.period === 'between_months'">
-                    <div class="col-md-6">
-                    <label class="control-label">Mes de</label>
-                    <el-date-picker
-                        v-model="form.month_start"
-                        type="month"
-                        @change="changeDisabledMonths"
-                        value-format="yyyy-MM"
-                        format="MM/yyyy"
-                        :clearable="false"
-                    ></el-date-picker>
-                    </div>
-                </template>
-                <template v-if="form.period === 'between_months'">
-                    <div class="col-md-6">
-                    <label class="control-label">Mes al</label>
-                    <el-date-picker
-                        v-model="form.month_end"
-                        type="month"
-                        :picker-options="pickerOptionsMonths"
-                        @change="loadAll"
-                        value-format="yyyy-MM"
-                        format="MM/yyyy"
-                        :clearable="false"
-                    ></el-date-picker>
-                    </div>
-                </template>
-                <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                    <div class="col-md-6">
-                    <label class="control-label">Fecha del</label>
-                    <el-date-picker
-                        v-model="form.date_start"
-                        type="date"
-                        @change="changeDisabledDates"
-                        value-format="yyyy-MM-dd"
-                        format="dd/MM/yyyy"
-                        :clearable="false"
-                    ></el-date-picker>
-                    </div>
-                </template>
-                <template v-if="form.period === 'between_dates'">
-                    <div class="col-md-6">
-                    <label class="control-label">Fecha al</label>
-                    <el-date-picker
-                        v-model="form.date_end"
-                        type="date"
-                        :picker-options="pickerOptionsDates"
-                        @change="loadAll"
-                        value-format="yyyy-MM-dd"
-                        format="dd/MM/yyyy"
-                        :clearable="false"
-                    ></el-date-picker>
-                    </div>
-                </template>
-                </div>
-            </div>
             </section>
-        </div>
+            </div>
+
         <!-- <div v-bind:class="[company.certificate_due != null ? 'col-xl-4': 'col-xl-6']" v-if="!disc.error">
             <section class="card card-featured-left card-featured-secondary">
             <div class="card-body">
@@ -115,7 +117,7 @@
             </div>
             </section>
         </div> -->
-        <div class="col-xl-2" v-if="company.certificate_due">
+        <!-- <div class="col-xl-2" v-if="company.certificate_due">
             <section class="card card-featured-left card-featured-secondary">
             <div class="card-body">
                 <div class="widget-summary">
@@ -134,15 +136,15 @@
                 </div>
             </div>
             </section>
-        </div>
-        <div class="col-xl-2">
+        </div> -->
+        <!-- <div class="col-xl-2">
             <section class="card card-featured-left card-featured-info">
             <div class="card-body">
                 <div class="widget-summary">
                 <div class="widget-summary-col">
                     <div class="row no-gutters">
                     <div class="col-md-12 m-b-10">
-                        <h4 class="card-title">Cantidad CPE Emitidos</h4>
+                        <h4 class="card-title">Cantidad CPE Emitidossdd</h4>
                     </div>
                     <div class="col-lg-12 py-1">
                         <div class="">
@@ -156,7 +158,7 @@
                 </div>
             </div>
             </section>
-        </div>
+        </div> -->
         </div>
         <div class="row">
         <div class="col-xl-12">
@@ -709,14 +711,14 @@
   </div>
 </template>
 <style>
-.widget-summary .summary {
-  min-height: inherit;
-}
+    .widget-summary .summary {
+    min-height: inherit;
+    }
 
-.custom-badge {
-  font-size: 15px;
-  font-weight: bold;
-}
+    .custom-badge {
+    font-size: 15px;
+    font-weight: bold;
+    }
 </style>
 <script>
 // import DocumentPayments from "../../../../../../resources/js/views/tenant/documents/partials/payments.vue";
@@ -724,10 +726,11 @@
 import DashboardStock from "./partials/dashboard_stock.vue";
 import queryString from "query-string";
 import LoaderGraph from "../components/loaders/l-graph.vue";
+import RowTop from './RowTop';
 
 export default {
   props: ["typeUser", "soapCompany"],
-  components: { DashboardStock, LoaderGraph },
+  components: { DashboardStock, LoaderGraph, RowTop },
   data() {
     return {
       loading_search:false,
@@ -761,7 +764,7 @@ export default {
         graph: {}
       },
       form: {},
-      documents_quantity: 0,
+    //   documents_quantity: 0,
       pickerOptionsDates: {
         disabledDate: time => {
           time = moment(time).format("YYYY-MM-DD");
@@ -784,7 +787,7 @@ export default {
       all_items: [],
       items:[],
       company: {},
-      loaders: {}
+      loaders: {},
     };
   },
   async created() {
@@ -962,7 +965,7 @@ export default {
       this.$http.post(`/${this.resource}/data`, this.form).then(response => {
 
         this.document = response.data.data.document;
-        this.documents_quantity = response.data.data.quantity;
+        // this.documents_quantity = response.data.data.quantity;
         this.balance = response.data.data.balance;
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;

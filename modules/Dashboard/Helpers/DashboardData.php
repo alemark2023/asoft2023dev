@@ -22,7 +22,6 @@ class DashboardData
 
     public function data($request)
     {
-// dd($request);
         $establishment_id = $request['establishment_id'];
         $period = $request['period'];
         $date_start = $request['date_start'];
@@ -68,7 +67,16 @@ class DashboardData
             'general' => $this->totals($establishment_id, $d_start, $d_end, $period, $month_start, $month_end),
             'balance' => $this->balance($establishment_id, $d_start, $d_end),
             'items' => $this->getItems(),
-            'quantity' => Configuration::first()->quantity_documents
+            // 'quantity' => Configuration::first()->quantity_documents,
+        ];
+    }
+
+    public function globalData()
+    {
+        return [
+            'total_cpe' => Configuration::first()->quantity_documents,
+            'document_total_global' => $this->document_totals_globals(),
+            'sale_note_total_global' => $this->sale_note_totals_global(),
         ];
     }
 
@@ -147,6 +155,45 @@ class DashboardData
         ];
     }
 
+    private function sale_note_totals_global()
+    {
+        $sale_notes = SaleNote::query()
+            ->where('changed', false)
+            ->whereStateTypeAccepted()
+            ->get();
+
+        //PEN
+        $sale_note_total_pen = 0;
+        $sale_note_total_payment_pen = 0;
+
+        $sale_note_total_pen = collect($sale_notes->where('currency_type_id', 'PEN'))->sum('total');
+
+        //USD
+        $sale_note_total_usd = 0;
+        $sale_note_total_payment_usd = 0;
+
+        //TWO CURRENCY
+        foreach ($sale_notes as $sale_note)
+        {
+
+            if($sale_note->currency_type_id == 'PEN'){
+
+                $sale_note_total_payment_pen += collect($sale_note->payments)->sum('payment');
+
+            }else{
+
+                $sale_note_total_usd += $sale_note->total * $sale_note->exchange_rate_sale;
+                $sale_note_total_payment_usd += collect($sale_note->payments)->sum('payment') * $sale_note->exchange_rate_sale;
+
+            }
+        }
+
+        //TOTALS
+        $sale_note_total = $sale_note_total_pen + $sale_note_total_usd;
+
+        return number_format($sale_note_total,2, ".", "");
+    }
+
     /**
      * @param $establishment_id
      * @param $date_start
@@ -157,11 +204,17 @@ class DashboardData
     {
 
         if($date_start && $date_end){
-            $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            $documents = Document::query()
+                ->where('establishment_id', $establishment_id)
+                ->whereBetween('date_of_issue', [$date_start, $date_end])
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                ->get();
         }else{
-            $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+            $documents = Document::query()
+                ->where('establishment_id', $establishment_id)
+                ->whereIn('state_type_id', ['01','03','05','07','13'])
+                ->get();
         }
-
         //PEN
         $document_total_pen = 0;
         $document_total_payment_pen = 0;
@@ -241,6 +294,67 @@ class DashboardData
                 ],
             ]
         ];
+    }
+
+    private function document_totals_globals()
+    {
+        $documents = Document::query()->get();
+
+        //PEN
+        $document_total_pen = 0;
+        $document_total_payment_pen = 0;
+        $document_total_note_credit_pen = 0;
+
+        $document_total_pen = collect($documents->whereIn('state_type_id', ['01','03','05','07','13'])->whereIn('document_type_id', ['01','03','08']))->where('currency_type_id', 'PEN')->sum('total');
+
+
+        //USD
+        $document_total_usd = 0;
+        $document_total_note_credit_usd = 0;
+        $document_total_payment_usd = 0;
+
+        $documents_usd = $documents->whereIn('state_type_id', ['01','03','05','07','13'])
+                                    ->whereIn('document_type_id', ['01','03','08'])
+                                    ->where('currency_type_id', 'USD');
+
+        foreach ($documents_usd as $dusd) {
+            $document_total_usd += $dusd->total * $dusd->exchange_rate_sale;
+        }
+
+        //TWO CURRENCY
+
+        foreach ($documents as $document)
+        {
+            if($document->currency_type_id == 'PEN'){
+
+                if(in_array($document->state_type_id,['01','03','05','07','13'])){
+
+                    $document_total_payment_pen += collect($document->payments)->sum('payment');
+                    $document_total_note_credit_pen += ($document->document_type_id == '07') ? $document->total:0; //nota de credito
+
+                }
+
+
+            }else{
+
+                if(in_array($document->state_type_id,['01','03','05','07','13'])){
+
+                    $document_total_payment_usd += collect($document->payments)->sum('payment') * $document->exchange_rate_sale;
+                    $document_total_note_credit_usd += ($document->document_type_id == '07') ? $document->total * $document->exchange_rate_sale:0; //nota de credito
+
+                }
+
+            }
+
+        }
+
+        //TOTALS
+        $document_total = $document_total_pen + $document_total_usd;
+        $document_total_note_credit = $document_total_note_credit_pen + $document_total_note_credit_usd;
+
+        $document_total = round(($document_total - $document_total_note_credit),2);
+
+        return number_format($document_total,2, ".", "");
     }
 
     /**
