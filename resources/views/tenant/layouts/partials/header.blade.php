@@ -21,7 +21,7 @@
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>FA</span>
         </a>
-        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="Nueva boleta" data-toggle="tooltip" data-placement="bottom">
+        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.documents.create') : '#' }}" title="Nueva boleta" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>BO</span>
         </a>
