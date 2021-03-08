@@ -299,6 +299,9 @@ Vue.component('system-configuration-culqi', require('./views/system/configuratio
 //token
 Vue.component('system-configuration-token', require('./views/system/configuration/token_ruc_dni.vue'))
 
+//Configuración global del login
+Vue.component('system-login-settings', require('./views/system/configuration/login.vue'))
+
 // Configuración del login
 Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
 
