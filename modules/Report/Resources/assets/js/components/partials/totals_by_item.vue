@@ -6,7 +6,7 @@
                     <div class="col-md-12">
                         <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
                         <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
-                        <el-button class="submit" type="success" @click.prevent="onGenerateGuide"><i class="fa fa-file-excel" ></i>  Generar guía</el-button>
+                        <el-button class="submit" type="success" @click.prevent="onGenerateGuide">Generar guía</el-button>
                     </div>
                     <div class="col-md-12 mt-2">
                         <div class="table-responsive">
