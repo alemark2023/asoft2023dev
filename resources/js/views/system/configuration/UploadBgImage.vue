@@ -11,9 +11,16 @@
       ref="inputFile"
       class="hidden"
     />
-    <small class="form-control-feedback">Se recomienda una imagen de 747 x 547px con fondo transparente en formato PNG o SVG</small>
-    <el-button type="primary" class="btn-block" @click="onShowFilePicker" :loading="loading" :disabled="loading"
-      >Cambiar image de fondo</el-button
+    <small class="form-control-feedback"
+      >{{ helpText }}</small
+    >
+    <el-button
+      type="primary"
+      class="btn-block"
+      @click="onShowFilePicker"
+      :loading="loading"
+      :disabled="loading"
+      >{{ btnText }}</el-button
     >
   </div>
 </template>
@@ -21,6 +28,10 @@
 <script>
 export default {
   props: {
+    type: {
+      type: String,
+      required: true,
+    },
     config: {
       type: Object,
       required: true,
@@ -30,10 +41,23 @@ export default {
     return {
       imageUrl: "",
       loading: false,
+      btnText: '',
+      helpText: ''
     };
   },
   mounted() {
-    this.imageUrl = this.config.image;
+      if (this.type === 'bg') {
+        this.imageUrl = this.config.image;
+        this.helpText = 'Se recomienda una imagen de 747 x 547px con fondo transparente en formato PNG o SVG';
+      } else {
+          this.imageUrl = this.config.logo || '';
+          this.helpText = 'Se recomienda una imagen de 700 x 300 con fondo transparente en formato PNG';
+      }
+    if (this.type === 'bg') {
+        this.btnText = 'Cambiar image de fondo';
+    } else {
+        this.btnText = 'Cambiar logo';
+    }
   },
   methods: {
     onShowFilePicker() {
@@ -50,6 +74,7 @@ export default {
         const image = files[0];
         const payload = new FormData();
         payload.append("image", image);
+        payload.append("type", this.type);
         this.loading = true;
         this.$http
           .post("/configurations/bg", payload)
@@ -58,7 +83,8 @@ export default {
               message: response.data.message,
               type: "success",
             });
-          }).finally(() => this.loading = false);
+          })
+          .finally(() => (this.loading = false));
       }
     },
   },

@@ -933,9 +933,11 @@
                                 <a class="nav-link" href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
                             </li>
                             @endif
+                            @if (! $useLoginGlobal)
                             <li class="{{($path[0] === 'login-page') ? 'nav-active' : ''}}">
                                 <a class="nav-link" href="{{route('tenant.login_page')}}">Login</a>
                             </li>
+                            @endif
                         </ul>
                     </li>
                     @endif

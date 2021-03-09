@@ -20784,6 +20784,7 @@ ul.nav-main li .nav-children li a:before {
 }
 .sidebar-left .sidebar-header .logo img {
     height: 50px;
+    max-width: 250px;
 }
 #btnOpenCloseMenu {
     width: 60px;

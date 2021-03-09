@@ -77,7 +77,7 @@ class ConfigurationController extends Controller
         request()->validate([
             'position_form' => 'required|in:left,right',
             'show_logo_in_form' => 'required|boolean',
-            'position_logo' => 'required|in:top-left,top-right,bottom-left,bottom-right',
+            'position_logo' => 'required|in:top-left,top-right,bottom-left,bottom-right,none',
             'show_socials' => 'required|boolean',
             'use_login_global' => 'required|boolean',
         ]);
@@ -87,10 +87,6 @@ class ConfigurationController extends Controller
         foreach(request()->all() as $key => $option) {
             $loginConfig->$key = $option;
         }
-        $loginConfig->facebook = null;
-        $loginConfig->twitter = null;
-        $loginConfig->instagram = null;
-        $loginConfig->linkedin = null;
 
         $config->login = $loginConfig;
         $config->use_login_global = request('use_login_global');
@@ -117,8 +113,13 @@ class ConfigurationController extends Controller
             $file->storeAs($path, $name);
 
             $loginConfig = $config->login;
-            $loginConfig->type = 'image';
-            $loginConfig->image = asset('storage/uploads/login/' . $name);
+            $basePathStorage = 'storage/uploads/login/';
+			if (request('type') === 'bg') {
+                $loginConfig->type = 'image';
+				$loginConfig->image = asset($basePathStorage . $name);
+			} else {
+                $loginConfig->logo = asset($basePathStorage . $name);
+            }
             $config->login = $loginConfig;
             $config->save();
         }
