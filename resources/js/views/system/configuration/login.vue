@@ -13,7 +13,9 @@
           </div>
           <template v-if="form.use_login_global">
             <div class="col-12 col-md-6 form-group">
-              <ImageBgUpload :config="configuration.login"></ImageBgUpload>
+              <ImageBgUpload type="bg" :config="configuration.login"></ImageBgUpload>
+              <br>
+              <ImageBgUpload type="logo" :config="configuration.login"></ImageBgUpload>
             </div>
             <div class="col-12 col-md-6">
               <div class="form-group">
@@ -63,6 +65,11 @@
                     value="bottom-right"
                     label="Inferior derecha"
                   ></el-option>
+                  <el-option
+                    key="none"
+                    value="none"
+                    label="Ocultar"
+                  ></el-option>
                 </el-select>
                 <small
                   class="form-control-feedback"
@@ -73,6 +80,22 @@
               <div class="form-group">
                 <label>Mostrar botones de redes sociales</label>
                 <el-switch v-model="form.show_socials"></el-switch>
+              </div>
+              <div class="form-group">
+                <label>Facebook</label>
+                <el-input v-model="form.facebook"></el-input>
+              </div>
+              <div class="form-group">
+                <label>Twitter</label>
+                <el-input v-model="form.twitter"></el-input>
+              </div>
+              <div class="form-group">
+                <label>Instagram</label>
+                <el-input v-model="form.instagram"></el-input>
+              </div>
+              <div class="form-group">
+                <label>Linkedin</label>
+                <el-input v-model="form.linkedin"></el-input>
               </div>
             </div>
           </template>
@@ -107,6 +130,10 @@ export default {
         position_logo: "",
         show_socials: "",
         use_login_global: false,
+        facebook: '',
+        twitter: '',
+        instagram: '',
+        linkedin: '',
       },
       errors: {},
     };
@@ -117,6 +144,10 @@ export default {
     this.form.position_logo = this.configuration.login.position_logo;
     this.form.show_socials = this.configuration.login.show_socials;
     this.form.use_login_global = this.configuration.use_login_global;
+    this.form.facebook = this.configuration.login.facebook;
+    this.form.twitter = this.configuration.login.twitter;
+    this.form.instagram = this.configuration.login.instagram;
+    this.form.linkedin = this.configuration.login.linkedin;
   },
   methods: {
     initForm() {

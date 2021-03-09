@@ -51,16 +51,10 @@ class LoginController extends Controller
         $config = SystemConfiguration::first();
         if (! $config->use_login_global) {
             $config = Configuration::first();
-            $login = $config->login;
-        } else {
-            $login = $config->login;
-            $configTenant = Configuration::first();
-            $login->facebook = $configTenant->login->facebook;
-            $login->twitter = $configTenant->login->twitter;
-            $login->instagram = $configTenant->login->instagram;
-            $login->linkedin = $configTenant->login->linkedin;
         }
+        $useLoginGlobal = $config->use_login_global;
+        $login = $config->login;
         $company = Company::first();
-        return view('tenant.auth.login', compact('company', 'login'));
+        return view('tenant.auth.login', compact('company', 'login', 'useLoginGlobal'));
     }
 }
