@@ -7,7 +7,6 @@ use App\Models\System\Configuration as SystemConfiguration;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Config;
 
 class LoginController extends Controller
 {
