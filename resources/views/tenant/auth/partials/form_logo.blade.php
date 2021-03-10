@@ -1,6 +1,6 @@
 @if ($useLoginGlobal)
     @if ($login->show_logo_in_form)
-        <img class="auth__logo-form" src="{{ $login->logo }}" alt="Logo formulario" />
+        <img class="auth__logo-form" src="{{ $login->logo }}" alt="Logo formulario" width="120" />
     @endif
 @else
     @if ($login->show_logo_in_form)

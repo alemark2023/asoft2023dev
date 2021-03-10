@@ -705,7 +705,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['typeUser', 'configuration'],
+        props: ['typeUser', 'configuration', 'documentId'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
@@ -822,9 +822,93 @@
             })
             this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
-            })
+            });
+            if (this.documentId) {
+                this.loading_submit = true;
+                await this.$http.get(`/documents/${this.documentId}/show`).then(response => {
+                    this.onSetFormData(response.data.data);
+                }).finally(() => this.loading_submit = false);
+            }
         },
         methods: {
+            onSetFormData(data) {
+                this.form = {
+                    establishment_id: data.establishment_id,
+                    document_type_id: data.document_type_id,
+                    series_id: null,
+                    seller_id: null,
+                    number: '#',
+                    date_of_issue: moment().format('YYYY-MM-DD'),
+                    time_of_issue: moment().format('HH:mm:ss'),
+                    customer_id: null,
+                    currency_type_id: null,
+                    purchase_order: null,
+                    exchange_rate_sale: 0,
+                    total_prepayment: 0,
+                    total_charge: 0,
+                    total_discount: 0,
+                    total_exportation: 0,
+                    total_free: 0,
+                    total_taxed: 0,
+                    total_unaffected: 0,
+                    total_exonerated: 0,
+                    total_igv: 0,
+                    total_base_isc: 0,
+                    total_isc: 0,
+                    total_base_other_taxes: 0,
+                    total_other_taxes: 0,
+                    total_plastic_bag_taxes: 0,
+                    total_taxes: 0,
+                    total_value: 0,
+                    total: 0,
+                    operation_type_id: null,
+                    date_of_due: moment().format('YYYY-MM-DD'),
+                    items: [],
+                    charges: [],
+                    discounts: [],
+                    attributes: [],
+                    guides: [],
+                    payments: [],
+                    prepayments: [],
+                    legends: [],
+                    detraction: {},
+                    additional_information:null,
+                    plate_number:null,
+                    has_prepayment:false,
+                    affectation_type_prepayment:null,
+                    actions: {
+                        format_pdf:'a4',
+                    },
+                    hotel: {},
+                    transport: {},
+                    customer_address_id:null,
+                    pending_amount_prepayment:0,
+                    payment_method_type_id:null,
+                    show_terms_condition: true,
+                    terms_condition: ''
+                }
+                 this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
+                this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
+                this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
+                this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
+                this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
+                this.is_client = response.data.is_client;
+                // this.payment_destinations = response.data.payment_destinations
+
+                this.selectDocumentType()
+
+                this.changeEstablishment()
+                this.changeDateOfIssue()
+                this.changeDocumentType()
+                this.changeDestinationSale()
+                this.changeCurrencyType()
+                
+                this.onSetSeriesId(data.document_type_id, data.series);
+            },
+            onSetSeriesId(documentType, serie) {
+                const find = this.series.find(s => s.document_type_id == documentType && s.number == serie);
+                console.log(find);
+            },
             getPrepayment(index){
                 return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
             },

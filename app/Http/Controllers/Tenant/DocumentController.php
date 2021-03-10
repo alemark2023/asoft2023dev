@@ -418,6 +418,25 @@ class DocumentController extends Controller
         ];
     }
 
+    public function edit($documentId)
+    {
+        if(auth()->user()->type == 'integrator') {
+            return redirect('/documents');
+        }
+        $configuration = Configuration::first();
+        $is_contingency = 0;
+        return view('tenant.documents.form', compact('is_contingency', 'configuration', 'documentId'));
+    }
+
+    public function show($documentId)
+    {
+        $document = Document::findOrFail($documentId);
+        return response()->json([
+            'data' => $document,
+            'success' => true,
+        ], 200);
+    }
+
     public function reStore($document_id)
     {
         $fact = DB::connection('tenant')->transaction(function () use ($document_id) {
