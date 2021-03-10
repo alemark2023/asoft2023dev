@@ -27,13 +27,15 @@
                         </el-upload>
                         <small class="form-control-feedback" v-if="errors.file" v-text="errors.file[0]"></small>
                     </div>
+                    <div class="col-12 mt-4 mb-2">
+                        <a class="text-dark mr-auto" href="/formats/items.xlsx" target="_new">
+                            <span class="mr-2">Descargar formato de ejemplo para importar</span>
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="form-actions text-right mt-5 d-flex align-items-center">
-                <a class="text-dark mr-auto" href="/formats/items.xlsx" target="_new">
-                    <span class="mr-2">Descargar formato</span>
-                    <i class="fa fa-download"></i>
-                </a>
+            <div class="form-actions text-right mt-5">
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Procesar</el-button>
             </div>

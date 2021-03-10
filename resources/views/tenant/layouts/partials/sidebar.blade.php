@@ -964,6 +964,7 @@
                         </ul>
                     </li>
                     @endif
+                    <li class="nav-description">Módulos extras</li>
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">

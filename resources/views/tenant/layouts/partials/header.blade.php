@@ -21,9 +21,9 @@
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
             <span>FA</span>
         </a>
-        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.documents.create') : '#' }}" title="Nueva boleta" data-toggle="tooltip" data-placement="bottom">
+        <a class="topbar-links" href="{{ in_array('pos', $vc_modules) ? route('tenant.pos.index') : '#' }}" title="POS" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>
-            <span>BO</span>
+            <span>POS</span>
         </a>
         <a class="topbar-links" href="{{ in_array('configuration', $vc_modules) ? route('tenant.companies.create') : '#' }}" title="Mi empresa" data-toggle="tooltip" data-placement="bottom">
             <i class="fas fa-fw fa-plus" aria-hidden="true"></i>

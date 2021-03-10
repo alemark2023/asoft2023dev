@@ -21126,3 +21126,9 @@ html.sidebar-left-big-icons .sidebar-left .sidebar-header {
 html.dark .btn-demo {
     color: #d0d2d6;
 }
+ul.nav-main li.nav-description{
+    padding: 1rem 2rem .25rem 2rem;
+}
+html.dark ul.nav-main li.nav-description{
+    color: #d0d2d6;
+}
