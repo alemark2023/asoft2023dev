@@ -1,3 +1,28 @@
+## 4.0.4
+
+### docs
+2021-03-04 : docs | Update README.md<br>
+2021-03-03 : docs | changelog<br>
+
+
+### fixed
+2021-03-10 : fixed | solución al error  logo not found<br>
+2021-03-09 : fixed | i-361 | template header_image_full_width<br>
+2021-03-08 : fixed | i-220-2 | se eliminó el icono de la frase genear guía<br>
+2021-03-03 : fixed | i-363-2 | Se modificó la forma de importar productos, ahora el almacén se selecciona en el popup de importación<br>
+
+
+### feature
+2021-03-10 : feature | template center_note (solo cambia ticket en nota de venta)<br>
+2021-03-09 : feature | i-374 | se agrego la marca del producto a la descripción en la sección POS<br>
+2021-03-09 : feature | i-381 | se agregó una opción para subir un logo global, tambien una opción para ocultar el logo global, se ocultó la opción de configurar el login en los clientes<br>
+2021-03-08 : feature | i-381 | se agregó una opción para configurar el login de los clientes desde el superadmin<br>
+2021-03-05 : feature | feature-dashboard-tenants | Se hicieron algunas modificaciones al dashboard y se resolvió el problema de los totales en el dashboard<br>
+2021-03-04 : feature | i-220 | se agregó el botón Generar Guía en la sección Reportes/Ventas/Consolidado de items<br>
+2021-03-03 : feature | i-368 | se modificó la plantilla datatime, se agregó la hora de creación del pedido en los tickets<br>
+2021-03-03 : feature | i-334 | se agregó la opción para agregar un lote a un producto desde las guías de remisión<br>
+
+
 ## 4.0.3
 
 ### fixed
