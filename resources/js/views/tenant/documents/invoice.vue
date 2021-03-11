@@ -170,7 +170,7 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input>
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
@@ -705,7 +705,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['typeUser', 'configuration', 'documentId'],
+        props: ['typeUser', 'configuration', 'documentId', 'isUpdate'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
@@ -831,83 +831,90 @@
             }
         },
         methods: {
-            onSetFormData(data) {
-                this.form = {
+            async onSetFormData(data) {
+                this.form = await {
                     establishment_id: data.establishment_id,
                     document_type_id: data.document_type_id,
-                    series_id: null,
-                    seller_id: null,
-                    number: '#',
-                    date_of_issue: moment().format('YYYY-MM-DD'),
-                    time_of_issue: moment().format('HH:mm:ss'),
-                    customer_id: null,
-                    currency_type_id: null,
-                    purchase_order: null,
-                    exchange_rate_sale: 0,
-                    total_prepayment: 0,
-                    total_charge: 0,
-                    total_discount: 0,
-                    total_exportation: 0,
-                    total_free: 0,
-                    total_taxed: 0,
-                    total_unaffected: 0,
-                    total_exonerated: 0,
-                    total_igv: 0,
-                    total_base_isc: 0,
-                    total_isc: 0,
-                    total_base_other_taxes: 0,
-                    total_other_taxes: 0,
-                    total_plastic_bag_taxes: 0,
-                    total_taxes: 0,
-                    total_value: 0,
-                    total: 0,
-                    operation_type_id: null,
-                    date_of_due: moment().format('YYYY-MM-DD'),
-                    items: [],
-                    charges: [],
-                    discounts: [],
+                    id: data.id,
+                    hash: data.hash,
+                    number: data.number,
+                    date_of_issue: moment(data.date_of_issue).format('YYYY-MM-DD'),
+                    time_of_issue: data.time_of_issue,
+                    customer_id: data.customer_id,
+                    currency_type_id: data.currency_type_id,
+                    exchange_rate_sale: data.exchange_rate_sale,
+                    additional_information: data.additional_information[0],
+                    external_id: data.external_id,
+                    filename: data.filename,
+                    group_id: data.group_id,
+                    perception: data.perception,
+                    note: data.note,
+                    plate_number: data.plate_number,
+                    payments: data.payments,
+                    prepayments: data.prepayments || [],
+                    legends: data.legends || [],
+                    detraction: data.detraction || {},
+                    affectation_type_prepayment: data.affectation_type_prepayment,
+                    purchase_order:  data.purchase_order,
+                    pending_amount_prepayment: data.pending_amount_prepayment || 0,
+                    payment_method_type_id: data.payment_method_type_id,
+                    charges: data.charges || [],
+                    discounts: data.discounts || [],
+                    seller_id: data.seller_id,
+                    items: data.items,
+                    series: data.series,
+                    state_type_id: data.state_type_id,
+                    total_discount: parseFloat(data.total_discount),
+                    total_exonerated: parseFloat(data.total_exonerated),
+                    total_exportation: parseFloat(data.total_exportation),
+                    total_free: parseFloat(data.total_free),
+                    total_igv: parseFloat(data.total_igv),
+                    total_isc: parseFloat(data.total_isc),
+                    total_base_isc: parseFloat(data.total_base_isc),
+                    total_base_other_taxes: parseFloat(data.total_base_other_taxes),
+                    total_other_taxes: parseFloat(data.total_other_taxes),
+                    total_plastic_bag_taxes: parseFloat(data.total_plastic_bag_taxes),
+                    total_prepayment: parseFloat(data.total_prepayment),
+                    total_taxed: parseFloat(data.total_taxed),
+                    total_taxes: parseFloat(data.total_taxes),
+                    total_unaffected: parseFloat(data.total_unaffected),
+                    total_value: parseFloat(data.total_value),
+                    total_charge: parseFloat(data.total_charge),
+                    total: parseFloat(data.total),
+                    series_id: this.onSetSeriesId(data.document_type_id, data.series),
+                    operation_type_id: data.invoice.operation_type_id,
+                    terms_condition: data.terms_condition || '',
+                    guides: data.guides || [],
+                    show_terms_condition: data.terms_condition ? true : false,
                     attributes: [],
-                    guides: [],
-                    payments: [],
-                    prepayments: [],
-                    legends: [],
-                    detraction: {},
-                    additional_information:null,
-                    plate_number:null,
-                    has_prepayment:false,
-                    affectation_type_prepayment:null,
+                    customer: data.customer,
+                    has_prepayment: false,
                     actions: {
                         format_pdf:'a4',
                     },
                     hotel: {},
                     transport: {},
                     customer_address_id:null,
-                    pending_amount_prepayment:0,
-                    payment_method_type_id:null,
-                    show_terms_condition: true,
-                    terms_condition: ''
                 }
-                 this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
-                this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
-                this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
-                this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
-                this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
-                this.is_client = response.data.is_client;
+
+                if (! data.guides) {
+                    this.clickAddInitGuides();
+                }
+
+                this.establishment = data.establishment;
                 // this.payment_destinations = response.data.payment_destinations
 
-                this.selectDocumentType()
-
-                this.changeEstablishment()
-                this.changeDateOfIssue()
-                this.changeDocumentType()
-                this.changeDestinationSale()
-                this.changeCurrencyType()
-                
-                this.onSetSeriesId(data.document_type_id, data.series);
+                this.changeDateOfIssue();
+                this.filterCustomers();
+                this.changeDestinationSale();
+                this.calculateTotal();
             },
             onSetSeriesId(documentType, serie) {
-                const find = this.series.find(s => s.document_type_id == documentType && s.number == serie);
-                console.log(find);
+                const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
+                if (find) {
+                    return find.id;
+                }
+                return null;
             },
             getPrepayment(index){
                 return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
@@ -930,24 +937,15 @@
 
             },
             changeDestinationSale() {
-
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
-
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
-
                     if(cash){
-
                         this.form.payments[0].payment_destination_id = cash.id
-
                     }else{
-
                         this.form.payment_destination_id = this.payment_destinations[0].id
                         this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
                     }
-                    // console.log('log', this.form.payments[index].payment_destination_id)
-                    // console.log('aqui', this.payment_destinations[0].id)
                 }
-
             },
             changePaymentDestination(index){
                 // if(this.form.payments[index].payment_method_type_id=='01'){
@@ -1593,9 +1591,11 @@
                 this.dateValid=false
               } else { this.dateValid = true }
                 this.form.date_of_due = this.form.date_of_issue
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-                    this.form.exchange_rate_sale = response
-                })
+                if (! this.isUpdate) {
+                    this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                        this.form.exchange_rate_sale = response
+                    });
+                }
             },
             assignmentDateOfPayment(){
                 this.form.payments.forEach((payment)=>{
@@ -1611,9 +1611,6 @@
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
             },
             filterCustomers() {
-                // this.form.customer_id = null
-                // if(this.form.operation_type_id === '0101' || this.form.operation_type_id === '1001') {
-
                 if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
 
                     if(this.form.document_type_id === '01') {

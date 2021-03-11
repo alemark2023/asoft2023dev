@@ -151,7 +151,7 @@
 
                         <td class="text-right" v-if="typeUser != 'integrator'">
                             <a :href="`/documents/${row.id}/edit`" class="btn btn-success waves-effect waves-light btn-xs m-1__2"
-                                    v-if="row.state_type_id === '01'">Editar</a>
+                                    v-if="row.state_type_id === '01' && userId == row.user_id">Editar</a>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                     @click.prevent="clickDeleteDocument(row.id)"
                                     v-if="row.btn_delete_doc_type_03">Eliminar</button>
@@ -229,7 +229,7 @@
 
     export default {
         mixins: [deletable],
-        props: ['isClient','typeUser','import_documents','import_documents_second'],
+        props: ['isClient','typeUser','import_documents','import_documents_second', 'userId'],
         components: {DocumentsVoided, ItemsImport, DocumentImportSecond, DocumentOptions, DocumentPayments, DataTable, DocumentConstancyDetraction, ReportPayment, ReportPaymentComplete },
         data() {
             return {

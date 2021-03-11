@@ -425,7 +425,8 @@ class DocumentController extends Controller
         }
         $configuration = Configuration::first();
         $is_contingency = 0;
-        return view('tenant.documents.form', compact('is_contingency', 'configuration', 'documentId'));
+        $isUpdate = true;
+        return view('tenant.documents.form', compact('is_contingency', 'configuration', 'documentId', 'isUpdate'));
     }
 
     public function show($documentId)
