@@ -1866,12 +1866,16 @@ export default {
             this.input_item = null;
         },
         filterItems() {
-            this.items = this.all_items.map(i => {
-                if (i.brand) {
-                    i.description = `${i.description} - ${i.brand}`;
-                }
-                return i;
-            });
+            if (this.place === "cat3") {
+                this.items = this.all_items;
+            } else {
+                this.items = this.all_items.map(i => {
+                    if (i.brand) {
+                        i.description = `${i.description} - ${i.brand}`;
+                    }
+                    return i;
+                });
+            }
         },
         reloadDataCustomers(customer_id) {
             this.$http
