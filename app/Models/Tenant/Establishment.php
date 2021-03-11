@@ -25,6 +25,7 @@ class Establishment extends ModelTenant
         'web_address',
         'aditional_information',
         'customer_id',
+        'logo',
     ];
 
     public function country()
@@ -52,12 +53,12 @@ class Establishment extends ModelTenant
         $address = ($this->address != '-')? $this->address.' ,' : '';
         return "{$address} {$this->department->description} - {$this->province->description} - {$this->district->description}";
     }
-    
+
     public function customer()
     {
         return $this->belongsTo(Person::class, 'customer_id');
     }
-    
+
     public function warehouse()
     {
         return $this->hasOne(Warehouse::class);
