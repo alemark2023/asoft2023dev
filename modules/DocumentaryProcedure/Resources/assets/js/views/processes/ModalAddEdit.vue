@@ -9,7 +9,7 @@
     <form autocomplete="off" @submit.prevent="onSubmit">
       <div class="form-body">
         <div class="form-group">
-          <label for="name">Nombre de la proceso</label>
+          <label for="name">Nombre del proceso</label>
           <input
             type="text"
             id="name"

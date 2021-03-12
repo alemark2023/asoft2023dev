@@ -34,6 +34,7 @@ if ($hostname) {
             Route::get('files/tables', 'DocumentaryFileController@tables');
             Route::get('files/create', 'DocumentaryFileController@create');
             Route::get('files/document-number', 'DocumentaryFileController@getDocumentNumber');
+            Route::post('files/{id}/add-office', 'DocumentaryFileController@addOffice');
 		});
 	});
 }

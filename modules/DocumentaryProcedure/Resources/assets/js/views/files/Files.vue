@@ -25,7 +25,7 @@
       </div>
       <div class="card-body">
         <form class="row" @submit.prevent="onFilter">
-          <div class="col-12 col-md-2 mb-3">
+          <div class="col-6 col-md-2 mb-3">
             <el-input
               type="text"
               placeholder="Filtrar por asunto"
@@ -33,7 +33,11 @@
             />
           </div>
           <div class="col-6 col-md-2 mb-3">
-            <el-select v-model="filter.documentary_office_id">
+            <el-select
+              v-model="filter.documentary_office_id"
+              clearable
+              placeholder="Oficina"
+            >
               <el-option
                 v-for="of in offices"
                 :key="of.id"
@@ -41,6 +45,47 @@
                 :label="of.name"
               ></el-option>
             </el-select>
+          </div>
+          <div class="col-6 col-md-2 mb-3">
+            <el-select
+              v-model="filter.register_date"
+              clearable
+              placeholder="Fecha de registro"
+              @change="onPrepareFilterDate"
+            >
+              <el-option
+                v-for="(date, i) in datesFilter"
+                :key="i"
+                :value="date"
+                :label="date"
+              ></el-option>
+            </el-select>
+          </div>
+          <div
+            class="col-6 col-md-2 mb-3"
+            v-if="filter.register_date === 'Personalizado'"
+          >
+            <el-date-picker
+              v-model="filter.date_start"
+              type="date"
+              placeholder="Fecha inicial"
+              format="yyyy/MM/dd"
+              value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div
+            class="col-6 col-md-2 mb-3"
+            v-if="filter.register_date === 'Personalizado'"
+          >
+            <el-date-picker
+              v-model="filter.date_end"
+              type="date"
+              placeholder="Fecha final"
+              format="yyyy/MM/dd"
+              value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
           </div>
           <div class="col-6 col-md-2 mb-3">
             <el-button native-type="submit">
@@ -66,21 +111,38 @@
                 <td>{{ item.subject }}</td>
                 <td>{{ item.date_register }} - {{ item.time_register }}</td>
                 <td>{{ item.sender.name }}</td>
-                <td class="text-center">
-                  <el-button
-                    type="success"
-                    @click="onEdit(item)"
-                    :disabled="loading"
-                  >
-                    <i class="fa fa-edit"></i>
-                  </el-button>
-                  <el-button
-                    type="danger"
-                    @click="onDelete(item)"
-                    :disabled="loading"
-                  >
-                    <i class="fa fa-trash"></i>
-                  </el-button>
+                <td class="text-center td-btns">
+                  <el-dropdown trigger="click">
+                    <el-button>
+                      Opciones
+                      <i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item
+                        @click.native="onShowModalDerive(item)"
+                        :disabled="loading"
+                      >
+                        <i class="fa fa-file-export"></i>
+                        <span class="ml-3">Derivar</span>
+                      </el-dropdown-item>
+                      <template v-if="onShowExtraButtons(item)">
+                        <el-dropdown-item
+                          @click.native="onEdit(item)"
+                          :disabled="loading"
+                        >
+                          <i class="fa fa-edit"></i>
+                          <span class="ml-3">Editar</span>
+                        </el-dropdown-item>
+                        <el-dropdown-item
+                          @click.native="onDelete(item)"
+                          :disabled="loading"
+                        >
+                          <i class="fa fa-trash"></i>
+                          <span class="ml-3">Eliminar</span>
+                        </el-dropdown-item>
+                      </template>
+                    </el-dropdown-menu>
+                  </el-dropdown>
                 </td>
               </tr>
             </tbody>
@@ -94,11 +156,18 @@
       @onUpdateItem="onUpdateItem"
       :file="file"
     ></ModalAddEdit>
+    <ModalDerive
+      :visible.sync="showModalDerive"
+      :file="file"
+      @onAddOffice="onAddOffice"
+    ></ModalDerive>
   </div>
 </template>
 
 <script>
 import ModalAddEdit from "./ModalAddEdit";
+import ModalDerive from "./ModalDerive";
+import moment from "moment";
 
 export default {
   props: {
@@ -113,23 +182,93 @@ export default {
   },
   components: {
     ModalAddEdit,
+    ModalDerive,
   },
   data() {
     return {
+      showModalDerive: false,
       items: [],
       file: null,
       openModalAddEdit: false,
       loading: false,
       filter: {
         name: "",
+        register_date: "Hoy",
       },
       basePath: "/documentary-procedure/files",
+      datesFilter: [
+        "Hoy",
+        "Ayer",
+        "Anteriores a 7 días",
+        "Anteriores a 30 días",
+        "Este mes",
+        "Mes anterior",
+        "Este año",
+        "Personalizado",
+      ],
     };
   },
   mounted() {
     this.items = this.files;
   },
   methods: {
+    onShowExtraButtons(file) {
+      if (file.offices) {
+        if (file.offices.length > 0) {
+          return false;
+        }
+      }
+      return true;
+    },
+    onAddOffice(office) {
+      this.items = this.items.map((i) => {
+        if (i.id === this.file.id) {
+          i.offices.push(office);
+        }
+        return i;
+      });
+    },
+    onShowModalDerive(file) {
+      this.file = file;
+      this.showModalDerive = true;
+    },
+    onPrepareFilterDate() {
+      const date = moment();
+      if (this.filter.register_date === "Hoy") {
+        this.filter.date_start = date.format("YYYY-MM-DD");
+        this.filter.date_end = null;
+      }
+      if (this.filter.register_date === "Ayer") {
+        this.filter.date_start = date.subtract(1, "days").format("YYYY-MM-DD");
+        this.filter.date_end = null;
+      }
+      if (this.filter.register_date === "Anteriores a 7 días") {
+        this.filter.date_start = date.subtract(7, "days").format("YYYY-MM-DD");
+        this.filter.date_end = moment().format("YYYY-MM-DD");
+      }
+      if (this.filter.register_date === "Anteriores a 30 días") {
+        this.filter.date_start = date.subtract(30, "days").format("YYYY-MM-DD");
+        this.filter.date_end = moment().format("YYYY-MM-DD");
+      }
+      if (this.filter.register_date === "Este mes") {
+        this.filter.date_start = date.startOf("month").format("YYYY-MM-DD");
+        this.filter.date_end = date.endOf("month").format("YYYY-MM-DD");
+      }
+      if (this.filter.register_date === "Mes anterior") {
+        const prevMonth = date.subtract(1, "month");
+        this.filter.date_start = prevMonth
+          .startOf("month")
+          .format("YYYY-MM-DD");
+        this.filter.date_end = prevMonth.endOf("month").format("YYYY-MM-DD");
+      }
+      if (this.filter.register_date === "Este año") {
+        this.filter.date_start = date.startOf("year").format("YYYY-MM-DD");
+        this.filter.date_end = date.endOf("year").format("YYYY-MM-DD");
+      }
+      if (this.filter.register_date === "Personalizado") {
+        this.showCalendars = true;
+      }
+    },
     onFilter() {
       this.loading = true;
       const params = this.filter;
@@ -144,7 +283,7 @@ export default {
     },
     onDelete(item) {
       this.$confirm(
-        `¿estás seguro de eliminar al elemento ${item.name}?`,
+        `¿estás seguro de eliminar al elemento ${item.subject}?`,
         "Atención",
         {
           confirmButtonText: "Si, continuar",
@@ -190,3 +329,9 @@ export default {
   },
 };
 </script>
+<style>
+.td-btns .el-button {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+</style>
