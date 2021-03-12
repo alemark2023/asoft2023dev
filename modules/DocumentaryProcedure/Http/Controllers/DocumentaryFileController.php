@@ -9,6 +9,7 @@ use Modules\DocumentaryProcedure\Models\DocumentaryFile;
 use Modules\DocumentaryProcedure\Http\Requests\FileRequest;
 use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
 use Modules\DocumentaryProcedure\Models\DocumentaryDocument;
+use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
 
 class DocumentaryFileController extends Controller
 {
@@ -18,14 +19,23 @@ class DocumentaryFileController extends Controller
 		if (request()->ajax()) {
 			$filter = request('subject');
 			if ($filter) {
-				$files = $files->where('subject', 'like', "%$filter%")->get();
+				$files = $files->where('subject', 'like', "%$filter%");
 			}
-
+            $office = request('documentary_office_id');
+            if ($office) {
+                $files = $files->whereHas('offices', function ($query) use ($office) {
+                    $query->where('documentary_office_id', $office);
+                });
+            }
+            $files = $files->get();
 			return response()->json(['data' => $files], 200);
 		}
 		$files = $files->get();
-
-		return view('documentaryprocedure::files', compact('files'));
+        $files->load('offices');
+        // return $files;
+        $offices = DocumentaryOffice::whereActive(true)
+            ->get();
+		return view('documentaryprocedure::files', compact('files', 'offices'));
 	}
 
 	private function storeFile(UploadedFile $file): string

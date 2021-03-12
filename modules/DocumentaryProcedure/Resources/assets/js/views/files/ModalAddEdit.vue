@@ -235,7 +235,6 @@ export default {
     },
     onSelectFile(event) {
       const files = event.target.files;
-      console.log(files);
       if (files.length > 0) {
         this.attachFile = files[0];
         this.filename = this.attachFile.name;

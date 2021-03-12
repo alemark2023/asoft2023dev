@@ -24,29 +24,31 @@
         <h3 class="my-0">Todos los expedientes</h3>
       </div>
       <div class="card-body">
-        <div class="row">
+        <form class="row" @submit.prevent="onFilter">
           <div class="col-12 col-md-2 mb-3">
-            <form class="form-group" @submit.prevent="onFilter">
-              <div class="input-group mb-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="Filtrar por nombre"
-                  v-model="filter.subject"
-                />
-                <div class="input-group-append">
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="submit"
-                    style="border-color: #ced4da"
-                  >
-                    <i class="fa fa-search"></i>
-                  </button>
-                </div>
-              </div>
-            </form>
+            <el-input
+              type="text"
+              placeholder="Filtrar por asunto"
+              v-model="filter.subject"
+            />
           </div>
-        </div>
+          <div class="col-6 col-md-2 mb-3">
+            <el-select v-model="filter.documentary_office_id">
+              <el-option
+                v-for="of in offices"
+                :key="of.id"
+                :value="of.id"
+                :label="of.name"
+              ></el-option>
+            </el-select>
+          </div>
+          <div class="col-6 col-md-2 mb-3">
+            <el-button native-type="submit">
+              <i class="fa fa-search"></i>
+              <span class="ml-2">Buscar</span>
+            </el-button>
+          </div>
+        </form>
         <div class="table-responsive">
           <table class="table">
             <thead>
@@ -59,10 +61,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="item in items"
-                :key="item.id"
-              >
+              <tr v-for="item in items" :key="item.id">
                 <td class="text-right">{{ item.id }}</td>
                 <td>{{ item.subject }}</td>
                 <td>{{ item.date_register }} - {{ item.time_register }}</td>
@@ -107,6 +106,10 @@ export default {
       type: Array,
       required: true,
     },
+    offices: {
+      type: Array,
+      required: true,
+    },
   },
   components: {
     ModalAddEdit,
@@ -120,7 +123,7 @@ export default {
       filter: {
         name: "",
       },
-      basePath: '/documentary-procedure/files'
+      basePath: "/documentary-procedure/files",
     };
   },
   mounted() {
