@@ -59,7 +59,7 @@ class CompanyController extends Controller
 
 
             if (($type === 'logo')) {
-                request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
+                $v = request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 $file->storeAs(($type === 'logo') ? 'public/uploads/logos' : 'certificates', $name);
             }
 
