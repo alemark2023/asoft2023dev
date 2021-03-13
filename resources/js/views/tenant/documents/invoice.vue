@@ -822,7 +822,59 @@
             })
             this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
-            })
+            });
+
+            const itemsFromDispatches = localStorage.getItem('items');
+            if (itemsFromDispatches) {
+                const itemsParsed = JSON.parse(itemsFromDispatches);
+                const items = itemsParsed.map(i => i.item_id);
+                const params = {
+                    items_id: items
+                }
+                localStorage.removeItem('items');
+                await this.$http.get('/documents/search-items', { params }).then(response => {
+                    const itemsResponse = response.data.items.map(i => {
+                        i.affectation_igv_type = {
+                            active: 1,
+                            description: "Gravado - Operación Onerosa",
+                            exportation: 0,
+                            free: 0,
+                            id: "10",
+                        }
+                        i.presentation = {};
+                        i.unit_price = i.sale_unit_price;
+                        i.item = i;
+                        i.IdLoteSelected = null;
+                        i.affectation_igv_type_id = "10";
+                        i.discounts = [];
+                        i.charges = [];
+                        i.item_id = i.id;
+                        i.unit_price_value = i.sale_unit_price;
+                        i.input_unit_price_value = i.sale_unit_price;
+                        i.quantity = itemsParsed.find(ip => ip.item_id == i.id).quantity;
+                        return i;
+                    });
+                    this.form.items = itemsResponse.map(i => {
+                        return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    });
+                });
+            }
+            const clientfromDispatches = localStorage.getItem('client');
+            if (clientfromDispatches) {
+                const client = JSON.parse(clientfromDispatches);
+                if (client.identity_document_type_id == 1) {
+                    this.form.document_type_id = '03'
+                } else if (client.identity_document_type_id == 6) {
+                    this.form.document_type_id = '01'
+                }
+                this.searchRemoteCustomers(client.number);
+                this.form.customer_id = client.id;
+                this.changeEstablishment();
+                this.filterSeries();
+                this.filterCustomers();
+                this.changeCurrencyType()
+                localStorage.removeItem('client');
+            }
         },
         methods: {
             getPrepayment(index){
@@ -831,7 +883,6 @@
             inputAmountPrepayment(index){
 
                 let prepayment = this.getPrepayment(index)
-                // console.log(prepayment)
 
                 if(parseFloat(this.form.prepayments[index].amount) > parseFloat(prepayment.amount)){
 
@@ -846,24 +897,15 @@
 
             },
             changeDestinationSale() {
-
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
-
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
-
-                    if(cash){
-
+                    if (cash) {
                         this.form.payments[0].payment_destination_id = cash.id
-
-                    }else{
-
+                    } else {
                         this.form.payment_destination_id = this.payment_destinations[0].id
                         this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
                     }
-                    // console.log('log', this.form.payments[index].payment_destination_id)
-                    // console.log('aqui', this.payment_destinations[0].id)
                 }
-
             },
             changePaymentDestination(index){
                 // if(this.form.payments[index].payment_method_type_id=='01'){
@@ -935,13 +977,9 @@
                 }
             },
             addDocumentDetraction(detraction) {
-
                 this.form.detraction = detraction
-
                 // this.has_data_detraction = (detraction.pay_constancy || detraction.detraction_type_id || detraction.payment_method_id || (detraction.amount && detraction.amount >0)) ? true:false
                 this.has_data_detraction = (detraction) ? detraction.has_data_detraction:false
-
-                // console.log(this.form.detraction)
             },
             clickAddItemInvoice(){
                 this.recordItem = null
@@ -984,8 +1022,6 @@
                     let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
 
                     if(global_discount>0 && !discount){
-                        // console.log("gl 0")
-
                         this.form.total_discount =  _.round(amount,2)
                         this.form.total_taxed =  _.round(base - amount,2)
                         this.form.total_value =  _.round(base - amount,2)
@@ -1033,8 +1069,6 @@
                     this.form.total =  this.form.total_value
 
                     if(global_discount>0 && !exonerated_discount){
-
-                        // console.log("gl 0")
                         this.form.discounts.push({
                                 discount_type_id: '05',
                                 description: 'Descuentos globales por anticipos exonerados',
@@ -1067,8 +1101,6 @@
                     this.form.total =  this.form.total_value
 
                     if(global_discount>0 && !unaffected_discount){
-
-                        // console.log("gl 0")
                         this.form.discounts.push({
                                 discount_type_id: '06',
                                 description: 'Descuentos globales por anticipos inafectos',
@@ -1076,13 +1108,9 @@
                                 amount: amount,
                                 base: base
                             })
-
-                    }else{
-
+                    } else {
                         let position = this.form.discounts.indexOf(unaffected_discount);
-
                         if(position > -1){
-
                             this.form.discounts[position].base = base
                             this.form.discounts[position].amount = amount
                             this.form.discounts[position].factor = factor
@@ -1223,11 +1251,9 @@
 
             addDocumentHotel(hotel) {
                 this.form.hotel = hotel
-                // console.log(this.form.hotel)
             },
             addDocumentTransport(transport) {
                 this.form.transport = transport
-                // console.log(this.form.transport)
             },
             changeIsReceivable(){
 
@@ -1261,19 +1287,14 @@
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
             },
-            ediItem(row, index)
-            {
+            ediItem(row, index) {
                 row.indexi = index
                 this.recordItem = row
                 this.showDialogAddItem = true
-
             },
-
             searchRemoteCustomers(input) {
 
                 if (input.length > 0) {
-                // if (input!="") {
-                    // console.log("a")
                     this.loading_search = true
                     let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&operation_type_id=${this.form.operation_type_id}`
 
@@ -1284,13 +1305,11 @@
                                 this.input_person.number = null
 
                                 if(this.customers.length == 0){
-                                    // console.log("b")
                                     this.filterCustomers()
                                     this.input_person.number = input
                                 }
                             })
                 } else {
-                    // this.customers = []
                     this.filterCustomers()
                     this.input_person.number = null
                 }
@@ -1434,14 +1453,8 @@
                 }
             },
             async changeDetractionType(){
-                // let detraction_type = await _.find(this.detraction_types, {'id':this.form.detraction.detraction_type_id})
-
                 if(this.form.detraction){
-
                     this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage)/100),2)
-
-                    // this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
-                    // console.log(this.form.detraction.amount)
                 }
             },
             validateDetraction(){
@@ -1451,7 +1464,6 @@
                     let detraction = this.form.detraction
 
                     let tot = (this.form.currency_type_id == 'PEN') ? this.form.total:(this.form.total * this.form.exchange_rate_sale)
-                    // console.log(tot)
                     let total_restriction = (this.form.operation_type_id == '1001') ? 700 : 400
 
                     if(tot <= total_restriction)
@@ -1500,7 +1512,6 @@
             },
             cleanCustomer(){
                 this.form.customer_id = null
-                // this.customers = []
             },
             changeDateOfIssue() {
               let minDate = moment().subtract(7, 'days')
@@ -1518,7 +1529,6 @@
                     payment.date_of_payment = this.form.date_of_issue
                 })
             },
-
             filterSeries() {
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id,
@@ -1565,8 +1575,7 @@
                 this.form.guides.splice(index, 1)
             },
             addRow(row) {
-                if(this.recordItem)
-                {
+                if(this.recordItem) {
                     //this.form.items.$set(this.recordItem.indexi, row)
                     this.form.items[this.recordItem.indexi] = row
                     this.recordItem = null
@@ -1712,12 +1721,9 @@
                 }
 
 
-                // console.log(this.form.discounts)
             },
             async deleteInitGuides(){
-                //eliminando guias null
                 await _.remove(this.form.guides,{'number':null})
-
             },
             async asignPlateNumberToItems(){
 

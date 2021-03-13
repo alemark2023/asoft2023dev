@@ -326,6 +326,12 @@ Vue.mixin({
                 return moment(time, 'HH:mm:ss').format('HH:mm:ss');
             }
             return '';
+        },
+        pad(value, fill = '', length = 3) {
+            if (value) {
+                return String(value).padStart(length, fill);
+            }
+            return value;
         }
     },
     methods: {
