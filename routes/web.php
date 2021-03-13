@@ -272,6 +272,9 @@ if ($hostname) {
             Route::get('dispatches/generate/{sale_note}', 'Tenant\DispatchController@generate');
             Route::get('dispatches/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
             Route::post('dispatches/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
+            Route::get('dispatches/tables/customers', 'Tenant\DispatchController@clientsForGenerateCPE');
+            Route::get('dispatches/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
+            Route::post('dispatches/items', 'Tenant\DispatchController@getItemsFromDispatches');
 
 			Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
 			Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');

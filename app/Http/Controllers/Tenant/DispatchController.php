@@ -36,6 +36,7 @@ use App\Models\Tenant\Catalogs\TransferReasonType;
 use Modules\Order\Http\Resources\DispatchResource;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Models\Tenant\DispatchItem;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 
 class DispatchController extends Controller
@@ -447,6 +448,63 @@ class DispatchController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Información actualiza'
+        ], 200);
+    }
+
+    public function clientsForGenerateCPE()
+    {
+        $typeFile = request('type');
+        $filter = request('name');
+        $persons = Person::without(['identity_document_type', 'country', 'department', 'province', 'district'])
+            ->select('id', 'name', 'identity_document_type_id', 'number')
+            ->where('type', 'customers')
+            ->orderBy('name');
+        if ($filter && $typeFile) {
+            if ($typeFile === 'document') {
+                $persons = $persons->where('number', 'like', "{$filter}%");
+            }
+            if ($typeFile === 'name') {
+                $persons = $persons->where('name', 'like', "%{$filter}%");
+            }
+        }
+        $persons = $persons->take(10)
+            ->get();
+        return response()->json([
+            'success' => true,
+            'data' => $persons,
+        ], 200);
+    }
+
+    public function dispatchesByClient($clientId)
+    {
+        $records = Dispatch::without(['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
+        'transfer_reason_type', 'items', 'reference_document'])
+            ->select('series', 'number', 'id', 'date_of_issue')
+            ->where('customer_id', $clientId)
+			->orderBy('series')
+			->orderBy('number', 'desc')
+            ->take(20)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $records,
+        ], 200);
+    }
+
+    public function getItemsFromDispatches(Request $request)
+    {
+        $request->validate([
+            'dispatches_id' => 'required|array',
+        ]);
+
+        $items = DispatchItem::whereIn('dispatch_id', $request->dispatches_id)
+            ->select('item_id', 'quantity')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items,
         ], 200);
     }
 }

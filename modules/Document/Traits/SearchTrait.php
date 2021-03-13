@@ -9,6 +9,11 @@ trait SearchTrait
 
     public function getItemsServices($request)
     {
+        if ($request->items_id) {
+            return Item::whereIn('id', $request->items_id)
+                ->whereIsActive()
+                ->get();
+        }
         if ($request->search_by_barcode == 1) {
             return Item::with(['item_lots'])
                 ->where('unit_type_id','ZZ')
@@ -37,6 +42,11 @@ trait SearchTrait
 
     public function getItemsNotServices($request)
     {
+        if ($request->items_id) {
+            return Item::whereIn('id', $request->items_id)
+                ->whereIsActive()
+                ->get();
+        }
         if ($request->search_by_barcode == 1) {
             return Item::where('barcode', $request->input)
                 ->whereIsActive()
