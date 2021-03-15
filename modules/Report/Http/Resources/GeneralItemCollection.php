@@ -75,7 +75,9 @@ class GeneralItemCollection extends ResourceCollection
         $purchase_unit_price = 0;
 
         $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $record->item_id)->latest('id')->first();
-        $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
+        $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : 0;
+        // TODO: revisar esta linea: Eliminando esta linea porque el precio de compra no puede ser igual al precio de venta, en conculusión esta condición nunca será 0, para los productos que no tienen una compra luego de registrarse
+        // $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
 
         if ($purchase_unit_price == 0 && $record->relation_item->purchase_unit_price > 0) {
             $purchase_unit_price = $record->relation_item->purchase_unit_price;
@@ -87,7 +89,6 @@ class GeneralItemCollection extends ResourceCollection
         //     $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $record->item_id)->latest('id')->first();
         //     $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
         // }
-
         return $purchase_unit_price;
     }
 
