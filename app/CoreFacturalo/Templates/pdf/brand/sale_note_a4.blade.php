@@ -77,6 +77,14 @@
                         @endif
                     </td>
                 </tr>
+                @if($customer->telephone !== null)
+                <tr>
+                    <td colspan="2" class="font-lg">
+                        <strong>TELÉFONO:</strong>
+                        {{ $customer->telephone}}
+                    </td>
+                </tr>
+                @endif
                 <tr>
                     <td colspan="2"  class="font-lg">
                         <strong>RUC: </strong>
