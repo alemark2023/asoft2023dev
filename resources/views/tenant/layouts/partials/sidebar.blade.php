@@ -1,11 +1,3 @@
-@php
-    $path = explode('/', request()->path());
-    $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
-    $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
-    $path[0] = ($path[0] === '')?'documents':$path[0];
-
-@endphp
-
 <aside id="sidebar-left" class="sidebar-left">
     <div class="sidebar-header">
         <a href="{{route('tenant.dashboard.index')}}" class="logo pt-2 pt-md-0">
@@ -964,6 +956,7 @@
                         </ul>
                     </li>
                     @endif
+                    <li class="nav-description">Módulos extras</li>
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">

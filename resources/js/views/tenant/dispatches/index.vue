@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
+                <a href="#" @click.prevent="showModalGenerateCPE = true" class="btn btn-custom btn-sm  mt-2 mr-2">Generar comprobante desde múltiples guías</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -54,6 +55,7 @@
             :showClose="true"
             :showGenerate="true"
         ></FormGenerateDocument>
+        <ModalGenerateCPE :show.sync="showModalGenerateCPE"></ModalGenerateCPE>
     </div>
 </template>
 
@@ -61,15 +63,17 @@
     import DataTable from '../../../components/DataTable.vue'
     import DispatchOptions from './partials/options.vue'
     import FormGenerateDocument from "./generate-document";
+    import ModalGenerateCPE from './ModalGenerateCPE';
 
     export default {
-        components: {DataTable, DispatchOptions, FormGenerateDocument},
+        components: {DataTable, DispatchOptions, FormGenerateDocument, ModalGenerateCPE},
         data() {
             return {
                 resource: 'dispatches',
                 showDialogOptions: false,
                 recordId: null,
-                showDialogGenerateDocument: false
+                showDialogGenerateDocument: false,
+                showModalGenerateCPE: false,
             }
         },
         methods: {

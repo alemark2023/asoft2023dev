@@ -282,5 +282,6 @@ return [
 		'time_register'                            => 'hora de registro',
 		'person_id'                                => 'remitente',
 		'documentary_process_id'                   => 'proceso',
+		'dispatches_id'                            => 'guías',
 	],
 ];

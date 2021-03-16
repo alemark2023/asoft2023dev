@@ -9,9 +9,16 @@ trait SearchTrait
 
     public function getItemsServices($request)
     {
+        if ($request->items_id) {
+            return Item::whereIn('id', $request->items_id)
+                ->whereIsActive()
+                ->whereTypeUser()
+                ->get();
+        }
         if ($request->search_by_barcode == 1) {
             return Item::with(['item_lots'])
                 ->where('unit_type_id','ZZ')
+                ->whereTypeUser()
                 ->whereNotIsSet()
                 ->whereIsActive()
                 ->where('barcode', $request->input)
@@ -19,44 +26,52 @@ trait SearchTrait
                 ->get();
         }
         return Item::where('description','like', "%{$request->input}%")
-                    ->orWhere('internal_id','like', "%{$request->input}%")
-                    ->orWhereHas('category', function($query) use($request) {
-                        $query->where('name', 'like', '%' . $request->input . '%');
-                    })
-                    ->orWhereHas('brand', function($query) use($request) {
-                        $query->where('name', 'like', '%' . $request->input . '%');
-                    })
-                    ->OrWhereJsonContains('attributes', ['value' => $request->input])
-                    ->with(['item_lots'])
-                    ->where('unit_type_id','ZZ')
-                    ->whereNotIsSet()
-                    ->whereIsActive()
-                    ->orderBy('description')
-                    ->get();
+            ->whereTypeUser()
+            ->orWhere('internal_id','like', "%{$request->input}%")
+            ->orWhereHas('category', function($query) use($request) {
+                $query->where('name', 'like', '%' . $request->input . '%');
+            })
+            ->orWhereHas('brand', function($query) use($request) {
+                $query->where('name', 'like', '%' . $request->input . '%');
+            })
+            ->OrWhereJsonContains('attributes', ['value' => $request->input])
+            ->with(['item_lots'])
+            ->where('unit_type_id','ZZ')
+            ->whereNotIsSet()
+            ->whereIsActive()
+            ->orderBy('description')
+            ->get();
     }
 
     public function getItemsNotServices($request)
     {
+        if ($request->items_id) {
+            return Item::whereIn('id', $request->items_id)
+                ->whereIsActive()
+                ->whereTypeUser()
+                ->get();
+        }
         if ($request->search_by_barcode == 1) {
             return Item::where('barcode', $request->input)
                 ->whereIsActive()
+                ->whereTypeUser()
                 ->limit(1)
                 ->get();
         }
         return Item::where('description','like', "%{$request->input}%")
-                    ->orWhere('internal_id','like', "%{$request->input}%")
-                    ->orWhereHas('category', function($query) use($request) {
-                        $query->where('name', 'like', '%' . $request->input . '%');
-                    })
-                    ->orWhereHas('brand', function($query) use($request) {
-                        $query->where('name', 'like', '%' . $request->input . '%');
-                    })
-                    ->OrWhereJsonContains('attributes', ['value' => $request->input])
-                    ->whereWarehouse()
-                    ->whereIsActive()
-                    ->orderBy('description')
-                    ->get();
-
+            ->whereTypeUser()
+            ->orWhere('internal_id','like', "%{$request->input}%")
+            ->orWhereHas('category', function($query) use($request) {
+                $query->where('name', 'like', '%' . $request->input . '%');
+            })
+            ->orWhereHas('brand', function($query) use($request) {
+                $query->where('name', 'like', '%' . $request->input . '%');
+            })
+            ->OrWhereJsonContains('attributes', ['value' => $request->input])
+            ->whereWarehouse()
+            ->whereIsActive()
+            ->orderBy('description')
+            ->get();
     }
 
 

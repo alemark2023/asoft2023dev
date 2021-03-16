@@ -1,7 +1,9 @@
 <article class="auth__image" style="background-image: url({{ $login->image }})">
     @if ($useLoginGlobal)
-        @if ($login->position_logo != 'none')
-        <img class="auth__logo {{ $login->position_logo }}" src="{{ $login->logo }}" alt="Logo" />
+        @if ($login->logo ?? false)
+            @if ($login->position_logo != 'none')
+            <img class="auth__logo {{ $login->position_logo }}" src="{{ $login->logo }}" alt="Logo" />
+            @endif
         @endif
     @else
         @if($company->logo)

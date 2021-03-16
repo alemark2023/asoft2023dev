@@ -6,6 +6,7 @@ use App\Models\Tenant\Company;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use App\Models\System\Configuration as SystemConfiguration;
 
 class ForgotPasswordController extends Controller
 {
@@ -34,9 +35,13 @@ class ForgotPasswordController extends Controller
 
     public function showLinkRequestForm()
     {
+        $config = SystemConfiguration::first();
+        if (! $config->use_login_global) {
+            $config = Configuration::first();
+        }
+        $useLoginGlobal = $config->use_login_global;
         $company = Company::first();
-        $config = Configuration::first();
         $login = $config->login;
-        return view('tenant.auth.passwords.email', compact('company', 'login'));
+        return view('tenant.auth.passwords.email', compact('company', 'login', 'useLoginGlobal'));
     }
 }

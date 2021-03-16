@@ -385,3 +385,10 @@ html.dark .el-switch__label *,
 .sidebar-left-collapsed.header-fixed .header {
     left: 74px !important;
 }
+
+
+@media only screen and (min-width: 768px){
+  html.newinvoice .inner-wrapper {
+    margin-top: 0px;
+  }
+}

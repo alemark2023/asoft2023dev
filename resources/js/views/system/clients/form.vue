@@ -12,15 +12,8 @@
                                 </el-button>
                             </el-input>
                         </div>
-
-                        <!--<div class="form-group" :class="{'has-danger': errors.number}">-->
-                            <!--<label class="control-label">RUC</label>-->
-                            <!--<el-input v-model="form.number" :maxlength="11" dusk="number"></el-input>-->
-                            <!--<small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>-->
-                        <!--</div>-->
                     </div>
                     <div class="col-md-6">
-
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Nombre de la Empresa</label>
                             <el-input :disabled="form.is_update" v-model="form.name" dusk="name"></el-input>
@@ -51,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-6" v-if="!form.is_update">
                         <div class="form-group" :class="{'has-danger': (errors.password)}">
                             <label class="control-label">Contraseña</label>
@@ -84,127 +77,123 @@
                             <small class="form-control-feedback" v-if="errors.locked_emission" v-text="errors.locked_emission[0]"></small>
                         </div>
                     </div>
-
-
                 </div>
-                <div class="row">
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-12" >
-                        <div class="form-group">
-                            <label class="control-label">Módulos</label>
-                            <div class="row">
-                                <div class="col-4" v-for="(module,ind) in form.modules" :key="ind">
-                                    <el-checkbox v-model="module.checked">{{ module.description }}</el-checkbox>
+                <el-collapse v-model="collapse">
+                    <el-collapse-item title="Módulos" name="1">
+                        <div class="row mt-2">
+                            <div class="col-md-12" >
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-4" v-for="(module,ind) in form.modules" :key="ind">
+                                            <el-checkbox v-model="module.checked">{{ module.description }}</el-checkbox>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-               <div class="row">
-                    <div class="col-md-12 mt-2">
-                        <h4 class="border-bottom">Entorno del sistema</h4>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.soap_send_id}">
-                            <label class="control-label">SOAP Envio</label>
-                            <el-select v-model="form.soap_send_id">
-                                <el-option v-for="(option, index) in soap_sends" :key="index" :value="option.value" :label="option.text"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.soap_send_id" v-text="errors.soap_send_id[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.soap_type_id}">
-                            <label class="control-label">SOAP Tipo</label>
-                            <el-select v-model="form.soap_type_id">
-                                <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
+                    </el-collapse-item>
+                    <el-collapse-item title="Entorno del sistema" name="2">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.soap_send_id}">
+                                    <label class="control-label">SOAP Envio</label>
+                                    <el-select v-model="form.soap_send_id">
+                                        <el-option v-for="(option, index) in soap_sends" :key="index" :value="option.value" :label="option.text"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.soap_send_id" v-text="errors.soap_send_id[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.soap_type_id}">
+                                    <label class="control-label">SOAP Tipo</label>
+                                    <el-select v-model="form.soap_type_id">
+                                        <el-option v-for="option in soap_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
 
-                            <el-checkbox
-                                   v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
-                                   v-model="toggle"
-                                   label="Ingresar Usuario">
-                            </el-checkbox>
-                            <small class="form-control-feedback" v-if="errors.soap_type_id" v-text="errors.soap_type_id[0]"></small>
-                        </div>
-                    </div>
-                </div>
-                <template v-if="form.soap_type_id == '02' || toggle == true ">
-                    <div class="row" >
-                        <div class="col-md-12 mt-2">
-                            <h4 class="border-bottom">Usuario Secundario Sunat</h4>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group" :class="{'has-danger': errors.soap_username}">
-                                <label class="control-label">SOAP Usuario <span class="text-danger">*</span></label>
-                                <el-input v-model="form.soap_username"></el-input>
-                                <div class="sub-title text-muted"><small>RUC + Usuario. Ejemplo: 01234567890ELUSUARIO</small></div>
-                                <small class="form-control-feedback" v-if="errors.soap_username" v-text="errors.soap_username[0]"></small>
+                                    <el-checkbox
+                                        v-if="form.soap_send_id == '02' && form.soap_type_id == '01'"
+                                        v-model="toggle"
+                                        label="Ingresar Usuario">
+                                    </el-checkbox>
+                                    <small class="form-control-feedback" v-if="errors.soap_type_id" v-text="errors.soap_type_id[0]"></small>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group" :class="{'has-danger': errors.soap_password}">
-                                <label class="control-label">SOAP Password <span class="text-danger">*</span></label>
-                                <el-input v-model="form.soap_password"></el-input>
-                                <small class="form-control-feedback" v-if="errors.soap_password" v-text="errors.soap_password[0]"></small>
+                        <template v-if="form.soap_type_id == '02' || toggle == true ">
+                            <div class="row" >
+                                <div class="col-md-12 mt-2">
+                                    <h4 class="border-bottom">Usuario Secundario Sunat</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group" :class="{'has-danger': errors.soap_username}">
+                                        <label class="control-label">SOAP Usuario <span class="text-danger">*</span></label>
+                                        <el-input v-model="form.soap_username"></el-input>
+                                        <div class="sub-title text-muted"><small>RUC + Usuario. Ejemplo: 01234567890ELUSUARIO</small></div>
+                                        <small class="form-control-feedback" v-if="errors.soap_username" v-text="errors.soap_username[0]"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group" :class="{'has-danger': errors.soap_password}">
+                                        <label class="control-label">SOAP Password <span class="text-danger">*</span></label>
+                                        <el-input v-model="form.soap_password"></el-input>
+                                        <small class="form-control-feedback" v-if="errors.soap_password" v-text="errors.soap_password[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <div class="row" v-if="form.soap_send_id == '02'">
+                            <div class="col-md-12">
+                                <div class="form-group" :class="{'has-danger': errors.soap_url}">
+                                    <label class="control-label">SOAP Url</label>
+                                    <el-input v-model="form.soap_url"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.soap_url" v-text="errors.soap_url[0]"></small>
+                                </div>
+                            </div>
+                        </div> <br>
+                        <div  class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" :class="{'has-danger': errors.password_certificate}">
+                                    <label class="control-label">Contraseña certificado</label>
+                                    <el-input v-model="form.password_certificate"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.password_certificate" v-text="errors.password_certificate[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" :class="{'has-danger': errors.certificate}">
+                                    <label class="control-label">Certificado pfx</label>
+                                    <el-upload
+                                            ref="upload"
+                                            :headers="headers"
+                                            :data="{'type': 'certificate'}"
+                                            :action="`/${resource}/upload`"
+                                            :show-file-list="false"
+                                            :multiple="false"
+                                            :on-error="errorUpload"
+                                            :on-success="successUpload">
+                                        <el-button slot="trigger" type="primary">Selecciona un archivo</el-button>
+                                    </el-upload>
+                                    <small class="form-control-feedback" v-if="errors.certificate" v-text="errors.certificate[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4" v-show="form.is_update == false && certificate_admin">
+                                <div class="form-group">
+                                    <label class="control-label">Archivo cargado (Administrador) </label>
+                                    <el-input :disabled="true" v-model="certificate_admin"></el-input>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6" v-show="form.is_update == true">
+                                <div class="form-group">
+                                    <label class="control-label">Archivo cargado (Cliente) {{form.certificate ? '(1)' : '(0)'}}  </label>
+                                    <el-input :disabled="true" v-model="form.certificate"></el-input>
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </template>
-                <div class="row" v-if="form.soap_send_id == '02'">
-                    <div class="col-md-12">
-                        <div class="form-group" :class="{'has-danger': errors.soap_url}">
-                            <label class="control-label">SOAP Url</label>
-                            <el-input v-model="form.soap_url"></el-input>
-                            <small class="form-control-feedback" v-if="errors.soap_url" v-text="errors.soap_url[0]"></small>
-                        </div>
-                    </div>
-                </div> <br>
-                <div  class="row">
-                    <div class="col-md-3">
-                        <div class="form-group" :class="{'has-danger': errors.password_certificate}">
-                            <label class="control-label">Contraseña certificado</label>
-                            <el-input v-model="form.password_certificate"></el-input>
-                            <small class="form-control-feedback" v-if="errors.password_certificate" v-text="errors.password_certificate[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group" :class="{'has-danger': errors.certificate}">
-                            <label class="control-label">Certificado pfx</label>
-                            <el-upload
-                                       ref="upload"
-                                       :headers="headers"
-                                       :data="{'type': 'certificate'}"
-                                       :action="`/${resource}/upload`"
-                                       :show-file-list="false"
-                                       :multiple="false"
-                                       :on-error="errorUpload"
-                                       :on-success="successUpload">
-                                <el-button slot="trigger" type="primary">Selecciona un archivo</el-button>
-                            </el-upload>
-                            <small class="form-control-feedback" v-if="errors.certificate" v-text="errors.certificate[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4" v-show="form.is_update == false && certificate_admin">
-                        <div class="form-group">
-                            <label class="control-label">Archivo cargado (Administrador) </label>
-                            <el-input :disabled="true" v-model="certificate_admin"></el-input>
-
-                        </div>
-                    </div>
-                    <div class="col-md-6" v-show="form.is_update == true">
-                        <div class="form-group">
-                            <label class="control-label">Archivo cargado (Cliente) {{form.certificate ? '(1)' : '(0)'}}  </label>
-                            <el-input :disabled="true" v-model="form.certificate"></el-input>
-
-                        </div>
-                    </div>
-                </div>
+                    </el-collapse-item>
+                </el-collapse>
 
                 <div class="row">
                     <div class="col-md-6 center-el-checkbox mt-4">
@@ -257,8 +246,8 @@
                 toggle: false,
                 certificate_admin: '',
                 soap_username:  null,
-                soap_password:  null
-
+                soap_password:  null,
+                collapse: 1,
             }
         },
         async created() {
@@ -274,7 +263,7 @@
                 })
 
             await this.initForm()
-        
+
             this.form.soap_username = this.soap_username
             this.form.soap_password = this.soap_password
 

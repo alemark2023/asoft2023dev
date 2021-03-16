@@ -11,14 +11,14 @@
         <div class="form-body">
           <div class="form-group row">
             <div class="col-6">
-              <label>Código</label>
+              <label>Código <span class="text-danger">*</span></label>
               <el-input v-model="nextId" type="text" readonly></el-input>
             </div>
             <div
               class="form-group col-6"
               :class="{ 'has-danger': errors.documentary_document_id }"
             >
-              <label for="document_type">Tipo de documento</label>
+              <label for="document_type">Tipo de documento <span class="text-danger">*</span></label>
               <el-select
                 v-model="form.documentary_document_id"
                 @change="onGetDocumentNumber"
@@ -40,7 +40,7 @@
               class="form-group col-6"
               :class="{ 'has-danger': errors.number }"
             >
-              <label>Número de documento</label>
+              <label>Número de documento <span class="text-danger">*</span></label>
               <el-input v-model="form.number">
                 <template slot="append">-{{ currentYear }}</template>
               </el-input>
@@ -54,7 +54,7 @@
               class="form-group col-6"
               :class="{ 'has-danger': errors.number }"
             >
-              <label for="invoice">Folio</label>
+              <label for="invoice">Folio <span class="text-danger">*</span></label>
               <el-input v-model="form.invoice"></el-input>
               <small
                 class="form-control-feedback"
@@ -66,7 +66,7 @@
               class="form-group col-6"
               :class="{ 'has-danger': errors.date_register }"
             >
-              <label for="invoice">Fecha de registro</label>
+              <label for="invoice">Fecha de registro <span class="text-danger">*</span></label>
               <el-date-picker
                 v-model="form.date_register"
                 type="date"
@@ -83,7 +83,7 @@
               class="form-group col-6"
               :class="{ 'has-danger': errors.time_register }"
             >
-              <label for="invoice">Hora de registro</label>
+              <label for="invoice">Hora de registro <span class="text-danger">*</span></label>
               <el-input v-model="form.time_register" placeholder="13:30:00">
               </el-input>
               <small
@@ -95,7 +95,7 @@
           </div>
           <div class="form-group" :class="{ 'has-danger': errors.person_id }">
             <label class="control-label font-weight-bold text-info">
-              Remitente
+              Remitente <span class="text-danger">*</span>
               <a href="#" @click.prevent="showDialogNewPerson = true"
                 >[+ Nuevo]</a
               >
@@ -125,14 +125,14 @@
             ></small>
           </div>
           <div class="form-group" :class="{ 'has-danger': errors.subject }">
-            <label>Asunto</label>
+            <label>Asunto <span class="text-danger">*</span></label>
             <el-input type="text" v-model="form.subject"></el-input>
             <div v-if="errors.subject" class="invalid-feedback">
               {{ errors.subject[0] }}
             </div>
           </div>
           <div class="form-group" :class="{ 'has-danger': errors.subject }">
-            <label for="file">Archivo adjunto</label>
+            <label for="file">Archivo adjunto <span class="text-danger">*</span></label>
             <el-button @click="onSearchFile">Buscar archivo</el-button>
             <input
               type="file"
@@ -149,7 +149,7 @@
             class="form-group"
             :class="{ 'has-danger': errors.documentary_process_id }"
           >
-            <label for="process">Proceso</label>
+            <label for="process">Proceso <span class="text-danger">*</span></label>
             <el-select v-model="form.documentary_process_id">
               <el-option
                 v-for="item in processes"
@@ -161,6 +161,9 @@
             <div v-if="errors.documentary_process_id" class="invalid-feedback">
               {{ errors.documentary_process_id[0] }}
             </div>
+          </div>
+          <div class="form-group">
+              <OfficesRows :offices="offices" :actions="actions" :form.sync="form"></OfficesRows>
           </div>
           <div class="row text-center">
             <div class="col-6">
@@ -193,10 +196,12 @@
 <script>
 import moment from "moment";
 import PersonForm from "../../../../../../../resources/js/views/tenant/persons/form.vue";
+import OfficesRows from './Offices.vue';
 
 export default {
   components: {
     PersonForm,
+    OfficesRows
   },
   props: {
     visible: {
@@ -227,7 +232,12 @@ export default {
       currentYear: 0,
       attachFile: null,
       filename: "",
+      offices: [],
+      actions: []
     };
+  },
+  mounted() {
+      this.onInitializeForm();
   },
   methods: {
     onSearchFile() {
@@ -235,7 +245,6 @@ export default {
     },
     onSelectFile(event) {
       const files = event.target.files;
-      console.log(files);
       if (files.length > 0) {
         this.attachFile = files[0];
         this.filename = this.attachFile.name;
@@ -256,6 +265,9 @@ export default {
       data.append("person_id", this.form.person_id);
       if (this.form.sender) {
         data.append("person", JSON.stringify(this.form.sender));
+      }
+      if (this.form.offices) {
+        data.append("offices", JSON.stringify(this.form.offices));
       }
       data.append("subject", this.form.subject || "");
       data.append("observation", this.form.observation || "");
@@ -380,6 +392,7 @@ export default {
       this.form = {
         date_register: date.format("YYYY-MM-DD"),
         time_register: date.format("H:mm:ss"),
+        offices: []
       };
       this.filename = "";
       this.attachFile = null;
@@ -395,9 +408,8 @@ export default {
         this.attachFile = null;
       } else {
         this.title = "Crear expediente";
-        this.form = {};
-        await this.onGetDataForNewFile();
         this.onInitializeForm();
+        await this.onGetDataForNewFile();
       }
       this.loading = true;
       await this.$http
@@ -407,6 +419,8 @@ export default {
           this.customers = data.customers;
           this.documentTypes = data.document_types;
           this.processes = data.processes;
+          this.offices = data.offices;
+          this.actions = data.actions;
         })
         .catch((error) => this.axiosError(error))
         .finally(() => (this.loading = false));

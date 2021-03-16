@@ -834,6 +834,58 @@
                     this.onSetFormData(response.data.data);
                 }).finally(() => this.loading_submit = false);
             }
+
+            const itemsFromDispatches = localStorage.getItem('items');
+            if (itemsFromDispatches) {
+                const itemsParsed = JSON.parse(itemsFromDispatches);
+                const items = itemsParsed.map(i => i.item_id);
+                const params = {
+                    items_id: items
+                }
+                localStorage.removeItem('items');
+                await this.$http.get('/documents/search-items', { params }).then(response => {
+                    const itemsResponse = response.data.items.map(i => {
+                        i.affectation_igv_type = {
+                            active: 1,
+                            description: "Gravado - Operación Onerosa",
+                            exportation: 0,
+                            free: 0,
+                            id: "10",
+                        }
+                        i.presentation = {};
+                        i.unit_price = i.sale_unit_price;
+                        i.item = i;
+                        i.IdLoteSelected = null;
+                        i.affectation_igv_type_id = "10";
+                        i.discounts = [];
+                        i.charges = [];
+                        i.item_id = i.id;
+                        i.unit_price_value = i.sale_unit_price;
+                        i.input_unit_price_value = i.sale_unit_price;
+                        i.quantity = itemsParsed.find(ip => ip.item_id == i.id).quantity;
+                        return i;
+                    });
+                    this.form.items = itemsResponse.map(i => {
+                        return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    });
+                });
+            }
+            const clientfromDispatches = localStorage.getItem('client');
+            if (clientfromDispatches) {
+                const client = JSON.parse(clientfromDispatches);
+                if (client.identity_document_type_id == 1) {
+                    this.form.document_type_id = '03'
+                } else if (client.identity_document_type_id == 6) {
+                    this.form.document_type_id = '01'
+                }
+                this.searchRemoteCustomers(client.number);
+                this.form.customer_id = client.id;
+                this.changeEstablishment();
+                this.filterSeries();
+                this.filterCustomers();
+                this.changeCurrencyType()
+                localStorage.removeItem('client');
+            }
         },
         methods: {
             async onSetFormData(data) {
@@ -964,9 +1016,9 @@
             changeDestinationSale() {
                 if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
-                    if(cash){
+                    if (cash) {
                         this.form.payments[0].payment_destination_id = cash.id
-                    }else{
+                    } else {
                         this.form.payment_destination_id = this.payment_destinations[0].id
                         this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
                     }
@@ -1042,9 +1094,7 @@
                 }
             },
             addDocumentDetraction(detraction) {
-
                 this.form.detraction = detraction
-
                 // this.has_data_detraction = (detraction.pay_constancy || detraction.detraction_type_id || detraction.payment_method_id || (detraction.amount && detraction.amount >0)) ? true:false
                 this.has_data_detraction = (detraction) ? detraction.has_data_detraction:false
             },
@@ -1175,13 +1225,9 @@
                                 amount: amount,
                                 base: base
                             })
-
-                    }else{
-
+                    } else {
                         let position = this.form.discounts.indexOf(unaffected_discount);
-
                         if(position > -1){
-
                             this.form.discounts[position].base = base
                             this.form.discounts[position].amount = amount
                             this.form.discounts[position].factor = factor
@@ -1358,14 +1404,11 @@
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
             },
-            ediItem(row, index)
-            {
+            ediItem(row, index) {
                 row.indexi = index
                 this.recordItem = row
                 this.showDialogAddItem = true
-
             },
-
             searchRemoteCustomers(input) {
 
                 if (input.length > 0) {
@@ -1384,7 +1427,6 @@
                                 }
                             })
                 } else {
-                    // this.customers = []
                     this.filterCustomers()
                     this.input_person.number = null
                 }
@@ -1528,13 +1570,8 @@
                 }
             },
             async changeDetractionType(){
-                // let detraction_type = await _.find(this.detraction_types, {'id':this.form.detraction.detraction_type_id})
-
                 if(this.form.detraction){
-
                     this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage)/100),2)
-
-                    // this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
                 }
             },
             validateDetraction(){
@@ -1592,7 +1629,6 @@
             },
             cleanCustomer(){
                 this.form.customer_id = null
-                // this.customers = []
             },
             changeDateOfIssue() {
               let minDate = moment().subtract(7, 'days')
@@ -1612,7 +1648,6 @@
                     payment.date_of_payment = this.form.date_of_issue
                 })
             },
-
             filterSeries() {
                 this.form.series_id = null
                 this.series = _.filter(this.all_series, {'establishment_id': this.form.establishment_id,
@@ -1656,8 +1691,7 @@
                 this.form.guides.splice(index, 1)
             },
             addRow(row) {
-                if(this.recordItem)
-                {
+                if(this.recordItem) {
                     //this.form.items.$set(this.recordItem.indexi, row)
                     this.form.items[this.recordItem.indexi] = row
                     this.recordItem = null
@@ -1803,9 +1837,7 @@
                 }
             },
             async deleteInitGuides(){
-                //eliminando guias null
                 await _.remove(this.form.guides,{'number':null})
-
             },
             async asignPlateNumberToItems(){
 

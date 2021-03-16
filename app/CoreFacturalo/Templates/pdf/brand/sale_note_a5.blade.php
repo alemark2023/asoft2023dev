@@ -83,6 +83,14 @@
                         @endif
                     </td>
                 </tr>
+                @if($customer->telephone !== null)
+                <tr>
+                    <td colspan="2">
+                        <strong>TELÉFONO:</strong>
+                        {{ $customer->telephone}}
+                    </td>
+                </tr>
+                @endif
                 <tr>
                     <td  class="">
                         <strong>FECHA: </strong>
