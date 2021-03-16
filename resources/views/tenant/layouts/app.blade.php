@@ -1,13 +1,27 @@
 <!DOCTYPE html>
+@php
+    $path = explode('/', request()->path());
+    $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
+    $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
+    $path[0] = ($path[0] === '')?'documents':$path[0];
+@endphp
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     class="fixed no-mobile-device custom-scroll
+        sidebar-{{$visual->sidebar_theme ?? ''}}
+        header-{{$visual->navbar ?? 'fixed'}}
         {{$vc_compact_sidebar->compact_sidebar == true ? 'sidebar-left-collapsed' : ''}}
         {{$visual->header == 'dark' ? 'header-dark' : ''}}
         {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}}
-        sidebar-{{$visual->sidebar_theme ?? ''}}
         {{$visual->bg == 'dark' ? 'dark' : ''}}
-        header-{{$visual->navbar ?? 'fixed'}}
+        {{ ($path[0] === 'documents' && $path[1] === 'create'
+        || $path[0] === 'quotations' && $path[1] === 'create'
+        || $path[0] === 'sale-opportunities' && $path[1] === 'create'
+        || $path[0] === 'order-notes' && $path[1] === 'create'
+        || $path[0] === 'sale-notes' && $path[1] === 'create'
+        || $path[0] === 'purchase-quotations' && $path[1] === 'create'
+        || $path[0] === 'purchase-orders' && $path[1] === 'create'
+        || $path[0] === 'purchases' && $path[1] === 'create') ? 'newinvoice' : ''}}
         ">
 <head>
     <meta charset="utf-8">
