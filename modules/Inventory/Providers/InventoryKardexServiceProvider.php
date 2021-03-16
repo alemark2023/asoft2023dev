@@ -55,7 +55,6 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
     private function sale() {
         DocumentItem::created(function($document_item) {
-
             if(!$document_item->item->is_set){
 
                 $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;

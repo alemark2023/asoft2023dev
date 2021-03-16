@@ -2,40 +2,41 @@
 
 namespace App\CoreFacturalo;
 
-use App\CoreFacturalo\Helpers\QrCode\QrCodeGenerate;
-use App\CoreFacturalo\Helpers\Xml\XmlFormat;
-use App\CoreFacturalo\Helpers\Xml\XmlHash;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\WS\Client\WsClient;
-use App\CoreFacturalo\WS\Services\BillSender;
-use App\CoreFacturalo\WS\Services\ConsultCdrService;
-use App\CoreFacturalo\WS\Services\ExtService;
-use App\CoreFacturalo\WS\Services\SummarySender;
-use App\CoreFacturalo\WS\Services\SunatEndpoints;
-use App\CoreFacturalo\WS\Signed\XmlSigned;
-use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
+use Exception;
+use Mpdf\Mpdf;
+use Mpdf\HTMLParserMode;
+use App\Traits\KardexTrait;
+use App\Models\Tenant\Voided;
 use App\Models\Tenant\Company;
-use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Invoice;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Tenant\Summary;
+use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Retention;
-use App\Models\Tenant\Summary;
-use App\Models\Tenant\Voided;
-use Exception;
-use Mpdf\HTMLParserMode;
-use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
-use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Perception;
+use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\Mail;
 use Modules\Finance\Traits\FinanceTrait;
-
+use App\CoreFacturalo\WS\Client\WsClient;
+use App\CoreFacturalo\Helpers\Xml\XmlHash;
+use App\CoreFacturalo\WS\Signed\XmlSigned;
+use App\CoreFacturalo\Helpers\Xml\XmlFormat;
+use App\CoreFacturalo\WS\Services\BillSender;
+use App\CoreFacturalo\WS\Services\ExtService;
+use App\CoreFacturalo\WS\Services\SummarySender;
+use App\CoreFacturalo\WS\Services\SunatEndpoints;
+use App\CoreFacturalo\Helpers\QrCode\QrCodeGenerate;
+use App\CoreFacturalo\WS\Services\ConsultCdrService;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
+use Modules\Inventory\Models\Warehouse;
 
 class Facturalo
 {
-    use StorageDocument, FinanceTrait;
+    use StorageDocument, FinanceTrait, KardexTrait;
 
     const REGISTERED = '01';
     const SENT = '03';
@@ -952,8 +953,6 @@ class Facturalo
             });
         }
 
-        // dd($payments, $balance, $this->apply_change);
-
         foreach ($payments as $row) {
 
             if($balance < 0 && !$this->apply_change){
@@ -972,4 +971,39 @@ class Facturalo
         }
     }
 
+    public function update($inputs,$id)
+    {
+
+        $this->actions = array_key_exists('actions', $inputs)?$inputs['actions']:[];
+        $this->type = @$inputs['type'];
+        switch ($this->type) {
+            case 'invoice':
+                $document = Document::find($id);
+                $document->fill($inputs);
+                $document->save();
+
+                $document->payments()->delete();
+                $this->savePayments($document, $inputs['payments']);
+
+                $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+                foreach ($document->items as $it) {
+                    $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+                }
+
+                $document->items()->delete();
+                foreach ($inputs['items'] as $row) {
+                    $document->items()->create($row);
+                }
+
+                $this->updatePrepaymentDocuments($inputs);
+
+                if($inputs['hotel']){
+                    $document->hotel()->update($inputs['hotel']);
+                }
+
+                $document->invoice()->update($inputs['invoice']);
+                $this->document = Document::find($document->id);
+                break;
+        }
+    }
 }

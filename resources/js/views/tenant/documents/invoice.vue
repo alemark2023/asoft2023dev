@@ -170,7 +170,7 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input>
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
@@ -562,11 +562,13 @@
                                         </td>
                                     </tr>
 
-                                    <tr v-if="form.detraction.amount > 0">
-                                        <td>M. DETRACCIÓN</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
-                                    </tr>
+                                    <template v-if="form.detraction">
+                                        <tr v-if="form.detraction.amount > 0">
+                                            <td>M. DETRACCIÓN</td>
+                                            <td>:</td>
+                                            <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                        </tr>
+                                    </template>
 
                                     <tr v-if="form.total_exportation > 0">
                                         <td>OP.EXPORTACIÓN</td>
@@ -628,7 +630,7 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">Generar</el-button>
+                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">{{ btnText }}</el-button>
                     </div>
                 </form>
             </div>
@@ -653,6 +655,7 @@
         <document-options :showDialog.sync="showDialogOptions"
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
+                          :isUpdate="isUpdate"
                           :showClose="false"></document-options>
 
 
@@ -705,7 +708,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['typeUser', 'configuration'],
+        props: ['typeUser', 'configuration', 'documentId', 'isUpdate'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
@@ -772,6 +775,7 @@
                 enabled_payments: true,
                 readonly_date_of_due: false,
                 seller_class: 'col-lg-6 pb-2',
+                btnText: 'Generar',
             }
         },
         async created() {
@@ -823,6 +827,13 @@
             this.$eventHub.$on('initInputPerson', () => {
                 this.initInputPerson()
             });
+            if (this.documentId) {
+                this.btnText = 'Actualizar';
+                this.loading_submit = true;
+                await this.$http.get(`/documents/${this.documentId}/show`).then(response => {
+                    this.onSetFormData(response.data.data);
+                }).finally(() => this.loading_submit = false);
+            }
 
             const itemsFromDispatches = localStorage.getItem('items');
             if (itemsFromDispatches) {
@@ -877,6 +888,112 @@
             }
         },
         methods: {
+            async onSetFormData(data) {
+                this.form = await {
+                    establishment_id: data.establishment_id,
+                    document_type_id: data.document_type_id,
+                    id: data.id,
+                    hash: data.hash,
+                    number: data.number,
+                    date_of_issue: moment(data.date_of_issue).format('YYYY-MM-DD'),
+                    time_of_issue: data.time_of_issue,
+                    customer_id: data.customer_id,
+                    currency_type_id: data.currency_type_id,
+                    exchange_rate_sale: data.exchange_rate_sale,
+                    additional_information: this.onPrepareAdditionalInformation(data.additional_information),
+                    external_id: data.external_id,
+                    filename: data.filename,
+                    group_id: data.group_id,
+                    perception: data.perception,
+                    note: data.note,
+                    plate_number: data.plate_number,
+                    payments: data.payments,
+                    prepayments: data.prepayments || [],
+                    legends: data.legends || [],
+                    detraction: data.detraction,
+                    affectation_type_prepayment: data.affectation_type_prepayment,
+                    purchase_order:  data.purchase_order,
+                    pending_amount_prepayment: data.pending_amount_prepayment || 0,
+                    payment_method_type_id: data.payment_method_type_id,
+                    charges: data.charges || [],
+                    discounts: data.discounts || [],
+                    seller_id: data.seller_id,
+                    items: this.onPrepareItems(data.items),
+                    series: data.series,
+                    state_type_id: data.state_type_id,
+                    total_discount: parseFloat(data.total_discount),
+                    total_exonerated: parseFloat(data.total_exonerated),
+                    total_exportation: parseFloat(data.total_exportation),
+                    total_free: parseFloat(data.total_free),
+                    total_igv: parseFloat(data.total_igv),
+                    total_isc: parseFloat(data.total_isc),
+                    total_base_isc: parseFloat(data.total_base_isc),
+                    total_base_other_taxes: parseFloat(data.total_base_other_taxes),
+                    total_other_taxes: parseFloat(data.total_other_taxes),
+                    total_plastic_bag_taxes: parseFloat(data.total_plastic_bag_taxes),
+                    total_prepayment: parseFloat(data.total_prepayment),
+                    total_taxed: parseFloat(data.total_taxed),
+                    total_taxes: parseFloat(data.total_taxes),
+                    total_unaffected: parseFloat(data.total_unaffected),
+                    total_value: parseFloat(data.total_value),
+                    total_charge: parseFloat(data.total_charge),
+                    total: parseFloat(data.total),
+                    series_id: this.onSetSeriesId(data.document_type_id, data.series),
+                    operation_type_id: data.invoice.operation_type_id,
+                    terms_condition: data.terms_condition || '',
+                    guides: data.guides || [],
+                    show_terms_condition: data.terms_condition ? true : false,
+                    attributes: [],
+                    customer: data.customer,
+                    has_prepayment: false,
+                    actions: {
+                        format_pdf:'a4',
+                    },
+                    hotel: {},
+                    transport: {},
+                    customer_address_id:null,
+                    type: 'invoice',
+                    invoice: {
+                        operation_type_id: data.invoice.operation_type_id,
+                        date_of_due: data.invoice.date_of_due,
+                    },
+                }
+
+                if (! data.guides) {
+                    this.clickAddInitGuides();
+                }
+
+                this.establishment = data.establishment;
+
+                this.changeDateOfIssue();
+                this.filterCustomers();
+                this.changeDestinationSale();
+                this.calculateTotal();
+            },
+            onPrepareAdditionalInformation(data) {
+                if (typeof data === 'object') {
+                    if (data[0]) {
+                        return data;
+                    }
+                    return null;
+                }
+                return null;
+            },
+            onPrepareItems(items) {
+                return items.map(i => {
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = i.unit_value;
+                    i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
+                    return i;
+                });
+            },
+            onSetSeriesId(documentType, serie) {
+                const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
+                if (find) {
+                    return find.id;
+                }
+                return null;
+            },
             getPrepayment(index){
                 return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})
             },
@@ -1520,9 +1637,11 @@
                 this.dateValid=false
               } else { this.dateValid = true }
                 this.form.date_of_due = this.form.date_of_issue
-                this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-                    this.form.exchange_rate_sale = response
-                })
+                if (! this.isUpdate) {
+                    this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
+                        this.form.exchange_rate_sale = response
+                    });
+                }
             },
             assignmentDateOfPayment(){
                 this.form.payments.forEach((payment)=>{
@@ -1537,9 +1656,6 @@
                 this.form.series_id = (this.series.length > 0)?this.series[0].id:null
             },
             filterCustomers() {
-                // this.form.customer_id = null
-                // if(this.form.operation_type_id === '0101' || this.form.operation_type_id === '1001') {
-
                 if (['0101', '1001', '1004'].includes(this.form.operation_type_id)) {
 
                     if(this.form.document_type_id === '01') {
@@ -1719,8 +1835,6 @@
                     this.form.discounts[0].amount = _.round(amount,2)
                     this.form.discounts[0].factor = factor
                 }
-
-
             },
             async deleteInitGuides(){
                 await _.remove(this.form.guides,{'number':null})
@@ -1819,7 +1933,11 @@
                 }
 
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form).then(response => {
+                let path = `/${this.resource}`;
+                if (this.isUpdate) {
+                    path = `/${this.resource}/${this.form.id}/update`;
+                }
+                this.$http.post(path, this.form).then(response => {
                     if (response.data.success) {
                         this.$eventHub.$emit('reloadDataItems', null)
                         this.resetForm();
