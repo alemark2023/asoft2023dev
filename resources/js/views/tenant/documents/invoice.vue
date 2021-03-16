@@ -655,6 +655,7 @@
         <document-options :showDialog.sync="showDialogOptions"
                           :recordId="documentNewId"
                           :isContingency="is_contingency"
+                          :isUpdate="isUpdate"
                           :showClose="false"></document-options>
 
 
@@ -847,7 +848,7 @@
                     customer_id: data.customer_id,
                     currency_type_id: data.currency_type_id,
                     exchange_rate_sale: data.exchange_rate_sale,
-                    additional_information: data.additional_information[0],
+                    additional_information: this.onPrepareAdditionalInformation(data.additional_information),
                     external_id: data.external_id,
                     filename: data.filename,
                     group_id: data.group_id,
@@ -865,7 +866,7 @@
                     charges: data.charges || [],
                     discounts: data.discounts || [],
                     seller_id: data.seller_id,
-                    items: data.items,
+                    items: this.onPrepareItems(data.items),
                     series: data.series,
                     state_type_id: data.state_type_id,
                     total_discount: parseFloat(data.total_discount),
@@ -911,12 +912,28 @@
                 }
 
                 this.establishment = data.establishment;
-                // this.payment_destinations = response.data.payment_destinations
 
                 this.changeDateOfIssue();
                 this.filterCustomers();
                 this.changeDestinationSale();
                 this.calculateTotal();
+            },
+            onPrepareAdditionalInformation(data) {
+                if (typeof data === 'object') {
+                    if (data[0]) {
+                        return data;
+                    }
+                    return null;
+                }
+                return null;
+            },
+            onPrepareItems(items) {
+                return items.map(i => {
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = i.unit_value;
+                    i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
+                    return i;
+                });
             },
             onSetSeriesId(documentType, serie) {
                 const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
@@ -931,7 +948,6 @@
             inputAmountPrepayment(index){
 
                 let prepayment = this.getPrepayment(index)
-                // console.log(prepayment)
 
                 if(parseFloat(this.form.prepayments[index].amount) > parseFloat(prepayment.amount)){
 
@@ -1031,8 +1047,6 @@
 
                 // this.has_data_detraction = (detraction.pay_constancy || detraction.detraction_type_id || detraction.payment_method_id || (detraction.amount && detraction.amount >0)) ? true:false
                 this.has_data_detraction = (detraction) ? detraction.has_data_detraction:false
-
-                // console.log(this.form.detraction)
             },
             clickAddItemInvoice(){
                 this.recordItem = null
@@ -1075,8 +1089,6 @@
                     let discount = _.find(this.form.discounts,{'discount_type_id':'04'})
 
                     if(global_discount>0 && !discount){
-                        // console.log("gl 0")
-
                         this.form.total_discount =  _.round(amount,2)
                         this.form.total_taxed =  _.round(base - amount,2)
                         this.form.total_value =  _.round(base - amount,2)
@@ -1124,8 +1136,6 @@
                     this.form.total =  this.form.total_value
 
                     if(global_discount>0 && !exonerated_discount){
-
-                        // console.log("gl 0")
                         this.form.discounts.push({
                                 discount_type_id: '05',
                                 description: 'Descuentos globales por anticipos exonerados',
@@ -1158,8 +1168,6 @@
                     this.form.total =  this.form.total_value
 
                     if(global_discount>0 && !unaffected_discount){
-
-                        // console.log("gl 0")
                         this.form.discounts.push({
                                 discount_type_id: '06',
                                 description: 'Descuentos globales por anticipos inafectos',
@@ -1314,11 +1322,9 @@
 
             addDocumentHotel(hotel) {
                 this.form.hotel = hotel
-                // console.log(this.form.hotel)
             },
             addDocumentTransport(transport) {
                 this.form.transport = transport
-                // console.log(this.form.transport)
             },
             changeIsReceivable(){
 
@@ -1363,8 +1369,6 @@
             searchRemoteCustomers(input) {
 
                 if (input.length > 0) {
-                // if (input!="") {
-                    // console.log("a")
                     this.loading_search = true
                     let parameters = `input=${input}&document_type_id=${this.form.document_type_id}&operation_type_id=${this.form.operation_type_id}`
 
@@ -1375,7 +1379,6 @@
                                 this.input_person.number = null
 
                                 if(this.customers.length == 0){
-                                    // console.log("b")
                                     this.filterCustomers()
                                     this.input_person.number = input
                                 }
@@ -1532,7 +1535,6 @@
                     this.form.detraction.amount = (this.form.currency_type_id == 'PEN') ? _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2) : _.round((parseFloat(this.form.total) * this.form.exchange_rate_sale) * (parseFloat(this.form.detraction.percentage)/100),2)
 
                     // this.form.detraction.amount = _.round(parseFloat(this.form.total) * (parseFloat(this.form.detraction.percentage)/100),2)
-                    // console.log(this.form.detraction.amount)
                 }
             },
             validateDetraction(){
@@ -1542,7 +1544,6 @@
                     let detraction = this.form.detraction
 
                     let tot = (this.form.currency_type_id == 'PEN') ? this.form.total:(this.form.total * this.form.exchange_rate_sale)
-                    // console.log(tot)
                     let total_restriction = (this.form.operation_type_id == '1001') ? 700 : 400
 
                     if(tot <= total_restriction)
@@ -1800,9 +1801,6 @@
                     this.form.discounts[0].amount = _.round(amount,2)
                     this.form.discounts[0].factor = factor
                 }
-
-
-                // console.log(this.form.discounts)
             },
             async deleteInitGuides(){
                 //eliminando guias null

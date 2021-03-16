@@ -52,6 +52,7 @@ class DocumentUpdateInput
 		}
 
 		return [
+			'id'                        => $inputs['id'],
 			'type'                      => $inputs['type'],
 			'group_id'                  => $inputs['group_id'],
 			'user_id'                   => auth()->id(),
@@ -137,23 +138,17 @@ class DocumentUpdateInput
 					'item_id' => $item->id,
 					'item'    => [
 						'description'              => $item->description,
-						'item'                     => $item,
 						'item_type_id'             => $item->item_type_id,
 						'internal_id'              => $item->internal_id,
 						'item_code'                => trim($item->item_code),
 						'item_code_gs1'            => $item->item_code_gs1,
-						'unit_price'               => $item->sale_unit_price,
 						'unit_type_id'             => (key_exists('item', $row)) ? $row['item']['unit_type_id'] : $item->unit_type_id,
 						'presentation'             => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation'] : []) : [],
 						'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
 						'is_set'                   => $item->is_set,
-						'type'                     => $item->type,
-						'existence_type_id'        => $item->existence_type_id,
-						'second_name'              => isset($row['second_name']) ? $row['second_name'] : '',
-						'has_igv'                  => $item->has_igv ? true : false,
-						'currency_type_id'         => $item->currency_type_id,
-						'has_perception_sale'      => $item->has_perception_sale ?? false,
-						'detraction_type_code'     => $item->detraction_type_code ?? null,
+						'lots'                     => self::lots($row),
+						'IdLoteSelected'           => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
+						'model'                    => $item->model,
 					],
 					'quantity'                => $row['quantity'],
 					'unit_value'              => $row['unit_value'],
@@ -179,12 +174,9 @@ class DocumentUpdateInput
 					'attributes'              => self::attributes($row),
 					'discounts'               => self::discounts($row),
 					'charges'                 => self::charges($row),
-					'type'                    => $item->type,
-					'dispatch_item_id'        => isset($row['dispatch_item_id']) ? $row['dispatch_item_id'] : null,
-					'quotation_item_id'       => isset($row['quotation_item_id']) ? $row['quotation_item_id'] : null,
-					'accessories'             => self::accessories($row),
-					'has_second_name'         => isset($row['has_second_name']) ? $row['has_second_name'] : 0,
-					'total_perception'        => $row['total_perception'] ?? 0.00,
+					'warehouse_id'            => Functions::valueKeyInArray($row, 'warehouse_id'),
+					'additional_information'  => Functions::valueKeyInArray($row, 'additional_information'),
+					'name_product_pdf'        => Functions::valueKeyInArray($row, 'name_product_pdf')
 				];
 			}
 
@@ -192,6 +184,17 @@ class DocumentUpdateInput
 		}
 
 		return null;
+	}
+
+	private static function lots($row)
+	{
+		if (isset($row['item']['lots'])) {
+			return $row['item']['lots'];
+		} elseif (isset($row['lots'])) {
+			return  $row['lots'];
+		} else {
+			return [];
+		}
 	}
 
 	private static function attributes($inputs)
@@ -223,40 +226,6 @@ class DocumentUpdateInput
 				}
 
 				return $attributes;
-			}
-		}
-
-		return null;
-	}
-
-	private static function accessories($inputs)
-	{
-		if (array_key_exists('accessories', $inputs)) {
-			if ($inputs['accessories']) {
-				$accessories = [];
-				foreach ($inputs['accessories'] as $row) {
-					$accessory_id = $row['accessory_id'];
-					$description = $row['description'];
-					$value = array_key_exists('value', $row) ? $row['value'] : null;
-					$start_date = array_key_exists('start_date', $row) ? $row['start_date'] : null;
-					$end_date = array_key_exists('start_date', $row) ? $row['start_date'] : null;
-					$duration = array_key_exists('duration', $row) ? $row['duration'] : null;
-					$sub_value = array_key_exists('sub_value', $row) ? $row['sub_value'] : null;
-					$accesory_values_id = array_key_exists('accessory_value_id', $row) ? $row['accessory_value_id'] : null;
-
-					$accessories[] = [
-						'accessory_id'       => $accessory_id,
-						'description'        => $description,
-						'value'              => $value,
-						'start_date'         => $start_date,
-						'end_date'           => $end_date,
-						'duration'           => $duration,
-						'sub_value'          => $sub_value,
-						'accessory_value_id' => $accesory_values_id,
-					];
-				}
-
-				return $accessories;
 			}
 		}
 
