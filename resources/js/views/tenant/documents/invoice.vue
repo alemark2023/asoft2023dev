@@ -562,11 +562,13 @@
                                         </td>
                                     </tr>
 
-                                    <tr v-if="form.detraction.amount > 0">
-                                        <td>M. DETRACCIÓN</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
-                                    </tr>
+                                    <template v-if="form.detraction">
+                                        <tr v-if="form.detraction.amount > 0">
+                                            <td>M. DETRACCIÓN</td>
+                                            <td>:</td>
+                                            <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                        </tr>
+                                    </template>
 
                                     <tr v-if="form.total_exportation > 0">
                                         <td>OP.EXPORTACIÓN</td>
@@ -628,7 +630,7 @@
 
                     <div class="form-actions text-right mt-4">
                         <el-button @click.prevent="close()">Cancelar</el-button>
-                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">Generar</el-button>
+                        <el-button class="submit" type="primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">{{ btnText }}</el-button>
                     </div>
                 </form>
             </div>
@@ -772,6 +774,7 @@
                 enabled_payments: true,
                 readonly_date_of_due: false,
                 seller_class: 'col-lg-6 pb-2',
+                btnText: 'Generar',
             }
         },
         async created() {
@@ -824,6 +827,7 @@
                 this.initInputPerson()
             });
             if (this.documentId) {
+                this.btnText = 'Actualizar';
                 this.loading_submit = true;
                 await this.$http.get(`/documents/${this.documentId}/show`).then(response => {
                     this.onSetFormData(response.data.data);
@@ -853,7 +857,7 @@
                     payments: data.payments,
                     prepayments: data.prepayments || [],
                     legends: data.legends || [],
-                    detraction: data.detraction || {},
+                    detraction: data.detraction,
                     affectation_type_prepayment: data.affectation_type_prepayment,
                     purchase_order:  data.purchase_order,
                     pending_amount_prepayment: data.pending_amount_prepayment || 0,
@@ -895,6 +899,11 @@
                     hotel: {},
                     transport: {},
                     customer_address_id:null,
+                    type: 'invoice',
+                    invoice: {
+                        operation_type_id: data.invoice.operation_type_id,
+                        date_of_due: data.invoice.date_of_due,
+                    },
                 }
 
                 if (! data.guides) {
@@ -1894,7 +1903,11 @@
                 }
 
                 this.loading_submit = true
-                this.$http.post(`/${this.resource}`, this.form).then(response => {
+                let path = `/${this.resource}`;
+                if (this.isUpdate) {
+                    path = `/${this.resource}/${this.form.id}/update`;
+                }
+                this.$http.post(path, this.form).then(response => {
                     if (response.data.success) {
                         this.$eventHub.$emit('reloadDataItems', null)
                         this.resetForm();

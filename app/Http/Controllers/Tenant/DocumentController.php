@@ -1,60 +1,61 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
-use App\CoreFacturalo\Facturalo;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\WS\Zip\ZipFly;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Tenant\DocumentEmailRequest;
-use App\Http\Requests\Tenant\DocumentRequest;
-use App\Http\Requests\Tenant\DocumentVoidedRequest;
-use App\Http\Resources\Tenant\DocumentCollection;
-use App\Http\Resources\Tenant\DocumentResource;
-use App\Mail\Tenant\DocumentEmail;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\DocumentType;
-use App\Models\Tenant\Catalogs\NoteCreditType;
-use App\Models\Tenant\Catalogs\NoteDebitType;
-use App\Models\Tenant\Catalogs\OperationType;
-use App\Models\Tenant\Catalogs\PriceType;
-use App\Models\Tenant\Catalogs\SystemIscType;
-use App\Models\Tenant\Catalogs\AttributeType;
-use App\Models\Tenant\Catalogs\DetractionType;
-use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
-use App\Models\Tenant\Company;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\Document;
-use App\Models\Tenant\Establishment;
-use App\Models\Tenant\StateType;
-use App\Models\Tenant\PaymentMethodType;
+use Exception;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use Nexmo\Account\Price;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\User;
+use App\Traits\OfflineTrait;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
-use App\Models\Tenant\Warehouse;
-use App\Models\Tenant\User;
-use Exception;
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Http\Request;
-use Nexmo\Account\Price;
-use Illuminate\Support\Facades\Cache;
-use App\Imports\DocumentsImport;
-use App\Imports\DocumentsImportTwoFormat;
-use Maatwebsite\Excel\Excel;
-use Modules\BusinessTurn\Models\BusinessTurn;
 use App\Exports\PaymentExport;
-use Modules\Item\Models\Category;
-use Modules\Item\Http\Requests\CategoryRequest;
-use Modules\Item\Http\Requests\BrandRequest;
+use App\Models\Tenant\Company;
 use Modules\Item\Models\Brand;
-use Carbon\Carbon;
-use App\Traits\OfflineTrait;
-use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use App\Models\Tenant\Document;
+use App\CoreFacturalo\Facturalo;
+use App\Imports\DocumentsImport;
+use App\Models\Tenant\StateType;
+use App\Models\Tenant\Warehouse;
+use Modules\Item\Models\Category;
+use App\Mail\Tenant\DocumentEmail;
+use Illuminate\Support\Facades\DB;
+use App\CoreFacturalo\WS\Zip\ZipFly;
+use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Traits\FinanceTrait;
+use App\Imports\DocumentsImportTwoFormat;
+use App\Models\Tenant\Catalogs\PriceType;
+use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\DocumentType;
+use Modules\Item\Http\Requests\BrandRequest;
+use App\Http\Requests\Tenant\DocumentRequest;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\NoteDebitType;
+use App\Models\Tenant\Catalogs\OperationType;
+use App\Models\Tenant\Catalogs\SystemIscType;
+use Modules\BusinessTurn\Models\BusinessTurn;
+use App\Models\Tenant\Catalogs\DetractionType;
+use App\Models\Tenant\Catalogs\NoteCreditType;
+use App\Http\Resources\Tenant\DocumentResource;
+use Modules\Item\Http\Requests\CategoryRequest;
+use App\Http\Resources\Tenant\DocumentCollection;
+use App\Http\Requests\Tenant\DocumentEmailRequest;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use App\Http\Requests\Tenant\DocumentUpdateRequest;
+use App\Http\Requests\Tenant\DocumentVoidedRequest;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 
 class DocumentController extends Controller
 {
@@ -65,6 +66,7 @@ class DocumentController extends Controller
     {
 
         $this->middleware('input.request:document,web', ['only' => ['store']]);
+        $this->middleware('input.request:documentUpdate,web', ['only' => ['update']]);
     }
 
     public function index()
@@ -427,6 +429,33 @@ class DocumentController extends Controller
         $is_contingency = 0;
         $isUpdate = true;
         return view('tenant.documents.form', compact('is_contingency', 'configuration', 'documentId', 'isUpdate'));
+    }
+
+    public function update(DocumentUpdateRequest $request, $id)
+    {
+        $fact = DB::connection('tenant')->transaction(function () use ($request, $id) {
+            $facturalo = new Facturalo();
+            $facturalo->update($request->all(), $id);
+
+            $facturalo->createXmlUnsigned();
+            $facturalo->signXmlUnsigned();
+            $facturalo->updateHash();
+            $facturalo->updateQr();
+            $facturalo->createPdf();
+
+            return $facturalo;
+        });
+
+        $document = $fact->getDocument();
+        $response = $fact->getResponse();
+
+        return [
+            'success' => true,
+            'data'    => [
+                'id'       => $document->id,
+                'response' => $response,
+            ],
+        ];
     }
 
     public function show($documentId)

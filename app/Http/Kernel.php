@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'locked.tenant' => \App\Http\Middleware\LockedTenant::class,
         //'locked.admin' => \App\Http\Middleware\LockedAdmin::class,
         'tenant.internal.mode' => \App\Http\Middleware\InternalModeTenant::class,
+        'input.request' => \App\CoreFacturalo\InputRequest::class,
     ];
 }

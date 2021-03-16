@@ -189,6 +189,7 @@ if ($hostname) {
 			Route::get('documents/tables', 'Tenant\DocumentController@tables');
 			Route::get('documents/record/{document}', 'Tenant\DocumentController@record');
 			Route::post('documents', 'Tenant\DocumentController@store');
+			Route::post('documents/{id}/update', 'Tenant\DocumentController@update');
 			Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
 			// Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
 			Route::post('documents/email', 'Tenant\DocumentController@email');

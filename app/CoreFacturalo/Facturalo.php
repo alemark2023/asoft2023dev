@@ -972,4 +972,39 @@ class Facturalo
         }
     }
 
+    public function update($inputs,$id)
+    {
+
+        $this->actions = array_key_exists('actions', $inputs)?$inputs['actions']:[];
+        $this->type = @$inputs['type'];
+        switch ($this->type) {
+            case 'invoice':
+                $document = Document::find($id);
+                $document->fill($inputs);
+                $document->save();
+
+                $document->payments()->delete();
+                $this->savePayments($document, $inputs['payments']);
+
+                $document->items()->delete();
+                foreach ($inputs['items'] as $row) {
+                    unset($row['additional_information']);
+                    // $item = json_encode($row['item']);
+                    // $row['item'] = $item;
+                    $document->items()->create($row);
+                }
+
+                $this->updatePrepaymentDocuments($inputs);
+
+                if($inputs['hotel']){
+                    $document->hotel()->update($inputs['hotel']);
+                }
+
+                $document->invoice()->update($inputs['invoice']);
+                $this->document = Document::find($document->id);
+                break;
+
+                // if($inputs['transport']) $document->transport()->create($inputs['transport']);
+        }
+    }
 }
