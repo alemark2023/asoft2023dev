@@ -229,7 +229,7 @@ class DispatchController extends Controller
 		//     array_push($identities, '1');
 		// }
 
-		$customers = Person::query()
+		$customers = Person::with('addresses')
 			->whereIn('identity_document_type_id', $identities)
 			->whereType('customers')
 			->orderBy('name')
@@ -243,10 +243,13 @@ class DispatchController extends Controller
 					'trade_name'                  => $row->trade_name,
 					'country_id'                  => $row->country_id,
 					'address'                     => $row->address,
+                    'addresses'                   => $row->addresses,
 					'email'                       => $row->email,
 					'telephone'                   => $row->telephone,
 					'number'                      => $row->number,
 					'district_id'                 => $row->district_id,
+					'department_id'               => $row->department_id,
+					'province_id'                 => $row->province_id,
 					'identity_document_type_id'   => $row->identity_document_type_id,
 					'identity_document_type_code' => $row->identity_document_type->code
 				];
