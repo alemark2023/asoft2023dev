@@ -909,7 +909,7 @@
                     plate_number: data.plate_number,
                     payments: data.payments,
                     prepayments: data.prepayments || [],
-                    legends: data.legends || [],
+                    legends: [],
                     detraction: data.detraction,
                     affectation_type_prepayment: data.affectation_type_prepayment,
                     purchase_order:  data.purchase_order,
