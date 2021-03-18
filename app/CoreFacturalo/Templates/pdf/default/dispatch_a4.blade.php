@@ -66,6 +66,14 @@
             {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
         </td>
     </tr>
+    @if ($customer->telephone)
+    <tr>
+        <td>Teléfono:{{ $customer->telephone }}</td>
+    </tr>
+    @endif
+    <tr>
+        <td>Vendedor: {{ $document->user->name }}</td>
+    </tr>
     </tbody>
 </table>
 <table class="full-width border-box mt-10 mb-10">
