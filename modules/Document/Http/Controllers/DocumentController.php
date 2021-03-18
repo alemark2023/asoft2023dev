@@ -368,6 +368,7 @@ class DocumentController extends Controller
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
                     'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
+                    'model' => $row->model,
                 ];
             });
 
