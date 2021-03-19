@@ -854,7 +854,36 @@
                         }
                         i.presentation = {};
                         i.unit_price = i.sale_unit_price;
-                        i.item = i;
+                        i.item = {
+                            amount_plastic_bag_taxes: i.amount_plastic_bag_taxes,
+                            attributes: i.attributes,
+                            brand: i.brand,
+                            calculate_quantity: i.calculate_quantity,
+                            category: i.category,
+                            currency_type_id: i.currency_type_id,
+                            currency_type_symbol: i.currency_type_symbol,
+                            description: i.description,
+                            full_description: i.full_description,
+                            has_igv: i.has_igv,
+                            has_plastic_bag_taxes: i.has_plastic_bag_taxes,
+                            id: i.id,
+                            internal_id: i.internal_id,
+                            item_unit_types: i.item_unit_types,
+                            lots: i.lots,
+                            lots_enabled: i.lots_enabled,
+                            lots_group: i.lots_group,
+                            model: i.model,
+                            presentation: {},
+                            purchase_affectation_igv_type_id: i.purchase_affectation_igv_type_id,
+                            purchase_unit_price: i.purchase_unit_price,
+                            sale_affectation_igv_type_id: i.sale_affectation_igv_type_id,
+                            sale_unit_price: i.sale_unit_price,
+                            series_enabled: i.series_enabled,
+                            stock: i.stock,
+                            unit_price: i.sale_unit_price,
+                            unit_type_id: i.unit_type_id,
+                            warehouses: i.warehouses,
+                        };
                         i.IdLoteSelected = null;
                         i.affectation_igv_type_id = "10";
                         i.discounts = [];
@@ -863,6 +892,7 @@
                         i.unit_price_value = i.sale_unit_price;
                         i.input_unit_price_value = i.sale_unit_price;
                         i.quantity = itemsParsed.find(ip => ip.item_id == i.id).quantity;
+                        i.warehouse_id = null;
                         return i;
                     });
                     this.form.items = itemsResponse.map(i => {
@@ -909,7 +939,7 @@
                     plate_number: data.plate_number,
                     payments: data.payments,
                     prepayments: data.prepayments || [],
-                    legends: data.legends || [],
+                    legends: [],
                     detraction: data.detraction,
                     affectation_type_prepayment: data.affectation_type_prepayment,
                     purchase_order:  data.purchase_order,
@@ -1953,15 +1983,13 @@
                         this.$message.error(response.data.message);
                     }
                 }).catch(error => {
-
-                    //alert('sdsd')
                     if (error.response.status === 422) {
                         this.errors = error.response.data;
                     }
                     else {
                         this.$message.error(error.response.data.message);
                     }
-                }).then(() => {
+                }).finally(() => {
                     this.loading_submit = false;
                 });
             },

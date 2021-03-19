@@ -68,6 +68,12 @@
         </td>
     </tr>
     @endif
+    <tr>
+        <td>Teléfono:</td>
+        <td>{{ $customer->telephone }}</td>
+        <td>Vendedor:</td>
+        <td>{{ $document->user->name }}</td>
+    </tr>
     @if ($document->plate_number !== null)
     <tr>
         <td width="15%">N° Placa:</td>

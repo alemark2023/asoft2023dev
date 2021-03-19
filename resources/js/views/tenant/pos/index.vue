@@ -205,7 +205,7 @@
                                     </p>
                                     <p
                                         class="font-weight-semibold mb-0"
-                                        v-if="item.description.length < 50"
+                                        v-if="item.description.length <= 50"
                                     >
                                         {{ item.description }}
                                     </p>
