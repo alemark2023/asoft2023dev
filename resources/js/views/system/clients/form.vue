@@ -84,9 +84,15 @@
                             <div class="col-md-12" >
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-4" v-for="(module,ind) in form.modules" :key="ind">
-                                            <el-checkbox v-model="module.checked">{{ module.description }}</el-checkbox>
-                                        </div>
+                                        <el-tree
+                                            :data="modules"
+                                            show-checkbox
+                                            node-key="id"
+                                            ref="tree"
+                                            accordion
+                                            highlight-current
+                                            :props="defaultProps">
+                                        </el-tree>
                                     </div>
                                 </div>
                             </div>
@@ -218,9 +224,7 @@
     </el-dialog>
 </template>
 
-
 <script>
-
     import {serviceNumber} from '../../../mixins/functions'
 
     export default {
@@ -228,6 +232,10 @@
         props: ['showDialog', 'recordId'],
         data() {
             return {
+                defaultProps: {
+                    children: 'childrens',
+                    label: 'description'
+                },
                 headers: headers_token,
                 loading_submit: false,
                 loading_search: false,
@@ -284,6 +292,7 @@
                     type:null,
                     is_update:false,
                     modules: [],
+                    levels: [],
                     config_system_env: true,
                     soap_send_id: '01',
                     soap_type_id: '01',
@@ -295,57 +304,87 @@
                     temp_path: null,
                 }
 
-                this.modules.forEach(module => {
-                    this.form.modules.push({
-                        id: module.id,
-                        description: module.description,
-                        checked: true
-                    })
-                })
+                // this.modules.forEach(module => {
+                //     this.form.modules.push({
+                //         id: module.id,
+                //         description: module.description,
+                //         checked: true
+                //     })
+                // })
             },
             create() {
-                this.titleDialog = (this.recordId)? 'Editar Cliente':'Nuevo Cliente'
+                if (this.recordId) {
+                    this.titleDialog = 'Editar Cliente';
+                } else {
+                    this.titleDialog = 'Nuevo Cliente';
+                    const preSelecteds = [];
+                    this.modules.map(m => {
+                        preSelecteds.push(m.id);
+                        m.childrens.map(c => {
+                            preSelecteds.push(c.id);
+                        });
+                    });
+
+                    setTimeout(() => {
+                        this.$refs.tree.setCheckedKeys(preSelecteds);
+                    }, 1000);
+                }
+
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
-                                this.form = response.data.data
-                                this.form.is_update = true
+                            this.form = response.data.data;
+                            this.form.is_update = true;
+                            const preSelecteds = [];
+                            const preSelectedsModules = this.form.modules;
+                            const preSelectedsLevels = this.form.levels;
+                            this.modules.map(m => {
+                                if (preSelectedsModules.includes(m.id)) {
+                                    preSelecteds.push(m.id);
+                                }
+                                m.childrens.map(c => {
+                                    const idArray = c.id.split('-');
+                                    if (preSelectedsLevels.includes(idArray[1])) {
+                                        preSelecteds.push(c.id);
+                                    }
+                                })
                             })
+                            this.$refs.tree.setCheckedKeys(preSelecteds);
+                        })
                 }
             },
-            hasModules(){
-
-                let modules_checked = 0
-                this.form.modules.forEach(module =>{
-                    if(module.checked){
-                        modules_checked++
+            async submit() {
+                const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();
+                const modules = [];
+                modulesAndLevelsSelecteds.map(m => {
+                    if (m.is_parent) {
+                        modules.push(m.id);
+                    }
+                });
+                const levels = [];
+                modulesAndLevelsSelecteds.filter(l => {
+                    if (! l.is_parent) {
+                        const idArray = l.id.split('-');
+                        levels.push(idArray[1]);
                     }
                 })
+                this.form.modules = modules;
+                this.form.levels = levels;
 
-                return (modules_checked > 0) ? true:false
-
-            },
-            async submit() {
-                // console.log(this.form)
-                let has_modules = await this.hasModules()
-                if(!has_modules)
+                if(modules.length < 1) {
                     return this.$message.error('Debe seleccionar al menos un módulo')
+                }
 
-
-                if(!this.form.is_update)
-                {
+                if(!this.form.is_update) {
                     if(this.form.certificate && !this.form.password_certificate)
                     {
                      return this.$message.error('Si carga un certificado, es necesario ingresar el password del certificado')
                     }
-                }else
-                {
+                } else {
                     if(this.form.temp_path && !this.form.password_certificate){
                          return this.$message.error('Si carga un certificado, es necesario ingresar el password del certificado')
                     }
                 }
-
-
 
                 this.button_text = (this.form.is_update) ? 'Actualizando cliente...':'Creando base de datos...'
                 this.loading_submit = true
@@ -380,15 +419,12 @@
             searchSunat() {
                 this.searchServiceNumber()
             },
-            errorUpload(r)
-            {
+            errorUpload(r) {
                 console.log(r)
             },
-            successUpload(response)
-            {
+            successUpload(response) {
                 if (response.success) {
                     this.form.certificate = response.data.filename
-                   // this.form.image_url = response.data.temp_image
                     this.form.temp_path = response.data.temp_path
                 } else {
                     this.$message.error(response.message)

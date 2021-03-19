@@ -33,21 +33,41 @@ class ClientController extends Controller
         return view('system.clients.form');
     }
 
+    private function prepareModules(Module $module): Module
+    {
+        $levels = [];
+        foreach ($module->levels as $level) {
+            array_push($levels, [
+                'id' => "{$module->id}-{$level->id}",
+                'description' => $level->description,
+                'module_id' => $level->module_id,
+                'is_parent' => false,
+            ]);
+        }
+        unset($module->levels);
+        $module->is_parent = true;
+        $module->childrens = $levels;
+        return $module;
+    }
+
     public function tables()
     {
 
         $url_base = '.'.config('tenant.app_url_base');
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
-        $modules = Module::orderBy('description')->get();
+        $modules = Module::with('levels')
+            ->orderBy('description')
+            ->get()
+            ->each(function ($module) {
+                return $this->prepareModules($module);
+            });
 
         $config = Configuration::first();
 
         $certificate_admin = $config->certificate;
         $soap_username =  $config->soap_username;
         $soap_password =  $config->soap_password;
-
-
 
         return compact('url_base','plans','types', 'modules', 'certificate_admin', 'soap_username', 'soap_password');
     }
@@ -92,11 +112,12 @@ class ClientController extends Controller
 
     public function record($id)
     {
-
         $client = Client::findOrFail($id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
-        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get();
+
+        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get()->pluck('module_id')->toArray();
+        $client->levels = DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->get()->pluck('module_level_id')->toArray();
 
         $config =  DB::connection('tenant')->table('configurations')->first();
 
@@ -148,7 +169,6 @@ class ClientController extends Controller
         $documents_by_month = [];
         foreach($groups_by_month as $month => $group)
         {
-//            $labels[] = $month;
             $documents_by_month[] = $group->sum('count');
         }
 
@@ -221,33 +241,20 @@ class ClientController extends Controller
             DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->delete();
 
             $array_modules = [];
-
+            $array_levels = [];
             foreach ($request->modules as $module) {
-                if($module['checked']){
-                    $array_modules[] = ['module_id' => $module['id'], 'user_id' => 1];
-
-                    if($module['id'] == 1){
-                        DB::connection('tenant')->table('module_level_user')->insert([
-                            ['module_level_id' => 1, 'user_id' => 1],
-                            ['module_level_id' => 2, 'user_id' => 1],
-                            ['module_level_id' => 3, 'user_id' => 1],
-                            ['module_level_id' => 4, 'user_id' => 1],
-                            ['module_level_id' => 5, 'user_id' => 1],
-                            ['module_level_id' => 6, 'user_id' => 1],
-                            ['module_level_id' => 7, 'user_id' => 1],
-                            ['module_level_id' => 8, 'user_id' => 1],
-                            ['module_level_id' => 9, 'user_id' => 1],
-                            ['module_level_id' => 10, 'user_id' => 1],
-                            ['module_level_id' => 11, 'user_id' => 1],
-                            ['module_level_id' => 12, 'user_id' => 1],
-                            ['module_level_id' => 13, 'user_id' => 1],
-                            ['module_level_id' => 14, 'user_id' => 1],
-                        ]);
-                    }
-                }
+                array_push($array_modules, [
+                    'module_id' => $module, 'user_id' => 1
+                ]);
+            }
+            foreach ($request->levels as $level) {
+                array_push($array_levels, [
+                    'module_level_id' => $level, 'user_id' => 1
+                ]);
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
-            //modules
+            DB::connection('tenant')->table('module_level_user')->insert($array_levels);
+            // Modules
 
             return [
                 'success' => true,
@@ -423,57 +430,26 @@ class ClientController extends Controller
 
 
         if($request->input('type') == 'admin'){
-
             $array_modules = [];
-
+            $array_levels = [];
             foreach ($request->modules as $module) {
-                if($module['checked']){
-                    $array_modules[] = ['module_id' => $module['id'], 'user_id' => $user_id];
-
-                    if($module['id'] == 1){
-                        DB::connection('tenant')->table('module_level_user')->insert([
-                            ['module_level_id' => 1, 'user_id' => $user_id],
-                            ['module_level_id' => 2, 'user_id' => $user_id],
-                            ['module_level_id' => 3, 'user_id' => $user_id],
-                            ['module_level_id' => 4, 'user_id' => $user_id],
-                            ['module_level_id' => 5, 'user_id' => $user_id],
-                            ['module_level_id' => 6, 'user_id' => $user_id],
-                            ['module_level_id' => 7, 'user_id' => $user_id],
-                            ['module_level_id' => 8, 'user_id' => $user_id],
-                            ['module_level_id' => 9, 'user_id' => $user_id],
-                            ['module_level_id' => 10, 'user_id' => $user_id],
-                            ['module_level_id' => 11, 'user_id' => $user_id],
-                            ['module_level_id' => 12, 'user_id' => $user_id],
-                            ['module_level_id' => 13, 'user_id' => $user_id],
-                            ['module_level_id' => 14, 'user_id' => $user_id],
-                        ]);
-                    }
-                }
+                array_push($array_modules, [
+                    'module_id' => $module, 'user_id' => $user_id
+                ]);
+            }
+            foreach ($request->levels as $level) {
+                array_push($array_levels, [
+                    'module_level_id' => $level, 'user_id' => $user_id
+                ]);
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
-
-            // DB::connection('tenant')->table('module_user')->insert([
-            //     ['module_id' => 1, 'user_id' => $user_id],
-            //     ['module_id' => 2, 'user_id' => $user_id],
-            //     ['module_id' => 3, 'user_id' => $user_id],
-            //     ['module_id' => 4, 'user_id' => $user_id],
-            //     ['module_id' => 5, 'user_id' => $user_id],
-            //     ['module_id' => 6, 'user_id' => $user_id],
-            //     ['module_id' => 7, 'user_id' => $user_id],
-            //     ['module_id' => 8, 'user_id' => $user_id],
-            //     ['module_id' => 9, 'user_id' => $user_id],
-            //     ['module_id' => 10, 'user_id' => $user_id],
-            //     ['module_id' => 11, 'user_id' => $user_id],
-            // ]);
-
-        }else{
-
+            DB::connection('tenant')->table('module_level_user')->insert($array_levels);
+        } else {
             DB::connection('tenant')->table('module_user')->insert([
                 ['module_id' => 1, 'user_id' => $user_id],
                 ['module_id' => 3, 'user_id' => $user_id],
                 ['module_id' => 5, 'user_id' => $user_id],
             ]);
-
         }
 
         return [
