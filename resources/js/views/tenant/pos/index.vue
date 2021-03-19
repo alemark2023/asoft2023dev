@@ -168,7 +168,7 @@
                         </div>
                     </div>
                 </div>
-                <br />
+                <br/>
 
                 <div v-if="place == 'cat'" class="row">
                     <template v-for="(item, index) in categories">
@@ -218,7 +218,7 @@
                                     >
                                         <small>{{ item.internal_id }}</small>
                                         <template v-if="item.sets.length > 0">
-                                            <br />
+                                            <br/>
                                             <small>
                                                 {{ item.sets.join("-") }}
                                             </small>
@@ -251,7 +251,7 @@
                                                 "
                                             >
                                                 <span style="font-size:16px;"
-                                                    >&#9998;</span
+                                                >&#9998;</span
                                                 >
                                             </button>
                                             ({{ item.unit_type_id }})
@@ -583,23 +583,16 @@
                     </div>
                     <div class="row py-1 border-bottom m-0 p-0">
                         <div class="col-12">
-                            <table class="table table-sm table-borderless mb-0">
+                            <table class="table table-sm table-borderless mb-0 pos-list-items">
                                 <template v-for="(item, index) in form.items">
                                     <tr :key="index">
-                                        <td width="20%">
-                                            <el-input
-                                                v-model="item.item.aux_quantity"
-                                                @input="
-                                                    clickAddItem(
-                                                        item,
-                                                        index,
-                                                        true
-                                                    )
-                                                "
-                                                @keyup.enter.native="
-                                                    keyupEnterQuantity
-                                                "
-                                            ></el-input>
+                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+                                            {{ item.unit_type_id }}
+                                        </td>
+                                        <td style="width: 80px; vertical-align: top">
+                                            <el-input v-model="item.item.aux_quantity"
+                                                      @input="clickAddItem(item, index, true)"
+                                                      @keyup.enter.native="keyupEnterQuantity"></el-input>
                                             <!-- <el-input
                                                 v-model="item.item.aux_quantity"
                                                 :readonly="
@@ -619,19 +612,14 @@
                                             ></el-input> -->
                                             <!-- <el-input-number v-model="item.item.aux_quantity" @change="clickAddItem(item,index,true)" :min="1" :max="10"></el-input-number> -->
                                         </td>
-                                        <td width="20%">
-                                            <p class="m-0">
+                                        <td>
+                                            <p class="item-description">
                                                 {{ item.item.description }}
                                             </p>
                                             <small>
                                                 {{ nameSets(item.item_id) }}
                                             </small>
                                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
-                                        </td>
-                                        <td>
-                                            <small>{{
-                                                item.unit_type_id
-                                            }}</small>
                                         </td>
                                         <!-- <td>
                       <p class="font-weight-semibold m-0 text-center">{{currency_type.symbol}}</p>
@@ -645,45 +633,29 @@
                         </el-input>
                       </p>
                     </td> -->
-                                        <td>
-                                            <p
-                                                class="font-weight-semibold m-0 text-center"
-                                            >
+
+                                        <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
+<!--                                            <p-->
+<!--                                                class="font-weight-semibold m-0 text-center"-->
+<!--                                            >-->
                                                 {{ currency_type.symbol }}
-                                            </p>
+<!--                                            </p>-->
                                         </td>
-                                        <td width="30%">
-                                            <p
-                                                class="font-weight-semibold m-0 text-center"
-                                            >
+                                        <td style="width: 80px; vertical-align: top">
+<!--                                            <p class="font-weight-semibold m-0 text-center">-->
                                                 <!-- {{currency_type.symbol}} {{item.total}} -->
                                                 <el-input
                                                     v-model="item.total"
-                                                    @input="
-                                                        calculateQuantity(index)
-                                                    "
-                                                    @blur="
-                                                        blurCalculateQuantity(
-                                                            index
-                                                        )
-                                                    "
-                                                    :readonly="
-                                                        !item.item
-                                                            .calculate_quantity
-                                                    "
-                                                >
-                                                    <!-- <template slot="prepend" v-if="currency_type.symbol">{{ currency_type.symbol }}</template> -->
+                                                    @input="calculateQuantity(index)"
+                                                    @blur="blurCalculateQuantity(index)"
+                                                    :readonly="!item.item.calculate_quantity">
+<!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
                                                 </el-input>
-                                            </p>
+<!--                                            </p>-->
                                         </td>
-                                        <td class="text-right">
-                                            <a
-                                                class="btn btn-sm btn-default"
-                                                @click="clickDeleteItem(index)"
-                                            >
-                                                <i
-                                                    class="fas fa-trash fa-wf"
-                                                ></i>
+                                        <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
+                                            <a class="btn btn-sm btn-default" @click="clickDeleteItem(index)">
+                                                <i class="fas fa-trash fa-wf"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -891,6 +863,7 @@
     white-space: nowrap;
     overflow-y: hidden;
 }
+
 .testimonial-group > .row > .col-sm-3 {
     display: inline-block;
     float: none;
@@ -914,6 +887,7 @@
 .ex1 {
     overflow-x: scroll;
 }
+
 .cat_c {
     width: 100px;
     margin: 1%;
@@ -922,18 +896,22 @@
     color: white;
     min-height: 90px;
 }
+
 .cat_c p {
     color: white;
 }
+
 .c-width {
     width: 80px !important;
     padding: 0 !important;
     margin-right: 0 !important;
 }
+
 .el-select-dropdown {
     max-width: 80% !important;
     margin-right: 1% !important;
 }
+
 .el-input-group__append {
     padding: 0 10px !important;
 }
@@ -941,16 +919,17 @@
 
 <script>
 import Keypress from "vue-keypress";
-import { calculateRowItem } from "../../../helpers/functions";
+import {calculateRowItem} from "../../../helpers/functions";
 import PaymentForm from "./partials/payment.vue";
 import ItemForm from "./partials/form.vue";
-import { functions, exchangeRate } from "../../../mixins/functions";
+import {functions, exchangeRate} from "../../../mixins/functions";
 import HistorySalesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 import HistoryPurchasesForm from "../../../../../modules/Pos/Resources/assets/js/views/history/purchases.vue";
 import PersonForm from "../persons/form.vue";
 import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
+
 export default {
     props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
     components: {
@@ -1177,7 +1156,7 @@ export default {
             let item_search = this.items[index];
             this.items[index].sale_unit_price = this.items[
                 index
-            ].edit_sale_unit_price;
+                ].edit_sale_unit_price;
             this.items[index].edit_unit_price = false;
 
             // console.log(item_search)
@@ -1278,7 +1257,7 @@ export default {
             if (this.form.items[index].item.calculate_quantity) {
                 let quantity = _.round(
                     parseFloat(this.form.items[index].total) /
-                        parseFloat(this.form.items[index].unit_price),
+                    parseFloat(this.form.items[index].unit_price),
                     4
                 );
 
@@ -1469,7 +1448,7 @@ export default {
                 discounts: [],
                 attributes: [],
                 has_igv: false,
-                has_plastic_bag_taxes:false,
+                has_plastic_bag_taxes: false,
             };
         },
         async clickPayment() {
@@ -1612,7 +1591,7 @@ export default {
                 this.form_item.attributes = [];
                 this.form_item.affectation_igv_type = _.find(
                     this.affectation_igv_types,
-                    { id: this.form_item.affectation_igv_type_id }
+                    {id: this.form_item.affectation_igv_type_id}
                 );
 
                 // console.log(this.form_item)
@@ -1629,7 +1608,7 @@ export default {
                     ? item.presentation.unit_type_id
                     : this.form_item.item.unit_type_id;
 
-                this.form.items.push(this.row);
+                this.form.items.unshift(this.row);
                 item.aux_quantity = 1;
             }
 
@@ -1943,6 +1922,11 @@ export default {
                     return "";
                 }
             }
+        },
+        listReverse(items) {
+            console.log(items);
+            console.log(_.reverse(items));
+            return _.reverse(items);
         }
     }
 };
