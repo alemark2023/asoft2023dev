@@ -6,6 +6,7 @@
 
 
 ### fixed
+2021-03-19 : fixed | i-332 | optimización visual del pos
 2021-03-10 : fixed | solución al error  logo not found<br>
 2021-03-09 : fixed | i-361 | template header_image_full_width<br>
 2021-03-08 : fixed | i-220-2 | se eliminó el icono de la frase genear guía<br>
