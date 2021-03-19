@@ -39,7 +39,14 @@ class ClientController extends Controller
         $url_base = '.'.config('tenant.app_url_base');
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
-        $modules = Module::orderBy('description')->get();
+        $modules = Module::with('levels')
+            ->orderBy('description')
+            ->get()
+            ->each(function ($module) {
+                return [
+                    'label' => 
+                ];
+            });
 
         $config = Configuration::first();
 
@@ -92,7 +99,6 @@ class ClientController extends Controller
 
     public function record($id)
     {
-
         $client = Client::findOrFail($id);
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);

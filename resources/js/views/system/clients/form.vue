@@ -84,9 +84,19 @@
                             <div class="col-md-12" >
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-4" v-for="(module,ind) in form.modules" :key="ind">
+                                        <el-tree
+                                            :data="data"
+                                            show-checkbox
+                                            default-expand-all
+                                            node-key="id"
+                                            ref="tree"
+                                            highlight-current
+                                            :props="defaultProps">
+                                        </el-tree>
+                                        <!-- <div class="col-4" v-for="(module,ind) in form.modules" :key="ind">
                                             <el-checkbox v-model="module.checked">{{ module.description }}</el-checkbox>
-                                        </div>
+                                        </div> -->
+                                        <a href="#" @click.prevent="demo" class="btn">Extraer nodos</a>
                                     </div>
                                 </div>
                             </div>
@@ -218,9 +228,7 @@
     </el-dialog>
 </template>
 
-
 <script>
-
     import {serviceNumber} from '../../../mixins/functions'
 
     export default {
@@ -228,6 +236,45 @@
         props: ['showDialog', 'recordId'],
         data() {
             return {
+                data: [{
+          id: 1,
+          label: 'Level one 1',
+          children: [{
+            id: 4,
+            label: 'Level two 1-1',
+            children: [{
+              id: 9,
+              label: 'Level three 1-1-1'
+            }, {
+              id: 10,
+              label: 'Level three 1-1-2'
+            }]
+          }]
+        }, {
+          id: 2,
+          label: 'Level one 2',
+          children: [{
+            id: 5,
+            label: 'Level two 2-1'
+          }, {
+            id: 6,
+            label: 'Level two 2-2'
+          }]
+        }, {
+          id: 3,
+          label: 'Level one 3',
+          children: [{
+            id: 7,
+            label: 'Level two 3-1'
+          }, {
+            id: 8,
+            label: 'Level two 3-2'
+          }]
+        }],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                },
                 headers: headers_token,
                 loading_submit: false,
                 loading_search: false,
@@ -270,6 +317,9 @@
 
         },
         methods: {
+            demo() {
+                console.log(this.$refs.tree.getCheckedNodes());
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
