@@ -9,7 +9,8 @@
     text-align: right;
 }
 
-.table th, .table td {
+.table th,
+.table td {
     vertical-align: middle;
 }
 
@@ -67,7 +68,7 @@
 }
 
 .m-1__2 {
-    margin: 0.10rem !important;
+    margin: 0.1rem !important;
 }
 
 .dialog-import {
@@ -108,7 +109,6 @@
     }
 }
 
-
 .separator-title {
     position: relative;
     color: #303133;
@@ -117,7 +117,7 @@
     margin-top: 20px;
 
     &:before {
-        content: '';
+        content: "";
         width: 100%;
         border-bottom: solid 1px #dcdfe6;
         position: absolute;
@@ -170,4 +170,19 @@ html.dark {
         text-align: right;
         padding: 0 6px;
     }
+}
+.el-tree-node__expand-icon {
+    font-size: 16px;
+    color: #303133;
+    margin-top: -2px;
+}
+.el-tree-node__content {
+    height: 30px;
+    .el-checkbox__input {
+        margin-top: 6px;
+    }
+}
+.tree-container-admin{
+    height: 200px;
+    overflow-y: scroll;
 }

@@ -57,7 +57,7 @@ class ClientController extends Controller
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
         $modules = Module::with('levels')
-            ->orderBy('description')
+            ->orderBy('sort')
             ->get()
             ->each(function ($module) {
                 return $this->prepareModules($module);

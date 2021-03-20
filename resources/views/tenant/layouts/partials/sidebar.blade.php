@@ -956,7 +956,10 @@
                         </ul>
                     </li>
                     @endif
+                    @if(in_array('hotels', $vc_modules) || in_array('documentary-procedure', $vc_modules))
                     <li class="nav-description">Módulos extras</li>
+                    @endif
+                    @if(in_array('hotels', $vc_modules))
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
@@ -981,6 +984,8 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
+                    @if(in_array('documentary-procedure', $vc_modules))
                     <li class=" nav-parent {{ ($path[0] === 'documentary-procedure') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
@@ -1004,6 +1009,7 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
                 </ul>
             </nav>
         </div>

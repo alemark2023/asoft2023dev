@@ -80,22 +80,17 @@
                 </div>
                 <el-collapse v-model="collapse">
                     <el-collapse-item title="Módulos" name="1">
-                        <div class="row mt-2">
-                            <div class="col-md-12" >
-                                <div class="form-group">
-                                    <div class="row">
-                                        <el-tree
-                                            :data="modules"
-                                            show-checkbox
-                                            node-key="id"
-                                            ref="tree"
-                                            accordion
-                                            highlight-current
-                                            :props="defaultProps">
-                                        </el-tree>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="form-group tree-container-admin">
+                            <el-tree
+                                :data="modules"
+                                show-checkbox
+                                node-key="id"
+                                ref="tree"
+                                accordion
+                                :check-strictly="true"
+                                highlight-current
+                                :props="defaultProps">
+                            </el-tree>
                         </div>
                     </el-collapse-item>
                     <el-collapse-item title="Entorno del sistema" name="2">
@@ -303,14 +298,6 @@
                     certificate: null,
                     temp_path: null,
                 }
-
-                // this.modules.forEach(module => {
-                //     this.form.modules.push({
-                //         id: module.id,
-                //         description: module.description,
-                //         checked: true
-                //     })
-                // })
             },
             create() {
                 if (this.recordId) {
@@ -333,6 +320,7 @@
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
+                            this.$refs.tree.setCheckedKeys([]);
                             this.form = response.data.data;
                             this.form.is_update = true;
                             const preSelecteds = [];
@@ -344,12 +332,14 @@
                                 }
                                 m.childrens.map(c => {
                                     const idArray = c.id.split('-');
-                                    if (preSelectedsLevels.includes(idArray[1])) {
+                                    if (preSelectedsLevels.includes(parseInt(idArray[1]))) {
                                         preSelecteds.push(c.id);
                                     }
                                 })
-                            })
-                            this.$refs.tree.setCheckedKeys(preSelecteds);
+                            });
+                            setTimeout(() => {
+                                this.$refs.tree.setCheckedKeys(preSelecteds);
+                            }, 1000);
                         })
                 }
             },
