@@ -196,9 +196,7 @@
                                                 </a>
                                             </li>
                                             <li class="{{ ($path[0] === 'incentives')?'nav-active':'' }}">
-                                                <a class="nav-link" href="{{route('tenant.incentives.index')}}">
-                                                    Productos
-                                                </a>
+                                                <a class="nav-link" href="{{route('tenant.incentives.index')}}">Productos</a>
                                             </li>
                                         </ul>
                                     </li>
@@ -269,7 +267,7 @@
                     @endif
 
                     {{-- Productos --}}
-                    @if(in_array('catalogs', $vc_module_levels))
+                    @if(in_array('items', $vc_module_levels))
                     <li class="nav-parent
                         {{ ($path[0] === 'items')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'services')?'nav-active nav-expanded':'' }}
@@ -305,7 +303,7 @@
                     </li>
                     @endif
                     {{-- Clientes --}}
-                    @if(in_array('catalogs', $vc_module_levels))
+                    @if(in_array('persons', $vc_module_levels))
                     <li class="nav-parent
                         {{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active nav-expanded':'' }}
                         {{ $path[0] === 'person-types' ? 'nav-active nav-expanded' : '' }}
@@ -631,7 +629,10 @@
                         </ul>
                     </li>
                     @endif
+                    @if(in_array('hotels', $vc_modules) || in_array('documentary-procedure', $vc_modules))
                     <li class="nav-description">Módulos extras</li>
+                    @endif
+                    @if(in_array('hotels', $vc_modules))
                     <li class=" nav-parent
                         {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
@@ -656,6 +657,8 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
+                    @if(in_array('documentary-procedure', $vc_modules))
                     <li class=" nav-parent {{ ($path[0] === 'documentary-procedure') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
@@ -679,6 +682,7 @@
                             </li>
                         </ul>
                     </li>
+                    @endif
                 </ul>
             </nav>
         </div>

@@ -4,6 +4,7 @@
 .el-select {
     width: 100%;
 }
+
 .el-input-number .el-input__inner {
     text-align: right;
 }
@@ -11,11 +12,13 @@
 .table td {
     vertical-align: middle;
 }
+
 .input-text-right {
     input {
         text-align: right;
     }
 }
+
 .button-xlarge {
     font-size: 20px;
     padding: 18px 22px;
@@ -26,12 +29,15 @@
     align-items: center;
     justify-content: space-between;
 }
+
 .certificate-form {
     .el-dialog {
         max-width: 600px;
     }
+
     .el-upload {
         width: 100%;
+
         .el-button {
             width: 100%;
         }
@@ -88,6 +94,7 @@
 .short-text {
     display: none;
 }
+
 .full-text {
     display: inline-block;
 }
@@ -126,10 +133,12 @@
     box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
     border-radius: 5px;
     border: none;
+
     .card-body {
         font-size: 1rem;
         font-weight: 600;
     }
+
     .card-title {
         font-weight: 500;
         font-size: 14px;
@@ -165,4 +174,37 @@ html.dark {
     .card.card-dashboard {
         color: #5bc0de;
     }
+}
+
+.pos-list-items {
+    .pos-list-label {
+        padding-top: 6px;
+        font-size: 9px;
+        font-weight: 500;
+    }
+    .item-description {
+        font-size: 11px;
+        margin: 0;
+        line-height: 16px;
+    }
+    .el-input__inner {
+        font-size: 11px;
+        text-align: right;
+        padding: 0 6px;
+    }
+}
+.el-tree-node__expand-icon {
+    font-size: 16px;
+    color: #303133;
+    margin-top: -2px;
+}
+.el-tree-node__content {
+    height: 30px;
+    .el-checkbox__input {
+        margin-top: 6px;
+    }
+}
+.tree-container-admin{
+    height: 200px;
+    overflow-y: scroll;
 }
