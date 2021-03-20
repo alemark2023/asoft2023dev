@@ -64,4 +64,9 @@ class SettingController extends Controller
     {
         return view('tenant.settings.list_vouchers_type');
     }
+
+    public function listReports()
+    {
+        return view('tenant.reports.list');
+    }
 }

@@ -23,6 +23,7 @@ if ($hostname) {
 
 		Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 			// Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
+            Route::get('list-reports', 'Tenant\SettingController@listReports');
             Route::get('list-banks', 'Tenant\SettingController@listBanks');
             Route::get('list-bank-accounts', 'Tenant\SettingController@listAccountBanks');
             Route::get('list-currencies', 'Tenant\SettingController@listCurrencies');
