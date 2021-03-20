@@ -69,4 +69,9 @@ class SettingController extends Controller
     {
         return view('tenant.reports.list');
     }
+
+    public function indexSettings()
+    {
+        return view('tenant.settings.list_settings');
+    }
 }

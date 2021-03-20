@@ -24,6 +24,11 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         view()->composer(
+            'tenant.settings.list_settings',
+            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
+        );
+
+        view()->composer(
             'tenant.reports.list',
             'Modules\BusinessTurn\Http\ViewComposers\BusinessTurnViewComposer'
         );
@@ -55,6 +60,11 @@ class ViewServiceProvider extends ServiceProvider
 
         view()->composer(
             'tenant.layouts.partials.sidebar',
+            'App\Http\ViewComposers\Tenant\ModuleViewComposer'
+        );
+
+        view()->composer(
+            'tenant.settings.list_settings',
             'App\Http\ViewComposers\Tenant\ModuleViewComposer'
         );
 
