@@ -267,7 +267,7 @@
                     @endif
 
                     {{-- Productos --}}
-                    @if(in_array('items', $vc_module_levels))
+                    @if(in_array('items', $vc_modules))
                     <li class="nav-parent
                         {{ ($path[0] === 'items')?'nav-active nav-expanded':'' }}
                         {{ ($path[0] === 'services')?'nav-active nav-expanded':'' }}
@@ -303,7 +303,7 @@
                     </li>
                     @endif
                     {{-- Clientes --}}
-                    @if(in_array('persons', $vc_module_levels))
+                    @if(in_array('persons', $vc_modules))
                     <li class="nav-parent
                         {{ ($path[0] === 'persons' && $path[1] === 'customers')?'nav-active nav-expanded':'' }}
                         {{ $path[0] === 'person-types' ? 'nav-active nav-expanded' : '' }}
