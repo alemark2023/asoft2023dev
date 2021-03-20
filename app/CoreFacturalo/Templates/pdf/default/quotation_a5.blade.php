@@ -351,5 +351,18 @@
     </tr>
 
 </table>
+@if ($document->seller->name)
+<br>
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        <td>{{ $document->seller->name }}</td>
+    </tr>
+</table>
+@endif
 </body>
 </html>

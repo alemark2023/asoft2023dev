@@ -2,44 +2,45 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Models\Tenant\Establishment;
-use App\Models\Tenant\Quotation;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\Series;
-use App\Http\Resources\Tenant\QuotationCollection;
-use App\Http\Resources\Tenant\QuotationResource;
-use App\Http\Resources\Tenant\QuotationResource2;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\DocumentType;
-use Illuminate\Support\Facades\DB;
-use App\Models\Tenant\Catalogs\PriceType;
-use App\Models\Tenant\Catalogs\SystemIscType;
-use App\Models\Tenant\Catalogs\AttributeType;
-use App\Models\Tenant\Company;
-use App\Http\Requests\Tenant\QuotationRequest;
-use App\Models\Tenant\Warehouse;
-use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
-use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Template;
+use Exception;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
-use Mpdf\Config\ConfigVariables;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\User;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Series;
+use App\Models\Tenant\Company;
 use Mpdf\Config\FontVariables;
-use Exception;
-use Illuminate\Support\Facades\Mail;
+use App\CoreFacturalo\Template;
+use App\Models\Tenant\Quotation;
+use App\Models\Tenant\StateType;
+use App\Models\Tenant\Warehouse;
+use Mpdf\Config\ConfigVariables;
+use Illuminate\Support\Facades\DB;
 use App\Mail\Tenant\QuotationEmail;
+use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Traits\FinanceTrait;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\StateType;
+use App\Models\Tenant\Catalogs\PriceType;
+use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Http\Requests\Tenant\QuotationRequest;
+use App\Http\Resources\Tenant\QuotationResource;
+use App\Http\Resources\Tenant\QuotationResource2;
+use App\Http\Resources\Tenant\QuotationCollection;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 
 
 class QuotationController extends Controller
@@ -168,9 +169,13 @@ class QuotationController extends Controller
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale')->first();
+        $sellers = User::without(['establishment'])
+            ->whereIn('type', ['seller'])
+            ->orWhere('id', auth()->user()->id)
+            ->get();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
-                        'company', 'document_type_03_filter','payment_method_types', 'payment_destinations');
+                        'company', 'document_type_03_filter','payment_method_types', 'payment_destinations', 'sellers');
 
     }
 
