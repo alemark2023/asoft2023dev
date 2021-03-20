@@ -8,7 +8,6 @@
 .el-input-number .el-input__inner {
     text-align: right;
 }
-
 .table th,
 .table td {
     vertical-align: middle;
@@ -115,7 +114,6 @@
     font-weight: 500;
     margin-bottom: 20px;
     margin-top: 20px;
-
     &:before {
         content: "";
         width: 100%;
@@ -146,8 +144,32 @@
         font-size: 14px;
         min-height: 60px;
     }
+    &.card-reports {
+        height: 100%;
+        .card-title {
+            min-height: 36px;
+        }
+    }
 }
-
+.card-report-links {
+    padding-left: 1rem;
+    margin-bottom: 0;
+    li {
+        margin-bottom: 0.5rem;
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+    a {
+        display: block;
+        color: #33353f;
+        font-size: 13px;
+        font-weight: 500;
+        &:hover {
+            color: #33353f;
+        }
+    }
+}
 html.dark {
     .card.card-dashboard {
         color: #5bc0de;
