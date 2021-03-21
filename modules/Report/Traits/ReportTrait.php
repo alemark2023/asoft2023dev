@@ -9,8 +9,11 @@ use App\Models\Tenant\SaleNote;
 use Carbon\Carbon;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Models\Tenant\StateType;
+use App\Models\Tenant\Warehouse;
+use Auth;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\WebPlatform;
 
@@ -19,7 +22,8 @@ trait ReportTrait
 {
 
 
-    public function getRecords($request, $model){
+    public function getRecords($request, $model)
+    {
 
         // dd($request['period']);
         $document_type_id = $request['document_type_id'];
@@ -232,6 +236,22 @@ trait ReportTrait
 
         return $persons;
 
+    }
+
+    public function getSeries($document_types)
+    {
+        $series = Series::wherein('document_type_id', $document_types->pluck('id')->toArray());
+        return $series->get();
+    }
+
+    public function getWarehouse()
+    {
+        $warehouses = Warehouse::select('id', 'description');
+        if (Auth::user()->type !== 'admin') {
+            $warehouses = $warehouses->where('id', Auth::user()->establishment_id);
+        }
+
+        return $warehouses->get();
     }
 
     public function getDataOfPeriod($request){
