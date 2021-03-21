@@ -50,7 +50,8 @@
                                 <div class="form-group">
                                     <label class="control-label">Tipo documento
                                     </label>
-                                    <el-select v-model="form.document_type_id" multiple filterable clearable>
+                                    <el-select v-model="form.document_type_id" multiple filterable clearable
+                                               collapse-tags>
                                         <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                     </el-select>
 
