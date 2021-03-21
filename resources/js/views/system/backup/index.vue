@@ -2,9 +2,25 @@
     <div class="row">
         <div class="card col-md-8">
             <div class="card-header justify-content-center d-block">
-                <div class="text-center mt-2">
-                    <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
-                </div>
+                <h4>Generar backup</h4>
+                <br>
+                <form class="row pt-2" @submit.prevent="onSubmitBackups">
+                    <div class="col-12 mb-2">
+                        <span>Tipo</span> <br>
+                        <el-radio v-model="formBackups.type" label="todos">Todos</el-radio>
+                        <el-radio v-model="formBackups.type" label="individual">Individual</el-radio>
+                    </div>
+                    <div class="col-6 col-md-3 form-group" v-if="formBackups.type === 'individual'" :class="{'has-danger': errors.hostname_id}">
+                        <el-select v-model="formBackups.hostname_id" clearable filterable placeholder="Selecciona un cliente">
+                            <el-option v-for="cl in clients" :key="cl.hostname_id" :label="cl.name" :value="cl.hostname_id"></el-option>
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.hostname_id" v-text="errors.hostname_id[0]"></small>
+                    </div>
+                    <div class="col-6 col-md-3 form-group">
+                        <el-button @click.prevent="start()" :loading="loading_submit">Iniciar Proceso</el-button>
+                    </div>
+                </form>
+                <br><br>
                 <p class="mb-0">Espacio disponible en disco: {{discUsed}}</p>
                 <p class="mb-0">Espacio ocupado por archivos de facturación: {{storageSize}}</p>
             </div>
@@ -65,7 +81,7 @@
     import $ from 'jquery'
 
     export default {
-        props: ['storageSize','discUsed', 'lastZip'],
+        props: ['storageSize','discUsed', 'lastZip', 'clients'],
         data() {
             return {
                 headers: null,
@@ -84,7 +100,11 @@
                     content: '',
                     status: '',
                 },
-                newLastZip: ''
+                newLastZip: '',
+                formBackups: {
+                    type: 'todos',
+                },
+                errors: {},
             }
         },
         created() {
@@ -120,29 +140,32 @@
                 this.files.status = false
             },
             backupDb() {
-                this.$http.get(`/${this.resource}/db`)
+                this.$http.post(`/${this.resource}/db`, this.formBackups)
                 .then(response => {
                     if (response.data !== '') {
                         this.db.content = response.data
+                        this.errors = {};
                         if (response.status === 200) {
                             this.db.status = 'success'
                         }
                         this.backupFiles()
                     }
                 }).catch(error => {
-                    if (error.response.status !== 200) {
+                    const status = error.response.status;
+                    if (status === 422) {
+                        this.errors = error.response.data;
+                    } else if (status !== 200) {
                         this.db.error = error.response.data.message
                         this.db.status = 'false'
-                    } else {
-                        console.log(error)
                     }
-                })
+                }).finally(() => this.loading_submit = false);
             },
             backupFiles() {
-                this.$http.get(`/${this.resource}/files`)
+                this.$http.post(`/${this.resource}/files`, this.formBackups)
                     .then(response => {
                         if (response.data !== '') {
                             this.files.content = response.data
+                            this.errors = {};
                             if (response.status === 200) {
                                 this.files.status = 'success'
                                 this.mostRecent()
@@ -150,17 +173,18 @@
                             this.loading_submit = false
                         }
                     }).catch(error => {
-                        if (error.response.status !== 200) {
-                            this.files.error = error.response.data.message
-                            this.files.status = 'false'
-                        } else {
-                            console.log(error)
+                        const status = error.response.status;
+                        if (status === 422) {
+                            this.errors = error.response.data;
+                        } else if (status !== 200) {
+                            this.db.error = error.response.data.message
+                            this.db.status = 'false'
                         }
                     })
 
             },
             mostRecent(){
-                
+
                 this.$http.get(`/${this.resource}/last-backup`)
                     .then(response => {
                         if (response.data !== '') {

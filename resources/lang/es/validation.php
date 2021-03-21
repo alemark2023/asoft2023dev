@@ -283,5 +283,6 @@ return [
 		'person_id'                                => 'remitente',
 		'documentary_process_id'                   => 'proceso',
 		'dispatches_id'                            => 'guías',
+		'hostname_id'                              => 'cliente',
 	],
 ];
