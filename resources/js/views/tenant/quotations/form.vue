@@ -212,6 +212,13 @@
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="control-label">Información referencial</label>
+                                                    <el-input v-model="form.referential_information"></el-input>
+                                                    <small class="form-control-feedback" v-if="errors.referential_information" v-text="errors.referential_information[0]"></small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </el-collapse-item>
                                 </el-collapse>

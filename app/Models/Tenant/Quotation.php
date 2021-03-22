@@ -62,6 +62,7 @@ class Quotation extends ModelTenant
         'changed',
         'account_number',
         'terms_condition',
+        'referential_information',
         'contact',
         'phone',
 

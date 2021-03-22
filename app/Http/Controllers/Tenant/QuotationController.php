@@ -76,7 +76,8 @@ class QuotationController extends Controller
             'customer' => 'Cliente',
             'date_of_issue' => 'Fecha de emisión',
             'delivery_date' => 'Fecha de entrega',
-            'user_name' => 'Vendedor'
+            'user_name' => 'Vendedor',
+            'referential_information' => 'Inf.Referencial'
         ];
     }
 

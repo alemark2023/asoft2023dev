@@ -31,6 +31,7 @@ class Configuration extends ModelTenant
         'affectation_igv_type_id',
         'terms_condition',
         'cotizaction_finance',
+        'quotation_allow_seller_generate_sale',
         'include_igv',
         'product_only_location',
         'header_image',
@@ -40,6 +41,10 @@ class Configuration extends ModelTenant
         'terms_condition_sale',
         'login',
         'finances'
+    ];
+
+    protected $casts = [
+      'quotation_allow_seller_generate_sale' => 'boolean'
     ];
 
     public function setPlanAttribute($value)
