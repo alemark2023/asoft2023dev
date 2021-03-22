@@ -7034,7 +7034,7 @@ ul.nav-main li .nav-children {
     -webkit-box-shadow: 0px -3px 3px -3px rgba(0, 0, 0, 0.7) inset;
     box-shadow: 0px -3px 3px -3px rgba(0, 0, 0, 0.7) inset; */
     display: none;
-    padding: 10px 0;
+    padding: 10px 10px;
 }
 
 ul.nav-main li .nav-children li a {
@@ -7058,7 +7058,7 @@ ul.nav-main li .nav-children li.nav-active > a {
 ul.nav-main li .nav-children .nav-children {
     -webkit-box-shadow: none;
     box-shadow: none;
-    padding: 0;
+    padding: 0 10px;
 }
 
 /* ul.nav-main li .nav-children .nav-children li a {
