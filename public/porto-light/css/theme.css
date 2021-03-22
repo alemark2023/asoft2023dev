@@ -1481,6 +1481,9 @@ html.dark .header .logo-container .topbar-links {
 html.dark .sidebar-toggle {
     border-right: 1px solid #161d31;
 }
+html.header-dark .sidebar-toggle {
+    border-right: 1px solid #161d31;
+}
 .sidebar-toggle:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
@@ -7031,7 +7034,7 @@ ul.nav-main li .nav-children {
     -webkit-box-shadow: 0px -3px 3px -3px rgba(0, 0, 0, 0.7) inset;
     box-shadow: 0px -3px 3px -3px rgba(0, 0, 0, 0.7) inset; */
     display: none;
-    padding: 10px 0;
+    padding: 10px 10px;
 }
 
 ul.nav-main li .nav-children li a {
@@ -7055,7 +7058,7 @@ ul.nav-main li .nav-children li.nav-active > a {
 ul.nav-main li .nav-children .nav-children {
     -webkit-box-shadow: none;
     box-shadow: none;
-    padding: 0;
+    padding: 0 10px;
 }
 
 /* ul.nav-main li .nav-children .nav-children li a {
@@ -7289,7 +7292,7 @@ html.sidebar-light:not(.dark) ul.nav-main li .nav-children li a:focus {
 }
 
 .badge-info {
-    background: #5bc0de;
+    background: #5bc0de !important;
     color: #fff;
 }
 
@@ -13122,6 +13125,7 @@ html.dark .notifications > li .notification-icon i {
     right: -8px;
     top: -3px;
     border-radius: 100%;
+    min-width: 16px;
 }
 
 .notifications > li > a {
@@ -13285,7 +13289,8 @@ html.dark .notifications > li .notification-icon i {
 }
 
 html.dark .notifications > li .notification-icon,
-html.header-dark .notifications > li .notification-icon {
+html.header-dark .notifications > li .notification-icon,
+html.header-dark .notifications > li .notification-icon i {
     /* background: #282d36; */
     color: #d0d2d6 !important;
 }
@@ -21100,7 +21105,7 @@ html.sidebar-left-big-icons .sidebar-left .sidebar-header {
 }
 .btn-demo.btn-demo-prod {
     position: relative;
-    color: #222;
+    color: #6c757d;
 }
 .btn-demo.btn-demo-prod::before {
     content: "";

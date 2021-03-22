@@ -162,6 +162,13 @@
                                     <small class="form-control-feedback" v-if="errors.cotizaction_finance" v-text="errors.cotizaction_finance[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Permitir generar comprobante de pago desde cotización a vendedores</label>
+                                <div class="form-group" :class="{'has-danger': errors.quotation_allow_seller_generate_sale}">
+                                    <el-switch v-model="form.quotation_allow_seller_generate_sale" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.quotation_allow_seller_generate_sale" v-text="errors.quotation_allow_seller_generate_sale[0]"></small>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mt-4">
@@ -342,6 +349,7 @@
                     legend_footer: false,
                     default_document_type_03: false,
                     destination_sale: false,
+                    quotation_allow_seller_generate_sale: false,
                     finances: {}
                 };
             },

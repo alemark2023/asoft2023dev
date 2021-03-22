@@ -211,6 +211,13 @@
                                                     <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="control-label">Información referencial</label>
+                                                    <el-input v-model="form.referential_information"></el-input>
+                                                    <small class="form-control-feedback" v-if="errors.referential_information" v-text="errors.referential_information[0]"></small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </el-collapse-item>
                                 </el-collapse>
@@ -525,6 +532,7 @@
                     this.form.active_terms_condition = dato.terms_condition ? true:false
                     this.form.items = dato.items
                     this.form.payments = dato.payments
+                    this.form.referential_information = dato.referential_information
                     this.changeCustomer()
                     this.form.customer_address_id = dato.customer.address_id
                     this.calculateTotal()
@@ -594,6 +602,7 @@
                     account_number:null,
                     terms_condition:null,
                     active_terms_condition:false,
+                    referential_information: '',
                     payments: [],
                     actions: {
                         format_pdf:'a4',

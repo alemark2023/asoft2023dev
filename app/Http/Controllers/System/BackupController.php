@@ -5,6 +5,7 @@ namespace App\Http\Controllers\System;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
+use App\Models\System\Client;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use DateTime;
@@ -12,7 +13,8 @@ use Artisan;
 use Config;
 use Exception;
 use App\Traits\BackupTrait;
-
+use Hyn\Tenancy\Models\Hostname;
+use Hyn\Tenancy\Models\Website;
 
 class BackupController extends Controller
 {
@@ -31,18 +33,50 @@ class BackupController extends Controller
 
         $most_recent = $this->mostRecent();
 
-        return view('system.backup.index')->with('disc_used', $disc_used)->with('storage_size', $storage_size)->with('last_zip', $most_recent);
+        $clients = Client::without(['hostname','plan'])
+            ->select('hostname_id', 'name')
+            ->get();
+
+        return view('system.backup.index')->with('disc_used', $disc_used)->with('storage_size', $storage_size)->with('last_zip', $most_recent)->with('clients', $clients);
     }
 
-    public function db()
+    public function db(Request $request)
     {
-        $output = Artisan::call('bk:bd');
+        $request->validate([
+            'type' => 'required|in:individual,todos',
+            'hostname_id' => 'nullable|required_if:type,individual',
+        ]);
+
+        $database = '';
+        if ($request->type === 'individual') {
+            $hostname = Hostname::findOrFail($request->hostname_id);
+            $website = Website::findOrFail($hostname->website_id);
+            $database = $website->uuid;
+        }
+        $output = Artisan::call('bk:bd', [
+            'type' => $request->type,
+            'database' => $database,
+        ]);
         return json_encode($output);
     }
 
-    public function files()
+    public function files(Request $request)
     {
-        $output = Artisan::call('bk:files');
+        $request->validate([
+            'type' => 'required|in:individual,todos',
+            'hostname_id' => 'nullable|required_if:type,individual',
+        ]);
+
+        $folder = '';
+        if ($request->type === 'individual') {
+            $hostname = Hostname::findOrFail($request->hostname_id);
+            $website = Website::findOrFail($hostname->website_id);
+            $folder = $website->uuid;
+        }
+        $output = Artisan::call('bk:files', [
+            'type' => $request->type,
+            'folder' => $folder,
+        ]);
         return json_encode($output);
     }
 
@@ -72,7 +106,7 @@ class BackupController extends Controller
             $fileFrom = Storage::get($most_recent['path']);
 
             $upload = Storage::disk('ftp')->put($fileTo, $fileFrom);
-            
+
             return [
                 'success' => $upload,
                 'message' => 'Proceso finalizado satisfactoriamente'
@@ -80,7 +114,7 @@ class BackupController extends Controller
 
 
         } catch (Exception $e) {
-            
+
             $this->setErrorLog($e);
             return $this->getErrorMessage("Lo sentimos, ocurrió un error inesperado: {$e->getMessage()}");
 
@@ -119,12 +153,12 @@ class BackupController extends Controller
         }
     }
 
-    
+
     public function download($filename)
     {
 
         return Storage::download('backups'.DIRECTORY_SEPARATOR.'zip'.DIRECTORY_SEPARATOR.$filename);
- 
+
     }
-    
+
 }
