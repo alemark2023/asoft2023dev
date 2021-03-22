@@ -244,14 +244,14 @@ trait ReportTrait
         return $series->get();
     }
 
-    public function getWarehouse()
+    public function getEstablishment()
     {
-        $warehouses = Warehouse::select('id', 'description');
+        $establishment = Establishment::select('id', 'description');
         if (Auth::user()->type !== 'admin') {
-            $warehouses = $warehouses->where('id', Auth::user()->establishment_id);
+            $establishment = $establishment->where('id', Auth::user()->establishment_id);
         }
 
-        return $warehouses->get();
+        return $establishment->get();
     }
 
     public function getDataOfPeriod($request){

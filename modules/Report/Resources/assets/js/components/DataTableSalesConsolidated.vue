@@ -125,10 +125,10 @@
                     <!-- Almacen -->
                     <div class="col-lg-3 col-md-3" >
                         <div class="form-group">
-                            <label class="control-label">Almacen
+                            <label class="control-label">Establecimiento
                             </label>
-                            <el-select v-model="form.warehouse_id" filterable clearable>
-                                <el-option v-for="option in warehouse_id" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            <el-select v-model="form.establishment_id" filterable clearable>
+                                <el-option v-for="option in establishment_id" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
 
                         </div>
@@ -237,7 +237,7 @@
                     this.sellers = response.data.sellers
                     this.document_types = response.data.document_types
                     this.series = response.data.series
-                    this.warehouse_id = response.data.warehouse_id
+                    this.establishment_id = response.data.establishment_id
                 });
 
 
