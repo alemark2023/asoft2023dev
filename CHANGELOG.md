@@ -14,6 +14,7 @@
 
 
 ### feature
+2021-03-22 : feature | i-416 | Requerimiento para Cotizaciones - Referencia
 2021-03-10 : feature | template center_note (solo cambia ticket en nota de venta)<br>
 2021-03-09 : feature | i-374 | se agrego la marca del producto a la descripción en la sección POS<br>
 2021-03-09 : feature | i-381 | se agregó una opción para subir un logo global, tambien una opción para ocultar el logo global, se ocultó la opción de configurar el login en los clientes<br>
