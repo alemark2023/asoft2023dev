@@ -22,7 +22,22 @@ if ($hostname) {
 		Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
 
 		Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
-			Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
+			// Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
+            Route::get('list-reports', 'Tenant\SettingController@listReports');
+            Route::get('list-settings', 'Tenant\SettingController@indexSettings');
+            Route::get('list-banks', 'Tenant\SettingController@listBanks');
+            Route::get('list-bank-accounts', 'Tenant\SettingController@listAccountBanks');
+            Route::get('list-currencies', 'Tenant\SettingController@listCurrencies');
+            Route::get('list-cards', 'Tenant\SettingController@listCards');
+            Route::get('list-platforms', 'Tenant\SettingController@listPlatforms');
+            Route::get('list-attributes', 'Tenant\SettingController@listAttributes');
+            Route::get('list-detractions', 'Tenant\SettingController@listDetractions');
+            Route::get('list-units', 'Tenant\SettingController@listUnits');
+            Route::get('list-payment-methods', 'Tenant\SettingController@listPaymentMethods');
+            Route::get('list-incomes', 'Tenant\SettingController@listIncomes');
+            Route::get('list-payments', 'Tenant\SettingController@listPayments');
+            Route::get('list-vouchers-type', 'Tenant\SettingController@listVouchersType');
+
 			Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
 
 			Route::get('tasks', 'Tenant\TaskController@index')->name('tenant.tasks.index');
@@ -637,8 +652,8 @@ if ($hostname) {
 
 			// backup
 			Route::get('backup', 'System\BackupController@index')->name('system.backup');
-			Route::get('backup/db', 'System\BackupController@db')->name('system.backup.db');
-			Route::get('backup/files', 'System\BackupController@files')->name('system.backup.files');
+			Route::post('backup/db', 'System\BackupController@db')->name('system.backup.db');
+			Route::post('backup/files', 'System\BackupController@files')->name('system.backup.files');
 			Route::post('backup/upload', 'System\BackupController@upload')->name('system.backup.upload');
 
 			Route::get('backup/last-backup', 'System\BackupController@mostRecent');

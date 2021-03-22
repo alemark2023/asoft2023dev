@@ -121933,6 +121933,38 @@ a.link:focus {
   min-height: 60px;
 }
 
+.card.card-dashboard.card-reports {
+  height: 100%;
+}
+
+.card.card-dashboard.card-reports .card-title {
+  min-height: 36px;
+}
+
+.card-report-links {
+  padding-left: 1rem;
+  margin-bottom: 0;
+}
+
+.card-report-links li {
+  margin-bottom: 0.5rem;
+}
+
+.card-report-links li:last-of-type {
+  margin-bottom: 0;
+}
+
+.card-report-links a {
+  display: block;
+  color: #33353f;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.card-report-links a:hover {
+  color: #33353f;
+}
+
 html.dark .card.card-dashboard {
   color: #5bc0de;
 }
