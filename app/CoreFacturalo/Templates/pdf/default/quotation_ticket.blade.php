@@ -364,5 +364,18 @@
     </tr>
     @endif
 </table>
+@if ($document->seller->name)
+<br>
+<table>
+    <tr>
+        <td class="desc">
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        <td class="desc">{{ $document->seller->name }}</td>
+    </tr>
+</table>
 </body>
+@endif
 </html>

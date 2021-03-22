@@ -327,7 +327,6 @@
 </table>
 
 @else
-
     <table class="full-width">
         <tr>
         <td>
@@ -343,8 +342,21 @@
             @endforeach
             <tr><td><strong>SALDO:</strong> {{ $document->quotation->currency_type->symbol }} {{ number_format($document->quotation->total - $payment, 2) }}</td>
         </tr>
-    
+
     </table>
+@endif
+@if ($document->seller->name)
+<br>
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        <td>{{ $document->seller->name }}</td>
+    </tr>
+</table>
 @endif
 </body>
 </html>
