@@ -9,7 +9,8 @@
                 <div class="col-lg-12 col-md-12 col-sm-12  ">
                     <el-tabs v-model="activeName"  >
                         <el-tab-pane label="Imprimir A4" name="first">
-                            <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
+                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_a4}?format=pdf`"></iframe>
+                            <!-- <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/> -->
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A5" name="second">
                             <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/>

@@ -1,9 +1,5 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
-        <!-- <div class="card-header bg-info">
-            <h3 class="my-0">Nuevo Comprobante</h3>
-        </div> -->
-
         <div class="tab-content"  v-if="company && establishment">
             <div class="invoice">
                 <header class="clearfix">
@@ -373,7 +369,7 @@
             changePaymentMethodType(index){
 
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
-                
+
                 if(payment_method_type.id == '09'){
 
                     this.form.payment_method_type_id = payment_method_type.id
@@ -434,7 +430,7 @@
 
                     this.$http.delete(`/${this.resource}/destroy_sale_note_item/${id}`)
                         .then(res => {
-                            
+
                             this.clickRemoveItem(index)
                             this.$eventHub.$emit('reloadDataItems', null)
 
@@ -693,7 +689,7 @@
                         })
 
                 }
-            
+
             },
             validatePaymentDestination(){
 
