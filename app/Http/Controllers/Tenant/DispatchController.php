@@ -446,7 +446,9 @@ class DispatchController extends Controller
         request()->validate(['document_id' => 'required|exists:tenant.documents,id']);
 
         Dispatch::where('id', $id)
-            ->update(request()->only(['document_id']));
+            ->update([
+                'reference_document_id' => request('document_id')
+            ]);
 
         return response()->json([
             'success' => true,
@@ -484,6 +486,7 @@ class DispatchController extends Controller
         'transfer_reason_type', 'items', 'reference_document'])
             ->select('series', 'number', 'id', 'date_of_issue')
             ->where('customer_id', $clientId)
+            ->whereNull('reference_document_id')
 			->orderBy('series')
 			->orderBy('number', 'desc')
             ->take(20)

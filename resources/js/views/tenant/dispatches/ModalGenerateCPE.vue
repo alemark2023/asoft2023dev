@@ -135,10 +135,17 @@ export default {
       this.$http
         .post("/dispatches/items", data)
         .then((response) => {
+          const dispatches = [];
+          this.dispatches.map((d) => {
+            if (d.selected) {
+              dispatches.push(`${d.series}-${d.number}`);
+            }
+          });
           const items = response.data.data;
-          const client = this.clients.find(c => c.id === this.form.client_id);
+          const client = this.clients.find((c) => c.id === this.form.client_id);
           localStorage.setItem("client", JSON.stringify(client));
           localStorage.setItem("items", JSON.stringify(items));
+          localStorage.setItem("dispatches", JSON.stringify(dispatches));
           this.onClose();
           window.location.href = "/documents/create";
         })

@@ -41,9 +41,9 @@ class DispatchCollection extends ResourceCollection
 				'download_external_xml' => $row->download_external_xml,
 				'download_external_pdf' => $row->download_external_pdf,
 				'download_external_cdr' => $row->download_external_cdr,
+                'reference_document_id' => $row->reference_document_id,
 				'created_at'            => $row->created_at->format('Y-m-d H:i:s'),
 				'updated_at'            => $row->updated_at->format('Y-m-d H:i:s'),
-				'document_id'           => $row->document_id
 			];
 		});
 	}
