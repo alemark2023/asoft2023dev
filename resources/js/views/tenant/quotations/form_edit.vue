@@ -602,6 +602,7 @@
                     account_number:null,
                     terms_condition:null,
                     active_terms_condition:false,
+                    referential_information: '',
                     payments: [],
                     actions: {
                         format_pdf:'a4',
