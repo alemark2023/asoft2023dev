@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\System;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\Controller;
-use App\Models\System\Client;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use DateTime;
-use Artisan;
 use Config;
+use Artisan;
+use DateTime;
 use Exception;
 use App\Traits\BackupTrait;
-use Hyn\Tenancy\Models\Hostname;
+use Illuminate\Http\Request;
+use App\Models\System\Client;
 use Hyn\Tenancy\Models\Website;
+use Hyn\Tenancy\Models\Hostname;
+use App\Http\Controllers\Controller;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Storage;
 
 class BackupController extends Controller
 {
@@ -129,6 +128,7 @@ class BackupController extends Controller
         if (count($zips) > 0) {
             $name_zips = [];
             $most_recent_time = '';
+            $last_date = null;
 
             foreach($zips as $zip){
                 $zip_explode = explode( '/', $zip);
@@ -140,11 +140,13 @@ class BackupController extends Controller
                         $most_recent_time = $datetime;
                         $most_recent_path = $zip;
                         $most_recent_name = $zip_explode[2];
+                        $last_date = $last;
                     }
                 }
             }
 
             return [
+                'date' => \Carbon\Carbon::createFromTimestamp($last_date)->format('d-m-Y \a \l\a\s H:i'),
                 'path' => $most_recent_path,
                 'name' => $most_recent_name
             ];
