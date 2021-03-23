@@ -1,17 +1,14 @@
 <template>
   <div class="row">
-    <div class="col-6 col-md-2">
-      <div class="card card-dashboard">
-        <div class="card-body">
-        <div class="card-title">Cantidad <br />CPE Emitidos</div>
-          <span>{{ total_cpe }}</span>
-        </div>
-      </div>
-    </div>
     <div class="col-6 col-md-2" v-if="company.certificate_due">
       <div class="card card-dashboard">
-        <div class="card-body">
-        <div class="card-title">Fec venc del <br />Certificado</div>
+        <div
+          class="card-body card-green"
+          :class="{
+            'is-due-warning': isDueWarning
+          }"
+        >
+          <div class="card-title">Fec venc del <br />Certificado</div>
           <span>{{ company.certificate_due }}</span>
         </div>
       </div>
@@ -19,7 +16,15 @@
     <div class="col-6 col-md-2">
       <div class="card card-dashboard">
         <div class="card-body">
-        <div class="card-title">Total <br />comprobantes</div>
+          <div class="card-title">Cantidad <br />CPE Emitidos</div>
+          <span>{{ total_cpe }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2">
+      <div class="card card-dashboard">
+        <div class="card-body">
+          <div class="card-title">Monto total <br />comprobantes</div>
           <span>{{ document_total_global }}</span>
         </div>
       </div>
@@ -27,7 +32,7 @@
     <div class="col-6 col-md-2">
       <div class="card card-dashboard">
         <div class="card-body">
-        <div class="card-title">Total notas <br />de ventas</div>
+          <div class="card-title">Monto total notas <br />de ventas</div>
           <span>{{ sale_note_total_global }}</span>
         </div>
       </div>
@@ -35,8 +40,16 @@
     <div class="col-6 col-md-2">
       <div class="card card-dashboard">
         <div class="card-body">
-        <div class="card-title">Total <br />general</div>
+          <div class="card-title">Monto total <br />general</div>
           <span>{{ total }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-2" v-if="utilities.totals">
+      <div class="card card-dashboard">
+        <div class="card-body">
+          <div class="card-title">Utitlidad <br />neta</div>
+          <span>{{ utilities.totals.utility }}</span>
         </div>
       </div>
     </div>
@@ -44,29 +57,57 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
-    props: ['company'],
-    data() {
-        return {
-            document_total_global: 0,
-            total_cpe: 0,
-            sale_note_total_global: 0,
-            total: 0,
-        }
+  props: ["company", 'utilities'],
+  data() {
+    return {
+      document_total_global: 0,
+      total_cpe: 0,
+      sale_note_total_global: 0,
+      total: 0,
+    };
+  },
+  mounted() {
+    this.onFetchData();
+  },
+  computed: {
+    isDueWarning() {
+      if (this.company.certificate_due) {
+        const dueDate = moment(this.company.certificate_due);
+
+        const now = moment();
+        const diffInDays = dueDate.diff(now, 'days')
+        return diffInDays <= 15;
+      }
+      return false;
     },
-    mounted() {
-        this.onFetchData();
+  },
+  methods: {
+    onFetchData() {
+      this.$http.get("/dashboard/global-data").then((response) => {
+        const data = response.data;
+        this.document_total_global = data.document_total_global;
+        this.total_cpe = data.total_cpe;
+        this.sale_note_total_global = data.sale_note_total_global;
+        this.total =
+          parseFloat(this.document_total_global) +
+          parseFloat(this.sale_note_total_global);
+      });
     },
-    methods: {
-        onFetchData() {
-            this.$http.get('/dashboard/global-data').then(response => {
-                const data = response.data;
-                this.document_total_global = data.document_total_global;
-                this.total_cpe = data.total_cpe;
-                this.sale_note_total_global = data.sale_note_total_global;
-                this.total = parseFloat(this.document_total_global) + parseFloat(this.sale_note_total_global)
-            })
-        }
-    }
+  },
 };
 </script>
+<style>
+.card-green {
+  background-color: green;
+  color: white;
+}
+.is-due-warning {
+  background-color: red;
+}
+.card-green .card-title {
+  color: white;
+}
+</style>

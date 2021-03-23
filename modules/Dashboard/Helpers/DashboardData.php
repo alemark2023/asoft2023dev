@@ -49,6 +49,10 @@ class DashboardData
                 $d_start = $date_start;
                 $d_end = $date_end;
                 break;
+            case 'last_week':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
         }
 
         // $customers = Person::whereType('customers')->orderBy('name')->take(100)->get()->transform(function($row) {
