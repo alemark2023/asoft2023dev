@@ -56,6 +56,7 @@ use App\Http\Requests\Tenant\DocumentVoidedRequest;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
+use App\Models\Tenant\Dispatch;
 
 class DocumentController extends Controller
 {
@@ -410,6 +411,8 @@ class DocumentController extends Controller
         $document = $fact->getDocument();
         $response = $fact->getResponse();
 
+        $this->associateDispatchesToDocument($request, $document->id);
+
         return [
             'success' => true,
             'data' => [
@@ -418,6 +421,23 @@ class DocumentController extends Controller
 
             ],
         ];
+    }
+
+    private function associateDispatchesToDocument(Request $request, int $documentId)
+    {
+        $dispatches_relateds = $request->dispatches_relateds;
+        if ($dispatches_relateds) {
+            foreach ($dispatches_relateds as $dispatch) {
+                $dispatchToArray = explode('-', $dispatch);
+                if (count($dispatchToArray) === 2) {
+                    Dispatch::where('series', $dispatchToArray[0])
+                        ->where('number', $dispatchToArray[1])
+                        ->update([
+                            'reference_document_id' => $documentId,
+                        ]);
+                }
+            }
+        }
     }
 
     public function edit($documentId)

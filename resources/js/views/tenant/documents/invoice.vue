@@ -916,6 +916,11 @@
                 this.changeCurrencyType()
                 localStorage.removeItem('client');
             }
+            const dispatchesNumbersFromDispatches = localStorage.getItem('dispatches');
+            if (dispatchesNumbersFromDispatches) {
+                this.form.dispatches_relateds = JSON.parse(dispatchesNumbersFromDispatches);
+                localStorage.removeItem('dispatches')
+            }
         },
         methods: {
             async onSetFormData(data) {
