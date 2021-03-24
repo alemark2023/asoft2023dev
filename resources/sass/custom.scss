@@ -204,7 +204,18 @@ html.dark {
         margin-top: 6px;
     }
 }
-.tree-container-admin{
+.tree-container-admin {
     height: 200px;
     overflow-y: scroll;
+}
+.container-btns {
+    display: none;
+}
+@media (max-width: 768px) {
+    .container-tabs {
+        display: none;
+    }
+    .container-btns {
+        display: block;
+    }
 }
