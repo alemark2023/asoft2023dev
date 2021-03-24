@@ -94,6 +94,29 @@
                             </div>
                         </div>
 
+                    <!-- Serie -->
+                    <div class="col-lg-3 col-md-3" >
+                        <div class="form-group">
+                            <label class="control-label">Serie
+                            </label>
+                            <el-select v-model="form.series" filterable clearable>
+                                <el-option v-for="option in series" :key="option.number" :value="option.number" :label="option.number"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
+
+                    <!-- Establecimiento -->
+                    <div class="col-lg-3 col-md-3" >
+                        <div class="form-group">
+                            <label class="control-label">Establecimiento
+                            </label>
+                            <el-select v-model="form.establishment_id" filterable clearable>
+                                <el-option v-for="option in establishment_id" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
 
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" type="primary" @click.prevent="getRecordsByFilter" :loading="loading_submit" icon="el-icon-search" >Buscar</el-button>
@@ -110,29 +133,6 @@
                             </template>
 
                         </div>
-                    <!-- Serie -->
-                    <div class="col-lg-2 col-md-2" >
-                        <div class="form-group">
-                            <label class="control-label">Serie
-                            </label>
-                            <el-select v-model="form.series" filterable clearable>
-                                <el-option v-for="option in series" :key="option.number" :value="option.number" :label="option.number"></el-option>
-                            </el-select>
-
-                        </div>
-                    </div>
-
-                    <!-- Almacen -->
-                    <div class="col-lg-3 col-md-3" >
-                        <div class="form-group">
-                            <label class="control-label">Establecimiento
-                            </label>
-                            <el-select v-model="form.establishment_id" filterable clearable>
-                                <el-option v-for="option in establishment_id" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                            </el-select>
-
-                        </div>
-                    </div>
 
                 </div>
                 <div class="row mt-1 mb-4">
