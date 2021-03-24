@@ -141,6 +141,12 @@ class DocumentItem extends ModelTenant
                             document_items.item as item, document_items.quantity as quantity, document_items.item_id as item_id,
                             documents.date_of_issue as date_of_issue");
 
+        if (isset($params['series'])) {
+            $query->where('series', $params['series']);
+        }
+        if (isset($params['establishment_id'])) {
+            $query->where('establishment_id', $params['establishment_id']);
+        }
         if($params['person_id']){
 
             return $query->whereHas('document', function($q) use($params){
