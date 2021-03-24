@@ -1,3 +1,48 @@
+## 4.0.5
+
+### docs
+2021-03-24 : cambios para ver el google docs viewer<br>
+2021-03-10 : docs | changelog<br>
+
+
+### fixed
+2021-03-24 : fixed | https://gitlab.com/carlomagno83/facturadorpro4/-/issues/431 | no listan tareas programadas<br>
+2021-03-24 : fixed | margen top en panel admin<br>
+2021-03-23 : fixed | i-306 | se ha asociado el documento generado desde multiples guías a sus repectivas guías<br>
+2021-03-22 : fixed | t-416 | Requerimiento para Cotizaciones - Referencia<br>
+2021-03-19 : fixed | i-327 | error al seleccionar un modulo con hijos arreglado<br>
+2021-03-18 : fixed | i-306 | se corrigió el error al crear cpe desde las guías<br>
+2021-03-17 : fixed | i-141 | se oculto el boton editar de los cpe<br>
+2021-03-17 : fixed | POS | problema con nombres de 50 caracteres<br>
+2021-03-17 : fixed | i-141 | error en el campo leyenda al editar un cpe, solucionado<br>
+2021-03-16 : fixed | mostrando orden de compra en plantilla full_height<br>
+2021-03-15 : fixed | i-392 | se limito la busqueda de productos a los vendedores, ahora solo ven los items de su almacen<br>
+2021-03-15 : fixed | i-282 | se modificó la formula para obtener las ganancias<br>
+2021-03-12 : fixed | subida de logo en formato jpg<br>
+2021-03-10 : fixed | errores varios<br>
+
+
+### feature
+2021-03-24 : feature | i-405 | problema al mostrar el pdf en moviles, arreglado<br>
+2021-03-22 : feature | t-338 | Permitir generar comprobante de pago desde cotización a vendedores<br>
+2021-03-21 : feature | sidebar espacios visible para submenus<br>
+2021-03-21 : feature | header mas uniforme en diseño, cambio de switch, tooltip para todos<br>
+2021-03-20 : feature | i-249 | backups independientes por empresas<br>
+2021-03-20 : feature | i-327 | se cambió el orden para mostrar de los modulos(en el superadmin y los tenant)<br>
+2021-03-19 : feature | i-327 | se agrego una la opción para activar o desactivar las opciones del menu ventas<br>
+2021-03-18 : feature | i-261 | se puede cargar plantillas personalizada[*] sin afectacion a las actualizaciones<br>
+2021-03-18 : feature | i-380 | telefono y vendedor en nota de venta y guia de remision, plantilla default<br>
+2021-03-17 : feature | i-346 | se agrego una ruta más para editar un producto a partir de su id<br>
+2021-03-16 : feature | i-306 | se agregó la opción para seleccionar la dirección de llegada dependiendo del cliente seleccionado en las guías de remisión<br>
+2021-03-16 : feature | i-365 | reduccion de espacios superiores en formulario de creacion<br>
+2021-03-15 : feature | i-369 | el usuario vendedor ya no puede editar el precio de venta de un producto al emitir un cpe<br>
+2021-03-15 : feature | i-398 | telefono de cliente en plantilla brand<br>
+2021-03-12 : feature | i-306 | se agrego la opción para generar un cpe desde multiples guías de remisión<br>
+2021-03-12 : feature | i-306 | se agrego la opción para generar un cpe desde multiples guías de remisi+on<br>
+2021-03-11 : feature | i-374 | se eliminó la marca de la descripción del producto cuando se usa la vista lista<br>
+2021-03-11 : feature | i-129 | se agrego la plantilla multilples_logos que habilita la opción de imprimir el logo del establecimiento en los cpe<br>
+
+
 ## 4.0.4
 
 ### docs
