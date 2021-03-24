@@ -7,27 +7,36 @@
                 :show-close="false">
 
             <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12  ">
+                <div class="col-lg-12 col-md-12 col-sm-12 container-tabs">
                     <el-tabs v-model="activeName">
                         <el-tab-pane label="Imprimir A4" name="first">
-                            <!-- <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/> -->
-                            <!-- <div class="pdf-container" id="containerPDFA4"></div> -->
-                            <!-- <pdf :src="form.print_a4"></pdf> -->
-                            <!-- <ejs-pdfviewer id="pdfviewer" :serviceUrl="serviceUrl" :documentPath="form.print_a4"></ejs-pdfviewer> -->
-                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_a4}?format=pdf`" style="width:100%; height:400px;" frameborder="0"></iframe>
+                            <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A5" name="second">
-                            <!-- <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/> -->
-                            <!-- <div class="pdf-container" id="containerPDFA5"></div> -->
-                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_a5}?format=pdf`" style="width:100%; height:400px;" frameborder="0"></iframe>
+                            <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir Ticket" name="third">
-                            <!-- <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/> -->
-                            <!-- <div class="pdf-container" id="containerPDFTicket"></div> -->
-                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_ticket}?format=pdf`" style="width:100%; height:400px;" frameborder="0"></iframe>
+                            <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/>
                         </el-tab-pane>
-
                     </el-tabs>
+                </div>
+                <div class="col-12 container-btns text-center">
+                    <br><br>
+                    <a :href="`https://docs.google.com/viewer?url=${form.print_a4}?format=pdf`" class="btn mx-3 btn-primary btn-lg" target="_BLANK">
+                        <i class="far fa-file-pdf"></i>
+                        <br>
+                        <span>PDF A4</span>
+                    </a>
+                    <a :href="`https://docs.google.com/viewer?url=${form.print_a5}?format=pdf`" class="btn btn-primary mx-3 btn-lg" target="_BLANK">
+                        <i class="far fa-file-pdf"></i>
+                        <br>
+                        <span>PDF A5</span>
+                    </a>
+                    <a :href="`https://docs.google.com/viewer?url=${form.print_ticket}?format=pdf`" class="btn mx-3 btn-primary btn-lg" target="_BLANK">
+                        <i class="far fa-file-pdf"></i>
+                        <br>
+                        <span>PDF TICKET</span>
+                    </a>
                 </div>
             </div>
             <span slot="footer" class="dialog-footer row">
@@ -52,8 +61,6 @@
 </template>
 
 <script>
-// import PDFObject from 'pdfobject';
-
 export default {
     props: ['showDialog', 'recordId', 'showClose'],
     data() {
@@ -98,18 +105,6 @@ export default {
                 .then(response => {
                     this.form = response.data.data
                     this.titleDialog = `Nota de venta registrada:  ${this.form.serie}-${this.form.number}`
-                    // const options = {
-                    //     forcePDFJS: true,
-                    //     height: '500px',
-                    //     zoom: 75,
-                    //     pdfOpenParams: {
-		            //         view: "FitV",
-                    //     }
-                    // }
-                    // this.onLoadPDF('containerPDFA4', this.form.print_a4);
-                    // PDFObject.embed(this.form.print_a4, "#containerPDFA4", options);
-                    // PDFObject.embed(this.form.print_a5, "#containerPDFA5", options);
-                    // PDFObject.embed(this.form.print_ticket, "#containerPDFTicket", options);
                 })
         },
         clickFinalize() {
@@ -156,8 +151,3 @@ export default {
     }
 }
 </script>
-<style>
-.pdf-container{
-    width: 100%;
-}
-</style>
