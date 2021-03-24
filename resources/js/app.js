@@ -5,10 +5,6 @@ import ElementUI from 'element-ui'
 
 import lang from 'element-ui/lib/locale/lang/es'
 import locale from 'element-ui/lib/locale'
-import pdf from 'vue-pdf'
-// import { PdfViewerPlugin } from "@syncfusion/ej2-vue-pdfviewer";
-
-// Vue.use(PdfViewerPlugin);
 
 locale.use(lang)
 
@@ -21,8 +17,6 @@ export default ElementUI;
 
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
-
-Vue.component('pdf', pdf);
 
 Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
 

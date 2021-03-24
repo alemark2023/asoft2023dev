@@ -13,15 +13,18 @@
                             <!-- <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/> -->
                             <!-- <div class="pdf-container" id="containerPDFA4"></div> -->
                             <!-- <pdf :src="form.print_a4"></pdf> -->
-                            <ejs-pdfviewer id="pdfviewer" :serviceUrl="serviceUrl" :documentPath="form.print_a4"></ejs-pdfviewer>
+                            <!-- <ejs-pdfviewer id="pdfviewer" :serviceUrl="serviceUrl" :documentPath="form.print_a4"></ejs-pdfviewer> -->
+                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_a4}?format=pdf`" style="width:100%; height:400px;" frameborder="0"></iframe>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A5" name="second">
                             <!-- <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/> -->
-                            <div class="pdf-container" id="containerPDFA5"></div>
+                            <!-- <div class="pdf-container" id="containerPDFA5"></div> -->
+                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_a5}?format=pdf`" style="width:100%; height:400px;" frameborder="0"></iframe>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir Ticket" name="third">
                             <!-- <embed :src="form.print_ticket" type="application/pdf" width="100%" height="400px"/> -->
-                            <div class="pdf-container" id="containerPDFTicket"></div>
+                            <!-- <div class="pdf-container" id="containerPDFTicket"></div> -->
+                            <iframe :src="`https://docs.google.com/viewer?url=${form.print_ticket}?format=pdf`" style="width:100%; height:400px;" frameborder="0"></iframe>
                         </el-tab-pane>
 
                     </el-tabs>
@@ -50,9 +53,6 @@
 
 <script>
 // import PDFObject from 'pdfobject';
-// import pdfjsLib from 'pdfjs-dist/build/pdf';
-// import { Toolbar, Magnification, Navigation, LinkAnnotation, BookmarkView, ThumbnailView, Print, TextSelection, TextSearch, Annotation, FormFields } from "@syncfusion/ej2-vue-pdfviewer";
-
 
 export default {
     props: ['showDialog', 'recordId', 'showClose'],
@@ -78,43 +78,7 @@ export default {
     created() {
         this.initForm()
     },
-    // provide: {
-    //   PdfViewer: [Toolbar, Magnification, Navigation, LinkAnnotation, BookmarkView, ThumbnailView, Print, TextSelection, TextSearch, Annotation, FormFields]
-    // },
-    mounted() {
-        // pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-    },
     methods: {
-        // onLoadPDF(elementId, pathFile) {
-        //     const loadingTask = pdfjsLib.getDocument(pathFile);
-        //     loadingTask.promise.then(function(pdf) {
-        //     console.log('PDF loaded');
-
-        //     var pageNumber = 1;
-        //     pdf.getPage(pageNumber).then(function(page) {
-        //         console.log('Page loaded');
-
-        //         var scale = 1.5;
-        //         var viewport = page.getViewport({scale: scale});
-
-        //         var canvas = document.getElementById(elementId);
-        //         var context = canvas.getContext('2d');
-        //         canvas.height = viewport.height;
-        //         canvas.width = viewport.width;
-
-        //         var renderContext = {
-        //             canvasContext: context,
-        //             viewport: viewport
-        //         };
-        //         var renderTask = page.render(renderContext);
-        //         renderTask.promise.then(function () {
-        //         console.log('Page rendered');
-        //         });
-        //     });
-        //     }, function (reason) {
-        //         console.error(reason);
-        //     });
-        // },
         initForm() {
             this.errors = {}
             this.form = {
