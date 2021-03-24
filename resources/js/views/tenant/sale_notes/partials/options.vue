@@ -3,7 +3,7 @@
         <el-dialog :title="titleDialog" :visible="showDialog" @open="create"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                :width="800"
+                width="800px"
                 :show-close="false">
 
             <div class="row">
@@ -11,7 +11,9 @@
                     <el-tabs v-model="activeName">
                         <el-tab-pane label="Imprimir A4" name="first">
                             <!-- <embed :src="form.print_a4" type="application/pdf" width="100%" height="400px"/> -->
-                            <div class="pdf-container" id="containerPDFA4"></div>
+                            <!-- <div class="pdf-container" id="containerPDFA4"></div> -->
+                            <!-- <pdf :src="form.print_a4"></pdf> -->
+                            <ejs-pdfviewer id="pdfviewer" :serviceUrl="serviceUrl" :documentPath="form.print_a4"></ejs-pdfviewer>
                         </el-tab-pane>
                         <el-tab-pane label="Imprimir A5" name="second">
                             <!-- <embed :src="form.print_a5" type="application/pdf" width="100%" height="400px"/> -->
@@ -24,8 +26,6 @@
 
                     </el-tabs>
                 </div>
-
-
             </div>
             <span slot="footer" class="dialog-footer row">
                 <div class="col-md-6">
@@ -49,12 +49,16 @@
 </template>
 
 <script>
-import PDFObject from 'pdfobject';
+// import PDFObject from 'pdfobject';
+// import pdfjsLib from 'pdfjs-dist/build/pdf';
+// import { Toolbar, Magnification, Navigation, LinkAnnotation, BookmarkView, ThumbnailView, Print, TextSelection, TextSearch, Annotation, FormFields } from "@syncfusion/ej2-vue-pdfviewer";
+
 
 export default {
     props: ['showDialog', 'recordId', 'showClose'],
     data() {
         return {
+            serviceUrl:"https://ej2services.syncfusion.com/production/web-services/api/pdfviewer",
             titleDialog: null,
             loading: false,
             resource: 'sale-notes',
@@ -74,7 +78,43 @@ export default {
     created() {
         this.initForm()
     },
+    // provide: {
+    //   PdfViewer: [Toolbar, Magnification, Navigation, LinkAnnotation, BookmarkView, ThumbnailView, Print, TextSelection, TextSearch, Annotation, FormFields]
+    // },
+    mounted() {
+        // pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+    },
     methods: {
+        // onLoadPDF(elementId, pathFile) {
+        //     const loadingTask = pdfjsLib.getDocument(pathFile);
+        //     loadingTask.promise.then(function(pdf) {
+        //     console.log('PDF loaded');
+
+        //     var pageNumber = 1;
+        //     pdf.getPage(pageNumber).then(function(page) {
+        //         console.log('Page loaded');
+
+        //         var scale = 1.5;
+        //         var viewport = page.getViewport({scale: scale});
+
+        //         var canvas = document.getElementById(elementId);
+        //         var context = canvas.getContext('2d');
+        //         canvas.height = viewport.height;
+        //         canvas.width = viewport.width;
+
+        //         var renderContext = {
+        //             canvasContext: context,
+        //             viewport: viewport
+        //         };
+        //         var renderTask = page.render(renderContext);
+        //         renderTask.promise.then(function () {
+        //         console.log('Page rendered');
+        //         });
+        //     });
+        //     }, function (reason) {
+        //         console.error(reason);
+        //     });
+        // },
         initForm() {
             this.errors = {}
             this.form = {
@@ -94,17 +134,18 @@ export default {
                 .then(response => {
                     this.form = response.data.data
                     this.titleDialog = `Nota de venta registrada:  ${this.form.serie}-${this.form.number}`
-                    const options = {
-                        forcePDFJS: true,
-                        height: '500px',
-                        zoom: 75,
-                        pdfOpenParams: {
-		                    view: "FitV",
-                        }
-                    }
-                    PDFObject.embed(this.form.print_a4, "#containerPDFA4", options);
-                    PDFObject.embed(this.form.print_a5, "#containerPDFA5", options);
-                    PDFObject.embed(this.form.print_ticket, "#containerPDFTicket", options);
+                    // const options = {
+                    //     forcePDFJS: true,
+                    //     height: '500px',
+                    //     zoom: 75,
+                    //     pdfOpenParams: {
+		            //         view: "FitV",
+                    //     }
+                    // }
+                    // this.onLoadPDF('containerPDFA4', this.form.print_a4);
+                    // PDFObject.embed(this.form.print_a4, "#containerPDFA4", options);
+                    // PDFObject.embed(this.form.print_a5, "#containerPDFA5", options);
+                    // PDFObject.embed(this.form.print_ticket, "#containerPDFTicket", options);
                 })
         },
         clickFinalize() {

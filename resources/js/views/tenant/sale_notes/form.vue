@@ -283,6 +283,9 @@
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
                           :showClose="false"></sale-notes-options>
+
+                          <iframe src="https://docs.google.com/viewer?url=https://demo.facturalo.pro/sale-notes/print/81ac4703-4560-465b-a2a3-30eba6c2408e/a4&embedded=true" style="width:600px; height:500px;" frameborder="0"></iframe>
+
     </div>
 </template>
 
