@@ -435,6 +435,15 @@ class DocumentController extends Controller
                         ->update([
                             'reference_document_id' => $documentId,
                         ]);
+
+                    $document = Dispatch::where('series', $dispatchToArray[0])
+                        ->where('number', $dispatchToArray[1])
+                        ->first();
+
+                    if ($document) {
+                        $facturalo = new Facturalo();
+                        $facturalo->createPdf($document, 'dispatch', 'a4');
+                    }
                 }
             }
         }
