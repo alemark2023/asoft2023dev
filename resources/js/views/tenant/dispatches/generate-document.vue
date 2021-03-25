@@ -53,7 +53,6 @@
               >Enviar</el-button
             >
           </el-input>
-          <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
         </div>
       </div>
       <br />

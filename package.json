@@ -22,7 +22,7 @@
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^20.0.0",
         "@riophae/vue-treeselect": "^0.4.0",
-        "@syncfusion/ej2-vue-navigations": "^18.3.40",
+        "canvas": "^2.7.0",
         "chart.js": "^2.7.3",
         "element-ui": "^2.13.0",
         "jqwidgets-scripts": "^10.1.5",

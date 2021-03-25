@@ -1,19 +1,11 @@
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
 
-// window.Vue = require('vue');
 import Vue from 'vue'
 import ElementUI from 'element-ui'
-import Axios from 'axios'
 
 import lang from 'element-ui/lib/locale/lang/es'
 import locale from 'element-ui/lib/locale'
+
 locale.use(lang)
 
 ElementUI.Select.computed.readonly = function () {
@@ -23,17 +15,9 @@ ElementUI.Select.computed.readonly = function () {
 
 export default ElementUI;
 
-//Vue.use(ElementUI)
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
-Vue.prototype.$http = Axios
 
-// import VueCharts from 'vue-charts'
-// Vue.use(VueCharts);
-// import { TableComponent, TableColumn } from 'vue-table-component';
-//
-// Vue.component('table-component', TableComponent);
-// Vue.component('table-column', TableColumn);
 Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
 
 Vue.component('x-graph', require('./components/graph/src/Graph.vue'));

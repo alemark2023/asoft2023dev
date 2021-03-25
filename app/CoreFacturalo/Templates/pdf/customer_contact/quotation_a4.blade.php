@@ -137,7 +137,7 @@
         </tr>
         @endif
     @endif
-    
+
     @if ($document->contact)
     <tr>
         <td class="align-top">Contacto:</td>
@@ -145,7 +145,7 @@
             {{ $document->contact }}
         </td>
     </tr>
-    @endif 
+    @endif
     @if ($document->phone)
     <tr>
         <td class="align-top">Telf. Contacto:</td>
@@ -153,7 +153,7 @@
             {{ $document->phone }}
         </td>
     </tr>
-    @endif 
+    @endif
 
 </table>
 
@@ -340,5 +340,18 @@
     </tr>
 
 </table>
+@if ($document->seller->name)
+<br>
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        <td>{{ $document->seller->name }}</td>
+    </tr>
+</table>
+@endif
 </body>
 </html>

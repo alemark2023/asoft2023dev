@@ -115,7 +115,7 @@ class DispatchController extends Controller
 			});
 
 			$document = $fact->getDocument();
-			$response = $fact->getResponse();
+			// $response = $fact->getResponse();
 		} else {
 			$fact = DB::connection('tenant')->transaction(function () use ($request) {
 				$facturalo = new Facturalo();
@@ -444,14 +444,31 @@ class DispatchController extends Controller
     public function setDocumentId($id)
     {
         request()->validate(['document_id' => 'required|exists:tenant.documents,id']);
+        DB::connection('tenant')->beginTransaction();
+        try {
+            Dispatch::where('id', $id)
+                ->update([
+                    'reference_document_id' => request('document_id')
+                ]);
 
-        Dispatch::where('id', $id)
-            ->update(request()->only(['document_id']));
+            $dispatch = Dispatch::findOrFail($id);
+            $facturalo = new Facturalo();
+            $facturalo->createPdf($dispatch, 'dispatch', 'a4');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Información actualiza'
-        ], 200);
+            DB::connection('tenant')->commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Información actualiza'
+            ], 200);
+        } catch (\Throwable $th) {
+            DB::connection('tenant')->rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al asociar la guía con el comprobante. Detalles: ' . $th->getMessage()
+            ], 500);
+        }
+
     }
 
     public function clientsForGenerateCPE()
@@ -484,6 +501,7 @@ class DispatchController extends Controller
         'transfer_reason_type', 'items', 'reference_document'])
             ->select('series', 'number', 'id', 'date_of_issue')
             ->where('customer_id', $clientId)
+            ->whereNull('reference_document_id')
 			->orderBy('series')
 			->orderBy('number', 'desc')
             ->take(20)

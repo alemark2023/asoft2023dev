@@ -38,7 +38,7 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-center">
-                            <button v-if="!row.document_id" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
+                            <button v-if="!row.reference_document_id" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
                         </td>
                     </tr>
@@ -91,7 +91,6 @@
             clickPrint(external_id){
                 window.open(`/print/dispatch/${external_id}/a4`, '_blank');
             },
-
         }
     }
 </script>

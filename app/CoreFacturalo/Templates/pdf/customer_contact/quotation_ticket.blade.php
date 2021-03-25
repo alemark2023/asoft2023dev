@@ -183,7 +183,7 @@
             <td><p class="desc">{{ $document->description }}</p></td>
         </tr>
     @endif
-    
+
     @if ($document->contact)
         <tr>
             <td class="align-top"><p class="desc">Contacto:</p></td>
@@ -357,5 +357,19 @@
     </tr>
     @endif
 </table>
+@if ($document->seller->name)
+<br>
+<table>
+    <tr>
+        <td class="desc">
+            <strong>Vendedor:</strong>
+        </td>
+    </tr>
+    <tr>
+        <td class="desc">{{ $document->seller->name }}</td>
+    </tr>
+</table>
+</body>
+@endif
 </body>
 </html>

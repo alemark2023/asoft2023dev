@@ -123,6 +123,9 @@ class SaleNoteItem extends ModelTenant
         $db_raw =  DB::raw("sale_note_items.id as id, sale_notes.series as series, sale_notes.number as number, 
                             sale_note_items.item as item, sale_note_items.quantity as quantity, sale_note_items.item_id as item_id,sale_notes.date_of_issue as date_of_issue");
 
+        if (isset($params['establishment_id'])) {
+            $query->where('establishment_id', $params['establishment_id']);
+        }
         if($params['person_id']){
 
             return $query->whereHas('sale_note', function($q) use($params){

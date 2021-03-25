@@ -392,3 +392,7 @@ html.dark .el-switch__label *,
     margin-top: 0px;
   }
 }
+
+html.dashboard-system .content-body {
+  /*margin-top: 60px;*/
+}
