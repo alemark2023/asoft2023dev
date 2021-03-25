@@ -32,7 +32,6 @@
             placeholder="Ingrese uno más caracteres"
             :remote-method="onFindClients"
             :loading="loading"
-            :disabled="loading"
             @change="onFindDispatches"
           >
             <el-option
@@ -174,11 +173,11 @@ export default {
         .finally(() => (this.loading = false));
     },
     onFindClients(query) {
-      if (query) {
+    //   if (query) {
         this.filter.name = query;
-      } else {
-        this.filter.name = null;
-      }
+    //   } else {
+    //     this.filter.name = null;
+    //   }
       this.onFetchClients();
     },
     onFetchClients() {

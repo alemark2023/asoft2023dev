@@ -91,7 +91,6 @@
             clickPrint(external_id){
                 window.open(`/print/dispatch/${external_id}/a4`, '_blank');
             },
-
         }
     }
 </script>
