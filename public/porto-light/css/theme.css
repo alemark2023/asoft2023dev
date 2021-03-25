@@ -51,7 +51,7 @@ a:active {
     transition: all 0.15s linear;
 }
 .sidebar-left-collapsed .header {
-    left: 92px !important;
+    left: 74px !important;
 }
 .header-floating .header {
     left: 320px;
@@ -1477,6 +1477,7 @@ html.dark .header .logo-container .topbar-links {
     display: flex;
     align-items: center;
     cursor: pointer;
+    font-size: 18px;
 }
 html.dark .sidebar-toggle {
     border-right: 1px solid #161d31;
@@ -7048,11 +7049,11 @@ ul.nav-main li .nav-children li a:focus {
 }
 
 ul.nav-main li .nav-children li a:after {
-    padding: 10px 25px;
+    padding: 10px 15px;
 }
 
 ul.nav-main li .nav-children li.nav-active > a {
-    color: #ccc;
+    /*color: #ccc;*/
 }
 
 ul.nav-main li .nav-children .nav-children {
@@ -20726,7 +20727,6 @@ ul.nav-main li.nav-expanded > a {
 ul.nav-main li.nav-expanded > a::before {
     border: 1px solid #565360;
 }
-
 html.sidebar-light:not(.dark) ul.nav-main > li.nav-active > a {
     color: #565360;
     border-radius: 6px;
@@ -20763,6 +20763,13 @@ ul.nav-main li li a:hover {
 ul.nav-main li.nav-active:not(.nav-parent) > a,
 ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
     background: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7));
+    color: #fff !important;
+    box-shadow: 0 0 10px 1px rgb(115 103 240 / 70%);
+    border-radius: 4px !important;
+}
+.sidebar-blue ul.nav-main li.nav-active:not(.nav-parent) > a,
+.sidebar-blue ul.nav-main li .nav-children li.nav-active:not(.nav-parent) > a {
+    background: #909399;
     color: #fff !important;
     box-shadow: 0 0 10px 1px rgb(115 103 240 / 70%);
     border-radius: 4px !important;
@@ -20807,10 +20814,13 @@ ul.nav-main li .nav-children li a:before {
 }
 html.dark ul.nav-main li a {
     color: #d0d2d6;
-    margin: 0 15px;
+    margin: 2px 15px;
 }
 html.dark ul.nav-main li a::before {
     border: 1px solid #d0d2d6;
+}
+html.dark ul.nav-main li.nav-expanded > a::before {
+    background: #d0d2d6;
 }
 html.dark ul.nav-main li.nav-expanded > a,
 html.dark ul.nav-main li .nav-children li a:hover {
@@ -20829,6 +20839,7 @@ html.fixed .sidebar-left a svg {
 }
 /* fondo azul */
 html.fixed.sidebar-blue .sidebar-left,
+html.fixed.sidebar-blue .sidebar-header,
 html.fixed.sidebar-blue .sidebar-left .nano {
     background-color: #7367f0 !important;
 }
@@ -20870,6 +20881,7 @@ html.fixed.sidebar-blue .sidebar-left a:focus::after {
 } */
 /* fondo gris */
 html.fixed.sidebar-gray .sidebar-left,
+html.fixed.sidebar-gray .sidebar-header,
 html.fixed.sidebar-gray .sidebar-left .nano {
     background-color: #82868b !important;
 }
@@ -20904,6 +20916,7 @@ html.fixed.sidebar-gray .sidebar-left a:focus::after {
 } */
 /* fondo verde */
 html.fixed.sidebar-green .sidebar-left,
+html.fixed.sidebar-green .sidebar-header,
 html.fixed.sidebar-green .sidebar-left .nano {
     background-color: #28c76f !important;
 }
@@ -20938,6 +20951,7 @@ html.fixed.sidebar-green .sidebar-left a:focus::after {
 }
 /* fondo rojo */
 html.fixed.sidebar-red .sidebar-left,
+html.fixed.sidebar-red .sidebar-header,
 html.fixed.sidebar-red .sidebar-left .nano {
     background-color: #ea5455 !important;
 }
@@ -20972,6 +20986,7 @@ html.sidebar-red .sidebar-left a:focus::after {
 }
 /* fondo naranja */
 html.fixed.sidebar-warning .sidebar-left,
+html.fixed.sidebar-warning .sidebar-header,
 html.fixed.sidebar-warning .sidebar-left .nano {
     background-color: #ff9f43 !important;
 }
@@ -21006,6 +21021,7 @@ html.fixed.sidebar-warning .sidebar-left a:focus::after {
 }
 /* fondo celeste */
 html.fixed.sidebar-ligth-blue .sidebar-left,
+html.fixed.sidebar-ligth-blue .sidebar-header,
 html.fixed.sidebar-ligth-blue .sidebar-left .nano {
     background-color: #00cfe8 !important;
 }
@@ -21040,6 +21056,7 @@ html.fixed.sidebar-ligth-blue .sidebar-left a:focus::after {
 }
 /* fondo blanco */
 html.fixed.sidebar-white .sidebar-left,
+html.fixed.sidebar-white .sidebar-header,
 html.fixed.sidebar-white .sidebar-left .nano {
     background-color: #fff !important;
 }
@@ -21057,6 +21074,7 @@ html.sidebar-left-collapsed .sidebar-left .nav-main > li > a {
 }
 /* fondo dark */
 html.fixed.sidebar-dark .sidebar-left,
+html.fixed.sidebar-dark .sidebar-header,
 html.fixed.sidebar-dark .sidebar-left .nano {
     background-color: #283046 !important;
 }
