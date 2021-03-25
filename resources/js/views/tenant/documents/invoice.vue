@@ -550,7 +550,7 @@
                                                 <th width="8%"></th>
                                             </tr>
                                         </thead>
-                                        <tbody v-if="form.items.length > 0">
+                                        <tbody >
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
                                                 <td>{{row.item.description}} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
@@ -573,7 +573,93 @@
 
                                                 </td>
                                             </tr>
-                                            <tr><td colspan="9"></td></tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                    <button type="button"
+                                                        class="btn waves-effect waves-light btn-primary"
+                                                        @click.prevent="clickAddItemInvoice"
+                                                        style="width: 180px;">+ Agregar Producto</button>
+                                                </td>
+                                                <td colspan="3"></td>
+                                                <td colspan="4">
+                                                    <table style="width: 100%;">
+                                                        <tr v-if="form.total_taxed > 0 && enabled_discount_global">
+                                                            <td>
+                                                                DESCUENTO
+                                                                <template v-if="is_amount"> MONTO</template>
+                                                                <template v-else> %</template>
+                                                                <el-checkbox class="ml-1 mr-1" v-model="is_amount" @change="changeTypeDiscount"></el-checkbox>
+
+                                                            </td>
+                                                            <td>:</td>
+                                                            <td class="text-right">
+                                                                <el-input class="input-custom" v-model="total_global_discount" @input="calculateTotal"></el-input>
+                                                            </td>
+                                                        </tr>
+
+                                                        <template v-if="form.detraction">
+                                                            <tr v-if="form.detraction.amount > 0">
+                                                                <td>M. DETRACCIÓN</td>
+                                                                <td>:</td>
+                                                                <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
+                                                            </tr>
+                                                        </template>
+
+                                                        <tr v-if="form.total_exportation > 0">
+                                                            <td>OP.EXPORTACIÓN</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_exportation }}</td>
+                                                        </tr>
+                                                        <tr v-if="form.total_free > 0">
+                                                            <td>OP.GRATUITAS</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_free }}</td>
+                                                        </tr>
+                                                        <tr v-if="form.total_unaffected > 0">
+                                                            <td>OP.INAFECTAS</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_unaffected }}</td>
+                                                        </tr>
+                                                        <tr v-if="form.total_exonerated > 0">
+                                                            <td>OP.EXONERADAS</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
+                                                        </tr>
+                                                        <tr v-if="form.total_taxed > 0">
+                                                            <td>OP.GRAVADA</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_taxed }}</td>
+                                                        </tr>
+                                                        <tr v-if="form.total_prepayment > 0">
+                                                            <td>ANTICIPOS</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_prepayment }}</td>
+                                                        </tr>
+                                                        <!-- <tr v-if="form.total_discount > 0">
+                                                            <td>DESCUENTOS</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_discount }}</td>
+                                                        </tr> -->
+                                                        <tr v-if="form.total_igv > 0">
+                                                            <td>IGV</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_igv }}</td>
+                                                        </tr>
+                                                        <tr v-if="form.total_plastic_bag_taxes > 0">
+                                                            <td>ICBPER</td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                                                        </tr>
+
+                                                        <tr v-if="form.total > 0">
+                                                            <td><strong>TOTAL A PAGAR</strong></td>
+                                                            <td>:</td>
+                                                            <td class="text-right">{{ currency_type.symbol }} {{ form.total }}</td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -600,13 +686,7 @@
 
 
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-auto">
-                                <button type="button"
-                                        class="btn waves-effect waves-light btn-primary"
-                                        @click.prevent="clickAddItemInvoice"
-                                        style="width: 180px;">+ Agregar Producto</button>
-                            </div>
+                        <div class="row">
                             <div class="col">
                                 <div class="row">
                                     <div class="col-12 mt-2 mb-4 text-center">
@@ -713,82 +793,6 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-auto">
-                                <table style="width: 200px;">
-                                    <tr v-if="form.total_taxed > 0 && enabled_discount_global">
-                                        <td>
-                                            DESCUENTO
-                                            <template v-if="is_amount"> MONTO</template>
-                                            <template v-else> %</template>
-                                            <el-checkbox class="ml-1 mr-1" v-model="is_amount" @change="changeTypeDiscount"></el-checkbox>
-
-                                        </td>
-                                        <td>:</td>
-                                        <td class="text-right">
-                                            <el-input class="input-custom" v-model="total_global_discount" @input="calculateTotal"></el-input>
-                                        </td>
-                                    </tr>
-
-                                    <template v-if="form.detraction">
-                                        <tr v-if="form.detraction.amount > 0">
-                                            <td>M. DETRACCIÓN</td>
-                                            <td>:</td>
-                                            <td class="text-right">{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
-                                        </tr>
-                                    </template>
-
-                                    <tr v-if="form.total_exportation > 0">
-                                        <td>OP.EXPORTACIÓN</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_exportation }}</td>
-                                    </tr>
-                                    <tr v-if="form.total_free > 0">
-                                        <td>OP.GRATUITAS</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_free }}</td>
-                                    </tr>
-                                    <tr v-if="form.total_unaffected > 0">
-                                        <td>OP.INAFECTAS</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_unaffected }}</td>
-                                    </tr>
-                                    <tr v-if="form.total_exonerated > 0">
-                                        <td>OP.EXONERADAS</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
-                                    </tr>
-                                    <tr v-if="form.total_taxed > 0">
-                                        <td>OP.GRAVADA</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_taxed }}</td>
-                                    </tr>
-                                    <tr v-if="form.total_prepayment > 0">
-                                        <td>ANTICIPOS</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_prepayment }}</td>
-                                    </tr>
-                                    <!-- <tr v-if="form.total_discount > 0">
-                                        <td>DESCUENTOS</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_discount }}</td>
-                                    </tr> -->
-                                    <tr v-if="form.total_igv > 0">
-                                        <td>IGV</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_igv }}</td>
-                                    </tr>
-                                    <tr v-if="form.total_plastic_bag_taxes > 0">
-                                        <td>ICBPER</td>
-                                        <td>:</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
-                                    </tr>
-
-                                </table>
-
-                                <template v-if="form.total > 0">
-                                    <h5 class="text-right" v-if="form.total > 0"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h5>
-                                </template>
                             </div>
                         </div>
                     </div>
