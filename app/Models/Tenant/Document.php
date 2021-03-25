@@ -87,6 +87,7 @@ class Document extends ModelTenant
         'seller_id',
         'reference_data',
         'terms_condition',
+        'payment_condition_id'
     ];
 
     protected $casts = [
@@ -294,6 +295,10 @@ class Document extends ModelTenant
         return $this->hasMany(DocumentPayment::class);
     }
 
+    public function fee()
+    {
+        return $this->hasMany(DocumentFee::class);
+    }
 
     public function inventory_kardex()
     {
