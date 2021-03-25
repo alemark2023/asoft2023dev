@@ -164,8 +164,11 @@
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>
             <p class="desc">
-                {{ $document->user->name }}
-
+                @if ($document->seller->name)
+                    {{ $document->seller->name }}
+                @else
+                    {{ $document->user->name }}
+                @endif
             </p>
         </td>
     </tr>
@@ -357,19 +360,5 @@
     </tr>
     @endif
 </table>
-@if ($document->seller->name)
-<br>
-<table>
-    <tr>
-        <td class="desc">
-            <strong>Vendedor:</strong>
-        </td>
-    </tr>
-    <tr>
-        <td class="desc">{{ $document->seller->name }}</td>
-    </tr>
-</table>
-</body>
-@endif
 </body>
 </html>

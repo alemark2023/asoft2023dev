@@ -126,7 +126,11 @@
     <tr>
         <td class="align-top">Vendedor:</td>
         <td colspan="3">
-            {{ $document->user->name }}
+            @if ($document->seller->name)
+                {{ $document->seller->name }}
+            @else
+                {{ $document->user->name }}
+            @endif
         </td>
     </tr>
     @if ($document->contact)
@@ -341,19 +345,5 @@
     </tr>
 
 </table>
-<br>
-@if ($document->seller->name)
-<br>
-<table class="full-width">
-    <tr>
-        <td>
-            <strong>Vendedor:</strong>
-        </td>
-    </tr>
-    <tr>
-        <td>{{ $document->seller->name }}</td>
-    </tr>
-</table>
-@endif
 </body>
 </html>
