@@ -169,6 +169,27 @@
             <cbc:Amount currencyID="PEN">{{ $detraction->amount }}</cbc:Amount>
         </cac:PaymentTerms>
     @endif
+    @if($document->payment_condition_id === '01')
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Contado</cbc:PaymentMeansID>
+    </cac:PaymentTerms>
+    @endif
+    @if($document->payment_condition_id === '02')
+    <cac:PaymentTerms>
+        <cbc:ID>FormaPago</cbc:ID>
+        <cbc:PaymentMeansID>Credito</cbc:PaymentMeansID>
+        <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $document->fee()->sum('amount') }}</cbc:Amount>
+    </cac:PaymentTerms>
+    @foreach($document->fee as $fee)
+        <cac:PaymentTerms>
+            <cbc:ID>FormaPago</cbc:ID>
+            <cbc:PaymentMeansID>Cuota{{ sprintf("%03d", $loop->iteration) }}</cbc:PaymentMeansID>
+            <cbc:Amount currencyID="{{ $document->currency_type_id }}">{{ $fee->amount }}</cbc:Amount>
+            <cbc:PaymentDueDate>{{ $fee->date->format('Y-m-d') }}</cbc:PaymentDueDate>
+        </cac:PaymentTerms>
+    @endforeach
+    @endif
     @if($document->perception)
     @php($perception = $document->perception)
     <cac:PaymentTerms>
@@ -345,7 +366,7 @@
             </cac:TaxCategory>
         </cac:TaxSubtotal>
         @endif
-        @if($document->total_plastic_bag_taxes > 0) 
+        @if($document->total_plastic_bag_taxes > 0)
         <cac:TaxSubtotal>
             <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_plastic_bag_taxes }}</cbc:TaxAmount>
             <cac:TaxCategory>

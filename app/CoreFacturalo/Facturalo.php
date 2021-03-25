@@ -113,6 +113,7 @@ class Facturalo
             case 'invoice':
                 $document = Document::create($inputs);
                 $this->savePayments($document, $inputs['payments']);
+                $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
@@ -1004,6 +1005,13 @@ class Facturalo
                 $document->invoice()->update($inputs['invoice']);
                 $this->document = Document::find($document->id);
                 break;
+        }
+    }
+
+    private function saveFee($document, $fee)
+    {
+        foreach ($fee as $row) {
+            $document->fee()->create($row);
         }
     }
 }
