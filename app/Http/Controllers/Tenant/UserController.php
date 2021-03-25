@@ -35,7 +35,18 @@ class UserController extends Controller
             ->get()
             ->pluck('module_id')
             ->all();
-        $modules = Module::orderBy('order_menu')
+
+        $levelsTenant = DB::connection('tenant')
+            ->table('module_level_user')
+            ->where('user_id', 1)
+            ->get()
+            ->pluck('module_level_id')
+            ->toArray();
+
+        $modules = Module::with(['levels' => function ($query) use ($levelsTenant) {
+            $query->whereIn('id', $levelsTenant);
+        }])
+            ->orderBy('order_menu')
             ->whereIn('id', $modulesTenant)
             ->get();
         $datasource = [];
