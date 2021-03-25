@@ -16,7 +16,7 @@ class DownloadController extends Controller
     public function downloadExternal($model, $type, $external_id, $format = null) {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();
-        
+
         if (!$document) throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
 
         if ($format != null) $this->reloadPDF($document, 'invoice', $format);
