@@ -224,25 +224,8 @@
 
 </table>
 
-{{--<table class="full-width mt-3">--}}
-    {{--@if ($document->purchase_order)--}}
-        {{--<tr>--}}
-            {{--<td width="25%">Orden de Compra: </td>--}}
-            {{--<td>:</td>--}}
-            {{--<td class="text-left">{{ $document->purchase_order }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-    {{--@if ($document->quotation_id)--}}
-        {{--<tr>--}}
-            {{--<td width="15%">Cotización:</td>--}}
-            {{--<td class="text-left" width="85%">{{ $document->quotation->identifier }}</td>--}}
-        {{--</tr>--}}
-    {{--@endif--}}
-{{--</table>--}}
-
 @if ($document->guides)
 <br/>
-{{--<strong>Guías:</strong>--}}
 <table>
     @foreach($document->guides as $guide)
         <tr>
@@ -299,9 +282,9 @@
             <td>{{ $document->quotation->identifier }}</td>
 
             @isset($document->quotation->delivery_date)
-                    <td width="120px">T. ENTREGA</td>
+                    <td width="120px">F. ENTREGA</td>
                     <td width="8px">:</td>
-                    <td>{{ $document->quotation->delivery_date}}</td>
+                    <td>{{ $document->date_of_issue->addDays($document->quotation->delivery_date)->format('d-m-Y') }}</td>
             @endisset
         </tr>
 

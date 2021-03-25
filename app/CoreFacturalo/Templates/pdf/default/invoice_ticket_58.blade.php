@@ -21,10 +21,7 @@
 
 @endphp
 <html>
-<head>
-    {{--<title>{{ $document_number }}</title>--}}
-    {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
-</head>
+<head></head>
 <body>
 
 @if($company->logo)
@@ -218,8 +215,8 @@
     @endif
     @isset($document->quotation->delivery_date)
         <tr>
-            <td><p class="desc">T. Entrega</p></td>
-            <td><p class="desc">{{ $document->quotation->delivery_date}}</p></td>
+            <td><p class="desc">F. Entrega</p></td>
+            <td><p class="desc">{{ $document->date_of_issue->addDays($document->quotation->delivery_date)->format('d-m-Y') }}</p></td>
         </tr>
     @endisset
     @isset($document->quotation->sale_opportunity)
