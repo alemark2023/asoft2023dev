@@ -4,15 +4,21 @@
     $path[1] = (array_key_exists(1, $path)> 0)?$path[1]:'';
     $path[2] = (array_key_exists(2, $path)> 0)?$path[2]:'';
     $path[0] = ($path[0] === '')?'documents':$path[0];
+    $visual->sidebar_theme = property_exists($visual, 'sidebar_theme')?$visual->sidebar_theme:''
 @endphp
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     class="fixed no-mobile-device custom-scroll
         sidebar-{{$visual->sidebar_theme ?? ''}}
-        header-{{$visual->navbar ?? 'fixed'}}
+        {{ ($visual->sidebar_theme == 'white'
+        || $visual->sidebar_theme == 'gray'
+        || $visual->sidebar_theme == 'green'
+        || $visual->sidebar_theme == 'warning'
+        || $visual->sidebar_theme == 'ligth-blue') ? 'sidebar-light' : '' }}
         {{$vc_compact_sidebar->compact_sidebar == true ? 'sidebar-left-collapsed' : ''}}
-        {{$visual->header == 'dark' ? 'header-dark' : ''}}
-        {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}}
+        {{-- header-{{$visual->navbar ?? 'fixed'}} --}}
+        {{-- {{$visual->header == 'dark' ? 'header-dark' : ''}} --}}
+        {{-- {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}} --}}
         {{$visual->bg == 'dark' ? 'dark' : ''}}
         {{ ($path[0] === 'documents' && $path[1] === 'create'
         || $path[0] === 'quotations' && $path[1] === 'create'

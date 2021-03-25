@@ -22,7 +22,8 @@ use Modules\Item\Http\Requests\ItemRequest;
 use Modules\Dashboard\Helpers\DashboardData;
 use Modules\Item\Http\Requests\ItemUpdateRequest;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
-
+use App\Models\Tenant\Warehouse;
+use Modules\Inventory\Models\ItemWarehouse;
 
 class MobileController extends Controller
 {
@@ -90,15 +91,18 @@ class MobileController extends Controller
                 'identity_document_type_code' => $row->identity_document_type->code
             ];
         });*/
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
 
-        $items = Item::whereWarehouse()
+        $items = Item::with(['brand', 'category'])
+                    ->whereWarehouse()
                     ->whereHasInternalId()
                     ->whereNotIsSet()
                     ->whereIsActive()
                     ->orderBy('description')
                     ->take(20)
                     ->get()
-                    ->transform(function($row){
+                    ->transform(function($row) use($warehouse){
                         $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
                         return [
@@ -120,6 +124,10 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
+                    'brand' => $row->brand->name,
+                    'category' => $row->brand->name,
+                    'stock' => ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock,
+                    'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
 
                         ];
                     });
@@ -236,6 +244,8 @@ class MobileController extends Controller
 
     public function searchItems(Request $request)
     {
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
 
         $items = Item::where('description', 'like', "%{$request->input}%" )
                     ->orWhere('internal_id', 'like', "%{$request->input}%")
@@ -245,7 +255,7 @@ class MobileController extends Controller
                     ->whereIsActive()
                     ->orderBy('description')
                     ->get()
-                    ->transform(function($row){
+                    ->transform(function($row) use($warehouse){
 
                         $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
 
@@ -268,6 +278,10 @@ class MobileController extends Controller
                             'has_igv' => (bool) $row->has_igv,
                             'is_set' => (bool) $row->is_set,
                             'aux_quantity' => 1,
+                    'brand' => $row->brand->name,
+                    'category' => $row->brand->name,
+                    'stock' => ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock,
+                    'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                             'warehouses' => collect($row->warehouses)->transform(function($row) {
                                 return [
                                     'warehouse_description' => $row->warehouse->description,

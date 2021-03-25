@@ -10,8 +10,8 @@
         </a> --}}
         <div class="sidebar-toggle" data-toggle-class="sidebar-left-collapsed" data-target="html"
              data-fire-event="sidebar-left-toggle">
-             <img src="{{ asset('images/disc.svg') }}" alt="Sidebar toggle" class="img-fluid" width="20">
-            {{-- <i class="fas fa-dot-circle" aria-label="Toggle sidebar"></i> --}}
+             {{-- <img src="{{ asset('images/disc.svg') }}" alt="Sidebar toggle" class="img-fluid" width="20"> --}}
+            <i class="fas fa-bullseye" aria-label="Toggle sidebar"></i>
         </div>
         <div class="d-md-none toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
             <i class="fas fa-bars" aria-label="Toggle sidebar"></i>
