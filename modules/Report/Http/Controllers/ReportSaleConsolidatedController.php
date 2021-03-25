@@ -23,16 +23,19 @@ class ReportSaleConsolidatedController extends Controller
 {
     use ReportTrait;
 
-    public function filter() {
+    public function filter()
+    {
 
 
-        $persons = $this->getPersons('customers'); 
+        $persons = $this->getPersons('customers');
         $date_range_types = $this->getDateRangeTypes(true);
         $order_state_types = [];
         $sellers = $this->getSellers();
         $document_types = $this->getCIDocumentTypes();
+        $establishment_id = $this->getEstablishment();
+        $series = $this->getSeries($document_types);
 
-        return compact('persons', 'date_range_types', 'order_state_types', 'sellers', 'document_types');
+        return compact('persons', 'date_range_types', 'order_state_types', 'sellers', 'document_types', 'series', 'establishment_id');
     }
 
 
@@ -51,14 +54,14 @@ class ReportSaleConsolidatedController extends Controller
 
     public function totalsByItem(Request $request)
     {
-        
+
         $records = $this->getRecordsSalesConsolidated($request->all())->get()->groupBy('item_id');
 
         return $records->map(function($row, $key){
 
             return [
                 'item_id' => $key,
-                'item_internal_id' => $row->first()->relation_item->internal_id,  
+                'item_internal_id' => $row->first()->relation_item->internal_id,
                 'item_unit_type_id' => $row->first()->relation_item->unit_type_id,
                 'item_description' => $row->first()->item->description,
                 'quantity' => number_format($row->sum('quantity'), 4, ".", ""),
@@ -81,7 +84,24 @@ class ReportSaleConsolidatedController extends Controller
     private function dataSalesConsolidated($request)
     {
 
-        $document_type_id = $request['document_type_id']; 
+        $document_types = isset($request['document_type_id']) ? json_decode($request['document_type_id']) : [];
+        $document_items = DocumentItem::whereDefaultDocumentType($request);
+        if (!empty($document_types)) {
+            $nota_venta = null;
+            $document_items = $document_items->wherein('document_type_id', $document_types);
+            if (in_array('80', $document_types)) {
+                $request['document_type_id'] = '80';
+                $nota_venta = SaleNoteItem::whereDefaultDocumentType($request);
+            }
+            $data = ($nota_venta != null) ? $document_items->union($nota_venta) : $document_items;
+        } else {
+            $sale_note_items = SaleNoteItem::whereDefaultDocumentType($request);
+            $data = $document_items->union($sale_note_items);
+        }
+
+        return $data;
+
+        $document_type_id = $request['document_type_id'];
 
         switch ($document_type_id) {
 
@@ -93,8 +113,8 @@ class ReportSaleConsolidatedController extends Controller
             case '80':
                 $data = SaleNoteItem::whereDefaultDocumentType($request);
                 break;
-    
-            default: 
+
+            default:
                 $document_items = DocumentItem::whereDefaultDocumentType($request);
                 $sale_note_items = SaleNoteItem::whereDefaultDocumentType($request);
                 $data = $document_items->union($sale_note_items);
@@ -172,5 +192,5 @@ class ReportSaleConsolidatedController extends Controller
                 ->download($filename.'.xlsx');
 
     }
-    
+
 }
