@@ -125,6 +125,12 @@
                             </el-select>
                         </div>
                     </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 pb-2">
+                        <div class="form-group"  >
+                            <label class="control-label">Orden de compra</label>
+                            <el-input v-model="search.purchase_order" clearable></el-input>
+                        </div>
+                    </div>
                     <div class="col-lg-2 col-md-2 col-sm-12 mt-4">
                         <div class="form-group"  >
                             <el-checkbox v-model="search.pending_payment" >PEND. DE PAGO</el-checkbox>

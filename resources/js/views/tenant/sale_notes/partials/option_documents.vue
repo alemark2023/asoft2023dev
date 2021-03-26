@@ -3,7 +3,7 @@
         <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
-                :show-close="false">  
+                :show-close="false">
             <div class="row">
                 <div class="col-lg-8">
                     <div class="form-group" :class="{'has-danger': errors.document_type_id}">
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div class="col-lg-8 mt-3">
-                    <div class="form-group" :class="{'has-danger': errors.dipatch_id}"> 
+                    <div class="form-group" :class="{'has-danger': errors.dipatch_id}">
                         <!-- <label class="control-label">Tipo comprobante</label> -->
                         <el-checkbox  v-model="generate_dispatch">Generar Guía Remisión</el-checkbox>
                         <el-select v-model="dispatch_id" popper-class="el-select-document_type" filterable  class="border-left rounded-left border-info" v-if="generate_dispatch">
@@ -44,7 +44,7 @@
                         <small class="form-control-feedback" v-if="errors.dipatch_id" v-text="errors.dipatch_id[0]"></small>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-12">
                     <table>
                         <thead>
@@ -118,8 +118,8 @@
                     </table>
                 </div>
             </div>
-            <span slot="footer" class="dialog-footer"> 
-                <el-button @click="clickClose">Cerrar</el-button>         
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="clickClose">Cerrar</el-button>
                 <el-button class="submit" type="primary" @click="submit" :loading="loading_submit" v-if="flag_generate">Generar</el-button>
             </span>
 
@@ -265,13 +265,13 @@
 
             },
             async submit() {
-                
+
                 if(this.generate_dispatch){
                     if(!this.dispatch_id){
                         return this.$message.error('Debe seleccionar una guía base')
                     }
                 }
-                
+
                 let validate_payment_destination = await this.validatePaymentDestination()
 
                 if(validate_payment_destination.error_by_item > 0) {
@@ -338,11 +338,12 @@
                 this.document.operation_type_id = '0101'
 
                 this.document.items = q.items
+                this.document.purchase_order = q.purchase_order || ''
+                this.document.additional_information = q.observation || ''
                 this.document.charges = q.charges
                 this.document.discounts = q.discounts
                 this.document.attributes = []
                 this.document.guides = q.guides;
-                this.document.additional_information =null;
                 this.document.actions = {
                     format_pdf : 'a4'
                 };
@@ -370,10 +371,10 @@
                         this.titleDialog = 'Nota de venta registrada: '+this.form.identifier
                     })
 
-                    
+
                 await this.$http.get(`/${this.resource}/dispatches`)
                     .then(response => {
-                        this.dispatches = response.data 
+                        this.dispatches = response.data
                     })
             },
             changeDocumentType() {

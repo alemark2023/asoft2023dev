@@ -75,14 +75,14 @@
                     <td>
                         <p><strong>Usuario: </strong>{{$reportService->getUserName($filters['seller_id'])}}</p>
                     </td>
-                    @endif 
+                    @endif
                 </tr>
             </table>
         </div>
         @if(!empty($records))
             <div class="">
                 <div class=" ">
-                
+
                     @php
                         $acum_total_taxed=0;
                         $acum_total_igv=0;
@@ -102,6 +102,7 @@
                                 <th>Nota de Venta</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
+                                <th class="text-center">Orden de compra</th>
                                 <th class="text-center">Comprobantes</th>
                                 <th class="text-right" >T.Exportación</th>
                                 <th class="text-right" >T.Inafecta</th>
@@ -120,6 +121,7 @@
                                     <td class="celda">{{$value->number_full}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
                                     <td class="celda">{{$value->currency_type_id}}</td>
+                                    <td class="celda">{{$value->purchase_order}}</td>
                                     <td class="celda">
                                         @foreach ($value->documents as $doc)
                                             <label class="d-block">{{$doc->number_full}}</label>
@@ -127,7 +129,7 @@
                                     </td>
 
                                     @if($value->state_type_id == '11')
-                                    
+
                                         <td class="celda">0</td>
                                         <td class="celda">0</td>
                                         <td class="celda">0</td>
@@ -147,9 +149,9 @@
                                     @endif
                                 </tr>
 
-                                
+
                                 @php
-                                
+
                                     if($value->currency_type_id == 'PEN'){
 
                                         if($value->state_type_id == '11'){
@@ -162,7 +164,7 @@
 
                                             $acum_total += $value->total;
                                             $acum_total_taxed += $value->total_taxed;
-                                            $acum_total_igv += $value->total_igv; 
+                                            $acum_total_igv += $value->total_igv;
 
                                         }
 
@@ -186,14 +188,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="10"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="10"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

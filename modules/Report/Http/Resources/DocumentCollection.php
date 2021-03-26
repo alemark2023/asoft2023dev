@@ -6,13 +6,13 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class DocumentCollection extends ResourceCollection
 {
-     
+
 
     public function toArray($request) {
-        
 
-        return $this->collection->transform(function($row, $key){ 
-            
+
+        return $this->collection->transform(function($row, $key){
+
             $affected_document = null;
             if(in_array($row->document_type_id,['07','08']) && $row->note){
 
@@ -23,9 +23,9 @@ class DocumentCollection extends ResourceCollection
 
             $signal = $row->document_type_id;
             $state = $row->state_type_id;
-            
- 
-               
+
+
+
             return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
@@ -38,6 +38,7 @@ class DocumentCollection extends ResourceCollection
                 'currency_type_id' => $row->currency_type_id,
                 'series' => $row->series,
                 'alone_number' => $row->number,
+                'purchase_order' => $row->purchase_order,
 
                 'total_exportation' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exportation,2, ".",""),
                 'total_exonerated' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_exonerated,2, ".",""),
@@ -46,14 +47,14 @@ class DocumentCollection extends ResourceCollection
                 'total_taxed' => (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_taxed,2, ".",""),
                 'total_igv' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total_igv,2, ".",""),
                 'total' =>  (in_array($row->document_type_id,['01','03']) && in_array($row->state_type_id,['09','11'])) ? number_format(0,2, ".","") : number_format($row->total,2, ".",""),
- 
- 
+
+
 
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'document_type_description' => $row->document_type->description,
-                'document_type_id' => $row->document_type->id,   
-                'affected_document' => $affected_document,   
+                'document_type_id' => $row->document_type->id,
+                'affected_document' => $affected_document,
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
 

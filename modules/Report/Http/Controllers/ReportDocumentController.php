@@ -60,7 +60,8 @@ class ReportDocumentController extends Controller
         $records = $this->getRecords($request->all(), Document::class)->get();
         $filters = $request->all();
 
-        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"));
+        $pdf = PDF::loadView('report::documents.report_pdf', compact("records", "company", "establishment", "filters"))
+            ->setPaper('a4', 'landscape');
 
         $filename = 'Reporte_Ventas_'.date('YmdHis');
 
@@ -78,16 +79,16 @@ class ReportDocumentController extends Controller
         $records = $this->getRecords($request->all(), Document::class)->get();
         $filters = $request->all();
 
-        //get categories 
+        //get categories
         $categories = [];
         $categories_services = [];
-        
+
         if($request->include_categories == "true"){
             $categories = $this->getCategories($records, false);
             $categories_services = $this->getCategories($records, true);
         }
 
-        
+
         return (new DocumentExport)
                 ->records($records)
                 ->company($company)
@@ -103,13 +104,13 @@ class ReportDocumentController extends Controller
     public function getCategories($records, $is_service) {
 
         $aux_categories = collect([]);
-        
+
         foreach ($records as $document) {
-            
+
             $id_categories = $document->items->filter(function($row) use($is_service){
                 return (($is_service) ? (!is_null($row->relation_item->category_id) && $row->item->unit_type_id === 'ZZ') : !is_null($row->relation_item->category_id)) ;
             })->pluck('relation_item.category_id');
-            
+
             foreach ($id_categories as $value) {
                 $aux_categories->push($value);
             }

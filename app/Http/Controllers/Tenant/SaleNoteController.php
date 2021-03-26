@@ -118,14 +118,16 @@ class SaleNoteController extends Controller
 
         }
 
-        if($request->series)
-        {
+        if($request->series) {
             $records = $records->where('series', 'like', '%' . $request->series . '%');
         }
 
-        if($request->total_canceled != null)
-        {
+        if($request->total_canceled != null) {
             $records = $records->where('total_canceled', $request->total_canceled);
+        }
+
+        if($request->purchase_order) {
+            $records = $records->where('purchase_order', $request->purchase_order);
         }
 
         return $records;
@@ -217,7 +219,6 @@ class SaleNoteController extends Controller
 
     public function store(SaleNoteRequest $request)
     {
-
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
