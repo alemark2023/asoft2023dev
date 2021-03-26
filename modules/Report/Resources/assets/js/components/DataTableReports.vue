@@ -95,8 +95,13 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-3 col-md-3" v-if="resource == 'reports/sales' || resource === 'reports/sale-notes'">
+                        <label>Orden de compra</label>
+                            <el-input v-model="form.purchase_order" clearable></el-input>
+                        </div>
+
                         <div class="col-lg-3 col-md-3 mt-4" v-if="resource == 'reports/sales'">
-                            <div class="form-group"> 
+                            <div class="form-group">
                                 <el-checkbox v-model="form.include_categories" >¿Incluir categorías?</el-checkbox><br>
                             </div>
                         </div>

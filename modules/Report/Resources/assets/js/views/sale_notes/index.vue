@@ -14,6 +14,7 @@
                             <th>Nota de Venta</th>
                             <th>Estado</th>
                             <th class="text-center">Moneda</th>
+                            <th>Orden de compra</th>
                             <th class="text-center">Comprobantes</th>
                             <th>Cotización</th>
                             <th>Caso</th>
@@ -26,15 +27,16 @@
                             <th class="text-right">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
-                            <td>{{ index }}</td>  
+                            <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.user_name}}</td>
                             <td>{{row.customer_name}}</td>
                             <td>{{row.number_full}}</td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.currency_type_id}}</td>
+                            <td>{{ row.purchase_order }}</td>
                             <td>
-                                <template v-for="(doc,i) in row.documents">                                
+                                <template v-for="(doc,i) in row.documents">
                                     <label class="d-block"  :key="i">{{doc.number_full}}</label>
                                 </template>
                             </td>
@@ -47,36 +49,36 @@
                             <td>{{ (row.state_type_id == '11') ? "0.00" : row.total_taxed}}</td>
                             <td>{{ (row.state_type_id == '11') ? "0.00" : row.total_igv}}</td>
                             <td>{{ (row.state_type_id == '11') ? "0.00" : row.total}}</td>
-                            
+
                         </tr>
-                        
+
                     </data-table>
-                     
-                    
-                </div> 
+
+
+                </div>
         </div>
- 
+
     </div>
 </template>
 
 <script>
- 
+
     import DataTable from '../../components/DataTableReports.vue'
 
-    export default { 
+    export default {
         components: {DataTable},
         data() {
             return {
-                resource: 'reports/sale-notes',                 
-                form: {}, 
+                resource: 'reports/sale-notes',
+                form: {},
 
             }
         },
-        async created() { 
+        async created() {
         },
-        methods: { 
-             
-            
+        methods: {
+
+
         }
     }
 </script>

@@ -58,6 +58,7 @@
                         <th class="text-right">T.Igv</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">Saldo</th>
+                        <th class="text-center">Orden de compra</th>
                         <th class="text-center"></th>
                         <th class="text-center">Descargas</th>
                         <!--<th class="text-center">Anulación</th>-->
@@ -86,11 +87,6 @@
                                 <label class="d-block"   :key="index">{{row.note_type_description}}: {{row.description}}</label>
                             </template>
                         </td>
-
-                        <!-- <td>
-                            {{ row.document_type_id == '07' ?  row.number : ''}}
-                        </td> -->
-
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
                                 <div slot="content">{{tooltip(row)}}</div>
@@ -122,6 +118,7 @@
                         <td class="text-right">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
                         <td class="text-right">{{ row.balance }}</td>
+                        <td>{{ row.purchase_order }}</td>
                         <td class="text-center">
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                     @click.prevent="clickPayment(row.id)">Pagos</button>
