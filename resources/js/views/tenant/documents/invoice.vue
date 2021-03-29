@@ -11,7 +11,7 @@
                             <address class="mb-0 mt-2" >
                                 <span class="font-weight-bold">{{company.name}}</span>
                                 <br>
-                                <div v-if="establishment.address != '-'">{{ establishment.address }}, </div> {{ establishment.district.description }}, {{ establishment.province.description }}, {{ establishment.department.description }} - {{ establishment.country.description }}
+                                <div v-if="establishment.address != '-'">{{ establishment.address }} </div>
                                 <br>
                                 {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
                             </address>
