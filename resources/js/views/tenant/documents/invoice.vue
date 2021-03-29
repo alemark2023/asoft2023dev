@@ -239,8 +239,8 @@
                                                     <td>FORMA DE PAGO:</td>
                                                     <td>
                                                         <el-select v-model="form.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
-                                                            <el-option value="01" label="Crédito"></el-option>
-                                                            <el-option value="02" label="Contado"></el-option>
+                                                            <el-option value="02" label="Crédito"></el-option>
+                                                            <el-option value="01" label="Contado"></el-option>
                                                         </el-select>
                                                     </td>
                                                 </tr>
