@@ -150,6 +150,16 @@
             min-height: 36px;
         }
     }
+    .table {
+        td,
+        th {
+            font-size: 12px;
+            font-weight: 400;
+        }
+        th{
+            font-weight: 600;
+        }
+    }
 }
 .card-report-links {
     padding-left: 1rem;
