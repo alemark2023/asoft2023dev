@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="text-center" style="color: #CCC; cursor: pointer;" @click="dialogVisible = true">
+        <div :div_src="div_src" style="color: #CCC; cursor: pointer;" @click="dialogVisible = true">
             <img :src="src" class="img-fluid" style="max-height: 70px;">
         </div>
         <div class="">
@@ -23,7 +23,7 @@
 
 <script>
     export default {
-        props: ['url', 'path_logo'],
+        props: ['url', 'path_logo', 'position_class'],
         data() {
             return {
                 headers: headers_token,
@@ -35,18 +35,26 @@
         computed: {
             src() {
                 if (this.path_logo != '') return this.path_logo;
-                
+
                 return '/logo/700x300.jpg';
+            },
+            div_src() {
+                if (this.position_class != ''){
+                    return this.position_class;
+                } else {
+                    this.position_class = 'text-center';
+                    return this.position_class;
+                }
             }
         },
         methods: {
             beforeUpload(file) {
                 const isIMG = ((file.type === 'image/jpeg') || (file.type === 'image/png') || (file.type === 'image/jpg'));
                 const isLt2M = file.size / 1024 / 1024 < 2;
-                
+
                 if (!isIMG) this.$message.error('La imagen no es valida!');
                 if (!isLt2M) this.$message.error('La imagen excede los 2MB!');
-                
+
                 return isIMG && isLt2M;
             },
             preview(file) {
@@ -57,15 +65,15 @@
             },
             successUpload(response, file, fileList) {
                 this.imageUrl = URL.createObjectURL(file.raw);
-                
+
                 if (response.success) {
                     this.$message.success(response.message);
                     location.href = this.url;
 //                    this.load = true;
-                    
+
                     return;
                 }
-                
+
                 this.$message({message:'Error al subir el archivo', type: 'error'});
                 this.imageUrl = '';
             },
@@ -97,7 +105,7 @@
         line-height: 178px;
         text-align: center;
     }
-    
+
     .avatar {
         width: 178px;
         height: 178px;
