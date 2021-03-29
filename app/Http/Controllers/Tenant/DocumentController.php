@@ -237,7 +237,7 @@ class DocumentController extends Controller
                     'identity_document_type_id' => $row->identity_document_type_id,
                     'identity_document_type_code' => $row->identity_document_type->code,
                     'addresses' => $row->addresses,
-                    'address' =>  $row->address,
+                    'address' =>  $row->address.', '.$row->district->description.', '.$row->province->description.', '.$row->department->description,
                     'internal_code' => $row->internal_code
                 ];
             });
