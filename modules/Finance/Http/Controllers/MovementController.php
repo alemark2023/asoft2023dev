@@ -9,7 +9,7 @@ use Modules\Finance\Models\GlobalPayment;
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait; 
+use Modules\Finance\Traits\FinanceTrait;
 use Modules\Finance\Http\Resources\MovementCollection;
 use Modules\Finance\Exports\MovementExport;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use Modules\Pos\Models\CashTransaction;
 
 class MovementController extends Controller
-{ 
+{
 
     use FinanceTrait;
 
@@ -31,10 +31,8 @@ class MovementController extends Controller
 
     public function records(Request $request)
     {
-
-        // dd($request->all());
         $records = $this->getRecords($request->all(), GlobalPayment::class);
-        
+
         return new MovementCollection($records->paginate(config('tenant.items_per_page')));
 
     }
@@ -51,11 +49,11 @@ class MovementController extends Controller
             'date_end' => $data_of_period['d_end'],
         ];
 
-        
+
         $records = $model::whereFilterPaymentType($params);
 
         if($last_cash_opening == 'true'){
-            
+
             $cash =  Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
 
             if($cash){
@@ -77,7 +75,7 @@ class MovementController extends Controller
         return $records->latest();
     }
 
-    
+
     public function pdf(Request $request) {
 
         $company = Company::first();

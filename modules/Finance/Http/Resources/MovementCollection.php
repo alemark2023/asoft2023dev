@@ -22,41 +22,49 @@ class MovementCollection extends ResourceCollection
 
     public function toArray($request)
     {
-        
+
         self::$request = $request;
         $this->calculateResiduary(self::$request);
 
+
         return $this->collection->transform(function($row, $key) {
- 
             $data_person = $row->data_person;
 
-            self::$balance =  ($row->type_movement == 'input') ?  self::$balance + $row->payment->payment : self::$balance - $row->payment->payment;
+            $amount = $row->payment->payment;
+            $document = $row->payment->document;
+            // Convirtiendo el documento que esta hecho en dolares a soles
+            if ($document) {
+                if ($document->currency_type_id === 'USD') {
+                    $amount = $amount * $document->exchange_rate_sale;
+                }
+            }
+            self::$balance =  ($row->type_movement == 'input') ?  self::$balance + $amount : self::$balance - $amount;
 
             return [
-                'id' => $row->id, 
-                'destination_description' => $row->destination_description, 
-                'date_of_payment' => $row->payment->date_of_payment->format('Y-m-d'), 
-                'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row), 
-                'reference' => $row->payment->reference, 
-                'total' => $row->payment->payment, 
-                'number_full' => $row->payment->associated_record_payment->number_full, 
-                'currency_type_id' => $row->payment->associated_record_payment->currency_type_id, 
+                'id' => $row->id,
+                'destination_description' => $row->destination_description,
+                'date_of_payment' => $row->payment->date_of_payment->format('Y-m-d'),
+                'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
+                'reference' => $row->payment->reference,
+                'total' => $amount,
+                'number_full' => $row->payment->associated_record_payment->number_full,
+                'currency_type_id' => $row->payment->associated_record_payment->currency_type_id,
                 // 'document_type_description' => ($row->payment->associated_record_payment->document_type) ? $row->payment->associated_record_payment->document_type->description:'NV',
                 'document_type_description' => $this->getDocumentTypeDescription($row),
-                'person_name' => $data_person->name, 
-                'person_number' => $data_person->number, 
-                // 'payment' => $row->payment, 
-                // 'payment_type' => $row->payment_type, 
-                'instance_type' => $row->instance_type, 
-                'instance_type_description' => $row->instance_type_description, 
-                'user_id' => $row->user_id, 
-                'user_name' => optional($row->user)->name, 
+                'person_name' => $data_person->name,
+                'person_number' => $data_person->number,
+                // 'payment' => $row->payment,
+                // 'payment_type' => $row->payment_type,
+                'instance_type' => $row->instance_type,
+                'instance_type_description' => $row->instance_type_description,
+                'user_id' => $row->user_id,
+                'user_name' => optional($row->user)->name,
 
-                'type_movement' => $row->type_movement, 
-                'input' => ($row->type_movement == 'input') ? number_format($row->payment->payment, 2, ".", "") : '-', 
-                'output' => ($row->type_movement == 'output') ? number_format($row->payment->payment, 2, ".", "") : '-',
+                'type_movement' => $row->type_movement,
+                'input' => ($row->type_movement == 'input') ? number_format($amount, 2, ".", "") : '-',
+                'output' => ($row->type_movement == 'output') ? number_format($amount, 2, ".", "") : '-',
                 'balance' => number_format(self::$balance, 2, ".", ""),
-                'items' => $this->getItems($row), 
+                'items' => $this->getItems($row),
 
 
             ];
@@ -70,13 +78,13 @@ class MovementCollection extends ResourceCollection
 
             return $row->payment->associated_record_payment->items->transform(function($row, $key) {
                 return [
-                    'description' => $row->description 
+                    'description' => $row->description
                 ];
             });
         }
 
         return [];
-        
+
     }
 
 
@@ -93,7 +101,7 @@ class MovementCollection extends ResourceCollection
             self::$residuary += $input - $output;
             self::$balance = self::$residuary;
 
-        } 
+        }
 
     }
 
@@ -105,9 +113,9 @@ class MovementCollection extends ResourceCollection
         if($row->payment->associated_record_payment->document_type){
 
             $document_type = $row->payment->associated_record_payment->document_type->description;
-        
+
         }elseif(isset($row->payment->associated_record_payment->prefix)){
-            
+
             $document_type = $row->payment->associated_record_payment->prefix;
 
         }
@@ -130,6 +138,6 @@ class MovementCollection extends ResourceCollection
 
         return $payment_method_type_description;
     }
- 
+
 
 }
