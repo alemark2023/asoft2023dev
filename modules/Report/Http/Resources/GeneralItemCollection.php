@@ -10,11 +10,8 @@ class GeneralItemCollection extends ResourceCollection
 
     public function toArray($request)
     {
-
         return $this->collection->transform(function ($row, $key) {
-
             $resource = self::getDocument($row);
-
             $total_item_purchase = self::getPurchaseUnitPrice($row);
             $utility_item = $row->total - $total_item_purchase;
 
@@ -30,6 +27,7 @@ class GeneralItemCollection extends ResourceCollection
                 'date_of_issue' => $resource['date_of_issue'],
                 'customer_name' => $resource['customer_name'],
                 'customer_number' => $resource['customer_number'],
+                'brand' => $row->relation_item->brand->name,
 
                 'series' => $resource['series'],
                 'alone_number' => $resource['alone_number'],
@@ -38,6 +36,7 @@ class GeneralItemCollection extends ResourceCollection
                 'unit_value' => number_format($row->unit_value, 2),
 
                 'total' => number_format($row->total, 2),
+                'total_number' => $row->total,
 
                 'total_item_purchase' => number_format($total_item_purchase, 2),
                 'utility_item' => number_format($utility_item, 2),

@@ -33,10 +33,11 @@ class ReportGeneralItemController extends Controller
         $items = $this->getItems('items');
         $brands = $this->getBrands();
         $web_platforms = $this->getWebPlatforms();
-
         $document_types = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $categories = $this->getCategories();
+        $users = $this->getUsers();
 
-        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms', 'brands');
+        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms', 'brands', 'categories', 'users');
     }
 
 
@@ -50,7 +51,6 @@ class ReportGeneralItemController extends Controller
     {
 
         $records = $this->getRecordsItems($request->all())->latest('id');
-
 
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -69,21 +69,22 @@ class ReportGeneralItemController extends Controller
         $type_person = $request['type_person'];
         $item_id = $request['item_id'];
         $brand_id = $request['brand_id'];
+        $category_id = $request['category_id'];
 
-        $user = $request['user'];
+        $user_id = $request['user_id'];
+        $user_type = $request['user_type'];
         $web_platform_id = $request['web_platform_id'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type,$user, $person_id, $type_person, $item_id, $web_platform_id, $brand_id);
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type);
 
         return $records;
 
     }
 
 
-    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $user, $person_id, $type_person, $item_id, $web_platform_id, $brand_id)
+    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type)
     {
-        if( $document_type_id && $document_type_id == '80' )
-        {
+        if( $document_type_id && $document_type_id == '80' ) {
             $relation = 'sale_note';
 
             $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end){
@@ -92,8 +93,7 @@ class ReportGeneralItemController extends Controller
                 ->latest()
                 ->whereTypeUser();
             });
-        }
-        else{
+        } else {
 
             $model = $data_type['model'];
             $relation = $data_type['relation'];
@@ -106,11 +106,17 @@ class ReportGeneralItemController extends Controller
                             ->whereIn('document_type_id', $document_types)
                             ->latest()
                             ->whereTypeUser();
-                        })
-                        ->whereHas($relation.'.user', function($query) use($user){
-                            $query->where('name', 'like', "%{$user}%");
                         });
-
+            if ($user_id && $user_type === 'CREADOR') {
+                $data = $data->whereHas($relation.'.user', function($query) use($user_id){
+                    $query->where('user_id', $user_id);
+                });
+            }
+			if ($user_id && $user_type === 'VENDEDOR') {
+				$data = $data->whereHas($relation . '.seller', function ($query) use ($user_id) {
+					$query->where('seller_id', $user_id);
+				});
+			}
         }
 
 
@@ -128,13 +134,16 @@ class ReportGeneralItemController extends Controller
             $data =  $data->where('item_id', $item_id);
         }
 
-        if($web_platform_id || $brand_id){
-            $data = $data->whereHas('relation_item', function($q) use($web_platform_id, $brand_id){
+        if($web_platform_id || $brand_id || $category_id){
+            $data = $data->whereHas('relation_item', function($q) use($web_platform_id, $brand_id, $category_id){
 				if ($web_platform_id) {
 					$q->where('web_platform_id', $web_platform_id);
                 }
 				if ($brand_id) {
 					$q->where('brand_id', $brand_id);
+				}
+                if ($category_id) {
+					$q->where('category_id', $category_id);
 				}
             });
         }
