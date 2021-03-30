@@ -14,6 +14,7 @@ use App\Models\Tenant\User;
 use App\Models\Tenant\StateType;
 use Auth;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 use Modules\Item\Models\WebPlatform;
 
 
@@ -348,5 +349,26 @@ trait ReportTrait
     {
         return Brand::orderBy('name')
             ->get();
+    }
+
+    public function getCategories()
+    {
+        return Category::orderBy('name')
+            ->get();
+    }
+
+    public function getUsers()
+    {
+        $user = auth()->user();
+        $persons = User::select('id', 'name', 'type')
+                ->orderBy('name');
+        if ($user->type === 'admin') {
+            $persons = $persons->whereIn('type', ['seller', 'admin'])
+                ->get();
+        } else {
+            $persons = $persons->where('id', $user->id)
+                ->get();
+        }
+        return $persons;
     }
 }

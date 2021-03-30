@@ -47,6 +47,7 @@
                                 @endif
                                 <th>PLATAFORMA</th>
                                 <th>MARCA</th>
+                                <th>CATEGORÍA</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,6 +119,7 @@
 
                                             <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
                                             <td class="celda">{{$value->relation_item->brand->name}}</td>
+                                            <td class="celda">{{$value->relation_item->category->name}}</td>
                                         </tr>
                                     @endforeach
 
@@ -187,6 +189,7 @@
 
                                         <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
                                         <td class="celda">{{$value->relation_item->brand->name}}</td>
+                                        <td class="celda">{{$value->relation_item->category->name}}</td>
                                     </tr>
                                     @endforeach
 
