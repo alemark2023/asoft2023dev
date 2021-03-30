@@ -508,7 +508,7 @@
                                                     </div>
                                                 </template>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-12">
                                                     <div class="form-group">
                                                         <label class="control-label">Observaciones</label>
                                                         <el-input
@@ -518,7 +518,7 @@
                                                         </el-input>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-12">
                                                     <div class="form-group" :class="{'has-danger': errors.purchase_order}">
                                                         <label class="control-label">Orden Compra</label>
                                                         <!-- <el-input v-model="form.purchase_order"></el-input> -->
@@ -530,7 +530,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-2">
+                                                <div class="col-md-12">
                                                     <div class="form-group" :class="{'has-danger': errors.plate_number}">
                                                         <label class="control-label">N° Placa</label>
                                                         <!-- <el-input v-model="form.plate_number"></el-input> -->
