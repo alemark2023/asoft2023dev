@@ -507,40 +507,6 @@
                                                         </table>
                                                     </div>
                                                 </template>
-
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label class="control-label">Observaciones</label>
-                                                        <el-input
-                                                                type="textarea"
-                                                                autosize
-                                                                v-model="form.additional_information">
-                                                        </el-input>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group" :class="{'has-danger': errors.purchase_order}">
-                                                        <label class="control-label">Orden Compra</label>
-                                                        <!-- <el-input v-model="form.purchase_order"></el-input> -->
-                                                        <el-input
-                                                                type="textarea"
-                                                                v-model="form.purchase_order">
-                                                        </el-input>
-                                                        <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-12">
-                                                    <div class="form-group" :class="{'has-danger': errors.plate_number}">
-                                                        <label class="control-label">N° Placa</label>
-                                                        <!-- <el-input v-model="form.plate_number"></el-input> -->
-                                                        <el-input
-                                                                type="textarea"
-                                                                v-model="form.plate_number">
-                                                        </el-input>
-                                                        <small class="form-control-feedback" v-if="errors.plate_number" v-text="errors.plate_number[0]"></small>
-                                                    </div>
-                                                </div>
                                             </template>
                                         </div>
                                         <div class="col-12 py-2 border-top">
@@ -561,6 +527,14 @@
                                                         autosize
                                                         v-model="form.additional_information">
                                                 </el-input>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 py-2 border-top">
+                                            <div class="form-group" :class="{'has-danger': errors.plate_number}">
+                                                <label class="control-label">N° Placa</label>
+                                                <el-input type="textarea" v-model="form.plate_number">
+                                                </el-input>
+                                                <small class="form-control-feedback" v-if="errors.plate_number" v-text="errors.plate_number[0]"></small>
                                             </div>
                                         </div>
                                         <div class="col-12 py-2 border-top">
