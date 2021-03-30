@@ -65,6 +65,7 @@ class SaleNote extends ModelTenant
         'observation',
         'reference_data',
         'plate_number',
+        'purchase_order',
     ];
 
     protected $casts = [
@@ -254,7 +255,7 @@ class SaleNote extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
-    
+
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
@@ -264,15 +265,15 @@ class SaleNote extends ModelTenant
     {
         return $query->where('changed', false);
     }
-    
+
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);
     }
-    
+
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
     }
-    
+
 }

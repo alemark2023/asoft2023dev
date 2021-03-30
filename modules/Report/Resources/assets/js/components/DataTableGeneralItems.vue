@@ -5,8 +5,20 @@
             <div class="col-md-12 col-lg-12 col-xl-12 ">
 
                 <div class="row mt-2">
-
-                        <div class="col-md-2" >
+                        <div class="col-md-2 form-group">
+                            <label class="control-label">Tipo de usuario</label>
+                            <el-select v-model="form.user_type" clearable>
+                                <el-option key="CREADOR" value="CREADOR" label="Registrado por"></el-option>
+                                <el-option key="VENDEDOR" value="VENDEDOR" label="Vendedor asignado"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="col-md-2 form-group">
+                            <label class="control-label">{{ form.user_type === 'CREADOR' ? 'Usuario' : 'Vendedor' }}</label>
+                            <el-select v-model="form.user_id" clearable>
+                                <el-option v-for="user in users" :key="user.id" :value="user.id" :label="user.name"></el-option>
+                            </el-select>
+                        </div>
+                        <!-- <div class="col-md-2" >
                             <div class="form-group">
                                 <label class="control-label">Usuario</label>
                                 <el-input placeholder="Buscar"
@@ -14,7 +26,7 @@
                                     style="width: 100%;">
                                 </el-input>
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="col-md-3" >
                             <div class="form-group">
@@ -129,6 +141,16 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-2 col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Categoría</label>
+                                <el-select v-model="form.category_id" filterable  popper-class="el-select-customers"  clearable
+                                    placeholder="Nombre de la categoría">
+                                    <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+
                         <div class="col-md-2">
                             <div class="form-group">
                                 <label class="control-label">Plataforma</label>
@@ -149,14 +171,8 @@
                             </template>
 
                         </div>
-
-                </div>
-                <div class="row mt-1 mb-4">
-
                 </div>
             </div>
-
-
             <div class="col-md-12">
                 <div class="table-responsive">
                     <table class="table">
@@ -166,16 +182,24 @@
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="14">
+                                    <el-pagination
+                                            @current-change="getRecords"
+                                            layout="total, prev, pager, next"
+                                            :total="pagination.total"
+                                            :current-page.sync="pagination.current_page"
+                                            :page-size="pagination.per_page">
+                                    </el-pagination>
+                                </td>
+                                <td class="text-right">{{ total | toDecimals }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
                     </table>
-                    <div>
-                        <el-pagination
-                                @current-change="getRecords"
-                                layout="total, prev, pager, next"
-                                :total="pagination.total"
-                                :current-page.sync="pagination.current_page"
-                                :page-size="pagination.per_page">
-                        </el-pagination>
-                    </div>
                 </div>
             </div>
         </div>
@@ -233,10 +257,11 @@
                 all_items: [],
                 web_platforms: [],
                 loading_search_items:false,
-                brands: []
+                brands: [],
+                categories: [],
+                users: [],
+                total: 0
             }
-        },
-        computed: {
         },
         created() {
             this.initForm()
@@ -254,6 +279,8 @@
                     this.all_items = response.data.items
                     this.web_platforms = response.data.web_platforms
                     this.brands = response.data.brands
+                    this.categories = response.data.categories
+                    this.users = response.data.users;
                 });
 
 
@@ -351,6 +378,9 @@
                     date_end: moment().format('YYYY-MM-DD'),
                     month_start: moment().format('YYYY-MM'),
                     month_end: moment().format('YYYY-MM'),
+                    category_id: '',
+                    user_type: '',
+                    user_id: ''
                 }
 
             },
@@ -367,6 +397,11 @@
             getRecords() {
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
+                    if (this.records) {
+                        this.total = this.records.reduce((acc, r) => {
+                            return acc + parseFloat(r.total_number);
+                        }, 0);
+                    }
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.loading_submit = false

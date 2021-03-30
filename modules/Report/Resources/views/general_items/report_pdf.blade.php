@@ -22,10 +22,12 @@
                 text-align: center;
                 padding: 5px;
                 border: 0.1px solid black;
+                font-size: 9px;
             }
 
             th {
                 padding: 5px;
+                font-size: 9px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
@@ -67,6 +69,7 @@
                                 <th style="width:6%;">MONEDA</th>
                                 <th style="width:5%;">UNIDAD DE MEDIDA</th>
                                 <th style="width:5%;">MARCA</th>
+                                <th style="width:5%;">CATEGORÍA</th>
                                 <th style="width:12%;">DESCRIPCIÓN</th>
                                 <th style="width:8%;">CANTIDAD</th>
                                 <th style="width:7%;">PRECIO UNITARIO</th>
@@ -115,6 +118,7 @@
                                             <td class="celda">{{$value->sale_note->currency_type_id}}</td>
                                             <td class="celda">{{$value->item->unit_type_id}}</td>
                                             <td class="celda">{{$value->relation_item->brand->name}}</td>
+                                            <td class="celda">{{$value->relation_item->category->name}}</td>
                                             <td class="celda">{{$value->item->description}}</td>
                                             <td class="celda">{{$value->quantity}}</td>
                                             <td class="celda">{{$value->unit_price}}</td>
@@ -161,6 +165,7 @@
                                         <td class="celda">{{$value->document->currency_type_id}}</td>
                                         <td class="celda">{{$value->item->unit_type_id}}</td>
                                         <td class="celda">{{$value->relation_item->brand->name}}</td>
+                                        <td class="celda">{{$value->relation_item->category->name}}</td>
                                         {{-- <td  class="celda" >{{ $value->item->description}}</td> --}}
                                         <td  class="celda" >{{ (strlen($value->item->description) > 50) ? substr($value->item->description,0,50):$value->item->description}}</td>
                                         <td class="celda">{{$value->quantity}}</td>

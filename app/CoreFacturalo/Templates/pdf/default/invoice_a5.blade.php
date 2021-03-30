@@ -516,7 +516,8 @@
         </tr>
     </table>
 @endif
-@if($payments->count())
+@if ($document->payment_condition_id === '01')
+    @if($payments->count())
     <table class="full-width">
         <tr>
         <td>
@@ -527,6 +528,22 @@
             @foreach($payments as $row)
                 <tr>
                     <td>&#8226; {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment + $row->change }}</td>
+                </tr>
+            @endforeach
+        </tr>
+    </table>
+    @endif
+@else
+    @php
+        $paymentMethod = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+    @endphp
+    <table class="full-width">
+        <tr>
+            <td><strong>PAGOS: {{ $paymentMethod->description }}</strong></td>
+        </tr>
+            @foreach($document->fee as $key => $quote)
+                <tr>
+                    <td>&#8226;  Cuota #{{ $key + 1 }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
                 </tr>
             @endforeach
         </tr>

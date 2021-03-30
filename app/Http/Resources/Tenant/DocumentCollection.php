@@ -150,7 +150,7 @@ class DocumentCollection extends ResourceCollection
                 'balance' => $balance,
                 'message_regularize_shipping' => $message_regularize_shipping,
                 'regularize_shipping' => (bool) $row->regularize_shipping,
-
+                'purchase_order' => $row->purchase_order,
             ];
         });
     }

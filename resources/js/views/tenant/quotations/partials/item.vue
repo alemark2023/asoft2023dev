@@ -361,7 +361,6 @@
             },
             initForm() {
                 this.errors = {};
-
                 this.form = {
                     item_id: null,
                     item: {},
@@ -381,7 +380,8 @@
                     unit_type_id: null,
                     is_set: false,
                     extra_attr_name: 'Tiempo de entrega',
-                    extra_attr_value: ''
+                    extra_attr_value: '',
+                    name_product_pdf: ''
                 };
 
                 this.total_item = 0;
@@ -393,6 +393,7 @@
                 this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
 
                 if (this.recordItem) {
+                    //console.log(this.recordItem);
                     await this.reloadDataItems(this.recordItem.item_id)
                     this.form.item_id = this.recordItem.item_id
                     await this.changeItem();
@@ -400,9 +401,10 @@
                     this.form.unit_price = this.recordItem.unit_price
                     this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                     this.form.warehouse_id = this.recordItem.warehouse_id
-                    if(this.recordItem.name_product_pdf){
-                        this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    if(this.recordItem.item.name_product_pdf){
+                        this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                     }
+                    // console.log(this.form);
                     this.calculateQuantity()
                 }
             },

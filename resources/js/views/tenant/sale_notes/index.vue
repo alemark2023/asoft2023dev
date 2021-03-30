@@ -44,6 +44,7 @@
 
                         <th class="text-center">Comprobantes</th>
                         <th class="text-center">Estado pago</th>
+                        <th class="text-center">Orden de compra</th>
 
                         <th class="text-center">Pagos</th>
                         <th class="text-center">Descarga</th>
@@ -99,6 +100,8 @@
                         <td class="text-center">
                             <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
                         </td>
+
+                        <td>{{ row.purchase_order }}</td>
 
                         <td class="text-center">
                             <!-- <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"

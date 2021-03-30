@@ -12,9 +12,9 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Models\Tenant\StateType;
-use App\Models\Tenant\Warehouse;
 use Auth;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 use Modules\Item\Models\WebPlatform;
 
 
@@ -24,8 +24,6 @@ trait ReportTrait
 
     public function getRecords($request, $model)
     {
-
-        // dd($request['period']);
         $document_type_id = $request['document_type_id'];
         $establishment_id = $request['establishment_id'];
         $period = $request['period'];
@@ -37,6 +35,7 @@ trait ReportTrait
         $type_person = $request['type_person'];
         $seller_id = $request['seller_id'];
         $state_type_id = $request['state_type_id'];
+        $purchase_order = $request['purchase_order'] ?? null;
 
 
         $d_start = null;
@@ -46,7 +45,6 @@ trait ReportTrait
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
                 $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
-                // $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
                 break;
             case 'between_months':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
@@ -55,7 +53,6 @@ trait ReportTrait
             case 'date':
                 $d_start = $date_start;
                 $d_end = $date_start;
-                // $d_end = $date_end;
                 break;
             case 'between_dates':
                 $d_start = $date_start;
@@ -63,14 +60,14 @@ trait ReportTrait
                 break;
         }
 
-        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id, $state_type_id);
+        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order);
 
         return $records;
 
     }
 
 
-    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id, $state_type_id)
+    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order)
     {
 
         if($document_type_id && $establishment_id){
@@ -106,6 +103,9 @@ trait ReportTrait
 
         if($state_type_id){
             $data =  $data->where('state_type_id', $state_type_id);
+        }
+        if($purchase_order){
+            $data =  $data->where('purchase_order', $purchase_order);
         }
 
         return $data;
@@ -349,5 +349,26 @@ trait ReportTrait
     {
         return Brand::orderBy('name')
             ->get();
+    }
+
+    public function getCategories()
+    {
+        return Category::orderBy('name')
+            ->get();
+    }
+
+    public function getUsers()
+    {
+        $user = auth()->user();
+        $persons = User::select('id', 'name', 'type')
+                ->orderBy('name');
+        if ($user->type === 'admin') {
+            $persons = $persons->whereIn('type', ['seller', 'admin'])
+                ->get();
+        } else {
+            $persons = $persons->where('id', $user->id)
+                ->get();
+        }
+        return $persons;
     }
 }

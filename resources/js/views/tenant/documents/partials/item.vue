@@ -724,6 +724,7 @@
                     lots_group: [],
                     IdLoteSelected: null,
                     document_item_id: null,
+                    name_product_pdf: ''
                 };
 
                 this.activePanel = 0;
@@ -766,9 +767,12 @@
 
                     }
 
-                    if(this.recordItem.name_product_pdf){
-                        this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    if(this.recordItem.item.name_product_pdf){
+                        this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                     }
+                    // if(this.recordItem.name_product_pdf){
+                    //     this.form.name_product_pdf = this.recordItem.name_product_pdf
+                    // }
 
 
                     this.calculateQuantity()
@@ -959,6 +963,11 @@
                 let IdLoteSelected = this.form.IdLoteSelected
                 let document_item_id = this.form.document_item_id
                 this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale);
+
+                this.row.item.name_product_pdf = this.row.name_product_pdf || '';
+                if (this.recordItem) {
+                    this.row.indexi = this.recordItem.indexi
+                }
 
                 let select_lots = await _.filter(this.row.item.lots, {'has_sale':true})
                 let un_select_lots = await _.filter(this.row.item.lots, {'has_sale':false})

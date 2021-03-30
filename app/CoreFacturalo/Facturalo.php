@@ -921,7 +921,6 @@ class Facturalo
         $balance = $total - collect($payments)->sum('payment');
 
         $search_cash = ($balance < 0) ? collect($payments)->firstWhere('payment_method_type_id', '01') : null;
-
         $this->apply_change = false;
 
         if($balance < 0 && $search_cash){
@@ -932,7 +931,6 @@ class Facturalo
                 $payment = $row['payment'];
 
                 if($row['payment_method_type_id'] == '01' && !$this->apply_change){
-
                     $change = abs($balance);
                     $payment = $row['payment'] - abs($balance);
                     $this->apply_change = true;
@@ -955,7 +953,6 @@ class Facturalo
         }
 
         foreach ($payments as $row) {
-
             if($balance < 0 && !$this->apply_change){
                 $row['change'] = abs($balance);
                 $row['payment'] = $row['payment'] - abs($balance);

@@ -69,10 +69,68 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+                                    <label class="control-label">Fec. Emisión</label>
+                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
+                                    <label class="control-label">Tipo de cambio
+                                        <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
+                                </div>
+                            </div>
 
+                            <div class="col-lg-2 col-md-2">
+                                <div class="form-group" >
+                                    <label class="control-label">
+                                        Tipo periodo
 
-                            <div class="col-lg-8">
+                                        <el-tooltip class="item" effect="dark" content="Creación recurrente de N. Venta de forma automática, por periodo." placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <el-select v-model="form.type_period" clearable>
+                                        <el-option v-for="option in type_periods" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors.type_period" v-text="errors.type_period[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2" >
+                                <div class="form-group">
+                                    <label class="control-label">Cant. Periodos</label>
+                                    <el-input-number v-model="form.quantity_period" :min="0"></el-input-number>
 
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2" >
+                                <div class="form-group">
+                                    <label class="control-label">Placa</label>
+                                    <el-input v-model="form.license_plate" :maxlength="200"></el-input>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 form-group">
+                                    <label class="control-label">Orden de compra</label>
+                                    <el-input v-model="form.purchase_order" :maxlength="50"></el-input>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Observación
+                                    </label>
+                                    <el-input  type="textarea"  v-model="form.observation"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
+                                </div>
+                            </div>
+                            <!-- Pagos -->
+                            <div class="col-12 pt-3">
                                 <table>
                                     <thead>
                                         <tr width="100%">
@@ -126,67 +184,10 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
                             </div>
-
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                                    <!--<label class="control-label">Fecha de emisión</label>-->
-                                    <label class="control-label">Fec. Emisión</label>
-                                    <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
-                                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
-                                    <label class="control-label">Tipo de cambio
-                                        <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-input v-model="form.exchange_rate_sale"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-2">
-                                <div class="form-group" >
-                                    <label class="control-label">
-                                        Tipo periodo
-
-                                        <el-tooltip class="item" effect="dark" content="Creación recurrente de N. Venta de forma automática, por periodo." placement="top-start">
-                                            <i class="fa fa-info-circle"></i>
-                                        </el-tooltip>
-                                    </label>
-                                    <el-select v-model="form.type_period" clearable>
-                                        <el-option v-for="option in type_periods" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                    <small class="form-control-feedback" v-if="errors.type_period" v-text="errors.type_period[0]"></small>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-2" >
-                                <div class="form-group">
-                                    <label class="control-label">Cant. Periodos</label>
-                                    <el-input-number v-model="form.quantity_period" :min="0"></el-input-number>
-
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-2" >
-                                <div class="form-group">
-                                    <label class="control-label">Placa</label>
-                                    <el-input v-model="form.license_plate" :maxlength="200"></el-input>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6 col-md-6">
-                                <div class="form-group">
-                                    <label class="control-label">Observación
-                                    </label>
-                                    <el-input  type="textarea"  v-model="form.observation"></el-input>
-                                    <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
-                                </div>
-                            </div>
+                            <!-- Fin Pagos -->
                         </div>
+
 
 
 

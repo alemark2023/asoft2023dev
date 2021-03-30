@@ -42,7 +42,6 @@ class CashController extends Controller
     {
         return [
             'income' => 'Ingresos',
-            // 'expense' => 'Egresos',
         ];
     }
 

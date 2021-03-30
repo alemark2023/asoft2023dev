@@ -121941,6 +121941,16 @@ a.link:focus {
   min-height: 36px;
 }
 
+.card.card-dashboard .table td,
+.card.card-dashboard .table th {
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.card.card-dashboard .table th {
+  font-weight: 600;
+}
+
 .card-report-links {
   padding-left: 1rem;
   margin-bottom: 0;

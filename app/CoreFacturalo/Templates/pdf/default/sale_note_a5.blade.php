@@ -103,6 +103,12 @@
             <td colspan="3">{{ $document->reference_data }}</td>
         </tr>
     @endif
+    @if ($document->purchase_order)
+        <tr>
+            <td class="align-top">Orden de compra:</td>
+            <td colspan="3">{{ $document->purchase_order }}</td>
+        </tr>
+    @endif
 </table>
 
 @if ($document->guides)
