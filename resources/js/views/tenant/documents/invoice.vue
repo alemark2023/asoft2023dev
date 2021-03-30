@@ -2,7 +2,7 @@
     <div>
         <div v-if="loading_form">
             <form autocomplete="off" @submit.prevent="submit" class="row no-gutters">
-                <div class="card col-xl-9 col-md-9 col-12">
+                <div class="col-xl-9 col-md-9 col-12">
                     <div class="row card-header no-gutters align-items-start" style="background-color: #fff;">
                         <div class="col-xl-2 col-md-2 col-12">
                             <logo url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''" :position_class="'text-left'"></logo>
@@ -192,7 +192,7 @@
 
                                                 <template v-if="form.detraction">
                                                     <tr v-if="form.detraction.amount > 0">
-                                                        <td width="50%">M. DETRACCIÓN:</td>
+                                                        <td width="60%">M. DETRACCIÓN:</td>
                                                         <td>{{ currency_type.symbol }} {{ form.detraction.amount }}</td>
                                                     </tr>
                                                 </template>
@@ -236,7 +236,7 @@
                                                 </tr>
 
                                                 <tr v-if="form.total > 0">
-                                                    <td>FORMA DE PAGO:</td>
+                                                    <td>CONDICIÓN DE PAGO:</td>
                                                     <td>
                                                         <el-select v-model="form.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
                                                             <el-option value="02" label="Crédito"></el-option>
@@ -507,40 +507,6 @@
                                                         </table>
                                                     </div>
                                                 </template>
-
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label class="control-label">Observaciones</label>
-                                                        <el-input
-                                                                type="textarea"
-                                                                autosize
-                                                                v-model="form.additional_information">
-                                                        </el-input>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <div class="form-group" :class="{'has-danger': errors.purchase_order}">
-                                                        <label class="control-label">Orden Compra</label>
-                                                        <!-- <el-input v-model="form.purchase_order"></el-input> -->
-                                                        <el-input
-                                                                type="textarea"
-                                                                v-model="form.purchase_order">
-                                                        </el-input>
-                                                        <small class="form-control-feedback" v-if="errors.purchase_order" v-text="errors.purchase_order[0]"></small>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-2">
-                                                    <div class="form-group" :class="{'has-danger': errors.plate_number}">
-                                                        <label class="control-label">N° Placa</label>
-                                                        <!-- <el-input v-model="form.plate_number"></el-input> -->
-                                                        <el-input
-                                                                type="textarea"
-                                                                v-model="form.plate_number">
-                                                        </el-input>
-                                                        <small class="form-control-feedback" v-if="errors.plate_number" v-text="errors.plate_number[0]"></small>
-                                                    </div>
-                                                </div>
                                             </template>
                                         </div>
                                         <div class="col-12 py-2 border-top">
@@ -563,6 +529,14 @@
                                                 </el-input>
                                             </div>
                                         </div>
+                                        <div class="col-md-12 py-2 border-top">
+                                            <div class="form-group" :class="{'has-danger': errors.plate_number}">
+                                                <label class="control-label">N° Placa</label>
+                                                <el-input type="textarea" v-model="form.plate_number">
+                                                </el-input>
+                                                <small class="form-control-feedback" v-if="errors.plate_number" v-text="errors.plate_number[0]"></small>
+                                            </div>
+                                        </div>
                                         <div class="col-12 py-2 border-top">
                                             <span class="mr-3">Mostrar términos y condiciones.</span>
                                             <el-switch v-model="form.show_terms_condition"></el-switch>
@@ -580,11 +554,6 @@
                                     <button class="btn btn-primary btn-block" @click.prevent="clickAddDocumentTransport">Datos de transporte</button>
                                 </el-tooltip>
                             </div>
-                        </div>
-                    </div>
-                    <div class="card-body d-flex align-items-end no-gutters">
-                        <div class="col-12">
-
                         </div>
                     </div>
                 </div>
