@@ -126,7 +126,7 @@ class MobileController extends Controller
                             'aux_quantity' => 1,
                     'brand' => $row->brand->name,
                     'category' => $row->brand->name,
-                    'stock' => ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock,
+                    'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
                     'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
 
                         ];
@@ -212,13 +212,13 @@ class MobileController extends Controller
     public function person(PersonRequest $request)
     {
         $row = new Person();
-		if ($request->department_id === '-') {
-			$request->merge([
-				'department_id' => null,
-				'province_id'   => null,
-				'district_id'   => null
-			]);
-		}
+        if ($request->department_id === '-') {
+            $request->merge([
+                'department_id' => null,
+                'province_id'   => null,
+                'district_id'   => null
+            ]);
+        }
         $row->fill($request->all());
         $row->save();
 
@@ -280,7 +280,7 @@ class MobileController extends Controller
                             'aux_quantity' => 1,
                     'brand' => $row->brand->name,
                     'category' => $row->brand->name,
-                    'stock' => ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock,
+                    'stock' => $row->unit_type_id!='ZZ' ? ItemWarehouse::where([['item_id', $row->id],['warehouse_id', $warehouse->id]])->first()->stock : '0',
                     'image' => $row->image != "imagen-no-disponible.jpg" ? url("/storage/uploads/items/" . $row->image) : url("/logo/" . $row->image),
                             'warehouses' => collect($row->warehouses)->transform(function($row) {
                                 return [
