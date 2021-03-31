@@ -182,28 +182,17 @@
                         <tbody>
                             <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="14">
-                                    <el-pagination
-                                            @current-change="getRecords"
-                                            layout="total, prev, pager, next"
-                                            :total="pagination.total"
-                                            :current-page.sync="pagination.current_page"
-                                            :page-size="pagination.per_page">
-                                    </el-pagination>
-                                </td>
-                                <td class="text-right">{{ total | toDecimals }}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
+                <el-pagination
+                        @current-change="getRecords"
+                        layout="total, prev, pager, next"
+                        :total="pagination.total"
+                        :current-page.sync="pagination.current_page"
+                        :page-size="pagination.per_page">
+                </el-pagination>
             </div>
         </div>
-
     </div>
 </template>
 <style>
