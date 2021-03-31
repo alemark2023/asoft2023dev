@@ -183,7 +183,7 @@ class DocumentController extends Controller
                 'id' => $row->id,
                 'active' => (bool) $row->active,
                 'short' => $row->short,
-                'description' => ucfirst(mb_strtolower($row->description)),
+                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA','REMITENTE',$row->description))),
             ];
         });
         // $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
