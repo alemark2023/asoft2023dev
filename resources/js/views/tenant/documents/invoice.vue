@@ -353,7 +353,7 @@
                     </div>
                     <div class="card-footer text-right">
                         <button style="min-width: 180px" class="btn btn-default" @click.prevent="close()">Cancelar</button>
-                        <button style="min-width: 180px" class="submit btn btn-primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">{{ btnText }}</button>
+                        <el-button style="min-width: 180px" class="submit btn btn-primary" native-type="submit" :loading="loading_submit" v-if="form.items.length > 0 && this.dateValid">{{ btnText }}</el-button>
                     </div>
                 </div>
                 <div class="card card-transparent col-xl-3 col-md-3 col-12 pl-md-2 mt-0">
