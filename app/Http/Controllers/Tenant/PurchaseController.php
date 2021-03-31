@@ -2,49 +2,50 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Models\Tenant\Establishment;
-use App\Models\Tenant\Purchase;
-use App\Models\Tenant\PurchaseItem;
-use Modules\Purchase\Models\PurchaseOrder;
-
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
-use App\Models\Tenant\Item;
-use App\Http\Resources\Tenant\PurchaseCollection;
-use App\Http\Resources\Tenant\PurchaseResource;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\DocumentType;
-use Illuminate\Support\Facades\DB;
-use App\Models\Tenant\Catalogs\PriceType;
-use App\Models\Tenant\Catalogs\SystemIscType;
-use App\Models\Tenant\Catalogs\AttributeType;
-use App\Models\Tenant\Company;
-use App\Http\Requests\Tenant\PurchaseRequest;
-use App\Http\Requests\Tenant\PurchaseImportRequest;
-
-use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
-use App\Models\Tenant\PaymentMethodType;
-use Carbon\Carbon;
-use Modules\Inventory\Models\Warehouse;
-use App\Models\Tenant\InventoryKardex;
-use App\Models\Tenant\ItemWarehouse;
-use Modules\Finance\Traits\FinanceTrait;
-use Modules\Item\Models\ItemLotsGroup;
-use Modules\Item\Models\ItemLot;
-
-
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Template;
+use Exception;
 use Mpdf\Mpdf;
+use Carbon\Carbon;
 use Mpdf\HTMLParserMode;
-use Mpdf\Config\ConfigVariables;
+use App\Models\Tenant\Item;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Company;
+
 use Mpdf\Config\FontVariables;
+use App\CoreFacturalo\Template;
+use App\Models\Tenant\Purchase;
+use Modules\Item\Models\ItemLot;
+use Mpdf\Config\ConfigVariables;
+use Illuminate\Support\Facades\DB;
+use App\Models\Tenant\PurchaseItem;
+use App\Http\Controllers\Controller;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\ItemWarehouse;
+use App\Models\Tenant\InventoryKardex;
+use Modules\Item\Models\ItemLotsGroup;
+
+use Modules\Inventory\Models\Warehouse;
+use App\Models\Tenant\PaymentMethodType;
+use Modules\Finance\Traits\FinanceTrait;
+use App\Models\Tenant\Catalogs\PriceType;
+use Modules\Purchase\Models\PurchaseOrder;
+use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Catalogs\DocumentType;
+use App\Http\Requests\Tenant\PurchaseRequest;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\SystemIscType;
+
+
+use App\Http\Resources\Tenant\PurchaseResource;
+use App\Http\Resources\Tenant\PurchaseCollection;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
+use App\Http\Requests\Tenant\PurchaseImportRequest;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 
 
 class PurchaseController extends Controller
@@ -169,78 +170,83 @@ class PurchaseController extends Controller
 
     public function store(PurchaseRequest $request)
     {
-
-        //return 'asd';
         $data = self::convert($request);
+        try {
+            $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                $doc = Purchase::create($data);
+                foreach ($data['items'] as $row) {
+                    $p_item = new PurchaseItem;
+                    $p_item->fill($row);
+                    $p_item->purchase_id = $doc->id;
+                    $p_item->save();
 
-        $purchase = DB::connection('tenant')->transaction(function () use ($data) {
-            $doc = Purchase::create($data);
-            foreach ($data['items'] as $row)
-            {
-                // $doc->items()->create($row);
-                $p_item = new PurchaseItem;
-                $p_item->fill($row);
-                $p_item->purchase_id = $doc->id;
-                $p_item->save();
+                    if ($row['update_price']) {
+                        if (! ($row['sale_unit_price'] ?? false)) {
+                            throw new Exception('Debe ingresar el nuevo precio de venta del producto, cuando la opción "Actualizar precio de venta" está activado', 500);
+                        }
+                        Item::where('id', $row['item_id'])
+                            ->update(['sale_unit_price' => floatval($row['sale_unit_price'])]);
+                    }
 
-                if(array_key_exists('lots', $row)){
+                    if (array_key_exists('lots', $row)) {
 
-                    foreach ($row['lots'] as $lot){
+                        foreach ($row['lots'] as $lot) {
 
-                        $p_item->lots()->create([
-                            'date' => $lot['date'],
-                            'series' => $lot['series'],
-                            'item_id' => $row['item_id'],
-                            'warehouse_id' => $row['warehouse_id'],
-                            'has_sale' => false,
-                            'state' => $lot['state']
-                        ]);
+                            $p_item->lots()->create([
+                                'date' => $lot['date'],
+                                'series' => $lot['series'],
+                                'item_id' => $row['item_id'],
+                                'warehouse_id' => $row['warehouse_id'],
+                                'has_sale' => false,
+                                'state' => $lot['state']
+                            ]);
 
+                        }
+                    }
+
+                    if (array_key_exists('item', $row)) {
+                        if ( isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
+
+                            ItemLotsGroup::create([
+                                'code'  => $row['lot_code'],
+                                'quantity'  => $row['quantity'],
+                                'date_of_due'  => $row['date_of_due'],
+                                'item_id' => $row['item_id']
+                            ]);
+
+                        }
+                    }
+
+                }
+
+                foreach ($data['payments'] as $payment) {
+
+                    $record_payment = $doc->purchase_payments()->create($payment);
+
+                    if(isset($payment['payment_destination_id'])){
+                        $this->createGlobalPayment($record_payment, $payment);
                     }
                 }
 
-                if(array_key_exists('item', $row))
-                {
-                    if( isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true)
-                    {
+                $this->setFilename($doc);
+                $this->createPdf($doc, "a4", $doc->filename);
 
-                        ItemLotsGroup::create([
-                            'code'  => $row['lot_code'],
-                            'quantity'  => $row['quantity'],
-                            'date_of_due'  => $row['date_of_due'],
-                            'item_id' => $row['item_id']
-                        ]);
+                return $doc;
+            });
 
-                    }
-                }
-
-            }
-
-
-            foreach ($data['payments'] as $payment) {
-
-                $record_payment = $doc->purchase_payments()->create($payment);
-
-                if(isset($payment['payment_destination_id'])){
-                    $this->createGlobalPayment($record_payment, $payment);
-                }
-            }
-
-            $this->setFilename($doc);
-            $this->createPdf($doc, "a4", $doc->filename);
-
-            return $doc;
-        });
-
-
-
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $purchase->id,
-                'number_full' => "{$purchase->series}-{$purchase->number}",
-            ],
-        ];
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $purchase->id,
+                    'number_full' => "{$purchase->series}-{$purchase->number}",
+                ],
+            ];
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
     }
 
     private function setFilename($purchase){
@@ -545,7 +551,7 @@ class PurchaseController extends Controller
     }
 
 
-    
+
     public function searchItems(Request $request)
     {
 
@@ -597,7 +603,7 @@ class PurchaseController extends Controller
 
     }
 
-    
+
     public function searchItemById($id)
     {
 

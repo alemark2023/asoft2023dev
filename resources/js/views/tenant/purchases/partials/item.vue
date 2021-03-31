@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" @close="close">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close">
         <form autocomplete="off" @submit.prevent="clickAddItem">
             <div class="form-body">
                 <div class="row">
@@ -49,8 +49,16 @@
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
+                        <el-checkbox v-model="form.update_price">Editar precio de venta</el-checkbox>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-2" v-if="form.update_price">
+                        <div class="form-group" :class="{'has-danger': errors.unit_price}">
+                            <label class="control-label">Precio de venta</label>
+                            <el-input v-model="form.sale_unit_price"></el-input>
+                            <small class="form-control-feedback" v-if="errors.sale_unit_price" v-text="errors.sale_unit_price[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
                             <label class="control-label">Almacén de destino</label>
                             <el-select v-model="form.warehouse_id"   filterable  >
@@ -108,20 +116,16 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in form.item_unit_types">
-
+                                <tr v-for="(row, index) in form.item_unit_types" :key="index">
                                     <td class="text-center">{{row.unit_type_id}}</td>
                                     <td class="text-center">{{row.description}}</td>
                                     <td class="text-center">{{row.quantity_unit}}</td>
-
                                     <td class="series-table-actions text-right">
                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-success" @click.prevent="selectedPrice(row)">
                                             <i class="el-icon-check"></i>
                                         </button>
                                     </td>
-
-
-                            </tr>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -274,7 +278,6 @@
 
     import itemForm from '../../items/form.vue'
     import {calculateRowItem} from '../../../../helpers/functions'
-    // import LotsForm from '../../items/partials/lots.vue'
     import LotsForm from '@components/incomeLots.vue'
 
     export default {
@@ -306,7 +309,6 @@
             this.initForm()
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 this.all_items = response.data.items
-                // this.items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
@@ -314,7 +316,6 @@
                 this.attribute_types = response.data.attribute_types
                 this.warehouses = response.data.warehouses
                 this.initFilterItems()
-                // this.filterItems()
             })
 
             this.$eventHub.$on('reloadDataItems', (item_id) => {
@@ -331,7 +332,6 @@
 
                     await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
                             .then(response => {
-                                // console.log(response)
                                 this.items = response.data.items
                                 this.loading_search = false
 
@@ -351,9 +351,6 @@
                 this.lots = lots
             },
             clickLotcode(){
-                // if(this.form.stock <= 0)
-                //     return this.$message.error('El stock debe ser mayor a 0')
-
                 this.showDialogLots = true
             },
             filterItems(){
@@ -381,18 +378,12 @@
                     lot_code:null,
                     date_of_due: null,
                     purchase_has_igv: null,
-
+                    update_price: false,
                 }
 
                 this.item_unit_type = {};
                 this.lots = []
                 this.lot_code = null
-            },
-            // initializeFields() {
-            //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
-            // },
-            create() {
-            //     this.initializeFields()
             },
             clickAddDiscount() {
                 this.form.discounts.push({
@@ -452,13 +443,9 @@
                 this.initForm()
                 this.$emit('update:showDialog', false)
             },
-            selectedPrice(row)
-            {
-
+            selectedPrice(row) {
                 this.form.item_unit_type_id = row.id
                 this.item_unit_type = row
-
-               // this.form.unit_price = valor
                 this.form.item.unit_type_id = row.unit_type_id
             },
             changeItem() {
@@ -471,20 +458,15 @@
 
             },
             async clickAddItem() {
-
                 if(this.form.item.lots_enabled){
-
                     if(!this.lot_code)
                         return this.$message.error('Código de lote es requerido');
 
                     if(!this.form.date_of_due)
                         return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
-
                 }
 
-                if(this.form.item.series_enabled)
-                {
-
+                if(this.form.item.series_enabled) {
                     if(this.lots.length > this.form.quantity)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
 
@@ -507,19 +489,18 @@
                 this.form.item.unit_price = unit_price
                 this.form.item.presentation = this.item_unit_type;
                 this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
-
                 this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale)
-
                 this.row.lot_code = await this.lot_code
                 this.row.lots = await this.lots
+                this.row.update_price = this.form.update_price
+                this.row.sale_unit_price = this.form.sale_unit_price
 
                 this.row = this.changeWarehouse(this.row)
 
                 this.row.date_of_due = date_of_due
-                // console.log(this.row)
 
                 this.initForm()
-                // this.initializeFields()
+
                 this.$emit('add', this.row)
             },
             changeWarehouse(row){
