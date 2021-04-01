@@ -26,6 +26,23 @@ class UserController extends Controller
         return $record;
     }
 
+    private function prepareModules(Module $module): Module
+    {
+        $levels = [];
+        foreach ($module->levels as $level) {
+            array_push($levels, [
+                'id' => "{$module->id}-{$level->id}",
+                'description' => $level->description,
+                'module_id' => $level->module_id,
+                'is_parent' => false,
+            ]);
+        }
+        unset($module->levels);
+        $module->is_parent = true;
+        $module->childrens = $levels;
+        return $module;
+    }
+
     public function tables()
     {
         $modulesTenant = DB::connection('tenant')
@@ -48,39 +65,22 @@ class UserController extends Controller
         }])
             ->orderBy('order_menu')
             ->whereIn('id', $modulesTenant)
-            ->get();
-        $datasource = [];
-        $children = array();
-
-        for ($i = 0; $i < count($modules); $i++) {
-            $hasChild = false;
-            $expanded = false;
-            $isChecked = true;
-            if (count($modules[$i]->levels) > 0) :
-                for ($j = 0; $j < count($modules[$i]->levels); $j++) {
-                    array_push($datasource, ['id' => $modules[$i]->id . '-' . $modules[$i]->levels[$j]->id, 'pid' => $modules[$i]->id, 'name' => $modules[$i]->levels[$j]->description, 'isChecked' => $isChecked]);
-                }
-            endif;
-            if (count($modules[$i]->levels) > 0) :
-                $hasChild = true;
-                $expanded = true;
-                $isChecked = false;
-            endif;
-            array_push($datasource,  ['id' => $modules[$i]->id, 'name' => $modules[$i]->description, 'hasChild' => $hasChild, 'expanded' => $expanded, 'isChecked' => $isChecked]);
-        }
+            ->get()
+            ->each(function ($module) {
+                return $this->prepareModules($module);
+            });
 
         $establishments = Establishment::orderBy('description')->get();
         $types = [['type' => 'admin', 'description' => 'Administrador'], ['type' => 'seller', 'description' => 'Vendedor']];
 
-        return compact('modules', 'establishments', 'types', 'datasource');
+        return compact('modules', 'establishments', 'types');
     }
 
     public function store(UserRequest $request)
     {
         $id = $request->input('id');
 
-        if (!$id)  //VALIDAR EMAIL DISPONIBLE
-        {
+        if (!$id) { //VALIDAR EMAIL DISPONIBLE
             $verify = User::where('email', $request->input('email'))->first();
             if ($verify) {
                 return [
@@ -105,30 +105,24 @@ class UserController extends Controller
         }
         $user->save();
 
-        $first_user = User::select('id')->first();
-
-        if ($first_user->id != $id) {
-
-            $modules = collect($request->input('modules'))->where('checked', true)->pluck('id')->toArray();
-
-            $user->modules()->sync($modules);
-
-
-            $levels = collect($request->input('levels'))->where('checked', true)->pluck('id')->toArray();
-            $user->levels()->sync($levels);
-
-
+        if ($user->id != 1) {
+            $array_modules = [];
+            $array_levels = [];
+            DB::connection('tenant')->table('module_user')->where('user_id', $user->id)->delete();
+            DB::connection('tenant')->table('module_level_user')->where('user_id', $user->id)->delete();
+            foreach ($request->modules as $module) {
+                array_push($array_modules, [
+                    'module_id' => $module, 'user_id' => $user->id
+                ]);
+            }
+            foreach ($request->levels as $level) {
+                array_push($array_levels, [
+                    'module_level_id' => $level, 'user_id' => $user->id
+                ]);
+            }
+            DB::connection('tenant')->table('module_user')->insert($array_modules);
+            DB::connection('tenant')->table('module_level_user')->insert($array_levels);
         }
-
-        // dd($user->getModules()->transform(function($row, $key) {
-        //     return [
-        //         'id' => $row->id,
-        //         'privot_id' => $row->pivot,
-        //         'privot_user' => $row->pivot->user_id,
-        //         'privot_module' => $row->pivot->module_id,
-
-        //     ];
-        // }));
 
         return [
             'success' => true,
