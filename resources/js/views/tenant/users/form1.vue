@@ -55,7 +55,6 @@
             </div>
           </div>
           <div class="col-md-12" v-show="form.id">
-
             <div class="form-group" :class="{ 'has-danger': errors.api_token }">
               <label class="control-label">Api Token</label>
               <el-input
@@ -115,54 +114,21 @@
           <div class="col-md-8" v-if="typeUser != 'integrator'">
             <div class="form-comtrol">
               <label class="control-label">Permisos Módulos</label>
-
-              <div id="app">
-                <div class="control_wrapper">
-                  <ejs-treeview
-                    id="treeview"
-                    :fields="fields"
-                    :showCheckBox="true"
-                    :nodeChecked="nodeChecked"
-                  ></ejs-treeview>
-                </div>
+              <div class="form-group tree-container-admin">
+                <el-tree
+                  :data="modules"
+                  show-checkbox
+                  node-key="id"
+                  ref="tree"
+                  accordion
+                  :check-strictly="true"
+                  highlight-current
+                  :props="defaultProps"
+                >
+                </el-tree>
               </div>
             </div>
           </div>
-          <!--
-          <div class="col-md-12" v-if="typeUser != 'integrator'">
-            <div class="form-group">
-              <label class="control-label">Módulos</label>
-              <div class="row">
-                <div class="col-4" v-for="module in form.modules">
-                  <el-checkbox
-                    v-model="module.checked"
-                    :disabled="form.locked"
-                    @change="changeModule(module.id, module.checked)"
-                    >{{ module.description }}</el-checkbox
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="col-md-12 mt-3"
-            v-if="typeUser != 'integrator' && show_levels"
-          >
-            <div class="form-group">
-              <label class="control-label"
-                >Nivel de acceso del módulo ventas</label
-              >
-              <div class="row">
-                <div class="col-4" v-for="level in form.levels">
-                  <el-checkbox
-                    v-model="level.checked"
-                    :disabled="form.locked"
-                    >{{ level.description }}</el-checkbox
-                  >
-                </div>
-              </div>
-            </div>
-          </div>-->
         </div>
       </div>
       <div class="form-actions text-right mt-4">
@@ -176,22 +142,14 @@
 </template>
 
 <script>
-import { EventBus } from "../../../helpers/bus";
-// import the component
-import Treeselect from "@riophae/vue-treeselect";
-// import the styles
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-
-import Vue from "vue";
-import { TreeViewPlugin } from "@syncfusion/ej2-vue-navigations";
-
-Vue.use(TreeViewPlugin);
-
 export default {
   props: ["showDialog", "recordId", "typeUser"],
-  components: { Treeselect },
   data() {
     return {
+      defaultProps: {
+        children: "childrens",
+        label: "description",
+      },
       loading_submit: false,
       titleDialog: null,
       resource: "users",
@@ -201,9 +159,6 @@ export default {
       datai: [],
       establishments: [],
       types: [],
-      show_levels: false,
-      datasource: [],
-      fields: {},
       // define the default value
       value: null,
       // define options
@@ -213,15 +168,6 @@ export default {
   },
   async created() {
     await this.$http.get(`/${this.resource}/tables`).then((response) => {
-      //this.options = response.data.datasource;
-      this.fields = {
-        dataSource: response.data.datasource,
-        id: "id",
-        parentID: "pid",
-        text: "name",
-        hasChildren: "hasChild",
-      };
-
       this.modules = response.data.modules;
       this.establishments = response.data.establishments;
       this.types = response.data.types;
@@ -244,15 +190,6 @@ export default {
         modules: [],
         levels: [],
       };
-      /*this.modules.forEach((module) => {
-        this.form.modules.push({
-          id: module.id,
-          description: module.description,
-          checked: false,
-        });
-      });*/
-
-      this.show_levels = false;
     },
     create() {
       this.titleDialog = this.recordId ? "Editar Usuario" : "Nuevo Usuario";
@@ -260,28 +197,30 @@ export default {
         this.$http
           .get(`/${this.resource}/record/${this.recordId}`)
           .then((response) => {
-
-            this.fields = {
-              dataSource: response.data.data.dataSource,
-              id: "id",
-              parentID: "pid",
-              text: "description",
-              hasChildren: "hasChild",
-            };
             this.form = response.data.data;
-            this.show_levels = this.form.levels.length > 0 ? true : false;
+
+            this.$refs.tree.setCheckedKeys([]);
+            const preSelecteds = [];
+            const preSelectedsModules = this.form.modules;
+            const preSelectedsLevels = this.form.levels;
+            this.modules.map((m) => {
+              if (preSelectedsModules.includes(m.id)) {
+                preSelecteds.push(m.id);
+              }
+              m.childrens.map((c) => {
+                const idArray = c.id.split("-");
+                if (preSelectedsLevels.includes(parseInt(idArray[1]))) {
+                  preSelecteds.push(c.id);
+                }
+              });
+            });
+            setTimeout(() => {
+              this.$refs.tree.setCheckedKeys(preSelecteds);
+            }, 1000);
           });
       } else {
-
         this.$http.get(`/${this.resource}/tables`).then((response) => {
-          this.fields = {
-            dataSource: response.data.datasource,
-            id: "id",
-            parentID: "pid",
-            text: "name",
-            hasChildren: "hasChild",
-          };
-
+          this.$refs.tree.setCheckedKeys([]);
           this.modules = response.data.modules;
           this.establishments = response.data.establishments;
           this.types = response.data.types;
@@ -289,6 +228,26 @@ export default {
       }
     },
     submit() {
+      const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();
+      const modules = [];
+      modulesAndLevelsSelecteds.map((m) => {
+        if (m.is_parent) {
+          modules.push(m.id);
+        }
+      });
+      const levels = [];
+      modulesAndLevelsSelecteds.filter((l) => {
+        if (!l.is_parent) {
+          const idArray = l.id.split("-");
+          levels.push(idArray[1]);
+        }
+      });
+      this.form.modules = modules;
+      this.form.levels = levels;
+
+      if (modules.length < 1) {
+        return this.$message.error("Debe seleccionar al menos un módulo");
+      }
       this.loading_submit = true;
       this.$http
         .post(`/${this.resource}`, this.form)
@@ -308,64 +267,16 @@ export default {
             this.errors = error.response.data;
           } else {
             this.$message.error(error.response.data.message);
-
           }
         })
         .then(() => {
           this.loading_submit = false;
         });
     },
-    nodeChecked: function (args) {
-      this.form.levels = [];
-      this.form.modules = [];
-      var treeObj = document.getElementById("treeview").ej2_instances[0];
-      var array_d = treeObj.checkedNodes;
-      for (let h = 0; h < array_d.length; h++) {
-        const element = array_d[h].split("-");
-        if (element.length > 1) {
-          this.form.modules.push({
-            id: element[0],
-            checked: true,
-          });
-          this.form.levels.push({
-            id: element[1],
-            checked: true,
-          });
-        } else {
-          this.form.modules.push({
-            id: array_d[h],
-            checked: true,
-          });
-        }
-      }
-    },
     close() {
-
       this.$emit("update:showDialog", false);
       this.initForm();
     },
   },
 };
 </script>
-<style>
-@import "../../../../../node_modules/@syncfusion/ej2-base/styles/material.css";
-@import "../../../../../node_modules/@syncfusion/ej2-vue-navigations/styles/material.css";
-@import "../../../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
-.control_wrapper {
-  display: block;
-  max-height: 350px;
-  overflow: auto;
-  border: 1px solid #dddddd;
-  border-radius: 3px;
-}
-.e-checkbox-wrapper .e-frame.e-check, .e-css.e-checkbox-wrapper .e-frame.e-check {
-    background-color: #0088CC;
-    border-color: transparent;
-    color: #fff;
-}
-.e-checkbox-wrapper:hover .e-frame.e-check, .e-css.e-checkbox-wrapper:hover .e-frame.e-check {
-    background-color: #0088CC;
-    border-color: transparent;
-    color: #fff;
-}
-</style>
