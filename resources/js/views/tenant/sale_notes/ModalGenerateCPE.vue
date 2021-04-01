@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-dialog
-      title="Generar comprobante desde múltiples guías"
+      title="Generar comprobante desde múltiples notas"
       :visible="show"
       @open="onOpened"
       :close-on-click-modal="false"

@@ -90,9 +90,6 @@
                         <td class="text-center" v-if="columns.total_pending_paid.visible">
                             {{row.total_pending_paid}}
                         </td>
-
-
-
                         <td>
                             <template v-for="(document,i) in row.documents">
                                 <label :key="i" v-text="document.number_full" class="d-block"></label>
@@ -105,16 +102,11 @@
                         <td>{{ row.purchase_order }}</td>
 
                         <td class="text-center">
-                            <!-- <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                    @click.prevent="clickPayment(row.id)"  v-if="row.btn_payments">Pagos</button> -->
-
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-primary"
                                     @click.prevent="clickPayment(row.id)" ><i class="fas fa-money-bill-alt"></i></button>
                         </td>
 
                         <td class="text-right">
-                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickDownload(row.external_id)">PDF</button> -->
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.external_id)"><i class="fas fa-file-pdf"></i></button>
                         </td>
@@ -140,13 +132,8 @@
                         </td>
 
                         <td class="text-right">
-
-                            <!-- <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickVoided(row.id)">Anular</button> -->
                             <button data-toggle="tooltip" data-placement="top" title="Anular" v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                              @click.prevent="clickVoided(row.id)"><i class="fas fa-trash"></i></button>
-
-                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickCreate(row.id)" v-if="row.btn_generate && row.state_type_id != '11'">Editar</button> -->
 
                             <button data-toggle="tooltip"
                                     data-placement="top"
@@ -323,8 +310,6 @@
             },
 
             changeConcurrency(row) {
-
-                // console.log(row)
                 this.$http.post(`/${this.resource}/enabled-concurrency`, row).then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
