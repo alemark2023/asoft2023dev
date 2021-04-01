@@ -58,6 +58,7 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
 use App\Models\Tenant\Dispatch;
+use App\Models\Tenant\SaleNote;
 
 class DocumentController extends Controller
 {
@@ -414,6 +415,7 @@ class DocumentController extends Controller
         $response = $fact->getResponse();
 
         $this->associateDispatchesToDocument($request, $document->id);
+        $this->associateSaleNoteToDocument($request, $document->id);
 
         return [
             'success' => true,
@@ -423,6 +425,25 @@ class DocumentController extends Controller
 
             ],
         ];
+    }
+
+    private function associateSaleNoteToDocument(Request $request, int $documentId)
+    {
+        if ($request->sale_note_id) {
+            SaleNote::where('id', $request->sale_note_id)
+                ->update(['document_id' => $documentId]);
+        }
+        $notes = $request->sale_notes_relateds;
+        if ($notes) {
+            foreach ($notes as $note) {
+                $noteArray = explode('-', $note);
+                if (count($noteArray) === 2) {
+                    SaleNote::where('series', $noteArray[0])
+                        ->where('number', $noteArray[1])
+                        ->update(['document_id' => $documentId]);
+                }
+            }
+        }
     }
 
     private function associateDispatchesToDocument(Request $request, int $documentId)

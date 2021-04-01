@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <a href="#" @click.prevent="clickCreate()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
+                <a href="#" @click.prevent="onOpenModalGenerateCPE" class="btn btn-custom btn-sm  mt-2 mr-2">Generar comprobante desde múltiples Notas</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -167,8 +168,6 @@
                                 <i class="fas fa-file-excel"></i>
                             </button>
 
-                            <!-- <button  v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)">Opciones</button> -->
                             <el-tooltip class="item" effect="dark" content="Generar guía desde CPE" placement="top-start">
                                 <template v-for="(document,i) in row.documents" >
                                     <a :href="`/dispatches/create/${document.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
@@ -179,9 +178,6 @@
                             <el-tooltip class="item" effect="dark" content="Generar guía desde Nota Venta" placement="top-start">
                                 <a :href="`/dispatches/generate/${row.id}`" class="btn waves-effect waves-light btn-xs btn-primary m-1__2"><i class="fas fa-file-alt"></i></a>
                             </el-tooltip>
-
-                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickGenerate(row.id)" v-if="!row.changed && row.state_type_id != '11' ">Generar comprobante</button> -->
 
                             <button  data-toggle="tooltip" data-placement="top" title="Imprimir" v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)"><i class="fas fa-print"></i></button>
@@ -204,24 +200,25 @@
                            :recordId="recordId"
                            :showGenerate="true"
                            :showClose="false"></sale-note-generate>
-
+        <ModalGenerateCPE :show.sync="showModalGenerateCPE"></ModalGenerateCPE>
     </div>
 </template>
 
 <script>
-
     import DataTable from '../../../components/DataTableSaleNote.vue'
     import SaleNotePayments from './partials/payments.vue'
     import SaleNotesOptions from './partials/options.vue'
     import SaleNoteGenerate from './partials/option_documents'
     import {deletable} from '../../../mixins/deletable'
+    import ModalGenerateCPE from './ModalGenerateCPE'
 
     export default {
         props: ['soapCompany','typeUser'],
         mixins: [deletable],
-        components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate},
+        components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate, ModalGenerateCPE},
         data() {
             return {
+                showModalGenerateCPE: false,
                 resource: 'sale-notes',
                 showDialogPayments: false,
                 showDialogOptions: false,
@@ -282,8 +279,6 @@
                 }
             }
         },
-        created() {
-        },
         filters:{
             period(name)
             {
@@ -305,6 +300,9 @@
             }
         },
         methods: {
+            onOpenModalGenerateCPE() {
+                this.showModalGenerateCPE = true;
+            },
             clickDownload(external_id) {
                 window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
             },

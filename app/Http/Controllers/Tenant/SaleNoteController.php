@@ -1139,20 +1139,45 @@ class SaleNoteController extends Controller
         }
 
         if(isset($item->item->lots)){
-
             foreach ($item->item->lots as $it) {
-
                 if($it->has_sale == true){
-
                     $ilt = ItemLot::find($it->id);
                     $ilt->has_sale = false;
                     $ilt->save();
-
                 }
-
             }
         }
-
     }
 
+    public function saleNotesByClient($clientId)
+    {
+        $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
+            ->select('series', 'number', 'id', 'date_of_issue')
+            ->where('customer_id', $clientId)
+            ->whereNull('document_id')
+			->orderBy('number', 'desc')
+            ->take(20)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $records,
+        ], 200);
+    }
+
+    public function getItemsFromNotes(Request $request)
+    {
+        $request->validate([
+            'notes_id' => 'required|array',
+        ]);
+
+        $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
+            ->select('item_id', 'quantity')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items,
+        ], 200);
+    }
 }
