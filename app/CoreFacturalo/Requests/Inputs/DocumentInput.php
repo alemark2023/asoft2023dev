@@ -156,6 +156,7 @@ class DocumentInput
                         'lots' => self::lots($row),
                         'IdLoteSelected' => ( isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null ),
                         'model' => $item->model,
+                        'date_of_due' => $item->date_of_due,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
