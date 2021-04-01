@@ -769,9 +769,9 @@
                 }).finally(() => this.loading_submit = false);
             }
 
-            const itemsFromDispatches = localStorage.getItem('items');
-            if (itemsFromDispatches) {
-                const itemsParsed = JSON.parse(itemsFromDispatches);
+            const itemsFromDispatchesOrNotes = localStorage.getItem('items');
+            if (itemsFromDispatchesOrNotes) {
+                const itemsParsed = JSON.parse(itemsFromDispatchesOrNotes);
                 const items = itemsParsed.map(i => i.item_id);
                 const params = {
                     items_id: items
@@ -834,9 +834,9 @@
                     });
                 });
             }
-            const clientfromDispatches = localStorage.getItem('client');
-            if (clientfromDispatches) {
-                const client = JSON.parse(clientfromDispatches);
+            const clientfromDispatchesOrNotes = localStorage.getItem('client');
+            if (clientfromDispatchesOrNotes) {
+                const client = JSON.parse(clientfromDispatchesOrNotes);
                 if (client.identity_document_type_id == 1) {
                     this.form.document_type_id = '03'
                 } else if (client.identity_document_type_id == 6) {
@@ -854,6 +854,11 @@
             if (dispatchesNumbersFromDispatches) {
                 this.form.dispatches_relateds = JSON.parse(dispatchesNumbersFromDispatches);
                 localStorage.removeItem('dispatches')
+            }
+            const notesNumbersFromNotes = localStorage.getItem('notes');
+            if (notesNumbersFromNotes) {
+                this.form.sale_notes_relateds = JSON.parse(notesNumbersFromNotes);
+                localStorage.removeItem('notes')
             }
         },
         methods: {

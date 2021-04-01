@@ -203,8 +203,6 @@ class PersonController extends Controller
 
     public function export($type, Request $request)
     {
-
-        // dd($request->all(), $type);
         $d_start = null;
         $d_end = null;
         $period = $request->period;
@@ -220,11 +218,6 @@ class PersonController extends Controller
                 break;
         }
 
-        // $date = $request->month_start.'-01';
-        // $d_start = Carbon::parse($date);
-        // $d_end = Carbon::parse($date)->addMonth()->subDay();
-        // dd($d_start.' - '.$d_end);
-
         $records = ($period == 'all') ? Person::where('type', $type)->get() : Person::where('type', $type)->whereBetween('created_at', [$d_start, $d_end])->get();
 
         $filename = ($type == 'customers') ? 'Reporte_Clientes_':'Reporte_Proveedores_';
@@ -236,4 +229,27 @@ class PersonController extends Controller
 
     }
 
+    public function clientsForGenerateCPE()
+    {
+        $typeFile = request('type');
+        $filter = request('name');
+        $persons = Person::without(['identity_document_type', 'country', 'department', 'province', 'district'])
+            ->select('id', 'name', 'identity_document_type_id', 'number')
+            ->where('type', 'customers')
+            ->orderBy('name');
+        if ($filter && $typeFile) {
+            if ($typeFile === 'document') {
+                $persons = $persons->where('number', 'like', "{$filter}%");
+            }
+            if ($typeFile === 'name') {
+                $persons = $persons->where('name', 'like', "%{$filter}%");
+            }
+        }
+        $persons = $persons->take(10)
+            ->get();
+        return response()->json([
+            'success' => true,
+            'data' => $persons,
+        ], 200);
+    }
 }

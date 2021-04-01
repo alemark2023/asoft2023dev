@@ -471,30 +471,6 @@ class DispatchController extends Controller
 
     }
 
-    public function clientsForGenerateCPE()
-    {
-        $typeFile = request('type');
-        $filter = request('name');
-        $persons = Person::without(['identity_document_type', 'country', 'department', 'province', 'district'])
-            ->select('id', 'name', 'identity_document_type_id', 'number')
-            ->where('type', 'customers')
-            ->orderBy('name');
-        if ($filter && $typeFile) {
-            if ($typeFile === 'document') {
-                $persons = $persons->where('number', 'like', "{$filter}%");
-            }
-            if ($typeFile === 'name') {
-                $persons = $persons->where('name', 'like', "%{$filter}%");
-            }
-        }
-        $persons = $persons->take(10)
-            ->get();
-        return response()->json([
-            'success' => true,
-            'data' => $persons,
-        ], 200);
-    }
-
     public function dispatchesByClient($clientId)
     {
         $records = Dispatch::without(['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',

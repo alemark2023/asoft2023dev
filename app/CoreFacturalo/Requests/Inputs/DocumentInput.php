@@ -129,6 +129,7 @@ class DocumentInput
             'reference_data' => Functions::valueKeyInArray($inputs, 'reference_data'),
             'terms_condition' => $inputs['terms_condition'] ?? '',
             'dispatches_relateds' => $inputs['dispatches_relateds'] ?? null,
+            'sale_notes_relateds' => $inputs['sale_notes_relateds'] ?? null,
             'payment_condition_id' => key_exists('payment_condition_id', $inputs)?$inputs['payment_condition_id']:'01',
             'fee' => Functions::valueKeyInArray($inputs, 'fee', []),
         ];

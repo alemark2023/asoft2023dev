@@ -290,7 +290,7 @@ if ($hostname) {
             Route::get('dispatches/generate/{sale_note}', 'Tenant\DispatchController@generate');
             Route::get('dispatches/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
             Route::post('dispatches/record/{id}/set-document-id', 'Tenant\DispatchController@setDocumentId');
-            Route::get('dispatches/tables/customers', 'Tenant\DispatchController@clientsForGenerateCPE');
+            Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');
             Route::get('dispatches/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
             Route::post('dispatches/items', 'Tenant\DispatchController@getItemsFromDispatches');
 
@@ -447,6 +447,8 @@ if ($hostname) {
 			Route::delete('sale-notes/destroy_sale_note_item/{sale_note_item}', 'Tenant\SaleNoteController@destroy_sale_note_item');
 			Route::get('sale-notes/search-items', 'Tenant\SaleNoteController@searchItems');
 			Route::get('sale-notes/search/item/{item}', 'Tenant\SaleNoteController@searchItemById');
+			Route::get('sale-notes/list-by-client/{customer_id}', 'Tenant\SaleNoteController@saleNotesByClient');
+			Route::post('sale-notes/items', 'Tenant\SaleNoteController@getItemsFromNotes');
 
 			Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
 			Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

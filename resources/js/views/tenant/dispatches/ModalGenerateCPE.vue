@@ -173,11 +173,7 @@ export default {
         .finally(() => (this.loading = false));
     },
     onFindClients(query) {
-    //   if (query) {
-        this.filter.name = query;
-    //   } else {
-    //     this.filter.name = null;
-    //   }
+      this.filter.name = query;
       this.onFetchClients();
     },
     onFetchClients() {
@@ -186,7 +182,7 @@ export default {
       this.form.selecteds = [];
       const params = this.filter;
       this.$http
-        .get("/dispatches/tables/customers", { params })
+        .get("/customers/list", { params })
         .then((response) => {
           this.clients = response.data.data;
         })
