@@ -122,7 +122,7 @@ export default {
         }
     },
     created() {
-        this.initForm()
+        this.initTables()
     },
     methods: {
         async changeItem() {
@@ -172,15 +172,18 @@ export default {
 
             }
         },
-        async create() {
-            this.loading = true;
-            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
+        async initTables() {
             await this.$http.get(`/${this.resource}/tables/transaction/${this.type}`)
                 .then(response => {
                     this.items = response.data.items
                     this.warehouses = response.data.warehouses
                     this.inventory_transactions = response.data.inventory_transactions
                 })
+        },
+        async create() {
+            this.loading = true;
+            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
+            this.initForm();
             this.loading = false;
         },
         async submit() {
