@@ -97,11 +97,9 @@
                 this.recordId = recordId
                 this.showDialogRemove = true
             },
-            clickOutput()
-            {
+            clickOutput() {
                 this.recordId = null
                 this.showDialogOutput = true
-
             }
 
         }
