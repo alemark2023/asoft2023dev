@@ -475,7 +475,7 @@ export default {
 
         },
         async submit() {
-            
+
             let validate_items = await this.validateQuantityandSeries();
             if (!validate_items.success)
                 return this.$message.error(validate_items.message);
@@ -574,6 +574,9 @@ export default {
                 format_pdf: "a4",
             };
             this.document.quotation_id = this.form.id;
+            _.forEach(this.document.items, row => {
+                row.name_product_pdf = row.item.name_product_pdf;
+            })
         },
         async create() {
             await this.$http
