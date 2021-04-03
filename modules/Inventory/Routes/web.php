@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if($hostname) {
@@ -33,6 +35,13 @@ if($hostname) {
                 Route::post('remove', 'InventoryController@remove');
                 Route::get('initialize', 'InventoryController@initialize');
                 Route::get('regularize_stock', 'InventoryController@regularize_stock');
+
+                Route::prefix('report')->group(function () {
+                    Route::get('tables', 'ReportInventoryController@tables');
+                    Route::post('records', 'ReportInventoryController@records');
+                    Route::post('export', 'ReportInventoryController@export');
+                });
+
             });
 
             Route::prefix('reports')->group(function () {
