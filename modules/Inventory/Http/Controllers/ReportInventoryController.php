@@ -111,7 +111,7 @@ class ReportInventoryController extends Controller
             $format = $request->input('format');
 
             if ($format === 'pdf') {
-                $pdf = PDF::loadView('inventory::reports.inventory.report_excel', compact("records", "company", "establishment"));
+                $pdf = PDF::loadView('inventory::reports.inventory.report', compact('records', 'company', 'establishment', 'format'));
                 $pdf->setPaper('A4', 'landscape');
                 $filename = 'ReporteInv_' . date('YmdHis');
                 return $pdf->download($filename . '.pdf');
@@ -121,6 +121,7 @@ class ReportInventoryController extends Controller
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
+                ->format($format)
                 ->download('ReporteInv_' . Carbon::now() . '.xlsx');
 
         } catch (\Exception $e) {

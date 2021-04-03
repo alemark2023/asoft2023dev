@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-{{--    <meta http-equiv="Content-Type"--}}
-{{--          content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"/>--}}
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    @if($format === 'pdf')
     <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
+    @else
+    <meta http-equiv="Content-Type"
+          content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"/>
+    @endif
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Inventario</title>
     <style>
-        body {
+        html {
             font-family: sans-serif;
             font-size: 12px;
         }
-
         table {
             border-spacing: 0;
             border-collapse: collapse;
@@ -36,7 +38,6 @@
             background: #0088cc;
             color: white;
         }
-
         .table-records tr th,
         .table-records tr td {
             border: 1px solid #000;
