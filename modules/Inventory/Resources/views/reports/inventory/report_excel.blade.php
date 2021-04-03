@@ -7,7 +7,41 @@
           content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Inventario</title>
-    <link rel="stylesheet" href="{{ asset('css/report.css') }}" />
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        .title {
+            font-weight: 500;
+            text-align: center;
+            font-size: 24px;
+        }
+        .label {
+            width: 120px;
+            font-weight: 500;
+            font-family: sans-serif;
+        }
+        .table-records {
+            margin-top: 24px;
+        }
+        .table-records tr th {
+            font-weight: bold;
+            background: #0088cc;
+            color: white;
+        }
+
+        .table-records tr th,
+        .table-records tr td {
+            border: 1px solid #000;
+            font-size: 9px;
+        }
+    </style>
 </head>
 <body>
 <table style="width: 100%">
