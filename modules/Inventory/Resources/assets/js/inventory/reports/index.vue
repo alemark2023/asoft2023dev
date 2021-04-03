@@ -162,19 +162,26 @@ export default {
                 }
             })
                 .then(response => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'ReporteInv.' + format);
-                    document.body.appendChild(link);
-                    link.click();
+                    let res = response.data;
+                    if(res.success) {
+                        console.log(response);
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'ReporteInv.' + format);
+                        document.body.appendChild(link);
+                        link.click();
+                    } else {
+                        console.log(res);
+                    }
                 })
                 .catch(error => {
+                    console.log(error);
                     this.errors = error;
                 })
                 .then(() => {
-                    this.loadingPdf = !(format === 'pdf');
-                    this.loadingXlsx = !(format === 'xlsx');
+                    this.loadingPdf = false;
+                    this.loadingXlsx = false;
                     this.loading = false;
                 });
             // this.loadingSubmit = false;

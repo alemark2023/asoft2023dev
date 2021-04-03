@@ -102,26 +102,37 @@ class ReportInventoryController extends Controller
 
     public function export(Request $request)
     {
-        $company = Company::query()->first();
-        $establishment = Establishment::query()->first();
-        ini_set('max_execution_time', 0);
+        try {
+            $company = Company::query()->first();
+            $establishment = Establishment::query()->first();
+            ini_set('max_execution_time', 0);
 
-        $records = $request->input('records');
-        $format = $request->input('format');
+            $records = $request->input('records');
+            $format = $request->input('format');
 
-        if ($format === 'pdf') {
-            $pdf = PDF::loadView('inventory::reports.inventory.report_excel', compact("records", "company", "establishment"));
-            $pdf->setPaper('A4', 'landscape');
-            $filename = 'ReporteInv_' . date('YmdHis');
-            return $pdf->download($filename . '.pdf');
+            if ($format === 'pdf') {
+                $pdf = PDF::loadView('inventory::reports.inventory.report_excel', compact("records", "company", "establishment"));
+                $pdf->setPaper('A4', 'landscape');
+                $filename = 'ReporteInv_' . date('YmdHis');
+                $data = $pdf->download($filename . '.pdf');
+            } else {
+                $data = (new InventoryExport)
+                    ->records($records)
+                    ->company($company)
+                    ->establishment($establishment)
+                    ->download('ReporteInv_' . Carbon::now() . '.xlsx');
+            }
+
+            return [
+                'success' => true,
+                'data' => $data
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
         }
-
-        return (new InventoryExport)
-            ->records($records)
-            ->company($company)
-            ->establishment($establishment)
-            ->download('ReporteInv_' . Carbon::now() . '.xlsx');
-
     }
 
     /**
