@@ -96,6 +96,8 @@
 
 <script>
 
+import moment from "moment";
+
 export default {
     props: [],
     data() {
@@ -132,6 +134,10 @@ export default {
                 });
         },
         async getRecords() {
+            if(_.isNull(this.form.warehouse_id)) {
+                this.$message.error('Seleccionar un almacén ');
+                return false;
+            }
             this.loading = true;
             this.records = [];
             await this.$http.post(`/${this.resource}/records`, this.form)
@@ -169,15 +175,10 @@ export default {
                         const url = window.URL.createObjectURL(new Blob([res]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'ReporteInv.' + format);
+                        link.setAttribute('download', 'ReporteInv_'+ moment().format('HHmmss') +'.' + format);
                         document.body.appendChild(link);
                         link.click();
                     }
-                    // if(res.success) {
-
-                    // } else {
-                    //     console.log(res);
-                    // }
                 })
                 .catch(error => {
                     console.log(error);
