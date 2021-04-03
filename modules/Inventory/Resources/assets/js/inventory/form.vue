@@ -6,8 +6,15 @@
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">Producto</label>
-                            <el-select v-model="form.item_id" filterable @change="changeItem">
-                                <el-option v-for="option in items" :key="option.id" :value="option.id"
+                            <el-select v-model="form.item_id"
+                                       filterable
+                                       remote
+                                       :remote-method="searchRemoteItems"
+                                       :loading="loading_search"
+                                       @change="changeItem">
+                                <el-option v-for="option in items"
+                                           :key="option.id"
+                                           :value="option.id"
                                            :label="option.description"></el-option>
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id"
@@ -109,6 +116,7 @@ export default {
     data() {
         return {
             loading: false,
+            loading_search: false,
             loading_submit: false,
             showDialogLots: false,
             showDialogLotsOutput: false,
@@ -121,26 +129,26 @@ export default {
             inventory_transactions: [],
         }
     },
-    created() {
-        this.initTables()
-    },
+    // created() {
+    //     this.initForm()
+    // },
     methods: {
         async changeItem() {
-            if (this.type === 'output') {
-                this.form.lots = []
-                let item = await _.find(this.items, {'id': this.form.item_id})
-                this.form.lots_enabled = item.lots_enabled
-                let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
-                // console.log(item)
-                this.form.lots = lots
-                this.form.lots_enabled = item.lots_enabled
-                this.form.series_enabled = item.series_enabled
-
-            } else {
-                let item = await _.find(this.items, {'id': this.form.item_id})
-                this.form.lots_enabled = item.lots_enabled
-                this.form.series_enabled = item.series_enabled
-
+            if (this.items.length > 0) {
+                if (this.type === 'output') {
+                    this.form.lots = []
+                    let item = await _.find(this.items, {'id': this.form.item_id})
+                    this.form.lots_enabled = item.lots_enabled
+                    let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
+                    // console.log(item)
+                    this.form.lots = lots
+                    this.form.lots_enabled = item.lots_enabled
+                    this.form.series_enabled = item.series_enabled
+                } else {
+                    let item = await _.find(this.items, {'id': this.form.item_id})
+                    this.form.lots_enabled = item.lots_enabled
+                    this.form.series_enabled = item.series_enabled
+                }
             }
         },
         addRowOutputLot(lots) {
@@ -175,16 +183,27 @@ export default {
         async initTables() {
             await this.$http.get(`/${this.resource}/tables/transaction/${this.type}`)
                 .then(response => {
-                    this.items = response.data.items
+                    // this.items = response.data.items
                     this.warehouses = response.data.warehouses
                     this.inventory_transactions = response.data.inventory_transactions
                 })
+            await this.searchRemoteItems('')
         },
         async create() {
             this.loading = true;
             this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
+            await this.initTables();
             this.initForm();
             this.loading = false;
+        },
+        async searchRemoteItems(search) {
+            this.loading_search = true;
+            this.items = [];
+            await this.$http.post(`/${this.resource}/search_items`, {'search': search})
+                .then(response => {
+                    this.items = response.data.items
+                })
+            this.loading_search = false;
         },
         async submit() {
             if (this.type === 'input') {

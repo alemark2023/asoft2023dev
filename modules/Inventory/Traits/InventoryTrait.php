@@ -107,13 +107,19 @@ trait InventoryTrait
         });
     }
 
-    public function optionsItemFull()
+    public function optionsItemFull($search = null, $take = null)
     {
-        return Item::query()
+        $query = Item::query()
             ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
-            ->whereNotIsSet()
-            ->get()->transform(function ($row) {
+            ->whereNotIsSet();
+        if($search) {
+            $query->where('description', 'like', "%{$search}%");
+        }
+        if($take) {
+            $query->take($take);
+        }
+        return $query->get()->transform(function ($row) {
                 return [
                     'id' => $row->id,
                     'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,

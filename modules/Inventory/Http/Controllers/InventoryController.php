@@ -86,9 +86,18 @@ class InventoryController extends Controller
     public function tables_transaction($type)
     {
         return [
-            'items' => $this->optionsItemFull(),
+//            'items' => $this->optionsItemFull(),
             'warehouses' => $this->optionsWarehouse(),
             'inventory_transactions' => $this->optionsInventoryTransaction($type),
+        ];
+    }
+
+    public function searchItems(Request $request)
+    {
+        $search = $request->input('search');
+
+        return [
+            'items' => $this->optionsItemFull($search, 20),
         ];
     }
 
@@ -375,7 +384,7 @@ class InventoryController extends Controller
         $this->initializeInventory();
     }
 
-    
+
     public function regularize_stock()
     {
 
