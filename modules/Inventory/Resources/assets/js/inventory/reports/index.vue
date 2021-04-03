@@ -163,17 +163,21 @@ export default {
             })
                 .then(response => {
                     let res = response.data;
-                    if(res.success) {
-                        console.log(response);
-                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                    if(res.type === 'application/json') {
+                        this.$message.error('Error al exportar');
+                    } else {
+                        const url = window.URL.createObjectURL(new Blob([res]));
                         const link = document.createElement('a');
                         link.href = url;
                         link.setAttribute('download', 'ReporteInv.' + format);
                         document.body.appendChild(link);
                         link.click();
-                    } else {
-                        console.log(res);
                     }
+                    // if(res.success) {
+
+                    // } else {
+                    //     console.log(res);
+                    // }
                 })
                 .catch(error => {
                     console.log(error);

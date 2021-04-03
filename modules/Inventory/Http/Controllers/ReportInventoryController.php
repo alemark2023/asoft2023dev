@@ -45,19 +45,19 @@ class ReportInventoryController extends Controller
         $data = [];
         foreach ($records as $row) {
             $add = true;
-            if($filter === '02') {
+            if ($filter === '02') {
                 $add = ($row->stock < 0);
             }
-            if($filter === '03') {
+            if ($filter === '03') {
                 $add = ($row->stock === 0);
             }
-            if($filter === '04') {
+            if ($filter === '04') {
                 $add = ($row->stock > 0 && $row->stock <= $row->item->stock_min);
             }
-            if($filter === '05') {
+            if ($filter === '05') {
                 $add = ($row->stock > $row->item->stock_min);
             }
-            if($add) {
+            if ($add) {
                 $data[] = [
                     'barcode' => $row->item->barcode,
                     'internal_id' => $row->item->internal_id,
@@ -114,19 +114,15 @@ class ReportInventoryController extends Controller
                 $pdf = PDF::loadView('inventory::reports.inventory.report_excel', compact("records", "company", "establishment"));
                 $pdf->setPaper('A4', 'landscape');
                 $filename = 'ReporteInv_' . date('YmdHis');
-                $data = $pdf->download($filename . '.pdf');
-            } else {
-                $data = (new InventoryExport)
-                    ->records($records)
-                    ->company($company)
-                    ->establishment($establishment)
-                    ->download('ReporteInv_' . Carbon::now() . '.xlsx');
+                return $pdf->download($filename . '.pdf');
             }
 
-            return [
-                'success' => true,
-                'data' => $data
-            ];
+            return (new InventoryExport)
+                ->records($records)
+                ->company($company)
+                ->establishment($establishment)
+                ->download('ReporteInv_' . Carbon::now() . '.xlsx');
+
         } catch (\Exception $e) {
             return [
                 'success' => false,
