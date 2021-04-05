@@ -1,16 +1,29 @@
 <template>
     <div class="row card-table-report">
         <div class="col-md-12">
-            <div class="card card-primary" v-loading="loading">
+            <div v-loading="loading" class="card card-primary">
                 <div class="card-header">
                     <h4 class="card-title">Consulta de inventarios</h4>
+                    <div class="data-table-visible-columns" style="top:10px">
+                        <el-dropdown :hide-on-click="false">
+                            <el-button type="primary">
+                                Mostrar/Ocultar filtros<i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item v-for="(column, index) in filters" :key="index">
+                                    <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+
                 </div>
                 <div class="card-body">
                     <div class="row m-b-10">
                         <div class="col-md-4">
                             <el-select v-model="form.warehouse_id"
-                                       @change="changeWarehouse"
-                                       placeholder="Seleccionar almacén">
+                                       placeholder="Seleccionar almacén"
+                                       @change="changeWarehouse">
                                 <el-option key="all" label="Todos" value="all"></el-option>
                                 <el-option v-for="opt in warehouses"
                                            :key="opt.id"
@@ -21,8 +34,8 @@
                         </div>
                         <div class="col-md-3">
                             <el-select v-model="form.filter"
-                                       @change="changeFilter"
-                                       placeholder="Seleccionar filtro">
+                                       placeholder="Seleccionar filtro"
+                                       @change="changeFilter">
                                 <el-option key="01" label="Todos" value="01"></el-option>
                                 <el-option key="02" label="Stock < 0" value="02"></el-option>
                                 <el-option key="03" label="Stock = 0" value="03"></el-option>
@@ -30,23 +43,52 @@
                                 <el-option key="05" label="Stock > Stock mínimo" value="05"></el-option>
                             </el-select>
                         </div>
+                        <div class="col-md-3" v-if="filters.categories.visible">
+                            <div class="form-group">
+                                <el-select
+                                    v-model="form.category_id"
+                                    clearable
+                                    filterable
+                                    placeholder="Seleccionar categoría"
+                                    @change="changeFilter">
+                                    <el-option v-for="option in categories" :key="option.id" :label="option.name"
+                                               :value="option.id"></el-option>
+                                </el-select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3" v-if="filters.brand.visible">
+                            <div class="form-group">
+                                <el-select
+                                    v-model="form.brand_id"
+                                    clearable
+                                    filterable
+                                    placeholder="Seleccionar marca"
+                                    @change="changeFilter">
+                                    <el-option v-for="option in brands" :key="option.id" :label="option.name"
+                                               :value="option.id"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
                         <div class="col-auto">
-                            <el-button @click="clickExport('pdf')"
+                            <el-button :disabled="records.length <= 0"
                                        :loading="loadingPdf"
-                                       :disabled="records.length <= 0"><i class="fa fa-file-pdf"></i> Exportar PDF
+                                       @click="clickExport('pdf')"><i class="fa fa-file-pdf"></i> Exportar PDF
                             </el-button>
                         </div>
                         <div class="col-auto">
-                            <el-button @click="clickExport('xlsx')"
+                            <el-button :disabled="records.length <= 0"
                                        :loading="loadingXlsx"
-                                       :disabled="records.length <= 0"><i class="fa fa-file-excel"></i> Exportar Excel
+                                       @click="clickExport('xlsx')"><i class="fa fa-file-excel"></i> Exportar Excel
                             </el-button>
                         </div>
                     </div>
-                    <div class="row" v-if="records.length > 0">
+
+                    <div v-if="records.length > 0" class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-striped table-responsive-xl table-bordered table-hover">
+                                <table class="table table-striped table-responsive-xl table-bordered table-hover"
+                                       >
                                     <thead class="">
                                     <tr>
                                         <th>#</th>
@@ -82,7 +124,7 @@
                             Total {{ records.length }}
                         </div>
                     </div>
-                    <div class="row" v-else>
+                    <div v-else class="row">
                         <div class="col-md-12">
                             <strong>No se encontraron registros</strong>
                         </div>
@@ -113,28 +155,45 @@ export default {
             errors: {},
             form: {},
             warehouses: [],
+            categories: [],
+            brands: [],
+            filters: [],
             records: []
         }
     },
     created() {
         this.initTables();
         this.initForm();
+        this.filters = {
+            categories: {
+                title: 'Categorias',
+                visible: false
+            },
+            brand: {
+                title: 'Marcas',
+                visible: false
+            },
+        }
     },
     methods: {
         initForm() {
             this.form = {
                 'warehouse_id': null,
-                'filter': '01'
+                'filter': '01',
+                'category_id': null,
+                'brand_id': null,
             }
         },
         initTables() {
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.warehouses = response.data.warehouses;
+                    this.brands = response.data.brands;
+                    this.categories = response.data.categories;
                 });
         },
         async getRecords() {
-            if(_.isNull(this.form.warehouse_id)) {
+            if (_.isNull(this.form.warehouse_id)) {
                 this.$message.error('Seleccionar un almacén ');
                 return false;
             }
@@ -169,13 +228,13 @@ export default {
             })
                 .then(response => {
                     let res = response.data;
-                    if(res.type === 'application/json') {
+                    if (res.type === 'application/json') {
                         this.$message.error('Error al exportar');
                     } else {
                         const url = window.URL.createObjectURL(new Blob([res]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'ReporteInv_'+ moment().format('HHmmss') +'.' + format);
+                        link.setAttribute('download', 'ReporteInv_' + moment().format('HHmmss') + '.' + format);
                         document.body.appendChild(link);
                         link.click();
                     }

@@ -11,16 +11,18 @@ use App\Models\Tenant\Item;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Exports\InventoryExport;
 use Modules\Inventory\Models\Warehouse;
-
+use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 
 use Carbon\Carbon;
-
 class ReportInventoryController extends Controller
 {
     public function tables()
     {
         return [
-            'warehouses' => Warehouse::query()->select('id', 'description')->get()
+            'warehouses' => Warehouse::query()->select('id', 'description')->get(),
+            'categories' => Category::query()->select('id', 'name')->get(),
+            'brands' => Brand::query()->select('id', 'name')->get(),
         ];
     }
 
@@ -40,7 +42,16 @@ class ReportInventoryController extends Controller
         $warehouse_id = $request->input('warehouse_id');
         $filter = $request->input('filter');
 
-        $records = $this->getRecords($warehouse_id)->get();
+
+        $records = $this->getRecords($warehouse_id);
+        if ($request->has('brand_id') && (int)$request->brand_id != 0) {
+            $records->where('items.brand_id', $request->brand_id);
+        }
+        if ($request->has('category_id') && (int)$request->category_id != 0) {
+            $records->where('items.category_id', $request->category_id);
+        }
+        $records->orderBy('items.name','desc');
+        $records = $records->latest()->get();
 
         $data = [];
         foreach ($records as $row) {
@@ -91,13 +102,20 @@ class ReportInventoryController extends Controller
 
     private function getRecords($warehouse_id)
     {
-        return ItemWarehouse::with(['item', 'item.category', 'item.brand'])
-            ->whereWarehouse($warehouse_id)
+        $query =  ItemWarehouse::with(['item', 'item.category', 'item.brand'])
+
+
             ->whereHas('item', function ($q) {
                 $q->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
                     ->whereNotIsSet();
             })
-            ->latest();
+            ->join('items', 'items.id', 'item_warehouse.item_id')
+            ->select(\DB::raw('item_warehouse.*'));
+        if($warehouse_id != 0){
+            $query->where('item_warehouse.warehouse_id',$warehouse_id);
+        }
+        return $query;
+
     }
 
     public function export(Request $request)
