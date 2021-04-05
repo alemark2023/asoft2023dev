@@ -54,7 +54,7 @@
                     <div class="col-md-2" v-if="form.update_price">
                         <div class="form-group" :class="{'has-danger': errors.unit_price}">
                             <label class="control-label">Precio de venta</label>
-                            <el-input v-model="form.sale_unit_price"></el-input>
+                            <el-input v-model="sale_unit_price"></el-input>
                             <small class="form-control-feedback" v-if="errors.sale_unit_price" v-text="errors.sale_unit_price[0]"></small>
                         </div>
                     </div>
@@ -285,6 +285,7 @@
         components: {itemForm, LotsForm},
         data() {
             return {
+                sale_unit_price: 0,
                 loading_search:false,
                 titleDialog: 'Agregar Producto o Servicio',
                 showDialogLots:false,
@@ -449,7 +450,10 @@
                 this.form.item.unit_type_id = row.unit_type_id
             },
             changeItem() {
-                this.form.item = _.find(this.items, {'id': this.form.item_id})
+                const item = {..._.find(this.items, {'id': this.form.item_id})};
+                this.form.item = item;
+                const saleUnitPrice = item.sale_unit_price;
+                this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
                 this.form.unit_price = this.form.item.purchase_unit_price
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
                 this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
@@ -493,7 +497,7 @@
                 this.row.lot_code = await this.lot_code
                 this.row.lots = await this.lots
                 this.row.update_price = this.form.update_price
-                this.row.sale_unit_price = this.form.sale_unit_price
+                this.row.sale_unit_price = this.sale_unit_price
 
                 this.row = this.changeWarehouse(this.row)
 
