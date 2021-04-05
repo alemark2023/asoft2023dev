@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="table-responsive pt-5" v-if="notes">
-        <span>Seleccione una o más guías para poder continuar</span>
+        <span>Seleccione una o más notas de venta para poder continuar</span>
         <div
           v-if="errors.notes_id"
           class="alert alert-warning"
@@ -57,7 +57,7 @@
           <thead>
             <tr>
               <th></th>
-              <th>Guía</th>
+              <th>Nota</th>
               <th>Fecha de emisión</th>
             </tr>
           </thead>
@@ -141,9 +141,27 @@ export default {
             }
           });
           const items = response.data.data;
+          const data = [];
+          items.map(i => {
+              const it = {
+                  id: i.item_id,
+                  quantity: 0
+              }
+              items.map(ite => {
+                  if (ite.item_id === it.id) {
+                      it.quantity = it.quantity + parseFloat(ite.quantity)
+                  }
+              });
+              const itemIsDuplicated = data.find(item => item.id === it.id);
+              if (itemIsDuplicated) {
+                itemIsDuplicated.quantity = it.quantity;
+              } else {
+                  data.push(it);
+              }
+          })
           const client = this.clients.find((c) => c.id === this.form.client_id);
           localStorage.setItem("client", JSON.stringify(client));
-          localStorage.setItem("items", JSON.stringify(items));
+          localStorage.setItem("itemsForNotes", JSON.stringify(data));
           localStorage.setItem("notes", JSON.stringify(notes));
           this.onClose();
           window.location.href = "/documents/create";
