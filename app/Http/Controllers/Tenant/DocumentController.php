@@ -67,7 +67,6 @@ class DocumentController extends Controller
 
     public function __construct()
     {
-
         $this->middleware('input.request:document,web', ['only' => ['store']]);
         $this->middleware('input.request:documentUpdate,web', ['only' => ['update']]);
     }

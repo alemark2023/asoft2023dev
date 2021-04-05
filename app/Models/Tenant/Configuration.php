@@ -32,6 +32,7 @@ class Configuration extends ModelTenant
         'terms_condition',
         'cotizaction_finance',
         'quotation_allow_seller_generate_sale',
+        'allow_edit_unit_price_to_seller',
         'include_igv',
         'product_only_location',
         'header_image',
@@ -44,27 +45,28 @@ class Configuration extends ModelTenant
     ];
 
     protected $casts = [
-      'quotation_allow_seller_generate_sale' => 'boolean'
+        'quotation_allow_seller_generate_sale' => 'boolean',
+        'allow_edit_unit_price_to_seller' => 'boolean',
     ];
 
     public function setPlanAttribute($value)
     {
-        $this->attributes['plan'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['plan'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getPlanAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object)json_decode($value);
     }
 
     public function setVisualAttribute($value)
     {
-        $this->attributes['visual'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['visual'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getVisualAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object)json_decode($value);
     }
 
     public function setLoginAttribute($value)
@@ -74,16 +76,16 @@ class Configuration extends ModelTenant
 
     public function getLoginAttribute($value)
     {
-        return is_null($value) ? null : (object) json_decode($value);
+        return is_null($value) ? null : (object)json_decode($value);
     }
 
     public function setFinancesAttribute($value)
     {
-        $this->attributes['finances'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['finances'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getFinancesAttribute($value)
     {
-        return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object) json_decode($value);
+        return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object)json_decode($value);
     }
 }

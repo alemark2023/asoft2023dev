@@ -169,8 +169,13 @@
                                     <small class="form-control-feedback" v-if="errors.quotation_allow_seller_generate_sale" v-text="errors.quotation_allow_seller_generate_sale[0]"></small>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Permitir editar precio unitario a vendedores</label>
+                                <div class="form-group" :class="{'has-danger': errors.allow_edit_unit_price_to_seller}">
+                                    <el-switch v-model="form.allow_edit_unit_price_to_seller" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                    <small class="form-control-feedback" v-if="errors.allow_edit_unit_price_to_seller" v-text="errors.allow_edit_unit_price_to_seller[0]"></small>
+                                </div>
+                            </div>
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Productos de una ubicación</label>
                                 <div class="form-group" :class="{'has-danger': errors.product_only_location}">
@@ -178,7 +183,6 @@
                                     <small class="form-control-feedback" v-if="errors.product_only_location" v-text="errors.product_only_location[0]"></small>
                                 </div>
                             </div>
-
                             <div class="col-md-6 mt-4">
                                 <label class="control-label">Seleccionar boleta por defecto
                                     <el-tooltip class="item" effect="dark" content="Disponible POS" placement="top-start">
@@ -350,6 +354,7 @@
                     default_document_type_03: false,
                     destination_sale: false,
                     quotation_allow_seller_generate_sale: false,
+                    allow_edit_unit_price_to_seller: false,
                     finances: {}
                 };
             },
