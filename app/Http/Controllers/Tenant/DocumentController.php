@@ -281,8 +281,30 @@ class DocumentController extends Controller
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
-            $items_u = Item::whereWarehouse()->whereIsActive()->orderBy('description')->take(20)->get();
-            $items_s = Item::where('unit_type_id','ZZ')->whereIsActive()->orderBy('description')->take(10)->get();
+            $items_u = Item::select(\DB::raw('items.*,item_warehouse.stock as stock'))
+                ->distinct()
+                ->whereIsActive()
+                ->join('item_warehouse','items.id','item_warehouse.item_id')
+                ->where('item_warehouse.stock','>',0)
+                ->orderBy('description');
+            $items_s = Item::select(\DB::raw('items.*,item_warehouse.stock as stock'))
+                ->distinct()
+                ->where('items.unit_type_id','ZZ')
+                ->whereIsActive()
+                ->join('item_warehouse','items.id','item_warehouse.item_id')
+                ->orderBy('description');
+
+            if(!\Config::get('configuration.show_all_items_at_invoice')){
+                $items_u->where('item_warehouse.warehouse_id',$establishment_id);
+                $items_s->where('item_warehouse.warehouse_id',$establishment_id);
+            }
+            if(!\Config::get('configuration.show_all_items_with_out_stock')){
+                $items_s                ->where('item_warehouse.stock','>',0);
+                $items_u                ->where('item_warehouse.stock','>',0);
+            }
+
+            $items_u = $items_u->take(20)->get();
+            $items_s = $items_s->take(10)->get();
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
@@ -371,7 +393,14 @@ class DocumentController extends Controller
 
         if($row->unit_type_id != 'ZZ')
         {
-            $warehouse_stock = ($row->warehouses && $warehouse) ? number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) : 0;
+            if(isset($row['stock'])){
+                $warehouse_stock = number_format($row['stock'],2);
+            } else {
+                $warehouse_stock = ($row->warehouses && $warehouse) ?
+                    number_format($row->warehouses->where('warehouse_id', $warehouse->id)->first()->stock,2) :
+                    0;
+            }
+
             $stock = ($row->warehouses && $warehouse) ? "{$warehouse_stock}" : "";
         }
         else{
