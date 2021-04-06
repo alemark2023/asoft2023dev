@@ -128,7 +128,7 @@
     <div class="col-6 col-md-4 mb-4">
         <div class="card card-dashboard card-reports">
             <div class="card-body">
-                <h6 class="card-title">Azanzado</h6>
+                <h6 class="card-title">Avanzado</h6>
                 <ul class="card-report-links">
                     @if(auth()->user()->type != 'integrator' && $vc_company->soap_type_id != '03')
                     <li>
