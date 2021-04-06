@@ -17,13 +17,6 @@ class GenerateDocumentController extends Controller
 {
     use FinanceTrait;
 
-    public function record($table, $id)
-    {
-        if($table === 'technical-services') {
-            return new TechnicalServiceResource(TechnicalService::query()->findOrFail($id));
-        }
-    }
-
     public function tables()
     {
         $establishment = Establishment::query()->where('id', auth()->user()->establishment_id)->first();
@@ -37,6 +30,13 @@ class GenerateDocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
 
         return compact('series', 'document_types', 'payment_method_types', 'payment_destinations');
+    }
+
+    public function record($table, $id)
+    {
+        if($table === 'technical-services') {
+            return new TechnicalServiceResource(TechnicalService::query()->findOrFail($id));
+        }
     }
 
     public function customers(Request $request)
