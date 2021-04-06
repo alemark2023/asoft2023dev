@@ -37,29 +37,6 @@
     <link href="{{ $path_style }}" rel="stylesheet" />
 </head>
 <body>
-@if($document != null)
-
-    <table class="full-width border-box my-2">
-    @foreach($accounts as $account)
-        <tr>
-            <th class="p-1">Banco</th>
-            <th class="p-1">Moneda</th>
-            <th class="p-1">Código de Cuenta Interbancaria</th>
-            <th class="p-1">Código de Cuenta</th>
-        </tr>
-        <tr>
-            <td class="text-center">{{$account->bank->description}}</td>
-            <td class="text-center text-upp">{{$account->currency_type->description}}</td>
-            <td class="text-center">
-                @if($account->cci)
-                    {{$account->cci}}
-                @endif
-            </td>
-            <td class="text-center">{{$account->number}}</td>
-        </tr>
-    @endforeach
-    </table>
-@endif
 <table class="full-width">
     <tr>
         <td class="text-center desc font-bold">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>

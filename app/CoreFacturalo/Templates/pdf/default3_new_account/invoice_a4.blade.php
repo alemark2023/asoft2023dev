@@ -25,7 +25,7 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
 
     //calculate items
-    $allowed_items = 96 - (\App\Models\Tenant\BankAccount::all()->count())*2;
+    $allowed_items = 94 - (\App\Models\Tenant\BankAccount::all()->count())*2;
     $quantity_items = $document->items()->count();
     $cycle_items = $allowed_items - ($quantity_items * 3);
     $total_weight = 0;
@@ -430,7 +430,28 @@
     </tbody>
 
 </table>
+@if($document != null)
 
-
+    <table class="full-width border-box my-2">
+        @foreach($accounts as $account)
+            <tr>
+                <th class="p-1">Banco</th>
+                <th class="p-1">Moneda</th>
+                <th class="p-1">Código de Cuenta Interbancaria</th>
+                <th class="p-1">Código de Cuenta</th>
+            </tr>
+            <tr>
+                <td class="text-center">{{$account->bank->description}}</td>
+                <td class="text-center text-upp">{{$account->currency_type->description}}</td>
+                <td class="text-center">
+                    @if($account->cci)
+                        {{$account->cci}}
+                    @endif
+                </td>
+                <td class="text-center">{{$account->number}}</td>
+            </tr>
+        @endforeach
+    </table>
+@endif
 </body>
 </html>
