@@ -4,7 +4,7 @@
             :title="titleDialog"
             :visible="showDialog"
             @open="create"
-            width="30%"
+            width="50%"
             :close-on-click-modal="false"
             :close-on-press-escape="false"
             :show-close="false"
@@ -190,6 +190,12 @@
                             v-if="errors.date_of_due"
                             v-text="errors.date_of_due[0]"
                         ></small>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+                        <label class="control-label"> Total </label> <br>
+                        <label class="control-label">{{document.currency_type_id}} {{ document.total }}</label>
                     </div>
                 </div>
                 <br />
@@ -705,6 +711,7 @@ export default {
                     this.form = response.data.data;
                     this.document.payments =
                         response.data.data.quotation.payments;
+                    this.document.total = this.form.quotation.total;
                     this.document.currency_type_id =this.form.quotation.currency_type_id;
                     this.document.payment_condition_id =this.form.quotation.payment_condition_id;
                     if(this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
