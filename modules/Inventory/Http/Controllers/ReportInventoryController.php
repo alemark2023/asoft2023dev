@@ -42,7 +42,6 @@ class ReportInventoryController extends Controller
         $warehouse_id = $request->input('warehouse_id');
         $filter = $request->input('filter');
 
-
         $records = $this->getRecords($warehouse_id);
         if ($request->has('brand_id') && (int)$request->brand_id != 0) {
             $records->where('items.brand_id', $request->brand_id);
@@ -53,6 +52,8 @@ class ReportInventoryController extends Controller
         $records->orderBy('items.name','desc');
         $records = $records->latest()->get();
 
+//        return $records;
+
         $data = [];
         foreach ($records as $row) {
             $add = true;
@@ -60,7 +61,7 @@ class ReportInventoryController extends Controller
                 $add = ($row->stock < 0);
             }
             if ($filter === '03') {
-                $add = ($row->stock === 0);
+                $add = ($row->stock == 0);
             }
             if ($filter === '04') {
                 $add = ($row->stock > 0 && $row->stock <= $row->item->stock_min);
@@ -103,8 +104,6 @@ class ReportInventoryController extends Controller
     private function getRecords($warehouse_id)
     {
         $query =  ItemWarehouse::with(['item', 'item.category', 'item.brand'])
-
-
             ->whereHas('item', function ($q) {
                 $q->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
                     ->whereNotIsSet();

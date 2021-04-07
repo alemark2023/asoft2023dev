@@ -15,6 +15,10 @@ class ItemWarehouse extends ModelTenant
         'stock',
     ];
 
+    protected $casts = [
+        'stock' => 'float'
+    ];
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
@@ -33,22 +37,22 @@ class ItemWarehouse extends ModelTenant
         return $query;
     }
 
-    public function scopeWhereFilter($query, $filter, $stock_min)
-    {
-        if($filter === '02') {
-            return $query->where('stock', '<', 0);
-        }
-        if($filter === '03') {
-            return $query->where('stock', '=', 0);
-        }
-        if($filter === '04') {
-            return $query->where('stock', '>', 0)
-                         ->where('stock', '<=', $stock_min);
-        }
-        if($filter === '05') {
-            return $query->where('stock', '>', $stock_min);
-        }
-
-        return $query;
-    }
+//    public function scopeWhereFilter($query, $filter, $stock_min)
+//    {
+//        if($filter === '02') {
+//            return $query->where('stock', '<', 0);
+//        }
+//        if($filter === '03') {
+//            return $query->where('stock', '=', 0);
+//        }
+//        if($filter === '04') {
+//            return $query->where('stock', '>', 0)
+//                         ->where('stock', '<=', $stock_min);
+//        }
+//        if($filter === '05') {
+//            return $query->where('stock', '>', $stock_min);
+//        }
+//
+//        return $query;
+//    }
 }
