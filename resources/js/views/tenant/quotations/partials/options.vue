@@ -141,7 +141,23 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
+                    <div class="form-group" :class="{'has-danger': errors.payment_condition_id}">
+                        <!--<label class="control-label">Fecha de emisión</label>-->
+                        <label class="control-label">Condición de pago</label>
+                        <el-select v-model="document.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
+                            <el-option value="02" label="Crédito"></el-option>
+                            <el-option value="01" label="Contado"></el-option>
+                        </el-select>
+                        <small
+                            class="form-control-feedback"
+                            v-if="errors.date_of_due"
+                            v-text="errors.date_of_due[0]"
+                        ></small>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                         <label class="control-label">Fecha de emisión</label>
                         <el-date-picker
@@ -160,7 +176,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                         <!--<label class="control-label">Fecha de emisión</label>-->
                         <label class="control-label">Fecha de vencimiento</label>
@@ -177,27 +193,7 @@
                         ></small>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                        <!--<label class="control-label">Fecha de emisión</label>-->
-                        <label class="control-label">CONDICIÓN DE PAGO</label>
-                        <el-select v-model="document.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
-                            <el-option value="02" label="Crédito"></el-option>
-                            <el-option value="01" label="Contado"></el-option>
-                        </el-select>
-                        <small
-                            class="form-control-feedback"
-                            v-if="errors.date_of_due"
-                            v-text="errors.date_of_due[0]"
-                        ></small>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                        <label class="control-label"> Total </label> <br>
-                        <label class="control-label">{{document.currency_type_id}} {{ document.total }}</label>
-                    </div>
-                </div>
+
                 <br />
                 <div class="col-lg-4">
                     <div class="form-group" v-show="document.document_type_id == '03'">
@@ -208,7 +204,7 @@
                     </div>
                 </div>
                 <br />
-                <div class="col-lg-12" v-if="document.payment_condition_id === '02'">
+                <div class="col-lg-12" v-show="is_document_type_invoice && document.payment_condition_id === '02'">
                     <table v-if="document.fee.length>0" width="100%">
                         <thead>
                         <tr>
@@ -327,7 +323,14 @@
             </div>
 
             <series-form v-if="generate && form.quotation" :items="form.quotation.items"></series-form>
+            <div class="col-lg-12" v-show="document.total > 0">
+                <div class="form-group pull-right" >
+                    <label class="control-label"> Total </label> <br>
+                    <label class="control-label">{{document.currency_type_id}} {{ document.total }}</label>
+                </div>
 
+                <br>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
