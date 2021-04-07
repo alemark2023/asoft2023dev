@@ -360,10 +360,10 @@
                     <div class="card-body d-flex align-items-start no-gutters">
                         <div class="col-12">
                             <div class="card-body p-2">
-                                <div v-if="typeUser == 'admin'" class="col-12 py-2 px-0">
+                                <div class="col-12 py-2 px-0">
                                     <div class="form-group">
                                         <label class="control-label">Vendedor</label>
-                                        <el-select v-model="form.seller_id">
+                                        <el-select v-model="form.seller_id" :disabled="typeUser == 'seller'">
                                             <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                         </el-select>
                                     </div>
@@ -641,7 +641,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['typeUser', 'configuration', 'documentId', 'isUpdate'],
+        props: ['idUser', 'typeUser', 'configuration', 'documentId', 'isUpdate'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
@@ -736,7 +736,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
-                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
+                    this.form.seller_id = (this.sellers.length > 0)?this.idUser:null;
                     // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
@@ -1480,7 +1480,7 @@
                     establishment_id: null,
                     document_type_id: null,
                     series_id: null,
-                    seller_id: null,
+                    seller_id: this.idUser,
                     number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
@@ -1570,7 +1570,7 @@
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
-                this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
+                this.form.seller_id = (this.sellers.length > 0)?this.idUser:null;
                 this.selectDocumentType()
                 this.changeEstablishment()
                 this.changeDocumentType()

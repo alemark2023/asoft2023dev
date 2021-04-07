@@ -141,7 +141,11 @@ class DashboardSalePurchase
     private function purchase_totals($establishment_id, $d_start, $d_end)
     {
         // $purchases = Purchase::get();
-        $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])->where('establishment_id', $establishment_id)->get();
+        $purchases = Purchase::without(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'])
+            ->whereIn('state_type_id', ['01','03','05','07','13'])
+            ->where('establishment_id', $establishment_id)
+            ->select('id', 'state_type_id', 'establishment_id', 'currency_type_id', 'total', 'exchange_rate_sale', 'total_perception')
+            ->get();
 
         $purchases_total = $purchases->where('currency_type_id', 'PEN')->sum('total');
 
@@ -204,32 +208,31 @@ class DashboardSalePurchase
 
 
 
-    private function items_by_sales($establishment_id, $d_start, $d_end, $enabled_move_item){
+    private function items_by_sales($establishment_id, $d_start, $d_end, $enabled_move_item) {
+        if ($d_start && $d_end) {
 
-        // $document_items = DocumentItem::get();
-        // $sale_note_items = SaleNoteItem::get();
-        if($d_start && $d_end){
-
-            $documents = Document::query()->where('establishment_id', $establishment_id)
+            $documents = Document::without(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments'])
+                        ->where('establishment_id', $establishment_id)
                         ->whereIn('state_type_id', ['01','03','05','07','13'])
                         ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
 
 
-            $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+            $sale_notes = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
+                        ->where([['establishment_id', $establishment_id],['changed',false]])
                         ->whereIn('state_type_id', ['01','03','05','07','13'])
                         ->whereBetween('date_of_issue', [$d_start, $d_end])->get();
-        }else{
+        } else {
 
-            $documents = Document::query()->where('establishment_id', $establishment_id)
+            $documents = Document::without(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments'])
+                        ->where('establishment_id', $establishment_id)
                         ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
 
 
-            $sale_notes = SaleNote::query()->where([['establishment_id', $establishment_id],['changed',false]])
+            $sale_notes = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
+                        ->where([['establishment_id', $establishment_id],['changed',false]])
                         ->whereIn('state_type_id', ['01','03','05','07','13'])->get();
 
         }
-
-        // dd($documents->count(),$sale_notes->count());
 
         $document_items = collect([]);
         $sale_note_items = collect([]);
@@ -257,10 +260,8 @@ class DashboardSalePurchase
         $items_by_sales = collect([]);
 
         foreach ($group_items as $items) {
-            // dd($items);
-
-            $item = Item::where('status',true)->find($items[0]->item_id);
-
+            $item = Item::without(['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags'])
+                ->where('status',true)->find($items[0]->item_id);
 
             $totals = 0;
             $total_credit_note = 0;
@@ -300,7 +301,6 @@ class DashboardSalePurchase
                     'description' => $item->description,
                     'internal_id' => $item->internal_id,
                     'move_quantity' => number_format($move_quantity, 2, ".", ""),
-                   // 'currency' => $item->currency_type->symbol
                 ]);
             }
         }

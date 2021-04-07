@@ -58,7 +58,8 @@ trait SearchTrait
                 ->limit(1)
                 ->get();
         }
-        return Item::where('description','like', "%{$request->input}%")
+        return Item::with('warehousePrices')
+            ->where('description','like', "%{$request->input}%")
             ->whereTypeUser()
             ->orWhere('internal_id','like', "%{$request->input}%")
             ->orWhereHas('category', function($query) use($request) {
