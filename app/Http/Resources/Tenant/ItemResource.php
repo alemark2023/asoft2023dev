@@ -101,6 +101,7 @@ class ItemResource extends JsonResource
             //         'stock' => $row->stock,
             //     ];
             // })
+            'warehouse_prices' => $this->warehousePrices,
         ];
     }
 }

@@ -29,6 +29,7 @@ if($hostname) {
                 Route::post('/', 'InventoryController@store');
                 Route::post('/transaction', 'InventoryController@store_transaction');
                 Route::post('move', 'InventoryController@move');
+                Route::post('move-multilple', 'InventoryController@moveMultiples');
 
                 Route::get('moves', 'MovesController@index')->name('inventory.moves.index');
 
