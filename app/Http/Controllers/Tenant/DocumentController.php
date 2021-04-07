@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Models\Tenant\PaymentCondition;
+use Config;
 use Exception;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -284,24 +285,23 @@ class DocumentController extends Controller
                 ->select(\DB::raw('items.*,item_warehouse.stock as stock'))
                 ->distinct()
                 ->whereIsActive()
-                ->join('item_warehouse','items.id','item_warehouse.item_id')
-                ->where('item_warehouse.stock','>',0)
+                ->join('item_warehouse', 'items.id', 'item_warehouse.item_id')
                 ->orderBy('description');
             $items_s = Item::with('warehousePrices')
                 ->select(\DB::raw('items.*,item_warehouse.stock as stock'))
                 ->distinct()
-                ->where('items.unit_type_id','ZZ')
+                ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()
-                ->join('item_warehouse','items.id','item_warehouse.item_id')
+                ->join('item_warehouse', 'items.id', 'item_warehouse.item_id')
                 ->orderBy('description');
 
-            if(!\Config::get('configuration.show_all_items_at_invoice')){
-                $items_u->where('item_warehouse.warehouse_id',$establishment_id);
-                $items_s->where('item_warehouse.warehouse_id',$establishment_id);
+            if (!Config::get('configuration.show_all_items_at_invoice')) {
+                $items_u->where('item_warehouse.warehouse_id', $establishment_id);
+                $items_s->where('item_warehouse.warehouse_id', $establishment_id);
             }
-            if(!\Config::get('configuration.show_all_items_with_out_stock')){
-                $items_s                ->where('item_warehouse.stock','>',0);
-                $items_u                ->where('item_warehouse.stock','>',0);
+            if (!Config::get('configuration.show_all_items_with_out_stock')) {
+                $items_s->where('item_warehouse.stock', '>', 0);
+                $items_u->where('item_warehouse.stock', '>', 0);
             }
 
             $items_u = $items_u->take(20)->get();
