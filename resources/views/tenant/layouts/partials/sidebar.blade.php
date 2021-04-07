@@ -417,7 +417,6 @@
                                 <li class="nav-parent {{ ($path[0] === 'fixed-asset' )?'nav-active nav-expanded' : '' }}">
                                     <a class="nav-link" href="#">Activos fijos</a>
                                     <ul class="nav nav-children">
-                                        purchases_fixed_assets_items
                                         @if(in_array('purchases_fixed_assets_items', $vc_module_levels))
                                         <li class="{{ ($path[0] === 'fixed-asset' && $path[1] === 'items')?'nav-active':'' }}">
                                             <a class="nav-link" href="{{route('tenant.fixed_asset_items.index')}}">Ítems</a>
