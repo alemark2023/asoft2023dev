@@ -326,4 +326,18 @@ class Item extends ModelTenant
         return $this->belongsTo(WebPlatform::class);
     }
 
+    public function warehousePrices()
+    {
+        return $this->hasMany(ItemWarehousePrice::class, 'item_id')->select('item_id', 'price', 'warehouse_id');
+    }
+
+    public static function getSaleUnitPriceByWarehouse(Item $item, int $warehouseId): string
+    {
+        $warehousePrice = $item->warehousePrices->where('item_id', $item->id)
+            ->where('warehouse_id', $warehouseId)
+            ->first();
+
+        $price = $warehousePrice ? $warehousePrice->price : $item->sale_unit_price;
+        return number_format($price, 4, ".", "");
+    }
 }

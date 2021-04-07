@@ -37,6 +37,7 @@ use Carbon\Carbon;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
 use App\Exports\ItemExportBarCode;
+use App\Models\Tenant\ItemWarehousePrice;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
@@ -134,7 +135,6 @@ class ItemController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $system_isc_types = SystemIscType::whereActive()->orderByDescription()->get();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
-        // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
         $warehouses = Warehouse::all();
         $accounts = Account::all();
         $tags = Tag::all();
@@ -154,7 +154,6 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
-        //return 'no';
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -222,8 +221,7 @@ class ItemController extends Controller
 
         }
 
-        if($request->tags_id)
-        {
+        if ($request->tags_id) {
             ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));
             foreach ($request->tags_id as $value) {
                 ItemTag::create(['item_id' => $item->id,  'tag_id' => $value]);
@@ -320,6 +318,28 @@ class ItemController extends Controller
         }
 
         $item->update();
+
+        // Precios por almacenes
+        $warehouses = $request->warehouses;
+        if ($warehouses) {
+            ItemWarehousePrice::where('item_id', $item->id)
+                ->delete();
+
+            foreach ($warehouses as $warehousePrice) {
+                try {
+                    $price = $warehousePrice['price'];
+					if (is_numeric($warehousePrice['price'])) {
+						ItemWarehousePrice::query()->insert([
+							'item_id'      => $item->id,
+							'warehouse_id' => $warehousePrice['id'],
+							'price'        => $price,
+						]);
+					}
+                } catch (\Throwable $th) {
+                    \Log::error('No se pudo agregar el precio del producto al almacén ' . $warehousePrice['id']);
+                }
+            }
+        }
 
         return [
             'success' => true,

@@ -68,7 +68,7 @@
                               :recordId="recordId"></inventories-move>
             <inventories-remove :showDialog.sync="showDialogRemove"
                                 :recordId="recordId"></inventories-remove>
-            <MoveGlobal :products="selectedItems" :show="showHideModalMoveGlobal"></MoveGlobal>
+            <MoveGlobal :products="selectedItems" :show.sync="showHideModalMoveGlobal"></MoveGlobal>
         </div>
     </div>
 </template>
@@ -105,16 +105,25 @@
         },
         methods: {
             async onOpenModalMoveGlobal() {
-                this.selectedItems = await this.$refs.datatable.records.filter(p => p.selected);
-                this.showHideModalMoveGlobal = true;
+                const itemsSelecteds = await this.$refs.datatable.records.filter(p => p.selected);
+                if (itemsSelecteds.length > 0) {
+                    this.selectedItems = itemsSelecteds;
+                    this.showHideModalMoveGlobal = true;
+                } else {
+                    this.$message({
+                        message: 'Selecciona uno o más productos.',
+                        type: 'warning'
+                    });
+                }
             },
-            onChangeSelectedStatus(row) {
-                this.$refs.datatable.records = this.$refs.datatable.records.map(r => {
+            async onChangeSelectedStatus(row) {
+                this.$refs.datatable.records = await this.$refs.datatable.records.map(r => {
                     if (r.id === row.id) {
                         r.selected = row.selected ? false : true;
                     }
                     return r;
                 });
+                this.$forceUpdate();
             },
             onChecktAll() {
                 this.$refs.datatable.records = this.$refs.datatable.records.map(r => {

@@ -3,14 +3,6 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
-
-                    <!-- <div class="col-md-6">
-                        <div class="form-group" :class="{'has-danger': errors.description}">
-                            <label class="control-label">Descripción <span class="text-danger">*</span></label>
-                            <el-input v-model="form.description" dusk="description"></el-input>
-                            <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
-                        </div>
-                    </div> -->
                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.description}">
                             <label class="control-label">Nombre<span class="text-danger">*</span></label>
@@ -27,14 +19,6 @@
                         </div>
                     </div>
 
-
-                     <!-- <div class="col-md-9">
-                        <div class="form-group" :class="{'has-danger': errors.name}">
-                            <label class="control-label">Nombre  <span class="text-danger">*</span></label>
-                            <el-input v-model="form.name" dusk="name"></el-input>
-                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
-                        </div>
-                    </div> -->
                      <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Descripción</label>
@@ -49,8 +33,6 @@
                             <small class="form-control-feedback" v-if="errors.model" v-text="errors.model[0]"></small>
                         </div>
                     </div>
-
-
 
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
@@ -124,8 +106,6 @@
                         </div>
                     </div>
 
-
-
                     <div v-show="form.unit_type_id !='ZZ'" class="col-md-3 center-el-checkbox">
                         <div class="form-group" :class="{'has-danger': errors.calculate_quantity}">
                             <el-checkbox v-model="form.calculate_quantity">Calcular cantidad por precio</el-checkbox><br>
@@ -191,35 +171,24 @@
                     </div>
                     <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.lots_enabled">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
-                            <label class="control-label">
-                                <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
-                                Código lote
-                            </label>
-                            <el-input v-model="form.lot_code" >
-                                <!--<el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button> -->
-                            </el-input>
+                            <label class="control-label">Código lote</label>
+                            <el-input v-model="form.lot_code"></el-input>
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
 
                      <div  v-show="form.unit_type_id !='ZZ'" class="col-md-3 center-el-checkbox" >
-                        <div class="form-group"  >
+                        <div class="form-group">
                             <el-checkbox v-model="form.series_enabled" @change="changeLotsEnabled">¿Maneja series?</el-checkbox><br>
                         </div>
                     </div>
                     <div class="col-md-3" v-show="form.unit_type_id !='ZZ' && form.series_enabled && !recordId">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
-                            <label class="control-label">
-                                <!-- <el-checkbox v-model="enabled_lots"  @change="changeEnabledPercentageOfProfit">Código lote</el-checkbox> -->
-                                Ingrese series
-                            </label>
-
+                            <label class="control-label">Ingrese series</label>
                             <el-button style="margin-top:2%;" type="primary" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button>
-
                             <small class="form-control-feedback" v-if="errors.lot_code" v-text="errors.lot_code[0]"></small>
                         </div>
                     </div>
-
 
                     <div class="col-md-3 center-el-checkbox" >
                         <div class="form-group"  >
@@ -229,7 +198,6 @@
                     <div class="col-md-3 center-el-checkbox" v-show="form.has_perception">
                         <div class="form-group"  >
                             <label class="control-label">Porcentaje de percepción</label>
-
                             <el-input v-model="form.percentage_perception"></el-input>
                         </div>
                     </div>
@@ -276,21 +244,22 @@
                             <small class="form-control-feedback" v-if="errors.barcode" v-text="errors.barcode[0]"></small>
                         </div>
                     </div>
-
-                    <!-- <div class="col-md-3 center-el-checkbox">
-                        <div class="form-group" >
-                            <el-checkbox v-model="have_account" @change="changeHaveAccount">¿Tiene cuenta contable?</el-checkbox><br>
+                    <div class="col-12" v-show="form.unit_type_id !='ZZ'">
+                        <h5 class="separator-title">Precios por almacenes</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr v-for="w in warehouses" :key="w.id">
+                                        <td>{{ w.description }}</td>
+                                        <td width="150">
+                                            <el-input placeholder="Precio" v-model="w.price" type="number" min="0" step="0.01"></el-input>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-md-3" v-show="have_account">
-                        <div class="form-group" :class="{'has-danger': errors.account_id}">
-                            <label class="control-label">Cuenta contable</label>
-                            <el-select v-model="form.account_id" filterable>
-                                <el-option v-for="option in accounts" :key="option.id" :value="option.id" :label="`${option.number} - ${option.description}`"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.account_id" v-text="errors.account_id[0]"></small>
-                        </div>
-                    </div> -->
+
                     <div v-show="form.unit_type_id !='ZZ'" class="col-md-12">
                         <h5 class="separator-title ">
                             Listado de precios
@@ -343,13 +312,11 @@
                                                 <el-select v-model="row.unit_type_id" dusk="item_unit_type.unit_type_id">
                                                     <el-option v-for="option in unit_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                 </el-select>
-                                                <!-- <small class="form-control-feedback" v-if="errors.unit_type_id" v-text="errors.unit_type_id[0]"></small> -->
                                             </div>
                                         </td>
                                         <td>
                                             <div class="form-group" >
                                             <el-input v-model="row.description"></el-input>
-                                            <!-- <small class="form-control-feedback" v-if="errors.quantity_unit" v-text="errors.quantity_unit[0]"></small> -->
                                         </div>
                                         </td>
                                         <td>
@@ -498,25 +465,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
-                    <!--<div class="col-md-12" v-if="form.warehouses">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Ubicación</th>
-                                <th class="text-right">Stock</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="row in form.warehouses">
-                                <th>{{ row.warehouse_description }}</th>
-                                <th class="text-right">{{ row.stock }}</th>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>-->
                 </div>
             </div>
             <div class="form-actions text-right pt-2">
@@ -524,10 +472,6 @@
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
             </div>
         </form>
-        <!-- <percentage-perception
-                :showDialog.sync="showPercentagePerception"
-                :percentage_perception="percentage_perception">
-        </percentage-perception> -->
 
         <lots-form
             :showDialog.sync="showDialogLots"
@@ -541,7 +485,6 @@
 </template>
 
 <script>
-    // import PercentagePerception from './partials/percentage_perception.vue'
     import LotsForm from './partials/lots.vue'
 
     export default {
@@ -668,9 +611,6 @@
                 this.form.lots = lots
             },
             clickLotcode(){
-                // if(this.form.stock <= 0)
-                //     return this.$message.error('El stock debe ser mayor a 0')
-
                 this.showDialogLots = true
             },
             changeHaveAccount(){
@@ -701,7 +641,6 @@
                 if(!this.form.has_perception){
                     this.form.percentage_perception = null
                 }
-
             },
             clickAddRow() {
                 this.form.item_unit_types.push({
@@ -717,8 +656,6 @@
             },
             clickCancel(index) {
                 this.form.item_unit_types.splice(index, 1)
-                // this.initDocumentTypes()
-                // this.showAddButton = true
             },
             initForm() {
                 this.loading_submit = false,
@@ -825,6 +762,22 @@
                             this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                             this.changeAffectationIgvType()
                             this.changePurchaseAffectationIgvType()
+                            const warehousePrices = response.data.data.warehouse_prices;
+                            if (warehousePrices.length > 0) {
+                                this.warehouses = this.warehouses.map(w => {
+                                    const price = warehousePrices.find(wp => wp.warehouse_id === w.id);
+                                    if (price) {
+                                        var priceToJson = {...price};
+                                        w.price = priceToJson.price;
+                                    }
+                                    return w;
+                                });
+                            } else {
+                                this.warehouses = this.warehouses.map(w => {
+                                    delete w.price;
+                                    return w;
+                                });
+                            }
                         })
                 }
 
@@ -886,20 +839,6 @@
                 if(this.validateItemUnitTypes() > 0) return this.$message.error('El campo factor no puede ser menor a 0.0001');
 
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
-                // if(!this.has_percentage_perception) this.form.percentage_perception = null
-
-                /*if(!this.recordId && this.form.lots_enabled){
-
-                    if(this.form.lots.length > this.form.stock)
-                        return this.$message.error('La cantidad de series registradas es superior al stock');
-
-                    if(!this.form.lot_code)
-                        return this.$message.error('Código de lote es requerido');
-
-                    if(this.form.lots.length != this.form.stock)
-                        return this.$message.error('La cantidad de series registradas son diferentes al stock');
-
-                }*/
 
                 if(this.form.lots_enabled){
 
@@ -910,8 +849,7 @@
                         return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
                 }
 
-                if(!this.recordId && this.form.series_enabled)
-                {
+                if (!this.recordId && this.form.series_enabled) {
 
                     if(this.form.lots.length > this.form.stock)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
@@ -921,6 +859,7 @@
                 }
 
                 this.loading_submit = true
+                this.form.warehouses = this.warehouses.filter(w => w.price);
                 await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
