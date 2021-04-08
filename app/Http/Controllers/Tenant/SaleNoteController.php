@@ -1149,14 +1149,25 @@ class SaleNoteController extends Controller
         }
     }
 
-    public function saleNotesByClient($clientId)
+    public function saleNotesByClient(Request $request)
     {
+        $request->validate([
+            'client_id' => 'required|numeric|min:1',
+        ]);
+        $clientId = $request->client_id;
         $records = SaleNote::without(['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'])
             ->select('series', 'number', 'id', 'date_of_issue')
             ->where('customer_id', $clientId)
             ->whereNull('document_id')
-			->orderBy('number', 'desc')
-            ->take(20)
+            ->whereIn('state_type_id', ['01', '03', '05'])
+			->orderBy('number', 'desc');
+
+        $dateOfIssue = $request->date_of_issue;
+        if ($dateOfIssue) {
+            $records = $records->where('date_of_issue', $dateOfIssue);
+        }
+
+        $records = $records->take(20)
             ->get();
 
         return response()->json([

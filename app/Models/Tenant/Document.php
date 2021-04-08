@@ -356,7 +356,7 @@ class Document extends ModelTenant
     public function scopeWhereTypeUser($query)
     {
         $user = auth()->user();
-        return ($user->type == 'admin') ? null : $query->where('user_id', $user->id);
+        return ($user->type == 'admin') ? null : $query->where('user_id', $user->id)->orWhere('seller_id', $user->id)->latest();
         // return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
