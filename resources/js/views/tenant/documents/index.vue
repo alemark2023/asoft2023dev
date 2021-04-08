@@ -111,7 +111,7 @@
                         <td class="text-center">{{ row.currency_type_id }}</td>
                     <td class="text-center" v-if="columns.guides.visible">
                         <span v-for="(item, i) in row.guides" :key="i">
-                            {{item.document_type_description}}: {{item.number}} <br>
+                            {{item.number}} <br>
                         </span>
                     </td>
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>

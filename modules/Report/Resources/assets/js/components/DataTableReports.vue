@@ -99,6 +99,12 @@
                         <label>Orden de compra</label>
                             <el-input v-model="form.purchase_order" clearable></el-input>
                         </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group"  >
+                            <label class="control-label">Numero de Guía</label>
+                            <el-input v-model="form.guides" clearable></el-input>
+                        </div>
+                    </div>
 
                         <div class="col-lg-3 col-md-3 mt-4" v-if="resource == 'reports/sales'">
                             <div class="form-group">
@@ -400,7 +406,8 @@
                     month_end: moment().format('YYYY-MM'),
                     seller_id:null,
                     state_type_id:null,
-                    include_categories: false
+                    include_categories: false,
+                    guides: null
                 }
 
             },

@@ -87,6 +87,7 @@
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
                                 <th>Doc. Afectado</th>
+                                <th># Guía</th>
                                 <th>Cotización</th>
                                 <th>Caso</th>
                                 <th>Cliente</th>
@@ -131,7 +132,13 @@
 
                                     @endif
                                 <td class="celda">{{$serie_affec }} </td>
-
+                                <td class="celda">
+                                    @if(!empty($value->guides))
+                                        @foreach($value->guides as $guide)
+                                            {{ $guide->number }}<br>
+                                        @endforeach
+                                    @endif
+                                </td>
                                 <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
                                 <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
 
