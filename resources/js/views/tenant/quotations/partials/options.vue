@@ -4,7 +4,7 @@
             :title="titleDialog"
             :visible="showDialog"
             @open="create"
-            width="30%"
+            width="50%"
             :close-on-click-modal="false"
             :close-on-press-escape="false"
             :show-close="false"
@@ -141,7 +141,23 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
+                    <div class="form-group" :class="{'has-danger': errors.payment_condition_id}">
+                        <!--<label class="control-label">Fecha de emisión</label>-->
+                        <label class="control-label">Condición de pago</label>
+                        <el-select v-model="document.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
+                            <el-option value="02" label="Crédito"></el-option>
+                            <el-option value="01" label="Contado"></el-option>
+                        </el-select>
+                        <small
+                            class="form-control-feedback"
+                            v-if="errors.date_of_due"
+                            v-text="errors.date_of_due[0]"
+                        ></small>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                         <label class="control-label">Fecha de emisión</label>
                         <el-date-picker
@@ -160,7 +176,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                         <!--<label class="control-label">Fecha de emisión</label>-->
                         <label class="control-label">Fecha de vencimiento</label>
@@ -177,6 +193,7 @@
                         ></small>
                     </div>
                 </div>
+
                 <br />
                 <div class="col-lg-4">
                     <div class="form-group" v-show="document.document_type_id == '03'">
@@ -187,7 +204,51 @@
                     </div>
                 </div>
                 <br />
-                <div class="col-lg-12" v-show="is_document_type_invoice">
+                <div class="col-lg-12" v-show="is_document_type_invoice && document.payment_condition_id === '02'">
+                    <table v-if="document.fee.length>0" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th style="width: 30px">
+                                <a
+                                    style="font-size:18px"
+                                    href="#"
+                                    @click.prevent="clickAddFee"
+                                    class="text-center font-weight-bold text-center text-info"
+                                >[+]</a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="(row, index) in document.fee" :key="index">
+                            <td v-if="document.fee.length>0">
+                                <div class="form-group mb-2 mr-2">
+                                <el-date-picker v-model="row.date" type="date"
+                                                value-format="yyyy-MM-dd"
+                                                format="dd/MM/yyyy"
+                                                :clearable="false"></el-date-picker>
+                                </div>
+                            </td>
+                            <td v-if="document.fee.length>0">
+                                <div class="form-group mb-2 mr-2">
+                                <el-input v-model="row.amount"></el-input>
+                                </div>
+                            </td>
+                            <td class="series-table-actions text-center">
+                                <button
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-danger"
+                                    @click.prevent="clickRemoveFee(index)"
+                                >
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                       </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-12" v-show="is_document_type_invoice && document.payment_condition_id != '02'">
                     <table>
                         <thead>
                             <tr width="100%">
@@ -262,7 +323,14 @@
             </div>
 
             <series-form v-if="generate && form.quotation" :items="form.quotation.items"></series-form>
+            <div class="col-lg-12" v-show="document.total > 0">
+                <div class="form-group pull-right" >
+                    <label class="control-label"> Total </label> <br>
+                    <label class="control-label">{{document.currency_type_id}} {{ document.total }}</label>
+                </div>
 
+                <br>
+            </div>
             <span slot="footer" class="dialog-footer">
                 <template v-if="showClose">
                     <el-button @click="clickClose">Cerrar</el-button>
@@ -308,6 +376,7 @@
 import DocumentOptions from "../../documents/partials/options.vue";
 import SaleNoteOptions from "../../sale_notes/partials/options.vue";
 import SeriesForm from "./series_form.vue";
+import moment from "moment";
 
 export default {
     components: { DocumentOptions, SaleNoteOptions, SeriesForm },
@@ -352,10 +421,54 @@ export default {
         this.clickAddPayment();
     },
     methods: {
+        changePaymentCondition() {
+            this.document.fee = [];
+            this.document.payments = [];
+            if(this.document.payment_condition_id === '01') {
+                this.document.payments = this.form.quotation.payments;
+                if(this.document.payments === undefined || this.document.payments.length < 1) {
+                    this.clickAddPayment();
+                }
+            }
+            if(this.document.payment_condition_id === '02') {
+                this.document.fee = this.form.quotation.fee;
+                if(this.document.fee === undefined || this.document.fee.length < 1){
+                    this.clickAddFee();
+                }
+            }
+        },
+        clickRemoveFee(index) {
+            this.document.fee.splice(index, 1);
+            this.calculateFee();
+        },
+        clickAddFee() {
+            if(this.document.fee === undefined)this.document.fee = [];
+            this.document.fee.push({
+                id: null,
+                date: moment().format('YYYY-MM-DD'),
+                currency_type_id: this.document.currency_type_id,
+                amount: 0,
+            });
+            this.calculateFee();
+        },
+        calculateFee() {
+            let fee_count = this.document.fee.length;
+            let total = this.document.total;
+            let accumulated = 0;
+            let amount = _.round(total / fee_count, 2);
+            _.forEach(this.document.fee, row => {
+                accumulated += amount;
+                if (total - accumulated < 0) {
+                    amount = _.round(total - accumulated + amount, 2);
+                }
+                row.amount = amount;
+            })
+        },
         clickCancel(index) {
             this.document.payments.splice(index, 1);
         },
         clickAddPayment() {
+            if(this.document.payments === undefined) this.document.payments = [];
             this.document.payments.push({
                 id: null,
                 document_id: null,
@@ -422,6 +535,8 @@ export default {
                 total_exportation: 0,
                 total_free: 0,
                 total_taxed: 0,
+                payment_condition_id: '01',
+                fee: [],
                 total_unaffected: 0,
                 total_exonerated: 0,
                 total_igv: 0,
@@ -599,7 +714,14 @@ export default {
                     this.form = response.data.data;
                     this.document.payments =
                         response.data.data.quotation.payments;
-                    // console.log(this.form)
+                    this.document.total = this.form.quotation.total;
+                    this.document.currency_type_id =this.form.quotation.currency_type_id;
+                    this.document.payment_condition_id =this.form.quotation.payment_condition_id;
+                    if(this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
+                        this.document.payment_condition_id = "01";
+                    }
+
+                     // console.log(this.form)
                     // this.validateIdentityDocumentType()
                     this.getCustomer();
                     let type = this.type == "edit" ? "editada" : "registrada";
