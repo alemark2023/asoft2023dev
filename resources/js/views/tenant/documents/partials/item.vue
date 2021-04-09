@@ -115,7 +115,7 @@
                     <div class="col-md-4 col-sm-4">
                         <div class="form-group" :class="{'has-danger': errors.unit_price_value}">
                             <label class="control-label">Precio Unitario</label>
-                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="typeUser === 'seller'">
+                            <el-input v-model="form.unit_price_value" @input="calculateQuantity" :readonly="!edit_unit_price">
                                 <template slot="prepend" v-if="form.item.currency_type_symbol">{{ form.item.currency_type_symbol }}</template>
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price_value" v-text="errors.unit_price[0]"></small>
@@ -592,6 +592,17 @@
             this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
                 this.form.warehouse_id = warehouse_id
             })
+        },
+        computed: {
+            edit_unit_price() {
+                if(this.typeUser === 'admin') {
+                    return true
+                }
+                if(this.typeUser === 'seller') {
+                    return this.configuration.allow_edit_unit_price_to_seller;
+                }
+                return false;
+            }
         },
         methods: {
             validateQuantity(){

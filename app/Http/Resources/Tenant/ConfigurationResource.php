@@ -41,6 +41,7 @@ class ConfigurationResource extends JsonResource
             'header_image' => $this->header_image,
             'destination_sale' => (bool) $this->destination_sale,
             'quotation_allow_seller_generate_sale' => $this->quotation_allow_seller_generate_sale,
+            'allow_edit_unit_price_to_seller' => $this->allow_edit_unit_price_to_seller,
             'finances' => $this->finances,
             ];
     }

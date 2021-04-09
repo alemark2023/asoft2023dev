@@ -9,7 +9,7 @@
       @close="onClose"
     >
       <div class="row">
-        <div class="col-3">
+        <div class="col-2">
           <el-select
             v-model="filter.type"
             @click="onFetchClients"
@@ -23,7 +23,7 @@
             <el-option key="name" value="name" label="Nombres"></el-option>
           </el-select>
         </div>
-        <div class="col-9 form-group">
+        <div class="col-5 form-group">
           <el-select
             v-model="form.client_id"
             filterable
@@ -32,7 +32,6 @@
             placeholder="Ingrese uno más caracteres"
             :remote-method="onFindClients"
             :loading="loading"
-            @change="onFindNotes"
           >
             <el-option
               v-for="item in clients"
@@ -43,21 +42,32 @@
             </el-option>
           </el-select>
         </div>
+        <div class="col-3 form-group">
+          <el-date-picker
+            v-model="form.date_of_issue"
+            type="date"
+            style="width: 100%"
+            placeholder="Fecha de emisión"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </div>
+        <div class="col-2 form-group">
+          <el-button class="btn-block" @click="onFindNotes" type="primary">
+            <i class="fa fa-search"></i>
+          </el-button>
+        </div>
       </div>
       <div class="table-responsive pt-5" v-if="notes">
-        <span>Seleccione una o más guías para poder continuar</span>
-        <div
-          v-if="errors.notes_id"
-          class="alert alert-warning"
-          role="alert"
-        >
+        <span>Seleccione una o más notas de venta para poder continuar</span>
+        <div v-if="errors.notes_id" class="alert alert-warning" role="alert">
           {{ errors.notes_id[0] }}
         </div>
         <table class="table table-hover table-stripe">
           <thead>
             <tr>
               <th></th>
-              <th>Guía</th>
+              <th>Nota</th>
               <th>Fecha de emisión</th>
             </tr>
           </thead>
@@ -141,9 +151,27 @@ export default {
             }
           });
           const items = response.data.data;
+          const data = [];
+          items.map((i) => {
+            const it = {
+              id: i.item_id,
+              quantity: 0,
+            };
+            items.map((ite) => {
+              if (ite.item_id === it.id) {
+                it.quantity = it.quantity + parseFloat(ite.quantity);
+              }
+            });
+            const itemIsDuplicated = data.find((item) => item.id === it.id);
+            if (itemIsDuplicated) {
+              itemIsDuplicated.quantity = it.quantity;
+            } else {
+              data.push(it);
+            }
+          });
           const client = this.clients.find((c) => c.id === this.form.client_id);
           localStorage.setItem("client", JSON.stringify(client));
-          localStorage.setItem("items", JSON.stringify(items));
+          localStorage.setItem("itemsForNotes", JSON.stringify(data));
           localStorage.setItem("notes", JSON.stringify(notes));
           this.onClose();
           window.location.href = "/documents/create";
@@ -162,8 +190,9 @@ export default {
     onFindNotes() {
       this.form.selecteds = [];
       this.loading = true;
+      const params = this.form;
       this.$http
-        .get(`/sale-notes/list-by-client/${this.form.client_id}`)
+        .get(`/sale-notes/list-by-client`, { params })
         .then((response) => {
           this.notes = response.data.data.map((d) => {
             d.selected = false;

@@ -360,10 +360,10 @@
                     <div class="card-body d-flex align-items-start no-gutters">
                         <div class="col-12">
                             <div class="card-body p-2">
-                                <div v-if="typeUser == 'admin'" class="col-12 py-2 px-0">
+                                <div class="col-12 py-2 px-0">
                                     <div class="form-group">
                                         <label class="control-label">Vendedor</label>
-                                        <el-select v-model="form.seller_id">
+                                        <el-select v-model="form.seller_id" :disabled="typeUser == 'seller'">
                                             <el-option v-for="option in sellers" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                         </el-select>
                                     </div>
@@ -641,7 +641,7 @@
     import moment from 'moment'
 
     export default {
-        props: ['typeUser', 'configuration', 'documentId', 'isUpdate'],
+        props: ['idUser', 'typeUser', 'configuration', 'documentId', 'isUpdate'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
         data() {
@@ -736,7 +736,7 @@
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
-                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
+                    this.form.seller_id = (this.sellers.length > 0)?this.idUser:null;
                     // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
@@ -769,9 +769,9 @@
                 }).finally(() => this.loading_submit = false);
             }
 
-            const itemsFromDispatchesOrNotes = localStorage.getItem('items');
-            if (itemsFromDispatchesOrNotes) {
-                const itemsParsed = JSON.parse(itemsFromDispatchesOrNotes);
+            const itemsFromDispatches = localStorage.getItem('items');
+            if (itemsFromDispatches) {
+                const itemsParsed = JSON.parse(itemsFromDispatches);
                 const items = itemsParsed.map(i => i.item_id);
                 const params = {
                     items_id: items
@@ -826,6 +826,72 @@
                         i.unit_price_value = i.sale_unit_price;
                         i.input_unit_price_value = i.sale_unit_price;
                         i.quantity = itemsParsed.find(ip => ip.item_id == i.id).quantity;
+                        i.warehouse_id = null;
+                        return i;
+                    });
+                    this.form.items = itemsResponse.map(i => {
+                        return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
+                    });
+                });
+            }
+
+            const itemsFromNotes = localStorage.getItem('itemsForNotes');
+            if (itemsFromNotes) {
+                const itemsParsed = JSON.parse(itemsFromNotes);
+                const items = itemsParsed.map(i => i.id);
+                const params = {
+                    items_id: items
+                }
+                localStorage.removeItem('itemsForNotes');
+                await this.$http.get('/documents/search-items', { params }).then(response => {
+                    const itemsResponse = response.data.items.map(i => {
+                        i.affectation_igv_type = {
+                            active: 1,
+                            description: "Gravado - Operación Onerosa",
+                            exportation: 0,
+                            free: 0,
+                            id: "10",
+                        }
+                        i.presentation = {};
+                        i.unit_price = i.sale_unit_price;
+                        i.item = {
+                            amount_plastic_bag_taxes: i.amount_plastic_bag_taxes,
+                            attributes: i.attributes,
+                            brand: i.brand,
+                            calculate_quantity: i.calculate_quantity,
+                            category: i.category,
+                            currency_type_id: i.currency_type_id,
+                            currency_type_symbol: i.currency_type_symbol,
+                            description: i.description,
+                            full_description: i.full_description,
+                            has_igv: i.has_igv,
+                            has_plastic_bag_taxes: i.has_plastic_bag_taxes,
+                            id: i.id,
+                            internal_id: i.internal_id,
+                            item_unit_types: i.item_unit_types,
+                            lots: i.lots,
+                            lots_enabled: i.lots_enabled,
+                            lots_group: i.lots_group,
+                            model: i.model,
+                            presentation: {},
+                            purchase_affectation_igv_type_id: i.purchase_affectation_igv_type_id,
+                            purchase_unit_price: i.purchase_unit_price,
+                            sale_affectation_igv_type_id: i.sale_affectation_igv_type_id,
+                            sale_unit_price: i.sale_unit_price,
+                            series_enabled: i.series_enabled,
+                            stock: i.stock,
+                            unit_price: i.sale_unit_price,
+                            unit_type_id: i.unit_type_id,
+                            warehouses: i.warehouses,
+                        };
+                        i.IdLoteSelected = null;
+                        i.affectation_igv_type_id = "10";
+                        i.discounts = [];
+                        i.charges = [];
+                        i.item_id = i.id;
+                        i.unit_price_value = i.sale_unit_price;
+                        i.input_unit_price_value = i.sale_unit_price;
+                        i.quantity = itemsParsed.find(ip => ip.id == i.id).quantity;
                         i.warehouse_id = null;
                         return i;
                     });
@@ -1414,7 +1480,7 @@
                     establishment_id: null,
                     document_type_id: null,
                     series_id: null,
-                    seller_id: null,
+                    seller_id: this.idUser,
                     number: '#',
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
@@ -1504,7 +1570,7 @@
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
-                this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null;
+                this.form.seller_id = (this.sellers.length > 0)?this.idUser:null;
                 this.selectDocumentType()
                 this.changeEstablishment()
                 this.changeDocumentType()
@@ -1945,15 +2011,11 @@
             saveCashDocument(){
                 this.$http.post(`/cash/cash_document`, this.form_cash_document)
                     .then(response => {
-                        if (response.data.success) {
-                            // console.log(response)
-                        } else {
+                        if (!response.data.success) {
                             this.$message.error(response.data.message);
                         }
                     })
-                    .catch(error => {
-                        console.log(error);
-                    })
+                    .catch(error => console.log(error))
             },
             validate_payments(){
 
