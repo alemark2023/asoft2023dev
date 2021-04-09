@@ -106,6 +106,7 @@
                                         <th class="font-weight-bold">Descripción</th>
                                         <th class="text-center font-weight-bold">Precio Unitario</th>
                                         <th class="text-right font-weight-bold">Cantidad</th>
+                                        <th class="text-right font-weight-bold">Total</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -116,11 +117,11 @@
                                     <td class="text-center">{{row.sale_unit_price}}</td>
                                     <td class="text-right">
                                         <el-input-number
-                                            v-if="form.id > 0"
                                             v-model="row.quantity"
+                                            @change="calculateTotal"
                                             :min="0"/>
-                                        <span v-else>{{row.quantity}}</span>
                                     </td>
+                                    <td class="text-center">{{row.sale_unit_price * row.quantity | toDecimals }}</td>
                                     <td class="text-right">
                                         <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
                                                 @click.prevent="clickRemoveItem(index)">x
@@ -128,6 +129,16 @@
                                     </td>
                                 </tr>
                                 </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th class="font-weight-bold"></th>
+                                    <th class="text-center font-weight-bold"></th>
+                                    <th class="text-right font-weight-bold">Total</th>
+                                    <th class="text-center font-weight-bold">{{ total | toDecimals}}</th>
+                                    <th></th>
+                                </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
@@ -304,9 +315,9 @@
                         <div class="col-md-9">
                             <div class="row">
 
-                                <div class="short-div col-md-8"> 
+                                <div class="short-div col-md-8">
                                     <div class="form-group" :class="{'has-danger': errors.purchase_affectation_igv_type_id}">
-                                        
+
                                         <label class="control-label">Tipo de afectación (Venta)</label>
                                         <el-select v-model="form.sale_affectation_igv_type_id" @change="changeAffectationIgvType">
                                             <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -375,6 +386,7 @@ import ItemSetFormItem from './partials/item.vue'
                 enabled_percentage_of_profit:false,
                 titleDialog: null,
                 resource: 'item-sets',
+                total: 0,
                 errors: {},
                 headers: headers_token,
                 form: {},
@@ -401,6 +413,7 @@ import ItemSetFormItem from './partials/item.vue'
         },
         created() {
             this.initForm()
+            this.total = 0;
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
@@ -423,6 +436,13 @@ import ItemSetFormItem from './partials/item.vue'
 
         },
         methods: {
+            calculateTotal(){
+                this.total = 0;
+                this.form.individual_items.forEach(row => {
+                    this.total += row.sale_unit_price * row.quantity;
+                });
+
+            },
             clickRemoveItem(index) {
                 this.form.individual_items.splice(index, 1)
                 this.changeIndividualItems()
@@ -441,7 +461,7 @@ import ItemSetFormItem from './partials/item.vue'
                 this.changeIndividualItems()
             },
             changeIndividualItems(){
-
+                this.calculateTotal();
                 // let acum_sale_unit_price = 0
 
                 // this.form.individual_items.forEach(row => {
@@ -525,11 +545,13 @@ import ItemSetFormItem from './partials/item.vue'
             },
             create() {
                 this.titleDialog = (this.recordId)? 'Editar producto compuesto':'Nuevo producto compuesto'
+                this.total = 0;
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
                             this.changeAffectationIgvType()
+                            this.calculateTotal();
                         })
                 }
             },
@@ -538,7 +560,8 @@ import ItemSetFormItem from './partials/item.vue'
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
-                            this.changeAffectationIgvType()
+                            this.changeAffectationIgvType();
+
                         })
                 }
             },
@@ -553,7 +576,7 @@ import ItemSetFormItem from './partials/item.vue'
 
                 this.$http.delete(`/${this.resource}/item-unit-type/${id}`)
                         .then(res => {
-                            if(res.data.success) { 
+                            if(res.data.success) {
                                 this.loadRecord()
                                 this.$message.success('Se eliminó correctamente el registro')
                             }
