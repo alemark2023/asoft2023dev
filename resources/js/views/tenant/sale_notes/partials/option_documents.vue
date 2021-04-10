@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="50%"
+        <el-dialog :title="titleDialog" :visible="show" @open="create" width="50%"
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
                 :show-close="false">
@@ -245,7 +245,7 @@
     export default {
         components: {DocumentOptions},
 
-        props: ['showDialog', 'recordId', 'showClose','showGenerate'],
+        props: ['show', 'recordId', 'showClose','showGenerate'],
         data() {
             return {
                 titleDialog: null,
@@ -445,7 +445,7 @@
                             });
                             this.resetDocument()
 
-                            // this.clickClose();
+                            this.$emit('update:show', false)
                         } else {
                             this.$message.error(response.data.message);
                         }
