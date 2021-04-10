@@ -281,14 +281,13 @@ class DocumentController extends Controller
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
 
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            $select = 'items.*';
             $items_u = Item::with('warehousePrices')
-                ->select(\DB::raw('items.*,item_warehouse.stock as stock'))
                 ->distinct()
                 ->whereIsActive()
                 ->join('item_warehouse', 'items.id', 'item_warehouse.item_id')
                 ->orderBy('description');
             $items_s = Item::with('warehousePrices')
-                ->select(\DB::raw('items.*,item_warehouse.stock as stock'))
                 ->distinct()
                 ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()
@@ -296,16 +295,18 @@ class DocumentController extends Controller
                 ->orderBy('description');
 
             if (!Config::get('configuration.show_all_items_at_invoice')) {
+                $select .= ",item_warehouse.stock as stock";
                 $items_u->where('item_warehouse.warehouse_id', $establishment_id);
                 $items_s->where('item_warehouse.warehouse_id', $establishment_id);
             }
             if (!Config::get('configuration.show_all_items_with_out_stock')) {
+                $select .= ',item_warehouse.stock as stock';
                 $items_s->where('item_warehouse.stock', '>', 0);
                 $items_u->where('item_warehouse.stock', '>', 0);
             }
 
-            $items_u = $items_u->take(20)->get();
-            $items_s = $items_s->take(10)->get();
+            $items_u = $items_u->select(\DB::raw($select))->take(20)->get();
+            $items_s = $items_s->select(\DB::raw($select))->take(10)->get();
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
