@@ -66,10 +66,7 @@
             <div class="row" v-if="generate">
                 <div class="col-lg-12 pb-2">
                     <div class="form-group">
-                        <label class="control-label font-weight-bold text-info">
-                            Cliente
-                            <!-- <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a> -->
-                        </label>
+                        <label class="control-label font-weight-bold text-info">Cliente</label>
                         <el-select
                             v-model="document.customer_id"
                             filterable
@@ -143,7 +140,6 @@
 
                 <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.payment_condition_id}">
-                        <!--<label class="control-label">Fecha de emisión</label>-->
                         <label class="control-label">Condición de pago</label>
                         <el-select v-model="document.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
                             <el-option value="02" label="Crédito"></el-option>
@@ -178,7 +174,6 @@
 
                 <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                        <!--<label class="control-label">Fecha de emisión</label>-->
                         <label class="control-label">Fecha de vencimiento</label>
                         <el-date-picker
                             v-model="document.date_of_due"
@@ -252,6 +247,7 @@
                     <table>
                         <thead>
                             <tr width="100%">
+                                <th v-if="document.payments.length>0">F.Pago</th>
                                 <th v-if="document.payments.length>0">M.Pago</th>
                                 <th v-if="document.payments.length>0">Destino</th>
                                 <th v-if="document.payments.length>0">Referencia</th>
@@ -268,6 +264,14 @@
                         </thead>
                         <tbody>
                             <tr v-for="(row, index) in document.payments" :key="index">
+                                <td>
+                                    <el-date-picker
+                                        v-model="row.date_of_payment"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        :clearable="false"
+                                    ></el-date-picker>
+                                </td>
                                 <td>
                                     <div class="form-group mb-2 mr-2">
                                         <el-select v-model="row.payment_method_type_id">
@@ -476,7 +480,7 @@ export default {
                 payment_method_type_id: "01",
                 payment_destination_id: null,
                 reference: null,
-                payment: 0,
+                payment: parseFloat(this.form.quotation.total),
             });
         },
         initForm() {
