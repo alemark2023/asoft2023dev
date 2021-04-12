@@ -169,7 +169,7 @@ class ItemController extends Controller
             if (isset($time['date'])) {
                 $date = $time['date'];
                 if (!empty($date)) {
-                    $request->merge(['date_of_due' => Carbon::createFromFormat('Y-m-d H:m:s.u', $date)]);
+                    $request->merge(['date_of_due' => Carbon::createFromFormat('Y-m-d H:i:s.u', $date)]);
                 }
             }
         }
