@@ -167,10 +167,10 @@ class ItemController extends Controller
             $time = $request->date_of_due;
             $date = null;
             if (isset($time['date'])) {
-                $date = str_replace('.000000', '', $time['date']);
-            }
-            if (!empty($date)) {
-                $request->merge(['date_of_due' => Carbon::createFromFormat('Y-m-d H:m:s', $date)]);
+                $date = $time['date'];
+                if (!empty($date)) {
+                    $request->merge(['date_of_due' => Carbon::createFromFormat('Y-m-d H:m:s.u', $date)]);
+                }
             }
         }
         $item->fill($request->all());
