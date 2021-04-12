@@ -163,6 +163,16 @@ class ItemController extends Controller
         $item = Item::firstOrNew(['id' => $id]);
         $item->item_type_id = '01';
         $item->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
+        if ($request->has('date_of_due')) {
+            $time = $request->date_of_due;
+            $date = null;
+            if (isset($time['date'])) {
+                $date = $time['date'];
+                if (!empty($date)) {
+                    $request->merge(['date_of_due' => Carbon::createFromFormat('Y-m-d H:i:s.u', $date)]);
+                }
+            }
+        }
         $item->fill($request->all());
 
         $temp_path = $request->input('temp_path');
