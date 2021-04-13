@@ -7,24 +7,24 @@
 
                 <div class="row pl-3 py-2 border-bottom m-0 p-0 bg-white">
                     <div class="col-12 px-0 py-3">
-                        <h4 class="font-weight-semibold m-0">{{customer.description}}</h4>
+                        <h4 class="font-weight-semibold m-0 text-secondary">{{customer.description}}</h4>
                     </div>
                 </div>
 
                  <template v-for="(item,index) in form.items">
                     <div class="row py-1 border-bottom m-0 p-0" :key="index">
                         <div class="col-2 p-r-0 m-l-2">
-                            <h4 class="font-weight-semibold m-0 text-center">{{item.quantity}}</h4>
+                            <h4 class="font-weight-semibold m-0 text-center text-secondary">{{item.quantity}}</h4>
 
                         </div>
                         <div class="col-6 px-0">
-                            <h4 class="font-weight-semibold m-0 text-center m-b-0">{{item.item.description}}</h4>
+                            <h4 class="font-weight-semibold m-0 text-center m-b-0 text-secondary">{{item.item.description}}</h4>
                             <!-- <p class="m-b-0">Descripción del producto</p> -->
                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                         </div>
                         <div class="col-4 p-l-0">
                             <!-- <p class="font-weight-semibold m-b-0">{{currencyTypeActive.symbol}} 240.00</p> -->
-                            <h4 class="font-weight-semibold m-0 text-center">{{currencyTypeActive.symbol}} {{item.total}}</h4>
+                            <h4 class="font-weight-semibold m-0 text-center text-secondary">{{currencyTypeActive.symbol}} {{item.total}}</h4>
                         </div>
                     </div>
                 </template>
@@ -204,12 +204,12 @@
                                         <label class="control-label">Datos de referencia</label>
                                         <el-input type="textarea" v-model="form.reference_data"></el-input>
                                     </div>
-                                </div> 
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
 
                 <div class="col-lg-8">
                     <div class="card card-default">
@@ -862,7 +862,7 @@
 
                 this.loading_submit = true
                 this.locked_submit = true
-                
+
                 await this.$http.post(`/${this.resource_documents}`, this.form).then(response => {
                     if (response.data.success) {
 
