@@ -116,6 +116,7 @@
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
                                 <th>Doc. Afectado</th>
+                                <th># Guía</th>
 
                                 <th>Cliente</th>
                                 <th>RUC</th>
@@ -152,6 +153,13 @@
                                         @endif
 
                                     <td class="celda">{{  $serie_affec }} </td>
+                                    <td class="celda">
+                                        @if(!empty($value->guides))
+                                            @foreach($value->guides as $guide)
+                                                {{ $guide->number }}<br>
+                                            @endforeach
+                                        @endif
+                                    </td>
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->customer->number}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>

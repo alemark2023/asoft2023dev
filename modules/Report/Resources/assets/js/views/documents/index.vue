@@ -2,6 +2,18 @@
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
             <h3 class="my-0">Consulta de Documentos</h3>
+            <div class="data-table-visible-columns" style="top: 10px;">
+                <el-dropdown :hide-on-click="false">
+                    <el-button type="primary">
+                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
         </div>
         <div class="card mb-0">
                 <div class="card-body">
@@ -12,6 +24,7 @@
                             <th class="">Tipo Documento</th>
                             <th class="">Comprobante</th>
                             <th class="">Fecha emisión</th>
+                            <th class="text-right" v-if="columns.guides.visible">Guia</th>
                             <th>Doc. Afectado</th>
                             <th>Cotización</th>
                             <th>Caso</th>
@@ -33,14 +46,20 @@
                             <td>{{row.document_type_description}}</td>
                             <td>{{row.number}}</td>
                             <td>{{row.date_of_issue}}</td>
-                            <td>{{row.affected_document}}</td>
+                        <td class="text-center" v-if="columns.guides.visible">
+                        <span v-for="(item, i) in row.guides" :key="i">
+                            {{item.number}} <br>
+                        </span>
+                        </td><td>{{row.affected_document}}</td>
                             <td>{{row.quotation_number_full}}</td>
                             <td>{{row.sale_opportunity_number_full}}</td>
                             <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
                             <td>{{row.state_type_description}}</td>
 
                             <td>{{ row.currency_type_id}}</td>
-                            <td>{{ row.purchase_order }}</td>
+
+
+                        <td>{{ row.purchase_order }}</td>
 
 
                             <td>{{ (row.document_type_id == '07') ? ( (row.total_exonerated == 0) ? '0.00': '-'+row.total_exonerated) : ((row.document_type_id!='07' && (row.state_type_id =='11'||row.state_type_id =='09')) ? '0.00':row.total_exonerated) }}</td>
@@ -79,6 +98,12 @@
             return {
                 resource: 'reports/sales',
                 form: {},
+                columns: {
+                    guides: {
+                        title: 'Guias',
+                        visible: false
+                    },
+                }
 
             }
         },

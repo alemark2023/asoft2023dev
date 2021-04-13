@@ -447,7 +447,7 @@ if ($hostname) {
 			Route::delete('sale-notes/destroy_sale_note_item/{sale_note_item}', 'Tenant\SaleNoteController@destroy_sale_note_item');
 			Route::get('sale-notes/search-items', 'Tenant\SaleNoteController@searchItems');
 			Route::get('sale-notes/search/item/{item}', 'Tenant\SaleNoteController@searchItemById');
-			Route::get('sale-notes/list-by-client/{customer_id}', 'Tenant\SaleNoteController@saleNotesByClient');
+			Route::get('sale-notes/list-by-client', 'Tenant\SaleNoteController@saleNotesByClient');
 			Route::post('sale-notes/items', 'Tenant\SaleNoteController@getItemsFromNotes');
 
 			Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');

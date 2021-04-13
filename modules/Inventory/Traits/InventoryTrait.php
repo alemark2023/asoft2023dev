@@ -113,40 +113,50 @@ trait InventoryTrait
             ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
-        if($search) {
-            $query->where('description', 'like', "%{$search}%");
+        if ($search) {
+            $query->where('description', 'like', "%{$search}%")
+                ->orWhere('barcode', 'like', "%{$search}%")
+                ->orWhere('internal_id', 'like', "%{$search}%");
         }
-        if($take) {
+        if ($take) {
             $query->take($take);
         }
         return $query->get()->transform(function ($row) {
-                return [
-                    'id' => $row->id,
-                    'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,
-                    'lots_enabled' => (bool)$row->lots_enabled,
-                    'series_enabled' => (bool)$row->series_enabled,
-                    'lots' => $row->item_lots->where('has_sale', false)->transform(function ($row1) {
-                        return [
-                            'id' => $row1->id,
-                            'series' => $row1->series,
-                            'date' => $row1->date,
-                            'item_id' => $row1->item_id,
-                            'warehouse_id' => $row1->warehouse_id,
-                            'has_sale' => (bool)$row1->has_sale,
-                            'lot_code' => ($row1->item_loteable_type) ? (isset($row1->item_loteable->lot_code) ? $row1->item_loteable->lot_code : null) : null
-                        ];
-                    }),
-                    'lots_group' => collect($row->lots_group)->transform(function ($row2) {
-                        return [
-                            'id' => $row2->id,
-                            'code' => $row2->code,
-                            'quantity' => $row2->quantity,
-                            'date_of_due' => $row2->date_of_due,
-                            'checked' => false
-                        ];
-                    })
-                ];
-            });
+            $description = $row->description;
+            if($row->internal_id) {
+                $description .= " | {$row->internal_id}";
+            }
+            if($row->barcode) {
+                $description .= " | {$row->barcode}";
+            }
+
+            return [
+                'id' => $row->id,
+                'description' => $description,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'series_enabled' => (bool)$row->series_enabled,
+                'lots' => $row->item_lots->where('has_sale', false)->transform(function ($row1) {
+                    return [
+                        'id' => $row1->id,
+                        'series' => $row1->series,
+                        'date' => $row1->date,
+                        'item_id' => $row1->item_id,
+                        'warehouse_id' => $row1->warehouse_id,
+                        'has_sale' => (bool)$row1->has_sale,
+                        'lot_code' => ($row1->item_loteable_type) ? (isset($row1->item_loteable->lot_code) ? $row1->item_loteable->lot_code : null) : null
+                    ];
+                }),
+                'lots_group' => collect($row->lots_group)->transform(function ($row2) {
+                    return [
+                        'id' => $row2->id,
+                        'code' => $row2->code,
+                        'quantity' => $row2->quantity,
+                        'date_of_due' => $row2->date_of_due,
+                        'checked' => false
+                    ];
+                })
+            ];
+        });
     }
 
     public function findInventoryTransaction($id)

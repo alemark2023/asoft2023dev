@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Models\Tenant\PaymentCondition;
+use Config;
 use Exception;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -211,7 +212,7 @@ class DocumentController extends Controller
     public function item_tables()
     {
         $items = $this->table('items');
-        $categories = [];//Category::cascade();
+        $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
         $price_types = PriceType::whereActive()->get();
@@ -278,32 +279,22 @@ class DocumentController extends Controller
 
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
-
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
-            $items_u = Item::select(\DB::raw('items.*,item_warehouse.stock as stock'))
-                ->distinct()
+            $items_u = Item::with('warehousePrices')
                 ->whereIsActive()
-                ->join('item_warehouse','items.id','item_warehouse.item_id')
-                ->where('item_warehouse.stock','>',0)
                 ->orderBy('description');
-            $items_s = Item::select(\DB::raw('items.*,item_warehouse.stock as stock'))
-                ->distinct()
-                ->where('items.unit_type_id','ZZ')
+            $items_s = Item::with('warehousePrices')
+                ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()
-                ->join('item_warehouse','items.id','item_warehouse.item_id')
                 ->orderBy('description');
-
-            if(!\Config::get('configuration.show_all_items_at_invoice')){
-                $items_u->where('item_warehouse.warehouse_id',$establishment_id);
-                $items_s->where('item_warehouse.warehouse_id',$establishment_id);
-            }
-            if(!\Config::get('configuration.show_all_items_with_out_stock')){
-                $items_s                ->where('item_warehouse.stock','>',0);
-                $items_u                ->where('item_warehouse.stock','>',0);
-            }
-
-            $items_u = $items_u->take(20)->get();
-            $items_s = $items_s->take(10)->get();
+            $items_u = $items_u
+                ->WithExtraConfiguration()
+                ->take(20)
+                ->get();
+            $items_s = $items_s
+                ->WithExtraConfiguration()
+                ->take(10)
+                ->get();
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
@@ -319,7 +310,7 @@ class DocumentController extends Controller
                     'description' => $row->description,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => number_format($row->sale_unit_price, 4, ".",""),
+                    'sale_unit_price' => Item::getSaleUnitPriceByWarehouse($row, $warehouse->id),
                     'purchase_unit_price' => $row->purchase_unit_price,
                     'unit_type_id' => $row->unit_type_id,
                     'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
@@ -360,23 +351,11 @@ class DocumentController extends Controller
                         ];
                     }),
                     'lots' => [],
-                    // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
-                    //     return [
-                    //         'id' => $row->id,
-                    //         'series' => $row->series,
-                    //         'date' => $row->date,
-                    //         'item_id' => $row->item_id,
-                    //         'warehouse_id' => $row->warehouse_id,
-                    //         'has_sale' => (bool)$row->has_sale,
-                    //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                    //     ];
-                    // })->values(),
                     'lots_enabled' => (bool) $row->lots_enabled,
                     'series_enabled' => (bool) $row->series_enabled,
 
                 ];
             });
-//            return $items;
         }
 
         return [];
@@ -841,6 +820,7 @@ class DocumentController extends Controller
         $item_id = $request->item_id;
         $category_id = $request->category_id;
         $purchase_order = $request->purchase_order;
+        $guides = $request->guides;
 
 
         $records = Document::query();
@@ -890,7 +870,9 @@ class DocumentController extends Controller
                                     });
                                 });
         }
-
+        if(!empty($guides)){
+            $records->where('guides','like', DB::raw("%\"number\":\"%").$guides. DB::raw("%\"%"));
+        }
         return $records;
     }
 

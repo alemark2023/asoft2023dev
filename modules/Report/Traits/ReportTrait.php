@@ -13,6 +13,7 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Models\Tenant\StateType;
 use Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\WebPlatform;
@@ -36,6 +37,7 @@ trait ReportTrait
         $seller_id = $request['seller_id'];
         $state_type_id = $request['state_type_id'];
         $purchase_order = $request['purchase_order'] ?? null;
+        $guides = $request['guides'] ?? null;
 
 
         $d_start = null;
@@ -60,14 +62,14 @@ trait ReportTrait
                 break;
         }
 
-        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order);
+        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order,$guides);
 
         return $records;
 
     }
 
 
-    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order)
+    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order, $guides = null)
     {
 
         if($document_type_id && $establishment_id){
@@ -106,6 +108,11 @@ trait ReportTrait
         }
         if($purchase_order){
             $data =  $data->where('purchase_order', $purchase_order);
+        }
+        if($model == 'App\Models\Tenant\Document'){
+            if(!empty($guides)){
+                $data->where('guides','like', DB::raw("%\"number\":\"%").$guides. DB::raw("%\"%"));
+            }
         }
 
         return $data;
