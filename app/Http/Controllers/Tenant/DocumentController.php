@@ -820,6 +820,7 @@ class DocumentController extends Controller
         $item_id = $request->item_id;
         $category_id = $request->category_id;
         $purchase_order = $request->purchase_order;
+        $guides = $request->guides;
 
 
         $records = Document::query();
@@ -869,7 +870,9 @@ class DocumentController extends Controller
                                     });
                                 });
         }
-
+        if(!empty($guides)){
+            $records->where('guides','like', DB::raw("%\"number\":\"%").$guides. DB::raw("%\"%"));
+        }
         return $records;
     }
 

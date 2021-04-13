@@ -50,6 +50,7 @@
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
+                        <th class="text-right" v-if="columns.guides.visible">Guia</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-right" v-if="columns.total_free.visible">T.Gratuita</th>
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
@@ -108,6 +109,11 @@
                             <br/><small v-text="row.user_email"></small>
                         </td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
+                    <td class="text-center" v-if="columns.guides.visible">
+                        <span v-for="(item, i) in row.guides" :key="i">
+                            {{item.number}} <br>
+                        </span>
+                    </td>
                         <td class="text-right" v-if="columns.total_exportation.visible">{{ row.total_exportation }}</td>
 
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
@@ -267,6 +273,10 @@
                     },
                     date_of_due: {
                         title: 'F. Vencimiento',
+                        visible: false
+                    },
+                    guides: {
+                        title: 'Guias',
                         visible: false
                     },
                 }
