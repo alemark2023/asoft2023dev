@@ -405,9 +405,19 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
-        $fact = DB::connection('tenant')->transaction(function () use ($request) {
+        $res = $this->storeWithData($request->all());
+        $document_id = $res['data']['id'];
+        $this->associateDispatchesToDocument($request, $document_id);
+        $this->associateSaleNoteToDocument($request, $document_id);
+
+        return $res;
+    }
+
+    public function storeWithData($data)
+    {
+        $fact = DB::connection('tenant')->transaction(function () use ($data) {
             $facturalo = new Facturalo();
-            $facturalo->save($request->all());
+            $facturalo->save($data);
             $facturalo->createXmlUnsigned();
             $facturalo->signXmlUnsigned();
             $facturalo->updateHash();
@@ -421,16 +431,12 @@ class DocumentController extends Controller
         $document = $fact->getDocument();
         $response = $fact->getResponse();
 
-        $this->associateDispatchesToDocument($request, $document->id);
-        $this->associateSaleNoteToDocument($request, $document->id);
-
         return [
-            'success' => true,
-            'data' => [
-                'id' => $document->id,
-                'response' =>$response
-
-            ],
+          'success' => true,
+          'data' => [
+              'id' => $document->id,
+              'response' =>$response
+          ]
         ];
     }
 

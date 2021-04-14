@@ -233,3 +233,15 @@ html.dark {
 .card-table-report {
     font-size: 12px;
 }
+
+.dialog-modal {
+    .el-dialog__body {
+        padding-top: 10px;
+        .form-group {
+            margin-bottom: 5px;
+            .control-label {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
