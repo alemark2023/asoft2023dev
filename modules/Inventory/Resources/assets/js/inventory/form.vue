@@ -206,8 +206,8 @@ export default {
             this.loading_search = false;
         },
         async submit() {
+            let total_qty =  this.form.quantity * 1;
             if (this.type === 'input') {
-
                 if (this.form.lots_enabled) {
                     if (!this.form.lot_code)
                         return this.$message.error('Código de lote es requerido');
@@ -216,9 +216,9 @@ export default {
                 }
 
                 if (this.form.series_enabled) {
-                    if (this.form.lots.length > this.form.quantity)
+                    if (this.form.lots.length > total_qty)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
-                    if (this.form.lots.length !== this.form.quantity)
+                    if (this.form.lots.length !== total_qty)
                         return this.$message.error('La cantidad de series registradas son diferentes al stock');
                 }
 
@@ -235,7 +235,7 @@ export default {
             } else {
                 if (this.form.lots.length > 0 && this.form.lots_enabled) {
                     let select_lots = await _.filter(this.form.lots, {'has_sale': true})
-                    if (select_lots.length !== this.form.quantity) {
+                    if (select_lots.length !== total_qty) {
                         return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
                     }
                 }
