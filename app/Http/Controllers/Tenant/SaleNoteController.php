@@ -226,6 +226,9 @@ class SaleNoteController extends Controller
     {
         DB::connection('tenant')->beginTransaction();
         try {
+            if (!isset($inputs['id'])) {
+                $inputs['id'] = false;
+            }
             $data = $this->mergeData($inputs);
             $this->sale_note =  SaleNote::query()->updateOrCreate(['id' => $inputs['id']], $data);
 
@@ -336,8 +339,8 @@ class SaleNoteController extends Controller
         $this->company = Company::active();
 
 
-        $type_period = $inputs['type_period'];
-        $quantity_period = $inputs['quantity_period'];
+        $type_period = isset($inputs['type_period']) ? $inputs['type_period'] : null;
+        $quantity_period = isset($inputs['quantity_period']) ? $inputs['quantity_period'] : null;
         $d_of_issue = new Carbon($inputs['date_of_issue']);
         $automatic_date_of_issue = null;
 
