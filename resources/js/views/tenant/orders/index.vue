@@ -43,6 +43,7 @@
                 <el-popover placement="right" width="540" trigger="click">
                   <el-table style="width: 100%" :data="row.items">
                     <el-table-column width="150" property="name" label="Nombre"></el-table-column>
+                    <el-table-column width="150" property="description" label="Descripción"></el-table-column>
                     <el-table-column width="90" property="cantidad" label="Cant."></el-table-column>
                     <el-table-column width="90" label="Precio">
                       <template slot-scope="scope">
