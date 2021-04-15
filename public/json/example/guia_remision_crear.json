@@ -61,8 +61,7 @@
             "cantidad": 2,
             "descripcion": "Nuevo Producto Descripcion",
             "nombre": "Nuevo Producto Nombre",
-            "nombre_secundario": "Nuevo Producto Nombre secundario",
-            "codigo_tipo_item": "01"
+            "nombre_secundario": "Nuevo Producto Nombre secundario"
         }
     ]
 }
