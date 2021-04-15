@@ -170,13 +170,13 @@
                 </div>
                 <br/>
 
-                <div v-if="place == 'cat'" class="row">
+                <div v-if="place == 'cat'" class="row no-gutters">
                     <template v-for="(item, index) in categories">
-                        <div class="col-md-2" :key="index">
-                            <div @click="filterCategorie(item.id)" class="card">
+                        <div class="col" :key="index">
+                            <div @click="filterCategorie(item.id)" class="card p-0 m-0 mb-1 mr-1 text-center">
                                 <div
                                     :style="{ backgroundColor: item.color }"
-                                    class="card-body pointer"
+                                    class="card-body pointer rounded-0"
                                     style="font-weight: bold;color: white;font-size: 18px;"
                                 >
                                     {{ item.name }}
