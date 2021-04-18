@@ -233,9 +233,7 @@
                     </el-popover> -->
                                     </p>
                                 </div>
-                                <div
-                                    class="card-footer pointer text-center bg-primary"
-                                >
+                                <div class="card-footer pointer text-center bg-primary">
                                     <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-danger m-1__2" @click="clickHistorySales(item.item_id)"><i class="fa fa-list"></i></button>
                   <button type="button" class="btn waves-effect waves-light btn-xs btn-success m-1__2" @click="clickHistoryPurchases(item.item_id)"><i class="fas fa-cart-plus"></i></button> -->
                                     <template v-if="!item.edit_unit_price">
@@ -243,16 +241,11 @@
                                             class="font-weight-semibold text-right text-white"
                                         >
                                             <button
-                                                v-if="configuration.options_pos"
+                                                v-if="configuration.options_pos && edit_unit_price"
                                                 type="button"
                                                 class="btn btn-xs btn-primary-pos"
-                                                @click="
-                                                    clickOpenInputEditUP(index)
-                                                "
-                                            >
-                                                <span style="font-size:16px;"
-                                                >&#9998;</span
-                                                >
+                                                @click="clickOpenInputEditUP(index)">
+                                                <span style="font-size:16px;">&#9998;</span>
                                             </button>
                                             ({{ item.unit_type_id }})
                                             {{ item.currency_type_symbol }}
@@ -644,13 +637,18 @@
                                         <td style="width: 80px; vertical-align: top">
 <!--                                            <p class="font-weight-semibold m-0 text-center">-->
                                                 <!-- {{currency_type.symbol}} {{item.total}} -->
+                                            <template v-if="edit_unit_price">
                                                 <el-input
                                                     v-model="item.total"
                                                     @input="calculateQuantity(index)"
                                                     @blur="blurCalculateQuantity(index)"
                                                     :readonly="!item.item.calculate_quantity">
-<!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
+                                                    <!--                                                     <template slot="prepend">{{ currency_type.symbol }}</template>-->
                                                 </el-input>
+                                            </template>
+                                            <template v-else>
+                                                {{ item.total }}
+                                            </template>
 <!--                                            </p>-->
                                         </td>
                                         <td class="text-right" style="width: 36px; padding-left: 0; padding-right: 0; vertical-align: top">
@@ -1029,6 +1027,15 @@ export default {
                 width: `${clase}`,
                 padding: "5px"
             };
+        },
+        edit_unit_price() {
+            if(this.typeUser === 'admin') {
+                return true
+            }
+            if(this.typeUser === 'seller') {
+                return this.configuration.allow_edit_unit_price_to_seller;
+            }
+            return false;
         }
     },
     methods: {
