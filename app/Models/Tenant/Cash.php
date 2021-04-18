@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
- 
+
 use Modules\Finance\Models\GlobalPayment;
 use Modules\Pos\Models\CashTransaction;
 
@@ -19,14 +19,14 @@ class Cash extends ModelTenant
         'time_closed',
         'beginning_balance',
         'final_balance',
-        'income', 
+        'income',
         'state',
-        'reference_number' 
- 
-    ];
- 
+        'reference_number'
 
-  
+    ];
+
+
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -37,23 +37,28 @@ class Cash extends ModelTenant
     {
         return $this->hasMany(CashDocument::class);
     }
- 
+
     public function scopeWhereTypeUser($query)
     {
-        $user = auth()->user();         
-        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
- 
+
     public function global_destination()
     {
         return $this->morphMany(GlobalPayment::class, 'destination');
+    }
+
+    public function global_payments()
+    {
+        return $this->morphToMany(GlobalPayment::class, 'destination');
     }
 
     public function cash_transaction()
     {
         return $this->hasOne(CashTransaction::class);
     }
-    
+
     public function getCurrencyTypeIdAttribute()
     {
         return 'PEN';
