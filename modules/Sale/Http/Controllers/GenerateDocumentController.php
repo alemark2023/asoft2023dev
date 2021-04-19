@@ -2,13 +2,18 @@
 
 namespace Modules\Sale\Http\Controllers;
 
-use App\Models\Tenant\Catalogs\DocumentType;
+use App\CoreFacturalo\Requests\Inputs\DocumentInput;
+use App\Http\Controllers\Tenant\DocumentController;
+use App\Http\Controllers\Tenant\SaleNoteController;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Series;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Sale\Http\Resources\TechnicalServiceResource;
 use Modules\Sale\Models\TechnicalService;
@@ -29,7 +34,7 @@ class GenerateDocumentController extends Controller
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
 
-        return compact('series', 'document_types', 'payment_method_types', 'payment_destinations');
+        return compact('series', 'document_types', 'payment_method_types', 'payment_destinations', 'establishment');
     }
 
     public function record($table, $id)
@@ -62,6 +67,51 @@ class GenerateDocumentController extends Controller
         return compact('customers');
     }
 
+    public function store(Request $request)
+    {
+        DB::connection('tenant')->beginTransaction();
+        try {
+            $inputs = $request->all();
+            $inputs['items'][0]['item_id'] = $this->storeItem($request->input('items')[0]);
+            if (in_array($request->input('document_type_id'), ['01', '03'])) {
+                $res = (new DocumentController())->storeWithData(DocumentInput::set($inputs));
+            } else {
+                $inputs['items'] = DocumentInput::items($inputs);
+                $inputs['type_period'] = null;
+                $inputs['quantity_period'] = null;
+                $res = (new SaleNoteController())->storeWithData($inputs);
+            }
+
+            DB::connection('tenant')->commit();
+            return $res;
+
+        } catch (\Exception $e) {
+            DB::connection('tenant')->rollBack();
+            return [
+                'success' => false,
+                'message' => $e->getFile().'-'.$e->getLine().'-'.$e->getMessage()
+            ];
+        }
+    }
+
+    public function storeItem($row)
+    {
+        $item = Item::query()->create([
+            'internal_id' => $row['internal_id'],
+            'description' => $row['description'],
+            'name' => null,
+            'second_name' => null,
+            'item_type_id' => $row['item_type_id'],
+            'unit_type_id' => $row['unit_type_id'],
+            'currency_type_id' => $row['currency_type_id'],
+            'sale_unit_price' => $row['unit_price'],
+            'sale_affectation_igv_type_id' => $row['affectation_igv_type_id'],
+            'purchase_affectation_igv_type_id' => $row['affectation_igv_type_id'],
+            'stock' => 0,
+        ]);
+
+        return $item->id;
+    }
 //    private function searchCustomers($input)
 //    {
 //        return  Person::query()->where('number','like', "%{$input}%")

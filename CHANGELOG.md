@@ -1,3 +1,84 @@
+## 4.0.6
+
+### docs
+2021-03-24 : docs | changelog<br>
+
+
+### fixed
+2021-04-12 : fixed | #477 | Editar Producto: Fecha de vencimiento en formato Y-m-d H:i:s<br>
+2021-04-12 : fixed | #477 | Editar Item: Fecha de vencimiento en formato Y-m-d H:i:s<br>
+2021-04-12 : fixed | #477 | Editar Item: Ajuste para guardar la fecha de vencimiento como fecha y no como array<br>
+2021-04-12 : fixed | #476 | Ajuste de validacion de configuracion ( #432 ) en el modelo y aplicado a la busqueda<br>
+2021-04-09 : fixed | #390 | Packs: Edicion/Nuevo pack, muestra el total y se puede modificar la cantidad de los items que lo componen<br>
+2021-04-09 : fixed | #432 | mejoras en la lista de productos, evita duplicados por stock si no se tiene la configuracion habilitada<br>
+2021-04-08 : fixed | #475 | GUIA DE REMISION - Cambio de nomenclatura por migracion<br>
+2021-04-07 : fixed | #441 | Nota de venta: Ajuste para añadir formas de pago Credito y Contado. Similar a Cotizacion<br>
+2021-04-07 : fixed | #441 | Cotizacion: Ajuste de diseño en los campos de fecha y total.<br>
+2021-04-07 : fixed | #441 | Cotizacion: Modal al 50%, Se muestra la moneda (currency_type_id) y el total<br>
+2021-04-07 : fixed | #441 | Cotizacion: Al momento de generar el comprobante, se selecciona credito o contado. Default Contado.<br>
+2021-04-07 : fixed | #432 | Ajuste de texto en el sidebar<br>
+2021-04-07 : fixed | #432 | Ajuste de estilo de codigo.<br>
+2021-04-06 : fixed | #435 | Ajuste para guardar la fecha en formato Y-m-d y no un array<br>
+2021-04-06 : fixed | #393 | error de texto azanvado x avanzado<br>
+2021-04-05 : fixed | #414 #301 #277 | Añadido filtro por marcas y categorias como opcional. Ajuste para ordenar por nombre de item<br>
+2021-04-03 : fixed | i-418 | Detalle del Item al Generar FACTURA de una Cotización no se Copia<br>
+2021-04-03 : fixed | carga de items en movimiento de inventario<br>
+2021-04-03 : fixed | carga de items en movimiento de inventario<br>
+2021-04-03 : fixed | carga de items en movimiento de inventario<br>
+2021-04-03 : fixed | carga de items en movimiento de inventario<br>
+2021-04-03 : fixed | i-395 | error en la busqueda al momento de ingresar en el modulo de movimiento<br>
+2021-04-03 : fixed | reporte de inventario<br>
+2021-04-03 : fixed | reporte de inventario<br>
+2021-04-03 : fixed | reporte de inventario<br>
+2021-04-03 : fixed | reporte de inventario<br>
+2021-04-03 : fixed | reporte de inventario<br>
+2021-04-03 : fixed | reporte de inventario<br>
+2021-03-31 : fixed | i-1 | Removiendo "ELECTRÓNICA" de "GUIA DE REMISIÓN REMITENTE ELECTRÓNICA"<br>
+2021-03-31 : fixed | #448 | stock 0 para servicios<br>
+2021-03-31 : fixed | #458 | boton permite duplicados<br>
+2021-03-30 : fixed | campos giro grifo activo form de venta<br>
+2021-03-30 : fixed | campos de informacion adicional en formulario de venta<br>
+2021-03-30 : fixed | observaciones en formulario de venta<br>
+2021-03-30 : fixed | t-373 | Corregir edición items en cotizaciones luego de ser generadas, así como en ventas<br>
+2021-03-29 : fixed | direcciones de cliente en form de venta<br>
+2021-03-29 : fixed | direcciones de cliente en form de venta<br>
+2021-03-29 : fixed | direcciones de cliente en formulario de venta<br>
+2021-03-26 : fixed | #387 | solución al error en reporte de caja, montos a credito no aparecian<br>
+2021-03-25 : fixed | js<br>
+2021-03-25 : fixed | compilado<br>
+2021-03-25 : fixed | #420 | cierre inesperado del popup de pagos en notas de venta, solucionado<br>
+2021-03-25 : fixed | #327 | bug de permisos, usuarios secundarios pueden entrar a modulos no asignados, reparado}<br>
+2021-03-25 : fixed | #233 | se eliminó la duplicidad del nombre del vendedor en los pdfs de cotizaciones<br>
+2021-03-24 : fixed | #327 | se ocultaron los modules y componentes no otorgados a la empresa al momento de editar un usuario secundario<br>
+2021-03-24 : fixed | #306 | se corrigieron los detalles del buscador de clientes en el popup de generar cpe desde multiples guías y se agrego el número del comprobante en la plantilla blank<br>
+
+
+### feature
+2021-04-11 : feature | #233 | se agrego el cuadro para cambiar la fecha de pago cuando se genera un comprobante a partir de una cotización<br>
+2021-04-08 : feature | cambio de url para consulta interna la sunat<br>
+2021-04-07 : feature | #439 | se agregó el modod cargando en las opciones de los cpe<br>
+2021-04-06 : feature | detalles dashboard<br>
+2021-04-06 : feature | #443 | Ajuste para nota de venta, Copia de default y ajuste para orden visual de las cuentas<br>
+2021-04-06 : feature | #443 | Plantilla PDF basada en default3_new para añadir las cuentas bancarias al final de la factura a4<br>
+2021-04-05 : feature | #390 | poder editar la cantidad del producto luego de creado<br>
+2021-04-05 : feature | i-436 | Agregó configuración: Permitir editar precio unitario a vendedores<br>
+2021-04-05 : feature | i-367 | REQUERIMIENTO PARA PODER EMITIR FACTURA DESDE UN SERVICIO DE SOPORTE TÉCNICO<br>
+2021-04-05 : feature | #313 | se agregó la columna cantidad a los cpe generados desde nota de venta<br>
+2021-04-05 : feature | #401 | mostrar el precio de venta de producto al editar el precio en las compras<br>
+2021-04-02 : feature | i-358 | REPORTE DE PRODUCTOS SIN STOCK Y CON STOCK MÍNIMO<br>
+2021-04-01 : feature | #435 | Añadiendo modelo de factura con fecha de vencimiento por producto. Se quita Serie para fecha de vencimiento<br>
+2021-04-01 : feature | #285 | módulos y componentes controlados desde el superadmin<br>
+2021-03-31 : feature | #313 | generar un cpe desde múltiples notas de ventas. listo<br>
+2021-03-31 : feature | #401 | opción de editar el precio de venta de un producto desde las compras fue aadido<br>
+2021-03-31 : feature | #423 | template pedido sin mostrar igv<br>
+2021-03-29 : feature | #391 | se agregaron los campos tipos de usuario y vendedor y categoría de los productos en el reporte general del productos<br>
+2021-03-29 : feature | rediseño posiciones en formulario de venta<br>
+2021-03-25 : feature | diseño formulario venta<br>
+2021-03-25 : feature | condicion de pago<br>
+2021-03-25 : feature | arreglos de diseño sidebar, colores e iconos<br>
+2021-03-25 : feature | json retorna url de imagen a apk<br>
+
+
 ## 4.0.5
 
 ### docs

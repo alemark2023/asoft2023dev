@@ -52,9 +52,8 @@ foreach ($cash_documents as $cash_document) {
 
             }
         }
-
-
     }
+
     else if($cash_document->document){
 
         if($cash_document->document->currency_type_id == 'PEN'){
@@ -92,11 +91,20 @@ foreach ($cash_documents as $cash_document) {
 
             }
         }
-
-
-
-
     }
+
+    else if($cash_document->technical_service) {
+        $cash_income += $cash_document->technical_service->cost;
+        $final_balance += $cash_document->technical_service->cost;
+
+        if( count($cash_document->technical_service->payments) > 0) {
+            $pays = $cash_document->technical_service->payments;
+            foreach ($methods_payment as $record) {
+                $record->sum = ($record->sum + $pays->where('payment_method_type_id', $record->id)->sum('payment'));
+            }
+        }
+    }
+
     else if($cash_document->expense_payment){
 
         if($cash_document->expense_payment->expense->state_type_id == '05'){
@@ -196,7 +204,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
             <p><strong>Ingreso: </strong>S/. {{number_format($cash_income, 2, ".", "")}} </p>
             <p><strong>Saldo final: </strong>S/. {{number_format($cash_final_balance, 2, ".", "")}} </p>
             <p><strong>Egreso: </strong>S/. {{number_format($cash_egress, 2, ".", "")}} </p>
- 
+
         </div>
 
         @if($cash_documents->count())
@@ -249,6 +257,8 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                     if($value->sale_note){
                                         $all_documents[] = $value;
                                     }else if($value->document){
+                                        $all_documents[] = $value;
+                                    }else if($value->technical_service){
                                         $all_documents[] = $value;
                                     }else if($value->expense_payment){
                                         if($value->expense_payment->expense->state_type_id == '05'){
@@ -303,6 +313,18 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                                             }
 
                                             $currency_type_id = $value->document->currency_type_id;
+
+                                        }
+                                        else if($value->technical_service){
+                                            $type_transaction = 'Venta';
+                                            $document_type_description =  'Servicio técnico';
+                                            $number = 'TS-'.$value->technical_service->id;//$value->document->number_full;
+                                            $date_of_issue = $value->technical_service->date_of_issue->format('Y-m-d');
+                                            $customer_name = $value->technical_service->customer->name;
+                                            $customer_number = $value->technical_service->customer->number;
+                                            $total = $value->technical_service->cost;
+
+                                            $currency_type_id = 'PEN';
 
                                         }
                                         else if($value->expense_payment){

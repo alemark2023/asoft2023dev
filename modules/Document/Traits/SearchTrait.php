@@ -68,7 +68,8 @@ trait SearchTrait
             })
             ->OrWhereJsonContains('attributes', ['value' => $request->input])
             ->whereWarehouse()
-            ->orderBy('description')->get();
+            ->orderBy('description')
+            ->get();
     }
 
 

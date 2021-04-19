@@ -59,11 +59,11 @@
                         </td>
 
                         <td class="text-right">
-<!--                            <button type="button"-->
-<!--                                    class="btn waves-effect waves-light btn-xs btn-info"-->
-<!--                                    @click.prevent="clickOptions(row.id)">-->
-<!--                                Generar comprobante-->
-<!--                            </button>-->
+                            <button type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)">
+                                Generar comprobante
+                            </button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)">Editar
                             </button>
@@ -72,7 +72,6 @@
                                         @click.prevent="clickDelete(row.id)">Eliminar
                                 </button>
                             </template>
-
                         </td>
                     </tr>
                 </data-table>

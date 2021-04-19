@@ -219,23 +219,25 @@ class SaleNoteController extends Controller
 
     public function store(SaleNoteRequest $request)
     {
-        DB::connection('tenant')->transaction(function () use ($request) {
+        return $this->storeWithData($request->all());
+    }
 
-            $data = $this->mergeData($request);
+    public function storeWithData($inputs)
+    {
+        DB::connection('tenant')->beginTransaction();
+        try {
+            if (!isset($inputs['id'])) {
+                $inputs['id'] = false;
+            }
+            $data = $this->mergeData($inputs);
+            $this->sale_note =  SaleNote::query()->updateOrCreate(['id' => $inputs['id']], $data);
 
-            $this->sale_note =  SaleNote::updateOrCreate(
-                ['id' => $request->input('id')],
-                $data);
-
-
-            // $this->sale_note->payments()->delete();
             $this->deleteAllPayments($this->sale_note->payments);
-
 
             foreach($data['items'] as $row) {
 
                 $item_id = isset($row['id']) ? $row['id'] : null;
-                $sale_note_item = SaleNoteItem::firstOrNew(['id' => $item_id]);
+                $sale_note_item = SaleNoteItem::query()->firstOrNew(['id' => $item_id]);
 
                 if(isset($row['item']['lots'])){
                     $row['item']['lots'] = isset($row['lots']) ? $row['lots']:$row['item']['lots'];
@@ -248,7 +250,7 @@ class SaleNoteController extends Controller
                 if(isset($row['lots'])){
 
                     foreach($row['lots'] as $lot) {
-                        $record_lot = ItemLot::findOrFail($lot['id']);
+                        $record_lot = ItemLot::query()->findOrFail($lot['id']);
                         $record_lot->has_sale = true;
                         $record_lot->update();
                     }
@@ -273,18 +275,21 @@ class SaleNoteController extends Controller
             $this->setFilename();
             $this->createPdf($this->sale_note,"a4", $this->sale_note->filename);
             $this->regularizePayments($data['payments']);
-
-        });
-
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $this->sale_note->id,
-            ],
-        ];
-
+            DB::connection('tenant')->commit();
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $this->sale_note->id,
+                ],
+            ];
+        } catch (Exception $e) {
+            DB::connection('tenant')->rollBack();
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
-
 
     private function regularizePayments($payments){
 
@@ -334,8 +339,8 @@ class SaleNoteController extends Controller
         $this->company = Company::active();
 
 
-        $type_period = $inputs['type_period'];
-        $quantity_period = $inputs['quantity_period'];
+        $type_period = isset($inputs['type_period']) ? $inputs['type_period'] : null;
+        $quantity_period = isset($inputs['quantity_period']) ? $inputs['quantity_period'] : null;
         $d_of_issue = new Carbon($inputs['date_of_issue']);
         $automatic_date_of_issue = null;
 
@@ -346,8 +351,11 @@ class SaleNoteController extends Controller
 
         }
 
-        $series = Series::find($inputs['series_id'])->number;
-
+        if (key_exists('series_id', $inputs)) {
+            $series = Series::query()->find($inputs['series_id'])->number;
+        } else {
+            $series = $inputs['series'];
+        }
 
         $number = null;
 
@@ -357,7 +365,8 @@ class SaleNoteController extends Controller
         }
         else{
 
-            $document = SaleNote::select('number')->where('soap_type_id', $this->company->soap_type_id)
+            $document = SaleNote::query()
+                                ->select('number')->where('soap_type_id', $this->company->soap_type_id)
                                 ->where('series', $series)
                                 ->orderBy('number', 'desc')
                                 ->first();
@@ -380,9 +389,9 @@ class SaleNoteController extends Controller
 
         unset($inputs['series_id']);
 
-        $inputs->merge($values);
-
-        return $inputs->all();
+//        $inputs->merge($values);
+        $inputs = array_merge($inputs, $values);
+        return $inputs;
     }
 
 //    public function recreatePdf($sale_note_id)

@@ -8,12 +8,7 @@ use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\SoapType;
 use Modules\Sale\Models\QuotationPayment;
 use Modules\Expense\Models\ExpensePayment;
-use App\Models\Tenant\{
-    DocumentPayment,
-    SaleNotePayment,
-    PurchasePayment,
-    User,
-};
+use App\Models\Tenant\{DocumentPayment, SaleNote, SaleNotePayment, PurchasePayment, User};
 use Modules\Sale\Models\ContractPayment;
 use Modules\Pos\Models\CashTransaction;
 use Modules\Sale\Models\TechnicalServicePayment;
@@ -307,5 +302,4 @@ class GlobalPayment extends ModelTenant
         return $query->wherePaymentType($payment_type);
 
     }
-
 }
