@@ -9,24 +9,22 @@ trait SearchTrait
 
     public function getItemsServices($request)
     {
+        $item = Item::whereIsActive()
+            ->whereTypeUser()
+            ->WithExtraConfiguration();
         if ($request->items_id) {
-            return Item::whereIn('id', $request->items_id)
-                ->whereIsActive()
-                ->whereTypeUser()
+            return $item->whereIn('id', $request->items_id)
                 ->get();
         }
         if ($request->search_by_barcode == 1) {
-            return Item::with(['item_lots'])
+            return $item->with(['item_lots'])
                 ->where('unit_type_id','ZZ')
-                ->whereTypeUser()
                 ->whereNotIsSet()
-                ->whereIsActive()
                 ->where('barcode', $request->input)
                 ->limit(1)
                 ->get();
         }
-        return Item::where('description','like', "%{$request->input}%")
-            ->whereTypeUser()
+        return $item->where('description','like', "%{$request->input}%")
             ->orWhere('internal_id','like', "%{$request->input}%")
             ->orWhereHas('category', function($query) use($request) {
                 $query->where('name', 'like', '%' . $request->input . '%');
@@ -38,7 +36,6 @@ trait SearchTrait
             ->with(['item_lots'])
             ->where('unit_type_id','ZZ')
             ->whereNotIsSet()
-            ->whereIsActive()
             ->orderBy('description')
             ->get();
     }
@@ -46,7 +43,7 @@ trait SearchTrait
     public function getItemsNotServices($request)
     {
         $item = Item::whereIsActive()
-            ->whereTypeUser()
+                ->whereTypeUser()
             ->WithExtraConfiguration();
         if ($request->items_id) {
             return $item
