@@ -272,14 +272,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="10"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="10"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>
