@@ -336,6 +336,9 @@ class DocumentController extends Controller
                         ];
                     }),
                     'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
+                        if(!$row->showAllItemsAtInvoice($warehouse->id,auth()->user()->establishment_id)){
+                            return [];
+                        }
                         return [
                             'warehouse_description' => $row->warehouse->description,
                             'stock' => $row->stock,
