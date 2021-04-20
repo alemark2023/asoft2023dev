@@ -369,7 +369,7 @@ class Item extends ModelTenant
                     $join->on('item_warehouse.stock', '>', \DB::raw(0));
                 }
             });
-            $query->distinct();
+            $query->select('items.*')->distinct();
         }
         return $query;
     }
