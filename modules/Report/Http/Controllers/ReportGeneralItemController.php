@@ -87,12 +87,16 @@ class ReportGeneralItemController extends Controller
         if( $document_type_id && $document_type_id == '80' ) {
             $relation = 'sale_note';
 
-            $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end){
+            $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end, $user_id){
                 $query
                 ->whereBetween('date_of_issue', [$date_start, $date_end])
                 ->latest()
                 ->whereTypeUser();
+                if(!empty($user_id)){
+                    $query->where('user_id',$user_id);
+                }
             });
+
         } else {
 
             $model = $data_type['model'];
