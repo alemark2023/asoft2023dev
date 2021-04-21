@@ -7,9 +7,10 @@
                 <div class="row mt-2">
                         <div class="col-md-2 form-group">
                             <label class="control-label">Tipo de usuario</label>
-                            <el-select v-model="form.user_type" clearable>
+                            <el-select v-model="form.user_type" clearable
+                                       @change="ChangedSalesnote">
                                 <el-option key="CREADOR" value="CREADOR" label="Registrado por"></el-option>
-                                <el-option key="VENDEDOR" value="VENDEDOR" label="Vendedor asignado"></el-option>
+                                <el-option v-show="form.document_type_id !== '80'" key="VENDEDOR" value="VENDEDOR" label="Vendedor asignado"></el-option>
                             </el-select>
                         </div>
                         <div class="col-md-2 form-group">
@@ -82,7 +83,9 @@
                         <div class="col-md-3" >
                             <div class="form-group">
                                 <label class="control-label">Tipo de documento</label>
-                                <el-select v-model="form.document_type_id" clearable>
+                                <el-select v-model="form.document_type_id"
+                                           @change="ChangedSalesnote"
+                                           clearable>
                                     <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                 </el-select>
                             </div>
@@ -372,6 +375,11 @@
                     user_id: ''
                 }
 
+            },
+            ChangedSalesnote(){
+              if(this.form.document_type_id == '80' && this.form.user_type != null ){
+                  this.form.user_type = 'CREADOR';
+              }
             },
             customIndex(index) {
                 return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
