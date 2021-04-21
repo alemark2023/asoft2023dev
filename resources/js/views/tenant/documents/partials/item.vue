@@ -28,6 +28,7 @@
                                         <el-tooltip v-for="option in items"  :key="option.id" placement="top">
 
                                             <div slot="content">
+                                                Almacen: {{option.warehouse_description}} <br>
                                                 Marca: {{option.brand}} <br>
                                                 Categoria: {{option.category}} <br>
                                                 Stock: {{option.stock}} <br>

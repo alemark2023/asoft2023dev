@@ -342,35 +342,4 @@ class Item extends ModelTenant
         return number_format($price, 4, ".", "");
     }
 
-
-    /**
-     * Evalua la configuracion para mostrar solo los items asociados al almacen del usuario show_all_items_at_invoice
-     * Evalua la configuracion para mostrar solo items con stock mayor a 0 show_all_items_with_out_stock
-     *
-     * ver #432
-     *
-     * @param \Illuminate\Database\Eloquent\Builder|static  $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeWithExtraConfiguration($query)
-    {
-
-        if (!Config::get('configuration.show_all_items_at_invoice') ||
-            !Config::get('configuration.show_all_items_with_out_stock')
-        ) {
-            // ref #432
-            $query->join('item_warehouse', function ($join) {
-                $join->on('items.id', 'item_warehouse.item_id');
-                if (!Config::get('configuration.show_all_items_at_invoice')) {
-                    $join->on('item_warehouse.warehouse_id', \DB::raw(auth()->user()->establishment_id));
-                }
-                if (!Config::get('configuration.show_all_items_with_out_stock')) {
-                    $join->on('item_warehouse.stock', '>', \DB::raw(0));
-                }
-            });
-            $query->select('items.*')->distinct();
-        }
-        return $query;
-    }
 }

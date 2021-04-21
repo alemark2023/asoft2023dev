@@ -308,6 +308,7 @@ class DocumentController extends Controller
                     'full_description' => $detail['full_description'],
                     'brand' => $detail['brand'],
                     'category' => $detail['category'],
+                    'warehouse_description' => $detail['warehouse_description'],
                     'stock' => $detail['stock'],
                     'barcode' => $row->barcode,
                     'internal_id' => $row->internal_id,
@@ -336,12 +337,9 @@ class DocumentController extends Controller
                         ];
                     }),
                     'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
-                        if(!$row->showAllItemsAtInvoice($warehouse->id,auth()->user()->establishment_id)){
-                            return [];
-                        }
                         return [
-                            'warehouse_description' => $row->warehouse->description,
-                            'stock' => $row->stock,
+                            'warehouse_description' => $row->getWarehouseDescription(),
+                            'stock' => (!empty($row->stock))?$row->stock:0,
                             'warehouse_id' => $row->warehouse_id,
                             'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
                         ];

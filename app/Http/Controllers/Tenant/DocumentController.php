@@ -288,11 +288,9 @@ class DocumentController extends Controller
                 ->whereIsActive()
                 ->orderBy('description');
             $items_u = $items_u
-                ->WithExtraConfiguration()
                 ->take(20)
                 ->get();
             $items_s = $items_s
-                ->WithExtraConfiguration()
                 ->take(10)
                 ->get();
             $items = $items_u->merge($items_s);
@@ -304,6 +302,7 @@ class DocumentController extends Controller
                     'full_description' => $detail['full_description'],
                     'model' => $row->model,
                     'brand' => $detail['brand'],
+                    'warehouse_description' => $detail['warehouse_description'],
                     'category' => $detail['category'],
                     'stock' => $detail['stock'],
                     'internal_id' => $row->internal_id,
@@ -392,6 +391,7 @@ class DocumentController extends Controller
             'brand' => $brand,
             'category' => $category,
             'stock' => $stock,
+            'warehouse_description' => $warehouse->description,
         ];
     }
 
