@@ -1,3 +1,41 @@
+## 4.0.7
+
+### docs
+2021-04-12 : docs | changelog<br>
+
+
+### fixed
+2021-04-21 : fixed | complie js, padding top nota de credito/debito<br>
+2021-04-21 : fixed | condicion para editar precio en nota de credito<br>
+2021-04-20 : fixed | #480 | Compile JS<br>
+2021-04-20 : fixed | #480 | Lista de pedidos en tienda virtual: Se determina que description es el nombre del producto (desde creacion del item) por lo tanto, se cambia la etiqueta de la propiedad<br>
+2021-04-19 : fixed | #432 | Filtro de productos, seleccion de solo item.<br>
+2021-04-19 : fixed | #501 | Reporte de Ventas: Ajuste para alinear totales en descarga (pdf y excel)<br>
+2021-04-18 : fixed | #436 | Editar precio en perfil vendedor - pos<br>
+2021-04-18 : fixed | #367 | Pago de servicio tecnico en caja<br>
+2021-04-16 : fixed | #425 | REPORTES: CONSISTENCIA DE DOCUMENTOS POR RANGO DE FECHAS: Se ajsuta la validacion para seleccionar por rango de fechas.<br>
+2021-04-15 : fixed | #309 | TIENDA VIRTUAL: Al seleccionar la categoria, se mostrará resaltado y enviará correctamente a la categoria<br>
+2021-04-15 : fixed | #480 | Tienda virtual: Pedidos: Añadiendo descripcion a la tabla de pedidos (lupa)<br>
+2021-04-15 : fixed | #495 | NV desde POS: Se ajusta id en false, type_period y quantity_period se valida que existan para que no falle la creacion<br>
+2021-04-15 : fixed | #449 | Api: Guia de Remision: Ejemplo para crear items al momento de enviar la guia: removiendo codigo_tipo_item<br>
+2021-04-15 : fixed | #449 | Api: Guia de Remision: Ejemplo para crear items al momento de enviar la guia.<br>
+2021-04-15 : fixed | #486 | POS: Nota de venta: Ajuste para mensaje por whatsapp<br>
+2021-04-14 : fixed | #463 | visualizacion categorias en pos<br>
+2021-04-14 : fixed | #491 | menu header comprobantes no enviados<br>
+2021-04-14 : fixed | #485 | Compile JS<br>
+2021-04-14 : fixed | #485 | Ingreso de Producto en inventario: Convirtiendo cantidad en numero para comparacion<br>
+2021-04-14 : fixed | #485 | Ingreso de Producto en inventario: Convirtiendo cantidad en numero para comparacion<br>
+2021-04-13 : fixed | #433 | Compile js<br>
+2021-04-12 : fixed | #462 | datos visuales en letras blanco con modo oscuro<br>
+2021-04-08 : fixed | #433 | Filtro para buscar por numero de guia en Reportes -> Ventas -> Documentos<br>
+2021-04-08 : fixed | #433 | Filtro para buscar por numero de guia en Ventas -> Listado de Comprobantes<br>
+2021-04-07 : fixed | #449 | Api: Guia de Remision: Ejemplo para crear items al momento de enviar la guia<br>
+
+
+### feature
+2021-04-14 : feature | i-367 | EMITIR FACTURA DESDE UN SERVICIO DE SOPORTE TÉCNICO<br>
+
+
 ## 4.0.6
 
 ### docs
