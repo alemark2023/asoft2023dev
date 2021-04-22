@@ -11,10 +11,8 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header bg-info">
-                <h3 class="my-0">Selección de plantilla de impresión para comprobantes</h3>
-            </div>
             <div class="card-body pt-0 pb-5">
+                <p>aqui: {{establishments}}</p>
                 <h3>Plantilla actual: <a :href="'#'+form.formats" class="text-secondary">{{form.formats}}</a></h3>
                 <div class="row">
                   <div v-for="(o, index) in formatos" class="col-md-3 my-2">
@@ -52,7 +50,7 @@
 <script>
 
     export default {
-        props:['path_image'],
+        props:['path_image','typeUser','establishments'],
 
         data() {
             return {
@@ -64,6 +62,7 @@
                 path: location,
                 modalImage: false,
                 template: '',
+                establishments: []
             }
         },
         async created() {
