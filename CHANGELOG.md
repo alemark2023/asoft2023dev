@@ -31,10 +31,8 @@
 2021-04-08 : fixed | #433 | Filtro para buscar por numero de guia en Ventas -> Listado de Comprobantes<br>
 2021-04-07 : fixed | #449 | Api: Guia de Remision: Ejemplo para crear items al momento de enviar la guia<br>
 
-
 ### feature
 2021-04-14 : feature | i-367 | EMITIR FACTURA DESDE UN SERVICIO DE SOPORTE TÉCNICO<br>
-
 
 ## 4.0.6
 

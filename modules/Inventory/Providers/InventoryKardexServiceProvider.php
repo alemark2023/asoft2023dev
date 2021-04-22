@@ -94,7 +94,11 @@ class InventoryKardexServiceProvider extends ServiceProvider
                 if($document_item->item->IdLoteSelected != null)
                 {
                     $lot = ItemLotsGroup::query()->find($document_item->item->IdLoteSelected);
-                    $quantity_unit = $document_item->item->presentation->quantity_unit;
+                    try {
+                        $quantity_unit = $document_item->item->presentation->quantity_unit;
+                    }  catch (\Exception $e) {
+                        $quantity_unit = 1;
+                    }
                     if($document->document_type_id === '07') {
                         $quantity = $lot->quantity + ($quantity_unit * $document_item->quantity);
                     } else {
