@@ -921,7 +921,7 @@
             {
                 this.form_brand.add = false
 
-                this.$http.post(`brands`,  this.form_brand)
+                this.$http.post(`/brands`,  this.form_brand)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
