@@ -903,7 +903,7 @@
             {
                 this.form_category.add = false
 
-                this.$http.post(`categories`,  this.form_category)
+                this.$http.post(`/categories`,  this.form_category)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
@@ -921,7 +921,7 @@
             {
                 this.form_brand.add = false
 
-                this.$http.post(`brands`,  this.form_brand)
+                this.$http.post(`/brands`,  this.form_brand)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
