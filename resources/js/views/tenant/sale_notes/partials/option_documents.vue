@@ -458,6 +458,10 @@
                         }
                     }).then(() => {
                         this.loading_submit = false;
+                        $.each($('.v-modal'),function(a,b){
+                            /* v-modal se le resta 5 z-index para que no se sobreponga en el modal*/
+                            $(b).css('z-index', $(b).css('z-index') - 5);
+                        })
                     });
             },
             assignDocument(){
