@@ -506,6 +506,8 @@
                 };
                 this.document.sale_note_id = this.form.id;
                 this.document.payments = q.payments;
+                this.document.seller_id = q.user_id;
+                this.document.user_id = q.user_id;
                 this.document.fee = [];
                 this.document.payment_condition_id =q.payment_condition_id;
                 if(this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
