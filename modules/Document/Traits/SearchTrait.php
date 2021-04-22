@@ -10,8 +10,7 @@ trait SearchTrait
     public function getItemsServices($request)
     {
         $item = Item::whereIsActive()
-            ->whereTypeUser()
-            ->WithExtraConfiguration();
+            ->whereTypeUser();
         if ($request->items_id) {
             return $item->whereIn('id', $request->items_id)
                 ->get();
@@ -43,8 +42,7 @@ trait SearchTrait
     public function getItemsNotServices($request)
     {
         $item = Item::whereIsActive()
-                ->whereTypeUser()
-            ->WithExtraConfiguration();
+                ->whereTypeUser();
         if ($request->items_id) {
             return $item
                 ->whereIn('id', $request->items_id)
@@ -123,6 +121,7 @@ trait SearchTrait
 
         return [
             'full_description' => $desc,
+            'warehouse_description' => $warehouse->description,
             'brand' => $brand,
             'category' => $category,
             'stock' => $stock,
