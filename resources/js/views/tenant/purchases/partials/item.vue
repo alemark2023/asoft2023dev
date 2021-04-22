@@ -49,6 +49,7 @@
                             </el-input>
                             <small class="form-control-feedback" v-if="errors.unit_price" v-text="errors.unit_price[0]"></small>
                         </div>
+                        <el-checkbox v-model="form.update_purchase_price">Actualizar precio de compra</el-checkbox>
                         <el-checkbox v-model="form.update_price">Editar precio de venta</el-checkbox>
                     </div>
                     <div class="col-md-2" v-if="form.update_price">
@@ -380,6 +381,7 @@
                     date_of_due: null,
                     purchase_has_igv: null,
                     update_price: false,
+                    update_purchase_price: true,
                 }
 
                 this.item_unit_type = {};
@@ -497,6 +499,7 @@
                 this.row.lot_code = await this.lot_code
                 this.row.lots = await this.lots
                 this.row.update_price = this.form.update_price
+                this.row.update_purchase_price = this.form.update_purchase_price
                 this.row.sale_unit_price = this.sale_unit_price
 
                 this.row = this.changeWarehouse(this.row)

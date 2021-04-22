@@ -188,6 +188,12 @@ class PurchaseController extends Controller
                             ->update(['sale_unit_price' => floatval($row['sale_unit_price'])]);
                     }
 
+                    if ($row['update_purchase_price']) {
+                        Item::query()->where('id', $row['item_id'])
+                            ->update(['purchase_unit_price' => floatval($row['unit_price'])]);
+                    }
+
+
                     if (array_key_exists('lots', $row)) {
 
                         foreach ($row['lots'] as $lot) {
