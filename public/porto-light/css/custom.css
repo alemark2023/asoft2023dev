@@ -401,3 +401,12 @@ html.dashboard-system .content-body {
 html.dark .el-switch__label:not(.is-active) {
   color: #FFF;
 }
+
+html.dark .card.card-dashboard .card-title,
+html.dark .card.card-dashboard small.text-muted  {
+  color: #FFF !important;
+}
+
+html.dark .card.card-reports .card-report-links li a {
+  color: #808697;
+}
