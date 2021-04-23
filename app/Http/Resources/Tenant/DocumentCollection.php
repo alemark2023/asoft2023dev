@@ -152,6 +152,7 @@ class DocumentCollection extends ResourceCollection
                 'message_regularize_shipping' => $message_regularize_shipping,
                 'regularize_shipping' => (bool) $row->regularize_shipping,
                 'purchase_order' => $row->purchase_order,
+                'is_editable' => $row->is_editable,
             ];
         });
     }

@@ -149,6 +149,8 @@ class DocumentUpdateInput
 						'lots'                     => self::lots($row),
 						'IdLoteSelected'           => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
 						'model'                    => $item->model,
+                        'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
+                        'has_igv' => $row['item']['has_igv'] ?? true,
 					],
 					'quantity'                => $row['quantity'],
 					'unit_value'              => $row['unit_value'],

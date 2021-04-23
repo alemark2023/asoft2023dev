@@ -87,7 +87,8 @@ class Document extends ModelTenant
         'seller_id',
         'reference_data',
         'terms_condition',
-        'payment_condition_id'
+        'payment_condition_id',
+        'is_editable',
     ];
 
     protected $casts = [
@@ -413,5 +414,10 @@ class Document extends ModelTenant
     public function seller()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getIsEditableAttribute($value)
+    {
+        return $value ? true : false;
     }
 }

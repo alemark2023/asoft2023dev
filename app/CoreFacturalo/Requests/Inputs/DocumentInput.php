@@ -132,6 +132,7 @@ class DocumentInput
             'sale_notes_relateds' => $inputs['sale_notes_relateds'] ?? null,
             'payment_condition_id' => key_exists('payment_condition_id', $inputs) ? $inputs['payment_condition_id'] : '01',
             'fee' => Functions::valueKeyInArray($inputs, 'fee', []),
+            'is_editable' => true,
         ];
     }
 
@@ -157,6 +158,7 @@ class DocumentInput
                         'IdLoteSelected' => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
                         'model' => $item->model,
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
+                        'has_igv' => $row['item']['has_igv'] ?? true,
                     ],
                     'quantity' => $row['quantity'],
                     'unit_value' => $row['unit_value'],
