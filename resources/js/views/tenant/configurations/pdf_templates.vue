@@ -11,9 +11,20 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-body pt-0 pb-5">
-                <p>aqui: {{establishments}}</p>
-                <h3>Plantilla actual: <a :href="'#'+form.formats" class="text-secondary">{{form.formats}}</a></h3>
+            <div class="card-body pb-5">
+                <div class="row">
+                    <div class="col-3">
+                        <label class="control-label">Establecimiento</label>
+                        <el-select v-model="form.establishment_id" @change="changeEstablishment()">
+                            <el-option v-for="option in establishments" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-3">
+                        <label class="control-label">Plantilla actual</label>
+                        <el-input v-model="form.current_format" readonly></el-input>
+                        <small style="cursor:pointer" v-if="form.current_format"><a @click="viewImage(form.current_format)">Ver plantilla</a></small>
+                    </div>
+                </div>
                 <div class="row">
                   <div v-for="(o, index) in formatos" class="col-md-3 my-2">
                     <el-card :body-style="{ padding: '0px' }" :id="o.formats">
@@ -22,8 +33,8 @@
                         <span class="text-center">{{o.formats}}</span>
                         <div class="bottom clearfix text-right">
                             <!-- <el-button type="submit" class="button" @change="changeFormat(o.formats)">Activo</el-button> -->
-                            <el-radio v-model="form.formats" :label="o.formats" @change="changeFormat(o.formats)">
-                                <span v-if="form.formats == o.formats">Activo</span>
+                            <el-radio v-model="form.current_format" :label="o.formats" @change="changeFormat(o.formats)">
+                                <span v-if="form.current_format == o.formats">Activo</span>
                                 <span v-else>Activar</span>
                             </el-radio>
                         </div>
@@ -61,18 +72,18 @@
                 formatos: [],
                 path: location,
                 modalImage: false,
-                template: '',
-                establishments: []
+                template: ''
             }
         },
         async created() {
 
-            await this.$http.get(`/${this.resource}/record`) .then(response => {
-                if (response.data !== ''){
-                this.form = response.data.data;
-                }
-                // console.log(this.placeholder)
-            });
+            // await this.$http.get(`/${this.resource}/record`) .then(response => {
+            //     if (response.data !== ''){
+            //         // console.log(response.data);
+            //         this.form = response.data.data;
+            //     }
+            //     // console.log(this.placeholder)
+            // });
 
             await this.$http.get(`/${this.resource}/getFormats`) .then(response => {
                 if (response.data !== '') this.formatos = response.data.filter(r => this.imageGuide(r.formats))
@@ -83,15 +94,22 @@
         methods: {
             changeFormat(value){
                 this.modalImage = false
-                this.formatos = {
+                this.form = {
                     formats: value,
+                    establishment: this.form.establishment_id,
                 }
 
-                this.$http.post(`/${this.resource}/changeFormat`, this.formatos).then(response =>{
+                this.$http.post(`/${this.resource}/changeFormat`, this.form).then(response =>{
                     this.$message.success(response.data.message);
                     location.reload()
                 })
 
+            },
+            changeEstablishment(){
+                var establishment = this.form.establishment_id;
+                var selected = _.filter(this.establishments, {'id':establishment})[0];
+                // console.log(selected.template_pdf);
+                this.form.current_format = selected.template_pdf;
             },
             addSeeder(){
                 var ruta = location.host
@@ -111,7 +129,7 @@
                 var http = new XMLHttpRequest();
                 http.open('HEAD', url, false);
                 http.send();
-                console.log(http.status)
+                // console.log(http.status)
                 return http.status!=404;
             },
         }

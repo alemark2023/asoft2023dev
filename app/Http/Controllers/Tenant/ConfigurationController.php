@@ -198,11 +198,11 @@ class ConfigurationController extends Controller
 
     public function changeFormat(Request $request)
     {
-        $format = Configuration::first();
-        $format->fill($request->all());
-        $format->save();
+        $establishment = Establishment::find($request->establishment);
+        $establishment->template_pdf = $request->formats;
+        $establishment->save();
 
-        $config_format = config(['tenant.pdf_template' => $format->formats]);
+        // $config_format = config(['tenant.pdf_template' => $format->formats]);
         // $fp = fopen(base_path() .'/config/tenant.php' , 'w');
         // fwrite($fp, '<?php return ' . var_export(config('tenant'), true) . ';');
         // fclose($fp);
@@ -228,7 +228,7 @@ class ConfigurationController extends Controller
 
     public function pdfTemplates()
     {
-        $establishments = Establishment::get(['id','template_pdf']);
+        $establishments = Establishment::select(['id','description','template_pdf'])->get();
         return view('tenant.advanced.pdf_templates')->with('establishments', $establishments);
     }
 

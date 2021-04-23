@@ -10,6 +10,7 @@ use App\Models\Tenant\Voided;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Invoice;
 use App\Models\Tenant\Summary;
+use App\Models\Tenant\Establishment;
 use Mpdf\Config\FontVariables;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
@@ -275,10 +276,7 @@ class Facturalo
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
-        $configuration = $this->configuration->formats;
-
-        $base_pdf_template = $configuration;//config(['tenant.pdf_template'=> $configuration]);
-        // dd($base_pdf_template);
+        $base_pdf_template = Establishment::find($document->establishment_id)->template_pdf;
 
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;
