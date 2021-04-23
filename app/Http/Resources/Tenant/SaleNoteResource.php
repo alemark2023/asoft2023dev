@@ -17,6 +17,7 @@ class SaleNoteResource extends JsonResource
     {
 
         $sale_note = SaleNote::find($this->id);
+        $sale_note->seller_id = $sale_note->user_id;
         $sale_note->payments = self::getTransformPayments($sale_note->payments);
 
         return [
