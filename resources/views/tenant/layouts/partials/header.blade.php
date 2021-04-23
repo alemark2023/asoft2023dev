@@ -83,7 +83,7 @@
         <span class="separator"></span>
         <ul class="notifications">
             <li>
-                <a href="{{route('tenant.documents.regularize_shipping')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de envío">
+                <a href="{{route('tenant.documents.not_sent')}}" class="notification-icon text-secondary" data-toggle="tooltip" data-placement="bottom" title="Comprobantes pendientes de envío">
                     <i class="far fa-bell text-secondary"></i>
                     <span class="badge badge-pill badge-danger badge-up cart-item-count">{{ $vc_document }}</span>
                 </a>

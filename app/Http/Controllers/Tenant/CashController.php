@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\SaleNoteItem;
 use App\Exports\CashProductExport;
 
-
 class CashController extends Controller
 {
 
@@ -215,7 +214,6 @@ class CashController extends Controller
 
     }
 
-
     public function cash_document(Request $request) {
 
         $cash = Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
@@ -270,8 +268,8 @@ class CashController extends Controller
 
     public function report($cash) {
 
-        $cash = Cash::findOrFail($cash);
-        $company = Company::first();
+        $cash = Cash::query()->findOrFail($cash);
+        $company = Company::query()->first();
 
         $methods_payment = collect(PaymentMethodType::all())->transform(function($row){
             return (object)[

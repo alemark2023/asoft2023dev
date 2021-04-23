@@ -21,6 +21,7 @@
         {{-- {{$visual->sidebars == 'dark' ? '' : 'sidebar-light'}} --}}
         {{$visual->bg == 'dark' ? 'dark' : ''}}
         {{ ($path[0] === 'documents' && $path[1] === 'create'
+        || $path[0] === 'documents' && $path[1] === 'note'
         || $path[0] === 'quotations' && $path[1] === 'create'
         || $path[0] === 'sale-opportunities' && $path[1] === 'create'
         || $path[0] === 'order-notes' && $path[1] === 'create'

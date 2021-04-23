@@ -28,6 +28,7 @@
                                         <el-tooltip v-for="option in items"  :key="option.id" placement="top">
 
                                             <div slot="content">
+                                                Almacen: {{option.warehouse_description}} <br>
                                                 Marca: {{option.brand}} <br>
                                                 Categoria: {{option.category}} <br>
                                                 Stock: {{option.stock}} <br>
@@ -189,7 +190,6 @@
                                 </thead>
                                 <tbody>
                                 <tr v-for="(row, index) in form.item_unit_types">
-
                                         <td class="text-center">{{row.unit_type_id}}</td>
                                         <td class="text-center">{{row.description}}</td>
                                         <td class="text-center">{{row.quantity_unit}}</td>
@@ -1061,8 +1061,6 @@
             },
             selectedPrice(row)
             {
-
-
                 let valor = 0
                 switch(row.price_default)
                 {

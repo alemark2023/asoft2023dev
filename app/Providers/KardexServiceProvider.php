@@ -17,7 +17,6 @@ class KardexServiceProvider extends ServiceProvider
 
     public function boot()
     {
-
         $this->save_item();
         $this->sale();
         $this->purchase();

@@ -116,6 +116,7 @@
                                 <th>Número</th>
                                 <th>Fecha emisión</th>
                                 <th>Doc. Afectado</th>
+                                <th># Guía</th>
 
                                 <th>Cliente</th>
                                 <th>RUC</th>
@@ -152,6 +153,13 @@
                                         @endif
 
                                     <td class="celda">{{  $serie_affec }} </td>
+                                    <td class="celda">
+                                        @if(!empty($value->guides))
+                                            @foreach($value->guides as $guide)
+                                                {{ $guide->number }}<br>
+                                            @endforeach
+                                        @endif
+                                    </td>
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->customer->number}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
@@ -264,14 +272,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="10"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="9"></td>
+                                <td class="celda" colspan="10"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

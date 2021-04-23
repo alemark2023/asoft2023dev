@@ -16,6 +16,39 @@
             </el-dropdown>
         </div>
         <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">
+                            Rango de fechas
+                        </label>
+                        <el-date-picker
+                            v-model="form.date_start"
+                            :clearable="false"
+                            :picker-options="pickeroptions"
+                            end-placeholder="Fecha de fin"
+                            range-separator="-"
+                            start-placeholder="Fecha de inicio"
+                            type="daterange"
+                            value-format="yyyy-MM-dd">
+                        </el-date-picker>
+                    </div>
+                </div>
+
+                <div class="col-md-12">&nbsp;</div>
+                <div class="col-md-4 d-flex pt-2">
+                    <div class="form-group">
+                        <el-button class="submit"
+                                   type="primary"
+                                   @click.prevent="refresh"
+                                   :loading="loading_submit"
+                                   icon="el-icon-search" >
+                            Buscar
+                        </el-button>
+
+                    </div>
+                </div>
+            </div>
             <template>
                 <el-table :data="tableData" style="width: 100%">
                     <el-table-column label="Serie" prop="serie.number"></el-table-column>
@@ -40,48 +73,77 @@
     export default {
             data() {
                 return {
-                resource: 'reports/consistency-documents',
-                showDialog: false,
-                columns: {
-                    sent: {
-                        title: 'Enviados',
-                        visible: false
+                    resource: 'reports/consistency-documents',
+                    loading_submit: false,
+                    pickeroptions: {
+                        disabledDate: date => {
+                            let now = new Date();
+                            return date.getTime() < (this.minDate) || date.getTime() > (now.getTime());
+                        },
                     },
-                    accepted: {
-                        title: 'Aceptados',
-                        visible: false
+                    showDialog: false,
+                    minDate: new Date(),
+                    maxDate: new Date(),
+                    form: {
+                        date_start: [
+                            new Date(),
+                            new Date()
+                        ]
                     },
-                    observed: {
-                        title: 'Observados',
-                        visible: false
+                    columns: {
+                        sent: {
+                            title: 'Enviados',
+                            visible: false
+                        },
+                        accepted: {
+                            title: 'Aceptados',
+                            visible: false
+                        },
+                        observed: {
+                            title: 'Observados',
+                            visible: false
+                        },
+                        rejected: {
+                            title: 'Rechazados',
+                            visible: false
+                        },
+                        canceled: {
+                            title: 'Anulados',
+                            visible: false
+                        },
+                        byVoiding: {
+                            title: 'Por anular',
+                            visible: false
+                        },
                     },
-                    rejected: {
-                        title: 'Rechazados',
-                        visible: false
-                    },
-                    canceled: {
-                        title: 'Anulados',
-                        visible: false
-                    },
-                    byVoiding: {
-                        title: 'Por anular',
-                        visible: false
-                    },
-                },
-                tableData: [],
-            }
+                    tableData: []
+                }
         },
         created() {
+            this.minDate = new Date(this.minDate.getFullYear(), this.minDate.getMonth(), 1);
+            this.form.date_start[0] = this.minDate;
             this.refresh();
         },
         methods: {
             refresh() {
-                axios.post(`/${this.resource}/lists`).then((response) => {
-                    this.tableData = response.data;
-                }).catch((error) => {
+                this.loading_submit = true;
+                this.$http.post(`/${this.resource}/lists`, this.form)
+                    .then((response) => {
+                        this.tableData = response.data;
+                        if (this.tableData !== undefined && this.tableData[0] !== undefined) {
+                            this.minDate = new Date(this.tableData[0].min);
+                            this.maxDate = new Date(this.tableData[0].max);
+                            this.maxDate = this.maxDate.getTime();
+                            this.minDate = this.minDate.getTime();
+                        }
+                    }).catch((error) => {
                     console.log(error);
-                }).then(() => {});
+                }).then(() => {})
+                    .finally(()=>{
+                    this.loading_submit = false;
+                });
             }
         }
     }
 </script>
+

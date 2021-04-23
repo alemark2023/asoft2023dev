@@ -188,6 +188,12 @@ class PurchaseController extends Controller
                             ->update(['sale_unit_price' => floatval($row['sale_unit_price'])]);
                     }
 
+                    if ($row['update_purchase_price']) {
+                        Item::query()->where('id', $row['item_id'])
+                            ->update(['purchase_unit_price' => floatval($row['unit_price'])]);
+                    }
+
+
                     if (array_key_exists('lots', $row)) {
 
                         foreach ($row['lots'] as $lot) {
@@ -388,22 +394,24 @@ class PurchaseController extends Controller
                 break;
             }
 
-            if($element->item->lots_enabled && $element->lot_code )
-            {
-                $lot_group = ItemLotsGroup::where('code', $element->lot_code)->first();
-
-                if(!$lot_group)
+            if(array_key_exists('lots_enabled', $element->item)) {
+                if($element->item->lots_enabled && $element->lot_code )
                 {
-                    $message = "Lote {$element->lot_code} no encontrado.";
-                    $validated = false;
-                    break;
-                }
+                    $lot_group = ItemLotsGroup::where('code', $element->lot_code)->first();
 
-                if( (int)$lot_group->quantity != (int)$element->quantity)
-                {
-                    $message = "Los productos del lote {$element->lot_code} han sido vendidos!";
-                    $validated = false;
-                    break;
+                    if(!$lot_group)
+                    {
+                        $message = "Lote {$element->lot_code} no encontrado.";
+                        $validated = false;
+                        break;
+                    }
+
+                    if( (int)$lot_group->quantity != (int)$element->quantity)
+                    {
+                        $message = "Los productos del lote {$element->lot_code} han sido vendidos!";
+                        $validated = false;
+                        break;
+                    }
                 }
             }
         }

@@ -24,7 +24,13 @@
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.quantity}">
                             <label class="control-label">Cantidad</label>
-                            <el-input v-model="form.quantity"></el-input>
+                            <el-input-number
+                                v-model="form.quantity"
+                                :min="0"
+                                :controls="false"
+                                :precision="precision"
+
+                            ></el-input-number>
                             <small class="form-control-feedback" v-if="errors.quantity"
                                    v-text="errors.quantity[0]"></small>
 
@@ -127,6 +133,7 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
+            precision:2,
         }
     },
     // created() {
@@ -149,6 +156,7 @@ export default {
                     this.form.lots_enabled = item.lots_enabled
                     this.form.series_enabled = item.series_enabled
                 }
+                this.ChangePrecision();
             }
         },
         addRowOutputLot(lots) {
@@ -158,6 +166,7 @@ export default {
             this.form.lots = lots
         },
         clickLotcode() {
+            this.ChangePrecision();
             this.showDialogLots = true
         },
         clickLotcodeOutput() {
@@ -178,6 +187,14 @@ export default {
                 lots: [],
                 date_of_due: null
 
+            }
+        },
+        ChangePrecision(){
+            if (this.form.series_enabled) {
+                /* Para series, debe ser entero*/
+                this.precision = 0;
+            }else{
+                this.precision = 2;
             }
         },
         async initTables() {
@@ -206,8 +223,8 @@ export default {
             this.loading_search = false;
         },
         async submit() {
+            let total_qty =  this.form.quantity * 1;
             if (this.type === 'input') {
-
                 if (this.form.lots_enabled) {
                     if (!this.form.lot_code)
                         return this.$message.error('Código de lote es requerido');
@@ -216,9 +233,9 @@ export default {
                 }
 
                 if (this.form.series_enabled) {
-                    if (this.form.lots.length > this.form.quantity)
+                    if (this.form.lots.length > total_qty)
                         return this.$message.error('La cantidad de series registradas es superior al stock');
-                    if (this.form.lots.length !== this.form.quantity)
+                    if (this.form.lots.length !== total_qty)
                         return this.$message.error('La cantidad de series registradas son diferentes al stock');
                 }
 
@@ -235,7 +252,7 @@ export default {
             } else {
                 if (this.form.lots.length > 0 && this.form.lots_enabled) {
                     let select_lots = await _.filter(this.form.lots, {'has_sale': true})
-                    if (select_lots.length !== this.form.quantity) {
+                    if (select_lots.length !== total_qty) {
                         return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
                     }
                 }

@@ -1,21 +1,21 @@
 <?php
 
 namespace App\Traits;
-use App\Models\Tenant\InventoryKardex; 
-use App\Models\Tenant\ItemWarehouse; 
-use App\Models\Tenant\Warehouse;
 
+use App\Models\Tenant\InventoryKardex;
+use App\Models\Tenant\ItemWarehouse;
+use App\Models\Tenant\Warehouse;
 
 trait InventoryKardexTrait
 {
-    
-    public function saveInventoryKardex($model, $item_id, $establishment_id, $quantity,$warehouse_id = null) {
-        
 
-        $inventory_kardex = $model->inventory_kardex()->create([ 
+    public function saveInventoryKardex($model, $item_id, $establishment_id, $quantity,$warehouse_id = null) {
+
+
+        $inventory_kardex = $model->inventory_kardex()->create([
             'date_of_issue' => date('Y-m-d'),
             'item_id' => $item_id,
-            'warehouse_id' => ($warehouse_id) ? $warehouse_id : $this->getWarehouseId($establishment_id), 
+            'warehouse_id' => ($warehouse_id) ? $warehouse_id : $this->getWarehouseId($establishment_id),
             'quantity' => $quantity,
         ]);
 
@@ -25,10 +25,10 @@ trait InventoryKardexTrait
 
     public function updateStock($item_id, $establishment_id, $quantity, $is_sale, $warehouse_id = null){
 
-        $item_warehouse = $this->getItemWarehouse($item_id, $establishment_id, $warehouse_id); 
+        $item_warehouse = $this->getItemWarehouse($item_id, $establishment_id, $warehouse_id);
         $item_warehouse->stock = ($is_sale) ? $item_warehouse->stock - $quantity : $item_warehouse->stock + $quantity;
         $item_warehouse->save();
-        
+
     }
 
 
@@ -53,7 +53,7 @@ trait InventoryKardexTrait
             'warehouse_id' => ($warehouse_id) ? $warehouse_id : $this->getWarehouseId($establishment_id),
             'stock' => $stock
             ]);
-            
+
     }
 
 

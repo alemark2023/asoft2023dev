@@ -6,6 +6,7 @@ use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
+use Illuminate\Support\Facades\Config;
 use Modules\Account\Models\Account;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
@@ -340,4 +341,5 @@ class Item extends ModelTenant
         $price = $warehousePrice ? $warehousePrice->price : $item->sale_unit_price;
         return number_format($price, 4, ".", "");
     }
+
 }

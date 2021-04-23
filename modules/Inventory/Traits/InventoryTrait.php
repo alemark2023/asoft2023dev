@@ -427,17 +427,19 @@ trait InventoryTrait
 
     public function verifyHasSaleLotsGroup($purchase_item)
     {
-        if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
-            $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
+        if(array_key_exists('lots_enabled', $purchase_item->item)) {
+            if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
+                $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
 
-            if (!$lot_group) {
-                throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+                if (!$lot_group) {
+                    throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+                }
+
+                if ((int)$lot_group->quantity != (int)$purchase_item->quantity) {
+                    throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
+                }
+
             }
-
-            if ((int)$lot_group->quantity != (int)$purchase_item->quantity) {
-                throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
-            }
-
         }
 
     }
@@ -449,12 +451,14 @@ trait InventoryTrait
             $it = ItemLot::findOrFail($row->id);
             $it->delete();
         }
-        if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
-            $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
-            if (!$lot_group) {
-                throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+        if(array_key_exists('lots_enabled', $purchase_item->item)) {
+            if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
+                $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
+                if (!$lot_group) {
+                    throw new Exception("El lote {$purchase_item->lot_code} no existe!");
+                }
+                $lot_group->delete();
             }
-            $lot_group->delete();
         }
     }
 
