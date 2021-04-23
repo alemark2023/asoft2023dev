@@ -180,7 +180,7 @@ class PurchaseController extends Controller
                     $p_item->purchase_id = $doc->id;
                     $p_item->save();
 
-                    if ($row['update_price']) {
+                    if (isset($row['update_price']) && $row['update_price']) {
                         if (! ($row['sale_unit_price'] ?? false)) {
                             throw new Exception('Debe ingresar el nuevo precio de venta del producto, cuando la opción "Actualizar precio de venta" está activado', 500);
                         }
@@ -188,7 +188,7 @@ class PurchaseController extends Controller
                             ->update(['sale_unit_price' => floatval($row['sale_unit_price'])]);
                     }
 
-                    if ($row['update_purchase_price']) {
+                    if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
                         Item::query()->where('id', $row['item_id'])
                             ->update(['purchase_unit_price' => floatval($row['unit_price'])]);
                     }
