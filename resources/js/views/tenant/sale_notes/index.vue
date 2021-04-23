@@ -183,7 +183,7 @@
                           :recordId="saleNotesNewId"
                           :showClose="true"></sale-notes-options>
 
-        <sale-note-generate :showDialog.sync="showDialogGenerate"
+        <sale-note-generate :show.sync="showDialogGenerate"
                            :recordId="recordId"
                            :showGenerate="true"
                            :showClose="false"></sale-note-generate>
