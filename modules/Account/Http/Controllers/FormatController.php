@@ -63,55 +63,58 @@ class FormatController extends Controller
     private function getSaleDocuments($d_start, $d_end)
     {
         return Document::query()
-                                ->whereBetween('date_of_issue', [$d_start, $d_end])
-                                // ->whereIn('document_type_id', ['01', '03'])
-                                ->whereIn('currency_type_id', ['PEN', 'USD'])
-                                ->orderBy('series')
-                                ->orderBy('number')
-                                ->get()->transform(function($row) {
-                                    $total = $row->total;
-                                    $total_taxed = $row->total_taxed;
-                                    $symbol = $row->currency_type->symbol;
-                                    $total_igv = $row->total_igv;
+            ->whereBetween('date_of_issue', [$d_start, $d_end])
+            // ->whereIn('document_type_id', ['01', '03'])
+            ->whereIn('currency_type_id', ['PEN', 'USD'])
+            ->orderBy('series')
+            ->orderBy('number')
+            ->get()->transform(function ($row) {
+                $total = $row->total;
+                $total_taxed = $row->total_taxed;
+                $symbol = $row->currency_type->symbol;
+                $total_igv = $row->total_igv;
 
-                                    if($row->currency_type_id == 'USD')
-                                    {
-                                        $total = round($row->total * $row->exchange_rate_sale, 2);
-                                        $total_taxed = round($row->total_taxed * $row->exchange_rate_sale, 2);
-                                        $symbol = 'S/';
+                if ($row->currency_type_id == 'USD') {
+                    $total = round($row->total * $row->exchange_rate_sale, 2);
+                    $total_taxed = round($row->total_taxed * $row->exchange_rate_sale, 2);
+                    $symbol = 'S/';
 
-                                        $total_igv = round($row->total_igv * $row->exchange_rate_sale, 2);
-                                    }
+                    $total_igv = round($row->total_igv * $row->exchange_rate_sale, 2);
+                }
+                $note_affected_document = new Document();
+                if (!empty($row->note)) {
+                    if (!empty($row->affected_document)) {
+                        $note_affected_document = $row->affected_document;
+                    }
+                }
 
+                return [
+                    'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                    'document_type_id' => $row->document_type_id,
+                    'state_type_id' => $row->state_type_id,
+                    'series' => $row->series,
+                    'number' => $row->number,
+                    'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                    'customer_number' => $row->customer->number,
+                    'customer_name' => $row->customer->name,
+                    'total_exportation' => $row->total_exportation,
+                    'total_taxed' => $total_taxed,
+                    'total_exonerated' => $row->total_exonerated,
+                    'total_unaffected' => $row->total_unaffected,
+                    'total_plastic_bag_taxes' => $row->total_plastic_bag_taxes,
+                    'total_isc' => $row->total_isc,
+                    'total_igv' => $total_igv,
+                    'total' => $total,
+                    'exchange_rate_sale' => $row->exchange_rate_sale,
+                    'currency_type_symbol' => $symbol,
+                    'affected_document' => (in_array($row->document_type_id, ['07', '08'])) ? [
+                        'date_of_issue' => !empty($note_affected_document->date_of_issue)?$note_affected_document->date_of_issue->format('d/m/Y'):null,
+                        'document_type_id' => $note_affected_document->document_type_id,
+                        'series' => $note_affected_document->series,
+                        'number' => $note_affected_document->number,
 
-                                    return [
-                                        'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
-                                        'document_type_id' => $row->document_type_id,
-                                        'state_type_id' => $row->state_type_id,
-                                        'series' => $row->series,
-                                        'number' => $row->number,
-                                        'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
-                                        'customer_number' => $row->customer->number,
-                                        'customer_name' => $row->customer->name,
-                                        'total_exportation' => $row->total_exportation,
-                                        'total_taxed' => $total_taxed,
-                                        'total_exonerated' => $row->total_exonerated,
-                                        'total_unaffected' => $row->total_unaffected,
-                                        'total_plastic_bag_taxes' => $row->total_plastic_bag_taxes,
-                                        'total_isc' => $row->total_isc,
-                                        'total_igv' => $total_igv,
-                                        'total' => $total,
-                                        'exchange_rate_sale' => $row->exchange_rate_sale,
-                                        'currency_type_symbol' => $symbol,
-                                        'affected_document' => (in_array($row->document_type_id, ['07', '08'])) ? [
-
-                                            'date_of_issue' => $row->note->affected_document->date_of_issue->format('d/m/Y'),
-                                            'document_type_id' => $row->note->affected_document->document_type_id,
-                                            'series' => $row->note->affected_document->series,
-                                            'number' => $row->note->affected_document->number,
-
-                                        ] : null
-                                    ];
+                    ] : null
+                ];
             });
 
     }
