@@ -76,14 +76,36 @@
                     resource: 'reports/consistency-documents',
                     loading_submit: false,
                     pickeroptions: {
+                        onPick: ({maxDate, minDate}) => {
+                            this.selectDate = 1;
+                            this.minDate = minDate && minDate.getTime()
+                            if (maxDate) {
+                                this.minDate = ''
+                            }
+                            if(minDate  && maxDate){
+                                this.selectDate = 0;
+                            }
+                        },
                         disabledDate: date => {
                             let now = new Date();
-                            return date.getTime() < (this.minDate) || date.getTime() > (now.getTime());
+                            let tiempo = date.getTime();
+                            // Tope de consulta + - 30 dias de la fecha seleccionada
+                            let Dias = 30 * 24 * 60 * 60 * 1000
+                            if (this.minDate !== '' && this.selectDate == 1) {
+                                // No permite que se seleccione fechas mayores a hoy o menores al minimo
+                                if ((this.minDate + Dias) > now.getTime() || (this.minDate - Dias) < this.minBaseDate) {
+                                    return false
+                                }
+                                return tiempo > (this.minDate + Dias) || tiempo <  (this.minDate - Dias);
+                            }
+                            return tiempo > (now.getTime()) || tiempo < (this.minDate);
                         },
                     },
                     showDialog: false,
                     minDate: new Date(),
                     maxDate: new Date(),
+                    minBaseDate : new Date(), /* Variable temporal para que no sea sobreescrita.*/
+                    selectDate: 0,
                     form: {
                         date_start: [
                             new Date(),
@@ -135,6 +157,7 @@
                             this.maxDate = new Date(this.tableData[0].max);
                             this.maxDate = this.maxDate.getTime();
                             this.minDate = this.minDate.getTime();
+                            this.minBaseDate  = this.minDate;
                         }
                     }).catch((error) => {
                     console.log(error);
