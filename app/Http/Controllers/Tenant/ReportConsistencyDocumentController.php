@@ -29,14 +29,16 @@ class ReportConsistencyDocumentController extends Controller
      */
     public function lists(Request $request) {
         $dates = [
-            'min' => (!$this->getIsClient()) ? Carbon::now()->startOfMonth() : Document::select('created_at')->min(),
-            'max' => (!$this->getIsClient()) ? Carbon::now() : Document::select('created_at')->max(),
+            'min' =>  Carbon::parse(Document::select('created_at')->min('created_at')),
+            'max' =>  Carbon::parse(Document::select('created_at')->max('created_at')),
         ];
-        $dates['start_date'] = $dates['min'];
+        $dates['start_date'] = ($dates['max']->addMonth(-1) < $dates['max'])?$dates['max']->addMonth(-1):$dates['max'];
         $dates['end_date'] = $dates['max'];
         if ($request->has('date_start') && !empty($request->date_start) && is_array($request->date_start)) {
             $start_date = Carbon::parse($request->date_start[0]);
             $end_date = Carbon::parse($request->date_start[1]);
+            /*
+             // Se remueve la validacion de  getIsClient por la aplicacion del issue #425
             if (!$this->getIsClient()) {
                 $dates['start_date'] = ($start_date < Carbon::now()->startOfMonth()) ? $dates['start_date'] : $start_date;
                 $dates['end_date'] = ($end_date > Carbon::now()) ? $dates['end_date'] : $end_date;
@@ -44,6 +46,9 @@ class ReportConsistencyDocumentController extends Controller
                 $dates['start_date'] = $start_date;
                 $dates['end_date'] = $end_date;
             }
+            */
+            $dates['start_date'] = $start_date;
+            $dates['end_date'] = $end_date;
         }
 
         return Series::query()
