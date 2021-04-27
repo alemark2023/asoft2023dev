@@ -548,7 +548,7 @@ class OrderNoteController extends Controller
         $filename = ($filename != null) ? $filename : $this->order_note->filename;
 
         // $base_template = config('tenant.pdf_template');
-        $base_template = Configuration::first()->formats;
+        $base_template = Establishment::find($document->establishment_id)->template_pdf;
 
         $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
