@@ -44,4 +44,16 @@ class BankAccount extends ModelTenant
     {
         return $value ? true : false;
     }
+
+    /**
+     *
+     * Devuelve las cuentas bancarias que esten activas (status 1) y
+     * que deban imprimirse en los documentos (show_in_documents 1)
+     *
+     * @return Builder
+     */
+    public function scopePrintShowInDocuments($query)
+    {
+        return $query->where('status', 1)->where('show_in_documents', 1);
+    }
 }
