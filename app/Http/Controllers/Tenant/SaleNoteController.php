@@ -440,8 +440,8 @@ class SaleNoteController extends Controller
         $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
 
         $this->configuration = Configuration::first();
-        $configuration = $this->configuration->formats;
-        $base_template = $configuration;
+        // $configuration = $this->configuration->formats;
+        $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
 
         $html = $template->pdf($base_template, "sale_note", $this->company, $this->document, $format_pdf);
 

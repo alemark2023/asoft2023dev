@@ -171,7 +171,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document_type_03_filter = config('tenant.document_type_03_filter');
         $user = auth()->user()->type;
-        $sellers = User::whereIn('type', ['seller'])->orWhere('id', auth()->user()->id)->get();
+        $sellers = User::where('establishment_id', auth()->user()->establishment_id)->whereIn('type', ['seller'])->orWhere('id', auth()->user()->id)->get();
         $payment_method_types = $this->table('payment_method_types');
         $business_turns = BusinessTurn::where('active', true)->get();
         $enabled_discount_global = config('tenant.enabled_discount_global');

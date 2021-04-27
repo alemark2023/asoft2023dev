@@ -339,7 +339,7 @@ class PurchaseOrderController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->purchase_order->filename;
 
-        $base_template = config('tenant.pdf_template');
+        $base_template = Establishment::find($document->establishment_id)->template_pdf;
 
         $html = $template->pdf($base_template, "purchase_order", $company, $document, $format_pdf);
 

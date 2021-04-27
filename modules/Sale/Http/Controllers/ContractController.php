@@ -426,9 +426,9 @@ class ContractController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->contract->filename;
 
-        $configuration = Configuration::first();
+        // $configuration = Configuration::first();
 
-        $base_template = $configuration->formats; //config('tenant.pdf_template');
+        $base_template = Establishment::find($document->establishment_id)->template_pdf;
 
         $html = $template->pdf($base_template, "contract", $company, $document, $format_pdf);
 
