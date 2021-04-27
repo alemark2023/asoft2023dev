@@ -276,7 +276,8 @@ class Facturalo
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
-        $base_pdf_template = Establishment::find($document->establishment_id)->template_pdf;
+        // dd($this->document);
+        $base_pdf_template = Establishment::find($this->document->establishment_id)->template_pdf;
 
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;

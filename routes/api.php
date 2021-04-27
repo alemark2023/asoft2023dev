@@ -46,7 +46,7 @@ if ($hostname) {
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
         Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
-        Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
+        // Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
 
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
