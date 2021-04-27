@@ -258,7 +258,10 @@ class SaleNoteController extends Controller
 
                 if(isset($row['IdLoteSelected']))
                 {
-                    $quantity_unit = $row['item']['presentation']['quantity_unit'];
+                    $quantity_unit = 1;
+                    if(isset($row['item']) && isset($row['item']['presentation'])&&isset($row['item']['presentation']['quantity_unit'])){
+                        $quantity_unit = $row['item']['presentation']['quantity_unit'];
+                    }
                     $lot = ItemLotsGroup::find($row['IdLoteSelected']);
                     $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
                     $lot->save();
@@ -1141,7 +1144,7 @@ class SaleNoteController extends Controller
         });
 
         if($lot_group_selected){
-
+            // @todo Posiblemente validar que exista quantity_unit.
             $quantity_unit = $item->item->presentation->quantity_unit;
             //$lot = ItemLotsGroup::find($row['IdLoteSelected']);
 //            $lot->quantity = ($lot->quantity - ($row['quantity'] * $quantity_unit));
