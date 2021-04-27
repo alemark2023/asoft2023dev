@@ -37,20 +37,25 @@ class CashController extends Controller
         $cash = Cash::findOrFail($cash);
         $company = Company::first();
 
-        $methods_payment = collect(PaymentMethodType::all())->transform(function ($row) {
+        $methods_payment = collect(PaymentMethodType::NonCredit()->get())->transform(function ($row) {
             return (object)[
                 'id' => $row->id,
                 'name' => $row->description,
                 'sum' => 0
             ];
         });
-
+        $type_documents = PaymentMethodType::NonCredit()
+            ->select('id')
+            ->get()
+            ->transform(function ($row) {
+                return $row->id;
+            })->toArray();
         set_time_limit(0);
 
         $quantity_rows = 30;//$cash->cash_documents()->count();
 
         $html = view('pos::cash.report_pdf_' . $format,
-            compact('cash', 'company', 'methods_payment'))->render();
+            compact('cash', 'company', 'methods_payment','type_documents'))->render();
         $width = 78;
         if ($format === 'ticket') {
             $pdf = new Mpdf([
