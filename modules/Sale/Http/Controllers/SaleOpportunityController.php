@@ -373,7 +373,7 @@ class SaleOpportunityController extends Controller
         $company = ($this->company != null) ? $this->company : Company::active();
         $filename = ($filename != null) ? $filename : $this->sale_opportunity->filename;
 
-        $base_template = config('tenant.pdf_template');
+        $base_template = Establishment::find($document->establishment_id)->template_pdf;;
 
         $html = $template->pdf($base_template, "sale_opportunity", $company, $document, $format_pdf);
 
