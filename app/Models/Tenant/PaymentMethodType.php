@@ -24,7 +24,51 @@ class PaymentMethodType extends ModelTenant
         'has_card',
         'charge',
         'number_days',
+        'is_credit',
+        'is_cash',
     ];
+
+    /**
+     * @return bool
+     */
+    public function isIsCash()
+    {
+        return (bool) $this->is_cash;
+    }
+
+    /**
+     * @param int|bool $is_cash
+     *
+     * @return PaymentMethodType
+     */
+    public function setIsCash($is_cash = 0)
+    {
+        $this->is_cash = (bool) $is_cash;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsCredit()
+    {
+        return (bool) $this->is_credit;
+    }
+
+    /**
+     * @param int|bool $is_cash
+     *
+     * @return PaymentMethodType
+     */
+    public function setIsCredit( $is_credit = 0)
+    {
+        $this->is_credit = (bool) $is_credit;
+        return $this;
+    }
+
+    public function scopeNonCredit($query){
+        return $query->where('is_credit',0);
+    }
 
 
     public function document_payments()
