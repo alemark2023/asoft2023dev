@@ -312,31 +312,84 @@ class PosController extends Controller
 
     }
 
+    /**
+     * Lista inicial de items en POS
+     *
+     * @param Request $request
+     *
+     * @return PosCollection
+     */
     public function item(Request $request)
     {
-        if($request->cat) {
-            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('series_enabled', 0)->where([['unit_type_id', '!=', 'ZZ'], ['category_id', $request->cat]])->orderBy('description')->paginate(50));
-        } else {
-            return new PosCollection(Item::whereWarehouse()->whereIsActive()->where('series_enabled', 0)->where('unit_type_id', '!=', 'ZZ')->orderBy('description')->paginate(50));
+        $items = Item::whereWarehouse()
+            ->whereIsActive()
+            ->where('series_enabled', 0)
+            ->orderBy('description')
+            ->where('unit_type_id', '!=', 'ZZ');
+        self::FilterItem($items, $request);
+
+        return new PosCollection($items->paginate(50));
+
+    }
+
+    /**
+     * Unificacion de los filtros de busqueda de items en POS
+     * Se evalua categoria como $request->cat
+     * se evalua description, internal_id del item como $request->input_item
+     * se evalua name de brand y category como $request->input_item
+     *
+     * @param Item    $item
+     * @param Request $request
+     */
+    public static function FilterItem(&$item, Request $request)
+    {
+        $whereItem = [];
+        $whereExtra = [];
+
+        if ($request->cat && !empty($request->cat)) {
+            $whereItem[] = ['category_id', $request->cat];
         }
 
+        if ($request->input_item && !empty($request->input_item)) {
+            $whereItem[] = ['description', 'like', '%'.$request->input_item.'%'];
+            $whereItem[] = ['internal_id', 'like', '%'.$request->input_item.'%'];
+            $whereExtra[] = ['name', 'like', '%'.$request->input_item.'%'];
+        }
+
+        foreach ($whereItem as $index => $wItem) {
+            if($index < 1) {
+                $item->Where([$wItem]);
+            }else{
+                $item->orWhere([$wItem]);
+            }
+        }
+
+        if (!empty($whereExtra)) {
+            $item
+                ->orWhereHas('brand', function ($query) use ($whereExtra) {
+                $query->where($whereExtra);
+            })
+                ->orWhereHas('category', function ($query) use ($whereExtra) {
+                $query->where($whereExtra);
+            });
+        }
     }
 
+    /**
+     * Se busca items al escribir en input_item desde POS
+     *
+     * @param Request $request
+     *
+     * @return PosCollection
+     */
     public function search_items_cat(Request $request)
     {
-        return new PosCollection(Item::where('description','like', "%{$request->input_item}%")->where('series_enabled', 0)
-                            ->orWhere('internal_id','like', "%{$request->input_item}%")
-                            //->orwhere('category_id', $request->cat)
-                            ->orWhereHas('category', function($query) use($request) {
-                                $query->where('name', 'like', '%' . $request->input_item . '%');
-                            })
-                            ->orWhereHas('brand', function($query) use($request) {
-                                $query->where('name', 'like', '%' . $request->input_item . '%');
-                            })
-                            ->whereWarehouse()
-                            ->whereIsActive()
-                            ->paginate(config(50)));
+        $item = Item::whereWarehouse()
+            ->whereIsActive()
+            ->where('series_enabled', 0);
+
+        self::FilterItem($item, $request);
+        return new PosCollection($item->paginate(config(50)));
 
     }
-
 }
