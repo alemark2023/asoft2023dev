@@ -196,7 +196,7 @@
                                 >
                                     <p
                                         class="font-weight-semibold mb-0"
-                                        v-if="item.description.length > 50"
+                                        v-if="DescriptionLength(item) > 50"
                                         data-toggle="tooltip"
                                         data-placement="top"
                                         :title="item.description"
@@ -205,7 +205,7 @@
                                     </p>
                                     <p
                                         class="font-weight-semibold mb-0"
-                                        v-if="item.description.length <= 50"
+                                        v-if="DescriptionLength(item) <= 50"
                                     >
                                         {{ item.description }}
                                     </p>
@@ -1112,6 +1112,7 @@ export default {
                     } else {
                         this.pagination.total = 0;
                     }
+                    this.fixItems();
                 });
         },
         getQueryParameters() {
@@ -1119,6 +1120,8 @@ export default {
                 page: this.pagination.current_page
                     ? this.pagination.current_page
                     : 1,
+                input_item: this.input_item,
+                cat: this.category_selected,
                 limit: this.limit
             });
         },
@@ -1799,7 +1802,7 @@ export default {
                             this.pagination.per_page = parseInt(
                                 response.data.meta.per_page
                             );
-
+                            this.fixItems();
                             this.loading = false;
                         } else {
                             this.loading = false;
@@ -1823,7 +1826,7 @@ export default {
                     .then(response => {
                         console.log("buah");
                         this.items = response.data.items;
-                        console.log(this.items);
+                        this.fixItems();
                         this.enabledSearchItemsBarcode();
                         this.loading = false;
                         if (this.items.length == 0) {
@@ -1833,6 +1836,23 @@ export default {
             } else {
                 await this.filterItems();
             }
+        },
+        fixItems(){
+            this.items = this.all_items.map(i => {
+                /** Si description es vacio y hay nombre */
+                if(i.name !== undefined) {
+                    if ( i.description === undefined || i.description == null ) {
+                        i.description = i.name;
+                    }
+                }
+                /** Si description es vacio aun */
+                if(i.description == null){
+                    i.description = i.internal_id;
+                }
+
+                return i;
+            });
+            this.all_items =this.items;
         },
         enabledSearchItemsBarcode() {
             if (this.search_item_by_barcode) {
@@ -1875,6 +1895,7 @@ export default {
         reloadDataItems(item_id) {
             this.$http.get(`/${this.resource}/table/items`).then(response => {
                 this.all_items = response.data;
+                this.fixItems();
                 this.filterItems();
             });
         },
@@ -1934,6 +1955,11 @@ export default {
             console.log(items);
             console.log(_.reverse(items));
             return _.reverse(items);
+        },
+        DescriptionLength(item){
+            if(item.description === undefined) return 0;
+            if(item.description == null) return 0;
+            return item.description.length;
         }
     }
 };
