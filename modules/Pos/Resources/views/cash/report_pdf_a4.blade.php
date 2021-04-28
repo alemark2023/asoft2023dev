@@ -1,11 +1,4 @@
 <?php
-$methods_payment = !isset($methods_payment) ? collect(PaymentMethodType::NonCredit()->get())->transform(function ($row) {
-    return (object)[
-        'id' => $row->id,
-        'name' => $row->description,
-        'sum' => 0
-    ];
-}) : $methods_payment;
 
 $establishment = $cash->user->establishment;
 
