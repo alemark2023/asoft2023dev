@@ -204,6 +204,18 @@
                                                 </el-upload>
                                             </el-input>
                                         </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Mostrar ticket 58mm
+                                                <el-tooltip class="item" effect="dark" placement="top-start">
+                                                    <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas de Crédito-Débito) </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div class="form-group" :class="{'has-danger': errors.ticket_58}">
+                                                <el-switch v-model="form.ticket_58" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                                <small class="form-control-feedback" v-if="errors.ticket_58" v-text="errors.ticket_58[0]"></small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </el-tab-pane>
@@ -266,7 +278,8 @@
                 resource: 'configurations',
                 errors: {},
                 form: {
-                    finances: {}
+                    finances: {},
+                    visual: {}
                 },
                 affectation_igv_types: [],
                 placeholder:'',
@@ -279,7 +292,7 @@
 
             await this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== ''){
-                this.form = response.data.data;
+                    this.form = response.data.data;
                 }
                 // console.log(this.placeholder)
             });
@@ -340,7 +353,9 @@
                     destination_sale: false,
                     quotation_allow_seller_generate_sale: false,
                     allow_edit_unit_price_to_seller: false,
-                    finances: {}
+                    finances: {},
+                    visual: {},
+                    ticket_58: false
                 };
             },
             submit() {

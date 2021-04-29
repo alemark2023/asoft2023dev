@@ -580,7 +580,8 @@
             :recordId="documentNewId"
             :isContingency="is_contingency"
             :isUpdate="isUpdate"
-            :showClose="false"></document-options>
+            :showClose="false"
+            :configuration="configuration"></document-options>
 
 
         <document-hotel-form

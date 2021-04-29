@@ -15,14 +15,16 @@
             <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold" v-if="!locked_emission.success">
                 <el-alert    :title="locked_emission.message"    type="warning"    show-icon>  </el-alert>
             </div>
+        </div>
+        <div class="row">
 
-            <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
+            <div class="col text-center font-weight-bold mt-3">
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a4')">
                     <i class="fa fa-file-alt"></i>
                 </button>
                 <p>Imprimir A4</p>
             </div>
-             <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
+             <div class="col text-center font-weight-bold mt-3">
 
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket')">
                     <i class="fa fa-receipt"></i>
@@ -30,7 +32,7 @@
                  <p>Imprimir Ticket 80MM</p>
             </div>
 
-             <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
+             <div class="col text-center font-weight-bold mt-3">
 
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_50')">
                     <i class="fa fa-receipt"></i>
@@ -38,13 +40,23 @@
                 <p>Imprimir Ticket 50MM</p>
             </div>
 
-            <div class="col-lg-3 col-md-3 col-sm-12 text-center font-weight-bold mt-3">
+            <div class="col text-center font-weight-bold mt-3" v-if="configuration.ticket_58">
+
+                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_58')">
+                    <i class="fa fa-receipt"></i>
+                </button>
+                <p>Imprimir Ticket 58MM</p>
+            </div>
+
+            <div class="col text-center font-weight-bold mt-3">
 
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('a5')">
                     <i class="fa fa-receipt"></i>
                 </button>
                 <p>Imprimir A5</p>
             </div>
+        </div>
+        <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 text-center font-weight-bold mt-3" v-if="form.image_detraction">
                 <a :href="`${this.form.image_detraction}`" download class="text-center font-weight-bold text-dark">Descargar constancia de pago - detracción</a>
             </div>
@@ -91,7 +103,7 @@
 
 <script>
     export default {
-        props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId', 'isUpdate'],
+        props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId', 'isUpdate','configuration'],
         data() {
             return {
                 titleDialog: null,
