@@ -1826,7 +1826,6 @@ export default {
                     .then(response => {
                         console.log("buah");
                         this.items = response.data.items;
-                        this.fixItems();
                         this.enabledSearchItemsBarcode();
                         this.loading = false;
                         if (this.items.length == 0) {
