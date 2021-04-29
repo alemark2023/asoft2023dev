@@ -14,7 +14,7 @@ use Modules\Pos\Exports\ReportCashExport;
 use Modules\Pos\Mail\CashEmail;
 use Illuminate\Support\Facades\Mail;
 
-class CashController extends Controller
+class CashControllerRevision extends Controller
 {
     public function email(Request $request)
     {
