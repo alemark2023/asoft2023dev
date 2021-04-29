@@ -61,14 +61,16 @@ class OrderNoteController extends Controller
     {
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $configuration = Configuration::first();
 
-        return view('order::order_notes.index', compact('soap_company'));
+        return view('order::order_notes.index', compact('soap_company','configuration'));
     }
 
 
     public function create()
     {
-        return view('order::order_notes.form');
+        $configuration = Configuration::first();
+        return view('order::order_notes.form', compact('configuration'));
     }
 
     public function edit($id)
@@ -552,10 +554,22 @@ class OrderNoteController extends Controller
 
         $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
-        if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80') {
+        if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80' OR $format_pdf === 'ticket_58') {
 
             $width = 78;
+            $pdf_margin_top = 2;
+            $pdf_margin_right = 5;
+            $pdf_margin_bottom = 0;
+            $pdf_margin_left = 5;
             if(config('tenant.enabled_template_ticket_80')) $width = 76;
+
+            if ($format_pdf === 'ticket_58') {
+                $width = 58;
+                $pdf_margin_top = 1;
+                $pdf_margin_right = 1;
+                $pdf_margin_bottom = 0;
+                $pdf_margin_left = 1;
+            }
 
             $company_name      = (strlen($company->name) / 20) * 10;
             $company_address   = (strlen($document->establishment->address) / 30) * 10;
@@ -597,10 +611,10 @@ class OrderNoteController extends Controller
                     $total_unaffected +
                     $total_exonerated +
                     $total_taxed],
-                'margin_top' => 2,
-                'margin_right' => 5,
-                'margin_bottom' => 0,
-                'margin_left' => 5
+                'margin_top' => $pdf_margin_top,
+                'margin_right' => $pdf_margin_right,
+                'margin_bottom' => $pdf_margin_bottom,
+                'margin_left' => $pdf_margin_left
             ]);
         } else if($format_pdf === 'a5'){
 

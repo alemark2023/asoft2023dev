@@ -98,11 +98,13 @@
             <quotation-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
                               :showGenerate="true"
-                              :showClose="true"></quotation-options>
+                              :showClose="true"
+                              :configuration="configuration"></quotation-options>
 
             <quotation-options-pdf :showDialog.sync="showDialogOptionsPdf"
                               :recordId="recordId"
-                              :showClose="true"></quotation-options-pdf>
+                              :showClose="true"
+                              :configuration="configuration"></quotation-options-pdf>
         </div>
     </div>
 </template>
@@ -119,7 +121,7 @@
     import {deletable} from '@mixins/deletable'
 
     export default {
-        props:['typeUser', 'soapCompany'],
+        props:['typeUser', 'soapCompany','configuration'],
         mixins: [deletable],
         components: {DataTable,QuotationOptions, QuotationOptionsPdf},
         data() {
