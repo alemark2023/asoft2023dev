@@ -41,7 +41,8 @@ class Configuration extends ModelTenant
         'destination_sale',
         'terms_condition_sale',
         'login',
-        'finances'
+        'finances',
+        'ticket_58'
     ];
 
     protected $casts = [

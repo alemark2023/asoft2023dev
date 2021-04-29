@@ -10,7 +10,7 @@
       :show-close="false"
     >
       <div class="row" v-show="!showGenerate">
-        <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+        <div class="col text-center font-weight-bold">
           <p>Imprimir A4</p>
           <button
             type="button"
@@ -20,7 +20,7 @@
             <i class="fa fa-file-alt"></i>
           </button>
         </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+        <div class="col text-center font-weight-bold">
           <p>Imprimir A5</p>
           <button
             type="button"
@@ -30,7 +30,7 @@
             <i class="fa fa-file-alt"></i>
           </button>
         </div>
-        <div class="col-lg-4 col-md-4 col-sm-4 text-center font-weight-bold">
+        <div class="col text-center font-weight-bold">
           <p>Imprimir Ticket</p>
           <button
             type="button"
@@ -39,6 +39,15 @@
           >
             <i class="fa fa-receipt"></i>
           </button>
+        </div>
+        <div class="col text-center font-weight-bold" v-if="configuration.ticket_58">
+            <p>Imprimir Ticket 58MM</p>
+            <button type="button"
+              class="btn btn-lg btn-info waves-effect waves-light"
+              @click="clickToPrint('ticket_58')"
+            >
+              <i class="fa fa-receipt"></i>
+            </button>
         </div>
       </div>
       <br />
@@ -282,6 +291,7 @@
       :recordId="documentNewId"
       :isContingency="false"
       :showClose="true"
+      :configuration="configuration"
     ></document-options>
 
     <sale-note-options
@@ -299,7 +309,7 @@ import SaleNoteOptions from "@views/sale_notes/partials/options.vue";
 export default {
   components: { DocumentOptions, SaleNoteOptions },
 
-  props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser'],
+  props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser','configuration'],
   data() {
     return {
       customer_email: "",

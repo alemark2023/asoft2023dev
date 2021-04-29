@@ -31,7 +31,7 @@
                       <a @click="viewImage(o.formats)"><img :src="path.origin+'/templates/pdf/'+o.formats+'/image.png'" class="image" style="width: 100%"></a>
                       <div style="padding: 14px;">
                         <span class="text-center">{{o.formats}}</span>
-                        <div class="bottom clearfix text-right">
+                        <div class="bottom clearfix text-right" v-if="form.establishment_id">
                             <!-- <el-button type="submit" class="button" @change="changeFormat(o.formats)">Activo</el-button> -->
                             <el-radio v-model="form.current_format" :label="o.formats" @change="changeFormat(o.formats)">
                                 <span v-if="form.current_format == o.formats">Activo</span>
@@ -52,7 +52,7 @@
             </span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="modalImage = false">Cerrar</el-button>
-                <el-button @click="changeFormat(template)" type="primary">Activar</el-button>
+                <el-button @click="changeFormat(template)" type="primary" v-if="form.establishment_id">Activar</el-button>
             </span>
         </el-dialog>
     </div>

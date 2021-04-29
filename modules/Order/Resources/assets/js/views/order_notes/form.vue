@@ -203,7 +203,8 @@
                           :recordId="orderNoteNewId"
                           :typeUser="typeUser"
                           :showGenerate="false"
-                          :showClose="false"></order-note-options>
+                          :showClose="false"
+                          :configuration="configuration"></order-note-options>
     </div>
 </template>
 
@@ -216,7 +217,7 @@
     import Logo from '@views/companies/logo.vue'
 
     export default {
-        props:['typeUser'],
+        props:['typeUser','configuration'],
         components: {OrderNoteFormItem, PersonForm, OrderNoteOptions, Logo},
         mixins: [functions, exchangeRate],
         data() {
