@@ -84,10 +84,14 @@ class ReportGeneralItemController extends Controller
 
     private function dataItems($date_start, $date_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type)
     {
+        /* columna state_type_id */
+        $documents_excluded = [
+            '11' // Documentos anulados
+        ];
         if( $document_type_id && $document_type_id == '80' ) {
             $relation = 'sale_note';
 
-            $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end, $user_id){
+            $data = SaleNoteItem::whereHas('sale_note', function($query) use($date_start, $date_end, $user_id, $documents_excluded){
                 $query
                 ->whereBetween('date_of_issue', [$date_start, $date_end])
                 ->latest()
@@ -95,6 +99,7 @@ class ReportGeneralItemController extends Controller
                 if(!empty($user_id)){
                     $query->where('user_id',$user_id);
                 }
+                $query->whereNotIn('state_type_id', $documents_excluded);
             });
 
         } else {
@@ -104,13 +109,16 @@ class ReportGeneralItemController extends Controller
 
             $document_types = $document_type_id ? [$document_type_id] : ['01','03'];
 
-            $data = $model::whereHas($relation, function($query) use($date_start, $date_end, $document_types){
-                            $query
-                            ->whereBetween('date_of_issue', [$date_start, $date_end])
-                            ->whereIn('document_type_id', $document_types)
-                            ->latest()
-                            ->whereTypeUser();
-                        });
+            $data = $model::whereHas($relation, function ($query) use ($date_start, $date_end, $document_types, $model,$documents_excluded) {
+                $query
+                    ->whereBetween('date_of_issue', [$date_start, $date_end])
+                    ->whereIn('document_type_id', $document_types)
+                    ->latest()
+                    ->whereTypeUser();
+                if ($model == 'App\Models\Tenant\DocumentItem') {
+                    $query->whereNotIn('state_type_id', $documents_excluded);
+                }
+            });
             if ($user_id && $user_type === 'CREADOR') {
                 $data = $data->whereHas($relation.'.user', function($query) use($user_id){
                     $query->where('user_id', $user_id);
