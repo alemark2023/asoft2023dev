@@ -389,7 +389,7 @@ class PosController extends Controller
             ->where('series_enabled', 0);
 
         self::FilterItem($item, $request);
-        return new PosCollection($item->paginate(config(50)));
+        return new PosCollection($item->paginate(50));
 
     }
 }
