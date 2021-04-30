@@ -89,6 +89,7 @@
                                 accordion
                                 :check-strictly="true"
                                 highlight-current
+                                @check="FixChildren"
                                 :props="defaultProps">
                             </el-tree>
                         </div>
@@ -253,6 +254,12 @@
                 collapse: 1,
             }
         },
+        updated () {
+            // Set default values ​​for multiple selection trees
+            if(this.modules !== undefined && this.$refs.tree !== undefined) {
+                this.$refs.tree.setCheckedKeys(this.modules)
+            }
+        },
         async created() {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -273,6 +280,38 @@
 
         },
         methods: {
+            FixChildren(currentObj, treeStatus) {
+                if (currentObj !== undefined) {
+                    let selected = treeStatus.checkedKeys.indexOf(currentObj.id) // -1 is unchecked
+                    if (selected !== -1) {
+                        this.SelectParent(currentObj)
+                        this.FixSameValueToChild(currentObj, true)
+                    } else {
+                        if (currentObj.childrens !== undefined && currentObj.childrens.length !== 0) {
+                            this.FixSameValueToChild(currentObj, false)
+                        }
+                    }
+                }
+            },
+            FixSameValueToChild(treeList, isSelected) {
+                if (treeList !== undefined) {
+                    this.$refs.tree.setChecked(treeList.id, isSelected)
+                    if( treeList.childrens !== undefined) {
+                        for (let i = 0; i < treeList.childrens.length; i++) {
+                            this.FixSameValueToChild(treeList.childrens[i], isSelected)
+                        }
+                    }
+                }
+            },
+            SelectParent(currentObj) {
+                if(currentObj !== undefined) {
+                    let currentNode = this.$refs.tree.getNode(currentObj)
+                    if (currentNode.parent.key !== undefined) {
+                        this.$refs.tree.setChecked(currentNode.parent, true)
+                        this.SelectParent(currentNode.parent)
+                    }
+                }
+            },
             initForm() {
                 this.errors = {}
                 this.form = {
