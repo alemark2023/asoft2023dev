@@ -930,77 +930,75 @@
         },
         methods: {
             async onSetFormData(data) {
-                this.form = {
-                    establishment_id: data.establishment_id,
-                    document_type_id: data.document_type_id,
-                    id: data.id,
-                    hash: data.hash,
-                    number: data.number,
-                    date_of_issue: moment(data.date_of_issue).format('YYYY-MM-DD'),
-                    time_of_issue: data.time_of_issue,
-                    customer_id: data.customer_id,
-                    currency_type_id: data.currency_type_id,
-                    exchange_rate_sale: data.exchange_rate_sale,
-                    additional_information: this.onPrepareAdditionalInformation(data.additional_information),
-                    external_id: data.external_id,
-                    filename: data.filename,
-                    group_id: data.group_id,
-                    perception: data.perception,
-                    note: data.note,
-                    plate_number: data.plate_number,
-                    payments: data.payments,
-                    prepayments: data.prepayments || [],
-                    legends: [],
-                    detraction: data.detraction,
-                    affectation_type_prepayment: data.affectation_type_prepayment,
-                    purchase_order:  data.purchase_order,
-                    pending_amount_prepayment: data.pending_amount_prepayment || 0,
-                    payment_method_type_id: data.payment_method_type_id,
-                    charges: data.charges || [],
-                    discounts: data.discounts || [],
-                    seller_id: data.seller_id,
-                    items: this.onPrepareItems(data.items),
-                    series: data.series,
-                    state_type_id: data.state_type_id,
-                    total_discount: parseFloat(data.total_discount),
-                    total_exonerated: parseFloat(data.total_exonerated),
-                    total_exportation: parseFloat(data.total_exportation),
-                    total_free: parseFloat(data.total_free),
-                    total_igv: parseFloat(data.total_igv),
-                    total_isc: parseFloat(data.total_isc),
-                    total_base_isc: parseFloat(data.total_base_isc),
-                    total_base_other_taxes: parseFloat(data.total_base_other_taxes),
-                    total_other_taxes: parseFloat(data.total_other_taxes),
-                    total_plastic_bag_taxes: parseFloat(data.total_plastic_bag_taxes),
-                    total_prepayment: parseFloat(data.total_prepayment),
-                    total_taxed: parseFloat(data.total_taxed),
-                    total_taxes: parseFloat(data.total_taxes),
-                    total_unaffected: parseFloat(data.total_unaffected),
-                    total_value: parseFloat(data.total_value),
-                    total_charge: parseFloat(data.total_charge),
-                    total: parseFloat(data.total),
-                    series_id: this.onSetSeriesId(data.document_type_id, data.series),
+                this.form.establishment_id = data.establishment_id;
+                this.form.document_type_id = data.document_type_id;
+                this.form.id = data.id;
+                this.form.hash = data.hash;
+                this.form.number = data.number;
+                this.form.date_of_issue = moment(data.date_of_issue).format('YYYY-MM-DD');
+                this.form.time_of_issue = data.time_of_issue;
+                this.form.customer_id = data.customer_id;
+                this.form.currency_type_id = data.currency_type_id;
+                this.form.exchange_rate_sale = data.exchange_rate_sale;
+                this.form.additional_information = this.onPrepareAdditionalInformation(data.additional_information);
+                this.form.external_id = data.external_id;
+                this.form.filename = data.filename;
+                this.form.group_id = data.group_id;
+                this.form.perception = data.perception;
+                this.form.note = data.note;
+                this.form.plate_number = data.plate_number;
+                this.form.payments = data.payments;
+                this.form.prepayments = data.prepayments || [];
+                this.form.legends = [];
+                this.form.detraction = data.detraction;
+                this.form.affectation_type_prepayment = data.affectation_type_prepayment;
+                this.form.purchase_order =  data.purchase_order;
+                this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
+                this.form.payment_method_type_id = data.payment_method_type_id;
+                this.form.charges = data.charges || [];
+                this.form.discounts = data.discounts || [];
+                this.form.seller_id = data.seller_id;
+                this.form.items = this.onPrepareItems(data.items);
+                this.form.series = data.series;
+                this.form.state_type_id = data.state_type_id;
+                this.form.total_discount = parseFloat(data.total_discount);
+                this.form.total_exonerated = parseFloat(data.total_exonerated);
+                this.form.total_exportation = parseFloat(data.total_exportation);
+                this.form.total_free = parseFloat(data.total_free);
+                this.form.total_igv = parseFloat(data.total_igv);
+                this.form.total_isc = parseFloat(data.total_isc);
+                this.form.total_base_isc = parseFloat(data.total_base_isc);
+                this.form.total_base_other_taxes = parseFloat(data.total_base_other_taxes);
+                this.form.total_other_taxes = parseFloat(data.total_other_taxes);
+                this.form.total_plastic_bag_taxes = parseFloat(data.total_plastic_bag_taxes);
+                this.form.total_prepayment = parseFloat(data.total_prepayment);
+                this.form.total_taxed = parseFloat(data.total_taxed);
+                this.form.total_taxes = parseFloat(data.total_taxes);
+                this.form.total_unaffected = parseFloat(data.total_unaffected);
+                this.form.total_value = parseFloat(data.total_value);
+                this.form.total_charge = parseFloat(data.total_charge);
+                this.form.total = parseFloat(data.total);
+                this.form.series_id = this.onSetSeriesId(data.document_type_id, data.series);
+                this.form.operation_type_id = data.invoice.operation_type_id;
+                this.form.terms_condition = data.terms_condition || '';
+                this.form.guides = data.guides || [];
+                this.form.show_terms_condition = data.terms_condition ? true : false;
+                this.form.attributes = [];
+                this.form.customer = data.customer;
+                this.form.has_prepayment = false;
+                this.form.actions = {
+                    format_pdf:'a4',
+                };
+                this.form.hotel = {};
+                this.form.transport = {};
+                this.form.customer_address_id = null;
+                this.form.type = 'invoice';
+                this.form.invoice = {
                     operation_type_id: data.invoice.operation_type_id,
-                    terms_condition: data.terms_condition || '',
-                    guides: data.guides || [],
-                    show_terms_condition: data.terms_condition ? true : false,
-                    attributes: [],
-                    customer: data.customer,
-                    has_prepayment: false,
-                    actions: {
-                        format_pdf:'a4',
-                    },
-                    hotel: {},
-                    transport: {},
-                    customer_address_id:null,
-                    type: 'invoice',
-                    invoice: {
-                        operation_type_id: data.invoice.operation_type_id,
-                        date_of_due: data.invoice.date_of_due,
-                    },
-                    payment_condition_id: '01',
-                    fee: []
-                }
+                    date_of_due: data.invoice.date_of_due,
+                };
+                this.form.payment_condition_id = '01';
+                this.form.fee = [];
 
                 if (! data.guides) {
                     this.clickAddInitGuides();
@@ -1012,6 +1010,7 @@
                 this.filterCustomers();
                 this.changeDestinationSale();
                 this.calculateTotal();
+                this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             },
             onPrepareAdditionalInformation(data) {
                 if (typeof data === 'object') {
@@ -1026,6 +1025,9 @@
                 return items.map(i => {
                     i.unit_price_value = i.unit_value;
                     i.input_unit_price_value = i.unit_value;
+                    i.discounts = i.discounts || [];
+                    i.charges = i.charges || [];
+                    i.item.id = i.item_id;
                     i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
                     return i;
                 });
