@@ -17,6 +17,7 @@ if ($hostname) {
             Route::get('sale-note/lists', 'Tenant\Api\SaleNoteController@lists');
             Route::post('item', 'Tenant\Api\MobileController@item');
             Route::post('items/{id}/update', 'Tenant\Api\MobileController@updateItem');
+            Route::post('item/upload', 'Tenant\Api\MobileController@upload');
             Route::post('person', 'Tenant\Api\MobileController@person');
             Route::get('document/search-items', 'Tenant\Api\MobileController@searchItems');
             Route::get('document/search-customers', 'Tenant\Api\MobileController@searchCustomers');
