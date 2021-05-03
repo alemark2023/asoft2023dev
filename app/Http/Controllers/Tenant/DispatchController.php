@@ -189,6 +189,7 @@ class DispatchController extends Controller
             ->with('lots_group')
             ->where('item_type_id', '01')
             ->orderBy('description')
+            ->take(20)
             ->get()
             ->transform(function ($row) {
                 $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
