@@ -43,7 +43,7 @@ class ConfigurationResource extends JsonResource
             'quotation_allow_seller_generate_sale' => $this->quotation_allow_seller_generate_sale,
             'allow_edit_unit_price_to_seller' => $this->allow_edit_unit_price_to_seller,
             'finances' => $this->finances,
-            'ticket_58' => $this->ticket_58,
+            'ticket_58' => (bool) $this->ticket_58,
             ];
     }
 }
