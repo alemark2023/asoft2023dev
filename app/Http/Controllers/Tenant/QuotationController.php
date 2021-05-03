@@ -843,6 +843,7 @@ class QuotationController extends Controller
 
         // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
+        Configuration::setConfigSmtpMail();
         Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
         return [
             'success' => true

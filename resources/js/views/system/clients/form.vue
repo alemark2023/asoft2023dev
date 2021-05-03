@@ -195,6 +195,76 @@
                             </div>
                         </div>
                     </el-collapse-item>
+                    <!-- Configuracion de correo -->
+
+                    <el-collapse-item title="Configuracion de correo" name="3">
+                        <div  class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.smtp_host}">
+                                    <label class="control-label">
+                                        Dirección del host de correo
+                                    </label>
+                                    <el-input v-model="form.smtp_host"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.smtp_host" v-text="errors.smtp_host[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.smtp_port}">
+                                    <label class="control-label">
+                                        Puerto del host de correo
+                                    </label>
+                                    <el-input v-model="form.smtp_port"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.smtp_port" v-text="errors.smtp_port[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.smtp_user}">
+                                    <label class="control-label">
+                                        Nombre de usuario de correo
+                                    </label>
+                                    <el-input v-model="form.smtp_user"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.smtp_user" v-text="errors.smtp_user[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.smtp_password}">
+                                    <label class="control-label">
+                                        Contraseña del usuario de correo
+                                    </label>
+                                    <el-input type="password"  dusk="password" v-model="form.smtp_password"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.smtp_password" v-text="errors.smtp_password[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" :class="{'has-danger': errors.smtp_encryption}">
+                                    <label class="control-label">
+                                        Encriptación de correo
+                                    </label>
+                                    <el-input v-model="form.smtp_encryption"></el-input>
+                                    <small class="form-control-feedback" v-if="errors.smtp_encryption" v-text="errors.smtp_encryption[0]"></small>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">
+                                        Informacion adicional
+                                    </label>
+                                    <span>
+                                        Para google, se es necesario activar la verificacion de dos pasos
+                                        <a  href="https://support.google.com/accounts/answer/185833?hl=es-419"target="_blank">
+                                        https://support.google.com/accounts/answer/185833?hl=es-419</a>
+                                            y luego crear una contraseña de aplicación se puede encontrar mas informacion sobre las configuraciones del correo de gmail en su enlace
+                                        <a  href="https://support.google.com/a/answer/176600?hl=es#zippy=%2Cutilizar-el-servidor-smtp-de-gmail">https://support.google.com/a/answer/176600?hl=es#zippy=%2Cutilizar-el-servidor-smtp-de-gmail</a>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </el-collapse-item>
+                    <!-- Configuracion de correo -->
+
                 </el-collapse>
 
                 <div class="row">
@@ -336,6 +406,12 @@
                     password_certificate: null,
                     certificate: null,
                     temp_path: null,
+                    /** Mail */
+                    smtp_host: 'smtp.gmail.com',
+                    smtp_port: 465,
+                    smtp_user: 'username',
+                    smtp_password: 'password',
+                    smtp_encryption: 'ssl',
                 }
             },
             create() {

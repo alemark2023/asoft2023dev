@@ -2,6 +2,7 @@
 
 namespace Modules\Pos\Http\Controllers;
 
+use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -25,6 +26,7 @@ class CashControllerRevision extends Controller
         $company = Company::active();
         $email = $request->input('email');
 
+        Configuration::setConfigSmtpMail();
         Mail::to($email)->send(new CashEmail($company, $this->getPdf($request->cash_id)));
 
         return [

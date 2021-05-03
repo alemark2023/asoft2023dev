@@ -162,6 +162,7 @@ class MobileController extends Controller
         $document = Document::find($request->id);
         $customer_email = $request->email;
 
+        Configuration::setConfigSmtpMail();
         Mail::to($customer_email)->send(new DocumentEmail($company, $document));
 
         return [

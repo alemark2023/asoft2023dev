@@ -524,6 +524,7 @@ class ContractController extends Controller
         $contract = Contract::find($request->id);
         $customer_email = $request->input('customer_email');
 
+        Configuration::setConfigSmtpMail();
         Mail::to($customer_email)->send(new ContractEmail($client, $contract));
         return [
             'success' => true

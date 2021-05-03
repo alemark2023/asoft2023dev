@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Http\Controllers;
 
+use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -437,6 +438,7 @@ class SaleOpportunityController extends Controller
         $sale_opportunity = SaleOpportunity::find($request->id);
         $customer_email = $request->input('customer_email');
 
+        Configuration::setConfigSmtpMail();
         Mail::to($customer_email)->send(new SaleOpportunityEmail($client, $sale_opportunity));
 
         return [

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Models\Tenant\Configuration;
 use Exception;
 use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
@@ -350,7 +351,7 @@ class DispatchController extends Controller
     {
         $record = Dispatch::find($request->input('id'));
         $customer_email = $request->input('customer_email');
-
+        Configuration::setConfigSmtpMail();
         Mail::to($customer_email)->send(new DispatchEmail($record));
 
         return [

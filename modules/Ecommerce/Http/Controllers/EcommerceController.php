@@ -2,6 +2,7 @@
 
 namespace Modules\Ecommerce\Http\Controllers;
 
+use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Item;
@@ -262,6 +263,7 @@ class EcommerceController extends Controller
     public function paymentCashEmail($customer_email, $document)
     {
         try {
+            Configuration::setConfigSmtpMail();
             Mail::to($customer_email)->send(new CulqiEmail($document));
         }catch(\Exception $e)
         {

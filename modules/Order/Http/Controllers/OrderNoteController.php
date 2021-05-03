@@ -735,6 +735,7 @@ class OrderNoteController extends Controller
 
         // $this->reloadPDF($order_note, "a4", $order_note->filename);
 
+        Configuration::setConfigSmtpMail();
         Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
         return [
             'success' => true

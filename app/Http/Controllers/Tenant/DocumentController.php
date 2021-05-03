@@ -578,6 +578,7 @@ class DocumentController extends Controller
         $company = Company::active();
         $document = Document::find($request->input('id'));
         $customer_email = $request->input('customer_email');
+        Configuration::setConfigSmtpMail();
 
         Mail::to($customer_email)->send(new DocumentEmail($company, $document));
 
