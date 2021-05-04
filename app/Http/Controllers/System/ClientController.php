@@ -218,12 +218,16 @@ class ClientController extends Controller
 
 
             $client = Client::findOrFail($request->id);
+
             $client
                 ->setSmtpHost($smtp_host)
                 ->setSmtpPort($smtp_port)
                 ->setSmtpUser($smtp_user)
-                ->setSmtpPassword($smtp_password)
+            //    ->setSmtpPassword($smtp_password)
                 ->setSmtpEncryption($smtp_encryption);
+            if(!empty($smtp_password)){
+                $client->setSmtpPassword($smtp_password);
+            }
             $client->plan_id = $request->plan_id;
             $client->save();
 
@@ -231,17 +235,19 @@ class ClientController extends Controller
 
             $tenancy = app(Environment::class);
             $tenancy->tenant($client->hostname->website);
+            $clientData = [
+                'plan' => json_encode($plan),
+                'config_system_env' => $request->config_system_env,
+                'limit_documents' =>  $plan->limit_documents,
+                'smtp_host'=>$client->smtp_host,
+                'smtp_port'=>$client->smtp_port,
+                'smtp_user'=>$client->smtp_user,
+                'smtp_password'=>$client->smtp_password,
+                'smtp_encryption'=>$client->smtp_encryption,
+            ];
+            if(empty($client->smtp_password)) unset($clientData['smtp_password']);
             DB::connection('tenant')->table('configurations')->where('id', 1)
-                ->update([
-                            'plan' => json_encode($plan),
-                            'config_system_env' => $request->config_system_env,
-                            'limit_documents' =>  $plan->limit_documents,
-                    'smtp_host'=>$client->smtp_host,
-                    'smtp_port'=>$client->smtp_port,
-                    'smtp_user'=>$client->smtp_user,
-                    'smtp_password'=>$client->smtp_password,
-                    'smtp_encryption'=>$client->smtp_encryption,
-                        ]);
+                ->update($clientData);
 
             DB::connection('tenant')->table('companies')->where('id', 1)->update([
                 'soap_type_id' => $request->soap_type_id,

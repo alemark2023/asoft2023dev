@@ -245,20 +245,11 @@
                                 </div>
                             </div>
 
-
-
-                            <div class="col-md-12">
-                                <div class="form-group">
+                            <div class="col-md-6">
+                                <div class="form-group p-t-20">
                                     <label class="control-label">
-                                        Informacion adicional
+                                        Para correos Gmail verificar el manual
                                     </label>
-                                    <span>
-                                        Para google, se es necesario activar la verificacion de dos pasos
-                                        <a  href="https://support.google.com/accounts/answer/185833?hl=es-419"target="_blank">
-                                        https://support.google.com/accounts/answer/185833?hl=es-419</a>
-                                            y luego crear una contraseña de aplicación se puede encontrar mas informacion sobre las configuraciones del correo de gmail en su enlace
-                                        <a  href="https://support.google.com/a/answer/176600?hl=es#zippy=%2Cutilizar-el-servidor-smtp-de-gmail">https://support.google.com/a/answer/176600?hl=es#zippy=%2Cutilizar-el-servidor-smtp-de-gmail</a>
-                                    </span>
                                 </div>
                             </div>
                         </div>

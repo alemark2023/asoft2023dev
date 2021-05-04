@@ -70,20 +70,18 @@ class Configuration extends ModelTenant
      */
     public static function setConfigSmtpMail(){
         $config = self::first();
-        if(empty($config)) $config = new self();
-        if(!empty($config->smtp_host)){
+        if (empty($config)) $config = new self();
+        if (
+            !empty($config->smtp_host) &&
+            !empty($config->smtp_port) &&
+            !empty($config->smtp_user) &&
+            !empty($config->smtp_password) &&
+            !empty($config->smtp_encryption)
+        ) {
             Config::set('mail.host', $config->smtp_host);
-        }
-        if(!empty($config->smtp_port)){
             Config::set('mail.port', $config->smtp_port);
-        }
-        if(!empty($config->smtp_user)){
             Config::set('mail.username', $config->smtp_user);
-        }
-        if(!empty($config->smtp_password)){
             Config::set('mail.password', $config->smtp_password);
-        }
-        if(!empty($config->smtp_encryption)){
             Config::set('mail.encryption', $config->smtp_encryption);
         }
         return $config;
