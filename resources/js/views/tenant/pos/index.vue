@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid p-0">
-        <div class="row page-header pr-0" style="height:auto">
+        <div class="row page-header pr-0 no-gutters" style="height:auto">
             <Keypress
                 key-event="keyup"
                 :key-code="112"
@@ -34,7 +34,7 @@
                         <button
                             type="button"
                             @click="back()"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fa fa-border-all"></i>
                         </button>
@@ -51,7 +51,7 @@
                             type="button"
                             :disabled="place == 'cat2'"
                             @click="setView('cat2')"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fa fa-bars"></i>
                         </button>
@@ -68,7 +68,7 @@
                             type="button"
                             :disabled="place == 'cat3'"
                             @click="setView('cat3')"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fas fa-list-ul"></i>
                         </button>
@@ -85,7 +85,7 @@
                             type="button"
                             :disabled="place == 'cat'"
                             @click="back()"
-                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-1"
+                            class="btn btn-custom btn-sm  mt-2 mr-2 mr-sm-0"
                         >
                             <i class="fa fa-undo"></i>
                         </button>
