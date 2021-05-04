@@ -404,46 +404,10 @@ class QuotationController extends Controller
                     // ->with(['warehouses' => function($query) use($warehouse){
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
-                    ->take(20)->get()->transform(function($row) {
-                    $full_description = $this->getFullDescription($row);
-                    // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-                    return [
-                        'id' => $row->id,
-                        'full_description' => $full_description,
-                        'description' => $row->description,
-                        'model' => $row->model,
-                        'currency_type_id' => $row->currency_type_id,
-                        'currency_type_symbol' => $row->currency_type->symbol,
-                        'sale_unit_price' => $row->sale_unit_price,
-                        'purchase_unit_price' => $row->purchase_unit_price,
-                        'unit_type_id' => $row->unit_type_id,
-                        'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                        'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                        'is_set' => (bool) $row->is_set,
-                        'has_igv' => (bool) $row->has_igv,
-                        'calculate_quantity' => (bool) $row->calculate_quantity,
-                        'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
-                            return [
-                                'id' => $row->id,
-                                'description' => "{$row->description}",
-                                'item_id' => $row->item_id,
-                                'unit_type_id' => $row->unit_type_id,
-                                'quantity_unit' => $row->quantity_unit,
-                                'price1' => $row->price1,
-                                'price2' => $row->price2,
-                                'price3' => $row->price3,
-                                'price_default' => $row->price_default,
-                            ];
-                        }),
-                        'warehouses' => collect($row->warehouses)->transform(function($row) {
-                            return [
-                                'warehouse_id' => $row->warehouse->id,
-                                'warehouse_description' => $row->warehouse->description,
-                                'stock' => $row->stock,
-                            ];
-                        })
-                    ];
-                });
+                    ->take(20)->get();
+
+                $this->ReturnItem($items);
+
                 return $items;
 
                 break;
@@ -470,99 +434,71 @@ class QuotationController extends Controller
                             $query->where('name', 'like', '%' . $request->input . '%');
                         })
                         ->whereIsActive()
-                        ->get()
-                        ->transform(function($row) {
+                        ->get();
 
-                            $full_description = $this->getFullDescription($row);
 
-                                return [
-                                    'id' => $row->id,
-                                    'full_description' => $full_description,
-                                    'description' => $row->description,
-                                    'currency_type_id' => $row->currency_type_id,
-                                    'currency_type_symbol' => $row->currency_type->symbol,
-                                    'sale_unit_price' => $row->sale_unit_price,
-                                    'purchase_unit_price' => $row->purchase_unit_price,
-                                    'unit_type_id' => $row->unit_type_id,
-                                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                                    'is_set' => (bool) $row->is_set,
-                                    'has_igv' => (bool) $row->has_igv,
-                                    'calculate_quantity' => (bool) $row->calculate_quantity,
-                                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
-                                        return [
-                                            'id' => $row->id,
-                                            'description' => "{$row->description}",
-                                            'item_id' => $row->item_id,
-                                            'unit_type_id' => $row->unit_type_id,
-                                            'quantity_unit' => $row->quantity_unit,
-                                            'price1' => $row->price1,
-                                            'price2' => $row->price2,
-                                            'price3' => $row->price3,
-                                            'price_default' => $row->price_default,
-                                        ];
-                                    }),
-                                    'warehouses' => collect($row->warehouses)->transform(function($row) {
-                                        return [
-                                            'warehouse_id' => $row->warehouse->id,
-                                            'warehouse_description' => $row->warehouse->description,
-                                            'stock' => $row->stock,
-                                        ];
-                                    })
-                                ];
-                        });
-
+        $this->ReturnItem($items);
         return compact('items');
 
     }
 
+    /**
+     * Normaliza la salida de la colección de items para su consumo en las funciones.
+     *
+     */
+    public function ReturnItem( &$item)
+    {
+        $item->transform(function ($row) {
+            $full_description = $this->getFullDescription($row);
+            return [
+                'id' => $row->id,
+                'full_description' => $full_description,
+                'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'model' => $row->model,
+                'brand' => $row->brand,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => $row->sale_unit_price,
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'is_set' => (bool) $row->is_set,
+                'has_igv' => (bool) $row->has_igv,
+                'calculate_quantity' => (bool) $row->calculate_quantity,
+                'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
+                    return [
+                        'id' => $row->id,
+                        'description' => "{$row->description}",
+                        'item_id' => $row->item_id,
+                        'unit_type_id' => $row->unit_type_id,
+                        'quantity_unit' => $row->quantity_unit,
+                        'price1' => $row->price1,
+                        'price2' => $row->price2,
+                        'price3' => $row->price3,
+                        'price_default' => $row->price_default,
+                    ];
+                }),
+                'warehouses' => collect($row->warehouses)->transform(function($row) {
+                    return [
+                        'warehouse_id' => $row->warehouse->id,
+                        'warehouse_description' => $row->warehouse->description,
+                        'stock' => $row->stock,
+
+                    ];
+                }),
+
+            ];
+        });
+    }
 
     public function searchItemById($id)
     {
         $items = Item::where('id', $id)
                         ->whereIsActive()
-                        ->get()
-                        ->transform(function($row) {
+                        ->get();
 
-                            $full_description = $this->getFullDescription($row);
-
-                                return [
-                                    'id' => $row->id,
-                                    'full_description' => $full_description,
-                                    'description' => $row->description,
-                                    'currency_type_id' => $row->currency_type_id,
-                                    'currency_type_symbol' => $row->currency_type->symbol,
-                                    'sale_unit_price' => $row->sale_unit_price,
-                                    'purchase_unit_price' => $row->purchase_unit_price,
-                                    'unit_type_id' => $row->unit_type_id,
-                                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                                    'is_set' => (bool) $row->is_set,
-                                    'has_igv' => (bool) $row->has_igv,
-                                    'calculate_quantity' => (bool) $row->calculate_quantity,
-                                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
-                                        return [
-                                            'id' => $row->id,
-                                            'description' => "{$row->description}",
-                                            'item_id' => $row->item_id,
-                                            'unit_type_id' => $row->unit_type_id,
-                                            'quantity_unit' => $row->quantity_unit,
-                                            'price1' => $row->price1,
-                                            'price2' => $row->price2,
-                                            'price3' => $row->price3,
-                                            'price_default' => $row->price_default,
-                                        ];
-                                    }),
-                                    'warehouses' => collect($row->warehouses)->transform(function($row) {
-                                        return [
-                                            'warehouse_id' => $row->warehouse->id,
-                                            'warehouse_description' => $row->warehouse->description,
-                                            'stock' => $row->stock,
-                                        ];
-                                    })
-                                ];
-                        });
-
+        $this->ReturnItem($items);
         return compact('items');
 
     }
