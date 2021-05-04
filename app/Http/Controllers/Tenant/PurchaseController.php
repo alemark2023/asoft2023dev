@@ -563,17 +563,21 @@ class PurchaseController extends Controller
     public function searchItems(Request $request)
     {
 
-        $all_items = Item::where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->whereNotIsSet()
-                        ->whereIsActive()
-                        ->orderBy('description')
-                        ->get();
+        $all_items = Item::whereNotIsSet()
+            ->whereIsActive();
+        if ($request->has('barcode') && !empty($request->barcode)) {
+            //codigo de barras
+            $all_items->where('barcode', "{$request->barcode}");
+            // $all_items->where('barcode', 'like', "%{$request->barcode}%");
+        } else {
+            // normal
+            $all_items->where('description', 'like', "%{$request->input}%")
+                ->orWhere('internal_id', 'like', "%{$request->input}%");
+        }
+        $all_items = $all_items->orderBy('description')->get();
 
         $items = collect($all_items)->transform(function($row){
-
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
-
             return [
                 'id' => $row->id,
                 'item_code'  => $row->item_code,
