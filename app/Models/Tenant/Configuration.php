@@ -2,6 +2,9 @@
 
 namespace App\Models\Tenant;
 
+
+use Illuminate\Support\Facades\Config;
+
 class Configuration extends ModelTenant
 {
     protected $fillable = [
@@ -42,13 +45,141 @@ class Configuration extends ModelTenant
         'terms_condition_sale',
         'login',
         'finances',
-        'ticket_58'
+        'ticket_58',
+        'smtp_host',
+        'smtp_port',
+        'smtp_user',
+        'smtp_password',
+        'smtp_encryption',
     ];
 
     protected $casts = [
         'quotation_allow_seller_generate_sale' => 'boolean',
         'allow_edit_unit_price_to_seller' => 'boolean',
     ];
+
+    /**
+     * Establece las configuraciones para envio de correo.
+     *
+     * @return Configuration
+     *@example
+     * <?php
+     *  Configuration::setConfigSmtpMail();
+     *?>
+     *
+     */
+    public static function setConfigSmtpMail(){
+        $config = self::first();
+        if (empty($config)) $config = new self();
+        if (
+            !empty($config->smtp_host) &&
+            !empty($config->smtp_port) &&
+            !empty($config->smtp_user) &&
+            !empty($config->smtp_password) &&
+            !empty($config->smtp_encryption)
+        ) {
+            Config::set('mail.host', $config->smtp_host);
+            Config::set('mail.port', $config->smtp_port);
+            Config::set('mail.username', $config->smtp_user);
+            Config::set('mail.password', $config->smtp_password);
+            Config::set('mail.encryption', $config->smtp_encryption);
+        }
+        return $config;
+    }
+    /**
+     * @return mixed
+     */
+    public function getSmtpHost()
+    {
+        return empty($this->smtp_host)?config('mail.host'):$this->smtp_host;
+    }
+
+    /**
+     * @param mixed $smtp_host
+     *
+     * @return Configuration
+     */
+    public function setSmtpHost($smtp_host)
+    {
+        $this->smtp_host = $smtp_host;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSmtpPort()
+    {
+        return empty($this->smtp_port)?config('mail.port'):$this->smtp_port;
+    }
+
+    /**
+     * @param mixed $smtp_port
+     *
+     * @return Configuration
+     */
+    public function setSmtpPort($smtp_port)
+    {
+        $this->smtp_port = $smtp_port;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSmtpUser()
+    {
+        return empty($this->smtp_user)?config('mail.username'):$this->smtp_user;
+    }
+
+    /**
+     * @param mixed $smtp_user
+     *
+     * @return Configuration
+     */
+    public function setSmtpUser($smtp_user)
+    {
+        $this->smtp_user = $smtp_user;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSmtpPassword()
+    {
+        return empty($this->smtp_password)?config('mail.password'):$this->smtp_password;
+    }
+
+    /**
+     * @param mixed $smtp_password
+     *
+     * @return Configuration
+     */
+    public function setSmtpPassword($smtp_password)
+    {
+        $this->smtp_password = $smtp_password;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSmtpEncryption()
+    {
+        return empty($this->smtp_encryption)?config('mail.encryption'):$this->smtp_encryption;
+    }
+
+    /**
+     * @param mixed $smtp_encryption
+     *
+     * @return Configuration
+     */
+    public function setSmtpEncryption($smtp_encryption)
+    {
+        $this->smtp_encryption = $smtp_encryption;
+        return $this;
+    }
 
     public function setPlanAttribute($value)
     {

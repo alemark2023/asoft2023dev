@@ -171,7 +171,7 @@ class Facturalo
             $company = $this->company;
             $document = $this->document;
             $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
-
+            Configuration::setConfigSmtpMail();
             Mail::to($email)->send(new DocumentEmail($company, $document));
 
         }

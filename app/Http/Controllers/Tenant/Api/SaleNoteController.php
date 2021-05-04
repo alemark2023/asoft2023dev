@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Api;
 
+use App\Models\Tenant\Configuration;
 use Exception;
 use Mpdf\Mpdf;
 use Carbon\Carbon;
@@ -373,7 +374,8 @@ class SaleNoteController extends Controller
 		$record = SaleNote::find($request->input('id'));
 		$customer_email = $request->input('email');
 
-		Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
+        Configuration::setConfigSmtpMail();
+        Mail::to($customer_email)->send(new SaleNoteEmail($company, $record));
 
 		return [
 			'success' => true,
