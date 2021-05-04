@@ -177,7 +177,46 @@ class MobileController extends Controller
         $row->item_type_id = '01';
         $row->amount_plastic_bag_taxes = Configuration::firstOrFail()->amount_plastic_bag_taxes;
         $row->fill($request->all());
-        $row->image = 'imagen-no-disponible.jpg';
+        $temp_path = $request->input('temp_path');
+
+        if($temp_path) {
+
+            $directory = 'public'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR;
+
+            $file_name_old = $request->input('image');
+            $file_name_old_array = explode('.', $file_name_old);
+            $file_content = file_get_contents($temp_path);
+            $datenow = date('YmdHis');
+            $file_name = Str::slug($row->description).'-'.$datenow.'.'.$file_name_old_array[1];
+            Storage::put($directory.$file_name, $file_content);
+            $row->image = $file_name;
+
+            //--- IMAGE SIZE MEDIUM
+            $image = \Image::make($temp_path);
+            $file_name = Str::slug($row->description).'-'.$datenow.'_medium'.'.'.$file_name_old_array[1];
+            $image->resize(512, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            Storage::put($directory.$file_name,  (string) $image->encode('jpg', 30));
+            $row->image_medium = $file_name;
+
+              //--- IMAGE SIZE SMALL
+            $image = \Image::make($temp_path);
+            $file_name = Str::slug($row->description).'-'.$datenow.'_small'.'.'.$file_name_old_array[1];
+            $image->resize(256, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            Storage::put($directory.$file_name,  (string) $image->encode('jpg', 20));
+            $row->image_small = $file_name;
+
+
+
+        }else if(!$request->input('image') && !$request->input('temp_path') && !$request->input('image_url')){
+            $row->image = 'imagen-no-disponible.jpg';
+        }
+
         $row->save();
 
         $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
@@ -394,5 +433,53 @@ class MobileController extends Controller
             ],
         ];
     }
+
+    //subir imagen app
+    public function upload(Request $request)
+    {
+
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg');
+
+        if(!$validate_upload['success']){
+            return $validate_upload;
+        }
+
+        if ($request->hasFile('file')) {
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type'),
+            ];
+
+            return $this->upload_image($new_request);
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+
+    function upload_image($request)
+    {
+        $file = $request['file'];
+        $type = $request['type'];
+
+        $temp = tempnam(sys_get_temp_dir(), $type);
+        file_put_contents($temp, file_get_contents($file));
+
+        $mime = mime_content_type($temp);
+        $data = file_get_contents($temp);
+
+        return [
+            'success' => true,
+            'data' => [
+                'filename' => $file->getClientOriginalName(),
+                'temp_path' => $temp,
+                'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
+            ]
+        ];
+    }
+
+
 }
 
