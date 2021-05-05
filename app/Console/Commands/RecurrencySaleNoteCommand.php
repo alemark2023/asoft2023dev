@@ -43,7 +43,7 @@ class RecurrencySaleNoteCommand extends Command
      */
     public function handle()
     {
-
+        $this->info('The command was started');
         DB::connection('tenant')->transaction(function () {
 
             $today = Carbon::now()->format('Y-m-d');
@@ -67,14 +67,13 @@ class RecurrencySaleNoteCommand extends Command
 
             }
         });
-
+        $this->info("The command is finished");
 
     }
 
 
     public function createSaleNote($sale_note)
     {
-        $this->info('The command was started');
         $record = DB::connection('tenant')->transaction(function () use ($sale_note) {
 
             // dd($sale_note->establishment);
@@ -176,7 +175,6 @@ class RecurrencySaleNoteCommand extends Command
             }
 
         });
-        $this->info("The command is finished");
 
         // return [
         //     'success' => true,
