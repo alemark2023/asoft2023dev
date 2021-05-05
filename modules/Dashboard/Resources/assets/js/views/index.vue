@@ -123,13 +123,13 @@
                                                 </div>
                                             </div>
                                             <div class="summary d-flex justify-content-between align-items-center">
-                                                <h4 class="title text-info">Total Pagado</h4>
+                                                <h4 class="title text-info">Total Cobrado</h4>
                                                 <div class="info">
                                                     <strong class="amount text-info">S/ {{ sale_note.totals.total_payment }}</strong>
                                                 </div>
                                             </div>
                                             <div class="summary d-flex justify-content-between align-items-center">
-                                                <h4 class="title text-danger">Total por Pagar</h4>
+                                                <h4 class="title text-danger">Pendiente de cobro</h4>
                                                 <div class="info">
                                                     <strong class="amount text-danger">S/ {{ sale_note.totals.total_to_pay }}</strong>
                                                 </div>
@@ -165,13 +165,13 @@
                                                 </div>
                                             </div>
                                             <div class="summary d-flex justify-content-between align-items-center">
-                                                <h4 class="title text-info">Total Pagado</h4>
+                                                <h4 class="title text-info">Total Cobrado</h4>
                                                 <div class="info">
                                                     <strong class="amount text-info">S/ {{ document.totals.total_payment }}</strong>
                                                 </div>
                                             </div>
                                             <div class="summary d-flex justify-content-between align-items-center">
-                                                <h4 class="title text-danger">Total por Pagar</h4>
+                                                <h4 class="title text-danger">Pendiente de cobro</h4>
                                                 <div class="info">
                                                     <strong class="amount text-danger">S/ {{ document.totals.total_to_pay }}</strong>
                                                 </div>

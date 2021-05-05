@@ -26,16 +26,10 @@ foreach ($cash_documents as $cash_document) {
             if ($cash_document->sale_note->currency_type_id == 'PEN') {
                 $cash_income += $total;
                 $final_balance += $total;
-                /** Array Temporal */
-                setArray($cash_income_array, $type, $total);
-                setArray($final_balance_array, $type, $total);
             } else {
                 $t = $total * $cash_document->sale_note->exchange_rate_sale;
                 $cash_income += $t;
                 $final_balance += $t;
-                /** Array Temporal */
-                setArray($cash_income_array, $type, $t);
-                setArray($final_balance_array, $type, $t);
             }
 
             if (count($cash_document->sale_note->payments) > 0) {
@@ -53,15 +47,10 @@ foreach ($cash_documents as $cash_document) {
                 $cash_income += $total;
                 $final_balance += $total;
                 /** Array Temporal */
-                setArray($cash_income_array, $type, $total);
-                setArray($final_balance_array, $type, $total);
             } else {
                 $t = $total * $cash_document->document->exchange_rate_sale;
                 $cash_income += $t;
                 $final_balance += $t;
-                /** Array Temporal */
-                setArray($cash_income_array, $type, $t);
-                setArray($final_balance_array, $type, $t);
             }
         }
         $payment_condition_id = $cash_document->document->payment_condition_id;
@@ -83,9 +72,6 @@ foreach ($cash_documents as $cash_document) {
 
         $cash_income += $cash_document->technical_service->cost;
         $final_balance += $cash_document->technical_service->cost;
-        /** Array Temporal */
-        $cash_income_array['service'] += $cash_document->technical_service->cost;
-        $final_balance['service'] += $cash_document->technical_service->cost;
 
         if (count($cash_document->technical_service->payments) > 0) {
             $pays = $cash_document->technical_service->payments;
@@ -242,7 +228,7 @@ $cash_final_balance = $final_balance + $cash->beginning_balance;
                     <tr>
                         <td class="celda">{{ $loop->iteration }}</td>
                         <td class="celda">{{ $item->name }}</td>
-                        <td class="celda">{{ number_format(  isset($cash_income_array[$item->id])?$cash_income_array[$item->id]:0, 2, ".", "")  }}</td>
+                        <td class="celda">{{ number_format($item->sum, 2, ".", "")  }}</td>
                     </tr>
                 @endforeach
                 </tbody>

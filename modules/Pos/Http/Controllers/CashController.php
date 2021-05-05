@@ -46,12 +46,21 @@ class CashController extends Controller
                 'sum' => 0
             ];
         });
+        /*
         $type_documents = PaymentMethodType::NonCredit()
             ->select('id')
             ->get()
             ->transform(function ($row) {
                 return $row->id;
             })->toArray();
+        */
+        $type_documents = [
+            '01',
+            '03',
+            '05',
+            '07',
+            '13'
+        ];
         set_time_limit(0);
 
         $quantity_rows = 30;//$cash->cash_documents()->count();
