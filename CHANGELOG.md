@@ -1,3 +1,86 @@
+## 4.0.8
+
+### docs
+2021-04-21 : docs | changelog<br>
+
+
+### fixed
+2021-05-05 : fixed | #565 | mostrando logs al ejecutar una tarea programada<br>
+2021-05-05 : fixed | #513 | Compile js<br>
+2021-05-05 : fixed | #565 | mostrando logs al ejecutar una tarea programada<br>
+2021-05-05 : fixed | #482 | CashControllerRevision: Separando Tipo de documenos de Metodos de pago<br>
+2021-05-04 : fixed | #496 #407 | Compile JS<br>
+2021-05-04 : fixed | #496 | Administración: Usuarios: Notificacion para correo como informacion adiciona en el manual. Cambia la configuracion si todos los campos estan llenos. Contraseña queda excluida de la actualizacion<br>
+2021-05-04 : fixed | #544 | Cotizacion: Nueva cotizacion: Añadido Marca al PDF default A5.<br>
+2021-05-04 : fixed | #544 | Cotizacion: Nueva cotizacion: Añadido Marca al PDF default.<br>
+2021-05-04 : fixed | #566 | plantilla model3<br>
+2021-05-04 : fixed | #540 | llamados en mobilecontroller<br>
+2021-05-04 : fixed | #407 | Compras: Añadir Producto: Codigo de barras: Se añade la funcionabilidad de buscar por codigo de barras.<br>
+2021-05-03 : fixed | #545 | valor booleano desde resources<br>
+2021-05-03 : fixed | #496 | Administración: Usuarios: Añade configuracion de correo por clientes.<br>
+2021-05-01 : fixed | #141 | se reparo el error al convertir dolares a soles y viceversa, al editar comprobantes<br>
+2021-04-30 : fixed | #503 | Pos: Busqueda: Se ajusta para que la paginacion funcione correctamente por input_item<br>
+2021-04-30 : fixed | #555 | consulta de productos mediante busqueda en guias de remision<br>
+2021-04-30 : fixed | #503 | Pos: Busqueda: Se ajusta para que la paginacion funcione correctamente por input_item<br>
+2021-04-30 : fixed | #539 | Admin: Usuarios: Modulos: Permite que el los nodos hijos se seleccionen cuando el padre es seleccionado, y quiten la seleccion cuando el caso contrario suceda<br>
+2021-04-30 : fixed | #498 | Reporte: Venta: GENERAL DE PRODUCTOS: Muestra Ventas Anuladas en los registros cuando no deberia.<br>
+2021-04-30 : fixed | #555 | vista guia tarda mucho en realizar consultas, se elimina repeticion de queries de localidades<br>
+2021-04-29 : fixed | #539 | Compile JS<br>
+2021-04-29 : fixed | cambio de plantilla solo cuando se tenga un establecimiento seleccionado<br>
+2021-04-29 : fixed | #539 | Usuarios: Permisos: Ajuste para seleccionar un elemento y sus hijos. Ajusta el mismo status de check a los hijos<br>
+2021-04-29 : fixed | #556 | Pos: Añade item al buscar por Codigo de barras<br>
+2021-04-29 : fixed | #482 | CashControllerRevision: Nomenclatura correcta.<br>
+2021-04-29 : fixed | #513 | Dashboard: Grafico Nota de venta - Comprobante: Total Pagado por Total Cobrado / Total por Pagar por Pendiente de cobro<br>
+2021-04-28 : fixed | #482 | Removiendo PaymentMethodType del template<br>
+2021-04-28 : fixed | #482 | compile js<br>
+2021-04-28 : fixed | #425 | Compile JS<br>
+2021-04-28 : fixed | #503 | Compile JS<br>
+2021-04-28 : fixed | #503 | Pos: Filtrado de items: Ajuste para evaluar si description es null, sino se toma name o internal_id. Se mantiene el filtrado input_item<br>
+2021-04-27 : fixed | #482 | Pos: Caja chica Pos: Reporte PDF: Se remueven metodos de pago a credito de facturacion, para que en el reporte puedan salir correctamente listados y de el monto correcto en el ingreso a caja<br>
+2021-04-26 : fixed | #329 | Compile JS<br>
+2021-04-26 : fixed | #541 | Nota de venta: Creacion con producto con lotes: Validar que exista presentation -> quantity_unit en el array<br>
+2021-04-26 : fixed | #466 | Contabilidad: Exportar Reporte: Ajuste para validar que documento exista cuando document_type_id es 07 o 08<br>
+2021-04-26 : fixed | #425 | REPORTES: CONSISTENCIA DE DOCUMENTOS POR RANGO DE FECHAS: Al front, se limita a 30 dias la seleccion final de consulta.<br>
+2021-04-26 : fixed | #425 | REPORTES: CONSISTENCIA DE DOCUMENTOS POR RANGO DE FECHAS: Se elimina la validacion getIsClient, se inicia con 1 mes pero el cliente puede consultar todo el rango de fechas( documents created_at min hasta documents created_at max)<br>
+2021-04-26 : fixed | #530 | Facturas: (invoice) Ocultar cuentas inhabilitadas y que tengan "Mostrar cuenta en los reportes de comprobantes" desactivado para el tema Top Ruc<br>
+2021-04-26 : fixed | #329 | Pedidos: Ajuste para establecer seller_id desde Pedidos al generar el comprobante<br>
+2021-04-23 : fixed | #329 | Compile js<br>
+2021-04-23 : fixed | #529 | Compra: Nueva compra desde Orden de Compra: update_price si es verdadero accede a la actualizaion de precios.<br>
+2021-04-23 : fixed | #529 | Compra: Nueva compra desde Orden de Compra: Error Undefined index: update_price al crear Nueva Compra<br>
+2021-04-22 : fixed | #329 | Nota de ventas: Ajuste para establecer seller_id desde nota de ventas al generar el comprobante<br>
+2021-04-22 : fixed | #451 #479 | Compile JS<br>
+2021-04-22 : fixed | #451 | Item: Marcas: Ajuste para la url de brands. No guarda desde el modulo de compra<br>
+2021-04-22 : fixed | #451 | Item: Categorias: Ajuste para la url de categorias. No guarda desde el modulo de compra<br>
+2021-04-22 : fixed | #479 | Nota de ventas: Generar Comprobante: Ajuste para que v-modal no se sobreponga en el modal de impresion<br>
+2021-04-22 : fixed | #432 | Compile JS<br>
+2021-04-22 : fixed | #399<br>
+2021-04-21 : fixed | #408 | Actualizar precio de compra en formulario de PRODUCTO en base al precio de COMPRA del formulario de COMPRAs<br>
+2021-04-21 : fixed | i-399 | PROBLEMA NO COINCIDE STOCK DE CATALOGO/PRODUCTOS CON REPORTE KARDEX<br>
+2021-04-21 : fixed | #515 | titulos y listas en modo oscudo<br>
+2021-04-21 : fixed | #432 | Se revierte la configuracion para stock 0 y solo items por almacen de usuario. En vez de eso, se mostrará el almacen del item<br>
+2021-04-21 : fixed | #481 | error lots_enable (no existe key en json)<br>
+2021-04-21 : fixed | #497 | Log Diario de laravel en .env.example<br>
+2021-04-21 : fixed | #497 | Compile JS<br>
+2021-04-21 : fixed | #497 | Ajuste para validar user_id como creador de sales note<br>
+2021-04-20 : fixed | #497 | Reporte general de productos: El modelo sale_notes no permite registrar el vendor. Se ajusta para que nota de venta no muestre vendedor.<br>
+
+
+### feature
+2021-05-04 : feature | #434 | organizando anulaciones por orden de fecha de emision<br>
+2021-05-03 : feature | #540 | mobileContrlller y ruta para subir imagenes desde apk personalizadas por terceros<br>
+2021-04-29 : feature | #545 | creado ticket 58mm para pedidos<br>
+2021-04-29 : feature | habilitando ticket de 58mm desde configuracion avanzada<br>
+2021-04-28 : feature | #545 | rediseño de vista configuracion avanzada<br>
+2021-04-27 : feature | #450 | compile js<br>
+2021-04-27 : feature | #450 | modulo de compras funcionando con formatos por establecimientos<br>
+2021-04-27 : feature | #450 | modulo de ventas funcionando con formatos por establecimientos<br>
+2021-04-27 : feature | #450 | plantilla de establecimiento funcionando en cotizaciones (recorriendo todos los documentos para que tomen esta configuracion)<br>
+2021-04-27 : feature | #450 | plantilla de establecimiento funcionando en oportunidades de venta (recorriendo todos los documentos para que tomen esta configuracion)<br>
+2021-04-27 : feature | #450 | plantilla de establecimiento funcionando en notas de venta (recorriendo todos los documentos para que tomen esta configuracion)<br>
+2021-04-23 : feature | #450 | guardando plantilla por establecimiento, funcionando solo en documents (guias notas y demas en proceso)<br>
+2021-04-22 : feature | #450 | campo en establecimiento para formato pdf, consulta en vista del formato actual por establecimiento (en proceso)<br>
+
+
 ## 4.0.7
 
 ### docs
