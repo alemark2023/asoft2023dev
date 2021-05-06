@@ -38,7 +38,7 @@ class ToPayController extends Controller
 
     public function filter(){
 
-        $suppliers = Person::whereType('suppliers')->orderBy('name')->take(100)->get()->transform(function($row) {
+        $supplier_temp = Person::whereType('suppliers')->orderBy('name')->take(100)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -47,6 +47,15 @@ class ToPayController extends Controller
                 'identity_document_type_id' => $row->identity_document_type_id,
             ];
         });
+        $supplier= [];
+        $supplier[]=[
+            'id' => null,
+            'description' => 'Todos',
+            'name' => 'Todos',
+            'number' => '',
+            'identity_document_type_id' => '',
+        ];
+        $suppliers = array_merge($supplier,$supplier_temp->toArray());
 
         $query_users = User::all();
         $users = new UserCollection($query_users);

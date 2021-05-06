@@ -38,7 +38,7 @@ class UnpaidController extends Controller
 
     public function filter()
     {
-        $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
+        $customer_temp = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
@@ -47,6 +47,15 @@ class UnpaidController extends Controller
                 'identity_document_type_id' => $row->identity_document_type_id,
             ];
         });
+        $customer= [];
+        $customer[]=[
+            'id' => null,
+            'description' => 'Todos',
+            'name' => 'Todos',
+            'number' => '',
+            'identity_document_type_id' => '',
+        ];
+        $customers = array_merge($customer,$customer_temp->toArray());
 
         $establishments = DashboardView::getEstablishments();
 
