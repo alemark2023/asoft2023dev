@@ -66,12 +66,38 @@ class SaleNote extends ModelTenant
         'reference_data',
         'plate_number',
         'purchase_order',
+        'due_date',
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
         'automatic_date_of_issue' => 'date',
+        'due_date' => 'date',
     ];
+
+    /**
+     * Obtiene la fecha de vencimiento
+     *
+     * @return mixed
+     */
+    public function getDueDate()
+    {
+        return $this->due_date;
+    }
+
+    /**
+     * Establece la fecha de vencimiento
+     *
+     * @param mixed $due_date
+     *
+     * @return SaleNote
+     */
+    public function setDueDate($due_date)
+    {
+        $this->due_date = $due_date;
+        return $this;
+    }
+
 
     public function getEstablishmentAttribute($value)
     {

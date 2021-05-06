@@ -77,6 +77,19 @@
                                 </div>
                             </div>
                             <div class="col-lg-2">
+                                <div class="form-group" :class="{'has-danger': errors.due_date}">
+                                    <label class="control-label">Fec. Vencimiento</label>
+                                    <el-date-picker
+                                        v-model="form.due_date"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        :clearable="true"
+                                        :picker-options="pickerOptions"
+                                    ></el-date-picker>
+                                    <small class="form-control-feedback" v-if="errors.due_date" v-text="errors.due_date[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
                                 <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
                                     <label class="control-label">Tipo de cambio
                                         <el-tooltip class="item" effect="dark" content="Tipo de cambio del día, extraído de SUNAT" placement="top-end">
@@ -302,6 +315,12 @@
         mixins: [functions, exchangeRate],
         data() {
             return {
+                pickerOptions :{
+                    disabledDate: date => {
+                        let now = new Date();
+                        return date.getTime() < (now.getTime());
+                    },
+                },
                 resource: 'sale-notes',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -521,6 +540,7 @@
                     series_id: null,
                     prefix:'NV',
                     establishment_id: null,
+                    due_date: null,
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     customer_id: null,

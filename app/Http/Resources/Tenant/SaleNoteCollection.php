@@ -21,7 +21,7 @@ class SaleNoteCollection extends ResourceCollection
 
             $btn_generate = (count($row->documents) > 0)?false:true;
             $btn_payments = (count($row->documents) > 0)?false:true;
-
+            $due_date = (!empty($row->due_date)) ? $row->due_date->format('Y-m-d') : null;
             return [
                 'id' => $row->id,
                 'soap_type_id' => $row->soap_type_id,
@@ -67,6 +67,7 @@ class SaleNoteCollection extends ResourceCollection
                 'number_full' => $row->number_full,
                 'print_a4' => url('')."/sale-notes/print/{$row->external_id}/a4",
                 'purchase_order' => $row->purchase_order,
+                'due_date' => $due_date,
             ];
         });
     }
