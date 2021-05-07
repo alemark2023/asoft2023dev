@@ -38,8 +38,9 @@ class CashController extends Controller
     {
         $cash = Cash::findOrFail($cash);
         $company = Company::first();
-
-        $methods_payment = collect(PaymentMethodType::NonCredit()->get())->transform(function ($row) {
+        //$model_methods_payment = PaymentMethodType::NonCredit()->get();
+        $model_methods_payment = PaymentMethodType::all();
+        $methods_payment = collect($model_methods_payment)->transform(function ($row) {
             return (object)[
                 'id' => $row->id,
                 'name' => $row->description,
