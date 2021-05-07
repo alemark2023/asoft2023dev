@@ -4,6 +4,7 @@ namespace Modules\Report\Http\Controllers;
 
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\DocumentExport;
 use Illuminate\Http\Request;
@@ -40,8 +41,9 @@ class ReportDocumentController extends Controller
 
 
     public function index() {
-
-        return view('report::documents.index');
+        $configuration = Configuration::first();
+        $configuration->ticket_58 = (bool)$configuration->ticket_58;
+        return view('report::documents.index',compact('configuration'));
     }
 
     public function records(Request $request)
