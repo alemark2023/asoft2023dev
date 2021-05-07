@@ -284,7 +284,7 @@ class Facturalo
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 
-        if (in_array($base_pdf_template, ['full_height', 'default3_new'])) {
+        if (in_array($base_pdf_template, ['full_height', 'default3_new','rounded'])) {
             $pdf_margin_top = 5;
             $pdf_margin_right = 5;
             $pdf_margin_bottom = 5;
