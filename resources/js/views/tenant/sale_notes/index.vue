@@ -32,6 +32,7 @@
                         <th>Nota de Venta</th>
                         <th>Estado</th>
                         <th class="text-center">Moneda</th>
+                        <th class="text-right" v-if="columns.due_date.visible">F. Vencimiento</th>
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación</th>
                         <th class="text-right" v-if="columns.total_free.visible">T.Gratuito</th>
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
@@ -75,6 +76,7 @@
                         <td>{{ row.state_type_description }}</td>
                         <td class="text-center">{{ row.currency_type_id }}</td>
 
+                        <td class="text-right"  v-if="columns.due_date.visible" >{{ row.due_date }}</td>
                         <td class="text-right"  v-if="columns.total_exportation.visible" >{{ row.total_exportation }}</td>
                         <td class="text-right" v-if="columns.total_free.visible">{{ row.total_free }}</td>
                         <td class="text-right" v-if="columns.total_unaffected.visible">{{ row.total_unaffected }}</td>
@@ -212,8 +214,11 @@
                 showDialogGenerate: false,
                 saleNotesNewId: null,
                 recordId: null,
-                showDialogOptions: false,
                 columns: {
+                    due_date: {
+                        title: 'Fecha de Vencimiento',
+                        visible: false
+                    },
                     total_free: {
                         title: 'T.Gratuito',
                         visible: false
