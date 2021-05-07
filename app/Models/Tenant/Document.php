@@ -4,6 +4,7 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
 use Modules\Order\Models\OrderNote;
@@ -11,6 +12,8 @@ use Modules\Order\Models\OrderNote;
 
 class Document extends ModelTenant
 {
+    use SoftDeletes;
+
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments'];
 
     protected $fillable = [
@@ -90,6 +93,7 @@ class Document extends ModelTenant
         'payment_condition_id',
         'is_editable',
     ];
+    protected $dates = ['deleted_at'];
 
     protected $casts = [
         'date_of_issue' => 'date',
@@ -419,5 +423,30 @@ class Document extends ModelTenant
     public function getIsEditableAttribute($value)
     {
         return $value ? true : false;
+    }
+
+    /**
+     * Evalua si es posible borrarlo basado en las condiciones:
+     *
+     * regularize_shipping y response_regularize_shipping no este vacio
+     *
+     * El documento este replicado  en series y numero
+     *
+     *
+     * @return bool
+     */
+    public function canDelete()
+    {
+        if (!empty($this->regularize_shipping) &&
+            !empty($this->response_regularize_shipping)) {
+            $duplicated = self::where([
+                'series' => $this->series ,
+                'number' => $this->number ,
+            ])->where('id', '!=', $this->id)->first();
+            if (!empty($duplicated)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
