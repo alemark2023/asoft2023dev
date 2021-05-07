@@ -40,11 +40,18 @@
                             </template> 
                         </td>
 
-                        <td class="text-center">  
-                            <template v-if="row.btn_resend">
+                        <td class="text-center">
+                            <template v-if="row.btn_resend || row.btn_remove">
                                 <el-button type="primary"  class="btn btn-sm"
+                                           v-show="row.btn_resend"
                                     @click.prevent="clickResend(row.id)"
                                         v-if="!isClient"  ><i class="el-icon-upload2"></i></el-button>
+                                <el-button type="primary"  class="btn btn-sm btn-danger"
+                                           v-show="row.btn_remove"
+                                           @click.prevent="clickRemove(row.id)"
+                                           v-if="!isClient"  >
+                                    <i class="el-icon-delete"></i>
+                                </el-button>
                             </template>
                             <template v-else>
                                 <el-tooltip class="item" effect="dark" :content="row.text_tooltip" placement="top">                                
@@ -104,6 +111,24 @@
             clickResend(document_id) {
                 this.loading_submit = true
                 this.$http.get(`/documents/send/${document_id}`)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit('reloadData')
+                            // location.reload()
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    })
+                    .catch(error => {
+                        this.$message.error(error.response.data.message)
+                    }).then(()=>{
+                        this.loading_submit = false
+                    })
+            },
+            clickRemove(document_id) {
+                this.loading_submit = true
+                this.$http.get(`/documents/remove/${document_id}`)
                     .then(response => {
                         if (response.data.success) {
                             this.$message.success(response.data.message)

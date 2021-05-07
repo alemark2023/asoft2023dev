@@ -606,6 +606,32 @@ class DocumentController extends Controller
         ];
     }
 
+    public function remove($document_id)
+    {
+        $document = Document::find($document_id);
+        $response['description'] = 'Documento no se encuentra';
+        if (!empty($document)) {
+            if($document->canDelete()){
+                $document->delete();
+                $response['description'] = 'Documento se ha borrado';
+            } else {
+                $duplicated = Document::where([
+                    'series' => $document->series ,
+                    'number' => $document->number ,
+                ])->where('id', '!=', $document->id)->first();
+                if(!empty($duplicated)) {
+                    $response['description'] = 'No es un documento regularizable';
+
+                }else{
+                    $response['description'] = 'La factura no puede eliminarse, no esta duplicado con serie y numero';
+                }
+            }
+        }
+        return [
+            'success' => true,
+            'message' => $response['description'],
+        ];
+    }
     public function consultCdr($document_id)
     {
         $document = Document::find($document_id);

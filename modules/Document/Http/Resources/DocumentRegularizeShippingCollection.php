@@ -43,6 +43,7 @@ class DocumentRegularizeShippingCollection extends ResourceCollection
             if($row->regularize_shipping) {
                 $message_regularize_shipping = "{$row->response_regularize_shipping->code} - {$row->response_regularize_shipping->description}";
             }
+            $canDeleted = $row->canDelete();
 
             return [
                 'id' => $row->id,
@@ -59,7 +60,8 @@ class DocumentRegularizeShippingCollection extends ResourceCollection
                 'document_type_description' => $row->document_type->description,
                 'document_type_id' => $row->document_type->id, 
                 'btn_resend' => $btn_resend,
-                'affected_document' => $affected_document,  
+                'btn_remove' => $canDeleted,
+                'affected_document' => $affected_document,
                 'user_name' => ($row->user) ? $row->user->name : '',
                 'user_email' => ($row->user) ? $row->user->email : '',
                 'text_tooltip' => $text_tooltip,
