@@ -206,7 +206,7 @@ if ($hostname) {
 			Route::post('documents', 'Tenant\DocumentController@store');
 			Route::post('documents/{id}/update', 'Tenant\DocumentController@update');
 			Route::get('documents/send/{document}', 'Tenant\DocumentController@send');
-			Route::get('documents/remove/{document}', 'Tenant\DocumentController@remove');
+			// Route::get('documents/remove/{document}', 'Tenant\DocumentController@remove');
 			// Route::get('documents/consult_cdr/{document}', 'Tenant\DocumentController@consultCdr');
 			Route::post('documents/email', 'Tenant\DocumentController@email');
 			Route::get('documents/note/{document}', 'Tenant\NoteController@create');
