@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddSoftDeleteToDocument extends Migration
+class RemoveSoftDeleteToDocument extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class AddSoftDeleteToDocument extends Migration
      */
     public function up()
     {
-        if(!Schema::hasColumn('documents','deleted_at')) {
+        if(Schema::hasColumn('documents','deleted_at')) {
             Schema::table('documents', function (Blueprint $table) {
                 //
-                $table->softDeletes();
+                $table->dropSoftDeletes();
             });
         }
     }
@@ -28,11 +28,9 @@ class AddSoftDeleteToDocument extends Migration
      */
     public function down()
     {
-        if(Schema::hasColumn('documents','deleted_at')) {
-            Schema::table('documents', function (Blueprint $table) {
-                //
-                $table->dropSoftDeletes();
-            });
-        }
+        Schema::table('documents', function (Blueprint $table) {
+            //
+
+        });
     }
 }

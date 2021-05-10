@@ -318,7 +318,7 @@
         updated () {
             // Set default values ​​for multiple selection trees
             if(this.modules !== undefined && this.$refs.tree !== undefined) {
-                this.$refs.tree.setCheckedKeys(this.modules)
+                // this.$refs.tree.setCheckedKeys(this.modules)
             }
         },
         async created() {
