@@ -530,6 +530,7 @@
                 this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
                 this.form.item_unit_types = item.item_unit_types
                 this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+                this.search_item_by_barcode = 0;
             },
             async clickAddItem() {
                 if(this.form.item.lots_enabled){
