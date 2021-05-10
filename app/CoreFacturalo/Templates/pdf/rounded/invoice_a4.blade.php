@@ -14,6 +14,12 @@
         $affected_document_number = null;
     }
 
+    //calculate items
+    $allowed_items = 35;
+    $quantity_items = $document->items()->count();
+    $cycle_items = $allowed_items - ($quantity_items * 3);
+    $total_weight = 0;
+
 
 @endphp
 <html>
@@ -173,6 +179,9 @@
                     <div class="div-table-col w-10 text-right">{{ number_format($row->total, 2) }}</div>
                 </div>
             @endforeach
+            @for($i = 0; $i < $cycle_items; $i++)
+            <br>
+            @endfor
         </div>
     </div>
 
