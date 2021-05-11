@@ -393,8 +393,17 @@ class PurchaseController extends Controller
                 $message = 'No se puede anular esta compra, series en productos no disponibles';
                 break;
             }
-
-            if(array_key_exists('lots_enabled', $element->item)) {
+            $lot_enabled = false;
+            if(is_array($element->item)){
+                if(in_array('lots_enabled',$element->item)){
+                    $lot_enabled = true;
+                }
+            }elseif(is_object($element->item)){
+                if(property_exists($element->item,'lots_enabled')){
+                    $lot_enabled = true;
+                }
+            }
+            if($lot_enabled) {
                 if($element->item->lots_enabled && $element->lot_code )
                 {
                     $lot_group = ItemLotsGroup::where('code', $element->lot_code)->first();
