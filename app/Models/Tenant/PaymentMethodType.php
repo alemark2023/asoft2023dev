@@ -69,18 +69,21 @@ class PaymentMethodType extends ModelTenant
     public function scopeNonCredit($query){
         return $query->where('is_credit',0);
     }
+    public function scopeCredit($query){
+        return $query->where('is_credit',1);
+    }
 
 
     public function document_payments()
     {
         return $this->hasMany(DocumentPayment::class,  'payment_method_type_id');
     }
-    
+
     public function sale_note_payments()
     {
         return $this->hasMany(SaleNotePayment::class,  'payment_method_type_id');
     }
-    
+
     public function purchase_payments()
     {
         return $this->hasMany(PurchasePayment::class,  'payment_method_type_id');
@@ -90,28 +93,28 @@ class PaymentMethodType extends ModelTenant
     {
         return $this->hasMany(QuotationPayment::class,  'payment_method_type_id');
     }
-    
+
     public function contract_payments()
     {
         return $this->hasMany(ContractPayment::class,  'payment_method_type_id');
     }
-    
+
     public function income_payments()
     {
         return $this->hasMany(IncomePayment::class,  'payment_method_type_id');
     }
-    
+
     public function cash_transactions()
     {
         return $this->hasMany(CashTransaction::class,  'payment_method_type_id');
     }
-    
+
     public function technical_service_payments()
     {
         return $this->hasMany(TechnicalServicePayment::class,  'payment_method_type_id');
     }
 
-    
+
     public function scopeWhereFilterPayments($query, $params)
     {
 
