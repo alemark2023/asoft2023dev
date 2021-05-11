@@ -449,4 +449,19 @@ class Document extends ModelTenant
         }
         return false;
     }
+
+    /**
+     * Devuelve el ultimo numero por serie, si no existe devielve 0
+     *
+     * @param string $serie
+     *
+     * @return int
+     */
+    public static function getLastNumberBySerie($serie){
+        $t = Document::where('series',$serie)->select('number')->orderby('number','DESC')->first();
+        if(!empty($t)){
+            return $t->number;
+        }
+        return 0;
+    }
 }

@@ -973,9 +973,17 @@ class Facturalo
 
         $this->actions = array_key_exists('actions', $inputs)?$inputs['actions']:[];
         $this->type = @$inputs['type'];
+        // dd($inputs);
         switch ($this->type) {
             case 'invoice':
                 $document = Document::find($id);
+                // si cambia la serie
+                if($inputs['series'] !== $document->series){
+                    // se consulta el ultimo numero de la nueva serie
+                    $last_number = Document::getLastNumberBySerie($inputs['series']);
+                    // se actualiza el numero actual en $imputs
+                    $inputs['number'] = $last_number + 1;
+                }
                 $document->fill($inputs);
                 $document->save();
 
