@@ -427,7 +427,18 @@ trait InventoryTrait
 
     public function verifyHasSaleLotsGroup($purchase_item)
     {
-        if(array_key_exists('lots_enabled', $purchase_item->item)) {
+        $lot_enabled = false;
+        if(is_array($purchase_item->item)){
+            if(in_array('lots_enabled',$purchase_item->item)){
+                $lot_enabled = true;
+            }
+        }elseif(is_object($purchase_item->item)){
+            if(property_exists($purchase_item->item,'lots_enabled')){
+                $lot_enabled = true;
+            }
+        }
+        if($lot_enabled) {
+        // if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
 
@@ -451,7 +462,18 @@ trait InventoryTrait
             $it = ItemLot::findOrFail($row->id);
             $it->delete();
         }
-        if(array_key_exists('lots_enabled', $purchase_item->item)) {
+        $lot_enabled = false;
+        if(is_array($purchase_item->item)){
+            if(in_array('lots_enabled',$purchase_item->item)){
+                $lot_enabled = true;
+            }
+        }elseif(is_object($purchase_item->item)){
+            if(property_exists($purchase_item->item,'lots_enabled')){
+                $lot_enabled = true;
+            }
+        }
+        if($lot_enabled) {
+        //if(array_key_exists('lots_enabled', $purchase_item->item)) {
             if ($purchase_item->item->lots_enabled && $purchase_item->lot_code) {
                 $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->firstOrFail();
                 if (!$lot_group) {
