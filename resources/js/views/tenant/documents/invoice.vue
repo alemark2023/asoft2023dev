@@ -959,7 +959,8 @@
                 this.form.discounts = data.discounts || [];
                 this.form.seller_id = data.seller_id;
                 this.form.items = this.onPrepareItems(data.items);
-                this.form.series = data.series;
+                // this.form.series = data.series; //form.series no llena el selector
+                this.series = this.onSetSeries(data.document_type_id, data.series);
                 this.form.state_type_id = data.state_type_id;
                 this.form.total_discount = parseFloat(data.total_discount);
                 this.form.total_exonerated = parseFloat(data.total_exonerated);
@@ -1038,6 +1039,13 @@
                     return find.id;
                 }
                 return null;
+            },
+            onSetSeries(documentType, serie) {
+                const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
+                if (find) {
+                    return [find];
+                }
+                return [];
             },
             getPrepayment(index){
                 return _.find(this.prepayment_documents, {id: this.form.prepayments[index].document_id})

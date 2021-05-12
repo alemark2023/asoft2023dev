@@ -34,6 +34,7 @@ use App\CoreFacturalo\WS\Services\ConsultCdrService;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
+use App\CoreFacturalo\Requests\Inputs\Functions;
 
 class Facturalo
 {
@@ -983,6 +984,8 @@ class Facturalo
                     $last_number = Document::getLastNumberBySerie($inputs['series']);
                     // se actualiza el numero actual en $imputs
                     $inputs['number'] = $last_number + 1;
+                    // cambiamos el filename
+                    $inputs['filename'] = Functions::filename(Company::active(), $inputs['document_type_id'], $inputs['series'], $inputs['number']);
                 }
                 $document->fill($inputs);
                 $document->save();
