@@ -7,7 +7,10 @@
                         <div class="form-group" id="custom-select" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">
                                 Producto/Servicio
-                                <a v-if="typeUser != 'seller'" href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
+                                <a v-if="can_add_new_product"
+                                   href="#" @click.prevent="showDialogNewItem = true">
+                                    [+ Nuevo]
+                                </a>
                             </label>
 
                             <template v-if="!search_item_by_barcode" id="select-append">
@@ -344,11 +347,22 @@
     import VueCkeditor from 'vue-ckeditor5'
 
     export default {
-        props: ['recordItem','showDialog', 'operationTypeId', 'currencyTypeIdActive', 'exchangeRateSale', 'typeUser',
-                'isEditItemNote', 'configuration', 'documentTypeId', 'noteCreditOrDebitTypeId'],
+        props: [
+            'recordItem',
+            'showDialog',
+            'operationTypeId',
+            'currencyTypeIdActive',
+            'exchangeRateSale',
+            'typeUser',
+            'isEditItemNote',
+            'configuration',
+            'documentTypeId',
+            'noteCreditOrDebitTypeId'
+        ],
         components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm, 'vue-ckeditor': VueCkeditor.component},
         data() {
             return {
+                can_add_new_product: false,
                 loading_search:false,
                 titleAction: '',
                 is_client:false,
@@ -410,6 +424,7 @@
             this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
                 this.form.warehouse_id = warehouse_id
             })
+            this.canCreateProduct();
         },
         computed: {
             edit_unit_price() {
@@ -423,6 +438,16 @@
             }
         },
         methods: {
+            canCreateProduct(){
+                if(this.typeUser === 'admin') {
+                    this.can_add_new_product =  true
+                }else if(this.typeUser === 'seller') {
+                    if (this.configuration !== undefined && this.configuration.seller_can_create_product !== undefined) {
+                        this.can_add_new_product = this.configuration.seller_can_create_product;
+                    }
+                }
+                return this.can_add_new_product;
+            },
             validateQuantity(){
 
                 if(!this.form.quantity){
