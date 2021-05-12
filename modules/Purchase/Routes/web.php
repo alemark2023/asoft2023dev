@@ -25,7 +25,7 @@ if($current_hostname) {
 
             Route::prefix('purchase-orders')->group(function () {
 
-                Route::get('', 'PurchaseOrderController@index')->name('tenant.purchase-orders.index');
+                Route::get('', 'PurchaseOrderController@index')->name('tenant.purchase-orders.index')->middleware('redirect.level');
                 Route::get('columns', 'PurchaseOrderController@columns');
                 Route::get('records', 'PurchaseOrderController@records');
                 Route::get('create/{id?}', 'PurchaseOrderController@create')->name('tenant.purchase-orders.create');
