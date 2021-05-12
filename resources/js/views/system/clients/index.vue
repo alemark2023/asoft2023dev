@@ -225,8 +225,10 @@
                 <th>Plan</th>
                 <th>Correo</th>
                 <th>Entorno</th>
-                <th class="text-center">Comprobantes</th>
-                <th class="text-center">Usuarios</th>
+                <th class="text-center">Total de Comprobantes</th>
+                  <th class="text-right">Inicio Ciclo Facturacion</th>
+                  <th class="text-center">Comprobantes Ciclo Facturacion</th>
+                  <th class="text-center">Usuarios</th>
                 <th class="text-center">F.Creación</th>
 
                 <th class="text-center">Bloquear cuenta</th>
@@ -237,8 +239,6 @@
                 <th class="text-right">Pagos</th>
                 <th class="text-right">E. Cuenta</th>
                 <th class="text-right">Editar</th>
-                <th class="text-right">Inicio Ciclo Facturacion</th>
-                <th class="text-center">Comprobantes Ciclo Facturacion</th>
               </tr>
             </thead>
             <tbody>
@@ -255,32 +255,38 @@
                   <span v-if="row.soap_type == '03'" class="badge badge-info">Interno</span>
                 </td>
                 <td class="text-center">
-                  <template v-if="row.max_documents !== 0 && row.count_doc > row.max_documents">
-                    <el-popover
-                      placement="top-start"
-                      width="220"
-                      trigger="hover"
-                      :content="text_limit_doc"
-                    >
-                      <label slot="reference" class="text-danger">
-                        <strong>{{ row.count_doc }}</strong>
-                      </label>
-                    </el-popover>
-                  </template>
-                  <template v-else>
                     <label>
-                      <strong>{{ row.count_doc }}</strong>
+                        <strong>{{ row.count_doc }}</strong>
                     </label>
-                  </template>
-                  /
-                  <template v-if="row.max_documents == 0">
-                    <i class="fas fa-infinity"></i>
-                  </template>
-                  <template v-else>
-                    <strong>{{ row.max_documents }}</strong>
-                  </template>
                 </td>
-                <td class="text-center">
+                  <td>
+                      <template v-if="row.start_billing_cycle">
+                          <span></span>
+                          <span>{{row.start_billing_cycle}}</span>
+                      </template>
+                      <template v-else>
+                          <el-date-picker
+                              @change="setStartBillingCycle($event, row.id)"
+                              v-model="row.select_date_billing"
+                              value-format="yyyy-MM-dd"
+                              type="date"
+                              placeholder="..."
+                          ></el-date-picker>
+                      </template>
+                  </td>
+                  <td class="text-center">
+                      <strong>
+                          {{ row.count_doc_month ? row.count_doc_month : 0 }} /
+                          <template v-if="row.max_documents == 0">
+                              <i class="fas fa-infinity"></i>
+                          </template>
+                          <template v-else>
+                              <strong>{{ row.max_documents }}</strong>
+                          </template>
+                      </strong>
+                  </td>
+
+                  <td class="text-center">
                   <template v-if="row.max_users !== 0 && row.count_user > row.max_users">
                     <el-popover
                       placement="top-start"
@@ -373,32 +379,7 @@
                   >Editar</button>
                 </td>
 
-                <td>
-                  <template v-if="row.start_billing_cycle">
-                    <span></span>
-                    <span>{{row.start_billing_cycle}}</span>
-                  </template>
-                  <template v-else>
-                    <el-date-picker
-                      @change="setStartBillingCycle($event, row.id)"
-                      v-model="row.select_date_billing"
-                      value-format="yyyy-MM-dd"
-                      type="date"
-                      placeholder="..."
-                    ></el-date-picker>
-                  </template>
-                </td>
-                <td class="text-center">
-                  <strong>
-                    {{ row.count_doc_month ? row.count_doc_month : 0 }} /
-                    <template v-if="row.max_documents == 0">
-                      <i class="fas fa-infinity"></i>
-                    </template>
-                    <template v-else>
-                      <strong>{{ row.max_documents }}</strong>
-                    </template>
-                  </strong>
-                </td>
+
               </tr>
             </tbody>
           </table>
