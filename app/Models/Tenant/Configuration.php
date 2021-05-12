@@ -51,11 +51,13 @@ class Configuration extends ModelTenant
         'smtp_user',
         'smtp_password',
         'smtp_encryption',
+        'seller_can_create_product',
     ];
 
     protected $casts = [
         'quotation_allow_seller_generate_sale' => 'boolean',
         'allow_edit_unit_price_to_seller' => 'boolean',
+        'seller_can_create_product' => 'boolean',
     ];
 
     /**
