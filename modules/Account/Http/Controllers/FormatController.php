@@ -83,8 +83,8 @@ class FormatController extends Controller
                 }
                 $note_affected_document = new Document();
                 if (!empty($row->note)) {
-                    if (!empty($row->affected_document)) {
-                        $note_affected_document = $row->affected_document;
+                    if (!empty($row->note->affected_document)) {
+                        $note_affected_document = $row->note->affected_document;
                     }
                 }
 
