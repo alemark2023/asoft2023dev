@@ -15,7 +15,7 @@ class RedirectModuleLevel
      */
     public function handle($request, Closure $next)
     {
-      
+
         $level = $request->user()->getLevel();
         $path = explode('/', $request->path());
         $levels = $request->user()->getLevels();
@@ -26,9 +26,9 @@ class RedirectModuleLevel
             if(count($levels)){
                 // dd("w");
 
-                if(count($levels) < 13){
+                if(count($levels) < 72){
                     // dd($levels);
-                    
+
                     $group = $this->getGroup($path, $level);
                     // dd($group);
 
@@ -77,20 +77,23 @@ class RedirectModuleLevel
                 return redirect()->route('tenant.sale_notes.create');
 
             case 'incentives':
-                return redirect()->route('tenant.incentives.create'); 
+                return redirect()->route('tenant.incentives.create');
 
 
             case 'sale-opportunity':
-                return redirect()->route('tenant.sale_opportunities.index'); 
-                    
+                return redirect()->route('tenant.sale_opportunities.index');
+
             case 'contracts':
-                return redirect()->route('tenant.contracts.create'); 
-                
+                return redirect()->route('tenant.contracts.create');
+
             case 'order-note':
-                return redirect()->route('tenant.order_notes.create'); 
-                
+                return redirect()->route('tenant.order_notes.create');
+
             case 'technical-service':
-                return redirect()->route('tenant.technical_services.create'); 
+                return redirect()->route('tenant.technical_services.create');
+
+            case 'purchases_orders':
+                return redirect()->route('tenant.purchase-orders.index');
 
         }
     }
@@ -177,6 +180,9 @@ class RedirectModuleLevel
         }
         elseif($path[0] == "technical-services"){
             $group = "technical-service";
+        }
+        elseif($path[0] == "purchase-orders"){
+            $group = "purchases";
         }
         else{
             $group = null;
