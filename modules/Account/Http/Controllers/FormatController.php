@@ -87,6 +87,50 @@ class FormatController extends Controller
                         $note_affected_document = $row->note->affected_document;
                     }
                 }
+                $document_type_id = $row->document_type_id;
+                $state_type_id = $row->state_type_id;
+                $type_array_cero = [
+                    '01',//    FACTURA ELECTRÓNICA
+                    '03',//    BOLETA DE VENTA ELECTRÓNICA
+                    //'07',//    NOTA DE CRÉDITO
+                    //'08',//    NOTA DE DÉBITO
+                    //'09',//    GUIA DE REMISIÓN REMITENTE
+                    //'20',//    COMPROBANTE DE RETENCIÓN ELECTRÓNICA
+                    //'31',//    Guía de remisión transportista
+                    //'40',//    COMPROBANTE DE PERCEPCIÓN ELECTRÓNICA
+                    //'71',//    Guia de remisión remitente complementaria
+                    //'72',//	Guia de remisión transportista complementaria
+                    //'GU75',//	GUÍA
+                    //'NE76',//	NOTA DE ENTRADA
+                    //'80',//	NOTA DE VENTA
+                    //'02',//	RECIBO POR HONORARIOS
+                    //'14',//	SERVICIOS PÚBLICOS
+                ];
+                $state_array_cero = [
+                    // '01',//	Registrado
+                    // '03',//	Enviado
+                    // '05',//	Aceptado
+                    // '07',//	Observado
+                    '09',//	Rechazado
+                    '11',//	Anulado
+                    // '13',//	Por anular
+                ];
+                if (
+                    in_array($document_type_id, $type_array_cero) &&
+                    in_array($state_type_id, $state_array_cero)
+                ) {
+                    $row->total_exportation = 0 ;
+                    $row->total_taxed = 0 ;
+                    $row->total_exonerated = 0 ;
+                    $row->total_unaffected = 0 ;
+                    $row->total_plastic_bag_taxes = 0 ;
+                    $row->total_igv = 0 ;
+                    $row->total = 0 ;
+                    $total = $row->total;
+                    $total_taxed = $row->total_taxed;
+                    $symbol = $row->currency_type->symbol;
+                    $total_igv = $row->total_igv;
+                }
 
                 return [
                     'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
