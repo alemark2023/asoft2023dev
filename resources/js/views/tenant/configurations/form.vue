@@ -140,6 +140,13 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 mt-4">
+                                        <label class="control-label">Permitir Ver el saldo en balance de finanzas a vendedores</label>
+                                        <div class="form-group" :class="{'has-danger': errors.seller_can_view_balance}">
+                                            <el-switch v-model="form.seller_can_view_balance" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.seller_can_view_balance" v-text="errors.seller_can_view_balance[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
                                         <label class="control-label">Productos de una ubicación</label>
                                         <div class="form-group" :class="{'has-danger': errors.product_only_location}">
                                             <el-switch v-model="form.product_only_location" active-text="Si" inactive-text="No" @change="submit"></el-switch>
@@ -361,6 +368,7 @@
                     quotation_allow_seller_generate_sale: false,
                     allow_edit_unit_price_to_seller: false,
                     seller_can_create_product: false,
+                    seller_can_view_balance: true,
                     finances: {},
                     visual: {},
                     ticket_58: false
