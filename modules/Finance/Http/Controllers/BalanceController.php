@@ -2,6 +2,7 @@
 
 namespace Modules\Finance\Http\Controllers;
 
+use App\Models\Tenant\Configuration;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
