@@ -22,8 +22,8 @@ class BalanceController extends Controller
     use FinanceTrait;
 
     public function index(){
-
-        return view('finance::balance.index');
+        $configuration = Configuration::first();
+        return view('finance::balance.index',compact('configuration'));
     }
 
 
