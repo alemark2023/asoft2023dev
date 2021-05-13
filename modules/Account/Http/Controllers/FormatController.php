@@ -60,6 +60,71 @@ class FormatController extends Controller
         ];
     }
 
+    /**
+     * Establece a 0 los totales para los documentos que se habiliten en $type_document_to_evalue
+     * y que el status se encuentre en $type_document_to_evalue.
+     *
+     * Normalmente se evalua Factura electronica (01) y Boleta de venta electronica (03)
+     * Si $is_affected es verdadero, evalua tambien nota de credito (07) y debito (08)
+     *
+     * @param Document $row
+     * @param boolean  $is_affected
+     *
+     * @return Document
+     */
+    public function AdjustValueToReportByDocumentTypeAndStateType(Document $row, $is_affected = false){
+
+        $document_type_id = $row->document_type_id;
+        $state_type_id = $row->state_type_id;
+        $type_document_to_evalue = [
+            '01',//    FACTURA ELECTRÓNICA
+            '03',//    BOLETA DE VENTA ELECTRÓNICA
+            //'07',//    NOTA DE CRÉDITO
+            //'08',//    NOTA DE DÉBITO
+            //'09',//    GUIA DE REMISIÓN REMITENTE
+            //'20',//    COMPROBANTE DE RETENCIÓN ELECTRÓNICA
+            //'31',//    Guía de remisión transportista
+            //'40',//    COMPROBANTE DE PERCEPCIÓN ELECTRÓNICA
+            //'71',//    Guia de remisión remitente complementaria
+            //'72',//	Guia de remisión transportista complementaria
+            //'GU75',//	GUÍA
+            //'NE76',//	NOTA DE ENTRADA
+            //'80',//	NOTA DE VENTA
+            //'02',//	RECIBO POR HONORARIOS
+            //'14',//	SERVICIOS PÚBLICOS
+        ];
+        if($is_affected == true){
+            $type_document_to_evalue = [
+                '01',//    FACTURA ELECTRÓNICA
+                '03',//    BOLETA DE VENTA ELECTRÓNICA
+                '07',//    NOTA DE CRÉDITO
+                '08',//    NOTA DE DÉBITO
+            ];
+        }
+        $document_state_to_evalue = [
+            // '01',//	Registrado
+            // '03',//	Enviado
+            // '05',//	Aceptado
+            // '07',//	Observado
+            '09',//	Rechazado
+            '11',//	Anulado
+            // '13',//	Por anular
+        ];
+        if (
+            in_array($document_type_id, $type_document_to_evalue) &&
+            in_array($state_type_id, $document_state_to_evalue)
+        ) {
+            $row->total_exportation = 0 ;
+            $row->total_taxed = 0 ;
+            $row->total_exonerated = 0 ;
+            $row->total_unaffected = 0 ;
+            $row->total_plastic_bag_taxes = 0 ;
+            $row->total_igv = 0 ;
+            $row->total = 0 ;
+        }
+        return $row;
+    }
+
     private function getSaleDocuments($d_start, $d_end)
     {
         return Document::query()
@@ -69,6 +134,15 @@ class FormatController extends Controller
             ->orderBy('series')
             ->orderBy('number')
             ->get()->transform(function ($row) {
+                $row = $this->AdjustValueToReportByDocumentTypeAndStateType($row);
+                $note_affected_document = new Document();
+                if (!empty($row->note)) {
+                    if (!empty($row->note->affected_document)) {
+                        $note_affected_document = $row->note->affected_document;
+                        $row = $this->AdjustValueToReportByDocumentTypeAndStateType($row,1);
+                    }
+                }
+
                 $total = $row->total;
                 $total_taxed = $row->total_taxed;
                 $symbol = $row->currency_type->symbol;
@@ -78,58 +152,7 @@ class FormatController extends Controller
                     $total = round($row->total * $row->exchange_rate_sale, 2);
                     $total_taxed = round($row->total_taxed * $row->exchange_rate_sale, 2);
                     $symbol = 'S/';
-
                     $total_igv = round($row->total_igv * $row->exchange_rate_sale, 2);
-                }
-                $note_affected_document = new Document();
-                if (!empty($row->note)) {
-                    if (!empty($row->note->affected_document)) {
-                        $note_affected_document = $row->note->affected_document;
-                    }
-                }
-                $document_type_id = $row->document_type_id;
-                $state_type_id = $row->state_type_id;
-                $type_array_cero = [
-                    '01',//    FACTURA ELECTRÓNICA
-                    '03',//    BOLETA DE VENTA ELECTRÓNICA
-                    //'07',//    NOTA DE CRÉDITO
-                    //'08',//    NOTA DE DÉBITO
-                    //'09',//    GUIA DE REMISIÓN REMITENTE
-                    //'20',//    COMPROBANTE DE RETENCIÓN ELECTRÓNICA
-                    //'31',//    Guía de remisión transportista
-                    //'40',//    COMPROBANTE DE PERCEPCIÓN ELECTRÓNICA
-                    //'71',//    Guia de remisión remitente complementaria
-                    //'72',//	Guia de remisión transportista complementaria
-                    //'GU75',//	GUÍA
-                    //'NE76',//	NOTA DE ENTRADA
-                    //'80',//	NOTA DE VENTA
-                    //'02',//	RECIBO POR HONORARIOS
-                    //'14',//	SERVICIOS PÚBLICOS
-                ];
-                $state_array_cero = [
-                    // '01',//	Registrado
-                    // '03',//	Enviado
-                    // '05',//	Aceptado
-                    // '07',//	Observado
-                    '09',//	Rechazado
-                    '11',//	Anulado
-                    // '13',//	Por anular
-                ];
-                if (
-                    in_array($document_type_id, $type_array_cero) &&
-                    in_array($state_type_id, $state_array_cero)
-                ) {
-                    $row->total_exportation = 0 ;
-                    $row->total_taxed = 0 ;
-                    $row->total_exonerated = 0 ;
-                    $row->total_unaffected = 0 ;
-                    $row->total_plastic_bag_taxes = 0 ;
-                    $row->total_igv = 0 ;
-                    $row->total = 0 ;
-                    $total = $row->total;
-                    $total_taxed = $row->total_taxed;
-                    $symbol = $row->currency_type->symbol;
-                    $total_igv = $row->total_igv;
                 }
 
                 return [
