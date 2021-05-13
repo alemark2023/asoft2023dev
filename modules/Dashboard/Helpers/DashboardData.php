@@ -144,7 +144,7 @@ class DashboardData
                 'total' => number_format($sale_note_total,2, ".", ""),
             ],
             'graph' => [
-                'labels' => ['Total pagado', 'Total por pagar'],
+                'labels' => ['Total cobrado', 'Pendiente de cobro'],
                 'datasets' => [
                     [
                         'label' => 'Notas de venta',
@@ -286,7 +286,7 @@ class DashboardData
                 'total' => number_format($document_total,2, ".", ""),
             ],
             'graph' => [
-                'labels' => ['Total pagado', 'Total por pagar'],
+                'labels' => ['Total cobrado', 'Pendiente de cobro'],
                 'datasets' => [
                     [
                         'label' => 'Comprobantes',
