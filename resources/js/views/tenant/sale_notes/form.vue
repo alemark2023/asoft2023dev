@@ -147,6 +147,7 @@
                                 <table>
                                     <thead>
                                         <tr width="100%">
+                                            <th>F. Pago</th>
                                             <th v-if="form.payments.length>0">Método de pago</th>
                                             <template v-if="enabled_payments">
                                                 <th v-if="form.payments.length>0">Destino
@@ -162,6 +163,16 @@
                                     </thead>
                                     <tbody>
                                         <tr v-for="(row, index) in form.payments" :key="index">
+                                            <td>
+                                                <div class="form-group mb-2 mr-2">
+                                                    <el-date-picker
+                                                        v-model="row.date_of_payment"
+                                                        type="date"
+                                                        :clearable="false"
+                                                        value-format="yyyy-MM-dd"
+                                                    ></el-date-picker>
+                                                </div>
+                                            </td>
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
                                                     <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
