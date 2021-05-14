@@ -158,6 +158,9 @@ class RedirectModule
 
         ///* Module reports */
 
+        elseif($path[0] == "list-reports"){
+            $group = "reports";
+        }
         elseif($path[0] == "reports" && $path[1] == "purchases"){
             $group = "reports";
         }
@@ -166,6 +169,11 @@ class RedirectModule
         }
         elseif($path[0] == "reports" && $path[1] == "consistency-documents"){
             $group = "reports";
+        }
+
+        // cuenta / listado de pagos
+        elseif($path[0] == "cuenta"){
+            $group = "cuenta";
         }
 
         ///* Module configuration */
@@ -205,11 +213,15 @@ class RedirectModule
                 $group = "purchases";
 
             }elseif($path[1] == "customers"){
-                $group = "documents";
+                $group = "persons";
 
             }else{
                 $group = null;
             }
+        }
+        elseif($path[0] == "person-types"){
+            $group = "persons";
+
         }
         ///* Module pos */
         elseif($path[0] == "pos"){

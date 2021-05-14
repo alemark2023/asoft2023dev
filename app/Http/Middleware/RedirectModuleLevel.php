@@ -64,7 +64,7 @@ class RedirectModuleLevel
             case 'document_contingengy':
                 return redirect()->route('tenant.contingencies.index');
 
-            case 'catalogs':
+            case 'items':
                 return redirect()->route('tenant.items.index');
 
             case 'summary_voided':
@@ -154,7 +154,10 @@ class RedirectModuleLevel
         elseif($path[0] == "contingencies"){
             $group = "document_contingengy";
         }
-        elseif(in_array($path[0], ["items", "categories", "brands"])){
+        elseif(in_array($path[0], ["items", "brands", "item-sets"])){
+            $group = "items";
+        }
+        elseif(in_array($path[0], ["categories"])){
             $group = "catalogs";
         }
         elseif(in_array($path[0], ["summaries", "voided"])){
