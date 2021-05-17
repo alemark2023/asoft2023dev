@@ -63,8 +63,9 @@ class SaleNoteController extends Controller
     {
         $company = Company::select('soap_type_id')->first();
         $soap_company  = $company->soap_type_id;
+        $configuration = Configuration::select('ticket_58')->first();
 
-        return view('tenant.sale_notes.index', compact('soap_company'));
+        return view('tenant.sale_notes.index', compact('soap_company', 'configuration'));
     }
 
 
@@ -174,7 +175,7 @@ class SaleNoteController extends Controller
             ];
         });
         $payment_destinations = $this->getPaymentDestinations();
-        $configuration = Configuration::select('destination_sale')->first();
+        $configuration = Configuration::select('destination_sale','ticket_58')->first();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
                          'charge_types','company','payment_method_types', 'series', 'payment_destinations');

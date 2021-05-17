@@ -183,7 +183,8 @@
 
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
-                          :showClose="true"></sale-notes-options>
+                          :showClose="true"
+                          :configuration="configuration"></sale-notes-options>
 
         <sale-note-generate :show.sync="showDialogGenerate"
                            :recordId="recordId"
@@ -202,7 +203,7 @@
     import ModalGenerateCPE from './ModalGenerateCPE'
 
     export default {
-        props: ['soapCompany','typeUser'],
+        props: ['soapCompany','typeUser','configuration'],
         mixins: [deletable],
         components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate, ModalGenerateCPE},
         data() {

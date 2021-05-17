@@ -29,7 +29,7 @@ class SaleNoteResource extends JsonResource
             'print_ticket' => url('')."/sale-notes/print/{$this->external_id}/ticket",
             'print_a4' => url('')."/sale-notes/print/{$this->external_id}/a4",
             'print_a5' => url('')."/sale-notes/print/{$this->external_id}/a5",
-            // 'print_a5' => url('')."/sale-notes/print-a5/{$this->id}/a5",
+            'print_ticket_58' => url('')."/sale-notes/print/{$this->external_id}/ticket_58",
             'sale_note' => $sale_note,
             'serie' => $this->series,
             'number' => $this->number,
