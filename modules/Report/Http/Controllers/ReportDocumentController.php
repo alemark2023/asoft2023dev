@@ -56,7 +56,7 @@ class ReportDocumentController extends Controller
 
 
     public function pdf(Request $request) {
-
+        set_time_limit (1800); // Maximo 30 minutos
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), Document::class)->get();
