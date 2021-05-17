@@ -1,3 +1,53 @@
+## 4.0.9
+
+### docs
+2021-05-05 : docs | changelog<br>
+
+
+### fixed
+2021-05-17 : fixed | #521 | Reporte: Ventas: Ajuste de tiempo maximo para pdf a 1800 segundos (30 minutos)<br>
+2021-05-14 : fixed | #517 | Compile JS<br>
+2021-05-14 : fixed | #517 | Nota de Ventas: Añadiendo fecha de pago al metodo de pago<br>
+2021-05-14 : fixed | #389 | permisos y restricciones de accesos mediante urls<br>
+2021-05-13 : fixed | #519 | missing use configuration<br>
+2021-05-13 : fixed | #519 #577 | Fix Response<br>
+2021-05-13 : fixed | #519 | Compile js<br>
+2021-05-13 : fixed | #519 | Finanzas: Balance: Oculta el saldo total basado en la configuracion seller_can_view_balance<br>
+2021-05-13 : fixed | #519 | Configuracion: Avanzada: Visual: Permite mostrar opcion de vendedor para ver balance en finanzas<br>
+2021-05-13 : fixed | #578 | Contabilidad: Exportar reporte: Reporte de venta: Se amplia nota de debito y credito cuando afecta a un documento, para evaluar su status y, de estar anulada, se ajusta a 0 el total de la misma<br>
+2021-05-12 : fixed | #516 #577 | Compile JS<br>
+2021-05-12 : fixed | #577 | Item: DocumentFormItem evalua si es vendedor y si puede crear producto.<br>
+2021-05-12 : fixed | #577 | Configuracion: Visual: Se añade posibilidad de vendedor para crear producto<br>
+2021-05-12 : fixed | #389 | accesos de usuarios a vistas sin permisos<br>
+2021-05-12 : fixed | #516 | Admin: Lista de usuarios: Ajuste grafico para orden de comprobantes<br>
+2021-05-12 : fixed | #578 | Contabilidad: Exportar Reporte: Ajuste para colocar en 0 los totales cuando sea factura o bolenta, con status Rechazado o Anulado<br>
+2021-05-12 : fixed | #578 | Contabilidad: Exportar Reporte: Ajuste para mostrar las notas correctamente.<br>
+2021-05-12 : fixed | 582 | errores en filename y selector de series al editar comprobante<br>
+2021-05-11 : fixed | #482 | Cash: Reportes de caja: Generacion de datos en el controlador. Ajuste para añadir credito y su calculo en los reportes de caja<br>
+2021-05-11 : fixed | #582 | actualizando correlativo al modificar tipo de comprobante tomando el proximo numero a registrar en la serie seleccionada<br>
+2021-05-11 : fixed | #576 | Compras: Anular Compra: Ajuste para verificar que exista lots_enabled.<br>
+2021-05-10 : fixed | #407 #554 | Compile js<br>
+2021-05-10 : fixed | #496 | Administración: Usuarios: Restaurando configuración de correo por cliente<br>
+2021-05-10 : fixed | #482 #554 | Revirtiendo Cambios 3a2d670b838dabcddbcd3698d29c1d9bc13e93d0 37a23f9f91feaa47ae8bb695706c531e842d6de5 496e0cb02dd740c0d0cca36b285b5f5b69dfaa8d 8cfda276e32db47e7834ebfcd2e260dcccc09bb5 664d0a047d62c286396ead521c9dd71616b4e828<br>
+2021-05-10 : fixed | #550 | altura cuerpo de plantilla<br>
+2021-05-10 : fixed | #407 | Compras: Añadir Producto: Codigo de barras: Al encontrar el item, se elimina la busqueda por barras y se ajusta normal.<br>
+2021-05-10 : fixed | #563 | Marcas y Categorías: Crear/Editar: Se añade validacion para marca o categoría única<br>
+2021-05-07 : fixed | #433 | Reporte Caja: Muestra todos los ingresos a caja. No suma Credito al total de caja<br>
+2021-05-07 : fixed | #433 #468 #554 | Compile js<br>
+2021-05-07 : fixed | #554 | Documentos por Regularizar: Archivo de migracion<br>
+2021-05-07 : fixed | #554 | Documentos por Regularizar: Se añade posiblidad de eliminar documentos con regularize_shipping y response_regularize_shipping, que tambien, tengan un documento con serie y con numero igual. Softdelete a tabla documents<br>
+2021-05-07 : fixed | #433 | Reporte: Venta: Documento: Se añade opciones de descarga en columna<br>
+2021-05-06 : fixed | #468 | Nota de venta: Se añade fecha de vencimiento a las nota de venta. Se lista Fecha de vencimiento a las nota de ventas<br>
+2021-05-06 : fixed | #511 #512 | Finanzas: Cuentas por Cobrar/ Cuentas por pagar: Añadiendo la opcion a todos en proveedores y clientes<br>
+
+
+### feature
+2021-05-17 : feature | #592 | ticket formato 58mm para notas de venta<br>
+2021-05-13 : feature | #589 | mejoras visuales de tablas y datos del dashboard<br>
+2021-05-07 : feature | #550 | plantilla con bordes redondeados -rounded-<br>
+2021-05-06 : feature | - | Tarea Programada: Añadiendo bat para tareas programadas en windows<br>
+
+
 ## 4.0.8
 
 ### docs
