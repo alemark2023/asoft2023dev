@@ -493,6 +493,18 @@
             <td colspan="8" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
         </tr>
+        @if($document->total_charge > 0)
+            @php
+                $total_factor = 0;
+                foreach($document->charges as $charge) {
+                    $total_factor = ($total_factor + $charge->factor) * 100;
+                }
+            @endphp
+            <tr>
+                <td colspan="8" class="text-right font-bold">CARGOS ({{$total_factor}}%): {{ $document->currency_type->symbol }}</td>
+                <td class="text-right font-bold">{{ number_format($document->total_charge, 2) }}</td>
+            </tr>
+        @endif
 
         @if($document->perception)
             <tr>
