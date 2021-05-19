@@ -19,21 +19,22 @@
                             <th>Entrada</th>
                             <th>Salida</th>
                             <th v-if="item_id">Saldo</th>
-
+                            <!-- <th>Almacen</th> -->
                         <tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
-                            <td v-if="!item_id">{{row.item_name}}</td>
-                            <td>{{row.date_time}}</td>
-                            <td>{{row.type_transaction}}</td>
-                            <td>{{row.number}}</td>
-                            <td>{{row.sale_note_asoc}}</td>
-                            <td>{{row.order_note_asoc}}</td>
-                            <td>{{row.doc_asoc}}</td>
-                            <td>{{row.date_of_issue}}</td>
-                            <td>{{row.input}}</td>
-                            <td>{{row.output}}</td>
-                            <td v-if="item_id">{{row.balance}}</td>
+                            <td v-if="!item_id">{{ row.item_name }}</td>
+                            <td>{{ row.date_time }}</td>
+                            <td>{{ row.type_transaction }}</td>
+                            <td>{{ row.number }}</td>
+                            <td>{{ row.sale_note_asoc }}</td>
+                            <td>{{ row.order_note_asoc }}</td>
+                            <td>{{ row.doc_asoc }}</td>
+                            <td>{{ row.date_of_issue }}</td>
+                            <td>{{ row.input }}</td>
+                            <td>{{ row.output }}</td>
+                            <td v-if="item_id">{{ row.balance }}</td>
+                            <!-- <td>{{ row.warehouse }}</td> -->
                         </tr>
 
                     </data-table>

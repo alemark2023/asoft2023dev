@@ -109,9 +109,9 @@ class ReportKardexController extends Controller
             with(['inventory_kardexable'])
             ->orderBy('item_id')
             ->orderBy('id');
-        if(auth()->user()->type !== 'admin'){
+         // if(auth()->user()->type !== 'admin'){
             $data = $data->where([['warehouse_id', $warehouse->id]]);
-        }
+        //}
 
         if($date_start && $date_end){
             $data = $data->whereBetween('date_of_issue', [$date_start, $date_end]);
