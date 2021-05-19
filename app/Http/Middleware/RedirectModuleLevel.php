@@ -185,7 +185,7 @@ class RedirectModuleLevel
             $group = "technical-service";
         }
         elseif($path[0] == "purchase-orders"){
-            $group = "purchases";
+            $group = "purchases_orders";
         }
         else{
             $group = null;
