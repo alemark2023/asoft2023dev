@@ -360,13 +360,10 @@ class OrderNoteController extends Controller
 
     public function voided($id)
     {
-
         DB::connection('tenant')->transaction(function () use ($id) {
-
-            $obj =  OrderNote::find($id);
-            $obj->state_type_id = '11';
+            $obj = OrderNote::find($id);
+            $obj->VoidOrderNote();
             $obj->update();
-
         });
 
         return [

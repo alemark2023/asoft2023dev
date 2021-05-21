@@ -13,6 +13,7 @@ use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\ModelTenant;
 use Modules\Inventory\Models\InventoryKardex;
+use Modules\Item\Models\ItemLot;
 
 class OrderNote extends ModelTenant
 {
@@ -241,13 +242,13 @@ class OrderNote extends ModelTenant
         return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
-    
+
     public function inventory_kardex()
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
-    
+
     public function scopeWherePendingState($query, $params)
     {
 
@@ -258,7 +259,7 @@ class OrderNote extends ModelTenant
                             ->where('customer_id', $params['person_id']);
         }
 
-        
+
         return $query->doesntHave('documents')
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
@@ -274,10 +275,10 @@ class OrderNote extends ModelTenant
             return $query->whereHas('documents')
                             ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                             ->where('customer_id', $params['person_id']);
-                            
+
         }
 
-        
+
         return $query->whereHas('documents')
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
@@ -292,12 +293,43 @@ class OrderNote extends ModelTenant
 
             return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                             ->where('customer_id', $params['person_id']);
-                        
+
         }
 
         return $query->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id']);
 
+    }
+
+    /**
+     * Establece el status anulado (11) para el pedido
+     *
+     * Recorre los items, si estos tienen lotes serán habilitados nuevamente
+     *
+     * @return $this
+     */
+    public function VoidOrderNote(): OrderNote
+    {
+        $order_items = $this->items;
+        /** @var OrderNoteItem $item */
+        foreach ($order_items as $items) {
+            $item = $items->item;
+            if (property_exists($item, 'lots')) {
+                $lots = $item->lots;
+                $total_lot = count($lots);
+                for ($i = 0; $i < $total_lot; $i++) {
+                    $lot = $lots[$i];
+                    if (property_exists($lot, 'has_sale') && $lot->has_sale == true) {
+                        $item_lot = ItemLot::find($lot->id);
+                        if (!empty($item_lot) && $item_lot->has_sale == false) {
+                            $item_lot->setHasSale(false)->push();
+                        }
+                    }
+                }
+            }
+        }
+        $this->state_type_id = '11';
+        return $this;
     }
 
 }
