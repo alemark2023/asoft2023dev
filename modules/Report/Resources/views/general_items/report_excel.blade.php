@@ -91,8 +91,8 @@
                                             <td class="celda">{{$value->sale_note->customer->name}}</td>
                                             <td class="celda">{{$value->sale_note->currency_type_id}}</td>
                                             <td class="celda">{{$value->sale_note->exchange_rate_sale}}</td>
-                                            <td class="celda">{{$value->sale_note->unit_type_id}}</td>
-                                            <td class="celda">{{$value->relation_item->brand->name}}</td>
+                                            <td class="celda">{{$value->relation_item->unit_type->description}}</td>
+                                            <td class="celda">{{$value->relation_item->internal_id}}</td>
                                             <td class="celda">{{$value->item->description}}</td>
                                             <td class="celda">{{$value->quantity}}</td>
 
