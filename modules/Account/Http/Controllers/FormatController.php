@@ -140,6 +140,18 @@ class FormatController extends Controller
                     if (!empty($row->note->affected_document)) {
                         $note_affected_document = $row->note->affected_document;
                         $row = $this->AdjustValueToReportByDocumentTypeAndStateType($row,1);
+                    }elseif(!empty($row->note->data_affected_document)){
+                        $data_affected_document = (array)$row->note->data_affected_document;
+                        $note_affected_document = Document::where([
+                            'number' => $data_affected_document['number'],
+                            'series' => $data_affected_document['series'],
+                            'document_type_id' => $data_affected_document['document_type_id'],
+                        ])->first();
+                        if (!empty($note_affected_document)) {
+                            $row = $this->AdjustValueToReportByDocumentTypeAndStateType($row,1);
+                        }else{
+                            $note_affected_document = new Document();
+                        }
                     }
                 }
 
