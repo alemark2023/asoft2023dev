@@ -321,7 +321,7 @@ class OrderNote extends ModelTenant
                     $lot = $lots[$i];
                     if (property_exists($lot, 'has_sale') && $lot->has_sale == true) {
                         $item_lot = ItemLot::find($lot->id);
-                        if (!empty($item_lot) && $item_lot->has_sale == false) {
+                        if (!empty($item_lot) && $item_lot->has_sale == true) {
                             $item_lot->setHasSale(false)->push();
                         }
                     }
