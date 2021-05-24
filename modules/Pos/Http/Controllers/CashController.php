@@ -167,74 +167,71 @@ class CashController extends Controller
                 $payment_condition_id = $document->payment_condition_id;
                 $pays = $document->payments;
                 $pagado = 0;
-                if (
-                    in_array($document->state_type_id, $status_type_id) &&
-                    $payment_condition_id == '01'
-                ) {
-                    $total = self::CalculeTotalOfCurency(
-                        $document->total,
-                        $document->currency_type_id,
-                        $document->exchange_rate_sale
-                    );
-                    $usado .= '<br>Tomado para income<br>';
-                    $cash_income += $total;
-                    $final_balance += $total;
-                    if (count($pays) > 0) {
-                        $usado .= '<br>Se usan los pagos<br>';
+                if (in_array($document->state_type_id, $status_type_id)) {
+                    if ($payment_condition_id == '01') {
+                        $total = self::CalculeTotalOfCurency(
+                            $document->total,
+                            $document->currency_type_id,
+                            $document->exchange_rate_sale
+                        );
+                        $usado .= '<br>Tomado para income<br>';
+                        $cash_income += $total;
+                        $final_balance += $total;
+                        if (count($pays) > 0) {
+                            $usado .= '<br>Se usan los pagos<br>';
+                            foreach ($methods_payment as $record) {
+                                $record_total = $pays
+                                    ->where('payment_method_type_id', $record->id)
+                                    ->whereIn('document.state_type_id', $status_type_id)
+                                    ->sum('payment');
+                                $record->sum = ($record->sum + $record_total);
+                                if (!empty($record_total)) {
+                                    $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
+                                }
+                            }
+                        }
+                    } else {
+                        $usado .= '<br> state_type_id: '.$document->state_type_id.'<br>';
                         foreach ($methods_payment as $record) {
                             $record_total = $pays
                                 ->where('payment_method_type_id', $record->id)
                                 ->whereIn('document.state_type_id', $status_type_id)
-                                ->sum('payment');
-                            $record->sum = ($record->sum + $record_total);
-                            if (!empty($record_total)) {
-                                $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
-                            }
-                        }
-                    }
-                } else {
-                    $usado .= '<br> state_type_id: '.$document->state_type_id.'<br>';
-                    foreach ($methods_payment as $record) {
-                        $record_total = $pays
-                            ->where('payment_method_type_id', $record->id)
-                            ->whereIn('document.state_type_id', $status_type_id)
-                            ->transform(function ($row) {
-                                if (!empty($row->change) && !empty($row->payment)) {
+                                ->transform(function ($row) {
+                                    if (!empty($row->change) && !empty($row->payment)) {
+                                        return (object)[
+                                            'payment' => $row->change * $row->payment,
+                                        ];
+                                    }
                                     return (object)[
-                                        'payment' => $row->change * $row->payment,
+                                        'payment' => $row->payment,
                                     ];
+                                })
+                                ->sum('payment');
+                            $usado .= "Id de documento {$document->id} - ".self::getStringPaymentMethod($record->id)." /* $record_total */<br>";
+                            if ($record->id == '09') {
+                                $usado .= '<br>Se usan los pagos Credito Tipo '.$record->id.' ****<br>';
+                                // $record->sum += $document->total;
+                                $credit += $document->total;
+                            } elseif ($record_total != 0) {
+                                if ((in_array($record->id, $methods_payment_credit))) {
+                                    $record->sum += $record_total;
+                                    $pagado += $record_total;
+                                    $cash_income += $record_total;
+                                    $credit -= $record_total;
+                                    $final_balance += $record_total;
+                                } else {
+                                    $record->sum += $record_total;
+                                    $credit += $record_total;
                                 }
-                                return (object)[
-                                    'payment' => $row->payment,
-                                ];
-                            })
-                            ->sum('payment');
-                        $usado .= "Id de documento {$document->id} - ".self::getStringPaymentMethod($record->id)." /* $record_total */<br>";
-                        if ($record->id == '09') {
-                            $usado .= '<br>Se usan los pagos Credito Tipo '.$record->id.' ****<br>';
-                            // $record->sum += $document->total;
-                            $credit += $document->total;
-                        } elseif ($record_total != 0) {
-                            if ((in_array($record->id, $methods_payment_credit))) {
-                                $record->sum += $record_total;
-                                $pagado += $record_total;
-                                $cash_income += $record_total;
-                                $credit -= $record_total;
-                                $final_balance += $record_total;
-                            } else {
-                                $record->sum += $record_total;
-                                $credit += $record_total;
+                            }
+                        }
+                        foreach ($methods_payment as $record) {
+                            if ($record->id == '09') {
+                                $record->sum += $document->total - $pagado;
                             }
                         }
                     }
-                    foreach ($methods_payment as $record) {
-                        if ($record->id == '09') {
-                            $record->sum += $document->total - $pagado;
-                        }
-                    }
-
                 }
-
                 if ($record_total != $document->total) {
                     $usado .= '<br> Los montos son diferentes '.$document->total." vs ".$pagado."<br>";
                 }
