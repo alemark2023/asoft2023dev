@@ -150,7 +150,9 @@ class FormatController extends Controller
                         if (!empty($note_affected_document)) {
                             $row = $this->AdjustValueToReportByDocumentTypeAndStateType($row,1);
                         }else{
-                            $note_affected_document = new Document();
+                            $note_affected_document = new Document($data_affected_document);
+                            $row = $this->AdjustValueToReportByDocumentTypeAndStateType($row);
+
                         }
                     }
                 }
