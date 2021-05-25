@@ -23,12 +23,14 @@ class ReportKardexCollection extends ResourceCollection
         self::$re = $request;
         $this->calcularRestante(self::$re);
 
-        return $this->collection->transform(function($row, $key) {
-            return self::determinateRow($row);
+        $warehouses = Warehouse::all()->toArray();
+        return $this->collection->transform(function($row, $key) use($warehouses) {
+            return self::determinateRow($row,$warehouses);
         });
     }
 
-    public static function determinateRow($row){
+    public static function determinateRow($row, $warehouse = [])
+    {
 
         $models = [
             "App\Models\Tenant\Document",
@@ -38,94 +40,105 @@ class ReportKardexCollection extends ResourceCollection
             "Modules\Order\Models\OrderNote",
             Devolution::class
         ];
+        $data = [
+            'id' => $row->id,
+            'item_name' => $row->item->description,
+            'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+            'warehouse_id' => $row->warehouse_id,
+            'warehouse' => $row->warehouse_id,
+
+        ];
+        if (isset($warehouse[($row->warehouse_id - 1)])) {
+            $data['warehouse'] = $warehouse[($row->warehouse_id - 1)]['description'];
+        }
 
         switch ($row->inventory_kardexable_type) {
 
-            case $models[0]: //venta
-                return [
-                    'id' => $row->id,
-                    'item_name' => $row->item->description,
-                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+            case $models[0]:
+            {
+                //venta
+                $temp = [
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
-                    'type_transaction' => ($row->quantity < 0) ? "Venta":"Anulación Venta",
+                    'type_transaction' => ($row->quantity < 0) ? "Venta" : "Anulación Venta",
                     'number' => optional($row->inventory_kardexable)->series.'-'.optional($row->inventory_kardexable)->number,
-                    'input' => ($row->quantity > 0) ?  (isset($row->inventory_kardexable->sale_note_id)|| isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-",
+                    'input' => ($row->quantity > 0) ? (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity) : "-",
                     // 'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  (isset($row->inventory_kardexable->sale_note_id)|| isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-",
-                    'balance' => (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id)) ? self::$balance+=0 : self::$balance+= $row->quantity,
-                    'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->number_full:"-",
-                    'order_note_asoc' => isset($row->inventory_kardexable->order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full:"-",
+                    'output' => ($row->quantity < 0) ? (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity) : "-",
+                    'balance' => (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id)) ? self::$balance += 0 : self::$balance += $row->quantity,
+                    'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id) ? optional($row->inventory_kardexable)->sale_note->number_full : "-",
+                    'order_note_asoc' => isset($row->inventory_kardexable->order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full : "-",
                     // 'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
                     'doc_asoc' => isset($row->inventory_kardexable->note) ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-'
                 ];
-
+                $data = array_merge($data, $temp);
+                return $data;
+            }
             case $models[1]:
-                return [
-                    'id' => $row->id,
-                    'item_name' => $row->item->description,
-                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+            {
+                $temp = [
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
-                    'type_transaction' => ($row->quantity < 0) ? "Anulación Compra":"Compra",
+                    'type_transaction' => ($row->quantity < 0) ? "Anulación Compra" : "Compra",
                     'number' => optional($row->inventory_kardexable)->series.'-'.optional($row->inventory_kardexable)->number,
-                    'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
-                    'balance' => self::$balance+= $row->quantity,
+                    'input' => ($row->quantity > 0) ? $row->quantity : "-",
+                    'output' => ($row->quantity < 0) ? $row->quantity : "-",
+                    'balance' => self::$balance += $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
                     'doc_asoc' => '-'
                 ];
 
-            case $models[2]: // Nota de venta
-                return [
-                    'id' => $row->id,
-                    'item_name' => $row->item->description,
-                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
-                    'type_transaction' => "Nota de venta",
+                $data = array_merge($data, $temp);
+                return $data;
+            }
+
+            case $models[2]:
+            { // Nota de venta
+                $temp = [
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
+                    'type_transaction' => "Nota de venta",
                     'number' => optional($row->inventory_kardexable)->number_full,
                     // 'number' => optional($row->inventory_kardexable)->prefix.'-'.optional($row->inventory_kardexable)->id,
-                    'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
-                    'balance' => self::$balance+= $row->quantity,
+                    'input' => ($row->quantity > 0) ? $row->quantity : "-",
+                    'output' => ($row->quantity < 0) ? $row->quantity : "-",
+                    'balance' => self::$balance += $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
                     'doc_asoc' => '-'
 
                 ];
 
-            case $models[3]:{
+                $data = array_merge($data, $temp);
+                return $data;
+            }
+            case $models[3]:
+            {
                 $transaction = '';
                 $input = '';
                 $output = '';
 
-                if(!$row->inventory_kardexable->type){
+                if (!$row->inventory_kardexable->type) {
                     $transaction = InventoryTransaction::findOrFail($row->inventory_kardexable->inventory_transaction_id);
                 }
 
-                if($row->inventory_kardexable->type != null){
+                if ($row->inventory_kardexable->type != null) {
                     $input = ($row->inventory_kardexable->type == 1) ? $row->quantity : "-";
-                }
-                else{
-                    $input = ($transaction->type == 'input') ? $row->quantity : "-" ;
+                } else {
+                    $input = ($transaction->type == 'input') ? $row->quantity : "-";
                 }
 
-                if($row->inventory_kardexable->type != null){
+                if ($row->inventory_kardexable->type != null) {
                     $output = ($row->inventory_kardexable->type == 2 || $row->inventory_kardexable->type == 3) ? $row->quantity : "-";
-                }
-                else{
+                } else {
                     $output = ($transaction->type == 'output') ? $row->quantity : "-";
                 }
                 $user = auth()->user();
                 $return = [
-                    'id' => $row->id,
-                    'item_name' => $row->item->description,
-                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => '-',
                     'type_transaction' => $row->inventory_kardexable->description,
                     'number' => "-",
                     // 'input' => $input,
                     // 'output' => $output,
-                    'balance' => self::$balance+= $row->quantity,
+                    'balance' => self::$balance += $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
                     'doc_asoc' => '-'
@@ -137,42 +150,46 @@ class ReportKardexCollection extends ResourceCollection
                     $return['input'] = $input;
                     $return['output'] = $output;
                 }
-                return $return;
+                $data = array_merge($data, $return);
+                return $data;
             }
 
 
             case $models[4]:
-                return [
-                    'id' => $row->id,
-                    'item_name' => $row->item->description,
-                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+            {
+                $temp = [
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
-                    'type_transaction' => ($row->quantity < 0) ? "Pedido":"Anulación Pedido",
+                    'type_transaction' => ($row->quantity < 0) ? "Pedido" : "Anulación Pedido",
                     'number' => optional($row->inventory_kardexable)->prefix.'-'.optional($row->inventory_kardexable)->id,
-                    'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
-                    'balance' => self::$balance+= $row->quantity,
+                    'input' => ($row->quantity > 0) ? $row->quantity : "-",
+                    'output' => ($row->quantity < 0) ? $row->quantity : "-",
+                    'balance' => self::$balance += $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
                     'doc_asoc' => '-'
                 ];
+                $data = array_merge($data, $temp);
+                return $data;
+            }
 
-            case $models[5]: // Devolution
-                return [
-                    'id' => $row->id,
-                    'item_name' => $row->item->description,
-                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
-                    'type_transaction' => "Devolución",
+            case $models[5]:
+            {// Devolution
+                $temp = [
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
+                    'type_transaction' => "Devolución",
                     'number' => optional($row->inventory_kardexable)->number_full,
-                    'input' => ($row->quantity > 0) ?  $row->quantity:"-",
-                    'output' => ($row->quantity < 0) ?  $row->quantity:"-",
-                    'balance' => self::$balance+= $row->quantity,
+                    'input' => ($row->quantity > 0) ? $row->quantity : "-",
+                    'output' => ($row->quantity < 0) ? $row->quantity : "-",
+                    'balance' => self::$balance += $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
                     'doc_asoc' => '-'
 
                 ];
+
+                $data = array_merge($data, $temp);
+                return $data;
+            }
         }
 
 
