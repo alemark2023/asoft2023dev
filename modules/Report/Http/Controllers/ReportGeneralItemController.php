@@ -200,6 +200,7 @@ class ReportGeneralItemController extends Controller
 
     public function excel(Request $request) {
 
+        ini_set("pcre.backtrack_limit", "5000000");
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $document_type_id = $request['document_type_id'];
