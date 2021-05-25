@@ -619,13 +619,14 @@ export default {
       // console.log(this.document)
       let customer = _.find(this.customers, { id: this.document.customer_id });
 
-      if (
-        identity_document_types.includes(customer.identity_document_type_id)
-      ) {
+      /*
+      if ( identity_document_types.includes(customer.identity_document_type_id) ) {
         this.document_types = _.filter(this.all_document_types, { id: "03" });
       } else {
         this.document_types = this.all_document_types;
       }
+      */
+        this.document_types = this.all_document_types;
 
       this.document.document_type_id =
         this.document_types.length > 0 ? this.document_types[0].id : null;
