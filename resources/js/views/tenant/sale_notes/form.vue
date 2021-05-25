@@ -105,13 +105,20 @@
                                 <div class="form-group" >
                                     <label class="control-label">
                                         Tipo periodo
-
-                                        <el-tooltip class="item" effect="dark" content="Creación recurrente de N. Venta de forma automática, por periodo." placement="top-start">
+                                        <el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Creación recurrente de N. Venta de forma automática, por periodo."
+                                            placement="top-start">
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
                                     <el-select v-model="form.type_period" clearable>
-                                        <el-option v-for="option in type_periods" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                        <el-option
+                                            v-for="option in type_periods"
+                                            :key="option.id"
+                                            :value="option.id"
+                                            :label="option.description"></el-option>
                                     </el-select>
                                     <small class="form-control-feedback" v-if="errors.type_period" v-text="errors.type_period[0]"></small>
                                 </div>
@@ -119,8 +126,12 @@
                             <div class="col-lg-2 col-md-2" >
                                 <div class="form-group">
                                     <label class="control-label">Cant. Periodos</label>
-                                    <el-input-number v-model="form.quantity_period" :min="0"></el-input-number>
-
+                                    <el-input-number
+                                        v-model="form.quantity_period"
+                                        :min="0"></el-input-number>
+                                    <small class="form-control-feedback"
+                                           v-show="sms_periodo.length > 1 "
+                                           v-text="sms_periodo"></small>
                                 </div>
                             </div>
                             <div class="col-lg-2 col-md-2" >
@@ -325,6 +336,26 @@
         props: ['id', 'typeUser'],
         components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
         mixins: [functions, exchangeRate],
+        computed:{
+            sms_periodo : function(){
+                let text = '';
+                let type = this.form.type_period;
+                let time = this.form.quantity_period;
+                if(time > 0 && ( type === 'year' || type === 'month' )){
+                    text = "Se duplicará cada " + time;
+                    if (type === 'year') {
+                        text = time > 1 ? text + ' años' : text + ' año';
+                    }else if (type === 'month'){
+                        text = time > 1 ? text + ' meces' : text + ' mes';
+                    }else{
+                        text = '';
+                    }
+                    return text;
+                }
+                return text;
+            }
+
+        },
         data() {
             return {
                 pickerOptions :{
