@@ -138,7 +138,7 @@ class ConfigurationController extends Controller
         return view('system.configuration.info', compact(
             'memory_limit',
             'memory_in_byte',
-            'pcre_backtrack_limit',
+            'pcre_backtrack_limit'
         ));
 
     }
