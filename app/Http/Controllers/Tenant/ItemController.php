@@ -1,47 +1,42 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
+use App\Exports\ItemExport;
+use App\Exports\ItemExportWp;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\ItemRequest;
+use App\Http\Resources\Tenant\ItemCollection;
+use App\Http\Resources\Tenant\ItemResource;
 use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemImage;
-
-use Modules\Item\Models\ItemLot;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use App\Http\Requests\Tenant\ItemRequest;
-use App\Http\Resources\Tenant\ItemCollection;
-use App\Http\Resources\Tenant\ItemResource;
-use App\Models\Tenant\User;
-use App\Models\Tenant\Warehouse;
-use App\Models\Tenant\Configuration;
+use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\ItemUnitType;
+use App\Models\Tenant\ItemWarehousePrice;
+use App\Models\Tenant\Warehouse;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
-use App\Models\Tenant\ItemTag;
-use App\Models\Tenant\Catalogs\Tag;
-use Modules\Item\Models\Category;
-use Modules\Item\Models\Brand;
-use Modules\Inventory\Models\Warehouse as WarehouseModule;
-use App\Models\Tenant\Establishment;
-use Modules\Item\Models\ItemLotsGroup;
-use Carbon\Carbon;
-use App\Exports\ItemExport;
-use App\Exports\ItemExportWp;
-use App\Exports\ItemExportBarCode;
-use App\Models\Tenant\ItemWarehousePrice;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Modules\Inventory\Models\ItemWarehouse;
+use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
+use Modules\Item\Models\ItemLot;
+use Modules\Item\Models\ItemLotsGroup;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
-use Modules\Inventory\Models\ItemWarehouse;
 
 
 class ItemController extends Controller
@@ -173,6 +168,14 @@ class ItemController extends Controller
                 }
             }
         }
+        $current_lot = null;
+        if(!empty($item->id)){
+            $current_lot = ItemLotsGroup::where([
+                'code' => $item->lot_code,
+                'item_id'=>$item->id
+            ])->first();
+        }
+
         $item->fill($request->all());
 
         $temp_path = $request->input('temp_path');
@@ -271,6 +274,7 @@ class ItemController extends Controller
                 ]);
             }
         } else {
+            /*
             $item->lots()->delete();
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
             $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
@@ -297,16 +301,80 @@ class ItemController extends Controller
                     }
                 }
             }
+            */
+            /****************************** SECCION PARA SEIRES EN ITEMLOT **********************************************/
+            $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+            $warehouse = Warehouse::where('establishment_id',$establishment->id)->first();
+            $v_lots = isset($request->lots) ? $request->lots:[];
+            foreach ($v_lots as $lot) {
+                /**
+                 * @var  ItemLot $temp_serie
+                 * @var Int $lot_id
+                 * @var Bool $delete
+                 */
+                $lot_id = isset($lot['id'])? (int) $lot['id']:0;
+                $delete = isset($lot['deleted'])?(boolean)$lot['deleted']:false;
+                if($lot_id != 0){
+                    $temp_serie = ItemLot::find($lot_id);
+                    if(!empty($temp_serie)){
+                        if($delete == true){
+                            $temp_serie->delete();
+                        }else{
+                            $temp_serie
+                                ->setDate($lot['date'])
+                                ->setSeries($lot['series'])
+                                ->setState($lot['state'])
+                                ->push();
+                        }
+                    }
+                }else{
+                    $temp_serie = new ItemLot([
+                        'date' => $lot['date'],
+                        'series' => $lot['series'],
+                        'item_id' => $item->id,
+                        'warehouse_id' => $warehouse ? $warehouse->id:null,
+                        'has_sale' => false,
+                        'state' => $lot['state'],
+                    ]);
+                    $temp_serie->push();
+                }
+            }
 
             $lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled:false;
-            if ($lots_enabled) {
-                ItemLotsGroup::where('item_id', $item->id)->delete();
+            /****************************** SECCION PARA LOTE EN ITEM LOT_CODE ******************************************/
+            if ($lots_enabled and !empty($request->lot_code)) {
+                if(empty($current_lot)){
+                    $current_lot = new ItemLotsGroup([
+                        'code' => $item->lot_code,
+                        'item_id'=>$item->id,
+                        'quantity' => $request->stock,
+                         'date_of_due'=>$request->date_of_due,
+                    ]);
+                    $current_lot->push();
+                }else{
+                    $lotes = ItemLotsGroup::where([
+                        'code'=>$current_lot->code,
+                        // 'quantity',
+                        // 'date_of_due',
+                        'item_id'=>$item->id
+                    ])->get();
+                    /** @var ItemLotsGroup $lot */
+                    foreach($lotes as $lot){
+                        $lot
+                            ->setCode($request->lot_code)
+                            ->setDateOfDue($request->date_of_due)
+                            ->push();
+                    }
+                }
+                /*
+                 ItemLotsGroup::where('item_id', $item->id)->delete();
                 ItemLotsGroup::create([
                     'code'  => $request->lot_code,
                     'quantity'  => $request->stock,
                     'date_of_due'  => $request->date_of_due,
                     'item_id' => $item->id
                 ]);
+                */
             }
         }
 
@@ -328,10 +396,30 @@ class ItemController extends Controller
         }
 
         $item->update();
+        /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
         $warehouses = $request->warehouses;
         if ($warehouses) {
+            /** @var ItemWarehousePrice $price */
+
+            foreach ($warehouses as $warehouse) {
+                $price = ItemWarehousePrice::where([
+                    'item_id' => $item->id,
+                    'warehouse_id' => $warehouse['id'],
+                ])->first();
+                if(empty($price)){
+                    $price = new ItemWarehousePrice([
+                        'item_id' => $item->id,
+                        'warehouse_id' => $warehouse['id'],
+                    ]) ;
+                }
+                $price
+                    ->setPrice($warehouse['price'])
+                    ->push();
+            }
+
+            /*
             ItemWarehousePrice::where('item_id', $item->id)
                 ->delete();
 
@@ -349,6 +437,7 @@ class ItemController extends Controller
                     \Log::error('No se pudo agregar el precio del producto al almacén ' . $warehousePrice['id']);
                 }
             }
+            */
         }
 
         return [
