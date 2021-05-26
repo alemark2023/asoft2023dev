@@ -129,4 +129,33 @@ class ConfigurationController extends Controller
             'message' => 'Información actualizada.',
         ], 200);
     }
+
+    public function InfoIndex(){
+        $memory_limit = ini_get('memory_limit');
+        $memory_in_byte = number_format(self::return_bytes($memory_limit),'2',',','.');
+        $pcre_backtrack_limit = ini_get('pcre.backtrack_limit');
+
+        return view('system.configuration.info', compact(
+            'memory_limit',
+            'memory_in_byte',
+            'pcre_backtrack_limit',
+        ));
+
+    }
+
+    private  static function return_bytes($val) {
+        $val = trim($val);
+        $last = strtolower($val[strlen($val)-1]);
+        $val = substr($val, 0, -1);
+        switch($last) {
+            // The 'G' modifier is available since PHP 5.1.0
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+        return $val;
+    }
 }
