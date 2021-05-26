@@ -553,8 +553,9 @@ export default {
             }
         },
         async created() {
-            await this.initForm()
-            await this.$http.get(`/${this.resource}/tables`)
+            await this.initForm();
+
+                await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
                     this.accounts = response.data.accounts
@@ -604,7 +605,6 @@ export default {
                 })
             },
             async reloadTables(){
-
                 await this.$http.get(`/${this.resource}/tables`)
                     .then(response => {
                         this.unit_types = response.data.unit_types
@@ -772,6 +772,12 @@ export default {
                 this.setDefaultConfiguration()
             },
             create() {
+                this.warehouses = this.warehouses.map(w => {
+                    delete w.price;
+                    return w;
+                });
+
+
                 if (this.type) {
                     this.form.unit_type_id = 'ZZ';
                 }
@@ -783,10 +789,11 @@ export default {
                             this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                             this.changeAffectationIgvType()
                             this.changePurchaseAffectationIgvType()
-                            const warehousePrices = response.data.data.warehouse_prices;
+                            let warehousePrices = response.data.data.warehouse_prices;
+                            console.error(warehousePrices);
                             if (warehousePrices.length > 0) {
                                 this.warehouses = this.warehouses.map(w => {
-                                    const price = warehousePrices.find(wp => wp.warehouse_id === w.id);
+                                    let price = warehousePrices.find(wp => wp.warehouse_id === w.id);
                                     if (price) {
                                         var priceToJson = {...price};
                                         w.price = priceToJson.price;
