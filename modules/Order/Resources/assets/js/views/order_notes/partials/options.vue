@@ -614,24 +614,32 @@ export default {
         this.is_document_type_invoice = false;
       }
     },
-    async validateIdentityDocumentType() {
-      let identity_document_types = ["0", "1"];
-      // console.log(this.document)
-      let customer = _.find(this.customers, { id: this.document.customer_id });
+      async validateIdentityDocumentType() {
+          let identity_document_types = ["0", "1"];
+          /*
+          0		Doc.trib.no.dom.sin.ruc
+          1		DNI
+          */
+          let customer = _.find(this.customers, {id: this.document.customer_id});
 
-      /*
-      if ( identity_document_types.includes(customer.identity_document_type_id) ) {
-        this.document_types = _.filter(this.all_document_types, { id: "03" });
-      } else {
-        this.document_types = this.all_document_types;
-      }
-      */
-        this.document_types = this.all_document_types;
+          if (identity_document_types.includes(customer.identity_document_type_id)) {
+              this.document_types = _.filter(this.all_document_types,
+                  _.overSome(
+                      [
+                          // {'id': '01'}, // Factura
+                          {'id': '03'}, // Boleta
+                          ['id', '80'] // Nota de venta
+                      ]
+                  )
+              );
+              // this.document_types = _.filter(this.all_document_types, {id: "03"});
+          } else {
+              this.document_types = this.all_document_types;
+          }
 
-      this.document.document_type_id =
-        this.document_types.length > 0 ? this.document_types[0].id : null;
-      await this.changeDocumentType();
-    },
+          this.document.document_type_id = this.document_types.length > 0 ? this.document_types[0].id : null;
+          await this.changeDocumentType();
+      },
     filterSeries() {
       this.document.series_id = null;
       this.series = _.filter(this.all_series, {
