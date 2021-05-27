@@ -50,7 +50,10 @@ class SaleOpportunityController extends Controller
 
     public function index()
     {
-        return view('sale::sale_opportunities.index');
+        $configuration = Configuration::first();
+        $SellerCanGenerateSaleOpportunities = $configuration->getSellerCanGenerateSaleOpportunities();
+
+        return view('sale::sale_opportunities.index',compact('SellerCanGenerateSaleOpportunities'));
     }
 
 
