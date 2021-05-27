@@ -46,6 +46,7 @@ class ConfigurationResource extends JsonResource
             'ticket_58' => (bool) $this->ticket_58,
             'seller_can_create_product' => (bool) $this->seller_can_create_product,
             'seller_can_view_balance' => (bool) $this->seller_can_view_balance,
+            'seller_can_generate_sale_opportunities' => (bool) $this->seller_can_generate_sale_opportunities,
             ];
     }
 }

@@ -147,6 +147,24 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 mt-4">
+                                        <label class="control-label">
+                                            Permite habilitar las acciones en oportunidad de venta para vendedores
+                                            <!--
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                content="Disponible POS"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                            -->
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.seller_can_generate_sale_opportunities}">
+                                            <el-switch v-model="form.seller_can_generate_sale_opportunities" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.seller_can_generate_sale_opportunities" v-text="errors.seller_can_generate_sale_opportunities[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
                                         <label class="control-label">Productos de una ubicación</label>
                                         <div class="form-group" :class="{'has-danger': errors.product_only_location}">
                                             <el-switch v-model="form.product_only_location" active-text="Si" inactive-text="No" @change="submit"></el-switch>
@@ -368,6 +386,7 @@
                     quotation_allow_seller_generate_sale: false,
                     allow_edit_unit_price_to_seller: false,
                     seller_can_create_product: false,
+                    seller_can_generate_sale_opportunities: false,
                     seller_can_view_balance: true,
                     finances: {},
                     visual: {},

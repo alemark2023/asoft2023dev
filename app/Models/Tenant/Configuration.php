@@ -52,6 +52,7 @@ class Configuration extends ModelTenant
         'smtp_password',
         'smtp_encryption',
         'seller_can_create_product',
+        'seller_can_generate_sale_opportunities',
         'seller_can_view_balance',
     ];
 
@@ -59,8 +60,28 @@ class Configuration extends ModelTenant
         'quotation_allow_seller_generate_sale' => 'boolean',
         'allow_edit_unit_price_to_seller' => 'boolean',
         'seller_can_create_product' => 'boolean',
+        'seller_can_generate_sale_opportunities' => 'boolean',
         'seller_can_view_balance' => 'boolean',
     ];
+
+    /**
+     * @return bool
+     */
+    public function getSellerCanGenerateSaleOpportunities()
+    {
+        return (bool) $this->seller_can_generate_sale_opportunities;
+    }
+
+    /**
+     * @param bool $seller_can_generate_sale_opportunities
+     *
+     * @return Configuration
+     */
+    public function setSellerCanGenerateSaleOpportunities($seller_can_generate_sale_opportunities)
+    {
+        $this->seller_can_generate_sale_opportunities = $seller_can_generate_sale_opportunities;
+        return $this;
+    }
 
     /**
      * Establece las configuraciones para envio de correo.
