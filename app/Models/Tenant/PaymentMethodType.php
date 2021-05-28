@@ -2,15 +2,10 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Tenant\{
-    DocumentPayment,
-    SaleNotePayment,
-    PurchasePayment
-};
-use Modules\Sale\Models\QuotationPayment;
-use Modules\Sale\Models\ContractPayment;
 use Modules\Finance\Models\IncomePayment;
 use Modules\Pos\Models\CashTransaction;
+use Modules\Sale\Models\ContractPayment;
+use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\TechnicalServicePayment;
 
 class PaymentMethodType extends ModelTenant
@@ -66,13 +61,47 @@ class PaymentMethodType extends ModelTenant
         return $this;
     }
 
+    /**
+     * @param $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeNonCredit($query){
         return $query->where('is_credit',0);
     }
+
+    /**
+     * @param $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeCredit($query){
         return $query->where('is_credit',1);
     }
 
+    /**
+     * Devuelve los metodos de pago como standandar. Se pueden excluir elementos por $exclude_method_types_id
+     *
+     * @param array $exclude_method_types_id Id de metodos a excluir
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getPaymentMethodTypes($exclude_method_types_id = []) {
+        $exclude_method_types_id = array_merge(['08', '09'], $exclude_method_types_id);
+        return self::whereNotIn('id', $exclude_method_types_id)
+                   ->get()
+                   ->transform(function ($row) {
+                       $row->id = (string)$row->id;
+                       $row->number_days = (int)$row->number_days;
+                       $row->has_card = (bool)$row->has_card;
+                       $row->is_credit = (bool)$row->is_credit;
+                       $row->has_card = (bool)$row->has_card;
+                       $row->is_cash = (bool)$row->is_cash;
+                       $row->charge = (float)$row->charge;
+                       $row->description = (string)$row->description;
+                       return $row;
+                   });
+    }
 
     public function document_payments()
     {
