@@ -13,6 +13,18 @@ class PaymentMethodType extends ModelTenant
     public $incrementing = false;
     public $timestamps = false;
 
+    protected $exclude_method_types = [
+        //'01', // Efectivo
+        //'02', // Tarjeta de crédito
+        //'03', // Tarjeta de débito
+        //'04', // Transferencia
+        //'05', // Factura a 30 días
+        //'06', // Tarjeta crédito visa
+        //'07', // Contado contraentrega
+        '08', // A 30 días
+        '09', // Crédito
+        // '10', // Contado
+    ];
     protected $fillable = [
         'id',
         'description',
@@ -78,9 +90,32 @@ class PaymentMethodType extends ModelTenant
     public function scopeCredit($query){
         return $query->where('is_credit',1);
     }
+    /**
+     * Devuelve los metodos de pago como standandar. Se pueden excluir elementos por $exclude_method_types_id
+     *
+     * @param $query
+     * @param array $exclude_method_types_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeExcludeMethodTypes($query,$exclude_method_types_id= []){
+        $exclude_method_types_id = array_merge($this->exclude_method_types, $exclude_method_types_id);
+        return $query->whereNotIn('id', $exclude_method_types_id);
+    }
 
     /**
      * Devuelve los metodos de pago como standandar. Se pueden excluir elementos por $exclude_method_types_id
+     *
+     * //'01', // Efectivo
+     * //'02', // Tarjeta de crédito
+     * //'03', // Tarjeta de débito
+     * //'04', // Transferencia
+     * //'05', // Factura a 30 días
+     * //'06', // Tarjeta crédito visa
+     * //'07', // Contado contraentrega
+     * '08', // A 30 días
+     * '09', // Crédito
+     * // '10', // Contado
      *
      * @param array $exclude_method_types_id Id de metodos a excluir
      *
