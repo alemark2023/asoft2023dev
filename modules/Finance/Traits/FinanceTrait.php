@@ -2,20 +2,17 @@
 
 namespace Modules\Finance\Traits;
 
-use App\Models\Tenant\Cash;
+use App\Models\Tenant\{DocumentPayment, PurchasePayment, SaleNotePayment};
 use App\Models\Tenant\BankAccount;
+use App\Models\Tenant\Cash;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Modules\Expense\Models\ExpensePayment;
-use App\Models\Tenant\{
-    DocumentPayment,
-    SaleNotePayment,
-    PurchasePayment
-};
-use Modules\Sale\Models\QuotationPayment;
-use Modules\Sale\Models\ContractPayment;
 use Modules\Finance\Models\IncomePayment;
 use Modules\Pos\Models\CashTransaction;
+use Modules\Sale\Models\ContractPayment;
+use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\TechnicalServicePayment;
 
 trait FinanceTrait
@@ -150,6 +147,11 @@ trait FinanceTrait
         ];
     }
 
+    /**
+     * @param array $request
+     *
+     * @return array
+     */
     public function getDatesOfPeriod($request){
 
         $period = $request['period'];
@@ -187,6 +189,11 @@ trait FinanceTrait
     }
 
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $cash
+     *
+     * @return array
+     */
     public function getBalanceByCash($cash){
 
         $document_payment = $this->getSumPayment($cash, DocumentPayment::class);
@@ -209,17 +216,33 @@ trait FinanceTrait
 
             'id' => 'cash',
             'description' => "CAJA GENERAL",
-            'expense_payment' => number_format($expense_payment,2, ".", ""),
-            'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
-            'quotation_payment' => number_format($quotation_payment,2, ".", ""),
-            'contract_payment' => number_format($contract_payment,2, ".", ""),
-            'income_payment' => number_format($income_payment + $cash_pos,2, ".", ""),
-            'document_payment' => number_format($document_payment,2, ".", ""),
-            'purchase_payment' => number_format($purchase_payment,2, ".", ""),
-            'technical_service_payment' => number_format($technical_service_payment,2, ".", ""),
-            'balance' => number_format($balance,2, ".", "")
+            'initial_balance' => self::FormatNumber($cash_pos),
+            'expense_payment' => self::FormatNumber($expense_payment),
+            'purchase_payment' => self::FormatNumber($purchase_payment),
+            'document_payment' => self::FormatNumber($document_payment),
+            'sale_note_payment' => self::FormatNumber($sale_note_payment),
+            'quotation_payment' => self::FormatNumber($quotation_payment),
+            'contract_payment' => self::FormatNumber($contract_payment),
+            'income_payment' => self::FormatNumber($income_payment + $cash_pos),
+            'technical_service_payment' => self::FormatNumber($technical_service_payment),
+            'balance' => self::FormatNumber($balance)
 
         ];
+    }
+
+    /**
+     * @param        $number
+     * @param int    $decimal
+     * @param string $decimal_separator
+     * @param string $thousands_separator
+     *
+     * @return string
+     */
+    public static function FormatNumber($number){
+        if($number == '-') return $number;
+        if($number == 0) return '0.00';
+
+        return number_format($number,2,'.', '');
     }
 
     public function getSumPaymentCashPos($record, $model)
@@ -229,6 +252,11 @@ trait FinanceTrait
         });
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $bank_accounts
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
     public function getBalanceByBankAcounts($bank_accounts)
     {
         $records = $bank_accounts->map(function($row) {
@@ -251,15 +279,16 @@ trait FinanceTrait
 
                 'id' => $row->id,
                 'description' => "{$row->bank->description} - {$row->currency_type_id} - {$row->description}",
-                'expense_payment' => number_format($expense_payment,2, ".", ""),
-                'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
-                'quotation_payment' => number_format($quotation_payment,2, ".", ""),
-                'contract_payment' => number_format($contract_payment,2, ".", ""),
-                'document_payment' => number_format($document_payment,2, ".", ""),
-                'purchase_payment' => number_format($purchase_payment,2, ".", ""),
-                'income_payment' => number_format($income_payment,2, ".", ""),
-                'technical_service_payment' => number_format($technical_service_payment,2, ".", ""),
-                'balance' => number_format($balance,2, ".", "")
+                'expense_payment' => self::FormatNumber($expense_payment),
+                'sale_note_payment' => self::FormatNumber($sale_note_payment),
+                'quotation_payment' => self::FormatNumber($quotation_payment),
+                'contract_payment' => self::FormatNumber($contract_payment),
+                'document_payment' => self::FormatNumber($document_payment),
+                'purchase_payment' => self::FormatNumber($purchase_payment),
+                'income_payment' => self::FormatNumber($income_payment),
+                'initial_balance' => self::FormatNumber($row->initial_balance),
+                'technical_service_payment' => self::FormatNumber($technical_service_payment),
+                'balance' => self::FormatNumber($balance),
 
             ];
 
@@ -307,10 +336,14 @@ trait FinanceTrait
     }
 
 
-    public function getRecordsByPaymentMethodTypes($payment_method_types)
-    {
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $payment_method_types
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
+    public function getRecordsByPaymentMethodTypes($payment_method_types) {
 
-        $records = $payment_method_types->map(function($row){
+        $records = $payment_method_types->map(function ($row) {
 
             $document_payment = $this->getSumByPMT($row->document_payments, true);
             $sale_note_payment = $this->getSumByPMT($row->sale_note_payments);
@@ -322,20 +355,20 @@ trait FinanceTrait
             $income_payment = $this->getSumByPMT($row->income_payments) + $cash_transaction;
             $technical_service_payment = $this->getSumByPMT($row->technical_service_payments);
 
-
             return [
 
-                'id' => $row->id,
-                'description' => $row->description,
-                'expense_payment' => '-',
-                'sale_note_payment' => number_format($sale_note_payment,2, ".", ""),
-                'document_payment' => number_format($document_payment,2, ".", ""),
-                'purchase_payment' => number_format($purchase_payment,2, ".", ""),
-                'quotation_payment' => number_format($quotation_payment,2, ".", ""),
-                'contract_payment' => number_format($contract_payment,2, ".", ""),
-                'income_payment' => number_format($income_payment,2, ".", ""),
-                'technical_service_payment' => number_format($technical_service_payment,2, ".", ""),
+                'id'                => $row->id,
+                'description'       => $row->description,
+                'expense_payment'   => '-',
+                'sale_note_payment' => self::FormatNumber($sale_note_payment),
 
+                'document_payment'          => self::FormatNumber($document_payment),
+                'purchase_payment'          => self::FormatNumber($purchase_payment),
+                'quotation_payment'         => self::FormatNumber($quotation_payment),
+                'contract_payment'          => self::FormatNumber($contract_payment),
+                'income_payment'            => self::FormatNumber($income_payment),
+                'technical_service_payment' => self::FormatNumber($technical_service_payment),
+                'balance'                   => self::FormatNumber($sale_note_payment + $document_payment + $purchase_payment + $quotation_payment + $contract_payment + $income_payment + $technical_service_payment),
             ];
 
         });
@@ -344,6 +377,11 @@ trait FinanceTrait
     }
 
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $expense_method_types
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
     public function getRecordsByExpenseMethodTypes($expense_method_types)
     {
 
@@ -356,7 +394,7 @@ trait FinanceTrait
 
                 'id' => $row->id,
                 'description' => $row->description,
-                'expense_payment' => number_format($expense_payment,2, ".", ""),
+                'expense_payment' => self::FormatNumber($expense_payment),
                 'sale_note_payment' => '-',
                 'document_payment' => '-',
                 'quotation_payment' => '-',
@@ -364,6 +402,7 @@ trait FinanceTrait
                 'income_payment' => '-',
                 'purchase_payment' => '-',
                 'technical_service_payment' => '-',
+                'balance' =>  self::FormatNumber($expense_payment),
 
             ];
 
@@ -372,6 +411,12 @@ trait FinanceTrait
         return $records;
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $records
+     * @param false                                    $include_credit_notes
+     *
+     * @return mixed
+     */
     public function getSumByPMT($records, $include_credit_notes = false)
     {
 
@@ -385,6 +430,12 @@ trait FinanceTrait
 
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection $records_by_pmt
+     * @param \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection $records_by_emt
+     *
+     * @return array
+     */
     public function getTotalsPaymentMethodType($records_by_pmt, $records_by_emt)
     {
 
@@ -397,6 +448,16 @@ trait FinanceTrait
         $t_income = 0;
         $t_technical_services = 0;
 
+        $t_documents = $records_by_pmt->sum('document_payment');
+        $t_sale_notes = $records_by_pmt->sum('sale_note_payment');
+        $t_quotations = $records_by_pmt->sum('quotation_payment');
+        $t_contracts = $records_by_pmt->sum('contract_payment');
+        $t_purchases = $records_by_pmt->sum('purchase_payment');
+        $t_income = $records_by_pmt->sum('income_payment');
+        $t_technical_services = $records_by_pmt->sum('technical_service_payment');
+        $t_balance = $records_by_pmt->sum('balance') -$records_by_emt->sum('balance');
+        $t_expenses = $records_by_emt->sum('expense_payment');
+        /*
         foreach ($records_by_pmt as $value) {
 
             $t_documents += $value['document_payment'];
@@ -415,15 +476,17 @@ trait FinanceTrait
 
         }
 
+        */
         return [
-            't_documents' => number_format($t_documents,2, ".", ""),
-            't_sale_notes' => number_format($t_sale_notes,2, ".", ""),
-            't_quotations' => number_format($t_quotations,2, ".", ""),
-            't_contracts' => number_format($t_contracts,2, ".", ""),
-            't_purchases' => number_format($t_purchases,2, ".", ""),
-            't_expenses' => number_format($t_expenses,2, ".", ""),
-            't_income' => number_format($t_income,2, ".", ""),
-            't_technical_services' => number_format($t_technical_services,2, ".", ""),
+            't_documents' => self::FormatNumber($t_documents),
+            't_sale_notes' => self::FormatNumber($t_sale_notes),
+            't_quotations' => self::FormatNumber($t_quotations),
+            't_contracts' => self::FormatNumber($t_contracts),
+            't_purchases' => self::FormatNumber($t_purchases),
+            't_expenses' => self::FormatNumber($t_expenses),
+            't_income' => self::FormatNumber($t_income),
+            't_technical_services' => self::FormatNumber($t_technical_services),
+            't_balance' => self::FormatNumber($t_balance),
         ];
 
     }
