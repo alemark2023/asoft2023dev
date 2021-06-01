@@ -98,24 +98,53 @@
             </div>
             <div class="col-md-12">
                 <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                        <slot name="heading"></slot>
+                    <table class="table table-responsive-xl ">
+                        <thead class="">
+                        <tr>
+                            <th>#</th>
+                            <th>Descripción</th>
+                            <th class="text-center" v-if="resource !== 'finances/payment-method-types'">S. Inicial</th>
+                            <th class="text-center">CPE</th>
+                            <th class="text-center">N. Venta</th>
+                            <th class="text-center">Cotización</th>
+                            <th class="text-center">Contrato</th>
+                            <th class="text-center">S. Técnico</th>
+                            <th class="text-center">Ingresos</th>
+                            <th class="text-center">Compras</th>
+                            <th class="text-center">Gastos</th>
+                            <th class="text-center">Saldo</th>
+
+                        </tr>
                         </thead>
                         <tbody>
-                        <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row"></slot>
+                        <tr v-for="(row, index) in records">
+                            <td class="">{{ index + 1 }}</td>
+                            <td class="">{{ row.description }}</td>
+                            <td class="text-center"  v-if="resource !== 'finances/payment-method-types'">{{ row.initial_balance | DecimalText}}</td>
+                            <td class="text-center">{{ row.document_payment | DecimalText}}</td>
+                            <td class="text-center">{{ row.sale_note_payment | DecimalText}}</td>
+                            <td  class="text-center">{{ row.quotation_payment | DecimalText}}</td>
+                            <td  class="text-center">{{ row.contract_payment | DecimalText}}</td>
+                            <td  class="text-center">{{ row.technical_service_payment | DecimalText}}</td>
+                            <td class="text-center">{{ row.income_payment | DecimalText}}</td>
+                            <td class="text-center">{{ row.purchase_payment | DecimalText}}</td>
+                            <td class="text-center">{{ row.expense_payment | DecimalText}}</td>
+                            <td class="text-center">S/ {{ row.balance | DecimalText}}</td>
+                        </tr>
                         </tbody>
-                        <tfoot v-if="resource == 'finances/payment-method-types'">
+                        <tfoot>
                         <tr>
                             <td class="text-center" colspan="2">Totales</td>
-                            <td class="text-center">S/ {{ totals.t_documents }}</td>
-                            <td class="text-center">S/ {{ totals.t_sale_notes }}</td>
-                            <td class="text-center">S/ {{ totals.t_quotations }}</td>
-                            <td class="text-center">S/ {{ totals.t_contracts }}</td>
-                            <td class="text-center">S/ {{ totals.t_technical_services }}</td>
-                            <td class="text-center">S/ {{ totals.t_income }}</td>
-                            <td class="text-center">S/ {{ totals.t_purchases }}</td>
-                            <td class="text-center">S/ {{ totals.t_expenses }}</td>
+                            <td class="text-center" v-if="resource !== 'finances/payment-method-types'">S/ {{ totals.t_initial_balance | DecimalText }}</td>
+                            <td class="text-center">S/ {{ totals.t_documents | DecimalText }}</td>
+                            <td class="text-center">S/ {{ totals.t_sale_notes | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_quotations | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_contracts | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_technical_services | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_income | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_purchases | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_expenses | DecimalText}}</td>
+                            <td class="text-center">S/ {{ totals.t_balance | DecimalText}}</td>
                         </tr>
                         </tfoot>
                     </table>
@@ -142,7 +171,6 @@ export default {
         return {
             loading_submit: false,
             loading_search: false,
-            columns: [],
             records: [],
             pagination: {},
             search: {},
@@ -200,13 +228,30 @@ export default {
             this.loading_submit = await false
         },
         getRecords() {
-            return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                if (this.resource == 'finances/payment-method-types') {
-                    this.records = response.data.records
-                    this.totals = response.data.totals
-                } else {
-                    this.records = response.data
-                }
+            this.records = [];
+            this.loading_submit = true
+            this.totals.t_initial_balance = 0;
+            this.totals.t_documents = 0;
+            this.totals.t_sale_notes = 0;
+            this.totals.t_quotations = 0;
+            this.totals.t_contracts = 0;
+            this.totals.t_technical_services = 0;
+            this.totals.t_income = 0;
+            this.totals.t_purchases = 0;
+            this.totals.t_expenses = 0;
+            this.totals.t_balance = 0;
+
+            return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`)
+                .then((response) => {
+                let data = response.data;
+                this.records = data.records
+                this.totals = data.totals
+            })
+                .catch(()=>{
+                    this.loading_submit = false
+
+                })
+                .finally(()=>{
                 this.loading_submit = false
             });
         },

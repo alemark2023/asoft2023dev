@@ -305,6 +305,9 @@ Vue.mixin({
         toDecimals(number, decimal = 2) {
             return Number(number).toFixed(decimal);
         },
+        DecimalText: function (number, decimal = 2) {
+            return isNaN(parseFloat(number)) ? number : Number(number).toFixed(decimal);
+        },
         toDate(date) {
             if (date) {
                 return moment(date).format('DD/MM/YYYY');
