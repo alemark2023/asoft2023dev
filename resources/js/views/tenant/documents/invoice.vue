@@ -239,6 +239,7 @@
                                                     <td>CONDICIÓN DE PAGO:</td>
                                                     <td>
                                                         <el-select v-model="form.payment_condition_id" @change="changePaymentCondition" popper-class="el-select-document_type" dusk="document_type_id" style="max-width: 200px;">
+                                                            <el-option value="03" label="Crédito con cuotas"></el-option>
                                                             <el-option value="02" label="Crédito"></el-option>
                                                             <el-option value="01" label="Contado"></el-option>
                                                         </el-select>
@@ -246,8 +247,10 @@
                                                 </tr>
 
                                                 <tr v-if="form.total > 0">
+                                                    <!-- Metodos de pago -->
                                                     <td colspan="2" class="p-0">
-                                                        <div v-if="form.payment_condition_id === '02'">
+                                                        <!-- Crédito con cuotas -->
+                                                        <div v-if="form.payment_condition_id === '03'">
                                                             <table v-if="form.fee.length>0" class="text-left" width="100%">
                                                                 <thead>
                                                                 <tr>
@@ -287,6 +290,47 @@
                                                                 </tbody>
                                                             </table>
                                                         </div>
+                                                        <!-- Credito -->
+                                                        <div v-if="form.payment_condition_id === '02'">
+                                                            <table v-if="form.fee.length>0" class="text-left" width="100%">
+                                                                <thead>
+                                                                <tr>
+                                                                    <th v-if="form.fee.length>0" style="width: 120px">Método de pago</th>
+                                                                    <th class="text-left" style="width: 100px">Fecha</th>
+                                                                    <th class="text-left" style="width: 100px">Monto</th>
+                                                                    <th style="width: 30px"></th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr v-for="(row, index) in form.fee" :key="index">
+                                                                    <td>
+                                                                        <el-select
+                                                                            v-model="row.payment_method_type_id"
+                                                                            @change="changePaymentMethodType(index)">
+                                                                            <el-option
+                                                                                v-for="option in credit_payment_metod"
+                                                                                :key="option.id"
+                                                                                :value="option.id"
+                                                                                :label="option.description"
+                                                                            ></el-option>
+                                                                        </el-select>
+                                                                    </td>
+                                                                    <td>
+                                                                        <el-date-picker
+                                                                            v-model="row.date"
+                                                                            type="date"
+                                                                            value-format="yyyy-MM-dd"
+                                                                            format="dd/MM/yyyy"
+                                                                            :clearable="false"></el-date-picker>
+                                                                    </td>
+                                                                    <td>
+                                                                        <el-input v-model="row.amount"></el-input>
+                                                                    </td>
+                                                                </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <!-- Contado -->
                                                         <div v-if="!is_receivable && form.payment_condition_id === '01'">
                                                             <table class="text-left">
                                                                 <thead>
@@ -307,8 +351,14 @@
                                                                 <tbody>
                                                                 <tr v-for="(row, index) in form.payments" :key="index">
                                                                     <td>
-                                                                        <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
-                                                                            <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                                                        <el-select
+                                                                            v-model="row.payment_method_type_id"
+                                                                            @change="changePaymentMethodType(index)">
+                                                                            <el-option
+                                                                                v-for="option in cash_payment_metod"
+                                                                                :key="option.id"
+                                                                                :value="option.id"
+                                                                                :label="option.description"></el-option>
                                                                         </el-select>
                                                                     </td>
                                                                     <template v-if="enabled_payments">
@@ -630,18 +680,18 @@
 }
 </style>
 <script>
-    import DocumentFormItem from './partials/item.vue'
-    import PersonForm from '../persons/form.vue'
-    import DocumentOptions from '../documents/partials/options.vue'
-    import {functions, exchangeRate} from '../../../mixins/functions'
-    import {calculateRowItem} from '../../../helpers/functions'
-    import Logo from '../companies/logo.vue'
-    import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
-    import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
-    import DocumentDetraction from './partials/detraction.vue'
-    import moment from 'moment'
+import DocumentFormItem from './partials/item.vue'
+import PersonForm from '../persons/form.vue'
+import DocumentOptions from '../documents/partials/options.vue'
+import {exchangeRate, functions} from '../../../mixins/functions'
+import {calculateRowItem} from '../../../helpers/functions'
+import Logo from '../companies/logo.vue'
+import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
+import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
+import DocumentDetraction from './partials/detraction.vue'
+import moment from 'moment'
 
-    export default {
+export default {
         props: ['idUser', 'typeUser', 'configuration', 'documentId', 'isUpdate'],
         components: {DocumentFormItem, PersonForm, DocumentOptions, Logo, DocumentHotelForm, DocumentDetraction, DocumentTransportForm},
         mixins: [functions, exchangeRate],
@@ -712,6 +762,15 @@
                 payment_conditions: []
             }
         },
+    computed: {
+      credit_payment_metod:function(){
+          return _.filter(this.payment_method_types, {'is_credit': true})
+      },
+      cash_payment_metod:function(){
+          return  _.filter(this.payment_method_types, {'is_credit': false})
+      },
+    },
+
         async created() {
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
@@ -1092,15 +1151,31 @@
             },
             changePaymentMethodType(index){
 
-                let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
+                let id = '01';
+                if(this.form.payments[index] !== undefined &&
+                    this.form.payments[index].payment_method_type_id !== undefined){
+                    id = this.form.payments[index].payment_method_type_id;
+                }else if(this.form.fee[index] !== undefined &&
+                    this.form.fee[index].payment_method_type_id !== undefined){
+                    id = this.form.fee[index].payment_method_type_id;
+                }
+                let payment_method_type = _.find(this.payment_method_types, {'id':id});
 
                 if(payment_method_type.number_days){
-
-                    this.form.date_of_due =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD')
+                   this.form.date_of_due =  moment().add(payment_method_type.number_days,'days').format('YYYY-MM-DD')
                     // this.form.payments = []
                     this.enabled_payments = false
                     this.readonly_date_of_due = true
                     this.form.payment_method_type_id = payment_method_type.id
+
+                    let date = moment()
+                        .add(payment_method_type.number_days,'days')
+                        .format('YYYY-MM-DD')
+                    if(this.form.fee !== undefined) {
+                        for (let index = 0; index < this.form.fee.length; index++) {
+                            this.form.fee[index].date = date;
+                        }
+                    }
 
                 }else if(payment_method_type.id == '09'){
 
@@ -1430,11 +1505,16 @@
             },
             clickAddPayment() {
 
+                let id = '01';
+                if( this.cash_payment_metod !== undefined &&
+                    this.cash_payment_metod[0] !== undefined){
+                    id = this.cash_payment_metod[0].id
+                }
                 this.form.payments.push({
                     id: null,
                     document_id: null,
                     date_of_payment:  moment().format('YYYY-MM-DD'),
-                    payment_method_type_id: '01',
+                    payment_method_type_id: id,
                     reference: null,
                     payment_destination_id: this.getPaymentDestinationId(),
                     payment: 0,
@@ -1443,7 +1523,8 @@
             },
             getPaymentDestinationId() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.configuration.destination_sale &&
+                    this.payment_destinations.length > 0) {
 
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
 
@@ -1993,6 +2074,8 @@
                 if (this.isUpdate) {
                     path = `/${this.resource}/${this.form.id}/update`;
                 }
+                let temp = this.form.payment_condition_id;
+                if(this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';
                 this.$http.post(path, this.form).then(response => {
                     if (response.data.success) {
                         this.$eventHub.$emit('reloadDataItems', null)
@@ -2015,6 +2098,7 @@
                     else {
                         this.$message.error(error.response.data.message);
                     }
+                    if(temp === '03') this.form.payment_condition_id = '03';
                 }).finally(() => {
                     this.loading_submit = false;
                 });
@@ -2089,6 +2173,9 @@
                     this.clickAddPayment();
                 }
                 if(this.form.payment_condition_id === '02') {
+                    this.clickAddFeeNew();
+                }
+                if(this.form.payment_condition_id === '03') {
                     this.clickAddFee();
                 }
             },
@@ -2096,6 +2183,32 @@
                 this.form.fee.push({
                     id: null,
                     date: moment().format('YYYY-MM-DD'),
+                    currency_type_id: this.form.currency_type_id,
+                    amount: 0,
+                });
+                this.calculateFee();
+            },
+            clickAddFeeNew() {
+                 let first = {
+                     id: '05',
+                     number_days: 0,
+                 };
+                if(this.credit_payment_metod[0]!== undefined){
+                    first = this.credit_payment_metod[0];
+                }
+                let date = moment()
+                    .add(first.number_days,'days')
+                    .format('YYYY-MM-DD')
+
+                this.form.fee.push({
+                    id: null,
+                    document_id: null,
+                    payment_method_type_id: first.id,
+                    // reference: null,
+                    // payment_destination_id: this.getPaymentDestinationId(),
+                    // payment: 0,
+
+                    date: date,
                     currency_type_id: this.form.currency_type_id,
                     amount: 0,
                 });

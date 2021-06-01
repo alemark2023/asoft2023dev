@@ -2,15 +2,10 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Tenant\{
-    DocumentPayment,
-    SaleNotePayment,
-    PurchasePayment
-};
-use Modules\Sale\Models\QuotationPayment;
-use Modules\Sale\Models\ContractPayment;
 use Modules\Finance\Models\IncomePayment;
 use Modules\Pos\Models\CashTransaction;
+use Modules\Sale\Models\ContractPayment;
+use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\TechnicalServicePayment;
 
 class PaymentMethodType extends ModelTenant
@@ -18,6 +13,18 @@ class PaymentMethodType extends ModelTenant
     public $incrementing = false;
     public $timestamps = false;
 
+    protected $exclude_method_types = [
+        //'01', // Efectivo
+        //'02', // Tarjeta de crédito
+        //'03', // Tarjeta de débito
+        //'04', // Transferencia
+        //'05', // Factura a 30 días
+        //'06', // Tarjeta crédito visa
+        //'07', // Contado contraentrega
+        '08', // A 30 días
+        '09', // Crédito
+        // '10', // Contado
+    ];
     protected $fillable = [
         'id',
         'description',
@@ -66,13 +73,70 @@ class PaymentMethodType extends ModelTenant
         return $this;
     }
 
+    /**
+     * @param $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeNonCredit($query){
         return $query->where('is_credit',0);
     }
+
+    /**
+     * @param $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeCredit($query){
         return $query->where('is_credit',1);
     }
+    /**
+     * Devuelve los metodos de pago como standandar. Se pueden excluir elementos por $exclude_method_types_id
+     *
+     * @param $query
+     * @param array $exclude_method_types_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeExcludeMethodTypes($query,$exclude_method_types_id= []){
+        $exclude_method_types_id = array_merge($this->exclude_method_types, $exclude_method_types_id);
+        return $query->whereNotIn('id', $exclude_method_types_id);
+    }
 
+    /**
+     * Devuelve los metodos de pago como standandar. Se pueden excluir elementos por $exclude_method_types_id
+     *
+     * //'01', // Efectivo
+     * //'02', // Tarjeta de crédito
+     * //'03', // Tarjeta de débito
+     * //'04', // Transferencia
+     * //'05', // Factura a 30 días
+     * //'06', // Tarjeta crédito visa
+     * //'07', // Contado contraentrega
+     * '08', // A 30 días
+     * '09', // Crédito
+     * // '10', // Contado
+     *
+     * @param array $exclude_method_types_id Id de metodos a excluir
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getPaymentMethodTypes($exclude_method_types_id = []) {
+        $exclude_method_types_id = array_merge(['08', '09'], $exclude_method_types_id);
+        return self::whereNotIn('id', $exclude_method_types_id)
+                   ->get()
+                   ->transform(function ($row) {
+                       $row->id = (string)$row->id;
+                       $row->number_days = (int)$row->number_days;
+                       $row->has_card = (bool)$row->has_card;
+                       $row->is_credit = (bool)$row->is_credit;
+                       $row->has_card = (bool)$row->has_card;
+                       $row->is_cash = (bool)$row->is_cash;
+                       $row->charge = (float)$row->charge;
+                       $row->description = (string)$row->description;
+                       return $row;
+                   });
+    }
 
     public function document_payments()
     {

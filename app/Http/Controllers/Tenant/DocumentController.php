@@ -1,65 +1,57 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
-use App\Models\Tenant\PaymentCondition;
-use Config;
-use Exception;
-use Carbon\Carbon;
-use GuzzleHttp\Client;
-use Nexmo\Account\Price;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\User;
-use App\Traits\OfflineTrait;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Excel;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Series;
-use App\Exports\PaymentExport;
-use App\Models\Tenant\Company;
-use Modules\Item\Models\Brand;
-use App\Models\Tenant\Document;
 use App\CoreFacturalo\Facturalo;
-use App\Imports\DocumentsImport;
-use App\Models\Tenant\StateType;
-use App\Models\Tenant\Warehouse;
-use Modules\Item\Models\Category;
-use App\Mail\Tenant\DocumentEmail;
-use Illuminate\Support\Facades\DB;
-use App\CoreFacturalo\WS\Zip\ZipFly;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Exports\PaymentExport;
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\Establishment;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Cache;
-use App\Models\Tenant\PaymentMethodType;
-use Modules\Finance\Traits\FinanceTrait;
+use App\Http\Requests\Tenant\DocumentEmailRequest;
+use App\Http\Requests\Tenant\DocumentRequest;
+use App\Http\Requests\Tenant\DocumentUpdateRequest;
+use App\Http\Resources\Tenant\DocumentCollection;
+use App\Http\Resources\Tenant\DocumentResource;
+use App\Imports\DocumentsImport;
 use App\Imports\DocumentsImportTwoFormat;
-use App\Models\Tenant\Catalogs\PriceType;
+use App\Mail\Tenant\DocumentEmail;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
-use Modules\Item\Http\Requests\BrandRequest;
-use App\Http\Requests\Tenant\DocumentRequest;
-use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\NoteCreditType;
 use App\Models\Tenant\Catalogs\NoteDebitType;
 use App\Models\Tenant\Catalogs\OperationType;
+use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
-use Modules\BusinessTurn\Models\BusinessTurn;
-use App\Models\Tenant\Catalogs\DetractionType;
-use App\Models\Tenant\Catalogs\NoteCreditType;
-use App\Http\Resources\Tenant\DocumentResource;
-use Modules\Item\Http\Requests\CategoryRequest;
-use App\Http\Resources\Tenant\DocumentCollection;
-use App\Http\Requests\Tenant\DocumentEmailRequest;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Http\Requests\Tenant\DocumentUpdateRequest;
-use App\Http\Requests\Tenant\DocumentVoidedRequest;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
-use App\Models\Tenant\Catalogs\PaymentMethodType as CatPaymentMethodType;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Dispatch;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\PaymentCondition;
+use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Person;
 use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\Series;
+use App\Models\Tenant\StateType;
+use App\Models\Tenant\User;
+use App\Traits\OfflineTrait;
+use Carbon\Carbon;
+use Config;
+use Exception;
+use GuzzleHttp\Client;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Maatwebsite\Excel\Excel;
+use Modules\BusinessTurn\Models\BusinessTurn;
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use Modules\Item\Http\Requests\BrandRequest;
+use Modules\Item\Http\Requests\CategoryRequest;
+use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 
 class DocumentController extends Controller
 {
@@ -202,11 +194,31 @@ class DocumentController extends Controller
 
         $payment_destinations = $this->getPaymentDestinations();
 
-        return compact( 'customers','establishments', 'series', 'document_types_invoice', 'document_types_note',
-                        'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
-                        'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-                        'document_types_guide', 'user', 'sellers','payment_method_types','enabled_discount_global',
-                        'business_turns','is_client','select_first_document_type_03', 'payment_destinations', 'payment_conditions');
+        return compact(
+            'customers',
+            'establishments',
+            'series',
+            'document_types_invoice',
+            'document_types_note',
+            'note_credit_types',
+            'note_debit_types',
+            'currency_types',
+            'operation_types',
+            'discount_types',
+            'charge_types',
+            'company',
+            'document_type_03_filter',
+            'document_types_guide',
+            'user',
+            'sellers',
+            'payment_method_types',
+            'enabled_discount_global',
+            'business_turns',
+            'is_client',
+            'select_first_document_type_03',
+            'payment_destinations',
+            'payment_conditions'
+        );
 
     }
 
@@ -270,10 +282,12 @@ class DocumentController extends Controller
 
         if ($table === 'payment_method_types') {
 
+            return PaymentMethodType::getPaymentMethodTypes();
+            /*
             $payment_method_types = PaymentMethodType::whereNotIn('id', ['05', '08', '09'])->get();
             $end_payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get(); //by requirement
-
             return $payment_method_types->merge($end_payment_method_types);
+            */
         }
 
         if ($table === 'items') {
