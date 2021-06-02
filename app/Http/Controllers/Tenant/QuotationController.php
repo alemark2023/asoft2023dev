@@ -220,8 +220,14 @@ class QuotationController extends Controller
     }
 
 
+    /**
+     * @param \App\Models\Tenant\Item $row
+     *
+     * @return string
+     */
     public function getFullDescription($row){
 
+        return $row->getFullDescription();
         $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
         $category = ($row->category) ? " - {$row->category->name}" : "";
         $brand = ($row->brand) ? " - {$row->brand->name}" : "";
@@ -449,7 +455,9 @@ class QuotationController extends Controller
     public function ReturnItem( &$item)
     {
         $item->transform(function ($row) {
-            $full_description = $this->getFullDescription($row);
+            /** @var \App\Models\Tenant\Item $row */
+            return $row->getItemDataToQuotation();
+
             return [
                 'id' => $row->id,
                 'full_description' => $full_description,

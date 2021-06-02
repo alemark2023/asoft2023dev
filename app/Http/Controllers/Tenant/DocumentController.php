@@ -292,8 +292,8 @@ class DocumentController extends Controller
 
         if ($table === 'items') {
 
-            $establishment_id = auth()->user()->establishment_id;
-            $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+            // $establishment_id = auth()->user()->establishment_id;
+            // $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
             $items_u = Item::with('warehousePrices')
                 ->whereIsActive()
@@ -310,7 +310,12 @@ class DocumentController extends Controller
                 ->get();
             $items = $items_u->merge($items_s);
 
-            return collect($items)->transform(function($row) use($warehouse){
+            return collect($items)->transform(function($row)
+            //use($warehouse)
+            {
+                /** @var \App\Models\Tenant\Item $row */
+                return  $row->getItemDataToDocument();
+
                 $detail = $this->getFullDescription($row, $warehouse);
                 return [
                     'id' => $row->id,
@@ -375,7 +380,16 @@ class DocumentController extends Controller
         return [];
     }
 
-    public function getFullDescription($row, $warehouse){
+    /**
+     * @param \App\Models\Tenant\Item             $row
+     * @param \Modules\Inventory\Models\Warehouse $warehouse
+     *
+     * @return array
+     *
+     * @deprecated use getItemDataToDocument from \App\Models\Tenant\Item
+     */
+
+    public function getFullDescription(Item $row, ModuleWarehouse $warehouse){
 
         $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
         $category = ($row->category) ? "{$row->category->name}" : "";

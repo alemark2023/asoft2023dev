@@ -1,15 +1,14 @@
 <?php
 
 namespace App\Models\Tenant;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
-use Illuminate\Support\Facades\Config;
 use Modules\Account\Models\Account;
-use Modules\Item\Models\Category;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\WebPlatform;
@@ -342,4 +341,126 @@ class Item extends ModelTenant
         return number_format($price, 4, ".", "");
     }
 
+    /**
+     * @return array
+     */
+    public function getItemDataToQuotation() {
+        return $this->getDataItem('Quotation');
+    }
+
+    protected function getDataItem($origin ='') {
+        $full_description = $this->getFullDescription($origin);
+        $warehouse_id = $full_description['warehouse_id'];
+        return [
+            'id' => $this->id,
+            'full_description' => $full_description['full_description'],
+            'model' => $this->model,
+            'brand' => $full_description['brand'],
+            'warehouse_description' => $full_description['warehouse_description'],
+            'category' => $full_description['category'],
+            'stock' => $full_description['stock'],
+            'internal_id' => $this->internal_id,
+            'description' => $this->description,
+            'currency_type_id' => $this->currency_type_id,
+            'currency_type_symbol' => $this->currency_type->symbol,
+            'sale_unit_price' => Item::getSaleUnitPriceByWarehouse($this,$warehouse_id),
+            'purchase_unit_price' => $this->purchase_unit_price,
+            'unit_type_id' => $this->unit_type_id,
+            'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
+            'calculate_quantity' => (bool) $this->calculate_quantity,
+            'has_igv' => (bool) $this->has_igv,
+            'has_plastic_bag_taxes' => (bool) $this->has_plastic_bag_taxes,
+            'amount_plastic_bag_taxes' => $this->amount_plastic_bag_taxes,
+            'is_set'                           => (bool)$this->is_set,
+            'item_unit_types' => collect($this->item_unit_types)->transform(function($row) {
+                return [
+                    'id' => $row->id,
+                    'description' => "{$row->description}",
+                    'item_id' => $row->item_id,
+                    'unit_type_id' => $row->unit_type_id,
+                    'quantity_unit' => $row->quantity_unit,
+                    'price1' => $row->price1,
+                    'price2' => $row->price2,
+                    'price3' => $row->price3,
+                    'price_default' => $row->price_default,
+                ];
+            }),
+            'warehouses' => collect($this->warehouses)->transform(function($row) use($warehouse_id){
+                return [
+                    'warehouse_description' => $row->warehouse->description,
+                    'stock' => $row->stock,
+                    'warehouse_id' => $row->warehouse_id,
+                    'checked' => ($row->warehouse_id == $warehouse_id) ? true : false,
+                ];
+            }),
+            'attributes' => $this->attributes ? $this->attributes : [],
+            'lots_group' => collect($this->lots_group)->transform(function($row){
+                return [
+                    'id'  => $row->id,
+                    'code' => $row->code,
+                    'quantity' => $row->quantity,
+                    'date_of_due' => $row->date_of_due,
+                    'checked'  => false
+                ];
+            }),
+            'lots' => [],
+            'lots_enabled' => (bool) $this->lots_enabled,
+            'series_enabled' => (bool) $this->series_enabled,
+
+        ];
+    }
+
+    /**
+     * Devuelve el standar de estrucutra para documentos, es migrado de app/Http/Controllers/Tenant/DocumentController.php
+     * @return array
+     * @example
+     * <?php
+     *         $item->getItemDataToDocument();
+     * ?>
+     */
+    public function getItemDataToDocument(){
+        return $this->getDataItem();
+    }
+
+    public function getFullDescription($full_description = '') {
+
+        $desc = ($this->internal_id) ? $this->internal_id.' - '.$this->description : $this->description;
+        $category = ($this->category) ? " - {$this->category->name}" : '';
+        $brand = ($this->brand) ? " - {$this->brand->name}" : '';
+        $desc = "{$desc} - {$brand}";
+        if ($full_description === 'Quotation') {
+            $desc = "{$desc} {$category} {$brand}";
+        }
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        if ($this->unit_type_id != 'ZZ') {
+            if (isset($this['stock'])) {
+                $warehouse_stock = number_format($this['stock'], 2);
+            } else {
+                $warehouse_stock = ($this->warehouses && $warehouse)
+                    ?
+                    number_format($this->warehouses->where('warehouse_id', $warehouse->id)->first()->stock, 2)
+                    :
+                    0;
+            }
+
+            $stock = ($this->warehouses && $warehouse) ? "{$warehouse_stock}" : '';
+        } else {
+            $stock = '';
+        }
+
+
+        return [
+            'full_description'      => $desc,
+            'brand'                 => $brand,
+            'category'              => $category,
+            'stock'                 => $stock,
+            'warehouse_description' => $warehouse->description,
+            'warehouse_id' => $warehouse->id,
+
+        ];
+    }
 }
