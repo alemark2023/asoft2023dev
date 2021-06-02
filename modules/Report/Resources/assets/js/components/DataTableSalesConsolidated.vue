@@ -171,8 +171,11 @@
             </div>
         </div>
 
-        <totals-by-item-form :showDialog.sync="showDialog"
-                        :parameters="getQueryParameters()"></totals-by-item-form>
+        <totals-by-item-form
+            :showDialog.sync="showDialog"
+            :parameters="getQueryParameters()"
+            :resource="'reports/sales-consolidated'"
+        ></totals-by-item-form>
     </div>
 </template>
 <style>
@@ -249,9 +252,7 @@
         },
         methods: {
             clickTotalByItem(){
-
                 this.showDialog = true
-
             },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {

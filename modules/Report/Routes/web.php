@@ -84,11 +84,16 @@ if($current_hostname) {
                 Route::get('items/filter', 'ReportItemController@filter')->name('tenant.reports.items.filter');
                 Route::get('items/records', 'ReportItemController@records')->name('tenant.reports.items.records');
 
-                Route::get('order-notes-consolidated', 'ReportOrderNoteConsolidatedController@index')->name('tenant.reports.order_notes_consolidated.index');
-                Route::get('order-notes-consolidated/pdf', 'ReportOrderNoteConsolidatedController@pdf');
-                // Route::get('order-notes-consolidated/excel', 'ReportOrderNoteConsolidatedController@excel');
-                Route::get('order-notes-consolidated/filter', 'ReportOrderNoteConsolidatedController@filter');
-                Route::get('order-notes-consolidated/records', 'ReportOrderNoteConsolidatedController@records');
+                Route::prefix('order-notes-consolidated')->group(function () {
+                    Route::get('', 'ReportOrderNoteConsolidatedController@index')->name('tenant.reports.order_notes_consolidated.index');
+                    Route::get('pdf', 'ReportOrderNoteConsolidatedController@pdf');
+                    // Route::get('/excel', 'ReportOrderNoteConsolidatedController@excel');
+                    Route::get('filter', 'ReportOrderNoteConsolidatedController@filter');
+                    Route::get('records', 'ReportOrderNoteConsolidatedController@records');
+                    Route::get('totals-by-item', 'ReportOrderNoteConsolidatedController@totalsByItem');
+                    Route::get('pdf-totals', 'ReportOrderNoteConsolidatedController@pdfTotals');
+                    Route::get('excel-totals', 'ReportOrderNoteConsolidatedController@excelTotals');
+                });
 
                 Route::get('general-items', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
                 Route::get('general-items/excel', 'ReportGeneralItemController@excel');
@@ -130,7 +135,7 @@ if($current_hostname) {
                     Route::get('excel', 'ReportFixedAssetPurchaseController@excel');
                     Route::get('filter', 'ReportFixedAssetPurchaseController@filter');
                     Route::get('records', 'ReportFixedAssetPurchaseController@records');
-    
+
                 });
 
                 Route::prefix('massive-downloads')->group(function () {
@@ -139,7 +144,7 @@ if($current_hostname) {
                     Route::get('filter', 'ReportMassiveDownloadController@filter');
                     Route::get('pdf', 'ReportMassiveDownloadController@pdf');
                     Route::get('records', 'ReportMassiveDownloadController@records');
-    
+
                 });
 
             });

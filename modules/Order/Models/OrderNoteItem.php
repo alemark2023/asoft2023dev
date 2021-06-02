@@ -5,6 +5,7 @@ namespace Modules\Order\Models;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
 use Modules\Inventory\Models\Warehouse;
 
@@ -110,7 +111,7 @@ class OrderNoteItem extends ModelTenant
         return $this->belongsTo(OrderNote::class, 'order_note_id');
     }
 
-    
+
     public function scopeWherePendingState($query, $params)
     {
 
@@ -124,7 +125,7 @@ class OrderNoteItem extends ModelTenant
                         });
         }
 
-        
+
         return $query->whereHas('order_note', function($q) use($params){
                     $q->doesntHave('documents')
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
@@ -149,7 +150,7 @@ class OrderNoteItem extends ModelTenant
 
         }
 
-        
+
         return $query->whereHas('order_note', function($q) use($params){
                     $q->whereHas('documents')
                         ->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
@@ -169,10 +170,10 @@ class OrderNoteItem extends ModelTenant
                                 ->where('customer_id', $params['person_id'])
                                 ->whereTypeUser();
                         });
-                        
+
         }
 
-        
+
         return $query->whereHas('order_note', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         ->where('user_id', $params['seller_id'])
@@ -185,6 +186,14 @@ class OrderNoteItem extends ModelTenant
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function relation_item()
+    {
+        return $this->belongsTo(Item::class, 'item_id');
     }
 
 }

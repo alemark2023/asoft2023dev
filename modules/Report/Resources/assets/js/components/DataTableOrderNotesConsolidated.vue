@@ -99,6 +99,15 @@
                                        @click.prevent="clickDownload('pdf')">Exportar PDF
                             </el-button>
                         </template>
+                        <template v-if="resource == 'reports/order-notes-consolidated' && records.length>0">
+                            <el-button
+                                class="submit"
+                                icon="el-icon-search"
+                                type="success"
+                                @click.prevent="clickTotalByItem()"
+                            >Ver totales por producto
+                            </el-button>
+                        </template>
                     </div>
                 </div>
                 <div class="row mt-1 mb-4">
@@ -140,6 +149,11 @@
                 </div>
             </div>
         </div>
+        <totals-by-item-form
+            :parameters="getQueryParameters()"
+            :resource="'reports/order-notes-consolidated'"
+            :showDialog.sync="showDialog"
+        ></totals-by-item-form>
     </div>
 </template>
 <style>
@@ -151,13 +165,18 @@
 
 import moment from 'moment'
 import queryString from 'query-string'
+import TotalsByItemForm from './partials/totals_by_item.vue'
 
 export default {
+    components: {
+        TotalsByItemForm
+    },
     props: {
         resource: String,
     },
     data() {
         return {
+            showDialog: false,
             loading_submit: false,
             persons: [],
             all_persons: [],
@@ -209,6 +228,9 @@ export default {
 
     },
     methods: {
+        clickTotalByItem() {
+            this.showDialog = true
+        },
         changeDisabledDates() {
             if (this.form.date_end < this.form.date_start) {
                 this.form.date_end = this.form.date_start
