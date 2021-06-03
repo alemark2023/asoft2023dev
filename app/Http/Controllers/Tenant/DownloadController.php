@@ -57,6 +57,14 @@ class DownloadController extends Controller
         return $this->downloadStorage($document->filename, $folder);
     }
 
+    /**
+     * @param      $model
+     * @param      $external_id
+     * @param null $format
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \Exception
+     */
     public function toPrint($model, $external_id, $format = null) {
         $model = "App\\Models\\Tenant\\".ucfirst($model);
         $document = $model::where('external_id', $external_id)->first();

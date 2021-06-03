@@ -428,6 +428,12 @@ class DocumentController extends Controller
         return $res;
     }
 
+    /**
+     * @param array $data
+     *
+     * @return array
+     * @throws \Throwable
+     */
     public function storeWithData($data)
     {
         $fact = DB::connection('tenant')->transaction(function () use ($data) {

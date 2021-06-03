@@ -36,6 +36,23 @@ class PaymentMethodType extends ModelTenant
     ];
 
     /**
+     * @return mixed
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     *
+     * @return PaymentMethodType
+     */
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isIsCash()
@@ -232,5 +249,13 @@ class PaymentMethodType extends ModelTenant
                 }
                 ]);
 
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function fee()
+    {
+        return $this->hasMany(DocumentFee::class);
     }
 }
