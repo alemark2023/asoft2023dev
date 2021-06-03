@@ -589,7 +589,7 @@ class ItemController extends Controller
     {
        // return $request->id;
        $obj = Item::find($request->id);
-       $new = $obj->replicate();
+       $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
        $new->save();
 
         return [
