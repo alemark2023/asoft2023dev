@@ -638,7 +638,7 @@
         </tr>
             @foreach($document->fee as $key => $quote)
                 <tr>
-                    <td>&#8226;  Cuota #{{ $key + 1 }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+                    <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1). ' / ' : '') }}Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
                 </tr>
             @endforeach
         </tr>

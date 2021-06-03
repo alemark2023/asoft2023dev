@@ -296,6 +296,9 @@ class Document extends ModelTenant
         return $this->hasMany(DocumentPayment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function fee()
     {
         return $this->hasMany(DocumentFee::class);
