@@ -516,13 +516,7 @@
         </tr>
     @endif
     @if ($document->payment_condition_id === '01')
-        @if($document->payment_method_type_id)
-            <tr>
-                <td class="desc pt-5">
-                    <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
-                </td>
-            </tr>
-        @endif
+
         @if($payments->count())
             <tr>
                 <td class="desc pt-5">
@@ -547,7 +541,7 @@
             </tr>
                 @foreach($document->fee as $key => $quote)
                     <tr>
-                        <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1). ' / ' : '') }}Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+                        <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1). ' / ' : $quote->getStringPaymentMethodType() ." / ") }}Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
                     </tr>
                 @endforeach
             </tr>
