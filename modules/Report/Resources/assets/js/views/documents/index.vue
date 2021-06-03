@@ -24,6 +24,7 @@
                             <th class="">Tipo Documento</th>
                             <th class="">Comprobante</th>
                             <th class="">Fecha emisión</th>
+                            <th class="">Fecha vencimiento</th>
                             <th v-if="columns.guides.visible" class="text-right">Guia</th>
                             <th v-if="columns.options.visible" class="text-right">Opciones</th>
                             <th>Doc. Afectado</th>
@@ -47,6 +48,7 @@
                             <td>{{ row.document_type_description }}</td>
                             <td>{{ row.number }}</td>
                             <td>{{ row.date_of_issue }}</td>
+                            <td>{{ row.date_of_due }}</td>
                             <td v-if="columns.guides.visible" class="text-center">
                                 <span v-for="(item, i) in row.guides" :key="i">
                                     {{ item.number }} <br>
