@@ -8,7 +8,7 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div :class="{ 'has-danger': errors.name }" class="form-group">
                             <label class="control-label">Nombre</label>
                             <el-input v-model="form.name"></el-input>
@@ -19,7 +19,7 @@
                             ></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div :class="{ 'has-danger': errors.email }" class="form-group">
                             <label class="control-label">Correo Electrónico</label>
                             <el-input
@@ -39,7 +39,7 @@
                             class="form-group"
                         >
                             <label class="control-label">Establecimiento</label>
-                            <el-select v-model="form.establishment_id" filterable>
+                            <el-select v-model="form.establishment_id" filterable @change="getSeries">
                                 <el-option
                                     v-for="option in establishments"
                                     :key="option.id"
@@ -54,6 +54,52 @@
                             ></small>
                         </div>
                     </div>
+                    <!-- Documento por defecto -->
+                    <div class="col-md-4">
+                        <div
+                            :class="{ 'has-danger': errors.document_id }"
+                            class="form-group"
+                        >
+                            <label class="control-label">Documento</label>
+                            <el-select v-model="form.document_id" filterable clearable @change="getSeries">
+                                <el-option
+                                    v-for="option in documents"
+                                    :key="option.id"
+                                    :label="option.description"
+                                    :value="option.id"
+                                ></el-option>
+                            </el-select>
+                            <small
+                                v-if="errors.document_id"
+                                class="form-control-feedback"
+                                v-text="errors.document_id[0]"
+                            ></small>
+                        </div>
+                    </div>
+                    <!-- Documento por defecto -->
+                    <!-- Serie por defecto -->
+                    <div class="col-md-4">
+                        <div
+                            :class="{ 'has-danger': errors.series_id }"
+                            class="form-group"
+                        >
+                            <label class="control-label">Serie</label>
+                            <el-select v-model="form.series_id" filterable clearable>
+                                <el-option
+                                    v-for="option in series"
+                                    :key="option.id"
+                                    :label="option.number"
+                                    :value="option.id"
+                                ></el-option>
+                            </el-select>
+                            <small
+                                v-if="errors.series_id"
+                                class="form-control-feedback"
+                                v-text="errors.series_id[0]"
+                            ></small>
+                        </div>
+                    </div>
+                    <!-- Serie por defecto -->
                     <div v-show="form.id" class="col-md-12">
                         <div :class="{ 'has-danger': errors.api_token }" class="form-group">
                             <label class="control-label">Api Token</label>
@@ -156,10 +202,26 @@ export default {
             titleDialog: null,
             resource: "users",
             errors: {},
-            form: {},
+            form: {
+                id: null,
+                name: null,
+                email: null,
+                api_token: null,
+                establishment_id: null,
+                password: null,
+                password_confirmation: null,
+                locked: false,
+                type: null,
+                series_id: null,
+                document_id: null,
+                modules: [],
+                levels: [],
+            },
             modules: [],
             datai: [],
             establishments: [],
+            documents: [],
+            series: [],
             types: [],
             // define the default value
             value: null,
@@ -169,7 +231,7 @@ export default {
         };
     },
     updated() {
-        // Set default values ​​for multiple selection trees
+        // Set default values for multiple selection trees
         if (this.modules !== undefined && this.$refs.tree !== undefined) {
             // this.$refs.tree.setCheckedKeys(this.modules)
         }
@@ -179,10 +241,27 @@ export default {
             this.modules = response.data.modules;
             this.establishments = response.data.establishments;
             this.types = response.data.types;
+            this.documents = response.data.documents;
+            this.series = response.data.series;
+            this.getSeries();
         });
         await this.initForm();
     },
     methods: {
+        getSeries(){
+            if(this.form.establishment_id !== null) {
+                let url = `/series/records/${this.form.establishment_id}`;
+                this.series = [];
+                if (this.form.document_id !== null) {
+                    url = url + `/${this.form.document_id}`;
+                }
+                this.$http
+                    .get(url)
+                    .then((response) => {
+                        this.series = response.data.data;
+                    });
+            }
+        },
         FixChildren(currentObj, treeStatus) {
             if (currentObj !== undefined) {
                 let selected = treeStatus.checkedKeys.indexOf(currentObj.id) // -1 is unchecked
@@ -229,6 +308,8 @@ export default {
                 password_confirmation: null,
                 locked: false,
                 type: null,
+                series_id: null,
+                document_id: null,
                 modules: [],
                 levels: [],
             };
@@ -245,6 +326,7 @@ export default {
                         const preSelecteds = [];
                         const preSelectedsModules = this.form.modules;
                         const preSelectedsLevels = this.form.levels;
+                        this.getSeries();
                         this.modules.map((m) => {
                             if (preSelectedsModules.includes(m.id)) {
                                 preSelecteds.push(m.id);
@@ -266,6 +348,8 @@ export default {
                     this.modules = response.data.modules;
                     this.establishments = response.data.establishments;
                     this.types = response.data.types;
+                    this.documents = response.data.documents;
+                    this.series = response.data.series;
                 });
             }
         },

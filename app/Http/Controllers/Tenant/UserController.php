@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Module;
 use Illuminate\Support\Facades\DB;
@@ -71,9 +73,11 @@ class UserController extends Controller
             });
 
         $establishments = Establishment::orderBy('description')->get();
+        $documents = DocumentType::OnlyAvaibleDocuments()->get();
+        $series = Series::FilterEstablishment()->FilterDocumentType()->get();
         $types = [['type' => 'admin', 'description' => 'Administrador'], ['type' => 'seller', 'description' => 'Vendedor']];
 
-        return compact('modules', 'establishments', 'types');
+        return compact('modules', 'establishments', 'types', 'documents', 'series');
     }
 
     public function store(UserRequest $request)
@@ -103,6 +107,9 @@ class UserController extends Controller
                 $user->password = bcrypt($request->input('password'));
             }
         }
+        $user->setDocumentId($request->input('document_id'))
+             ->setSeriesId($request->input('series_id'));
+        $user->establishment_id = $request->input('establishment_id');
         $user->save();
 
         if ($user->id != 1) {
