@@ -122,7 +122,7 @@ if ($hostname) {
             Route::delete('bank_accounts/{bank_account}', 'Tenant\BankAccountController@destroy');
 
             //Series
-            Route::get('series/records/{establishment}', 'Tenant\SeriesController@records');
+            Route::get('series/records/{establishment}/{document_type?}', 'Tenant\SeriesController@records');
             Route::get('series/create', 'Tenant\SeriesController@create');
             Route::get('series/tables', 'Tenant\SeriesController@tables');
             Route::post('series', 'Tenant\SeriesController@store');
