@@ -76,6 +76,7 @@
          * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
          */
         public function getRecords($request = []) {
+            set_time_limit (3900);
 
             $data_of_period = $this->getDatesOfPeriod($request);
 
