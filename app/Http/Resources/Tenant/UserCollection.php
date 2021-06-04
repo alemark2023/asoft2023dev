@@ -15,7 +15,7 @@ class UserCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
-
+            /** @var \App\Models\Tenant\User  $row */
             $type = '';
             switch ($row->type) {
                 case 'admin':
@@ -38,7 +38,7 @@ class UserCollection extends ResourceCollection
                 'name' => $row->name,
                 'api_token' => $row->api_token,
                 'document_id' => $row->document_id,
-                'serie_id' => ($this->series_id == 0)?null:$this->series_id,
+                'serie_id' => ($row->series_id == 0)?null:$row->series_id,
                 'establishment_description' => optional($row->establishment)->description,
                 'type' => $type,
                 'locked' => (bool) $row->locked,

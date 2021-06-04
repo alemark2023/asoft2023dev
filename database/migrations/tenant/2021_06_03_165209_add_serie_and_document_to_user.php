@@ -16,7 +16,7 @@ class AddSerieAndDocumentToUser extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             $table->char('document_id',255)->nullable()->comment('Relacion con tipo de documentos');
-            $table->unsignedInteger('series_id')->default(0)->comment('Relacion con series');
+            $table->unsignedInteger('series_id')->nullable()->comment('Relacion con series');
 
         });
     }
