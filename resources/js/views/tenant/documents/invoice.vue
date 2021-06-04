@@ -702,6 +702,8 @@ export default {
                     return time.getTime() > moment();
                   }
                 },
+                default_document_type : null,
+                default_series_type : null,
                 dateValid:false,
                 input_person:{},
                 showDialogDocumentDetraction:false,
@@ -806,6 +808,8 @@ export default {
 
                     this.seller_class = (this.user == 'admin')?'col-lg-4 pb-2':'col-lg-6 pb-2';
 
+                    this.default_document_type = response.data.document_id;
+                    this.default_series_type = response.data.series_id;
                     this.selectDocumentType()
 
                     this.changeEstablishment()
@@ -813,6 +817,7 @@ export default {
                     this.changeDocumentType()
                     this.changeDestinationSale()
                     this.changeCurrencyType()
+                  this.setDefaultDocumentType();
                 })
             this.loading_form = true
             this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -988,6 +993,17 @@ export default {
             }
         },
         methods: {
+            setDefaultDocumentType(){
+                if(this.default_document_type === undefined) this.default_document_type = null;
+                if(this.default_series_type === undefined) this.default_series_type = 0;
+                if(this.default_document_type !== null) {
+                    this.form.document_type_id = this.default_document_type;
+                    this.changeDocumentType()
+                    if(this.default_series_type!==0) {
+                        this.form.series_id = this.default_series_type;
+                    }
+                }
+            },
             async onSetFormData(data) {
                 this.form.establishment_id = data.establishment_id;
                 this.form.document_type_id = data.document_type_id;
@@ -2101,6 +2117,7 @@ export default {
                     if(temp === '03') this.form.payment_condition_id = '03';
                 }).finally(() => {
                     this.loading_submit = false;
+                    this.setDefaultDocumentType();
                 });
             },
             saveCashDocument(){

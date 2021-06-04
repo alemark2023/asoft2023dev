@@ -4,9 +4,8 @@ namespace App\Models\Tenant;
 
 use App\Notifications\Tenant\PasswordResetNotification;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
 
@@ -22,7 +21,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'establishment_id','type','locked', 'identity_document_type_id', 'number', 'address', 'telephone'
+        'name', 'email', 'password', 'establishment_id', 'type', 'locked', 'identity_document_type_id', 'number',
+        'address', 'telephone',
+         'document_id',
+         'series_id',
     ];
 
     /**
@@ -167,4 +169,39 @@ class User extends Authenticatable
     {
         $this->notify(new PasswordResetNotification($token));
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDocumentId() {
+        return $this->document_id;
+    }
+
+    /**
+     * @param mixed $document_id
+     *
+     * @return User
+     */
+    public function setDocumentId($document_id) {
+        $this->document_id = $document_id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSeriesId() {
+        return $this->series_id;
+    }
+
+    /**
+     * @param mixed $series_id
+     *
+     * @return User
+     */
+    public function setSeriesId($series_id) {
+        $this->series_id = $series_id;
+        return $this;
+    }
+
 }

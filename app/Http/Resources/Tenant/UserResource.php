@@ -41,6 +41,8 @@ class UserResource extends JsonResource
 			'modules'          => $modules,
 			'levels'           => $levels,
 			'locked'           => (bool) $this->locked,
+			'document_id'           => $this->document_id,
+			'series_id'           => ($this->series_id == 0)?null:$this->series_id,
 		];
 	}
 }

@@ -193,8 +193,12 @@ class DocumentController extends Controller
         //                'discount_types', 'charge_types', 'company', 'document_type_03_filter');
 
         $payment_destinations = $this->getPaymentDestinations();
+        $document_id =  auth()->user()->document_id;
+        $series_id =  auth()->user()->series_id;
 
         return compact(
+            'document_id',
+            'series_id',
             'customers',
             'establishments',
             'series',

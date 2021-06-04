@@ -77,6 +77,24 @@ class Item extends ModelTenant
     protected $casts = [
         'date_of_due' => 'date'
     ];
+
+    /**
+     * @return mixed
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     *
+     * @return Item
+     */
+    public function setDescription($description) {
+        $this->description = $description;
+        return $this;
+    }
+
     /*protected static function boot()
     {
         parent::boot();
