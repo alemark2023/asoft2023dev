@@ -7,6 +7,9 @@
     >
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
+                <el-tabs v-model="activeName">
+                    <el-tab-pane class name="first">
+                        <span slot="label">Datos de Usuario</span>
                 <div class="row">
                     <div class="col-md-6">
                         <div :class="{ 'has-danger': errors.name }" class="form-group">
@@ -100,20 +103,7 @@
                         </div>
                     </div>
                     <!-- Serie por defecto -->
-                    <div v-show="form.id" class="col-md-12">
-                        <div :class="{ 'has-danger': errors.api_token }" class="form-group">
-                            <label class="control-label">Api Token</label>
-                            <el-input
-                                v-model="form.api_token"
-                                :readonly="form.id != null"
-                            ></el-input>
-                            <small
-                                v-if="errors.api_token"
-                                class="form-control-feedback"
-                                v-text="errors.api_token[0]"
-                            ></small>
-                        </div>
-                    </div>
+
                     <div class="col-md-4">
                         <div :class="{ 'has-danger': errors.password }" class="form-group">
                             <label class="control-label">Contraseña</label>
@@ -157,7 +147,26 @@
                             ></small>
                         </div>
                     </div>
-                    <div v-if="typeUser != 'integrator'" class="col-md-8">
+                    <div v-show="form.id" class="col-md-12">
+                        <div :class="{ 'has-danger': errors.api_token }" class="form-group">
+                            <label class="control-label">Api Token</label>
+                            <el-input
+                                v-model="form.api_token"
+                                :readonly="form.id != null"
+                            ></el-input>
+                            <small
+                                v-if="errors.api_token"
+                                class="form-control-feedback"
+                                v-text="errors.api_token[0]"
+                            ></small>
+                        </div>
+                    </div>
+                </div>
+                    </el-tab-pane>
+                    <el-tab-pane class name="second">
+                        <span slot="label">Permisos</span>
+                        <div class="row">
+                    <div v-if="typeUser != 'integrator'" class="col-md-12">
                         <div class="form-comtrol">
                             <label class="control-label">Permisos Módulos</label>
                             <div class="form-group tree-container-admin">
@@ -176,7 +185,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -228,6 +239,7 @@ export default {
             // define options
             alwaysOpen: true,
             options: [],
+            activeName: 'first'
         };
     },
     updated() {
@@ -242,16 +254,15 @@ export default {
             this.establishments = response.data.establishments;
             this.types = response.data.types;
             this.documents = response.data.documents;
-            this.series = response.data.series;
             this.getSeries();
         });
         await this.initForm();
     },
     methods: {
         getSeries(){
+            this.series = [];
             if(this.form.establishment_id !== null) {
                 let url = `/series/records/${this.form.establishment_id}`;
-                this.series = [];
                 if (this.form.document_id !== null) {
                     url = url + `/${this.form.document_id}`;
                 }

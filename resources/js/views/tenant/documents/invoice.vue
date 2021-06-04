@@ -993,13 +993,16 @@ export default {
             }
         },
         methods: {
-            setDefaultDocumentType(){
-                if(this.default_document_type === undefined) this.default_document_type = null;
-                if(this.default_series_type === undefined) this.default_series_type = 0;
-                if(this.default_document_type !== null) {
+            // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
+            setDefaultDocumentType() {
+                if (this.default_document_type === undefined) this.default_document_type = null;
+                if (this.default_series_type === undefined) this.default_series_type = null;
+                let alt = _.find(this.document_types, {'id': this.default_document_type});
+                if (this.default_document_type !== null && alt !== undefined) {
                     this.form.document_type_id = this.default_document_type;
                     this.changeDocumentType()
-                    if(this.default_series_type!==0) {
+                    alt = _.find(this.series, {'id': this.default_series_type});
+                    if (this.default_series_type !== null && alt !== undefined) {
                         this.form.series_id = this.default_series_type;
                     }
                 }

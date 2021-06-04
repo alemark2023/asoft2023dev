@@ -36,6 +36,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'series_id'=> 'int'
+    ];
+
     public function modules()
     {
         return $this->belongsToMany(Module::class);
