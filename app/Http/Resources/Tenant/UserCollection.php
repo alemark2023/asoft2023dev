@@ -37,6 +37,8 @@ class UserCollection extends ResourceCollection
                 'email' => $row->email,
                 'name' => $row->name,
                 'api_token' => $row->api_token,
+                'document_id' => $row->document_id,
+                'serie_id' => ($this->series_id == 0)?null:$this->series_id,
                 'establishment_description' => optional($row->establishment)->description,
                 'type' => $type,
                 'locked' => (bool) $row->locked,
