@@ -118,6 +118,7 @@ export default {
         this.$eventHub.$on("reloadData", () => {
             this.getRecords();
         });
+        this.$root.$refs.DataTable = this;
     },
     async mounted() {
         let column_resource = _.split(this.resource, "/");
@@ -166,6 +167,9 @@ export default {
         changeClearInput() {
             this.search.value = "";
             this.getRecords();
+        },
+        getSearch() {
+            return this.search;
         }
     }
 };
