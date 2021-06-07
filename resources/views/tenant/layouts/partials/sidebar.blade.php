@@ -224,6 +224,11 @@
                             </a>
                             <ul class="nav nav-children">
                                 @if(in_array('pos', $vc_module_levels))
+                                <li class="{{-- {{ ($path[0] === 'pos'  )?'nav-active':'' }} --}}">
+                                    <a class="nav-link" href="{{-- {{route('tenant.pos.index')}} --}}">Venta rápida</a>
+                                </li>
+                                @endif
+                                @if(in_array('pos', $vc_module_levels))
                                 <li class="{{ ($path[0] === 'pos'  )?'nav-active':'' }}">
                                     <a class="nav-link" href="{{route('tenant.pos.index')}}">Punto de venta</a>
                                 </li>
