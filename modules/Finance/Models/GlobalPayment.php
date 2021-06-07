@@ -2,15 +2,14 @@
 
 namespace Modules\Finance\Models;
 
-use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\{BankAccount, DocumentPayment, GlobalPaymentsRelations, PurchasePayment, SaleNotePayment, User};
 use App\Models\Tenant\Cash;
-use App\Models\Tenant\BankAccount;
+use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\SoapType;
-use Modules\Sale\Models\QuotationPayment;
 use Modules\Expense\Models\ExpensePayment;
-use App\Models\Tenant\{DocumentPayment, SaleNote, SaleNotePayment, PurchasePayment, User};
-use Modules\Sale\Models\ContractPayment;
 use Modules\Pos\Models\CashTransaction;
+use Modules\Sale\Models\ContractPayment;
+use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\TechnicalServicePayment;
 
 class GlobalPayment extends ModelTenant
@@ -25,6 +24,75 @@ class GlobalPayment extends ModelTenant
         'user_id',
     ];
 
+    protected static function boot() {
+        parent::boot();
+        static::creating(function ($model) {
+        });
+        static::saving(function ($model) {
+        });
+        static::updating(function ($model) {
+        });
+        static::created(function ($model) {
+            self::SaveOnGlobalPaymentsRelations($model);
+        });
+
+        static::updated(function ($model) {
+            self::SaveOnGlobalPaymentsRelations($model);
+        });
+    }
+
+    /**
+     * Guarda el modelo en las relaciones globales
+     *
+     * @param $model
+     */
+    public static function SaveOnGlobalPaymentsRelations(&$model){
+        /** @var GlobalPayment $model */
+
+        $data = [
+            'global_payments_id'            => $model->id,
+            'user_id'            => $model->user_id,
+            'payment_type'            =>  $model->payment_type,
+        ];
+        if($model->destination_type === BankAccount::class){
+            $data['bank_id'] = $model->destination_id;
+        }else{
+            $data['cash_id'] = $model->destination_id;
+        }
+
+        $payment_type = $model->payment_type;
+        $payment_id = $model->payment_id;
+        if($payment_type === DocumentPayment::class){
+            $data['document_payment_id'] = $payment_id;
+        }
+        elseif($payment_type === ExpensePayment::class){
+            $data['expense_payments_id'] = $payment_id;
+        } elseif($payment_type === SaleNotePayment::class){
+            $data['sale_note_payments_id'] = $payment_id;
+        } elseif($payment_type === QuotationPayment::class){
+            $data['quotation_payments_id'] = $payment_id;
+        } elseif($payment_type === PurchasePayment::class){
+            $data['purchase_payments_id'] = $payment_id;
+        } elseif($payment_type === ContractPayment::class){
+            $data['contract_payments_id'] = $payment_id;
+        } elseif($payment_type === TechnicalServicePayment::class){
+            $data['technical_service_payments_id'] = $payment_id;
+        } elseif($payment_type === IncomePayment::class){
+            $data['income_payments_id'] = $payment_id;
+        } elseif($payment_type === CashTransaction::class){
+            $data['cash_transactions_id'] = $payment_id;
+        }else{
+            $data = [];
+        }
+        if(!empty($data)) {
+            $relation = GlobalPaymentsRelations::where($data)->first();
+            if (empty($relation)) {
+                $relation = new GlobalPaymentsRelations($data);
+            }
+            $relation->push();
+        }
+
+    }
 
     public function soap_type()
     {
@@ -301,5 +369,15 @@ class GlobalPayment extends ModelTenant
 
         return $query->wherePaymentType($payment_type);
 
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder|null $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|null
+     */
+    public function scopeJoinGlobalPaymentRelations($query) {
+        $query->leftjoin('global_payment_relations', 'global_payments.id', '=', 'global_payment_relations.global_payments_id');
+        return $query;
     }
 }

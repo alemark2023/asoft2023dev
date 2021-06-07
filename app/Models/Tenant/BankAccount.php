@@ -40,6 +40,14 @@ class BankAccount extends ModelTenant
         return $this->morphMany(GlobalPayment::class, 'destination')->with(['payment']);
     }
 
+    /**
+     * Obtiene las relaciones de la tabla global_destination_relations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_destination_relations(){
+        return $this->hasMany(GlobalPaymentsRelations::class, 'bank_id');
+    }
     public function getShowInDocumentsAttribute($value)
     {
         return $value ? true : false;
