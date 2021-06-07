@@ -250,9 +250,16 @@ class Quotation extends ModelTenant
 
     public function scopeWhereStateTypeAccepted($query)
     {
-        return $query->whereIn('state_type_id', ['01']);
+        return $query->whereIn('state_type_id', self::getStateTypeAccepted());
     }
 
+    /**
+     * Devuelve los tipos de estado aceptados
+     *
+     * @return string[]
+     */public static function  getStateTypeAccepted() {
+        return ['01'];
+    }
     public function payments()
     {
         return $this->hasMany(QuotationPayment::class);

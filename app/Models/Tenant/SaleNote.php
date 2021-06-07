@@ -284,9 +284,16 @@ class SaleNote extends ModelTenant
 
     public function scopeWhereStateTypeAccepted($query)
     {
-        return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+        return $query->whereIn('state_type_id', self::getStateTypeAccepted());
     }
-
+    /**
+     * Devuelve los tipos de estado aceptados
+     *
+     * @return string[]
+     */
+    public static function  getStateTypeAccepted(){
+            return  ['01','03','05','07','13'];
+    }
     public function scopeWhereNotChanged($query)
     {
         return $query->where('changed', false);
