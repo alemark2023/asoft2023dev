@@ -213,8 +213,8 @@
             </td>
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
-                @if($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!}
+                @if($row->item->name_product_pdf)
+                    {!!$row->item->name_product_pdf!!}
                 @else
                     {!!$row->item->description!!}
                 @endif
