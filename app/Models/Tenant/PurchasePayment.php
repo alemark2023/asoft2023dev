@@ -33,7 +33,7 @@ class PurchasePayment extends ModelTenant
     {
         return $this->belongsTo(CardBrand::class);
     }
-    
+
     public function global_payment()
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
@@ -48,9 +48,17 @@ class PurchasePayment extends ModelTenant
     {
         return $this->morphOne(PaymentFile::class, 'payment');
     }
-    
+
     public function purchase()
     {
         return $this->belongsTo(Purchase::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'purchase_payments_id');
+    }
+
 }

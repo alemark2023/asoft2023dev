@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Models;
 
+use App\Models\Tenant\GlobalPaymentsRelations;
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
 use App\Models\Tenant\Person;
@@ -91,10 +92,17 @@ class TechnicalService extends ModelTenant
     {
         return "TS-{$this->id}";
     }
-    
+
     public function getCurrencyTypeIdAttribute()
     {
         return 'PEN';
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'technical_services_id');
     }
 
 }

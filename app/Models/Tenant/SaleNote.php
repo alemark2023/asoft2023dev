@@ -309,4 +309,10 @@ class SaleNote extends ModelTenant
         return $this->belongsTo(PaymentMethodType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'sale_notes_id');
+    }
 }

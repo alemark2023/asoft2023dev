@@ -281,4 +281,11 @@ class Quotation extends ModelTenant
             'name' => ''
         ]);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'quotations_id');
+    }
 }

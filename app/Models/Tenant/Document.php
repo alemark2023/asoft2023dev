@@ -472,4 +472,12 @@ class Document extends ModelTenant
         }
         return 0;
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payment_relations()
+    {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'document_id');
+    }
 }

@@ -70,7 +70,7 @@ class Purchase extends ModelTenant
         'date_of_due' => 'date',
     ];
 
-    
+
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
@@ -281,4 +281,10 @@ class Purchase extends ModelTenant
         return $this->belongsTo(Person::class, 'customer_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'purchases_id');
+    }
 }

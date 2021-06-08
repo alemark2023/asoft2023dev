@@ -3,6 +3,7 @@
 namespace Modules\Sale\Models;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\GlobalPaymentsRelations;
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
 // use App\Models\Tenant\StateType;
@@ -269,5 +270,12 @@ class Contract extends ModelTenant
         return $this->belongsTo(User::class, 'seller_id')->withDefault([
             'name' => ''
         ]);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'contracts_id');
     }
 }

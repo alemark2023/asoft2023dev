@@ -2,6 +2,7 @@
 
 namespace Modules\Finance\Models;
 
+use App\Models\Tenant\GlobalPaymentsRelations;
 use Modules\Finance\Models\GlobalPayment;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\CardBrand;
@@ -41,9 +42,17 @@ class IncomePayment extends ModelTenant
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
     }
- 
+
     public function associated_record_payment()
     {
         return $this->belongsTo(Income::class, 'income_id');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'income_payments_id');
+    }
+
 }

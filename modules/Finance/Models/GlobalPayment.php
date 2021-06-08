@@ -287,75 +287,76 @@ class GlobalPayment extends ModelTenant
     }
 
 
-    public function scopeWhereFilterPaymentType($query, $params)
-    {
+    public function scopeWhereFilterPaymentType($query, $params) {
+        // $query->where('created_at','>=',$params->date_start);
 
-        return $query->whereHas('doc_payments', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+        $query->whereHas('doc_payments', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
 
-                })
-                ->OrWhereHas('exp_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+        });
+        $query->OrWhereHas('exp_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
 
-                })
-                ->OrWhereHas('sln_payments', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser()
-                                ->whereNotChanged();
-                        });
+        });
+        $query->OrWhereHas('sln_payments', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser()
+                    ->whereNotChanged();
+              });
 
-                })
-                ->OrWhereHas('pur_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+        });
+        $query->OrWhereHas('pur_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
 
-                })
-                ->OrWhereHas('quo_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser()
-                                ->whereNotChanged();
-                        });
+        });
+        $query->OrWhereHas('quo_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser()
+                    ->whereNotChanged();
+              });
 
-                })
-                ->OrWhereHas('con_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser()
-                                ->whereNotChanged();
-                        });
+        });
+        $query->OrWhereHas('con_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser()
+                    ->whereNotChanged();
+              });
 
-                })
-                ->OrWhereHas('inc_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+        });
+        $query->OrWhereHas('inc_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
 
-                })
-                ->OrWhereHas('cas_transaction', function($q) use($params){
-                    $q->whereBetween('date', [$params->date_start, $params->date_end]);
-                })
-                ->OrWhereHas('tec_serv_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereTypeUser();
-                        });
+        });
+        $query->OrWhereHas('cas_transaction', function ($q) use ($params) {
+            $q->whereBetween('date', [$params->date_start, $params->date_end]);
+        });
+        $query->OrWhereHas('tec_serv_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereTypeUser();
+              });
+        });
 
-                });
+        return $query;
 
     }
 
-    public function user()
+     public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -379,5 +380,13 @@ class GlobalPayment extends ModelTenant
     public function scopeJoinGlobalPaymentRelations($query) {
         $query->leftjoin('global_payment_relations', 'global_payments.id', '=', 'global_payment_relations.global_payments_id');
         return $query;
+    }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'global_payments_id');
     }
 }

@@ -297,6 +297,53 @@ trait FinanceTrait
         return $records;
 
     }
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection $bank_accounts
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
+    public function getBalanceByBankAcounts2($bank_accounts)
+    {
+        $records = $bank_accounts->map(function($row) {
+            /** @var BankAccount $row */
+            $global_destination_relations = $row->global_destination_relations;
+
+            $document_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, DocumentPayment::class);
+            $expense_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, ExpensePayment::class);
+            $sale_note_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, SaleNotePayment::class);
+            $purchase_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, PurchasePayment::class);
+            $quotation_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, QuotationPayment::class);
+            // $contract_payment = 0; //$this->getSumPayment($global_destination_relations, ContractPayment::class);
+            $contract_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, ContractPayment::class);
+            $income_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, IncomePayment::class);
+            $technical_service_payment = $this->getSumPaymentWithRelationGlobal($global_destination_relations, TechnicalServicePayment::class);
+
+            $entry = $document_payment + $sale_note_payment + $quotation_payment + $contract_payment + $income_payment + $technical_service_payment;
+            $egress = $expense_payment + $purchase_payment;
+            $balance = $row->initial_balance + $entry - $egress;
+
+            return [
+
+                'id' => $row->id,
+                'description' => "{$row->bank->description} - {$row->currency_type_id} - {$row->description}",
+                'expense_payment' => self::FormatNumber($expense_payment),
+                'sale_note_payment' => self::FormatNumber($sale_note_payment),
+                'quotation_payment' => self::FormatNumber($quotation_payment),
+                'contract_payment' => self::FormatNumber($contract_payment),
+                'document_payment' => self::FormatNumber($document_payment),
+                'purchase_payment' => self::FormatNumber($purchase_payment),
+                'income_payment' => self::FormatNumber($income_payment),
+                'initial_balance' => self::FormatNumber($row->initial_balance),
+                'technical_service_payment' => self::FormatNumber($technical_service_payment),
+                'balance' => self::FormatNumber($balance),
+
+            ];
+
+        });
+
+        return $records;
+
+    }
 
     public function getSumPayment($record, $model)
     {
@@ -309,12 +356,66 @@ trait FinanceTrait
 
         });
     }
+    public function getSumPaymentWithRelationGlobal($record, $model)
+    {
+
+        return $record
+            ->where('payment_type', $model)
+            ->sum(
+                function($row)   {
+                    $pagos = $row->associated_record_payment();
+                    if($pagos != null)
+                        $total_credit_notes = 0;
+                    if(!empty($row->document_id)){
+                        $total_credit_notes =  $this->getTotalCreditNotesGlobalRelations($pagos);
+                    }
+
+                    /*
+                        $total_credit_notes = (!empty($row->document_id))
+                            ? $this->getTotalCreditNotesGlobalRelations($pagos) : 0;
+                    */
+
+                        /*
+                        $total_currency_type = $this->calculateTotalCurrencyType(
+                            $pagos,
+                            $row);
+                        */
+                        $total_currency_type = $pagos->total;
+                        if($pagos->currency_type_id !== 'PEN'){
+                            $total_currency_type = $total_currency_type * $pagos->exchange_rate;
+                        }
+
+                        return $total_currency_type - $total_credit_notes;
+
+                    return 0;
+                });
+    }
 
 
     public function getTotalCreditNotes($record)
     {
 
         $credit_notes = $record->affected_documents->where('note_type', 'credit');
+
+        $total_credit_notes = $credit_notes->sum(function($note){
+
+            if(in_array($note->document->state_type_id, ['01','03','05','07','13'])){
+                return $this->calculateTotalCurrencyType($note->document, $note->document->total);
+            }
+
+            return 0;
+        });
+
+        return $total_credit_notes;
+
+    }
+
+    public function getTotalCreditNotesGlobalRelations($record)
+    {
+
+        $document =$record->document()->first();
+
+        $credit_notes = $document->affected_documents()->where('note_type', 'credit')->get();
 
         $total_credit_notes = $credit_notes->sum(function($note){
 

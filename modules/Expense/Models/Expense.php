@@ -2,6 +2,7 @@
 
 namespace Modules\Expense\Models;
 
+use App\Models\Tenant\GlobalPaymentsRelations;
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
 use App\Models\Tenant\StateType;
@@ -124,5 +125,12 @@ class Expense extends ModelTenant
      */
     public static function getStateTypeAccepted(){
         return ['01','03','05','07','13'];
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'expenses_id');
     }
 }

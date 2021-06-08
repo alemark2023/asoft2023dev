@@ -7,10 +7,12 @@
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
+    use App\Models\Tenant\GlobalPaymentsRelations;
     use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Routing\Controller;
+    use Illuminate\Support\Facades\DB;
     use Modules\Finance\Exports\BalanceExport;
     use Modules\Finance\Models\GlobalPayment;
     use Modules\Finance\Traits\FinanceTrait;
@@ -84,18 +86,21 @@
                 'date_start' => $data_of_period['d_start'],
                 'date_end'   => $data_of_period['d_end'],
             ];
+            /*$bank_accounts = BankAccount:: with(['global_destination' => function ($query) use ($params,&$a) {
+                $query->whereFilterPaymentType($params);
+            }])->get();*/
 
             $bank_accounts = BankAccount::
-            with(['global_destination' => function ($query) use ($params) {
+            with(['global_destination_relations' => function ($query) use ($params) {
                 $query->whereFilterPaymentType($params);
-            }])
-                                        ->get();
+            }])->get();
 
             $all_cash = GlobalPayment::whereFilterPaymentType($params)
                                      ->with(['payment'])
                                      ->whereDestinationType(Cash::class)
                                      ->get();
-            $balance_by_bank_acounts = $this->getBalanceByBankAcounts($bank_accounts);
+            $balance_by_bank_acounts = $this->getBalanceByBankAcounts2($bank_accounts);
+            //  $balance_by_bank_acounts = $this->getBalanceByBankAcounts($bank_accounts);
             $balance_by_cash = $this->getBalanceByCash($all_cash);
 
             return $balance_by_bank_acounts->push($balance_by_cash);

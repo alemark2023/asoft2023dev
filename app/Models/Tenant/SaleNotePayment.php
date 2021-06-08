@@ -54,4 +54,11 @@ class SaleNotePayment extends ModelTenant
     {
         return $this->belongsTo(SaleNote::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'sale_note_payments_id');
+    }
 }

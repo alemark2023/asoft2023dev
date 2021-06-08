@@ -258,4 +258,12 @@ class PaymentMethodType extends ModelTenant
     {
         return $this->hasMany(DocumentFee::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payment_relations()
+    {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'payment_method_type_id');
+    }
 }

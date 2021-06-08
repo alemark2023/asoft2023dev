@@ -75,4 +75,12 @@ class Cash extends ModelTenant
 
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payment_relations()
+    {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'cash_id');
+    }
+
 }

@@ -16,7 +16,7 @@ class Note extends ModelTenant
         'note_credit_type_id',
         'note_debit_type_id',
         'note_description',
-        'affected_document_id',        
+        'affected_document_id',
         'data_affected_document',
 
     ];
@@ -42,6 +42,14 @@ class Note extends ModelTenant
         return $this->belongsTo(NoteDebitType::class, 'note_debit_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payment_relations()
+    {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'notes_id');
+    }
+
     public function getDataAffectedDocumentAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);
@@ -52,4 +60,10 @@ class Note extends ModelTenant
         $this->attributes['data_affected_document'] = (is_null($value))?null:json_encode($value);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'notes_id');
+    }
 }

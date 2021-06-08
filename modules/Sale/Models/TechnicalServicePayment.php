@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Models;
 
+use App\Models\Tenant\GlobalPaymentsRelations;
 use Modules\Finance\Models\GlobalPayment;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\ModelTenant;
@@ -43,4 +44,12 @@ class TechnicalServicePayment extends ModelTenant
     {
         return $this->belongsTo(TechnicalService::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'technical_service_payments_id');
+    }
+
 }

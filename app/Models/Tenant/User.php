@@ -207,5 +207,10 @@ class User extends Authenticatable
         $this->series_id = $series_id;
         return $this;
     }
-
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'notes_id');
+    }
 }

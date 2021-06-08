@@ -2,6 +2,7 @@
 
 namespace Modules\Sale\Models;
 
+use App\Models\Tenant\GlobalPaymentsRelations;
 use Modules\Finance\Models\GlobalPayment;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Quotation;
@@ -43,15 +44,22 @@ class QuotationPayment extends ModelTenant
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
     }
- 
+
     public function associated_record_payment()
     {
         return $this->belongsTo(Quotation::class, 'quotation_id');
     }
-    
+
     public function payment_file()
     {
         return $this->morphOne(PaymentFile::class, 'payment');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'quotation_payments_id');
     }
 
 }

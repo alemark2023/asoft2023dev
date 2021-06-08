@@ -40,7 +40,7 @@ class DocumentPayment extends ModelTenant
         return $this->belongsTo(Document::class, 'document_id');
     }
 
-    
+
     public function global_payment()
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
@@ -54,6 +54,13 @@ class DocumentPayment extends ModelTenant
     public function payment_file()
     {
         return $this->morphOne(PaymentFile::class, 'payment');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function global_payments_relations() {
+        return $this->hasOne(GlobalPaymentsRelations::class, 'document_payment_id');
     }
 
 }

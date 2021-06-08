@@ -27,8 +27,10 @@
                 $table->text('currency_type_id')->nullable()->comment('Moneda');
                 $table->decimal('exchange_rate', 12, 2)->nullable()->comment('tasa de cambio');
                 $table->decimal('total', 12, 2)->nullable()->comment('total');
+                $table->date('date')->nullable()
+                      ->comment('Fecha del elemento padre');
                 $table->date('date_of_payment')->nullable()
-                      ->comment('Fecha de pago del documento. afecta a los no payments_id');
+                      ->comment('Fecha de pago del documento. ');
 
                 /** Relacion con ingreso */
                 $table->unsignedInteger('bank_id')->nullable()->index()->comment('Id de banco');
@@ -73,6 +75,9 @@
 
                 $table->unsignedInteger('associated_record_payment_id')->nullable()->index()
                       ->comment('Id de pagos relacionados');
+
+                $table->unsignedInteger('notes_id')->nullable()->index()
+                      ->comment('Id de notas (credito / debito)');
 
                 $table->tinyInteger('changed')->default(0)->comment('Si ha cambiado');
                 $table->timestamps();

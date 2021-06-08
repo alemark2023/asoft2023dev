@@ -2,6 +2,7 @@
 
 namespace Modules\Expense\Models;
 
+use App\Models\Tenant\GlobalPaymentsRelations;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\CardBrand;
 use Modules\Finance\Models\GlobalPayment;
@@ -54,6 +55,13 @@ class ExpensePayment extends ModelTenant
     public function payment_file()
     {
         return $this->morphOne(PaymentFile::class, 'payment');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function global_payments_relations() {
+        return $this->belongsTo(GlobalPaymentsRelations::class, 'global_payments_id');
     }
 
 }

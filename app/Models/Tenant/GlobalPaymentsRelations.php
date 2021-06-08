@@ -55,6 +55,7 @@
             'cash_transactions_id',
             'changed',
             'associated_record_payment_id',
+            'notes_id',
         ];
         protected $casts = [
             'global_payments_id'            => 'int',
@@ -86,6 +87,7 @@
             'income_payments_id'            => 'int',
             'cash_transactions_id'          => 'int',
             'changed'                       => 'bool',
+            'notes_id'  => 'int',
             'associated_record_payment_id'  => 'int',
         ];
 
@@ -116,6 +118,10 @@
                 $model->currency_type_id = $document->currency_type_id;
                 $model->exchange_rate = $document->exchange_rate_sale;
                 $model->total = $document_payment->payment;
+                $notes = Note::find($model->document_id);
+                if(!empty($notes)){
+                    $model->notes_id = $notes->id;
+                }
             } elseif (!empty($model->expense_payments_id)) {
                 $document_payment = ExpensePayment::find($model->expense_payments_id);
                 $model->expense_id = $document_payment->expense_id;
@@ -206,6 +212,23 @@
                 // $model->exchange_rate = $document->exchange_rate_sale;
                 $model->total = $document_payment->payment;
             }
+        }
+
+        /**
+         * @return mixed
+         */
+        public function getNotesId() {
+            return $this->notes_id;
+        }
+
+        /**
+         * @param mixed $notes_id
+         *
+         * @return GlobalPaymentsRelations
+         */
+        public function setNotesId($notes_id) {
+            $this->notes_id = $notes_id;
+            return $this;
         }
 
         /**
@@ -729,6 +752,12 @@
             return $this->belongsTo(GlobalPayment::class, 'global_payments_id');
         }
 
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function notes() {
+            return $this->belongsTo(Note::class, 'notes_id');
+        }
 
         /**
          * @param \Illuminate\Database\Eloquent\Builder|null $query
@@ -1092,109 +1121,130 @@
          * @return \Illuminate\Database\Eloquent\Builder|null
          */
         public function scopeWhereFilterPaymentType($query, $params) {
-            /*
-            $query->whereIn('payment_type', [
-                DocumentPayment::class,
-                ExpensePayment::class,
-                SaleNotePayment::class,
-                PurchasePayment::class,
-                QuotationPayment::class,
-                TechnicalServicePayment::class,
-                CashTransaction::class,
-                IncomePayment::class,
-                ContractPayment::class,
-            ]);
-            */
+
             $query->whereBetween('date_of_payment', [$params->date_start, $params->date_end]);
+            $query->where(function($data){
+                // Documentos
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', DocumentPayment::class)
+                        ->whereIn('state_type_id', Document::getStateTypeAccepted())
+                        ->WhereTypeUser();
+                });
+                // Gastos
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', ExpensePayment::class)
+                        ->whereIn('state_type_id', Expense::getStateTypeAccepted())
+                        ->WhereTypeUser();
+                });
+                // Nota de venta
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', SaleNotePayment::class)
+                        ->whereIn('state_type_id', SaleNote::getStateTypeAccepted())
+                        ->WhereTypeUser()
+                        ->whereNotChanged();
 
-            // Documentos
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', DocumentPayment::class)
-                    ->whereIn('state_type_id', Document::getStateTypeAccepted())
-                    ->WhereTypeUser();
+                });
+                // Conmpras
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', PurchasePayment::class)
+                        ->whereIn('state_type_id', Purchase::getStateTypeAccepted())
+                        ->WhereTypeUser();
+
+                });
+                // Cotizaciones
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', QuotationPayment::class)
+                        ->whereIn('state_type_id', Quotation::getStateTypeAccepted())
+                        ->WhereTypeUser()
+                        ->whereNotChanged();
+
+                });
+                // Contratos
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', ContractPayment::class)
+                        ->whereIn('state_type_id', Contract::getStateTypeAccepted())
+                        ->WhereTypeUser()
+                        ->whereNotChanged();
+
+                });
+                // Ingresos
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', IncomePayment::class)
+                        ->whereIn('state_type_id', Income::getStateTypeAccepted())
+                        ->WhereTypeUser();
+
+                });
+                // Transacciones de caja
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', CashTransaction::class);
+
+                });
+                // Sevicio Tecnico
+                $data->orwhere(function ($q) {
+                    $q
+                        ->where('payment_type', TechnicalServicePayment::class)
+                        ->whereNotNull('associated_record_payment_id');
+
+                });
             });
-            // Gastos
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', ExpensePayment::class)
-                    ->whereIn('state_type_id', Expense::getStateTypeAccepted())
-                    ->WhereTypeUser();
-            });
-            // Nota de venta
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', SaleNotePayment::class)
-                    ->whereIn('state_type_id', SaleNote::getStateTypeAccepted())
-                    ->WhereTypeUser()
-                    ->whereNotChanged();
-
-            });
-            // Conmpras
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', PurchasePayment::class)
-                    ->whereIn('state_type_id', Purchase::getStateTypeAccepted())
-                    ->WhereTypeUser();
-
-            });
-            // Cotizaciones
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', QuotationPayment::class)
-                    ->whereIn('state_type_id', Quotation::getStateTypeAccepted())
-                    ->WhereTypeUser()
-                    ->whereNotChanged();
-
-            });
-            // Contratos
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', ContractPayment::class)
-                    ->whereIn('state_type_id', Contract::getStateTypeAccepted())
-                    ->WhereTypeUser()
-                    ->whereNotChanged();
-
-            });
-            // Ingresos
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', IncomePayment::class)
-                    ->whereIn('state_type_id', Income::getStateTypeAccepted())
-                    ->WhereTypeUser();
-
-            });
-            // Transacciones de caja
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', CashTransaction::class);
-
-            });
-            // Sevicio Tecnico
-            $query->orwhere(function ($q) {
-                $q
-                    ->where('payment_type', TechnicalServicePayment::class)
-                    ->whereNotNull('associated_record_payment_id');
-
-            });
-
-
-            $e = $query->toSql();
-            $f = explode('?',$e);
-            $b = $query->getBindings();
-            $text = '';
-            foreach($f as $i=>$o){
-                $text .=$o;
-                if(isset($b[$i])){
-                    $text .="'".$b[$i]."'";
-                }
-            }
-            dd([
-                   $text,
-                   $query->getBindings(),
-                   $query->toSql()
-               ]);
             return $query;
+        }
+
+        public function payments()
+        {
+            if (!empty($model->document_payment_id)) {
+                return $this->hasMany(DocumentPayment::class);
+            } elseif (!empty($model->expense_payments_id)) {
+                return $this->hasMany(ExpensePayment::class);
+            } elseif (!empty($model->sale_note_payments_id)) {
+                return $this->hasMany(SaleNotePayment::class);
+            } elseif (!empty($model->quotation_payments_id)) {
+                return $this->hasMany(QuotationPayment::class);
+            } elseif (!empty($model->purchase_payments_id)) {
+                return $this->hasMany(PurchasePayment::class);
+            } elseif (!empty($model->contract_payments_id)) {
+                return $this->hasMany(ContractPayment::class);
+            } elseif (!empty($model->technical_service_payments_id)) {
+                return $this->hasMany(TechnicalServicePayment::class);
+            } elseif (!empty($model->income_payments_id)) {
+                return $this->hasMany(IncomePayment::class);
+            } elseif (!empty($model->cash_transactions_id)) {
+                return $this->hasMany(CashTransaction::class);
+            }
+            return null;
+        }
+
+        public function associated_record_payment()
+        {
+
+            if (!empty($model->document_id)) {
+                return $this->belongsTo(Document::class);
+            } elseif (!empty($model->expenses_id)) {
+                return $this->belongsTo(Expense::class);
+            } elseif (!empty($model->sale_notes_id)) {
+                return $this->belongsTo(SaleNote::class);
+            } elseif (!empty($model->quotations_id)) {
+                return $this->belongsTo(Quotation::class);
+            } elseif (!empty($model->purchases_id)) {
+                return $this->belongsTo(Purchase::class);
+            } elseif (!empty($model->contracts_id)) {
+                return $this->belongsTo(Contract::class);
+            } elseif (!empty($model->technical_services_id)) {
+                return $this->belongsTo(TechnicalService::class);
+            } elseif (!empty($model->income_id)) {
+                return $this->belongsTo(Income::class, 'income_id');
+            } elseif (!empty($model->cash_transactions_id)) {
+                return $this->belongsTo(CashTransaction::class);
+            }
+             return $this;
         }
 
         public function scopeWhereNotChanged($query) {

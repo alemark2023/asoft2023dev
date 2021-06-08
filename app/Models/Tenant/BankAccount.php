@@ -64,4 +64,11 @@ class BankAccount extends ModelTenant
     {
         return $query->where('status', 1)->where('show_in_documents', 1);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_payments_relations() {
+        return $this->hasMany(GlobalPaymentsRelations::class, 'bank_id');
+    }
 }
