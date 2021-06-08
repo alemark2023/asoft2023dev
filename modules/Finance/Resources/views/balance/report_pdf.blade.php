@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <?php
+    $times = $data['times'];
+    ?>
+    @php
+            $times[__FILE__."::".__LINE__] =  microtime(true) - $times['base'];
+    @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8"/>
@@ -70,8 +76,9 @@
                 <p><strong>Ruc: </strong>{{$company->number}}</p>
             </td>
             <td>
-                <p><strong>Establecimiento: </strong>{{$establishment->address}}
-                    - {{$establishment->department->description}} - {{$establishment->district->description}}</p>
+                <p><strong>Establecimiento: </strong>{{ (is_object($establishment))?$establishment->address:'' }}
+                    - {{is_object($establishment)?$establishment->department->description:''}}
+                    - {{is_object($establishment)?$establishment->district->description:''}}</p>
             </td>
         </tr>
     </table>
@@ -97,11 +104,17 @@
                 </tr>
                 </thead>
                 <tbody>
+                @php
+                    $times[__FILE__."::".__LINE__] =  microtime(true) - $times['base'];
+                @endphp
                 @foreach($data['records'] as $key => $value)
                     <?php
+                        if(!isset($value['document_payment'])){
+                            dd($value);
+                        }
 
                     $iteracion = $loop->iteration;
-                    $description = $value['description'];
+                    $description = isset($value['description'])?$value['description']:'??';
                     $initial_balance = $value['initial_balance'] ?? 0;
                     $document_payment = $value['document_payment'];
                     $sale_note_payment = $value['sale_note_payment'];
@@ -152,6 +165,9 @@
                     </tr>
                 @endforeach
                 </tbody>
+                @php
+                    $times[__FILE__."::".__LINE__] =  microtime(true) - $times['base'];
+                @endphp
 
 
                 <tfoot>
@@ -180,3 +196,8 @@
 @endif
 </body>
 </html>
+@php
+    $times[__FILE__."::".__LINE__] =  microtime(true) - $times['base'];
+@endphp
+
+{{dd($times)}}

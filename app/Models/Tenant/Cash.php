@@ -83,4 +83,14 @@ class Cash extends ModelTenant
         return $this->hasMany(GlobalPaymentsRelations::class, 'cash_id');
     }
 
+
+    /**
+     * Obtiene las relaciones de la tabla global_destination_relations
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function global_destination_relations(){
+        return $this->hasMany(GlobalPaymentsRelations::class, 'cash_id');
+    }
+
 }

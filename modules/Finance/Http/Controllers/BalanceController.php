@@ -77,8 +77,16 @@
          *
          * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
          */
-        public function getRecords($request = []) {
+        public function getRecords($request = [],   &$times = []) {
             set_time_limit (3900);
+
+            $old = true;
+
+            if(isset($_GET['nuevo'])&&$_GET['nuevo']== false){
+                $old = false;
+            }
+            if(!isset($times['base'])){$times['base'] = microtime(true);}
+
 
             $data_of_period = $this->getDatesOfPeriod($request);
 
@@ -86,22 +94,39 @@
                 'date_start' => $data_of_period['d_start'],
                 'date_end'   => $data_of_period['d_end'],
             ];
-            /*$bank_accounts = BankAccount:: with(['global_destination' => function ($query) use ($params,&$a) {
-                $query->whereFilterPaymentType($params);
-            }])->get();*/
 
-            $bank_accounts = BankAccount::
-            with(['global_destination_relations' => function ($query) use ($params) {
-                $query->whereFilterPaymentType($params);
-            }])->get();
+            $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
 
-            $all_cash = GlobalPayment::whereFilterPaymentType($params)
-                                     ->with(['payment'])
-                                     ->whereDestinationType(Cash::class)
-                                     ->get();
-            $balance_by_bank_acounts = $this->getBalanceByBankAcounts2($bank_accounts);
-            //  $balance_by_bank_acounts = $this->getBalanceByBankAcounts($bank_accounts);
-            $balance_by_cash = $this->getBalanceByCash($all_cash);
+            $return = null;
+            if($old == true) {
+                $bank_accounts = BankAccount:: with(['global_destination' => function ($query) use ($params,&$a) {
+                    $query->whereFilterPaymentType($params);
+                }])->get();
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+                $all_cash = GlobalPayment::whereFilterPaymentType($params)
+                                         ->with(['payment'])
+                                         ->whereDestinationType(Cash::class)
+                                         ->get();
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+                $balance_by_bank_acounts = $this->getBalanceByBankAcounts($bank_accounts);
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+                $balance_by_cash = $this->getBalanceByCash($all_cash);
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+            }else{
+                $bank_accounts = BankAccount::
+                with(['global_destination_relations' => function ($query) use ($params) {
+                    $query->whereFilterPaymentType($params);
+                }])->get();
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+                $all_cash = GlobalPaymentsRelations::whereFilterPaymentType($params)->wherenotnull('cash_id')->WhereNoNotes();
+                $all_cash = $all_cash->get();
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+                $balance_by_bank_acounts = $this->getBalanceByBankAcounts2($bank_accounts);
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+                $balance_by_cash = $this->getBalanceByCashAcounts($all_cash);
+                $times[__FILE__.'::'.__LINE__] = microtime(true) - $times['base'];
+
+            }
 
             return $balance_by_bank_acounts->push($balance_by_cash);
 
@@ -115,12 +140,18 @@
          */
         public function pdf(Request $request) {
 
+
+            $times = [];
+            $times['base'] = microtime(true);
+
             $company = Company::first();
             $establishment = ($request->establishment_id)
                 ? Establishment::findOrFail($request->establishment_id)
                 : auth()->user()->establishment;
-            $records = $this->getRecords($request->all());
+            $records = $this->getRecords($request->all(), $times);
             $data = $this->setTotals([], $records);
+            $data['times'] = $times;
+            return view('finance::balance.report_pdf',compact('records', 'company', 'establishment', 'data'));
             $pdf = PDF::loadView('finance::balance.report_pdf',compact('records', 'company', 'establishment', 'data'));
             $filename = 'Balance_'.date('YmdHis');
 

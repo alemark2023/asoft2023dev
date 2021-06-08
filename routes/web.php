@@ -1,6 +1,9 @@
 <?php
 
-$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+    use App\Models\Tenant\GlobalPaymentsRelations;
+    use Modules\Finance\Models\GlobalPayment;
+
+    $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if ($hostname) {
     Route::domain($hostname->fqdn)->group(function () {
@@ -8,6 +11,15 @@ if ($hostname) {
             'register' => false,
             'verify'   => false
         ]);
+        Route::get('testing',function(){
+            $f = GlobalPaymentsRelations::whereNotNull('global_payments_id')->select('global_payments_id')->get()->pluck('global_payments_id');
+           $e = GlobalPayment::wherenotin('id',$f)->get();
+           foreach ($e as $item){
+               $id = $item->id;
+               GlobalPayment::SaveOnGlobalPaymentsRelations($item);
+               echo "$id<br>";
+           }
+        });
 
         Route::get('search', 'Tenant\SearchController@index')->name('search.index');
         Route::get('buscar', 'Tenant\SearchController@index')->name('search.index');

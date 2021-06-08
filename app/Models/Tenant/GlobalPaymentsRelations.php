@@ -14,11 +14,16 @@
     use Modules\Sale\Models\QuotationPayment;
     use Modules\Sale\Models\TechnicalService;
     use Modules\Sale\Models\TechnicalServicePayment;
+    use Illuminate\Database\Eloquent\Builder;
 
     /**
      * Class GlobalPaymentsRelations
-     *
+     * @method static Builder|GlobalPaymentsRelations newModelQuery()
+     * @method static Builder|GlobalPaymentsRelations newQuery()
+     * @method static Builder|GlobalPaymentsRelations query()
+     * @method static Builder|GlobalPaymentsRelations where()
      * @package App\Models\Tenant
+     * @mixin ModelTenant
      */
     class GlobalPaymentsRelations extends ModelTenant {
         //
@@ -104,113 +109,145 @@
             });
         }
 
+        /**
+         * @param $model
+         */
         public static function setGlobalPaymentsRelations(&$model) {
             /** @var GlobalPaymentsRelations $model */
 
             /** Documentos */
             if (!empty($model->document_payment_id)) {
                 $document_payment = DocumentPayment::find($model->document_payment_id);
-                $model->document_id = $document_payment->document_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = Document::find($model->document_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
-                $notes = Note::find($model->document_id);
-                if(!empty($notes)){
-                    $model->notes_id = $notes->id;
+                if (!empty($document_payment)) {
+                    $model->document_id = $document_payment->document_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = Document::find($model->document_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                    $notes = Note::find($model->document_id);
+                    if (!empty($notes)) {
+                        $model->notes_id = $notes->id;
+                    }
                 }
             } elseif (!empty($model->expense_payments_id)) {
                 $document_payment = ExpensePayment::find($model->expense_payments_id);
-                $model->expense_id = $document_payment->expense_id;
-                $model->payment_method_type_id = $document_payment->expense_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = Expense::find($model->expense_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
+                if (!empty($document_payment)) {
+                    $model->expense_id = $document_payment->expense_id;
+                    $model->payment_method_type_id = $document_payment->expense_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = Expense::find($model->expense_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                }
             } elseif (!empty($model->sale_note_payments_id)) {
                 $document_payment = SaleNotePayment::find($model->sale_note_payments_id);
-
-                $model->sale_notes_id = $document_payment->sale_note_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = SaleNote::find($model->sale_notes_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->changed = $document->changed;
-                $model->total = $document_payment->payment;
+                if (!empty($document_payment)) {
+                    $model->sale_notes_id = $document_payment->sale_note_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = SaleNote::find($model->sale_notes_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->changed = $document->changed;
+                    $model->total = $document_payment->payment;
+                }
             } elseif (!empty($model->quotation_payments_id)) {
                 $document_payment = QuotationPayment::find($model->quotation_payments_id);
-
-                $model->quotations_id = $document_payment->quotation_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = Quotation::find($model->quotations_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
-                $model->changed = $document->changed;
+                if (!empty($document_payment)) {
+                    $model->quotations_id = $document_payment->quotation_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = Quotation::find($model->quotations_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                    $model->changed = $document->changed;
+                }
             } elseif (!empty($model->purchase_payments_id)) {
                 $document_payment = PurchasePayment::find($model->purchase_payments_id);
-
-                $model->purchases_id = $document_payment->purchase_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = Purchase::find($model->purchases_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
+                if (!empty($document_payment)) {
+                    $model->purchases_id = $document_payment->purchase_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = Purchase::find($model->purchases_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                }
             } elseif (!empty($model->contract_payments_id)) {
                 $document_payment = ContractPayment::find($model->contract_payments_id);
-                $model->contracts_id = $document_payment->contract_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = Contract::find($model->contracts_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
-                $model->changed = $document->changed;
+                if (!empty($document_payment)) {
+                    $model->contracts_id = $document_payment->contract_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = Contract::find($model->contracts_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                    $model->changed = $document->changed;
+                }
             } elseif (!empty($model->technical_service_payments_id)) {
                 $document_payment = TechnicalServicePayment::find($model->technical_service_payments_id);
-
-                $model->technical_services_id = $document_payment->technical_service_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = TechnicalService::find($model->technical_services_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
+                if (!empty($document_payment)) {
+                    $model->technical_services_id = $document_payment->technical_service_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = TechnicalService::find($model->technical_services_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                }
             } elseif (!empty($model->income_payments_id)) {
                 $document_payment = IncomePayment::find($model->income_payments_id);
-
-                $model->income_id = $document_payment->income_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date_of_payment;
-                $document = Income::find($model->income_id);
-                $model->state_type_id = $document->state_type_id;
-                $model->currency_type_id = $document->currency_type_id;
-                $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
+                if (!empty($document_payment)) {
+                    $model->income_id = $document_payment->income_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date_of_payment;
+                    $document = Income::find($model->income_id);
+                    if (!empty($document)) {
+                        $model->state_type_id = $document->state_type_id;
+                        $model->currency_type_id = $document->currency_type_id;
+                        $model->exchange_rate = $document->exchange_rate_sale;
+                    }
+                    $model->total = $document_payment->payment;
+                }
             } elseif (!empty($model->cash_transactions_id)) {
                 $document_payment = CashTransaction::find($model->cash_transactions_id);
+                if (!empty($document_payment)) {
 
-                $model->cash_id = $document_payment->cash_id;
-                $model->payment_method_type_id = $document_payment->payment_method_type_id;
-                $model->date_of_payment = $document_payment->date;
-                // $document = Cash::find($model->cash_id);
-                // $model->state_type_id = $document->state_type_id;
-                // $model->currency_type_id = $document->currency_type_id;
-                // $model->exchange_rate = $document->exchange_rate_sale;
-                $model->total = $document_payment->payment;
+                    $model->cash_id = $document_payment->cash_id;
+                    $model->payment_method_type_id = $document_payment->payment_method_type_id;
+                    $model->date_of_payment = $document_payment->date;
+                    // $document = Cash::find($model->cash_id);
+                    // $model->state_type_id = $document->state_type_id;
+                    // $model->currency_type_id = $document->currency_type_id;
+                    // $model->exchange_rate = $document->exchange_rate_sale;
+                    $model->total = $document_payment->payment;
+                }
             }
         }
 
@@ -1114,6 +1151,70 @@
             return $this->belongsTo(CashTransaction::class, 'cash_transactions_id');
         }
 
+        public function scopeWhereDocument($query){
+            //Documents
+            return $query->where('payment_type', DocumentPayment::class)
+                  ->whereIn('state_type_id', Document::getStateTypeAccepted())
+                  ->WhereTypeUser();
+        }
+        public function scopeWhereExpanse($query){
+            // gastos
+            return $query->where('payment_type', ExpensePayment::class)
+                ->whereIn('state_type_id', Expense::getStateTypeAccepted())
+                ->WhereTypeUser();
+        }
+        public function scopeWhereSaleNote($query){
+            // Nota de venta
+            return $query->where('payment_type', SaleNotePayment::class)
+                         ->whereIn('state_type_id', SaleNote::getStateTypeAccepted())
+                         ->WhereTypeUser()
+                         ->whereNotChanged();
+        }
+        public function scopeWhereContract($query){
+            // Nota de venta
+            return $query->where('payment_type', ContractPayment::class)
+                         ->whereIn('state_type_id', Contract::getStateTypeAccepted())
+                         ->WhereTypeUser()
+                         ->whereNotChanged();
+        }
+        public function scopeWhereQuotation($query){
+            // Nota de venta
+            return $query
+                ->where('payment_type', QuotationPayment::class)
+                ->whereIn('state_type_id', Quotation::getStateTypeAccepted())
+                ->WhereTypeUser()
+                ->whereNotChanged();
+        }
+        public function scopeWherePurchase($query){
+            // Nota de venta
+            return $query
+                ->where('payment_type', PurchasePayment::class)
+                ->whereIn('state_type_id', Purchase::getStateTypeAccepted())
+                ->WhereTypeUser();
+        }
+        public function scopeWhereIncome($query){
+            // Nota de venta
+            return $query
+                ->where('payment_type', IncomePayment::class)
+                ->whereIn('state_type_id', Income::getStateTypeAccepted())
+                ->WhereTypeUser();
+        }
+        public function scopeWhereTechnicalService($query){
+            // Nota de venta
+            return $query
+                ->where('payment_type', TechnicalServicePayment::class)
+                ->whereNotNull('associated_record_payment_id');
+        }
+        public function scopeWhereCashTransaction($query){
+            // Nota de venta
+            return $query
+                ->where('payment_type', CashTransaction::class);
+        }
+        public function scopeWhereNoNotes($query){
+            // Nota de venta
+            return $query
+                ->whereNull('notes_id');
+        }
         /**
          * @param \Illuminate\Database\Eloquent\Builder|null $query
          * @param \Illuminate\Support\Collection             $params
@@ -1124,74 +1225,46 @@
 
             $query->whereBetween('date_of_payment', [$params->date_start, $params->date_end]);
             $query->where(function($data){
+                $data->wherenotnull('id');
                 // Documentos
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', DocumentPayment::class)
-                        ->whereIn('state_type_id', Document::getStateTypeAccepted())
-                        ->WhereTypeUser();
+                    $q->WhereDocument();
                 });
                 // Gastos
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', ExpensePayment::class)
-                        ->whereIn('state_type_id', Expense::getStateTypeAccepted())
-                        ->WhereTypeUser();
+                    $q->WhereExpanse();
                 });
                 // Nota de venta
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', SaleNotePayment::class)
-                        ->whereIn('state_type_id', SaleNote::getStateTypeAccepted())
-                        ->WhereTypeUser()
-                        ->whereNotChanged();
-
+                    $q->WhereSaleNote();
                 });
                 // Conmpras
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', PurchasePayment::class)
-                        ->whereIn('state_type_id', Purchase::getStateTypeAccepted())
-                        ->WhereTypeUser();
+                    $q->WherePurchase();
 
                 });
                 // Cotizaciones
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', QuotationPayment::class)
-                        ->whereIn('state_type_id', Quotation::getStateTypeAccepted())
-                        ->WhereTypeUser()
-                        ->whereNotChanged();
+                    $q->WhereQuotation();
 
                 });
                 // Contratos
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', ContractPayment::class)
-                        ->whereIn('state_type_id', Contract::getStateTypeAccepted())
-                        ->WhereTypeUser()
-                        ->whereNotChanged();
-
+                    $q->WhereContract();
                 });
                 // Ingresos
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', IncomePayment::class)
-                        ->whereIn('state_type_id', Income::getStateTypeAccepted())
-                        ->WhereTypeUser();
+                    $q->WhereIncome();
 
                 });
                 // Transacciones de caja
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', CashTransaction::class);
+                    $q->WhereCashTransaction();
 
                 });
                 // Sevicio Tecnico
                 $data->orwhere(function ($q) {
-                    $q
-                        ->where('payment_type', TechnicalServicePayment::class)
-                        ->whereNotNull('associated_record_payment_id');
+                    $q->WhereTechnicalService();
 
                 });
             });
@@ -1222,6 +1295,28 @@
             return null;
         }
 
+        public function hasAssociatedRecordPayment(){
+            if (!empty($model->document_id)) {
+                return true;
+            } elseif (!empty($model->expenses_id)) {
+                return true;
+            } elseif (!empty($model->sale_notes_id)) {
+                return true;
+            } elseif (!empty($model->quotations_id)) {
+                return true;
+            } elseif (!empty($model->purchases_id)) {
+                return true;
+            } elseif (!empty($model->contracts_id)) {
+                return true;
+            } elseif (!empty($model->technical_services_id)) {
+                return true;
+            } elseif (!empty($model->income_id)) {
+                return true;
+            } elseif (!empty($model->cash_transactions_id)) {
+                return true;
+            }
+            return false;
+        }
         public function associated_record_payment()
         {
 
