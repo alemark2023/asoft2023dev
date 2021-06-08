@@ -1875,9 +1875,14 @@ export default {
                 this.items = this.all_items;
             } else {
                 this.items = this.all_items.map(i => {
-                    if (i.brand) {
-                        i.description = `${i.description} - ${i.brand}`;
-                    }
+                    console.log(i.description);
+                    // if (i.brand) {
+                    //     var desc = `${i.description} - ${i.brand}`;
+                    //     if(i.description != desc){
+                    //         i.description = `${i.description} - ${i.brand}`;
+                    //     }
+                    // }
+                    console.log(i.description);
                     return i;
                 });
             }
