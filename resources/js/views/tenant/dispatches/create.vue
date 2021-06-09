@@ -254,15 +254,21 @@
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['dispatcher.number']}">
                                 <label class="control-label">Número<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.dispatcher.number" :maxlength="11" placeholder="Número..."></el-input>
-                                <small class="form-control-feedback" v-if="errors['dispatcher.number']" v-text="errors['dispatcher.number'][0]"></small>
+                                <el-input v-model="form.dispatcher.number"
+                                          :maxlength="11" placeholder="Número..."
+                                          ></el-input>
+                                <small v-if="errors['dispatcher.number']" class="form-control-feedback"
+                                       v-text="errors['dispatcher.number'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['dispatcher.name']}">
                                 <label class="control-label">Nombre y/o razón social<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.dispatcher.name" :maxlength="100" placeholder="Nombre y/o razón social..."></el-input>
-                                <small class="form-control-feedback" v-if="errors['dispatcher.name']" v-text="errors['dispatcher.name'][0]"></small>
+                                <el-input v-model="form.dispatcher.name"
+                                          :maxlength="100" placeholder="Nombre y/o razón social..."
+                                          ></el-input>
+                                <small v-if="errors['dispatcher.name']" class="form-control-feedback"
+                                       v-text="errors['dispatcher.name'][0]"></small>
                             </div>
                         </div>
                     </div>
@@ -302,8 +308,10 @@
                         <div class="col-lg-4">
                             <div class="form-group" :class="{'has-danger': errors['driver.number']}">
                                 <label class="control-label">Número<span class="text-danger"> *</span></label>
-                                <el-input v-model="form.driver.number" :maxlength="11" placeholder="Número..."></el-input>
-                                <small class="form-control-feedback" v-if="errors['driver.number']" v-text="errors['driver.number'][0]"></small>
+                                <el-input v-model="form.driver.number" :maxlength="11"
+                                          placeholder="Número..." ></el-input>
+                                <small v-if="errors['driver.number']" class="form-control-feedback"
+                                       v-text="errors['driver.number'][0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -314,9 +322,10 @@
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div class="form-group" >
+                            <div class="form-group">
                                 <label class="control-label">Licencia del conductor</label>
-                                <el-input v-model="form.driver.license" ></el-input>
+                                <el-input v-model="form.driver.license"
+                                ></el-input>
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -477,17 +486,14 @@
                     this.form.dispatcher.number = v.number;
                     this.form.dispatcher.name = v.name;
                     this.form.dispatcher.identity_document_type_id = v.identity_document_type_id;
-                    this.dispacher = null;
                 }
             },
             changeDriver(){
                 let v =  _.find(this.drivers, {'id': this.driver})
                 if(v !== undefined){
                     this.form.driver.number = v.number;
-                    this.form.driver.name = v.name;
                     this.form.driver.license = v.license;
                     this.form.driver.identity_document_type_id = v.identity_document_type_id;
-                    this.driver = null;
                 }
             },
             onChangeAddress() {
