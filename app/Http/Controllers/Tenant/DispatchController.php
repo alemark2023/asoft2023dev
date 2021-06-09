@@ -129,7 +129,9 @@ class DispatchController extends Controller
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
         }
-        if(!empty($document->reference_document_id)) {
+        $configuration = Configuration::first();
+
+        if(!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
             $reference = Document::find($document->reference_document_id);
             if(!empty($reference)) {
                 $reference->updatePdfs();

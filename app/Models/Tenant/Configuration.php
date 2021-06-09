@@ -5,6 +5,13 @@ namespace App\Models\Tenant;
 
 use Illuminate\Support\Facades\Config;
 
+/**
+ * Class Configuration
+ *
+ * @package App\Models\Tenant
+ * @mixin  ModelTenant
+
+ */
 class Configuration extends ModelTenant
 {
     protected $fillable = [
@@ -54,6 +61,7 @@ class Configuration extends ModelTenant
         'seller_can_create_product',
         'seller_can_generate_sale_opportunities',
         'seller_can_view_balance',
+        'update_document_on_dispaches',
     ];
 
     protected $casts = [
@@ -62,7 +70,26 @@ class Configuration extends ModelTenant
         'seller_can_create_product' => 'boolean',
         'seller_can_generate_sale_opportunities' => 'boolean',
         'seller_can_view_balance' => 'boolean',
+        'update_document_on_dispaches' => 'boolean',
     ];
+
+    /**
+     * @return boolean
+     */
+    public function getUpdateDocumentOnDispaches() {
+        return $this->update_document_on_dispaches;
+    }
+
+    /**
+     * @param boolean $update_document_on_dispaches
+     *
+     * @return Configuration
+     */
+    public function setUpdateDocumentOnDispaches($update_document_on_dispaches) {
+        $this->update_document_on_dispaches = (boolean) $update_document_on_dispaches;
+        return $this;
+    }
+
 
     /**
      * @return bool
