@@ -4,6 +4,12 @@ namespace App\Http\Resources\Tenant;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Class ConfigurationResource
+ *
+ * @package App\Http\Resources\Tenant
+ * @mixin JsonResource
+ */
 class ConfigurationResource extends JsonResource
 {
     /**
@@ -47,6 +53,7 @@ class ConfigurationResource extends JsonResource
             'seller_can_create_product' => (bool) $this->seller_can_create_product,
             'seller_can_view_balance' => (bool) $this->seller_can_view_balance,
             'seller_can_generate_sale_opportunities' => (bool) $this->seller_can_generate_sale_opportunities,
+            'update_document_on_dispaches' => (bool) $this->update_document_on_dispaches,
             ];
     }
 }

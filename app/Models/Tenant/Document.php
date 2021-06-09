@@ -483,7 +483,6 @@ class Document extends ModelTenant
             try{
                 $DownloadController
                     ->toPrint('Document', $this->external_id, $format);
-                $work = $format;
             }catch (\ErrorException $e){
                 // do nothing
             }

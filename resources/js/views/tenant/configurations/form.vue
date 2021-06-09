@@ -222,33 +222,64 @@
                                     <div class="col-md-6 mt-4">
                                         <div class="form-group">
                                             <label class="control-label">Imágen para encabezado - pdf
-                                                <el-tooltip class="item" effect="dark" content="Disponible para facturas y boletas en formato a4, usando la plantilla header_image_full_width" placement="top-start">
+                                                <el-tooltip class="item" content="Disponible para facturas y boletas en formato a4, usando la plantilla header_image_full_width"
+                                                            effect="dark"
+                                                            placement="top-start">
                                                     <i class="fa fa-info-circle"></i>
                                                 </el-tooltip>
                                             </label>
                                             <el-input v-model="form.header_image" :readonly="true">
                                                 <el-upload slot="append"
                                                            :headers="headers"
-                                                           action="/configurations/uploads"
+                                                           :on-success="successUpload"
                                                            :show-file-list="false"
-                                                           :on-success="successUpload">
-                                                    <el-button type="primary" icon="el-icon-upload"></el-button>
+                                                           action="/configurations/uploads">
+                                                    <el-button icon="el-icon-upload" type="primary"></el-button>
                                                 </el-upload>
                                             </el-input>
                                         </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
                                         <div class="form-group">
                                             <label class="control-label">Mostrar ticket 58mm
                                                 <el-tooltip class="item" effect="dark" placement="top-start">
-                                                    <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas de Crédito-Débito) </div>
+                                                    <div slot="content">Disponible para Ventas (Facturas/Boletas/Notas
+                                                                        de Crédito-Débito)
+                                                    </div>
                                                     <i class="fa fa-info-circle"></i>
                                                 </el-tooltip>
                                             </label>
-                                            <div class="form-group" :class="{'has-danger': errors.ticket_58}">
-                                                <el-switch v-model="form.ticket_58" active-text="Si" inactive-text="No" @change="submit"></el-switch>
-                                                <small class="form-control-feedback" v-if="errors.ticket_58" v-text="errors.ticket_58[0]"></small>
+                                            <div :class="{'has-danger': errors.ticket_58}" class="form-group">
+                                                <el-switch v-model="form.ticket_58" active-text="Si" inactive-text="No"
+                                                           @change="submit"></el-switch>
+                                                <small v-if="errors.ticket_58" class="form-control-feedback"
+                                                       v-text="errors.ticket_58[0]"></small>
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- update_document_on_dispaches -->
+                                    <div class="col-md-6 mt-4">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Actualizar documento al generar guía.
+                                                <el-tooltip class="item" effect="dark" placement="top-start">
+                                                    <div slot="content">Al generar una guia basado en el documento, se
+                                                                        actualizará el comprobante de pago
+                                                    </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
+                                            <div :class="{'has-danger': errors.update_document_on_dispaches}"
+                                                 class="form-group">
+                                                <el-switch v-model="form.update_document_on_dispaches" active-text="Si"
+                                                           inactive-text="No" @change="submit"></el-switch>
+                                                <small v-if="errors.update_document_on_dispaches"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.update_document_on_dispaches[0]"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="five">
@@ -390,7 +421,8 @@
                     seller_can_view_balance: true,
                     finances: {},
                     visual: {},
-                    ticket_58: false
+                    ticket_58: false,
+                    update_document_on_dispaches: false,
                 };
             },
             submit() {
