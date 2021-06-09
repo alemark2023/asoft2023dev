@@ -15,6 +15,8 @@ use App\Models\Tenant\SaleNote;
 use App\CoreFacturalo\Facturalo;
 use App\Models\Tenant\Quotation;
 use Illuminate\Support\Facades\DB;
+use Modules\Order\Models\Dispatcher;
+use Modules\Order\Models\Driver;
 use Modules\Order\Models\OrderNote;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Establishment;
@@ -129,6 +131,14 @@ class DispatchController extends Controller
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
         }
+        $configuration = Configuration::first();
+
+        if(!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
+            $reference = Document::find($document->reference_document_id);
+            if(!empty($reference)) {
+                $reference->updatePdfs();
+            }
+        }
 
         return [
             'success' => true,
@@ -141,8 +151,10 @@ class DispatchController extends Controller
 
     /**
      * Tables
+     *
      * @param  Request $request
-     * @return \Illuminate\Http\Response
+     *
+     * @return array
      */
     public function tables(Request $request)
     {
@@ -290,6 +302,8 @@ class DispatchController extends Controller
         $establishments = Establishment::all();
         $series = Series::all()->toArray();
         $company = Company::select('number')->first();
+        $drivers = Driver::all();
+        $dispachers = Dispatcher::all();
 
         // ya se tiene un locations con lo siguiente combinado
         // $departments = Department::whereActive()->get();
@@ -311,6 +325,8 @@ class DispatchController extends Controller
             'items',
             'locations',
             'company',
+            'drivers',
+            'dispachers',
             'itemsFromSummary'
         );
     }

@@ -4,6 +4,12 @@ namespace App\Models\Tenant;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
 
+/**
+ * Class SaleNote
+ *
+ * @package App\Models\Tenant
+ * @mixin \App\Models\Tenant\ModelTenant
+ */
 class SaleNote extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items', 'payments'];
@@ -300,6 +306,30 @@ class SaleNote extends ModelTenant
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
+    }
+
+    /**
+     * Busca el ultimo numero basado en series y el prefijo.
+     *
+     * @param \App\Models\Tenant\SaleNote $model
+     *
+     * @return int
+     */
+    public static function getLastNumberByModel(SaleNote $model) {
+        $sn = SaleNote::where(
+            [
+                'series' => $model->series,
+                'prefix' => $model->prefix,
+                // 'number',
+            ])
+                      ->select('number')
+                      ->orderBy('number', 'desc')
+                      ->first();
+        $return = 0;
+        if (!empty($sn)) {
+            $return += $sn->number;
+        }
+        return $return + 1;
     }
 
 }

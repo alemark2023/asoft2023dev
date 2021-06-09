@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use App\Http\Controllers\Tenant\DownloadController;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\BusinessTurn\Models\DocumentHotel;
@@ -462,5 +463,31 @@ class Document extends ModelTenant
             return $t->number;
         }
         return 0;
+    }
+
+    /**
+     * Actualiza los pdf que se encuentran en las carpetas
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function updatePdfs(){
+
+        $formats = [
+            'ticket',
+            'a4',
+            'a5',
+        ];
+        $DownloadController = new DownloadController();
+        foreach($formats as $format){
+            try{
+                $DownloadController
+                    ->toPrint('Document', $this->external_id, $format);
+            }catch (\ErrorException $e){
+                // do nothing
+            }
+        }
+        return $this;
+
     }
 }

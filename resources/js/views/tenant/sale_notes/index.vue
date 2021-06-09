@@ -170,6 +170,12 @@
 
                             <button  data-toggle="tooltip" data-placement="top" title="Imprimir" v-if="row.state_type_id != '11'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)"><i class="fas fa-print"></i></button>
+                            <button @click="duplicate(row.id)"
+                                    title="Duplica la nota de venta"
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-info">
+                                <i class="fas fa-copy"></i>
+                            </button>
                         </td>
 
 
@@ -293,6 +299,22 @@
             }
         },
         methods: {
+            duplicate(id){
+                this.$http.post(`${this.resource}/duplicate`, {id})
+                    .then(response => {
+                        if (response.data.success) {
+                            this.$message.success('Se guardaron los cambios correctamente.')
+                            this.$eventHub.$emit('reloadData')
+                        } else {
+                            this.$message.error('No se guardaron los cambios')
+                        }
+                    })
+                    .catch(error => {
+
+                    })
+                console.error('Duplicado '+id)
+                this.$eventHub.$emit('reloadData')
+            },
             onOpenModalGenerateCPE() {
                 this.showModalGenerateCPE = true;
             },

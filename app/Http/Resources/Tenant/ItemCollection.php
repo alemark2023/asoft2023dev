@@ -19,7 +19,12 @@ class ItemCollection extends ResourceCollection
         $configuration =  Configuration::first();
 
         return $this->collection->transform(function($row, $key) use($configuration){
+            /** @var \App\Models\Tenant\Item  $row */
 
+            $brand = null;
+            if(!empty($row->brand_id)) {
+                $brand = $row->brand()->first()->name;
+            }
             $has_igv_description = null;
             $purchase_has_igv_description = null;
 
@@ -45,6 +50,7 @@ class ItemCollection extends ResourceCollection
                 'second_name' => $row->second_name,
                 'model' => $row->model,
                 'barcode' => $row->barcode,
+                'brand' => $brand,
                 'warehouse_id' => $row->warehouse_id,
                 'internal_id' => $row->internal_id,
                 'item_code' => $row->item_code,

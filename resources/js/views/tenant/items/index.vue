@@ -121,6 +121,8 @@
                         <th>Unidad</th>
                         <th>Nombre</th>
                         <th v-if="columns.description.visible">Descripción</th>
+                        <th v-if="columns.model.visible">Modelo</th>
+                        <th v-if="columns.brand.visible">Marca</th>
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
@@ -141,6 +143,8 @@
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
+                        <td v-if="columns.model.visible">{{ row.model }}</td>
+                        <td v-if="columns.brand.visible">{{ row.brand }}</td>
                         <td v-if="columns.description.visible">{{ row.name }}</td>
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td>
@@ -330,6 +334,14 @@ export default {
                 },
                 purchase_has_igv_description: {
                     title: 'Tiene Igv (Compra)',
+                    visible: false
+                },
+                model: {
+                    title: 'Modelo',
+                    visible: false
+                },
+                brand: {
+                    title: 'Marca',
                     visible: false
                 },
 
