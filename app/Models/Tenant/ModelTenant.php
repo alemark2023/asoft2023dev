@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Tenant
  * @mixin  Model
+ * @mixin \Illuminate\Database\Query\Builder
  */
 class ModelTenant extends Model
 {

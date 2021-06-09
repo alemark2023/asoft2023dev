@@ -1210,4 +1210,40 @@ class SaleNoteController extends Controller
             'data' => $items,
         ], 200);
     }
+
+    /**
+     * Proceso de duplicar una nota de venta por post
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return array
+     */
+    public function duplicate(Request $request)
+    {
+        // return $request->id;
+        $obj = SaleNote::find($request->id);
+        $this->sale_note = $obj->replicate();
+        $this->sale_note->external_id = Str::uuid()->toString();
+        $this->sale_note->state_type_id = '01' ;
+        $this->sale_note->number = SaleNote::getLastNumberByModel($obj) ;
+        $this->sale_note->save();
+
+        foreach($obj->items as $row)
+        {
+            $new = $row->replicate();
+            $new->sale_note_id = $this->sale_note->id;
+            $new->save();
+        }
+
+        $this->setFilename();
+
+        return [
+            'success' => true,
+            'data' => [
+                'id' => $this->sale_note->id,
+            ],
+        ];
+
+    }
+
 }
