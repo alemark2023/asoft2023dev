@@ -129,6 +129,12 @@ class DispatchController extends Controller
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
         }
+        if(!empty($document->reference_document_id)) {
+            $reference = Document::find($document->reference_document_id);
+            if(!empty($reference)) {
+                $reference->updatePdfs();
+            }
+        }
 
         return [
             'success' => true,
