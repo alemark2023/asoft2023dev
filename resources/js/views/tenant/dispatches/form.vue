@@ -279,6 +279,27 @@
                     <h4>Datos transportista</h4>
                     <div class="row">
                         <div class="col-lg-4">
+                            <div :class="{'has-danger': errors.dispacher}" class="form-group">
+                                <label class="control-label">Selección rápida de transportista</label>
+                                <el-select v-model="dispacher" @change="changeTransport" clearable>
+                                    <el-option
+                                        v-for="option in dispachers"
+                                        :key="option.id"
+                                        :label="option.number +' - '+ option.name"
+                                       :value="option.id"
+                                    ></el-option><!--
+                                     'identity_document_type_id',
+                                    'number',
+                                    'name',
+                                    'address',
+                                    -->
+                                </el-select>
+                                <small v-if="errors.dispacher" class="form-control-feedback"
+                                       v-text="errors.dispacher[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-12">&nbsp;</div>
+                        <div class="col-lg-4">
                             <div :class="{'has-danger': errors['dispatcher.identity_document_type_id']}"
                                  class="form-group">
                                 <label class="control-label">Tipo Doc. Identidad<span
@@ -313,6 +334,29 @@
                     </div>
                     <h4>Datos conductor</h4>
                     <div class="row">
+
+                        <div class="col-lg-4">
+                            <div :class="{'has-danger': errors.driver}" class="form-group">
+                                <label class="control-label">Selección rápida de conductor</label>
+                                <el-select v-model="driver"  @change="changeDriver" clearable>
+                                    <el-option
+                                        v-for="option in drivers"
+                                        :key="option.id"
+                                        :label="option.number +' - '+ option.name"
+                                        :value="option.id"
+                                    ></el-option><!--
+                                    'identity_document_type_id',
+                                    'number',
+                                    'name',
+                                    'license',
+                                    'telephone',
+                                    -->
+                                </el-select>
+                                <small v-if="errors.dispacher" class="form-control-feedback"
+                                       v-text="errors.dispacher[0]"></small>
+                            </div>
+                        </div>
+                        <div class="col-12">&nbsp;</div>
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors['driver.identity_document_type_id']}" class="form-group">
                                 <label class="control-label">Tipo Doc. Identidad<span
@@ -437,6 +481,10 @@ export default {
             districtsAll: [],
             provincesAll: [],
             departments: [],
+            drivers: [],
+            driver: null,
+            dispachers: [],
+            dispacher: null,
             countries: [],
 //                seriesAll: [],
             unitTypes: [],
@@ -450,7 +498,19 @@ export default {
                 errors: {}
             },
             recordId: null,
-            form: {}
+            form: {
+                driver: {
+                    number: null,
+                    name: null,
+                    license: null,
+                    identity_document_type_id: null,
+                },
+                dispatcher: {
+                    number: null,
+                    name: null,
+                    identity_document_type_id: null,
+                }
+            }
         }
     },
     async created() {
@@ -469,6 +529,9 @@ export default {
             this.countries = response.data.countries;
             this.locations = response.data.locations;
             this.all_series = response.data.series;
+            this.drivers = response.data.drivers;
+            this.dispachers = response.data.dispachers;
+
         });
         this.form.establishment_id = this.document.establishment_id
         this.form.date_of_issue = this.document.date_of_issue
@@ -537,6 +600,25 @@ export default {
         this.changeEstablishment()
     },
     methods: {
+        changeTransport(){
+            let v =  _.find(this.dispachers, {'id': this.dispacher})
+            if(v !== undefined){
+                this.form.dispatcher.number = v.number;
+                this.form.dispatcher.name = v.name;
+                this.form.dispatcher.identity_document_type_id = v.identity_document_type_id;
+                this.dispacher = null;
+            }
+        },
+        changeDriver(){
+            let v =  _.find(this.drivers, {'id': this.driver})
+            if(v !== undefined){
+                this.form.driver.number = v.number;
+                this.form.driver.name = v.name;
+                this.form.driver.license = v.license;
+                this.form.driver.identity_document_type_id = v.identity_document_type_id;
+                this.driver = null;
+            }
+        },
         initForm() {
             this.errors = {}
             this.form = {
