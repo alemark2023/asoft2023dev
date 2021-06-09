@@ -15,6 +15,12 @@ use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\WebPlatform;
 
 
+/**
+ * Class Item
+ *
+ * @package App\Models\Tenant
+ * @mixin  ModelTenant
+ */
 class Item extends ModelTenant
 {
     protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags'];
