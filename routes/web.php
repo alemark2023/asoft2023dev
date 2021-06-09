@@ -662,6 +662,31 @@ if ($hostname) {
 
             Route::get('backup/last-backup', 'System\BackupController@mostRecent');
             Route::get('backup/download/{filename}', 'System\BackupController@download');
+
+            /*
+            Route::get('ajuste_claves_mysql', function(){
+
+                $sites = \Hyn\Tenancy\Models\Website::all();
+                $passwords = [];
+                foreach($sites as $site){
+                    $contra =md5(sprintf(
+                                     '%s.%d',
+                                     \Config::get('app.key'),
+                                     $site->id
+                                 ));
+                    $temp = [
+                        'username'=>$site->uuid,
+                        'password'=>$contra,
+                        'query'=>"SET PASSWORD FOR '{$site->uuid}'@'%' = PASSWORD('$contra');"
+                    ];
+                    $passwords[] = $temp;
+                    \DB::update( $temp['query'] );
+                }
+            });
+            */
+
+
+
         });
     });
 }
