@@ -8,6 +8,12 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Modules\Finance\Models\GlobalPayment;
 
+/**
+ * Class BankAccount
+ *
+ * @package App\Models\Tenant
+ * @mixin ModelTenant
+ */
 class BankAccount extends ModelTenant
 {
     use UsesTenantConnection;
@@ -24,6 +30,19 @@ class BankAccount extends ModelTenant
         'initial_balance',
         'show_in_documents'
     ];
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSelectIdDescription($query){
+        $query->select(
+          'id',
+          'description'
+        )->orderBy('description');
+        return $query;
+    }
 
     public function bank()
     {

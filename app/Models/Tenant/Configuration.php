@@ -62,6 +62,7 @@ class Configuration extends ModelTenant
         'seller_can_generate_sale_opportunities',
         'seller_can_view_balance',
         'update_document_on_dispaches',
+        'is_pharmacy',
     ];
 
     protected $casts = [
@@ -71,7 +72,27 @@ class Configuration extends ModelTenant
         'seller_can_generate_sale_opportunities' => 'boolean',
         'seller_can_view_balance' => 'boolean',
         'update_document_on_dispaches' => 'boolean',
+        'is_pharmacy' => 'boolean',
     ];
+
+    /**
+     * @return bool
+     */
+    public function isPharmacy()
+    : bool {
+        return $this->is_pharmacy;
+    }
+
+    /**
+     * @param bool $is_pharmacy
+     *
+     * @return Configuration
+     */
+    public function setIsPharmacy(bool $is_pharmacy)
+    : Configuration {
+        $this->is_pharmacy = $is_pharmacy;
+        return $this;
+    }
 
     /**
      * @return boolean

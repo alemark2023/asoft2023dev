@@ -77,12 +77,48 @@ class Item extends ModelTenant
         'web_platform_id',
         'has_plastic_bag_taxes',
         'barcode',
+        'sanitary',
+        'cod_digemid',
         // 'warehouse_id'
     ];
 
     protected $casts = [
         'date_of_due' => 'date'
     ];
+
+    /**
+     * @return mixed
+     */
+    public function getSanitary() {
+        return $this->sanitary;
+    }
+
+    /**
+     * @param mixed $sanitary
+     *
+     * @return Item
+     */
+    public function setSanitary($sanitary) {
+        $this->sanitary = $sanitary;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCodDigemid() {
+        return $this->cod_digemid;
+    }
+
+    /**
+     * @param mixed $cod_digemid
+     *
+     * @return Item
+     */
+    public function setCodDigemid($cod_digemid) {
+        $this->cod_digemid = $cod_digemid;
+        return $this;
+    }
 
     /**
      * @return mixed

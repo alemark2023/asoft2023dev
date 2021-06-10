@@ -107,8 +107,11 @@
                         Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
-                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        <el-dropdown-item v-for="(column, index) in columnsComputed" :key="index">
+                            <el-checkbox
+                                v-if="column.title !== undefined && column.visible !== undefined"
+                                v-model="column.visible"
+                            >{{ column.title }}</el-checkbox>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -124,6 +127,8 @@
                         <th v-if="columns.model.visible">Modelo</th>
                         <th v-if="columns.brand.visible">Marca</th>
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
+                        <th v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">R.S.</th>
+                        <th v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">DIGEMID</th>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
@@ -147,6 +152,8 @@
                         <td v-if="columns.brand.visible">{{ row.brand }}</td>
                         <td v-if="columns.description.visible">{{ row.name }}</td>
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
+                        <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{ row.sanitary }}</td>
+                        <td v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">{{ row.cod_digemid }}</td>
                         <td>
                             <div v-if="config.product_only_location == true">
                                 {{ row.stock }}
@@ -294,7 +301,10 @@ import DataTable from "../../../components/DataTable.vue";
 import { deletable } from "../../../mixins/deletable";
 
 export default {
-    props: ["typeUser", "type"],
+    props: [
+        "configuration",
+        "typeUser",
+        "type"],
     mixins: [deletable],
     components: {
         ItemsForm,
@@ -344,7 +354,14 @@ export default {
                     title: 'Marca',
                     visible: false
                 },
-
+                sanitary: {
+                    title: 'N° Sanitario',
+                    visible: false
+                },
+                cod_digemid: {
+                    title: 'DIGEMID',
+                    visible: false
+                },
             },
             item_unit_types: [],
             titleTopBar: '',
@@ -352,6 +369,10 @@ export default {
         };
     },
     created() {
+         if(this.configuration.is_pharmacy !== true){
+            delete this.columns.sanitary;
+            delete this.columns.cod_digemid;
+         }
         if (this.type === 'ZZ') {
             this.titleTopBar = 'Servicios';
             this.title = 'Listado de servicios';
@@ -362,6 +383,11 @@ export default {
         this.$http.get(`/configurations/record`).then((response) => {
             this.config = response.data.data;
         });
+    },
+    computed:{
+        columnsComputed:function(){
+            return this.columns;
+        }
     },
     methods: {
         duplicate(id) {
