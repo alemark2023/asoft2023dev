@@ -54,6 +54,7 @@ class ConfigurationResource extends JsonResource
             'seller_can_view_balance' => (bool) $this->seller_can_view_balance,
             'seller_can_generate_sale_opportunities' => (bool) $this->seller_can_generate_sale_opportunities,
             'update_document_on_dispaches' => (bool) $this->update_document_on_dispaches,
+            'is_pharmacy' => (bool) $this->is_pharmacy,
             ];
     }
 }

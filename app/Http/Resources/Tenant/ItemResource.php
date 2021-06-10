@@ -4,6 +4,12 @@ namespace App\Http\Resources\Tenant;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Class ItemResource
+ *
+ * @package App\Http\Resources\Tenant
+ * @mixin JsonResource
+ */
 class ItemResource extends JsonResource
 {
     /**
@@ -93,7 +99,7 @@ class ItemResource extends JsonResource
                     'quantity' => (float) $row->quantity,
                 ];
             }),
-            'web_platform_id' => $this->web_platform_id,
+            'web_platform_id'  => $this->web_platform_id,
 
             // 'warehouses' => collect($this->warehouses)->transform(function($row) {
             //     return [
@@ -102,6 +108,8 @@ class ItemResource extends JsonResource
             //     ];
             // })
             'warehouse_prices' => $this->warehousePrices,
+            'sanitary'         => $this->sanitary,
+            'cod_digemid'      => $this->cod_digemid,
         ];
     }
 }

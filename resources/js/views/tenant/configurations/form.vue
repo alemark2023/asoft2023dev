@@ -182,6 +182,22 @@
                                             <small class="form-control-feedback" v-if="errors.default_document_type_03" v-text="errors.default_document_type_03[0]"></small>
                                         </div>
                                     </div>
+                                    <!-- Para elementos de farmacia -->
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Habilita elementos de farmacia
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Añade Codigo DIGEMID en Empresa y Codigo DIGEMID para productos, junto con el registro salitario"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.is_pharmacy}">
+                                            <el-switch v-model="form.is_pharmacy" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.is_pharmacy" v-text="errors.is_pharmacy[0]"></small>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -423,6 +439,7 @@
                     visual: {},
                     ticket_58: false,
                     update_document_on_dispaches: false,
+                    is_pharmacy: false,
                 };
             },
             submit() {

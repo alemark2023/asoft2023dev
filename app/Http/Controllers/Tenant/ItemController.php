@@ -135,7 +135,10 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
-        $configuration = Configuration::select('affectation_igv_type_id')->firstOrFail();
+        $configuration = Configuration::select(
+            'affectation_igv_type_id',
+            'is_pharmacy'
+        )->firstOrFail();
 
         return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
                         'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
