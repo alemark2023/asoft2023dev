@@ -169,6 +169,43 @@
                                 <small class="form-control-feedback" v-if="errors.line" v-text="errors.line[0]"></small>
                             </div>
                         </div>
+                        <!-- sanitary -->
+                        <div class="col-md-3" v-show="configuration.is_pharmacy" >
+                            <div class="form-group" :class="{'has-danger': errors.sanitary}">
+                                <label class="control-label">
+                                   Registro Sanitario
+                                    <el-tooltip
+                                        class="item"
+                                        effect="dark"
+                                        content="Número de registro sanitario"
+                                        placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.sanitary" >
+                                </el-input>
+                                <small class="form-control-feedback" v-if="errors.sanitary" v-text="errors.sanitary[0]"></small>
+                            </div>
+                        </div>
+                        <!-- cod_digemid -->
+                        <div class="col-md-3" v-show="configuration.is_pharmacy" >
+                            <div class="form-group" :class="{'has-danger': errors.cod_digemid}">
+                                <label class="control-label">
+                                   Código DIGEMID
+                                    <el-tooltip
+                                        class="item"
+                                        effect="dark"
+                                        content="Código de observación DIGEMID"
+                                        placement="top">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <el-input v-model="form.cod_digemid" >
+                                </el-input>
+                                <small class="form-control-feedback" v-if="errors.cod_digemid" v-text="errors.cod_digemid[0]"></small>
+                            </div>
+                        </div>
+
                         <div class="col-12">
                             <div class="table-responsive">
                                 <table class="table table-sm mb-0 table-borderless">
