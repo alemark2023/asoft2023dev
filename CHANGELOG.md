@@ -1,3 +1,94 @@
+## 4.1.0
+
+### docs
+2021-05-17 : docs | changelog<br>
+
+
+### fixed
+2021-06-10 : fixed | #649 | si no se aplica tipo vendedor y selecciona un nombre de vendedor se sobre entiende que se usa -vendedor asignado-<br>
+2021-06-09 : fixed | #630 | Ventas: Pedidios: Nuevo/Editar: Item: Si esta activado la configuracion "Permitir Editar precio unitario a vendedores" y no es admin, podra editar el precio unitario en los pedidos.<br>
+2021-06-09 : fixed | #676 | reporte documentos pdf, se traslada los totales a la posicion correcta<br>
+2021-06-08 : fixed | - | Clave de usuarios de tenant 5.3.1 para para restaurarlas en mysql.user<br>
+2021-06-08 : fixed | #661 | marca repetida al seleccionar con enter un producto en pos<br>
+2021-06-07 : fixed | #653 | relacion de item en cotizacion para mostrar el nombre de producto para pdf<br>
+2021-06-04 : fixed | #653 | nombre producto pdf en plantilla customer_contact<br>
+2021-06-04 : fixed | #455 | Test Set time limit 3900 para balance<br>
+2021-06-04 : fixed | #307 | Ajuste en ruta para series<br>
+2021-06-03 : fixed | #307 | Menor: Ajuste de estilo<br>
+2021-06-03 : fixed | #568 | Producto: Duplicado: Se añade (duplicado) a la descripcion del item para poder distinguirlo cuando es duplicado<br>
+2021-06-03 : fixed | #572 | Configuracion: Metodo de ingreso: Añadiendo columna de condicion de pago en ingresos.<br>
+2021-06-03 : fixed | #572 | Ajuste de templates para mostrar metodo de pago cuando es credito.<br>
+2021-06-03 : fixed | #572 | Comrpobante electronico: Generar pdf: Ajuste para almacenar el metodo de pago en fee y poder filtrarlo al momento de mostrar la factura o boleta.<br>
+2021-06-02 : fixed | #514 | Compile JS<br>
+2021-06-02 : fixed | #514 | Compile JS<br>
+2021-06-02 : fixed | #514 | Compras: Gastos diversos: Nuevo: Añadiendo filtro a Motivo.<br>
+2021-06-01 : fixed | #455 | Finanzas: Ingreso y Egreso por metodo de pago: Añadiendo Totales. Mejorando el rendimiento del reporte.<br>
+2021-06-01 : fixed | #455 | Finanzas: Balance: Añadiendo saldo inicial. Totales. Mejorando el rendimiento del reporte.<br>
+2021-05-31 : fixed | #455 | menor, ajuste de estilo.<br>
+2021-05-31 : fixed | #572 | Ajustando documentacion para excluir elementos en metodo de pago, Ajustando scope para ExcludeMethodTypes.<br>
+2021-05-28 : fixed | #572 | Venta: Comprobante Electrónico: Añadiendo Crédito y Crédito con cuotas a la factura.<br>
+2021-05-27 : fixed | #626 | Compile JS<br>
+2021-05-27 : fixed | #626 | Venta: Oportunidad de venta: Habilita la configuracion para que un vendedor pueda tener acciones en las oportunidades de venta para generar comprobantes.<br>
+2021-05-27 : fixed | #616 | Compile JS<br>
+2021-05-27 : fixed | #616 | Pedido: Generar Comprobante: Se añade boleta y nota de venta cuando el customer tiene Doc.trib.no.dom.sin.ruc o DNI como documento de identificacion<br>
+2021-05-26 : fixed | #399 #580 | Compile JS<br>
+2021-05-26 : fixed | #580 | Editar/Crear item: Al momento de crear el modal, se limpia el precio por almacen.<br>
+2021-05-26 : fixed | #399 #580 |<br>
+2021-05-26 : fixed | #399 | Integraicion del commit cdd7c6ab<br>
+2021-05-25 : fixed | #591 | Nota de venta: Crear/Editar: Cuando el tipo de periodo y cantidad de periodo no esten vacios, se mostrará un aviso para mostrar cuando se duplicará la nota de venta<br>
+2021-05-25 : fixed | #616 | Pedidos: Listado: Generar Comprobante: Habilitando todos los tipos de comprobantes enviados por modules/Order/Http/Controllers/OrderNoteController.php::212<br>
+2021-05-25 : fixed | #269 |  Compras: Listado: Importar: Añadiendo notificaciones para XML que no cumplan con los elementos requeridos.<br>
+2021-05-25 : fixed | #619 | error pagina en blanco al exportar productos general; se aumenta la cantidad que soporta php a convertir el html de la vista para el reporte<br>
+2021-05-24 : fixed | #578 | Contabilidad: Exportar Reporte: Venta: Si no se encuentra el documento, se añaden los datos de  data_affected_document para mostrarlo en el reporte<br>
+2021-05-24 : fixed | #482 | Reporte de Caja: Si el documento es a Credito, no se sumará si esta anulado.<br>
+2021-05-21 : fixed | #500 | Ventas: Pedidos:  Anular: Evaluar correctamente el has_sale<br>
+2021-05-21 : fixed | #500 | Ventas: Pedidos: Series: Cuando se añade un producto, la serie se evalua correctamente al realizar un pedido<br>
+2021-05-21 : fixed | #500 | Ventas: Pedidos: Al anular un pedido cuyos items tengan lotes, estos se vuelven a habilitar.<br>
+2021-05-21 : fixed | #587 | reporte general de productos campos codigo interno y unidad de medida<br>
+2021-05-20 : fixed | #578 | Contabilidad: exportar reporte: venta: si existe data_affected_document, se buscara el documento, si este existe, se tomará para el calculo.<br>
+2021-05-20 : fixed | #473 | Finanzas: Movimientos: Exportar Excel: Se ajusta el nombre de la hoja para maximo 30 caracteres.<br>
+2021-05-20 : fixed | #609 | ajustes al mostrar las guias de remision de la plantilla legend_amazonia<br>
+2021-05-19 : fixed | #611 | redireccion de diferentes usuario en la vista de ordenes de compras<br>
+2021-05-19 : fixed | #604 | Productos: Item: Exportar Excel: Se añade la lista de precios para los elementos consultados en el reporte.<br>
+2021-05-19 : fixed | #602 | enlaces eliminados u ocultos en ecommerce<br>
+2021-05-19 : fixed | #357 | Pos: Venta: Packs: Evalua el inventario de cada item del pack multiplicando la cantidad individual en el pack por la cantidad solicitada. Debe habilitarse stock_control para la validacion<br>
+2021-05-18 : fixed | #595 | error en variables que muestran cargos, agregado los cargos globales en totales del pdf<br>
+
+
+### feature
+2021-06-09 : feature | #646 #645 #644 #630 #586 | Compile JS<br>
+2021-06-09 : feature | #646 #645 #644 #630 #586 | Compile JS<br>
+2021-06-09 : feature | #645 | Comprobantes avanzados: Guias de remisión: Al crear, Permite seleccionar rapidamente transportistas y conductores. Se llena el input con los valores de los selectores.<br>
+2021-06-09 : feature | #645 | Comprobantes avanzados: Guias de remisión: Al crear, Permite seleccionar rapidamente transportistas y conductores. Se llena el input con los valores de los selectores.<br>
+2021-06-09 : feature | #646 | Productos y servicios: Productos: Añadido Marcas y Modelo al listado.<br>
+2021-06-09 : feature | #586 | Ventas: Nota de ventas: Habilita la  funcion de duplicar la nota de venta.<br>
+2021-06-09 : feature | #645 | Comprobantes avanzados: Guias de remisión: Permite seleccionar rapidamente transportistas y conductores. Se llena el input con los valores de los selectores.<br>
+2021-06-09 : feature | #645 | Menor: Ajuste de estilo de codigo.<br>
+2021-06-09 : feature | #644 | Configuracion: Empresa: Avanzado: Pdf: Ajuste para permitir la seleccion de actualizacion del pdf de documento al generar la guia.<br>
+2021-06-09 : feature | #644 | Ajuste para añadir configuraciones de actualizar documentos al generar despacho.<br>
+2021-06-09 : feature | #644 | Al generar la guia, se actualiza automaticamente el pdf de factura.<br>
+2021-06-09 : feature | #644 | Ajuste en modelo para actualizar los archivos pdf.<br>
+2021-06-07 : feature | #650 | campo numerico ahora es alfanumerico<br>
+2021-06-07 : feature | #650 | reporte excel para gastos diversos<br>
+2021-06-04 : feature | #654 | en campo vendedores de formulario de venta se muestran tanto admin con vendedores del establecimiento actual<br>
+2021-06-04 : feature | #307 #572 | Compile JS<br>
+2021-06-04 : feature | #307 | Comprobante Electronico: Ajuste para seleccionar automaticamente la factura y serie por defecto<br>
+2021-06-04 : feature | #307 | Usuarios: Editar/crear usuario: Ajuste grafico por tabs.<br>
+2021-06-04 : feature | #651 | cliente en plantilla de compra customer_contact y reporte de compras totales<br>
+2021-06-03 : feature | #307 | Comprobante Electronico: Ajuste para seleccionar automaticamente la factura y serie por defecto<br>
+2021-06-03 : feature | #307 | Usuarios: Editar usuario: Seleccionar un tipo de documento y serie por defecto para el usuario<br>
+2021-06-03 : feature | #584 | fecha de vencimiento en reporte de documentos<br>
+2021-06-03 : feature | issues | plantillas predefinidas para generar issues en gitlab<br>
+2021-06-02 : feature  | #424 | Compile JS<br>
+2021-06-02 : feature  | #424 | Reporte: Pedidos: Consolidado de items: Añadiendo Totales por productos con exporte pdf y excel.<br>
+2021-06-02 : feature  | #424 | Menor: Ajuste de estilo<br>
+2021-05-26 : feature | - | Añadiendo informacion sobre datos del archivo de configuracion PHP<br>
+2021-05-26 : feature | - | Añadiendo informacion sobre datos del archivo de configuracion PHP<br>
+2021-05-26 : feature | - | Añadiendo informacion sobre datos del archivo de configuracion PHP<br>
+2021-05-21 : feature | #518 | visualizacion de campos de pago en pago de notas de ventas<br>
+2021-05-18 : feature | #592 | plantilla para notas de venta en formato ticket_58<br>
+
+
 ## 4.0.9
 
 ### docs
