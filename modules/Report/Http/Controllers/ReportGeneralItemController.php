@@ -72,7 +72,7 @@ class ReportGeneralItemController extends Controller
         $category_id = $request['category_id'];
 
         $user_id = $request['user_id'];
-        $user_type = $request['user_type'];
+        $user_type = $request['user_type'] != null ? $request['user_type'] : 'VENDEDOR';
         $web_platform_id = $request['web_platform_id'];
 
         $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type);
