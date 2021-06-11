@@ -5,9 +5,16 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Purchase\Models\PurchaseOrder;
 
+/**
+ * Class Purchase
+ *
+ * @package App\Models\Tenant
+ * @mixin ModelTenant
+ */
 class Purchase extends ModelTenant
 {
     // use SoftDeletes;
@@ -70,7 +77,7 @@ class Purchase extends ModelTenant
         'date_of_due' => 'date',
     ];
 
-    
+
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
@@ -273,4 +280,45 @@ class Purchase extends ModelTenant
         return $this->belongsTo(Person::class, 'customer_id');
     }
 
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int                                   $establishment_id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDasboardSalePurchase( $query, $establishment_id = 0) {
+        $query->without(
+            [
+                'user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items',
+                'purchase_payments',
+            ]
+        );
+        $query->WhereStateTypeAccepted();
+        $query->where('establishment_id', $establishment_id);
+        $query->select(
+            'id', 'state_type_id', 'establishment_id', 'currency_type_id', 'total', 'exchange_rate_sale',
+            'total_perception', 'date_of_issue',
+            \DB::raw( "(CASE WHEN currency_type_id = 'PEN' THEN total ELSE (exchange_rate_sale * total) END) as total_purchase"),
+            \DB::raw( "(CASE WHEN currency_type_id = 'PEN' THEN total_perception ELSE (exchange_rate_sale * total_perception) END) as total_perception_purchase")
+        );
+
+        return $query;
+    }
+
+
+    /**
+     * Filtra por año basandose en date_of_issue
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int                                   $year
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOnlyDateOfIssueByYear($query, $year = 0) {
+        if ($year == 0) {
+            $year = (int)Carbon::now()->format('Y');
+        }
+        $query->where('date_of_issue', '>=', "$year-01-01");
+        return $query;
+    }
 }

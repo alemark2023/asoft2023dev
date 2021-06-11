@@ -1529,6 +1529,7 @@ export default {
                     this.cash_payment_metod[0] !== undefined){
                     id = this.cash_payment_metod[0].id
                 }
+                this.form.date_of_due = moment().format('YYYY-MM-DD');
                 this.form.payments.push({
                     id: null,
                     document_id: null,
@@ -2200,6 +2201,7 @@ export default {
                 }
             },
             clickAddFee() {
+                this.form.date_of_due = moment().format('YYYY-MM-DD');
                 this.form.fee.push({
                     id: null,
                     date: moment().format('YYYY-MM-DD'),
@@ -2219,7 +2221,7 @@ export default {
                 let date = moment()
                     .add(first.number_days,'days')
                     .format('YYYY-MM-DD')
-
+                this.form.date_of_due = date;
                 this.form.fee.push({
                     id: null,
                     document_id: null,
