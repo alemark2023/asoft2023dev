@@ -8,9 +8,19 @@ use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class ToPay
+ *
+ * @package Modules\Finance\Helpers
+ */
 class ToPay
 {
 
+    /**
+     * @param $request
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public static function getToPay($request)
     {
         $establishment_id = $request['establishment_id'];
@@ -19,8 +29,8 @@ class ToPay
         $date_end = $request['date_end'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
-        $supplier_id = $request['supplier_id'];
-        $user = $request['user'];
+        $supplier_id = isset($request['supplier_id']) ? (int)$request['supplier_id'] : 0;
+        $user = isset($request['user']) ? (int)$request['user'] : 0;
 
 
         $d_start = null;
@@ -57,7 +67,7 @@ class ToPay
             $purchases = DB::connection('tenant')
                 ->table('purchases')
                 // ->where('supplier_id', $supplier_id)
-                ->where('user_id', $user)
+                // ->where('user_id', $user)
                 ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
                 ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                     $join->on('purchases.id', '=', 'payments.purchase_id');
@@ -80,7 +90,7 @@ class ToPay
             $purchases = DB::connection('tenant')
                 ->table('purchases')
                 // ->where('supplier_id', $supplier_id)
-                ->where('user_id', $user)
+                // ->where('user_id', $user)
                 ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
                 ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                     $join->on('purchases.id', '=', 'payments.purchase_id');
@@ -98,8 +108,11 @@ class ToPay
                 ->where('purchases.establishment_id', $establishment_id);
 
         }
-        if ($supplier_id) {
-            $purchases = $purchases->where('supplier_id', $supplier_id);
+        if ($user !== 0) {
+            $purchases->where('user_id', $user);
+        }
+        if ($supplier_id !== 0) {
+            $purchases->where('supplier_id', $supplier_id);
         }
 
         /*

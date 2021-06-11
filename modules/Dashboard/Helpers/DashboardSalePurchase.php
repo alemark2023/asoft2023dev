@@ -11,8 +11,18 @@ use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Item;
 use Carbon\Carbon;
 
+/**
+ * Class DashboardSalePurchase
+ *
+ * @package Modules\Dashboard\Helpers
+ */
 class DashboardSalePurchase
 {
+    /**
+     * @param $request
+     *
+     * @return array
+     */
     public function data($request)
     {
         $establishment_id = $request['establishment_id'];
@@ -137,10 +147,16 @@ class DashboardSalePurchase
     }
 
 
-
+    /**
+     * @param $establishment_id
+     * @param $d_start
+     * @param $d_end
+     *
+     * @return array[]
+     */
     private function purchase_totals($establishment_id, $d_start, $d_end)
     {
-        // $purchases = Purchase::get();
+        /*
         $purchases = Purchase::without(['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'purchase_payments'])
             ->whereIn('state_type_id', ['01','03','05','07','13'])
             ->where('establishment_id', $establishment_id)
@@ -155,7 +171,10 @@ class DashboardSalePurchase
             $purchases_total +=  $pr->total * $pr->exchange_rate_sale;
         }
         $purchases_total_perception = round($purchases->sum('total_perception'),2);
-
+        */
+        $purchases = Purchase::DasboardSalePurchase($establishment_id)->OnlyDateOfIssueByYear()->get();
+        $purchases_total = $purchases->sum('total_purchase');
+        $purchases_total_perception = $purchases->sum('total_perception_purchase');
 
         $data_array = ['Ene', 'Feb','Mar', 'Abr','May', 'Jun','Jul', 'Ago','Sep', 'Oct', 'Nov', 'Dic'];
 
@@ -175,7 +194,7 @@ class DashboardSalePurchase
                 'datasets' => [
                     [
                         'label' => 'Total percepciones',
-                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_perception'),
+                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_perception_purchase'),
                         'backgroundColor' => 'rgb(255, 99, 132)',
                         'borderColor' => 'rgb(255, 99, 132)',
                         'borderWidth' => 1,
@@ -184,7 +203,7 @@ class DashboardSalePurchase
                     ],
                     [
                         'label' => 'Total compras',
-                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total'),
+                        'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_purchase'),
                         'backgroundColor' => 'rgb(54, 162, 235)',
                         'borderColor' => 'rgb(54, 162, 235)',
                         'borderWidth' => 1,
