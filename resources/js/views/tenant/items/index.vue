@@ -87,14 +87,15 @@
                             >
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        class="btn btn-custom btn-sm mt-2 mr-2"
-                        @click.prevent="clickCreate()"
-                    >
-                        <i class="fa fa-plus-circle"></i> Nuevo
-                    </button>
                 </template>
+                <button
+                    type="button"
+                    class="btn btn-custom btn-sm mt-2 mr-2"
+                    @click.prevent="clickCreate()"
+                    v-if="can_add_new_product"
+                >
+                    <i class="fa fa-plus-circle"></i> Nuevo
+                </button>
             </div>
         </div>
         <div class="card mb-0">
@@ -318,6 +319,7 @@ export default {
     },
     data() {
         return {
+            can_add_new_product: false,
             showDialog: false,
             showImportDialog: false,
             showExportDialog: false,
@@ -383,6 +385,7 @@ export default {
         this.$http.get(`/configurations/record`).then((response) => {
             this.config = response.data.data;
         });
+        this.canCreateProduct();
     },
     computed:{
         columnsComputed:function(){
@@ -390,6 +393,17 @@ export default {
         }
     },
     methods: {
+        canCreateProduct()
+        {
+            if (this.typeUser === 'admin') {
+                this.can_add_new_product = true
+            } else if (this.typeUser === 'seller') {
+                if (this.configuration !== undefined && this.configuration.seller_can_create_product !== undefined) {
+                    this.can_add_new_product = this.configuration.seller_can_create_product;
+                }
+            }
+            return this.can_add_new_product;
+        },
         duplicate(id) {
             this.$http
                 .post(`${this.resource}/duplicate`, { id })

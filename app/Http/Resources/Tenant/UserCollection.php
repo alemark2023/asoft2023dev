@@ -4,17 +4,23 @@ namespace App\Http\Resources\Tenant;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
+/**
+ * Class UserCollection
+ *
+ * @package App\Http\Resources\Tenant
+ * @mixin  ResourceCollection
+ */
 class UserCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return mixed
+     * @return \Illuminate\Support\Collection
      */
-    public function toArray($request)
+    public function toArray($request = null)
     {
-        return $this->collection->transform(function($row, $key) {
+        return  $this->collection->transform(function($row, $key) {
             /** @var \App\Models\Tenant\User  $row */
             $type = '';
             switch ($row->type) {
@@ -44,6 +50,6 @@ class UserCollection extends ResourceCollection
                 'locked' => (bool) $row->locked,
 
             ];
-        });
+        })->sortBy('id');
     }
 }

@@ -110,6 +110,10 @@ class ToPay
         }
         if ($user !== 0) {
             $purchases->where('user_id', $user);
+        }else{
+            if(auth()->user()->type!=='admin'){
+                $purchases->where('user_id', $user);
+            }
         }
         if ($supplier_id !== 0) {
             $purchases->where('supplier_id', $supplier_id);

@@ -507,11 +507,29 @@
     </tr>
 </table>
 
+
+
+@php
+    if($document->payment_condition_id === '01') {
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+    }else{
+        $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+    }
+@endphp
+{{-- Condicion de pago  Crédito / Contado --}}
+<table class="full-width">
+    <tr>
+        <td>
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+        </td>
+    </tr>
+</table>
+
 @if($document->payment_method_type_id)
     <table class="full-width">
         <tr>
             <td>
-                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
             </td>
         </tr>
     </table>
@@ -534,16 +552,10 @@
     </table>
     @endif
 @else
-    @php
-        $paymentMethod = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-    @endphp
     <table class="full-width">
-        <tr>
-            <td><strong>PAGOS: {{ $paymentMethod->description }}</strong></td>
-        </tr>
             @foreach($document->fee as $key => $quote)
                 <tr>
-                    <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1). ' / ' : '') }}Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+                    <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
                 </tr>
             @endforeach
         </tr>
