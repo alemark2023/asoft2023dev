@@ -58,6 +58,10 @@ class ToPayController extends Controller
         $suppliers = array_merge($supplier,$supplier_temp->toArray());
 
         $query_users = User::all();
+        if(auth()->user()->type === 'admin') {
+            $newUser = new User(['id' => 0, 'name' => 'Seleccionar Todos']);
+            $query_users = $query_users->add($newUser)->sortBy('id');
+        }
         $users = new UserCollection($query_users);
 
         $establishments = DashboardView::getEstablishments();
