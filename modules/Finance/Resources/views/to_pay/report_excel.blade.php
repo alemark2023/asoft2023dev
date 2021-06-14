@@ -47,8 +47,8 @@
                                 <th>#</th>
                                 <th class="text-center">Fecha Emisión</th>
                                 <th>Número</th>
-
                                 <th>Cliente</th>
+                                <th>Vendedor</th>
                                 <th>Por Pagar</th>
                                 <th>Total</th>
 
@@ -57,13 +57,20 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
+                                <?php
+                                $user = \App\Models\Tenant\User::find($value['user_id']);
+                                $user_name = null;
+                                if(!empty($user)){
+                                    $user_name = $user->getName();
+                                }
+                                ?>
                                 @if($value['total_to_pay'] > 0)
                                     <tr>
                                         <td class="celda">{{$loop->iteration}}</td>
                                         <td class="celda">{{$value['date_of_issue']}}</td>
                                         <td class="celda">{{$value['number_full']}}</td>
-
                                         <td class="celda">{{$value['supplier_name']}}</td>
+                                        <td class="celda">{{$user_name}}</td>
                                         <td class="celda">{{$value['total_to_pay']}}</td>
                                         <td class="celda">{{$value['total']}}</td>
                                     </tr>
