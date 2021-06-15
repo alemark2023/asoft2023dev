@@ -355,6 +355,7 @@ class PosController extends Controller
 
         if ($request->input_item && !empty($request->input_item)) {
             $whereItem[] = ['description', 'like', '%'.$request->input_item.'%'];
+            $whereItem[] = ['barcode', '=', $request->input_item];
             $whereItem[] = ['internal_id', 'like', '%'.$request->input_item.'%'];
             $whereExtra[] = ['name', 'like', '%'.$request->input_item.'%'];
         }

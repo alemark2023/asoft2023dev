@@ -315,6 +315,8 @@ class DocumentController extends Controller
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
+                /** @var Item $row */
+                return $row->getDataToItemModal($warehouse);
                 $detail = $this->getFullDescription($row, $warehouse);
                 return [
                     'id' => $row->id,
@@ -521,6 +523,13 @@ class DocumentController extends Controller
         return view('tenant.documents.form', compact('is_contingency', 'configuration', 'documentId', 'isUpdate'));
     }
 
+    /**
+     * @param \App\Http\Requests\Tenant\DocumentUpdateRequest $request
+     * @param                                                 $id
+     *
+     * @return array
+     * @throws \Throwable
+     */
     public function update(DocumentUpdateRequest $request, $id)
     {
         $fact = DB::connection('tenant')->transaction(function () use ($request, $id) {

@@ -7,7 +7,10 @@
                         <div id="custom-select" :class="{'has-danger': errors.item_id}" class="form-group">
                             <label class="control-label">
                                 Producto/Servicio
-                                <a href="#" @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
+                                <a
+                                    href="#" @click.prevent="showDialogNewItem = true">
+                                    [+ Nuevo]
+                                </a>
                             </label>
 
                             <!-- <el-select v-model="form.item_id" @change="changeItem" filterable  ref="select_item" @focus="focusSelectItem">
@@ -18,7 +21,8 @@
                             <template id="select-append">
                                 <el-input id="custom-input">
                                     <el-select
-                                        id="select-width" ref="select_item"
+                                        id="select-width"
+                                        ref="select_item"
                                         slot="prepend"
                                         v-model="form.item_id"
                                         filterable
@@ -27,12 +31,31 @@
                                         @change="changeItem"
                                         @focus="focusSelectItem">
 
-                                        <el-option v-for="option in items" :key="option.id" :label="option.full_description"
-                                                   :value="option.id"></el-option>
+
+                                        <el-tooltip v-for="option in items" :key="option.id" placement="top">
+
+                                            <div slot="content">
+                                                Almacen: {{ option.warehouse_description }} <br>
+                                                Marca: {{ option.brand }} <br>
+                                                Categoria: {{ option.category }} <br>
+                                                Stock: {{ option.stock }} <br>
+                                                Precio: {{ option.currency_type_symbol }} {{ option.sale_unit_price }}
+                                                <br>
+                                            </div>
+
+                                            <el-option :label="option.full_description" :value="option.id"></el-option>
+
+                                        </el-tooltip>
+
                                     </el-select>
-                                    <el-tooltip slot="append" class="item" content="Ver Stock del Producto"
-                                                effect="dark" placement="bottom">
-                                        <el-button @click.prevent="clickWarehouseDetail()"><i class="fa fa-search"></i>
+                                    <el-tooltip slot="append"
+                                                class="item"
+                                                content="Ver Stock del Producto"
+                                                effect="dark"
+                                                placement="bottom">
+                                        <el-button
+                                            @click.prevent="clickWarehouseDetail()">
+                                            <i class="fa fa-search"></i>
                                         </el-button>
                                     </el-tooltip>
                                 </el-input>
@@ -47,10 +70,13 @@
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id"
                                        :disabled="!change_affectation_igv_type_id" filterable>
-                                <el-option v-for="option in affectation_igv_types" :key="option.id" :label="option.description"
+                                <el-option v-for="option in affectation_igv_types" :key="option.id"
+                                           :label="option.description"
                                            :value="option.id"></el-option>
                             </el-select>
-                            <el-checkbox v-model="change_affectation_igv_type_id">Editar</el-checkbox>
+                            <el-checkbox v-model="change_affectation_igv_type_id">
+                                Editar
+                            </el-checkbox>
                             <small v-if="errors.affectation_igv_type_id" class="form-control-feedback"
                                    v-text="errors.affectation_igv_type_id[0]"></small>
                         </div>
@@ -58,8 +84,12 @@
                     <div class="col-md-3">
                         <div :class="{'has-danger': errors.quantity}" class="form-group">
                             <label class="control-label">Cantidad</label>
-                            <el-input-number v-model="form.quantity" :disabled="form.item.calculate_quantity"
-                                             :min="0.01"></el-input-number>
+                            <el-input-number
+                                v-model="form.quantity"
+                                :disabled="form.item.calculate_quantity"
+                                :min="0.01">
+
+                            </el-input-number>
                             <small v-if="errors.quantity" class="form-control-feedback"
                                    v-text="errors.quantity[0]"></small>
                         </div>
@@ -134,6 +164,13 @@
                                                                                                                     series]</a>
                     </div>
 
+                    <div v-if="configuration.edit_name_product" class="col-md-12 col-sm-12 mt-2">
+                        <div class="form-group">
+                            <label class="control-label">Nombre producto en PDF</label>
+                            <vue-ckeditor v-model="form.name_product_pdf" :editors="editors"
+                                          type="classic"></vue-ckeditor>
+                        </div>
+                    </div>
                     <!--<div class="col-md-6" v-show="has_list_prices">
                         <div class="form-group" :class="{'has-danger': errors.item_unit_type_id}">
                             <label class="control-label">Presentación</label>
@@ -314,6 +351,10 @@ import {calculateRowItem} from '@helpers/functions'
 // import WarehousesDetail from './warehouses.vue'
 import SelectLotsForm from './lots.vue'
 import WarehousesDetail from '@views/documents/partials/select_warehouses.vue'
+import ItemForm from "../../../../../../../../resources/js/views/tenant/items/form";
+import LotsGroup from "../../../../../../../../resources/js/views/tenant/documents/partials/lots_group";
+import VueCkeditor from "vue-ckeditor5";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 
 export default {
@@ -324,17 +365,25 @@ export default {
         'typeUser',
         'configuration',
     ],
-    components: {itemForm, WarehousesDetail, SelectLotsForm},
+    components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm, 'vue-ckeditor': VueCkeditor.component},
+
     data() {
         return {
+            can_add_new_product: false,
+            loading_search: false,
+            titleAction: '',
+            is_client: false,
             titleDialog: 'Agregar Producto o Servicio',
             resource: 'order-notes',
             showDialogNewItem: false,
-            showWarehousesDetail: false,
+            has_list_prices: false,
             errors: {},
             form: {},
+            all_items: [],
             items: [],
             aux_items: [],
+            operation_types: [],
+            all_affectation_igv_types: [],
             affectation_igv_types: [],
             system_isc_types: [],
             discount_types: [],
@@ -342,13 +391,17 @@ export default {
             attribute_types: [],
             use_price: 1,
             change_affectation_igv_type_id: false,
+            activePanel: 0,
             total_item: 0,
-            has_list_prices: false,
-            warehousesDetail: [],
             item_unit_types: [],
+            showWarehousesDetail: false,
+            warehousesDetail: [],
             item_unit_type: {},
             showDialogSelectLots: false,
-            lots: []
+            lots: [],
+            editors: {
+                classic: ClassicEditor
+            },
         }
     },
     computed: {
