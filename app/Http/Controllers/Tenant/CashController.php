@@ -27,6 +27,12 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Tenant\SaleNoteItem;
 use App\Exports\CashProductExport;
 
+/**
+ * Class CashController
+ *
+ * @package App\Http\Controllers\Tenant
+ * @mixin  Controller
+ */
 class CashController extends Controller
 {
 
@@ -214,10 +220,19 @@ class CashController extends Controller
 
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return array
+     */
     public function cash_document(Request $request) {
 
-        $cash = Cash::where([['user_id',auth()->user()->id],['state',true]])->first();
-        $cash->cash_documents()->create($request->all());
+        $cash = Cash::where([
+                                ['user_id', auth()->user()->id],
+                                ['state', true],
+                            ])->first();
+
+        $cash->cash_documents()->updateOrCreate($request->all());
 
         return [
             'success' => true,

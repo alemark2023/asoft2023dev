@@ -148,16 +148,15 @@
                                     </div>
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">
-                                            Permite habilitar las acciones en oportunidad de venta para vendedores
-                                            <!--
+                                            Permite habilitar las acciones para vendedores
                                             <el-tooltip
                                                 class="item"
                                                 effect="dark"
-                                                content="Disponible POS"
+                                                content="Disponible en Oportunidad de Venta y Pedidos"
                                                 placement="top-start">
                                                 <i class="fa fa-info-circle"></i>
                                             </el-tooltip>
-                                            -->
+
                                         </label>
                                         <div class="form-group" :class="{'has-danger': errors.seller_can_generate_sale_opportunities}">
                                             <el-switch v-model="form.seller_can_generate_sale_opportunities" active-text="Si" inactive-text="No" @change="submit"></el-switch>

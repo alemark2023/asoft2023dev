@@ -15,6 +15,12 @@ use App\Models\Tenant\ModelTenant;
 use Modules\Inventory\Models\InventoryKardex;
 use Modules\Item\Models\ItemLot;
 
+/**
+ * Class OrderNote
+ *
+ * @package Modules\Order\Models
+ * @mixin ModelTenant
+ */
 class OrderNote extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'currency_type', 'items'];

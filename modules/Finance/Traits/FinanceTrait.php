@@ -18,6 +18,9 @@ use Modules\Sale\Models\TechnicalServicePayment;
 trait FinanceTrait
 {
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getPaymentDestinations(){
 
         $bank_accounts = self::getBankAccounts();
@@ -25,7 +28,7 @@ trait FinanceTrait
 
         // dd($cash);
         if($cash){
-            return collect($bank_accounts)->push($cash);
+            return $bank_accounts->push($cash);
         }
 
         return $bank_accounts;
@@ -46,6 +49,9 @@ trait FinanceTrait
     }
 
 
+    /**
+     * @return array|null
+     */
     public function getCash()
     {
         $cash =  Cash::query()->where([['user_id',auth()->id()],['state',true]])->first();
