@@ -315,6 +315,8 @@ class DocumentController extends Controller
             $items = $items_u->merge($items_s);
 
             return collect($items)->transform(function($row) use($warehouse){
+                /** @var Item $row */
+                return $row->getDataToItemModal($warehouse);
                 $detail = $this->getFullDescription($row, $warehouse);
                 return [
                     'id' => $row->id,

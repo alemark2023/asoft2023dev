@@ -443,6 +443,8 @@ class OrderNoteController extends Controller
                     //     return $query->where('warehouse_id', $warehouse->id);
                     // }])
                     ->get()->transform(function ($row) use ($warehouse) {
+                        /** @var Item $row */
+                        return $row->getDataToItemModal($warehouse,true,true);
                         $full_description = $this->getFullDescription($row);
                         // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                         $lots = $row->item_lots->where('has_sale', false);
