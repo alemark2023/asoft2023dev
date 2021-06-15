@@ -969,6 +969,10 @@ class Facturalo
         }
     }
 
+    /**
+     * @param array $inputs
+     * @param int   $id
+     */
     public function update($inputs,$id)
     {
 

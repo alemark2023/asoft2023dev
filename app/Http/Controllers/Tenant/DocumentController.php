@@ -521,6 +521,13 @@ class DocumentController extends Controller
         return view('tenant.documents.form', compact('is_contingency', 'configuration', 'documentId', 'isUpdate'));
     }
 
+    /**
+     * @param \App\Http\Requests\Tenant\DocumentUpdateRequest $request
+     * @param                                                 $id
+     *
+     * @return array
+     * @throws \Throwable
+     */
     public function update(DocumentUpdateRequest $request, $id)
     {
         $fact = DB::connection('tenant')->transaction(function () use ($request, $id) {

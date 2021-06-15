@@ -378,33 +378,38 @@ class DocumentController extends Controller
     }
 
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Modules\Document\Http\Resources\ItemLotCollection
+     */
     public function searchLots(Request $request)
     {
 
-        $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
 
-        if($request->document_item_id){
-
+        $records = ItemLot::where('series', 'like', "%{$request->input}%");
+        if ($request->document_item_id) {
             //proccess credit note
             $document_item = DocumentItem::findOrFail($request->document_item_id);
+            /** @var array $lots */
+            $lots = $document_item->item->lots;
+            $records
+                ->whereIn('id', collect($lots)->pluck('id')->toArray())
+                ->where('has_sale', true)
+                ->latest();
 
-            $records = ItemLot::where('series','like', "%{$request->input}%")
-                                ->whereIn('id', collect($document_item->item->lots)->pluck('id')->toArray())
-                                ->where('has_sale', true)
-                                ->latest();
-
-        }else{
-
-            $records = ItemLot::where('series','like', "%{$request->input}%")
-                                    ->where('item_id', $request->item_id)
-                                    ->where('has_sale', false)
-                                    ->where('warehouse_id', $warehouse->id)
-                                    ->latest();
+        } else {
+            $warehouse = ModuleWarehouse::select('id')
+                                        ->where('establishment_id', auth()->user()->establishment_id)
+                                        ->first();
+            $records
+                ->where('item_id', $request->item_id)
+                ->where('has_sale', false)
+                ->where('warehouse_id', $warehouse->id)
+                ->latest();
         }
 
-
         return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
-
     }
 
 

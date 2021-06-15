@@ -320,7 +320,7 @@
             :showDialog.sync="showDialogSelectLots"
             :lots="lots"
             :itemId="form.item_id"
-            :documentItemId="form.document_item_id"
+            :documentItemId="documentItem"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
 
@@ -427,6 +427,16 @@
             this.canCreateProduct();
         },
         computed: {
+            documentItem(){
+                if(this.recordItem !== undefined &&
+                    this.recordItem !== null &&
+                    this.recordItem.id !== undefined &&
+                    this.recordItem.id !== 0){
+                    this.form.document_item_id = this.recordItem.id;
+                    return this.recordItem.id;
+                }
+                return this.form.document_item_id;
+            },
             edit_unit_price() {
                 if(this.typeUser === 'admin') {
                     return true

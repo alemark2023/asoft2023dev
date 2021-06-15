@@ -609,8 +609,10 @@
                 </div>
             </form>
         </div>
-        <document-form-item :showDialog.sync="showDialogAddItem"
+        <document-form-item
+            :showDialog.sync="showDialogAddItem"
             :recordItem="recordItem"
+            :documentId="documentId"
             :isEditItemNote="false"
             :operation-type-id="form.operation_type_id"
             :currency-type-id-active="form.currency_type_id"
