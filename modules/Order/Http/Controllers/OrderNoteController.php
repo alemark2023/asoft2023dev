@@ -49,6 +49,12 @@ use App\Http\Requests\Tenant\DocumentRequest;
 use App\Http\Controllers\Tenant\DocumentController;
 
 
+/**
+ * Class OrderNoteController
+ *
+ * @package Modules\Order\Http\Controllers
+ * @mixin Controller
+ */
 class OrderNoteController extends Controller
 {
 
@@ -76,7 +82,8 @@ class OrderNoteController extends Controller
     public function edit($id)
     {
         $resourceId = $id;
-        return view('order::order_notes.form_edit', compact('resourceId'));
+        $configuration = Configuration::first();
+        return view('order::order_notes.form_edit', compact('resourceId','configuration'));
     }
 
     public function columns()
@@ -255,6 +262,12 @@ class OrderNoteController extends Controller
         return $desc;
     }
 
+    /**
+     * @param \Modules\Order\Http\Requests\OrderNoteRequest $request
+     *
+     * @return array
+     * @throws \Throwable
+     */
     public function store(OrderNoteRequest $request) {
 
         DB::connection('tenant')->transaction(function () use ($request) {
@@ -542,6 +555,13 @@ class OrderNoteController extends Controller
         $this->createPdf($order_note, $format, $filename);
     }
 
+    /**
+     * @param null $order_note
+     * @param null $format_pdf
+     * @param null $filename
+     *
+     * @throws \Mpdf\MpdfException
+     */
     public function createPdf($order_note = null, $format_pdf = null, $filename = null) {
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
@@ -556,14 +576,14 @@ class OrderNoteController extends Controller
 
         $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
-        if ($format_pdf === 'ticket' OR $format_pdf === 'ticket_80' OR $format_pdf === 'ticket_58') {
+        if ($format_pdf === 'ticket' or $format_pdf === 'ticket_80' or $format_pdf === 'ticket_58') {
 
             $width = 78;
             $pdf_margin_top = 2;
             $pdf_margin_right = 5;
             $pdf_margin_bottom = 0;
             $pdf_margin_left = 5;
-            if(config('tenant.enabled_template_ticket_80')) $width = 76;
+            if (config('tenant.enabled_template_ticket_80')) $width = 76;
 
             if ($format_pdf === 'ticket_58') {
                 $width = 58;
@@ -573,76 +593,77 @@ class OrderNoteController extends Controller
                 $pdf_margin_left = 1;
             }
 
-            $company_name      = (strlen($company->name) / 20) * 10;
-            $company_address   = (strlen($document->establishment->address) / 30) * 10;
-            $company_number    = $document->establishment->telephone != '' ? '10' : '0';
-            $customer_name     = strlen($document->customer->name) > '25' ? '10' : '0';
-            $customer_address  = (strlen($document->customer->address) / 200) * 10;
-            $p_order           = $document->purchase_order != '' ? '10' : '0';
+            $company_name = (strlen($company->name) / 20) * 10;
+            $company_address = (strlen($document->establishment->address) / 30) * 10;
+            $company_number = $document->establishment->telephone != '' ? '10' : '0';
+            $customer_name = strlen($document->customer->name) > '25' ? '10' : '0';
+            $customer_address = (strlen($document->customer->address) / 200) * 10;
+            $p_order = $document->purchase_order != '' ? '10' : '0';
 
             $total_exportation = $document->total_exportation != '' ? '10' : '0';
-            $total_free        = $document->total_free != '' ? '10' : '0';
-            $total_unaffected  = $document->total_unaffected != '' ? '10' : '0';
-            $total_exonerated  = $document->total_exonerated != '' ? '10' : '0';
-            $total_taxed       = $document->total_taxed != '' ? '10' : '0';
-            $quantity_rows     = count($document->items);
+            $total_free = $document->total_free != '' ? '10' : '0';
+            $total_unaffected = $document->total_unaffected != '' ? '10' : '0';
+            $total_exonerated = $document->total_exonerated != '' ? '10' : '0';
+            $total_taxed = $document->total_taxed != '' ? '10' : '0';
+            $quantity_rows = count($document->items);
             $discount_global = 0;
             foreach ($document->items as $it) {
                 if ($it->discounts) {
                     $discount_global = $discount_global + 1;
                 }
             }
-            $legends           = $document->legends != '' ? '10' : '0';
+            $legends = $document->legends != '' ? '10' : '0';
 
             $pdf = new Mpdf([
-                'mode' => 'utf-8',
-                'format' => [
-                    $width,
-                    120 +
-                    ($quantity_rows * 8) +
-                    ($discount_global * 3) +
-                    $company_name +
-                    $company_address +
-                    $company_number +
-                    $customer_name +
-                    $customer_address +
-                    $p_order +
-                    $legends +
-                    $total_exportation +
-                    $total_free +
-                    $total_unaffected +
-                    $total_exonerated +
-                    $total_taxed],
-                'margin_top' => $pdf_margin_top,
-                'margin_right' => $pdf_margin_right,
-                'margin_bottom' => $pdf_margin_bottom,
-                'margin_left' => $pdf_margin_left
-            ]);
-        } else if($format_pdf === 'a5'){
+                                'mode'          => 'utf-8',
+                                'format'        => [
+                                    $width,
+                                    120 +
+                                    ($quantity_rows * 8) +
+                                    ($discount_global * 3) +
+                                    $company_name +
+                                    $company_address +
+                                    $company_number +
+                                    $customer_name +
+                                    $customer_address +
+                                    $p_order +
+                                    $legends +
+                                    $total_exportation +
+                                    $total_free +
+                                    $total_unaffected +
+                                    $total_exonerated +
+                                    $total_taxed],
+                                'margin_top'    => $pdf_margin_top,
+                                'margin_right'  => $pdf_margin_right,
+                                'margin_bottom' => $pdf_margin_bottom,
+                                'margin_left'   => $pdf_margin_left,
+                            ]);
+        } else {
+            if ($format_pdf === 'a5') {
 
-             $company_name      = (strlen($company->name) / 20) * 10;
-            $company_address   = (strlen($document->establishment->address) / 30) * 10;
-            $company_number    = $document->establishment->telephone != '' ? '10' : '0';
-            $customer_name     = strlen($document->customer->name) > '25' ? '10' : '0';
-            $customer_address  = (strlen($document->customer->address) / 200) * 10;
-            $p_order           = $document->purchase_order != '' ? '10' : '0';
+                $company_name = (strlen($company->name) / 20) * 10;
+                $company_address = (strlen($document->establishment->address) / 30) * 10;
+                $company_number = $document->establishment->telephone != '' ? '10' : '0';
+                $customer_name = strlen($document->customer->name) > '25' ? '10' : '0';
+                $customer_address = (strlen($document->customer->address) / 200) * 10;
+                $p_order = $document->purchase_order != '' ? '10' : '0';
 
-            $total_exportation = $document->total_exportation != '' ? '10' : '0';
-            $total_free        = $document->total_free != '' ? '10' : '0';
-            $total_unaffected  = $document->total_unaffected != '' ? '10' : '0';
-            $total_exonerated  = $document->total_exonerated != '' ? '10' : '0';
-            $total_taxed       = $document->total_taxed != '' ? '10' : '0';
-            $quantity_rows     = count($document->items);
-            $discount_global = 0;
-            foreach ($document->items as $it) {
-                if ($it->discounts) {
-                    $discount_global = $discount_global + 1;
+                $total_exportation = $document->total_exportation != '' ? '10' : '0';
+                $total_free = $document->total_free != '' ? '10' : '0';
+                $total_unaffected = $document->total_unaffected != '' ? '10' : '0';
+                $total_exonerated = $document->total_exonerated != '' ? '10' : '0';
+                $total_taxed = $document->total_taxed != '' ? '10' : '0';
+                $quantity_rows = count($document->items);
+                $discount_global = 0;
+                foreach ($document->items as $it) {
+                    if ($it->discounts) {
+                        $discount_global = $discount_global + 1;
+                    }
                 }
-            }
-            $legends           = $document->legends != '' ? '10' : '0';
+                $legends = $document->legends != '' ? '10' : '0';
 
 
-            $alto = ($quantity_rows * 8) +
+                $alto = ($quantity_rows * 8) +
                     ($discount_global * 3) +
                     $company_name +
                     $company_address +
@@ -656,56 +677,57 @@ class OrderNoteController extends Controller
                     $total_unaffected +
                     $total_exonerated +
                     $total_taxed;
-            $diferencia = 148 - (float)$alto;
-
-            $pdf = new Mpdf([
-                'mode' => 'utf-8',
-                'format' => [
-                    210,
-                    $diferencia + $alto
-                    ],
-                'margin_top' => 2,
-                'margin_right' => 5,
-                'margin_bottom' => 0,
-                'margin_left' => 5
-            ]);
-
-
-        }  else {
-
-            $pdf_font_regular = config('tenant.pdf_name_regular');
-            $pdf_font_bold = config('tenant.pdf_name_bold');
-
-            if ($pdf_font_regular != false) {
-                $defaultConfig = (new ConfigVariables())->getDefaults();
-                $fontDirs = $defaultConfig['fontDir'];
-
-                $defaultFontConfig = (new FontVariables())->getDefaults();
-                $fontData = $defaultFontConfig['fontdata'];
+                $diferencia = 148 - (float)$alto;
 
                 $pdf = new Mpdf([
-                    'fontDir' => array_merge($fontDirs, [
-                        app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                                 DIRECTORY_SEPARATOR.'pdf'.
-                                                 DIRECTORY_SEPARATOR.$base_template.
-                                                 DIRECTORY_SEPARATOR.'font')
-                    ]),
-                    'fontdata' => $fontData + [
-                        'custom_bold' => [
-                            'R' => $pdf_font_bold.'.ttf',
-                        ],
-                        'custom_regular' => [
-                            'R' => $pdf_font_regular.'.ttf',
-                        ],
-                    ]
-                ]);
+                                    'mode'          => 'utf-8',
+                                    'format'        => [
+                                        210,
+                                        $diferencia + $alto,
+                                    ],
+                                    'margin_top'    => 2,
+                                    'margin_right'  => 5,
+                                    'margin_bottom' => 0,
+                                    'margin_left'   => 5,
+                                ]);
+
+
+            } else {
+
+                $pdf_font_regular = config('tenant.pdf_name_regular');
+                $pdf_font_bold = config('tenant.pdf_name_bold');
+
+                if ($pdf_font_regular != false) {
+                    $defaultConfig = (new ConfigVariables())->getDefaults();
+                    $fontDirs = $defaultConfig['fontDir'];
+
+                    $defaultFontConfig = (new FontVariables())->getDefaults();
+                    $fontData = $defaultFontConfig['fontdata'];
+
+                    $pdf = new Mpdf([
+                                        'fontDir'  => array_merge($fontDirs, [
+                                            app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
+                                                     DIRECTORY_SEPARATOR.'pdf'.
+                                                     DIRECTORY_SEPARATOR.$base_template.
+                                                     DIRECTORY_SEPARATOR.'font'),
+                                        ]),
+                                        'fontdata' => $fontData + [
+                                                'custom_bold'    => [
+                                                    'R' => $pdf_font_bold.'.ttf',
+                                                ],
+                                                'custom_regular' => [
+                                                    'R' => $pdf_font_regular.'.ttf',
+                                                ],
+                                            ],
+                                    ]);
+                }
             }
         }
 
         $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                             DIRECTORY_SEPARATOR.'pdf'.
-                                             DIRECTORY_SEPARATOR.$base_template.
-                                             DIRECTORY_SEPARATOR.'style.css');
+                             DIRECTORY_SEPARATOR.'pdf'.
+                             DIRECTORY_SEPARATOR.$base_template.
+                             DIRECTORY_SEPARATOR.'style.css');
 
         $stylesheet = file_get_contents($path_css);
 
@@ -713,8 +735,8 @@ class OrderNoteController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if ($format_pdf != 'ticket') {
-            if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template,$this->order_note);
+            if (config('tenant.pdf_template_footer')) {
+                $html_footer = $template->pdfFooter($base_template, $this->order_note);
                 $pdf->SetHTMLFooter($html_footer);
             }
             //$html_footer = $template->pdfFooter();
