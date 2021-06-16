@@ -553,4 +553,99 @@ class Item extends ModelTenant
         return $data;
     }
 
+    /**
+     * Retorna un standar de nomenclatura para el modelo
+     *
+     * @param \App\Models\Tenant\Configuration|null $configuration
+     *
+     * @return array
+     */
+    public function getCollectionData(Configuration $configuration = null){
+        if(empty($configuration)){
+            $configuration =  Configuration::first();
+        }
+        $brand = null;
+        if (!empty($this->brand_id)) {
+            $brand = $this->brand()->first()->name;
+        }
+        $has_igv_description = null;
+        $purchase_has_igv_description = null;
+
+        $affectation_igv_types_exonerated_unaffected = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37'];
+
+        if (in_array($this->sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
+            $has_igv_description = 'No';
+        } else {
+            $has_igv_description = ((bool)$this->has_igv) ? 'Si' : 'No';
+        }
+
+        if (in_array($this->purchase_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
+            $purchase_has_igv_description = 'No';
+        } else {
+            $purchase_has_igv_description = ((bool)$this->purchase_has_igv) ? 'Si' : 'No';
+        }
+
+        return [
+            'id'                           => $this->id,
+            'unit_type_id'                 => $this->unit_type_id,
+            'description'                  => $this->description,
+            'name'                         => $this->name,
+            'second_name'                  => $this->second_name,
+            'model'                        => $this->model,
+            'barcode'                      => $this->barcode,
+            'brand'                        => $brand,
+            'warehouse_id'                 => $this->warehouse_id,
+            'internal_id'                  => $this->internal_id,
+            'item_code'                    => $this->item_code,
+            'item_code_gs1'                => $this->item_code_gs1,
+            'stock'                        => $this->getStockByWarehouse(),
+            'stock_min'                    => $this->stock_min,
+            'currency_type_id'             => $this->currency_type_id,
+            'currency_type_symbol'         => $this->currency_type->symbol,
+            'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'amount_sale_unit_price'       => $this->sale_unit_price,
+            'calculate_quantity'           => (bool)$this->calculate_quantity,
+            'has_igv'                      => (bool)$this->has_igv,
+            'active'                       => (bool)$this->active,
+            'has_igv_description'          => $has_igv_description,
+            'purchase_has_igv_description' => $purchase_has_igv_description,
+            'sale_unit_price'              => "{$this->currency_type->symbol} {$this->sale_unit_price}",
+            'purchase_unit_price'          => "{$this->currency_type->symbol} {$this->purchase_unit_price}",
+            'created_at'                   => ($this->created_at) ? $this->created_at->format('Y-m-d H:i:s') : '',
+            'updated_at'                   => ($this->created_at) ? $this->updated_at->format('Y-m-d H:i:s') : '',
+            'warehouses'                   => collect($this->warehouses)->transform(function ($row) {
+                return [
+                    'warehouse_description' => $row->warehouse->description,
+                    'stock'                 => $row->stock,
+                ];
+            }),
+            'apply_store'                  => (bool)$this->apply_store,
+            'image_url'                    => ($this->image !== 'imagen-no-disponible.jpg')
+                ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image)
+                : asset("/logo/{$this->image}"),
+            'image_url_medium'             => ($this->image_medium !== 'imagen-no-disponible.jpg')
+                ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image_medium)
+                : asset("/logo/{$this->image_medium}"),
+            'image_url_small'              => ($this->image_small !== 'imagen-no-disponible.jpg')
+                ? asset('storage'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'items'.DIRECTORY_SEPARATOR.$this->image_small)
+                : asset("/logo/{$this->image_small}"),
+            'tags'                         => $this->tags,
+            'tags_id'                      => $this->tags->pluck('tag_id'),
+            'item_unit_types'              => collect($this->item_unit_types)->transform(function ($row) use ($configuration) {
+                return [
+                    'id'            => $row->id,
+                    'description'   => "{$row->description}",
+                    'item_id'       => $row->item_id,
+                    'unit_type_id'  => $row->unit_type_id,
+                    'quantity_unit' => number_format($this->quantity_unit, $configuration->decimal_quantity, '.', ''),
+                    'price1'        => number_format($this->price1, $configuration->decimal_quantity, '.', ''),
+                    'price2'        => number_format($this->price2, $configuration->decimal_quantity, '.', ''),
+                    'price3'        => number_format($this->price3, $configuration->decimal_quantity, '.', ''),
+                    'price_default' => $this->price_default,
+                ];
+            }),
+
+
+        ];
+    }
 }

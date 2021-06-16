@@ -8,8 +8,16 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
+use Illuminate\Database\Eloquent\Model;
 
 
+/**
+ * Class User
+ *
+ * @package App\Models\Tenant
+ * @mixin Model
+ * @mixin Authenticatable
+ */
 class User extends Authenticatable
 {
     use Notifiable, UsesTenantConnection;

@@ -246,19 +246,28 @@ class DocumentController extends Controller
     public function table($table)
     {
         if ($table === 'customers') {
-            $customers = Person::with('addresses')->whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
-                return [
-                    'id' => $row->id,
-                    'description' => $row->number.' - '.$row->name,
-                    'name' => $row->name,
-                    'number' => $row->number,
-                    'identity_document_type_id' => $row->identity_document_type_id,
-                    'identity_document_type_code' => $row->identity_document_type->code,
-                    'addresses' => $row->addresses,
-                    'address' =>  $row->address,
-                    'internal_code' => $row->internal_code
-                ];
-            });
+            $customers = Person::with('addresses')
+                               ->whereType('customers')
+                               ->whereIsEnabled()
+                               ->orderBy('name')
+                               ->take(20)
+                               ->get()->transform(function ($row) {
+                    /** @var Person $row */
+                    return $row->getCollectionData();
+                    /** Se ha movido la salida, al modelo */
+                    return [
+                        'id'                          => $row->id,
+                        'description'                 => $row->number.' - '.$row->name,
+                        'name'                        => $row->name,
+                        'number'                      => $row->number,
+                        'identity_document_type_id'   => $row->identity_document_type_id,
+                        'identity_document_type_code' => $row->identity_document_type->code,
+                        'addresses'                   => $row->addresses,
+                        'address'                     => $row->address,
+                        'internal_code'               => $row->internal_code,
+                    ];
+
+                });
             return $customers;
         }
 
