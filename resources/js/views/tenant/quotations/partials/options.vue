@@ -227,6 +227,17 @@
                         ></small>
                     </div>
                 </div>
+                <div class="col-lg-4 col-md-4">
+
+                    <div :class="{'has-danger': errors.seller_id}" class="form-group">
+                        <label class="control-label">Vendedor</label>
+                        <el-select v-model="document.seller_id" clearable>
+                            <el-option v-for="option in sellers" :key="option.id" :label="option.name"
+                                       :value="option.id">{{ option.name }}
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
                 <div v-show="is_document_type_invoice && document.payment_condition_id === '02'" class="col-lg-12">
                     <table v-if="document.fee.length>0" width="100%">
                         <thead>
@@ -445,6 +456,7 @@ export default {
             payment_destinations: [],
             loading_search: false,
             payment_method_types: [],
+            sellers: [],
         };
     },
     created() {
@@ -721,6 +733,9 @@ export default {
             if(q.additional_information !== undefined && q.additional_information  != null) {
                 this.document.additional_information = q.additional_information;
             }
+            if(q.seller_id !== undefined && q.seller_id  != null) {
+                this.document.seller_id = q.seller_id;
+            }
             this.document.actions = {
                 format_pdf: "a4",
             };
@@ -740,6 +755,7 @@ export default {
                         response.data.payment_destinations;
                     this.payment_method_types =
                         response.data.payment_method_types;
+                    this.sellers = response.data.sellers
                     // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
                     // this.changeDocumentType()
                 });
