@@ -2,45 +2,43 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use Exception;
-use Mpdf\Mpdf;
-use Mpdf\HTMLParserMode;
-use App\Models\Tenant\Item;
-use App\Models\Tenant\User;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Series;
-use App\Models\Tenant\Company;
-use Mpdf\Config\FontVariables;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
+use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
-use App\Models\Tenant\Quotation;
-use App\Models\Tenant\StateType;
-use App\Models\Tenant\Warehouse;
-use Mpdf\Config\ConfigVariables;
-use Illuminate\Support\Facades\DB;
-use App\Mail\Tenant\QuotationEmail;
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Configuration;
-use App\Models\Tenant\Establishment;
-use Illuminate\Support\Facades\Mail;
-use App\Models\Tenant\PaymentMethodType;
-use Modules\Finance\Traits\FinanceTrait;
-use App\Models\Tenant\Catalogs\PriceType;
+use App\Http\Requests\Tenant\QuotationRequest;
+use App\Http\Resources\Tenant\QuotationCollection;
+use App\Http\Resources\Tenant\QuotationResource;
+use App\Mail\Tenant\QuotationEmail;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
-use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
-use App\Http\Requests\Tenant\QuotationRequest;
-use App\Http\Resources\Tenant\QuotationResource;
-use App\Http\Resources\Tenant\QuotationResource2;
-use App\Http\Resources\Tenant\QuotationCollection;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
-use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Quotation;
+use App\Models\Tenant\Series;
+use App\Models\Tenant\StateType;
+use App\Models\Tenant\User;
+use App\Models\Tenant\Warehouse;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Modules\Finance\Traits\FinanceTrait;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\HTMLParserMode;
+use Mpdf\Mpdf;
 
 
 class QuotationController extends Controller
@@ -136,22 +134,25 @@ class QuotationController extends Controller
     public function searchCustomers(Request $request)
     {
 
-        $customers = Person::where('number','like', "%{$request->input}%")
-                            ->orWhere('name','like', "%{$request->input}%")
-                            ->whereType('customers')->orderBy('name')
-                            ->whereIsEnabled()
-                            ->get()->transform(function($row) {
-                                return [
-                                    'id' => $row->id,
-                                    'description' => $row->number.' - '.$row->name,
-                                    'name' => $row->name,
-                                    'number' => $row->number,
-                                    'identity_document_type_id' => $row->identity_document_type_id,
-                                    'identity_document_type_code' => $row->identity_document_type->code,
-                                    'addresses' => $row->addresses,
-                                    'address' =>  $row->address
-                                ];
-                            });
+        $customers = Person::where('number', 'like', "%{$request->input}%")
+                           ->orWhere('name', 'like', "%{$request->input}%")
+                           ->whereType('customers')->orderBy('name')
+                           ->whereIsEnabled()
+                           ->get()->transform(function ($row) {
+                /** @var Person $row */
+                return $row->getCollectionData();
+                /* Se ha movido al modelo */
+                return [
+                    'id'                          => $row->id,
+                    'description'                 => $row->number.' - '.$row->name,
+                    'name'                        => $row->name,
+                    'number'                      => $row->number,
+                    'identity_document_type_id'   => $row->identity_document_type_id,
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                    'addresses'                   => $row->addresses,
+                    'address'                     => $row->address,
+                ];
+            });
 
         return compact('customers');
     }
@@ -381,6 +382,9 @@ class QuotationController extends Controller
             case 'customers':
 
                 $customers = Person::whereType('customers')->whereIsEnabled()->orderBy('name')->take(20)->get()->transform(function($row) {
+                    /** @var Person $row */
+                    return $row->getCollectionData();
+                    /** Se ha movido al modelo */
                     return [
                         'id' => $row->id,
                         'description' => $row->number.' - '.$row->name,
@@ -448,7 +452,11 @@ class QuotationController extends Controller
      */
     public function ReturnItem( &$item)
     {
-        $item->transform(function ($row) {
+        $configuration =  Configuration::first();
+        $item->transform(function ($row) use($configuration) {
+            /** @var \App\Models\Tenant\Item $row */
+            return $row->getDataToItemModal($configuration,false,true);
+            /** Se ha movido al modelo*/
             $full_description = $this->getFullDescription($row);
             return [
                 'id' => $row->id,
@@ -508,17 +516,20 @@ class QuotationController extends Controller
     {
 
         $customers = Person::whereType('customers')
-                    ->where('id',$id)
-                    ->get()->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => $row->number.' - '.$row->name,
-                            'name' => $row->name,
-                            'number' => $row->number,
-                            'identity_document_type_id' => $row->identity_document_type_id,
-                            'identity_document_type_code' => $row->identity_document_type->code
-                        ];
-                    });
+                           ->where('id', $id)
+                           ->get()->transform(function ($row) {
+                /** @var Person $row */
+                return $row->getCollectionData();
+                /** Se ha movido al modelo  */
+                return [
+                    'id'                          => $row->id,
+                    'description'                 => $row->number.' - '.$row->name,
+                    'name'                        => $row->name,
+                    'number'                      => $row->number,
+                    'identity_document_type_id'   => $row->identity_document_type_id,
+                    'identity_document_type_code' => $row->identity_document_type->code,
+                ];
+            });
 
         return compact('customers');
     }

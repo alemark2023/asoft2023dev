@@ -433,7 +433,7 @@ class Item extends ModelTenant
         if($extended == false) {
             $desc = "{$desc} - {$brand}";
         }else {
-            $desc = "{$desc} {$category} {$brand}";
+            $desc = "{$desc} - {$category} - {$brand}";
         }
         return [
             'full_description'      => $desc,
