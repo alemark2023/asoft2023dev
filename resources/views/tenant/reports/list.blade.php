@@ -18,6 +18,7 @@
     </div>
 
     <div class="row">
+        <!-- General -->
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -56,6 +57,7 @@
                 </div>
             </div>
         </div>
+        <!-- Compras -->
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -75,6 +77,7 @@
                 </div>
             </div>
         </div>
+        <!-- Ventas -->
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -112,6 +115,7 @@
                 </div>
             </div>
         </div>
+        <!-- Ventas/Comisiones -->
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -127,6 +131,7 @@
                 </div>
             </div>
         </div>
+        <!-- Pedidos -->
         <div class="col-6 col-md-4 mb-4">
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
@@ -137,6 +142,21 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.order_notes_consolidated.index')}}">
+                                Consolidado de items
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Guias -->
+        <div class="col-6 col-md-4 mb-4">
+            <div class="card card-dashboard card-reports">
+                <div class="card-body">
+                    <h6 class="card-title">Guias</h6>
+                    <ul class="card-report-links">
+                        <li>
+                            <a href="{{route('tenant.reports.guides.index')}}">
                                 Consolidado de items
                             </a>
                         </li>

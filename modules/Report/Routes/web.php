@@ -94,6 +94,16 @@ if($current_hostname) {
                     Route::get('pdf-totals', 'ReportOrderNoteConsolidatedController@pdfTotals');
                     Route::get('excel-totals', 'ReportOrderNoteConsolidatedController@excelTotals');
                 });
+                Route::prefix('guides')->group(function () {
+                    Route::get('general-items', 'ReportGuideController@index')->name('tenant.reports.guides.index');
+                    Route::post('filter', 'ReportGuideController@filter');
+                    Route::get('records', 'ReportGuideController@records');
+                    Route::get('totals-by-item', 'ReportGuideController@totalsByItem');
+                    Route::get('pdf', 'ReportGuideController@pdf');
+                    Route::get('pdf-totals', 'ReportGuideController@pdfTotals');
+                    Route::get('excel', 'ReportGuideController@excel');
+                    Route::get('excel-totals', 'ReportGuideController@excelTotals');
+                });
 
                 Route::get('general-items', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
                 Route::get('general-items/excel', 'ReportGeneralItemController@excel');
