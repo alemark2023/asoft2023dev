@@ -21,6 +21,8 @@ class ItemCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) use($configuration){
             /** @var \App\Models\Tenant\Item  $row */
 
+            return $row->getCollectionData($configuration);
+            /** Se ha movido la salida, al modelo */
             $brand = null;
             if(!empty($row->brand_id)) {
                 $brand = $row->brand()->first()->name;

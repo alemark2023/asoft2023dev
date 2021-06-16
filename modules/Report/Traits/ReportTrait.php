@@ -201,9 +201,19 @@ trait ReportTrait
 
     }
 
-    public function getItems(){
+    /**
+     * @param string                              $str
+     * @param \Illuminate\Support\Collection|null $ids
+     *
+     * @return \App\Models\Tenant\Item
+     */
+    public function getItems($str = '', \Illuminate\Support\Collection  $ids = null){
 
-        $items = Item::orderBy('description')->take(20)->get()->transform(function($row) {
+        $items = Item::orderBy('description');
+        if( count($ids)!=0){
+            $items->wherein('id',$ids);
+        }
+        $items->take(20)->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
