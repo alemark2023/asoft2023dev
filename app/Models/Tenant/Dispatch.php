@@ -2,11 +2,12 @@
 
 namespace App\Models\Tenant;
 
+use App\CoreFacturalo\Facturalo;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\TransferReasonType;
 use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 use Modules\Order\Models\OrderForm;
 
 
@@ -350,6 +351,35 @@ class Dispatch extends ModelTenant
             'reference_document_id'  => $this->reference_document_id,
             'created_at'             => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at'             => $this->updated_at->format('Y-m-d H:i:s'),
+            'soap_shipping_response' => $this->soap_shipping_response,
         ];
     }
+
+
+    /**
+     * Devuelve la clase Facturalo con los elementos cargados
+     *
+     * @return \App\CoreFacturalo\Facturalo
+     */
+    public function getFacturalo(){
+
+        $model = $this;
+        return DB::connection('tenant')->transaction(function () use ($model) {
+            $facturalo = new Facturalo();
+            return $facturalo->loadDocument($model->id, 'dispatch') ;
+        });
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function wasSend(){
+        $temp = $this->soap_shipping_response;
+        if (empty($temp)) {
+            return false;
+        }
+        return $temp->sent;
+    }
+
 }

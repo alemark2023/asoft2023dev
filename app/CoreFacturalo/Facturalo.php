@@ -36,6 +36,11 @@ use App\CoreFacturalo\WS\Validator\XmlErrorCodeProvider;
 use Modules\Inventory\Models\Warehouse;
 use App\CoreFacturalo\Requests\Inputs\Functions;
 
+/**
+ * Class Facturalo
+ *
+ * @package App\CoreFacturalo
+ */
 class Facturalo
 {
     use StorageDocument, FinanceTrait, KardexTrait;
@@ -161,6 +166,7 @@ class Facturalo
                 $this->document = Dispatch::find($document->id);
                 break;
         }
+        return $this;
     }
 
     public function sendEmail()
@@ -183,6 +189,7 @@ class Facturalo
         $template = new Template();
         $this->xmlUnsigned = XmlFormat::format($template->xml($this->type, $this->company, $this->document));
         $this->uploadFile($this->xmlUnsigned, 'unsigned');
+        return $this;
     }
 
     public function signXmlUnsigned()
@@ -191,6 +198,7 @@ class Facturalo
         $this->signer->setCertificateFromFile($this->pathCertificate);
         $this->xmlSigned = $this->signer->signXml($this->xmlUnsigned);
         $this->uploadFile($this->xmlSigned, 'signed');
+        return $this;
     }
 
     public function updateHash()
@@ -548,12 +556,14 @@ class Facturalo
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $this->uploadFile($pdf->output('', 'S'), 'pdf');
+        return $this;
     }
 
     public function loadXmlSigned()
     {
         $this->xmlSigned = $this->getStorage($this->document->filename, 'signed');
 //        dd($this->xmlSigned);
+        return $this;
     }
 
     private function senderXmlSigned()
@@ -1017,6 +1027,54 @@ class Facturalo
                 $this->document = Document::find($document->id);
                 break;
         }
+    }
+
+    /**
+     * @param array $actions
+     *
+     * @return $this
+     */
+    public function setActions($actions = []){
+        $this->actions = $actions;;
+        return $this;
+    }
+    /**
+     * Carga los elementos segun corresponda.
+     *
+     * @todo Falta determinar Document para credit e invoice
+     *
+     * @param      $id
+     * @param null $type
+     *
+     * @return \App\CoreFacturalo\Facturalo
+     */
+    public function loadDocument($id, $type = null){
+        $this->type = $type;
+        switch ($this->type) {
+            case 'debit':
+            case 'credit':
+                $this->document = Document::find($id);
+                break;
+            case 'invoice':
+                $this->document = Document::find($id);
+                break;
+            case 'summary':
+                $this->document = Summary::find($id);
+                break;
+            case 'voided':
+                $this->document = Voided::find($id);
+                break;
+            case 'retention':
+                $this->document = Retention::find($id);
+                break;
+            case 'perception':
+                $this->document = Perception::find($id);
+                break;
+            default:
+                $this->document = Dispatch::find($id);
+                break;
+        }
+        return $this;
     }
 
     private function saveFee($document, $fee)

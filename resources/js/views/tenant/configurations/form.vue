@@ -197,6 +197,30 @@
                                             <small class="form-control-feedback" v-if="errors.is_pharmacy" v-text="errors.is_pharmacy[0]"></small>
                                         </div>
                                     </div>
+                                    <!-- auto_send_dispatchs_to_sunat -->
+                                    <div class="col-md-6 mt-4">
+                                        <div class="form-group">
+                                            <label class="control-label">
+                                                Enviar la guia de remision automaticamente a sunat
+                                                <!--
+                                                <el-tooltip class="item" effect="dark" placement="top-start">
+                                                    <div slot="content">Al generar una guia basado en el documento, se
+                                                                        actualizará el comprobante de pago
+                                                    </div>
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                                -->
+                                            </label>
+                                            <div :class="{'has-danger': errors.auto_send_dispatchs_to_sunat}"
+                                                 class="form-group">
+                                                <el-switch v-model="form.auto_send_dispatchs_to_sunat" active-text="Si"
+                                                           inactive-text="No" @change="submit"></el-switch>
+                                                <small v-if="errors.auto_send_dispatchs_to_sunat"
+                                                       class="form-control-feedback"
+                                                       v-text="errors.auto_send_dispatchs_to_sunat[0]"></small>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -294,7 +318,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="five">
@@ -438,6 +461,7 @@
                     visual: {},
                     ticket_58: false,
                     update_document_on_dispaches: false,
+                    auto_send_dispatchs_to_sunat: true,
                     is_pharmacy: false,
                 };
             },

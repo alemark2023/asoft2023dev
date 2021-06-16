@@ -40,7 +40,7 @@
                 <p>Imprimir Ticket 50MM</p>
             </div>
 
-            <div class="col text-center font-weight-bold mt-3" v-if="configuration.ticket_58">
+            <div class="col text-center font-weight-bold mt-3" v-if="Ticket58">
 
                 <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickPrint('ticket_58')">
                     <i class="fa fa-receipt"></i>
@@ -117,6 +117,18 @@
         },
         async created() {
             this.initForm()
+        },
+        computed: {
+            Ticket58: function(){
+
+                if(
+                    this.configuration.ticket_58 !== undefined &&
+                    this.configuration.ticket_58){
+                    return this.configuration.ticket_58;
+                }
+
+                return false;
+            }
         },
         methods: {
             clickSendWhatsapp() {
