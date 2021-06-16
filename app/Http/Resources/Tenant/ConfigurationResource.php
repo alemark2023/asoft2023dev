@@ -19,6 +19,8 @@ class ConfigurationResource extends JsonResource
      * @return array
      */
     public function toArray($request) {
+        return $this->getCollectionData();
+        /** Se ha movido al modelo */
         return [
             'id' => $this->id,
             'send_auto' => (bool) $this->send_auto,

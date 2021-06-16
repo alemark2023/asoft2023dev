@@ -171,7 +171,6 @@ class Person extends ModelTenant
      *
      * @return array
      */
-    //getCollectionData
     public function getCollectionData(){
 
         $data = [

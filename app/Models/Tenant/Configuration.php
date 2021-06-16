@@ -63,6 +63,7 @@ class Configuration extends ModelTenant
         'seller_can_view_balance',
         'update_document_on_dispaches',
         'is_pharmacy',
+        'auto_send_dispatchs_to_sunat',
     ];
 
     protected $casts = [
@@ -73,7 +74,27 @@ class Configuration extends ModelTenant
         'seller_can_view_balance' => 'boolean',
         'update_document_on_dispaches' => 'boolean',
         'is_pharmacy' => 'boolean',
+        'auto_send_dispatchs_to_sunat' => 'boolean',
     ];
+
+    /**
+     * @return bool
+     */
+    public function isAutoSendDispatchsToSunat()
+    : bool {
+        return $this->auto_send_dispatchs_to_sunat;
+    }
+
+    /**
+     * @param bool $auto_send_dispatchs_to_sunat
+     *
+     * @return Configuration
+     */
+    public function setAutoSendDispatchsToSunat(bool $auto_send_dispatchs_to_sunat)
+    : Configuration {
+        $this->auto_send_dispatchs_to_sunat = $auto_send_dispatchs_to_sunat;
+        return $this;
+    }
 
     /**
      * @return bool
@@ -292,5 +313,63 @@ class Configuration extends ModelTenant
     public function getFinancesAttribute($value)
     {
         return is_null($value) ? ['apply_arrears' => false, 'arrears_amount' => 0] : (object)json_decode($value);
+    }
+
+    /**
+     * Devuelve un json con las propiedades excluidas
+     *
+     * @return string
+     */
+    public static function getPublicConfig(){
+        $conf = self::first();
+        $data = $conf->getCollectionData();
+
+        return json_encode($data);
+
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getCollectionData() {
+        return [
+            'id'                                     => $this->id,
+            'send_auto'                              => (bool)$this->send_auto,
+            'formats'                                => $this->formats,
+            'stock'                                  => (bool)$this->stock,
+            'cron'                                   => (bool)$this->cron,
+            'sunat_alternate_server'                 => (bool)$this->sunat_alternate_server,
+            'compact_sidebar'                        => (bool)$this->compact_sidebar,
+            'subtotal_account'                       => $this->subtotal_account,
+            'decimal_quantity'                       => $this->decimal_quantity,
+            'amount_plastic_bag_taxes'               => $this->amount_plastic_bag_taxes,
+            'colums_grid_item'                       => $this->colums_grid_item,
+            'options_pos'                            => (bool)$this->options_pos,
+            'edit_name_product'                      => (bool)$this->edit_name_product,
+            'restrict_receipt_date'                  => (bool)$this->restrict_receipt_date,
+            'affectation_igv_type_id'                => $this->affectation_igv_type_id,
+            'visual'                                 => $this->visual,
+            'enable_whatsapp'                        => (bool)$this->enable_whatsapp,
+            'terms_condition'                        => $this->terms_condition,
+            'terms_condition_sale'                   => $this->terms_condition_sale,
+            'cotizaction_finance'                    => (bool)$this->cotizaction_finance,
+            'include_igv'                            => (bool)$this->include_igv,
+            'product_only_location'                  => (bool)$this->product_only_location,
+            'legend_footer'                          => (bool)$this->legend_footer,
+            'default_document_type_03'               => (bool)$this->default_document_type_03,
+            'header_image'                           => $this->header_image,
+            'destination_sale'                       => (bool)$this->destination_sale,
+            'quotation_allow_seller_generate_sale'   => $this->quotation_allow_seller_generate_sale,
+            'allow_edit_unit_price_to_seller'        => $this->allow_edit_unit_price_to_seller,
+            'finances'                               => $this->finances,
+            'ticket_58'                              => (bool)$this->ticket_58,
+            'seller_can_create_product'              => (bool)$this->seller_can_create_product,
+            'seller_can_view_balance'                => (bool)$this->seller_can_view_balance,
+            'seller_can_generate_sale_opportunities' => (bool)$this->seller_can_generate_sale_opportunities,
+            'update_document_on_dispaches'           => (bool)$this->update_document_on_dispaches,
+            'is_pharmacy'                            => (bool)$this->is_pharmacy,
+            'auto_send_dispatchs_to_sunat'           => (bool)$this->auto_send_dispatchs_to_sunat,
+        ];
     }
 }
