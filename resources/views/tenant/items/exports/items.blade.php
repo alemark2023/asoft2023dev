@@ -3,6 +3,7 @@
     ->wherein('item_id',$records->pluck('id'))
     ->groupby('item_id')
     ->get()->max('total');
+
     @endphp<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -35,6 +36,18 @@
                     <th>Posee IGV</th>
                     <th>Categoría</th>
                     <th>Marca</th>
+                    @foreach($extra_data as $item)
+                        <?php
+                        $txt = $item;
+                        if($item == 'sanitary'){
+                            $txt = 'R.S.';
+                        }elseif($item == 'cod_digemid'){
+                            $txt = 'Cod: DIGEMID';
+                        }
+                        ?>
+                        <th>{{$txt}}</th>
+
+                        @endforeach
                     <th>Precio</th>
                     <th>Fecha de vencimiento</th>
                     @for($i=0;$i<$max_prices_columns;$i++)
@@ -50,6 +63,7 @@
                 <tbody>
                 @foreach($records as $key => $value)
                     @php
+                    /** @var \App\Models\Tenant\Item $value */
                         $item_unit_types = $value->item_unit_types->toArray();
                     @endphp
                     <tr>
@@ -63,6 +77,18 @@
                         <td class="celda">{{$value->has_igv }}</td>
                         <td class="celda">{{$value->category_id }}</td>
                         <td class="celda">{{$value->brand_id }}</td>
+
+                        @foreach($extra_data as $item)
+                            <?php
+                            $txt = $value->{$item} ;
+                            if($item == 'sanitary'){
+                                $txt = $value->getSanitary();
+                            }elseif($item == 'cod_digemid'){
+                                $txt = $value->getCodDigemid();
+                            }
+                            ?>
+                            <td class="celda">{{$txt}}</td>
+                        @endforeach
                         <td class="celda">{{$value->sale_unit_price }}</td>
                         <td class="celda">{{$value->date_of_due }}</td>
                         @for($i=0;$i<$max_prices_columns;$i++)

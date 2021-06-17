@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\ItemRequest;
 use App\Http\Resources\Tenant\ItemCollection;
 use App\Http\Resources\Tenant\ItemResource;
+use App\Imports\CatalogImport;
 use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
@@ -74,46 +75,51 @@ class ItemController extends Controller
 
     public function records(Request $request)
     {
+
         $records = $this->getRecords($request);
 
         return new ItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
-    public function getRecords($request){
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getRecords(Request $request){
 
+        $records = Item::whereTypeUser()->whereNotIsSet();
         switch ($request->column) {
 
             case 'brand':
-                $records = Item::whereHas('brand',function($q) use($request){
+                $records->whereHas('brand',function($q) use($request){
                                     $q->where('name', 'like', "%{$request->value}%");
-                                })
-                                ->whereTypeUser()
-                                ->whereNotIsSet();
+                                });
                 break;
 
             case 'active':
-                $records = Item::whereTypeUser()
-                                ->whereNotIsSet()
-                                ->whereIsActive();
+                $records->whereIsActive();
                 break;
 
             case 'inactive':
-                $records = Item::whereTypeUser()
-                                ->whereNotIsSet()
-                                ->whereIsNotActive();
+                $records->whereIsNotActive();
                 break;
 
             default:
-                $records = Item::whereTypeUser()
-                                ->whereNotIsSet()
-                                ->where($request->column, 'like', "%{$request->value}%");
+                $records->where($request->column, 'like', "%{$request->value}%");
                 break;
         }
         if ($request->type) {
-            $records = $records->whereService();
+            $records->whereService();
         }
-
+        $isPharmacy = false;
+        if($request->has('isPharmacy') ){
+            $isPharmacy = ($request->isPharmacy==='true')?true:false;
+        }
+        if($isPharmacy == true){
+            $records->Pharmacy();
+        }
         return $records->orderBy('description');
 
     }
@@ -512,6 +518,34 @@ class ItemController extends Controller
         ];
     }
 
+    public function catalog(Request $request)
+    {
+        $request->validate([
+            'catalog_id' => 'required|numeric|min:1'
+        ]);
+        if ($request->hasFile('file')) {
+            try {
+                $import = new CatalogImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' =>  __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' =>  $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
     public function upload(Request $request)
     {
 
@@ -674,6 +708,11 @@ class ItemController extends Controller
         }
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function export(Request $request)
     {
         $d_start = null;
@@ -696,29 +735,60 @@ class ItemController extends Controller
         // $end_date = Carbon::parse($date)->addMonth()->subDay();
 
         $items = Item::whereTypeUser()->whereNotIsSet();
+        $extradata = [];
+        $isPharmacy = false;
+        if($request->has('isPharmacy') ){
+            $isPharmacy = ($request->isPharmacy==='true')?true:false;
+        }
+        if($isPharmacy == true){
+            $extradata[]='sanitary';
+            $extradata[]='cod_digemid';
+            $items->Pharmacy();
+        }
 
-        $records = ($period == 'all') ? $items->get() : $items->whereBetween('created_at', [$d_start, $d_end])->get();
+        if($period !== 'all'){
+            $items->whereBetween('created_at', [$d_start, $d_end]);
+        }
 
-        return (new ItemExport)
-                ->records($records)
-                ->download('Reporte_Items_'.Carbon::now().'.xlsx');
+        $records =  $items->get();
+        return (new ItemExport())
+            ->setExtraData($extradata)
+            ->records($records)
+            ->download('Reporte_Items_'.Carbon::now().'.xlsx');
 
     }
 
-    public function exportWp(Request $request)
-    {
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportWp(Request $request) {
         $date = $request->month_start.'-01';
         $start_date = Carbon::parse($date);
         $end_date = Carbon::parse($date)->addMonth()->subDay();
 
-        $records = Item::whereBetween('created_at', [$start_date, $end_date])->get();
-
-        return (new ItemExportWp)
-                ->records($records)
-                ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV);
+        $records = Item::whereBetween('created_at', [$start_date, $end_date]);
+        $extradata = [];
+        if ($request->has('isPharmacy') && $request->isPharmacy == true) {
+            $extradata[] = 'sanitary';
+            $extradata[] = 'cod_digemid';
+            $records->Pharmacy();
+        }
+        $records = $records->get();
+        return (new ItemExportWp())
+            ->setExtraData($extradata)
+            ->records($records)
+            ->download('Reporte_Items_'.Carbon::now().'.csv', Excel::CSV);
 
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @throws \Mpdf\MpdfException
+     * @throws \Throwable
+     */
     public function exportBarCode(Request $request)
     {
         ini_set("pcre.backtrack_limit", "50000000");
@@ -726,8 +796,19 @@ class ItemController extends Controller
         $start = $request[0];
         $end = $request[1];
 
-        $records = Item::whereBetween('id', [$start, $end])->get();
-
+        $records = Item::whereBetween('id', [$start, $end]);
+        $extradata = [];
+        $isPharmacy = false;
+        if($request->has('isPharmacy') ){
+            $isPharmacy = ($request->isPharmacy==='true')?true:false;
+        }
+        if($isPharmacy == true){
+            $extradata[]='sanitary';
+            $extradata[]='cod_digemid';
+            $records->Pharmacy();
+        }
+        $extra_data = $extradata;
+        $records = $records->get();
         $pdf = new Mpdf([
                 'mode' => 'utf-8',
                 'format' => [
@@ -739,7 +820,7 @@ class ItemController extends Controller
                 'margin_bottom' => 0,
                 'margin_left' => 2
             ]);
-        $html = view('tenant.items.exports.items-barcode', compact('records'))->render();
+        $html = view('tenant.items.exports.items-barcode', compact('records','extra_data'))->render();
 
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
