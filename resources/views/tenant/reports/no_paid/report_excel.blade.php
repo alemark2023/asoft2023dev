@@ -47,8 +47,8 @@
                                 <th>#</th>
                                 <th class="text-center">Fecha Emisión</th>
                                 <th>Número</th>
-
                                 <th>Cliente</th>
+                                <th>Moneda</th>
                                 <th>Por cobrar</th>
                                 <th>Total</th>
 
@@ -62,8 +62,8 @@
                                         <td class="celda">{{$loop->iteration}}</td>
                                         <td class="celda">{{$value['date_of_issue']}}</td>
                                         <td class="celda">{{$value['number_full']}}</td>
-
                                         <td class="celda">{{$value['customer_name']}}</td>
+                                        <td class="celda">{{$value['currency_type_id']}}</td>
                                         <td class="celda">{{$value['total_to_pay']}}</td>
                                         <td class="celda">{{$value['total']}}</td>
                                     </tr>
