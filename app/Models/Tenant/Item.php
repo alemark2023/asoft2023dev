@@ -814,15 +814,7 @@ class Item extends ModelTenant
         $model = substr($data[5],0,100);
         $line = substr($data[4],0,255);
 
-        $this->item_type_id = '01';
-        $this->sale_affectation_igv_type_id = 10;
-        $this->purchase_affectation_igv_type_id = $this->sale_affectation_igv_type_id;
-        $this->internal_id = $data[0];
         $this->cod_digemid = $data[0];
-        $this->sanitary = $data[8];
-        $this->description = $data[1];
-        $this->second_name = $this->description." ". $data[2];
-        $this->name = $data[3]. " ".$this->second_name;
 
         $active = 1;
         if(strtolower(trim($data[10])) !== 'act'){
@@ -831,6 +823,14 @@ class Item extends ModelTenant
         $warehouse = auth()->user()->establishment_id;
         $today =  Carbon::now()->format('Y-m-d');
         $this
+            ->setInArray('sanitary',$data[8])
+            ->setInArray('internal_id',$data[0])
+            ->setInArray('description',$data[1])
+            ->setInArray('second_name',$data[1]." ".$data[2])
+            ->setInArray('name', $data[3].' '. $data[1]." ".$data[2])
+            ->setInArray('sale_affectation_igv_type_id',10)
+            ->setInArray('purchase_affectation_igv_type_id',$this->sale_affectation_igv_type_id)
+            ->setInArray('item_type_id','01')
             ->setInArray('barcode',$this->internal_id)
             ->setInArray('lot_code',$this->internal_id)
             ->setInArray('model',$model)
