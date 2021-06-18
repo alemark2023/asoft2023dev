@@ -49,10 +49,9 @@
                                 <th>Número</th>
                                 <th>Cliente</th>
                                 <th>Vendedor</th>
+                                <th>Moneda</th>
                                 <th>Por Pagar</th>
                                 <th>Total</th>
-
-
                             </tr>
                         </thead>
                         <tbody>
@@ -71,6 +70,7 @@
                                         <td class="celda">{{$value['number_full']}}</td>
                                         <td class="celda">{{$value['supplier_name']}}</td>
                                         <td class="celda">{{$user_name}}</td>
+                                        <td class="celda">{{$value['currency_type_id']}}</td>
                                         <td class="celda">{{$value['total_to_pay']}}</td>
                                         <td class="celda">{{$value['total']}}</td>
                                     </tr>
