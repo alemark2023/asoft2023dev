@@ -300,6 +300,9 @@ Vue.component('system-login-settings', require('./views/system/configuration/log
 // Configuración del login
 Vue.component('tenant-login-page', require('./views/tenant/login/index.vue'))
 
+/** Modulo DIGEMID **/
+Vue.component('tenant-digemid-index', require('../../modules/Digemid/Resources/assets/js/view/index.vue'));
+
 import moment from 'moment';
 
 Vue.mixin({

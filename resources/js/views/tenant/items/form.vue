@@ -170,7 +170,7 @@
                             </div>
                         </div>
                         <!-- sanitary -->
-                        <div class="col-md-3" v-show="configuration.is_pharmacy" >
+                        <div class="col-md-3" v-show="showPharmaElement" >
                             <div class="form-group" :class="{'has-danger': errors.sanitary}">
                                 <label class="control-label">
                                    Registro Sanitario
@@ -188,7 +188,7 @@
                             </div>
                         </div>
                         <!-- cod_digemid -->
-                        <div class="col-md-3" v-show="configuration.is_pharmacy" >
+                        <div class="col-md-3" v-show="showPharmaElement" >
                             <div class="form-group" :class="{'has-danger': errors.cod_digemid}">
                                 <label class="control-label">
                                    Código DIGEMID
@@ -545,8 +545,22 @@
 import LotsForm from './partials/lots.vue'
 
 export default {
-        props: ['showDialog', 'recordId', 'external', 'type'],
+        props: [
+            'showDialog',
+            'recordId',
+            'external',
+            'type',
+            'pharmacy',
+        ],
         components: {LotsForm},
+    computed:{
+      showPharmaElement(){
+
+          if(this.fromPharmacy === true) return true;
+          if(this.configuration.is_pharmacy === true) return true;
+          return false;
+      },
+    },
 
         data() {
             return {
@@ -586,10 +600,14 @@ export default {
 
                 },
                 attribute_types:  [],
-                activeName: 'first'
+                activeName: 'first',
+                fromPharmacy: false,
             }
         },
         async created() {
+            if(this.pharmacy !== undefined && this.pharmacy == true){
+                this.fromPharmacy = true;
+            }
             await this.initForm();
 
                 await this.$http.get(`/${this.resource}/tables`)
@@ -629,6 +647,7 @@ export default {
                 this.$http.get(`/configurations/record`) .then(response => {
                     this.form.has_igv = response.data.data.include_igv
                     this.form.purchase_has_igv = response.data.data.include_igv
+                    this.$setStorage('configuration',response.data.data)
                 })
             },
             clickAddAttribute() {
@@ -903,6 +922,14 @@ export default {
 
                 if(this.validateItemUnitTypes() > 0) return this.$message.error('El campo factor no puede ser menor a 0.0001');
 
+                if(this.fromPharmacy === true){
+                    if(this.form.cod_digemid === null ){
+                        return this.$message.error('Debe haber un codigo DIGEMID');
+                    }
+                    if(this.form.sanitary === null ){
+                        return this.$message.error('Debe haber un Registro Sanitario');
+                    }
+                }
                 if(this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
 
                 if(this.form.lots_enabled){

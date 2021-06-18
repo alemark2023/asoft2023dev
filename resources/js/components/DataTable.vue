@@ -25,10 +25,10 @@
                     <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
                         <template
                             v-if="
-                                search.column == 'date_of_issue' ||
-                                    search.column == 'date_of_due' ||
-                                    search.column == 'date_of_payment' ||
-                                    search.column == 'delivery_date'
+                                search.column === 'date_of_issue' ||
+                                    search.column === 'date_of_due' ||
+                                    search.column === 'date_of_payment' ||
+                                    search.column === 'delivery_date'
                             "
                         >
                             <el-date-picker
@@ -100,7 +100,8 @@ export default {
             type: Boolean,
             default: true,
             required: false
-        }
+        },
+        pharmacy: Boolean,
     },
     data() {
         return {
@@ -111,10 +112,14 @@ export default {
             columns: [],
             records: [],
             pagination: {},
-            loading_submit: false
+            loading_submit: false,
+            fromPharmacy: false,
         };
     },
     created() {
+        if(this.pharmacy !== undefined && this.pharmacy === true){
+            this.fromPharmacy = true;
+        }
         this.$eventHub.$on("reloadData", () => {
             this.getRecords();
         });
@@ -161,6 +166,7 @@ export default {
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
+                isPharmacy:this.fromPharmacy,
                 ...this.search
             });
         },
