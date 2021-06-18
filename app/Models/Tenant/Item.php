@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\Tenant;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
@@ -827,30 +828,44 @@ class Item extends ModelTenant
         if(strtolower(trim($data[10])) !== 'act'){
             $active = 0;
         }
+        $warehouse = auth()->user()->establishment_id;
+        $today =  Carbon::now()->format('Y-m-d');
         $this
+            ->setInArray('barcode',$this->internal_id)
+            ->setInArray('lot_code',$this->internal_id)
             ->setInArray('model',$model)
             ->setInArray('line',$line)
-            ->setInArray('lots_enabled',1)
+            ->setInArray('lots_enabled',true)
             ->setInArray('stock',0)
             ->setInArray('stock_min',0)
             ->setInArray('currency_type_id','PEN')
             ->setInArray('unit_type_id','NIU')
             ->setInArray('active',$active)
             ->setInArray('sale_unit_price',1)
-            ->setInArray('has_igv',1)
+            ->setInArray('sale_unit_price_set',null)
+            ->setInArray('has_igv',true)
+            ->setInArray('is_set',false)
+            ->setInArray('purchase_has_igv',true)
+            ->setInArray('amount_plastic_bag_taxes',0.1)
+            ->setInArray('purchase_unit_price',0)
+            ->setInArray('percentage_isc',0)
+            ->setInArray('suggested_price',0)
+            ->setInArray('has_plastic_bag_taxes',false)
+            ->setInArray('has_isc',false)
+            ->setInArray('has_plastic_bag_taxes',false)
+            ->setInArray('warehouse_id',$warehouse)
+            ->setInArray('image','imagen-no-disponible.jpg')
+            ->setInArray('image_medium','imagen-no-disponible.jpg')
+            ->setInArray('image_small','imagen-no-disponible.jpg')
+            ->setInArray('date_of_due',$today)
+            ->setInArray('item_code',$this->cod_digemid)
+            ->setInArray('brand_id',null)
+            ->setInArray('category_id',null)
 
         /*
-
-        'warehouse_id',
         'technical_specifications',
-        'item_type_id',
-        'item_code',
         'item_code_gs1',
-        'purchase_unit_price',
-        'has_isc',
         'system_isc_type_id',
-        'percentage_isc',
-        'suggested_price',
         'sale_affectation_igv_type_id',
         'purchase_affectation_igv_type_id',
         'calculate_quantity',
@@ -858,23 +873,10 @@ class Item extends ModelTenant
         'attributes',
         'has_perception',
         'percentage_perception',
-        'image',
-        'image_medium',
-        'image_small',
         'account_id',
-        'amount_plastic_bag_taxes',
-        'date_of_due',
-        'is_set',
-        'sale_unit_price_set',
         'apply_store',
-        'brand_id',
-        'category_id',
-        'lot_code',
         'series_enabled',
-        'purchase_has_igv',
         'web_platform_id',
-        'has_plastic_bag_taxes',
-        'barcode',
         */
         ;
         $this->description = substr($this->description,0,600);

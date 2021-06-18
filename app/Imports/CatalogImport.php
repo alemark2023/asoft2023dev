@@ -20,14 +20,90 @@
         use Importable;
 
         protected $data;
+        /** @var array */
+        protected $items;
+        /** @var array */
+        protected $updated;
+        /** @var array */
+        protected $news;
+
+        /**
+         * @return array
+         */
+        public function getUpdated()
+        : array {
+            if(empty($this->updated)) return [];
+            return $this->updated;
+        }
+
+        /**
+         * @param array $updated
+         *
+         * @return CatalogImport
+         */
+        public function setUpdated(array $updated)
+        : CatalogImport {
+            $this->updated = $updated;
+            return $this;
+        }
+
+        /**
+         * @return array
+         */
+        public function getNews()
+        : array {
+            if(empty($this->news)) return [];
+            return $this->news;
+        }
+
+        /**
+         * @param array $news
+         *
+         * @return CatalogImport
+         */
+        public function setNews(array $news)
+        : CatalogImport {
+            $this->news = $news;
+            return $this;
+        }
+
+        /**
+         * @return array
+         */
+        public function getItems()
+        : array {
+            return $this->items;
+        }
+
+        /**
+         * @param array $items
+         *
+         * @return CatalogImport
+         */
+        public function setItems(array $items)
+        : CatalogImport {
+            $this->items = $items;
+            return $this;
+        }
+        public function addItem(Item $item){
+            $this->items[] = $item;
+            return $this;
+        }
+        public function addUpdated(Item $item){
+            $this->updated[] = $item;
+            return $this;
+        }
+        public function addNew(Item $item){
+            $this->news[] = $item;
+            return $this;
+        }
+
 
         public function collection(Collection $rows) {
             $total = count($rows);
             $registered = 0;
-            $i = 0;
-            unset($rows[0]);
-            $data = [];
-            foreach ($rows as $row) {
+            for($i=0;$i<$total;$i++) {
+                $row = $rows[$i];
                 /*
  0 => 'Cod_Prod'
   1 => 'Nom_Prod'
@@ -66,6 +142,8 @@
                     !empty($Situacion) &&
                     $Cod_Prod !== 'Cod_Prod'
                 ) {
+
+
                     $item = Item::orWhere(function (Builder $q) use ($Cod_Prod) {
                         $q->Where('internal_id', $Cod_Prod);
                         $q->WhereNotNull('internal_id');
@@ -76,21 +154,15 @@
                     if (empty($item)) {
                         $item = new Item();
                     }
-                    \Log::debug('Escribiendo elemento '.($registered +1));
                     $item->fillFormDigemid($row);
-                    if(empty($item->id)){
-                        $item->save();
-                    }else{
-                        $item->push();
-                    }
-                    \Log::debug($item->id);
-                    \Log::debug($item->toJson());
+                    if (!empty($item->id)) {
+                        $this->addUpdated($item);
+                    } else {
+                        $this->addNew($item);
 
-                    $val =  Item::find($item->id);
-                    $c = $val->getConnection();
-                    dd([
-                           $c,$item,$val
-                       ]);
+                    }
+                    $item->push();
+                    $this->addItem($item);
                     ++$registered;
 
                 }

@@ -527,11 +527,15 @@ class ItemController extends Controller
             try {
                 $import = new CatalogImport();
                 $import->import($request->file('file'), null, Excel::XLSX);
-                $data = $import->getData();
+                $items = $import->getItems();
+                $new = $import->getNews();
+                $updated  = $import->getUpdated();
                 return [
                     'success' => true,
                     'message' =>  __('app.actions.upload.success'),
-                    'data' => $data
+                    'data' => count($items),
+                    'new' => count($new),
+                    'updated' => count($updated),
                 ];
             } catch (Exception $e) {
                 return [
