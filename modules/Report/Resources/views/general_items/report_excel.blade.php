@@ -23,6 +23,9 @@
                                 <th>DOC ENTIDAD TIPO DNI RUC</th>
                                 <th>DOC ENTIDAD NÚMERO</th>
                                 <th>DENOMINACIÓN ENTIDAD</th>
+                                @if($type == 'sale')
+                                <th>VENDEDOR</th>
+                                @endif
                                 <th>MONEDA</th>
                                 <th>TIPO DE CAMBIO</th>
                                 <th>UNIDAD DE MEDIDA</th>
@@ -89,6 +92,7 @@
                                             <td class="celda">{{$value->sale_note->customer->identity_document_type->description}}</td>
                                             <td class="celda">{{$value->sale_note->customer->number}}</td>
                                             <td class="celda">{{$value->sale_note->customer->name}}</td>
+                                            <td class="celda">{{$value->sale_note->user->name}}</td>
                                             <td class="celda">{{$value->sale_note->currency_type_id}}</td>
                                             <td class="celda">{{$value->sale_note->exchange_rate_sale}}</td>
                                             <td class="celda">{{$value->relation_item->unit_type->description}}</td>
@@ -158,6 +162,7 @@
                                         <td class="celda">{{$value->document->customer->identity_document_type->description}}</td>
                                         <td class="celda">{{$value->document->customer->number}}</td>
                                         <td class="celda">{{$value->document->customer->name}}</td>
+                                        <td class="celda">{{$value->document->seller_id == null ? $value->document->user->name : $value->document->seller->name}}</td>
                                         <td class="celda">{{$value->document->currency_type_id}}</td>
                                         <td class="celda">{{$value->document->exchange_rate_sale}}</td>
                                         <td class="celda">{{$value->item->unit_type_id}}</td>

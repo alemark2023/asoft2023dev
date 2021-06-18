@@ -210,7 +210,7 @@ trait ReportTrait
     public function getItems($str = '', \Illuminate\Support\Collection  $ids = null){
 
         $items = Item::orderBy('description');
-        if( count($ids)!=0){
+        if($ids!=null){
             $items->wherein('id',$ids);
         }
         $items->take(20)->get()->transform(function($row) {
