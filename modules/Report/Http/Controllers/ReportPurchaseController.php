@@ -14,11 +14,24 @@ use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use App\Http\Resources\Tenant\PurchaseCollection;
 
+/**
+ * Class ReportPurchaseController
+ *
+ * @package Modules\Report\Http\Controllers
+ */
 class ReportPurchaseController extends Controller
 {
     use ReportTrait;
 
+public function general_items(){
+    $typeresource = 'reports/purchases/general_items';
+    $typereport = 'purchase';
+    return view('report::general_items.index',compact('typeresource','typereport'));
 
+}
+    /**
+     * @return array
+     */
     public function filter() {
 
         $document_types = DocumentType::whereIn('id', ['01', '03','GU75', 'NE76'])->get();
@@ -37,11 +50,19 @@ class ReportPurchaseController extends Controller
     }
 
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+     */
     public function index() {
 
         return view('report::purchases.index');
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\Tenant\PurchaseCollection
+     */
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), Purchase::class);
@@ -50,7 +71,11 @@ class ReportPurchaseController extends Controller
     }
 
 
-
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return mixed
+     */
     public function pdf(Request $request) {
 
         $company = Company::first();
@@ -66,8 +91,11 @@ class ReportPurchaseController extends Controller
     }
 
 
-
-
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function excel(Request $request) {
 
         $company = Company::first();

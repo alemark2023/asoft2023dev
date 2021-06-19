@@ -211,13 +211,12 @@
     export default {
         props: {
             resource: String,
+            configuration: {},
         },
         data () {
             return {
+                config:{},
                 loading_submit:false,
-                items: [],
-                all_items: [],
-                loading_search:false,
                 columns: [],
                 records: [],
                 headers: headers_token,
@@ -256,6 +255,12 @@
             }
         },
         created() {
+
+            if(this.configuration !== undefined && this.configuration !== null && this.configuration.length > 0){
+                this.$setStorage('configuration',this.configuration)
+            }
+            this.config = this.$getStorage('configuration');
+
             this.initForm()
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()

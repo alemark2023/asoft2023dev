@@ -2,11 +2,9 @@
 
 namespace App\Models\Tenant;
 
-use App\Models\Tenant\Person;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Purchase\Models\PurchaseOrder;
 
 /**
@@ -321,4 +319,96 @@ class Purchase extends ModelTenant
         $query->where('date_of_issue', '>=', "$year-01-01");
         return $query;
     }
-}
+
+    /**
+     * @param     $number
+     * @param int $decimal
+     *
+     * @return string
+     */
+    protected static function NumberFormat($number,$decimal = 2){
+        return number_format($number,$decimal,'.','');
+    }
+
+    public function  getCollectionData() {
+        $total = $this->total;
+        if ($this->total_perception) {
+            $total += round($this->total_perception, 2);
+        }
+        $customer_number = '';
+        $customer_name = '';
+        $customer = $this->customer;
+        if (!empty($customer)) {
+            $customer = $customer->first();
+            if (!empty($customer)) {
+                $customer_number = $customer->number;
+                $customer_name = $customer->name;
+            }
+        }
+            /*
+            alone_number
+            internal_id
+            brand
+            description
+            quantity
+
+            lot_has_sale
+
+            web_platform_name
+            unit_value
+            */
+
+
+                            // --    total_item_purchase
+                            // --    utility_item
+
+
+        return [
+            'id'                             => $this->id,
+            'customer_number'                             => $customer_number,
+            'customer_name'                             => $customer_name,
+            'series'                             => $this->series,
+            'document_type_description'      => $this->document_type->description,
+            'group_id'                       => $this->group_id,
+            'soap_type_id'                   => $this->soap_type_id,
+            'date_of_issue'                  => $this->date_of_issue->format('Y-m-d'),
+            'date_of_due'                    => ($this->date_of_due) ? $this->date_of_due->format('Y-m-d') : '-',
+            'number'                         => $this->number_full,
+            'supplier_name'                  => $this->supplier->name,
+            'supplier_number'                => $this->supplier->number,
+            'currency_type_id'               => $this->currency_type_id,
+            'total_exportation'              => $this->total_exportation,
+            'total_free'                     => self::NumberFormat($this->total_free),
+            'total_unaffected'               => self::NumberFormat($this->total_unaffected),
+            'total_exonerated'               => self::NumberFormat($this->total_exonerated),
+            'total_taxed'                    => self::NumberFormat($this->total_taxed),
+            'total_igv'                      => self::NumberFormat($this->total_igv),
+            'total_perception'               => self::NumberFormat($this->total_perception),
+            'total'                          => self::NumberFormat($total),
+            'state_type_id'                  => $this->state_type_id,
+            'state_type_description'         => $this->state_type->description,
+            'state_type_payment_description' => $this->total_canceled ? 'Pagado' : 'Pendiente de pago',
+            // 'payment_method_type_description' => isset($this->purchase_payments['payment_method_type']['description'])?$this->purchase_payments['payment_method_type']['description']:'-',
+            'created_at'                     => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at'                     => $this->updated_at->format('Y-m-d H:i:s'),
+            'payments'                       => $this->purchase_payments->transform(function ($row, $key) {
+                return [
+                    'id'                              => $row->id,
+                    'payment_method_type_description' => $row->payment_method_type->description,
+                    'reference'                       => $row->reference,
+                    'payment'                         => $row->payment,
+                    'payment_method_type_id'          => $row->payment_method_type_id,
+                ];
+            }),
+            'items'                          => $this->items->transform(function ($row, $key) {
+                return [
+                    'key'         => $key + 1,
+                    'id'          => $row->id,
+                    'description' => $row->item->description,
+                    'quantity'    => round($row->quantity, 2)
+                ];
+            }),
+            'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
+        ];
+    }
+    }
