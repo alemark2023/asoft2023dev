@@ -6,6 +6,7 @@ use App\Notifications\Tenant\PasswordResetNotification;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,42 @@ use Illuminate\Database\Eloquent\Model;
  * @package App\Models\Tenant
  * @mixin Model
  * @mixin Authenticatable
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string|null $email_verified_at
+ * @property string $password
+ * @property string|null $api_token
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $phone
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
+ * @property-read int|null $documents_count
+ * @property-read \App\Models\Tenant\Establishment $establishment
+ * @property-read \Illuminate\Database\Eloquent\Collection|ModuleLevel[] $levels
+ * @property-read int|null $levels_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Module[] $modules
+ * @property-read int|null $modules_count
+ * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNote[] $sale_notes
+ * @property-read int|null $sale_notes_count
+ * @property-read UserCommission|null $user_commission
+ * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereApiToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereTypeUser()
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  */
 class User extends Authenticatable
 {
@@ -231,6 +268,96 @@ class User extends Authenticatable
     public function setName($name) {
         $this->name = $name;
         return $this;
+    }
+
+    /**
+     * Establece los niveles y modulos del usuario
+     * @param array $modules
+     * @param array $modules_levels
+     *
+     * @return $this
+     */
+    public function setModuleAndLevelModule($modules= [],$modules_levels = []){
+        $user_array = [
+            'user_id' => $this->id,
+        ];
+        /*** Estableciendo los modulos */
+        /** @var array $module_array */
+        $module_array = $modules;
+
+        $work = DB::connection('tenant')
+                  ->table('module_user')
+                  ->where($user_array);
+
+        $deletes = $work
+            ->whereNotIn('module_id', $module_array)
+            ->delete();
+        $total_modules = count($module_array);
+        for ($i = 0; $i < $total_modules; $i++) {
+            $item = (int)$module_array[$i];
+            $module_ = $work
+                ->where([
+                            'module_id' => $item,
+                        ])->first();
+            if (empty($module_)) {
+                $user_array['module_id'] = $item;
+                $work->insert($user_array);
+            }
+        }
+        unset($user_array['module_id']);
+
+        $levels_array =$modules_levels;
+
+        $work =DB::connection('tenant')
+                 ->table('module_level_user')
+                 ->where($user_array)
+        ;
+        $deletes = $work->whereNotIn('module_level_id', $levels_array)
+                        ->delete();
+
+        $total_modules_levels = count($levels_array);
+
+        for ($i = 0; $i < $total_modules_levels; $i++) {
+            $item = (int)$levels_array[$i];
+
+
+            $module_ = $work
+                ->where([
+                            'module_level_id' => $item,
+                        ])->first();
+            if (empty($module_)) {
+                $user_array['module_level_id'] = $item;
+                $work->insert($user_array);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Obtiene los niveles de modulo definidos por tenant
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCurrentModuleLevelByTenant(){
+        return  DB::connection('tenant')
+                      ->table('module_level_user')
+                      ->select('module_level_id')
+                      ->where('user_id', $this->id)
+                      ->get();
+
+    }
+    /**
+     * Obtiene los modulo definidos por tenant
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getCurrentModuleByTenant(){
+        return  DB::connection('tenant')
+                  ->table('module_user')
+                  ->select('module_id')
+                  ->where('user_id', $this->id)
+                  ->get();
+
     }
 
 }
