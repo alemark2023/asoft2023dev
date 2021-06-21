@@ -2,42 +2,56 @@
 
 namespace Modules\Report\Traits;
 
+use App\Http\Controllers\FunctionController;
 use App\Models\Tenant\Catalogs\DocumentType;
-use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Document;
-use App\Models\Tenant\SaleNote;
-use Carbon\Carbon;
-use App\Models\Tenant\Person;
+use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\PurchaseItem;
+use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Series;
-use App\Models\Tenant\User;
 use App\Models\Tenant\StateType;
+use App\Models\Tenant\User;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\WebPlatform;
 
 
+/**
+ * Trait ReportTrait
+ *
+ * @package Modules\Report\Traits
+ */
 trait ReportTrait
 {
 
 
+    /**
+     * @param $request
+     * @param $model
+     *
+     * @return mixed
+     */
     public function getRecords($request, $model)
     {
-        $document_type_id = $request['document_type_id'];
-        $establishment_id = $request['establishment_id'];
-        $period = $request['period'];
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        $month_start = $request['month_start'];
-        $month_end = $request['month_end'];
-        $person_id = $request['person_id'];
-        $type_person = $request['type_person'];
-        $seller_id = $request['seller_id'];
-        $state_type_id = $request['state_type_id'];
-        $purchase_order = $request['purchase_order'] ?? null;
-        $guides = $request['guides'] ?? null;
+        $document_type_id = FunctionController::InArray($request, 'document_type_id');
+        $establishment_id = FunctionController::InArray($request, 'establishment_id');
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $person_id = FunctionController::InArray($request, 'person_id');
+        $type_person = FunctionController::InArray($request, 'type_person');
+
+        $seller_id = FunctionController::InArray($request, 'seller_id');
+        $state_type_id = FunctionController::InArray($request, 'state_type_id');
+        $purchase_order = FunctionController::InArray($request, 'purchase_order');
+        $guides = FunctionController::InArray($request, 'guides');
 
 
         $d_start = null;
@@ -69,45 +83,65 @@ trait ReportTrait
     }
 
 
-    private function data($document_type_id, $establishment_id, $date_start, $date_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order, $guides = null)
-    {
+    /**
+     * @param      $document_type_id
+     * @param      $establishment_id
+     * @param      $date_start
+     * @param      $date_end
+     * @param      $person_id
+     * @param      $type_person
+     * @param      $model
+     * @param      $seller_id
+     * @param      $state_type_id
+     * @param      $purchase_order
+     * @param null $guides
+     *
+     * @return mixed
+     */
+    private function data(
+        $document_type_id,
+        $establishment_id,
+        $date_start,
+        $date_end,
+        $person_id,
+        $type_person,
+        $model,
+        $seller_id,
+        $state_type_id,
+        $purchase_order,
+        $guides = null) {
 
-        if($document_type_id && $establishment_id){
-
-            $data = $model::where([['establishment_id', $establishment_id],['document_type_id', $document_type_id]])
-                                ->whereBetween('date_of_issue', [$date_start, $date_end])->latest()->whereTypeUser();
-
-        }elseif($document_type_id){
-
-            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-                                ->where('document_type_id', 'like', '%' . $document_type_id . '%')->whereTypeUser();
-
-        }elseif($establishment_id){
-
-            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()
-                                ->where('establishment_id', 'like', '%' . $establishment_id . '%')->whereTypeUser();
-
+        if($model !== PurchaseItem::class) {
+            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
+                ->latest()
+                 -> whereTypeUser();
         }else{
-            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])->latest()->whereTypeUser();
+            $data = PurchaseItem::whereNotNull('id');
         }
+
+        if ($document_type_id && $establishment_id) {
+            $data->where([['establishment_id', $establishment_id], ['document_type_id', $document_type_id]]);
+        } elseif ($document_type_id) {
+            $data->where('document_type_id', 'like', '%'.$document_type_id.'%');
+        } elseif ($establishment_id) {
+            $data->where('establishment_id', 'like', '%'.$establishment_id.'%');
+        }
+
 
         if($person_id && $type_person){
-
             $column = ($type_person == 'customers') ? 'customer_id':'supplier_id';
-            $data =  $data->where($column, $person_id);
-
+             $data->where($column, $person_id);
         }
 
-        if($seller_id)
-        {
-            $data =  $data->where('user_id', $seller_id);
+        if($seller_id){
+            $data->where('user_id', $seller_id);
         }
 
         if($state_type_id){
-            $data =  $data->where('state_type_id', $state_type_id);
+             $data->where('state_type_id', $state_type_id);
         }
         if($purchase_order){
-            $data =  $data->where('purchase_order', $purchase_order);
+             $data->where('purchase_order', $purchase_order);
         }
         if($model == 'App\Models\Tenant\Document'){
             if(!empty($guides)){
@@ -120,11 +154,15 @@ trait ReportTrait
     }
 
 
-
+    /**
+     * @param $request
+     *
+     * @return \App\Models\Tenant\Document|\Illuminate\Database\Query\Builder
+     */
     public function getRecordsCash($request){
 
-        $document_type_id = $request['document_type_id'];
-        $user_id = $request['user_id'];
+        $document_type_id = FunctionController::InArray($request,'document_type_id');
+        $user_id = FunctionController::InArray($request,'user_id');
 
         $records = $this->dataCash($document_type_id, $user_id);
 
@@ -133,6 +171,12 @@ trait ReportTrait
     }
 
 
+    /**
+     * @param $document_type_id
+     * @param $user_id
+     *
+     * @return \App\Models\Tenant\Document|\Illuminate\Database\Query\Builder
+     */
     private function dataCash($document_type_id, $user_id)
     {
 
@@ -164,7 +208,11 @@ trait ReportTrait
     }
 
 
-
+    /**
+     * @param $type
+     *
+     * @return mixed
+     */
     public function getPersons($type){
 
         $persons = Person::whereType($type)->orderBy('name')->take(20)->get()->transform(function($row) {
@@ -182,6 +230,12 @@ trait ReportTrait
     }
 
 
+    /**
+     * @param $type
+     * @param $request
+     *
+     * @return mixed
+     */
     public function getDataTablePerson($type, $request) {
 
         $persons = Person::where('number','like', "%{$request->input}%")
@@ -225,6 +279,11 @@ trait ReportTrait
     }
 
 
+    /**
+     * @param $request
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function getDataTableItem($request) {
 
         $items = Item::where('description','like', "%{$request->input}%")
@@ -241,6 +300,9 @@ trait ReportTrait
 
     }
 
+    /**
+     * @return mixed
+     */
     public function getSellers(){
 
         $persons = User::whereIn('type', ['seller', 'admin'])->orderBy('name')->get()->transform(function($row) {
@@ -255,12 +317,20 @@ trait ReportTrait
 
     }
 
+    /**
+     * @param $document_types
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function getSeries($document_types)
     {
         $series = Series::wherein('document_type_id', $document_types->pluck('id')->toArray());
         return $series->get();
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getEstablishment()
     {
         $establishment = Establishment::select('id', 'description');
@@ -271,13 +341,18 @@ trait ReportTrait
         return $establishment->get();
     }
 
+    /**
+     * @param $request
+     *
+     * @return array
+     */
     public function getDataOfPeriod($request){
 
-        $period = $request['period'];
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        $month_start = $request['month_start'];
-        $month_end = $request['month_end'];
+        $period = FunctionController::InArray($request,'period');
+        $date_start = FunctionController::InArray($request,'date_start');
+        $date_end = FunctionController::InArray($request,'date_end');
+        $month_start = FunctionController::InArray($request,'month_start');
+        $month_end = FunctionController::InArray($request,'month_end');
 
         $d_start = null;
         $d_end = null;
@@ -307,6 +382,11 @@ trait ReportTrait
         ];
     }
 
+    /**
+     * @param false $is_sale
+     *
+     * @return \string[][]
+     */
     public function getDateRangeTypes($is_sale = false){
 
         if($is_sale){
@@ -324,6 +404,9 @@ trait ReportTrait
 
     }
 
+    /**
+     * @return \string[][]
+     */
     public function getOrderStateTypes(){
 
         return [
@@ -334,6 +417,9 @@ trait ReportTrait
 
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getCIDocumentTypes(){
 
         return DocumentType::whereIn('id', ['01', '03', '80'])->get()->transform(function($row) {
@@ -345,6 +431,11 @@ trait ReportTrait
 
     }
 
+    /**
+     * @param $params
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function getStateTypesById($params){
 
         return StateType::whereIn('id', $params)->get()->transform(function($row) {
@@ -356,24 +447,36 @@ trait ReportTrait
 
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getWebPlatforms(){
 
         return WebPlatform::get();
 
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getBrands()
     {
         return Brand::orderBy('name')
             ->get();
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getCategories()
     {
         return Category::orderBy('name')
             ->get();
     }
 
+    /**
+     * @return mixed
+     */
     public function getUsers()
     {
         $user = auth()->user();

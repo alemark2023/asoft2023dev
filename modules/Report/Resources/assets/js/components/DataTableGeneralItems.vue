@@ -210,14 +210,14 @@
 
     export default {
         props: {
+            defaultType: String,
             resource: String,
+            configuration: {},
         },
         data () {
             return {
+                config:{},
                 loading_submit:false,
-                items: [],
-                all_items: [],
-                loading_search:false,
                 columns: [],
                 records: [],
                 headers: headers_token,
@@ -227,7 +227,10 @@
                 totals: {},
                 establishment: null,
                 establishments: [],
-                types: [{id:'sale', description: 'Venta'},{id:'purchase', description: 'Compra'}],
+                types: [
+                    {id:'sale', description: 'Venta'},
+                    {id:'purchase', description: 'Compra'}
+                ],
                 form: {},
                 pickerOptionsDates: {
                     disabledDate: (time) => {
@@ -256,6 +259,12 @@
             }
         },
         created() {
+
+            if(this.configuration !== undefined && this.configuration !== null && this.configuration.length > 0){
+                this.$setStorage('configuration',this.configuration)
+            }
+            this.config = this.$getStorage('configuration');
+
             this.initForm()
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
@@ -281,6 +290,10 @@
             // await this.getTotals()
             this.form.type_person = this.form.type == 'sale' ? 'customers':'suppliers'
 
+            if(this.defaultType !== undefined && this.defaultType !== null ){
+                this.form.type = this.defaultType
+                this.changeType();
+            }
         },
         methods: {
             searchRemoteItems(input) {

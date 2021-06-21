@@ -5,7 +5,9 @@
         </div>
         <div class="card mb-0">
                 <div class="card-body">
-                    <data-table :resource="resource">
+                    <data-table
+                        :defaultType = "defaultType"
+                        :resource="resource">
                         <tr slot="heading">
                             <th class="">#</th>
                             <th class="">F. Emisión</th>
@@ -66,12 +68,21 @@
     import DataTable from '../../components/DataTableGeneralItems.vue'
 
     export default {
-        components: {DataTable},
+        components: {
+            DataTable
+        },
+        props:[
+            'defaultType',
+            'typeresource',
+            'typereport',
+            'configuration',
+        ],
         data() {
             return {
                 resource: 'reports/general-items',
                 form: {},
                 type: "sale",
+                config:{},
             }
         },
         filters:{
@@ -96,6 +107,17 @@
         },
         async created() {
 
+            if(this.configuration !== undefined && this.configuration !== null && this.configuration.length > 0){
+                this.$setStorage('configuration',this.configuration)
+            }
+            this.config = this.$getStorage('configuration');
+
+            if(this.typeresource !== undefined && this.typeresource !== null){
+                this.resource = this.typeresource;
+            }
+            if(this.typereport !== undefined && this.typereport !== null){
+                this.type = this.typereport;
+            }
             this.$eventHub.$on('typeTransaction', (type) => {
                 this.type = type
             })

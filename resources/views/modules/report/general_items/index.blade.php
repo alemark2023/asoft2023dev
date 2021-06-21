@@ -3,12 +3,13 @@
 @section('content')
 
     <tenant-report-general-items-index
-        @if(isset($typeresource))
-            :typeresource="'{!! $typeresource !!}'"
-            @endif
         @if(isset($typereport))
-            :typeresource="'{!! $typereport !!}'"
-            @endif
+        :default-type="'{{$typereport}}'"
+        @endif
+        @if(isset($configuration))
+        :configuration="{{$configuration}}"
+        @endif
     ></tenant-report-general-items-index>
+
 
 @endsection

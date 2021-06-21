@@ -73,6 +73,17 @@
                                 Activos fijos
                             </a>
                         </li>
+
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.items.index')}}">
+                                Producto - busqueda individual
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.general_items.index')}}">
+                                Productos
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
