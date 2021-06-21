@@ -75,10 +75,14 @@
                         </li>
 
                         <li>
-                            <a href="{{route('tenant.reports.purchases.items.index')}}">Producto - busqueda individual <strong>NUEVO</strong></a>
+                            <a href="{{route('tenant.reports.purchases.items.index')}}">
+                                Producto - busqueda individual
+                            </a>
                         </li>
                         <li>
-                            <a href="{{route('tenant.reports.purchases.general_items.index')}}">Productos<strong>NUEVO</strong></a>
+                            <a href="{{route('tenant.reports.purchases.general_items.index')}}">
+                                Productos
+                            </a>
                         </li>
                     </ul>
                 </div>

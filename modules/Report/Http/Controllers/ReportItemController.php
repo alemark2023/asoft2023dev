@@ -137,14 +137,25 @@ class ReportItemController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        if($request->has('type') && $request->type === 'purchase') {
+            $model = PurchaseItem::class;
+        }else{
+            $model = DocumentItem::class;
+        }
+        $records = $this->getRecordsItems($request->all(), $model)->get();
+        $itemExport =new ItemExport();
+        $fileName = 'Reporte_Ventas_por_Producto_'.Carbon::now().'.xlsx';
+        if($request->has('type') && $request->type === 'purchase'){
+            $itemExport->setType($request->type);
+            $fileName = 'Reporte_Compras_por_Producto_'.Carbon::now().'.xlsx';
 
-        $records = $this->getRecordsItems($request->all(), DocumentItem::class)->get();
+        }
 
-        return (new ItemExport)
+        return $itemExport
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
-                ->download('Reporte_Ventas_por_Producto_'.Carbon::now().'.xlsx');
+                ->download($fileName);
 
     }
 }

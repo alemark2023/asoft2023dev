@@ -1,6 +1,5 @@
 <?php
-use App\Models\Tenant\Item;
-$type = isset($type)?$type:'';
+use App\Models\Tenant\Item;$type = isset($type)?$type:'';
 ?>
     <!DOCTYPE html>
 <html lang="es">
@@ -131,7 +130,7 @@ $type = isset($type)?$type:'';
                         <td class="celda">{{$customer_number}}</td>
                         <td class="celda">{{$customer_name}}</td>
                         @if($type !== 'purchase')
-                            <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
+                        <td class="celda">{{ optional($value->relation_item->web_platform)->name }}</td>
                         @endif
                         <td class="celda">{{$value->quantity}}</td>
                         <td class="celda">{{$value->total}}</td>

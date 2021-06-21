@@ -59,7 +59,9 @@ public function general_items(){
      */
     public function index() {
 
-        return view('report::purchases.index');
+        $typereport = 'purchase';
+        $configuration = Configuration::getPublicConfig();
+        return view('report::purchases.index',compact('typereport','configuration'));
     }
 
     /**
