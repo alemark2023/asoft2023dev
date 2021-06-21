@@ -296,9 +296,9 @@ class Dispatch extends ModelTenant
     }
 
     /**
-     * @param \Illuminate\Database\Query\Builder $query
+     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
      *
-     * @return \Illuminate\Database\Query\Builder|null
+     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|null
      */
     public function scopeWhereTypeUser($query)
     {

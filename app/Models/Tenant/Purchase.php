@@ -5,6 +5,7 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Modules\Purchase\Models\PurchaseOrder;
 
 /**
@@ -12,6 +13,46 @@ use Modules\Purchase\Models\PurchaseOrder;
  *
  * @package App\Models\Tenant
  * @mixin ModelTenant
+ * @property-read CurrencyType $currency_type
+ * @property-read \App\Models\Tenant\Person $customer
+ * @property-read DocumentType $document_type
+ * @property-read \App\Models\Tenant\Establishment $establishment
+ * @property mixed $charges
+ * @property mixed $detraction
+ * @property mixed $discounts
+ * @property mixed $guides
+ * @property mixed $legends
+ * @property-read mixed $number_full
+ * @property-read mixed $number_to_letter
+ * @property mixed $perception
+ * @property mixed $prepayments
+ * @property-read mixed $related
+ * @property \App\Models\Tenant\Person $supplier
+ * @property-read \App\Models\Tenant\Group $group
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
+ * @property-read int|null $inventory_kardex_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PurchaseItem[] $items
+ * @property-read int|null $items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
+ * @property-read int|null $kardex_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PurchasePayment[] $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PurchaseItem[] $purchase_items
+ * @property-read int|null $purchase_items_count
+ * @property-read PurchaseOrder $purchase_order
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PurchasePayment[] $purchase_payments
+ * @property-read int|null $purchase_payments_count
+ * @property-write mixed $related_documents
+ * @property-read \App\Models\Tenant\SoapType $soap_type
+ * @property-read \App\Models\Tenant\StateType $state_type
+ * @property-read \App\Models\Tenant\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase dasboardSalePurchase($establishment_id = 0)
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase onlyDateOfIssueByYear($year = 0)
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase whereStateTypeAccepted()
+ * @method static \Illuminate\Database\Eloquent\Builder|Purchase whereTypeUser()
  */
 class Purchase extends ModelTenant
 {
@@ -76,6 +117,9 @@ class Purchase extends ModelTenant
     ];
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
@@ -182,70 +226,112 @@ class Purchase extends ModelTenant
         $this->attributes['legends'] = (is_null($value))?null:json_encode($value);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function purchase_payments()
     {
         return $this->hasMany(PurchasePayment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function soap_type()
     {
         return $this->belongsTo(SoapType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function state_type()
     {
         return $this->belongsTo(StateType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function group()
     {
         return $this->belongsTo(Group::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function document_type()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function currency_type()
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function supplier() {
         return $this->belongsTo(Person::class, 'supplier_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function items()
     {
         return $this->hasMany(PurchaseItem::class);
     }
 
+    /**
+     * @return string
+     */
     public function getNumberFullAttribute()
     {
         return $this->series.'-'.$this->number;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function kardex()
     {
         return $this->hasMany(Kardex::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
     public function inventory_kardex()
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function purchase_items()
     {
         return $this->hasMany(PurchaseItem::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function getNumberToLetterAttribute()
     {
         $legends = $this->legends;
@@ -253,27 +339,48 @@ class Purchase extends ModelTenant
         return $legend->value;
     }
 
-    public function scopeWhereTypeUser($query)
+    /**
+     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|null
+     */
+    public function scopeWhereTypeUser( $query)
     {
+        /** @var \App\Models\Tenant\User $user */
         $user = auth()->user();
-        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
+        return ($user->type === 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function purchase_order()
     {
         return $this->belongsTo(PurchaseOrder::class);
     }
 
+
+    /**
+     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
+     */
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function payments()
     {
         return $this->hasMany(PurchasePayment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function customer() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
@@ -330,6 +437,9 @@ class Purchase extends ModelTenant
         return number_format($number,$decimal,'.','');
     }
 
+    /**
+     * @return array
+     */
     public function  getCollectionData() {
         $total = $this->total;
         if ($this->total_perception) {
@@ -338,7 +448,7 @@ class Purchase extends ModelTenant
         $customer_number = '';
         $customer_name = '';
         $customer = $this->customer;
-        if (!empty($customer)) {
+        if (null !== $customer) {
             $customer = $customer->first();
             if (!empty($customer)) {
                 $customer_number = $customer->number;

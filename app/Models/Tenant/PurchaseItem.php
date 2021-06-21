@@ -5,9 +5,29 @@ namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
-use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Models\Warehouse;
+use Modules\Item\Models\ItemLot;
 
+/**
+ * App\Models\Tenant\PurchaseItem
+ *
+ * @property-read AffectationIgvType $affectation_igv_type
+ * @property mixed $attributes
+ * @property mixed $charges
+ * @property mixed $discounts
+ * @property \App\Models\Tenant\Item $item
+ * @property-read \Illuminate\Database\Eloquent\Collection|ItemLot[] $lots
+ * @property-read int|null $lots_count
+ * @property-read PriceType $price_type
+ * @property-read \App\Models\Tenant\Purchase $purchase
+ * @property-read \App\Models\Tenant\Item $relation_item
+ * @property-read SystemIscType $system_isc_type
+ * @property-read Warehouse $warehouse
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|PurchaseItem query()
+ * @mixin \Eloquent
+ */
 class PurchaseItem extends ModelTenant
 {
     protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type', 'lots', 'warehouse'];
@@ -49,7 +69,7 @@ class PurchaseItem extends ModelTenant
         'date_of_due'
     ];
 
-    
+
 
     public function getItemAttribute($value)
     {
@@ -91,43 +111,67 @@ class PurchaseItem extends ModelTenant
         $this->attributes['discounts'] = (is_null($value))?null:json_encode($value);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function affectation_igv_type()
     {
         return $this->belongsTo(AffectationIgvType::class, 'affectation_igv_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function system_isc_type()
     {
         return $this->belongsTo(SystemIscType::class, 'system_isc_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function price_type()
     {
         return $this->belongsTo(PriceType::class, 'price_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function purchase()
     {
         return $this->belongsTo(Purchase::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function item()
     {
         return $this->belongsTo(Item::class);
     }
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
     public function lots()
     {
         return $this->morphMany(ItemLot::class, 'item_loteable');
     }
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function relation_item()
     {
         return $this->belongsTo(Item::class, 'item_id');
