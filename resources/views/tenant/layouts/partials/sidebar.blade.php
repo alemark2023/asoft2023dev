@@ -751,7 +751,7 @@
                     @endif
 
                     {{-- DIGEMID --}}
-                        @if(in_array('digemid', $vc_module_levels) && $configuration->isPharmacy())
+                        @if(in_array('digemid', $vc_modules) && $configuration->isPharmacy())
                         <li class=" nav-parent {{ ($path[0] === 'digemid') ? 'nav-active nav-expanded' : '' }}">
                             <a class="nav-link" href="#">
                                 <i class="fa fas fa-ambulance" aria-hidden="true"></i>
@@ -759,7 +759,7 @@
                             </a>
                             <ul class="nav nav-children">
 
-                                @if(in_array('documentary_offices', $vc_module_levels))
+                                @if(in_array('digemid', $vc_module_levels))
 <!--                                    <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
                                         <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
                                     </li>-->
