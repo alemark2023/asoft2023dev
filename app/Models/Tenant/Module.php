@@ -10,6 +10,25 @@ use Modules\LevelAccess\Models\ModuleLevel;
  *
  * @package App\Models\Tenant
  * @mixin ModelTenant
+ * @property int $id
+ * @property string $value
+ * @property string $description
+ * @property int $sort
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|ModuleLevel[] $levels
+ * @property-read int|null $levels_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\User[] $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Module newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Module newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Module query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Module whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Module whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Module whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Module whereSort($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Module whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Module whereValue($value)
  */
 class Module extends ModelTenant
 {
