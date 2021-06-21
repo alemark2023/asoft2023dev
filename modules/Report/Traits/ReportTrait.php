@@ -8,6 +8,7 @@ use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
@@ -110,9 +111,13 @@ trait ReportTrait
         $purchase_order,
         $guides = null) {
 
-        $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
-                      ->latest()
-                      ->whereTypeUser();
+        if($model !== PurchaseItem::class) {
+            $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
+                ->latest()
+                 -> whereTypeUser();
+        }else{
+            $data = PurchaseItem::whereNotNull('id');
+        }
 
         if ($document_type_id && $establishment_id) {
             $data->where([['establishment_id', $establishment_id], ['document_type_id', $document_type_id]]);

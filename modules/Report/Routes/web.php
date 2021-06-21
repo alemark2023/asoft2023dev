@@ -19,8 +19,6 @@
                         /**
                          * reports/purchases/
                          * reports/purchases/items
-                         * reports/purchases/general_items
-                         * reports/purchases/general_items/records
                          * reports/purchases/pdf
                          * reports/purchases/excel
                          * reports/purchases/filter
@@ -30,8 +28,14 @@
                         /** Nuevo */
                         Route::get('items', 'ReportPurchaseController@index')
                              ->name('tenant.reports.purchases.items.index');
+                        /*
+                         * reports/purchases/general_items/
+                         * reports/purchases/general_items/records
+                         * reports/purchases/general_items/excel
+                         * reports/purchases/general_items/pdf
+                         * reports/purchases/general_items/filter
+                         */
                         Route::prefix('general_items')->group(function () {
-
                             Route::get('/', 'ReportPurchaseController@general_items')
                                  ->name('tenant.reports.purchases.general_items.index');
                             Route::get('records', 'ReportPurchaseController@records');

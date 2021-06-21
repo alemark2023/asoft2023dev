@@ -2,8 +2,11 @@
 
 namespace Modules\Report\Http\Controllers;
 
+use App\Http\Resources\Tenant\PurchaseItemCollection;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\PurchaseItem;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\PurchaseExport;
 use Illuminate\Http\Request;
@@ -26,7 +29,8 @@ class ReportPurchaseController extends Controller
 public function general_items(){
     $typeresource = 'reports/purchases/general_items';
     $typereport = 'purchase';
-    return view('report::general_items.index',compact('typeresource','typereport'));
+    $configuration = Configuration::getPublicConfig();
+    return view('report::general_items.index',compact('typeresource','typereport','configuration'));
 
 }
     /**
@@ -61,13 +65,13 @@ public function general_items(){
     /**
      * @param \Illuminate\Http\Request $request
      *
-     * @return \App\Http\Resources\Tenant\PurchaseCollection
+     * @return \App\Http\Resources\Tenant\PurchaseItemCollection
      */
     public function records(Request $request)
     {
-        $records = $this->getRecords($request->all(), Purchase::class);
+        $records = $this->getRecords($request->all(), PurchaseItem::class);
 
-        return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
+        return new PurchaseItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
