@@ -176,4 +176,89 @@ class PurchaseItem extends ModelTenant
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
+
+    public function getCollectionData(Configuration $configuration = null) {
+
+        if(empty($configuration)){
+            $configuration =  Configuration::first();
+        }
+        $purchase = $this->purchase;
+        $purchase_collection = $purchase->getCollectionData();
+
+        $item = $this->item;
+         $wharehouse = $this->warehouse;
+         $date_of_due = "-";
+         if($this->date_of_due){
+             if(is_string($this->date_of_due)){
+                 $date_of_due = $this->date_of_due;
+             }else{
+                 $date_of_due =$this->date_of_due->format('Y-m-d');
+             }
+         }
+
+        $data = [
+
+            /*
+                            <template v-if="type == 'sale'">
+                                row.total_item_purchase
+                                row.utility_item
+                            </template>
+        */
+            'id'                      => $this->id,
+            'purchase'                => $purchase_collection,
+            'purchase_id'             => $this->purchase_id,
+            'item_id'                 => $this->item_id,
+            // 'item'                    => $this->item,
+            'item' => $item,
+            'quantity'                => number_format($this->quantity,2,'.',''),
+            'unit_value'              => $this->unit_value,
+            'affectation_igv_type_id' => $this->affectation_igv_type_id,
+            'total_base_igv'          => $this->total_base_igv,
+            'percentage_igv'          => $this->percentage_igv,
+            'total_igv'               => $this->total_igv,
+            'system_isc_type_id'      => $this->system_isc_type_id,
+            'total_base_isc'          => $this->total_base_isc,
+            'percentage_isc'          => $this->percentage_isc,
+            'total_isc'               => $this->total_isc,
+            'total_base_other_taxes'  => $this->total_base_other_taxes,
+            'percentage_other_taxes'  => $this->percentage_other_taxes,
+            'total_other_taxes'       => $this->total_other_taxes,
+            'total_taxes'             => $this->total_taxes,
+            'price_type_id'           => $this->price_type_id,
+            'unit_price'              => $this->unit_price,
+            'total_value'             => $this->total_value,
+            'total'                   => $this->total,
+            'attributes'              => $this->attributes,
+            'charges'                 => $this->charges,
+            'lot_code'                => $this->lot_code,
+            'warehouse_id'            => $this->warehouse_id,
+            'warehouse'            => $wharehouse,
+            'discounts'               => $this->discounts,
+            'date_of_due' => $date_of_due,
+
+        ];
+
+         self::returnValuesToCollection($data,$purchase_collection,'customer_number');
+         self::returnValuesToCollection($data,$purchase_collection,'customer_name');
+         self::returnValuesToCollection($data,$purchase_collection,'date_of_issue');
+         self::returnValuesToCollection($data,$purchase_collection,'document_type_description');
+         self::returnValuesToCollection($data,$purchase_collection,'series');
+         self::returnValuesToCollection($data,$purchase_collection,'alone_number');
+         self::returnValuesToCollection($data,$purchase_collection,'internal_id');
+         self::returnValuesToCollection($data,$purchase_collection,'brand');
+         self::returnValuesToCollection($data,$purchase_collection,'description');
+         self::returnValuesToCollection($data,$purchase_collection,'lot_has_sale');
+         self::returnValuesToCollection($data,$purchase_collection,'web_platform_name');
+         self::returnValuesToCollection($data,$purchase_collection,'unit_value');
+         self::returnValuesToCollection($data,$purchase_collection,'currency_type_id');
+
+        return $data;
+    }
+    protected static function returnValuesToCollection($array,$purchase,$index){
+        if (!isset($array[$index]) && isset($purchase[$index])) {
+            $array['index'] = $purchase[$index];
+        } elseif (!isset($purchase[$index]) && !isset($array[$index])) {
+            $array[$index] = null;
+        }
+    }
 }
