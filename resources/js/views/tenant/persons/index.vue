@@ -21,6 +21,18 @@
             <div class="card-header bg-info">
                 <h3 class="my-0">Listado de {{ title }}</h3>
             </div>
+            <div class="data-table-visible-columns">
+                <el-dropdown :hide-on-click="false">
+                    <el-button type="primary">
+                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
             <div class="card-body">
                 <data-table :resource="resource+`/${this.type}`">
                     <tr slot="heading">
@@ -29,6 +41,10 @@
                         <th>Cód interno</th>
                         <th class="text-right">Tipo de documento</th>
                         <th class="text-right">Número</th>
+                        <th v-if="columns.person_type.visible === true" class="text-center">T. Cliente</th>
+                        <th v-if="columns.observation.visible === true" class="text-center">Observaciones</th>
+                        <th v-if="columns.zone.visible === true" class="text-center">Zona</th>
+                        <th v-if="columns.website.visible === true" class="text-center">WebSite</th>
                         <th class="text-right">Acciones</th>
                     <tr>
                     <tr slot-scope="{ index, row }" :class="{ disable_color : !row.enabled}">
@@ -37,6 +53,10 @@
                         <td>{{ row.internal_code }}</td>
                         <td class="text-right">{{ row.document_type }}</td>
                         <td class="text-right">{{ row.number }}</td>
+                        <td v-if="columns.person_type.visible === true" class="text-left">{{ row.person_type }}</td>
+                        <td v-if="columns.observation.visible === true" class="text-left">{{ row.observation }}</td>
+                        <td v-if="columns.zone.visible === true" class="text-left">{{ row.zone }}</td>
+                        <td v-if="columns.website.visible === true" class="text-left">{{ row.website }}</td>
                         <td class="text-right">
 
                             <template v-if="row.enabled">
@@ -98,6 +118,24 @@ export default {
             showExportDialog: false,
             resource: 'persons',
             recordId: null,
+            columns: {
+                observation: {
+                    title: 'Observacion',
+                    visible: false
+                },
+                zone: {
+                    title: 'Zona',
+                    visible: false
+                },
+                website: {
+                    title: 'Sitio Web',
+                    visible: false
+                },
+                person_type: {
+                    title: 'Tipo de cliente',
+                    visible: false
+                },
+            }
         }
     },
     created() {

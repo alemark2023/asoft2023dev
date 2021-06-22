@@ -201,6 +201,10 @@ class Person extends ModelTenant
                 return $row->getCollectionData();
             });
         }
+        $person_type_descripton = '';
+        if($this->person_type !== null){
+            $person_type_descripton = $this->person_type->description;
+        }
         $data = [
             'id' => $this->id,
             'description' => $this->number.' - '.$this->name,
@@ -230,6 +234,7 @@ class Person extends ModelTenant
             'state' => $this->state,
             'condition' => $this->condition,
             'person_type_id' => $this->person_type_id,
+            'person_type' => $person_type_descripton,
             'contact' => $this->contact,
             'comment' => $this->comment,
             'addresses' => $addresses,
