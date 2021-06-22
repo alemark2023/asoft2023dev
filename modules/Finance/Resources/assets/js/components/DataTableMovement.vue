@@ -354,7 +354,8 @@ export default {
             getRecords(init_current_page = false) {
 
                 if (init_current_page) {
-                    this.pagination.current_page = 1
+                    // this.pagination.current_page = 1
+                    this.currentPage = 1
                 }
                 this.records = [];
 
@@ -382,7 +383,7 @@ export default {
 
             getQueryParameters() {
                 return queryString.stringify({
-                    page: this.pagination.current_page,
+                    // page: this.pagination.current_page,
                     limit: this.limit,
                     column: this.filter.column,
                     order: this.filter.order,
