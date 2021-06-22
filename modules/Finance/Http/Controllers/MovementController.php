@@ -33,7 +33,8 @@ class MovementController extends Controller
     {
         $records = $this->getRecords($request->all(), GlobalPayment::class);
         // if($request->has('paginate') && $request->paginate === 1) {
-            return new MovementCollection($records->get());
+        ini_set('max_execution_time', 0);
+        return new MovementCollection($records->get());
         //}
         return new MovementCollection($records->paginate(config('tenant.items_per_page')));
 
