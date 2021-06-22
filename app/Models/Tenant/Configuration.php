@@ -370,6 +370,7 @@ class Configuration extends ModelTenant
             'update_document_on_dispaches'           => (bool)$this->update_document_on_dispaches,
             'is_pharmacy'                            => (bool)$this->is_pharmacy,
             'auto_send_dispatchs_to_sunat'           => (bool)$this->auto_send_dispatchs_to_sunat,
+            'item_per_page'           => config('tenant.items_per_page'),
         ];
     }
 }

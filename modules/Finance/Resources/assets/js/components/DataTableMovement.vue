@@ -47,9 +47,10 @@
                                 <label class="control-label">Fecha al</label>
                                 <el-date-picker v-model="form.date_end" type="date"
                                                 :picker-options="pickerOptionsDates"
-                                                value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
+                                                :clearable="false" format="dd/MM/yyyy"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
                             </div>
-                        </template> 
+                        </template>
 
                         <div class="col-md-3 mt-4">
                             <el-checkbox v-model="form.last_cash_opening" @change="getRecordsByFilter">Última apertura de caja</el-checkbox>
@@ -76,24 +77,107 @@
 
 
             <div class="col-md-12">
+
+                <div class="pull-right">
+                    <el-select v-model="per_page" @change="handleCurrentChange">
+                        <el-option key="10" label="10" value="10"></el-option>
+                        <el-option key="15" label="15" value="15"></el-option>
+                        <el-option key="25" label="25" value="25"></el-option>
+                        <el-option key="50" label="50" value="50"></el-option>
+                        <el-option key="todos" label="Todos" value="todos"></el-option>
+                    </el-select>
+                </div>
                 <div class="table-responsive">
+                    <el-table
+                        :data="currentTableData"
+                        :default-sort="{prop: 'index', order: 'ascending'}"
+                        style="width: 100%">
+
+                        <el-table-column
+                            class="" label="#"
+                            prop="index"
+                            sortable
+                        ></el-table-column>
+                        <el-table-column
+                            label="Fecha"
+                            prop="date_of_payment"
+                            sortable
+                        >
+                        </el-table-column>
+                        <el-table-column
+                            label="Adquiriente"
+                            prop="person_name"
+                            sortable>
+                        </el-table-column>
+                        <el-table-column
+                            label="Documento/Transacción"
+                            prop="number_full')"
+                            sortable>
+                        </el-table-column>
+                        <el-table-column
+                            prop="items"
+                            label="Detalle"
+                            sortable
+                        >
+                        </el-table-column>
+                        <el-table-column
+                            label="Moneda"
+                            prop="currency_type_id"
+                            >
+                        </el-table-column>
+                        <el-table-column
+                            label="Tipo"
+                            prop="instance_type_description"
+                            sortable>
+                        </el-table-column>
+                        <el-table-column
+                            label="Ingresos"
+                            prop="input">
+                        </el-table-column>
+                        <el-table-column
+                            label="Gastos"
+                            prop="output">
+                        </el-table-column>
+                        <el-table-column
+                            label="Saldo"
+                            prop="balance">
+                        </el-table-column>
+
+
+                    </el-table>
+
+
+                    <!--
                     <table class="table">
                         <thead>
                         <slot name="heading"></slot>
                         </thead>
                         <tbody>
-                            <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
-                        </tbody>                         
+                        <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row"></slot>
+                        </tbody>
                         <tfoot>
-                            <tr>
-                                <td colspan="7"></td>
-                                <td>S/{{totals.total_input}}</td>
-                                <td>S/{{totals.total_output}}</td>
-                                <td>S/{{totals.total_balance}}</td>
-                            </tr> 
+                        <tr>
+                            <td colspan="7"></td>
+                            <td>S/{{ totals.total_input }}</td>
+                            <td>S/{{ totals.total_output }}</td>
+                            <td>S/{{ totals.total_balance }}</td>
+                        </tr>
                         </tfoot>
 
                     </table>
+                    -->
+                    <div>
+
+                        <el-pagination
+                            :current-page.sync="currentPage"
+                            :page-size="itemsPerPage"
+                            :total="records.length"
+                            layout="total, prev, pager, next"
+                            @current-change='handleCurrentChange'
+                        >
+                        </el-pagination>
+                    </div>
+                    <!--
                     <div>
                         <el-pagination
                                 @current-change="getRecords()"
@@ -103,6 +187,7 @@
                                 :page-size="pagination.per_page">
                         </el-pagination>
                     </div>
+                    -->
                 </div>
             </div>
         </div>
@@ -116,48 +201,86 @@
 </style>
 <script>
 
-    import moment from 'moment'
-    import queryString from 'query-string'
+import moment from 'moment'
+import queryString from 'query-string'
 
-    export default {
-        props: {
-            resource: String,
-            applyCustomer: { type : Boolean, required: false, default: false}
+export default {
+    props: {
+        resource: String,
+        filter: {
+            type: Object,
+            required: false,
+            default: false
         },
-        data () {
-            return {
-                loading_submit:false,
-                loading_search:false,
-                columns: [],
-                records: [],
-                headers: headers_token,
-                pagination: {},
-                search: {},
-                payment_types: [],
-                destination_types: [],
-                form: {},
-                totals: {},
-                pickerOptionsDates: {
-                    disabledDate: (time) => {
-                        time = moment(time).format('YYYY-MM-DD')
-                        return this.form.date_start > time
-                    }
-                },
-                pickerOptionsMonths: {
-                    disabledDate: (time) => {
-                        time = moment(time).format('YYYY-MM')
-                        return this.form.month_start > time
-                    }
-                },
-                sellers: []
-            }
+        configuration: {
+            type: Object,
+            required: false,
+            default: false
+        },
+        applyCustomer: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    },
+    data() {
+        return {
+            filterdata: {
+                column: null,
+                order: null
+            },
+            currentPage: 1, // current page
+            per_page: 10,
+            loading_submit: false,
+            loading_search: false,
+            columns: [],
+            records: [],
+            currentTableData: [],
+            headers: headers_token,
+            pagination: {},
+            search: {},
+            payment_types: [],
+            destination_types: [],
+            form: {},
+            totals: {},
+            pickerOptionsDates: {
+                disabledDate: (time) => {
+                    time = moment(time).format('YYYY-MM-DD')
+                    return this.form.date_start > time
+                }
+            },
+            pickerOptionsMonths: {
+                disabledDate: (time) => {
+                    time = moment(time).format('YYYY-MM')
+                    return this.form.month_start > time
+                }
+            },
+            sellers: [],
+            config: {},
+        }
         },
         computed: {
+            itemsPerPage: function () {
+                if (this.per_page === 'todos') {
+                    return this.records.length
+                }
+                return this.per_page
+            },
         },
         created() {
+            if (this.configuration !== undefined && this.configuration !== null && this.configuration.length > 0) {
+                this.$setStorage('configuration', this.configuration)
+            }
+            this.config = this.$getStorage('configuration');
+//item_per_page
             this.initForm()
             this.initTotals()
             this.$eventHub.$on('reloadData', () => {
+                this.getRecords()
+            })
+            this.$eventHub.$on('filtrado', () => {
+                console.log('entra')
+                this.changeFilter()
                 this.getRecords()
             })
         },
@@ -165,8 +288,8 @@
 
             // await this.$http.get(`/${this.resource}/filter`)
             //     .then(response => {
-            //         this.payment_types = response.data.payment_types; 
-            //         this.destination_types = response.data.destination_types; 
+            //         this.payment_types = response.data.payment_types;
+            //         this.destination_types = response.data.destination_types;
             //     });
 
 
@@ -174,12 +297,26 @@
 
         },
         methods: {
-            initTotals(){
+            handleCurrentChange() {
+                this.currentTableData = this.records.slice(
+                    (this.currentPage - 1) * this.itemsPerPage,
+                    this.currentPage * this.itemsPerPage
+                )
+            },
+            changeFilter() {
+                if (this.filter.column !== undefined) {
+                    if (this.filter.order !== this.filter.order) {
+                        this.filterdata = this.filter;
+                        this.getRecords();
+                    }
+                }
+            },
+            initTotals() {
 
                 this.totals = {
-                    total_input : 0,
-                    total_output : 0,
-                    total_balance : 0,
+                    total_input: 0,
+                    total_output: 0,
+                    total_balance: 0,
                 }
 
             },
@@ -202,11 +339,12 @@
                     last_cash_opening: false,
                 }
 
-            }, 
-            customIndex(index) {
-                return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
             },
-            async getRecordsByFilter(){
+            customIndex(index) {
+                return 1;
+                // return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
+            },
+            async getRecordsByFilter() {
 
                 this.loading_submit = await true
                 await this.getRecords(true)
@@ -214,15 +352,19 @@
 
             },
             getRecords(init_current_page = false) {
-                
-                if(init_current_page){ 
+
+                if (init_current_page) {
                     this.pagination.current_page = 1
                 }
+                this.records = [];
 
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
+
+                    this.currentTableData = this.records.slice(0, this.itemsPerPage)
+
                     this.pagination = response.data.meta
-                    this.pagination.per_page = parseInt(response.data.meta.per_page)
+                    // this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.getTotals(response.data.data)
                     this.loading_submit = false
                 });
@@ -235,13 +377,16 @@
                 this.totals.total_input = _.round(_.sumBy(records, (row) => { return (row.input == '-') ? 0:parseFloat(row.input) }), 2)
                 this.totals.total_output = _.round(_.sumBy(records, (row) => { return (row.output == '-') ? 0:parseFloat(row.output) }), 2)
                 this.totals.total_balance = this.totals.total_input - this.totals.total_output
- 
+
             },
 
             getQueryParameters() {
                 return queryString.stringify({
                     page: this.pagination.current_page,
                     limit: this.limit,
+                    column: this.filter.column,
+                    order: this.filter.order,
+                    paginate:1,
                     ...this.form
                 })
             },
