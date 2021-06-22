@@ -15,6 +15,25 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @package App\Models\Tenant
  * @mixin ModelTenant
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PersonAddress[] $addresses
+ * @property-read int|null $addresses_count
+ * @property-read Country $country
+ * @property-read Department $department
+ * @property-read District $district
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
+ * @property-read int|null $documents_count
+ * @property-read mixed $address_full
+ * @property mixed $contact
+ * @property-read IdentityDocumentType $identity_document_type
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\PersonAddress[] $more_address
+ * @property-read int|null $more_address_count
+ * @property-read \App\Models\Tenant\PersonType $person_type
+ * @property-read Province $province
+ * @method static Builder|Person newModelQuery()
+ * @method static Builder|Person newQuery()
+ * @method static Builder|Person query()
+ * @method static Builder|Person whereIsEnabled()
+ * @method static Builder|Person whereType($type)
  */
 class Person extends ModelTenant
 {
@@ -42,6 +61,9 @@ class Person extends ModelTenant
         'enabled',
         'contact',
         'internal_code',
+        'observation',
+        'zone',
+        'website',
     ];
 
     // protected static function boot()
@@ -182,8 +204,70 @@ class Person extends ModelTenant
             'identity_document_type_code' => $this->identity_document_type->code,
             'addresses' => $this->addresses,
             'address' =>  $this->address,
-            'internal_code' => $this->internal_code
+            'internal_code' => $this->internal_code,
+            'observation' => $this->observation,
+            'zone' => $this->zone,
+            'website' => $this->website,
         ];
         return $data;
     }
+
+    /**
+     * @return string
+     */
+    public function getObservation()
+    : string {
+        return $this->observation;
+    }
+
+    /**
+     * @param string $observation
+     *
+     * @return Person
+     */
+    public function setObservation(string $observation)
+    : Person {
+        $this->observation = $observation;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getZone()
+    : string {
+        return $this->zone;
+    }
+
+    /**
+     * @param string $zone
+     *
+     * @return Person
+     */
+    public function setZone(string $zone)
+    : Person {
+        $this->zone = $zone;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebsite()
+    : string {
+        return $this->website;
+    }
+
+    /**
+     * @param string $website
+     *
+     * @return Person
+     */
+    public function setWebsite(string $website)
+    : Person {
+        $this->website = $website;
+        return $this;
+    }
+
+
 }
