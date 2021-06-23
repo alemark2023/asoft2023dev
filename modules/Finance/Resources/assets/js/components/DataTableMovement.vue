@@ -450,13 +450,13 @@ export default {
                 }
                 this.records = [];
                 this.loading_submit = true;
-
+                this.pagination.current_page = 0;
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
-                    this.currentTableData = this.records.slice(0, this.itemsPerPage)
                     this.pagination = response.data.meta
                     // this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.getTotals(response.data.data)
+                    this.currentTableData = this.records.slice(0, this.itemsPerPage)
                     // this.loading_submit = false
                 }).finally(() => {
                     this.getOtherData()
@@ -482,6 +482,7 @@ export default {
                             this.pagination = response.data.meta
                         }).catch(() => {
                             // Si existe el error, habilita la busqueda
+                            this.pagination.current_page = 0;
                             this.loading_submit = false;
                             this.currentTableData = this.records.slice(0, this.itemsPerPage)
                         })
@@ -489,6 +490,7 @@ export default {
                             this.getOtherData()
                         });
                 } else {
+                    this.pagination.current_page = 0;
                     this.loading_submit = false;
                     this.currentTableData = this.records.slice(0, this.itemsPerPage)
                 }
