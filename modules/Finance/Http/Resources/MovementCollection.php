@@ -25,7 +25,7 @@ class MovementCollection extends ResourceCollection
         $this->calculateResiduary(self::$request);
         /** @var \Illuminate\Support\Collection $data */
 
-        $data = $this->collection->transform(function ($row, $key) {
+        $data = $this->collection->transform(function ($row, $key)  use ($request ){
             $data_person = $row->data_person;
 
             $amount = $row->payment->payment;
@@ -38,8 +38,9 @@ class MovementCollection extends ResourceCollection
             }
             self::$balance =  ($row->type_movement == 'input') ?  self::$balance + $amount : self::$balance - $amount;
 
+            $index = $key +1;
             return [
-                'index'                              => $key+1,
+                'index'                              => $index,
                 'id'                              => $row->id,
                 'destination_description'         => $row->destination_description,
                 'date_of_payment_class'           => get_class($row->payment),

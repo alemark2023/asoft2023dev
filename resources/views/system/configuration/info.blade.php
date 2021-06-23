@@ -12,6 +12,7 @@
                 :memory_bytes="'{!! $memory_in_byte !!}'"
                 :memory_write="'{!! $memory_limit !!}'"
                 :backtrack_limit="'{!! $pcre_backtrack_limit !!}'"
+                :all_config="{{json_encode($all_config)}}"
             ></system-php-configuration>
         </div>
     </div>
