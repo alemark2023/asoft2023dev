@@ -89,6 +89,8 @@
                 </div>
                 <div class="table-responsive">
                     <el-table
+                        :summary-method="getSummaries"
+                        show-summary
                         :data="currentTableData"
                         :default-sort="{prop: 'index', order: 'ascending'}"
                         style="width: 100%">
@@ -100,25 +102,53 @@
                         ></el-table-column>
                         <el-table-column
                             label="Fecha"
+                            type="date"
                             prop="date_of_payment"
                             sortable
                         >
                         </el-table-column>
                         <el-table-column
                             label="Adquiriente"
-                            prop="person_name"
                             sortable>
+                            <template slot-scope="scope">
+                                <span>{{ scope.row.person_name }}
+                                    <br/>
+                                    <small>{{ scope.row.person_number }}</small>
+                                    </span>
+
+                            </template>
                         </el-table-column>
                         <el-table-column
                             label="Documento/Transacción"
-                            prop="number_full')"
                             sortable>
+                            <template slot-scope="scope">
+                                <span>
+                                    {{ scope.row.number_full }}<br/>
+                            <small v-text="scope.row.document_type_description"></small>
+                                    </span>
+
+                            </template>
                         </el-table-column>
                         <el-table-column
-                            prop="items"
-                            label="Detalle"
                             sortable
                         >
+                            <template slot="header" slot-scope="scope">
+                                Detalle
+                                <el-tooltip
+                                    class="item"
+                                    content="Aplica a Ingresos/Gastos"
+                                    effect="dark"
+                                    placement="top-start"
+                                >
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </template>
+                            <template slot-scope="scope">
+                                <div v-for="(item, index) in scope.row.items">
+                                    <label :key="index">- {{ item.description }}<br/></label>
+                                </div>
+
+                            </template>
                         </el-table-column>
                         <el-table-column
                             label="Moneda"
@@ -132,14 +162,17 @@
                         </el-table-column>
                         <el-table-column
                             label="Ingresos"
+                            :formatter="MonedaFormater"
                             prop="input">
                         </el-table-column>
                         <el-table-column
                             label="Gastos"
+                            :formatter="MonedaFormater"
                             prop="output">
                         </el-table-column>
                         <el-table-column
                             label="Saldo"
+                            :formatter="MonedaFormater"
                             prop="balance">
                         </el-table-column>
 
@@ -167,8 +200,9 @@
                     </table>
                     -->
                     <div>
-
+                        <!--v-if="showPagination" -->
                         <el-pagination
+
                             :current-page.sync="currentPage"
                             :page-size="itemsPerPage"
                             :total="records.length"
@@ -229,10 +263,12 @@ export default {
                 column: null,
                 order: null
             },
+            current_page: 1, // current page
             currentPage: 1, // current page
             per_page: 10,
             loading_submit: false,
             loading_search: false,
+            links: {},
             columns: [],
             records: [],
             currentTableData: [],
@@ -260,6 +296,17 @@ export default {
         }
         },
         computed: {
+            showPagination: function () {
+                if (this.per_page === 'todos') return false;
+
+                if (this.records.length < this.currentTableData.length) {
+                    return false
+                }
+                if (this.records.length < this.per_page) {
+                    return false
+                }
+                return true
+            },
             itemsPerPage: function () {
                 if (this.per_page === 'todos') {
                     return this.records.length
@@ -278,11 +325,6 @@ export default {
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
             })
-            this.$eventHub.$on('filtrado', () => {
-                console.log('entra')
-                this.changeFilter()
-                this.getRecords()
-            })
         },
         async mounted () {
 
@@ -297,6 +339,55 @@ export default {
 
         },
         methods: {
+            getSummaries(param) {
+                const {columns, data} = param;
+                const sums = [];
+                columns.forEach((column, index) => {
+                    if (index < 7) {
+                        sums[index] = '';
+                        return;
+                    }
+
+                    const values = data.map(item => Number(item[column.property]));
+                    if (!values.every(value => isNaN(value))) {
+                        let valor = values.reduce((prev, curr) => {
+                            const value = Number(curr);
+                            if (!isNaN(value)) {
+                                return prev + curr;
+                            } else {
+                                return prev;
+                            }
+                        }, 0);
+
+                        sums[index] = 'S/ ' + valor.toLocaleString('es')
+                    } else {
+                        sums[index] = 'N/A';
+                    }
+                });
+
+                return sums;
+            },
+            DetailFormater: (row, col, value, index) => {
+                let text = '';
+                for (let i = 0; i < row.items.length; i++) {
+                    let item = row.items[i]
+                    text = text + ` <label>- {{ item.description }}<br/></label>`
+                }
+
+                return text;
+            },
+            DocumentFormater: (row, col, value, index) => {
+
+                return row.number_full + '<br/> <small >' + row.document_type_description + '</small>';
+            },
+            personFormater: (row, col, value, index) => {
+                return `${row.person_name}<br/><small>${row.person_number}</small> `;
+            },
+            MonedaFormater: (row, col, value, index) => {
+                if (value === null) return '-';
+                if (isNaN(parseFloat(value))) return '-';
+                return `S/ ${value}`
+            },
             handleCurrentChange() {
                 this.currentTableData = this.records.slice(
                     (this.currentPage - 1) * this.itemsPerPage,
@@ -358,36 +449,70 @@ export default {
                     this.currentPage = 1
                 }
                 this.records = [];
+                this.loading_submit = true;
 
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                     this.records = response.data.data
-
                     this.currentTableData = this.records.slice(0, this.itemsPerPage)
-
                     this.pagination = response.data.meta
                     // this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.getTotals(response.data.data)
-                    this.loading_submit = false
+                    // this.loading_submit = false
+                }).finally(() => {
+                    this.getOtherData()
                 });
-
-
             },
-            getTotals(records){
+            reindex_array_keys(array, start) {
+                var temp = [];
+                start = typeof start == 'undefined' ? 0 : start;
+                start = typeof start != 'number' ? 0 : start;
+                for (var i in array) {
+                    array[i].index = parseInt(i) + 1;
+                    temp[start++] = array[i];
+                }
+                return temp;
+            },
+            async getOtherData() {
+                this.pagination.current_page = this.pagination.current_page + 1;
+                if (this.pagination.current_page <= this.pagination.last_page) {
+                    return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`)
+                        .then((response) => {
+                            let temp = [...this.records, ...response.data.data]
+                            this.records = this.reindex_array_keys(temp);
+                            this.pagination = response.data.meta
+                        }).catch(() => {
+                            // Si existe el error, habilita la busqueda
+                            this.loading_submit = false;
+                            this.currentTableData = this.records.slice(0, this.itemsPerPage)
+                        })
+                        .finally(() => {
+                            this.getOtherData()
+                        });
+                } else {
+                    this.loading_submit = false;
+                    this.currentTableData = this.records.slice(0, this.itemsPerPage)
+                }
+            },
+            getTotals(records) {
 
                 this.initTotals()
-                this.totals.total_input = _.round(_.sumBy(records, (row) => { return (row.input == '-') ? 0:parseFloat(row.input) }), 2)
-                this.totals.total_output = _.round(_.sumBy(records, (row) => { return (row.output == '-') ? 0:parseFloat(row.output) }), 2)
+                this.totals.total_input = _.round(_.sumBy(records, (row) => {
+                    return (row.input == '-') ? 0 : parseFloat(row.input)
+                }), 2)
+                this.totals.total_output = _.round(_.sumBy(records, (row) => {
+                    return (row.output == '-') ? 0 : parseFloat(row.output)
+                }), 2)
                 this.totals.total_balance = this.totals.total_input - this.totals.total_output
 
             },
 
             getQueryParameters() {
                 return queryString.stringify({
-                    // page: this.pagination.current_page,
+                    page: this.pagination.current_page,
                     limit: this.limit,
                     column: this.filter.column,
                     order: this.filter.order,
-                    paginate:1,
+                    paginate: 1,
                     ...this.form
                 })
             },

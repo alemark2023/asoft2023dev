@@ -43,6 +43,14 @@
                                     <strong>{{backtrack_limit}}</strong>
                                 </td>
                             </tr>
+                            <tr v-for="(row, index)  in all_config" :key="index">
+                                <td>
+                                    {{index}}
+                                </td>
+                                <td>
+                                    <strong>{{row}}</strong>
+                                </td>
+                            </tr>
 
                             </tbody>
 
@@ -61,11 +69,13 @@ export default {
         'memory_bytes',
         'memory_write',
         'backtrack_limit',
+        'all_config'
     ],
     data() {
         return {};
     },
     created() {
+        console.error(this.all_config)
     },
     methods: {
     }
