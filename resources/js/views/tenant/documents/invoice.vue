@@ -1771,13 +1771,29 @@ export default {
                 if(this.establishment.customer_id){
 
                     await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
-                        this.all_customers = response.data.customers
+                        this.all_customers = [...this.all_customers,...response.data.customers]
+                        this.customers = [...this.customers,...response.data.customers]
+                        // this.all_customers = response.data.customers
                     })
-
+                    this.all_customers =  this.all_customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                             t.id === item.id
+                        ))
+                    )
+                    this.customers =  this.customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                             t.id === item.id
+                        ))
+                    )
                     await this.filterCustomers()
-                    this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
+                    // this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
+                    let alt = _.find(this.customers, {'id': this.establishment.customer_id});
+                    if (alt !== undefined) {
+                        this.form.customer_id = this.establishment.customer_id
+                    }
 
-                }
+
+                    }
 
             },
             changeDocumentType() {
