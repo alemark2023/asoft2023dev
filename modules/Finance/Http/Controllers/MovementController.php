@@ -2,20 +2,17 @@
 
 namespace Modules\Finance\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
-use Modules\Finance\Models\GlobalPayment;
 use App\Models\Tenant\Cash;
-use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Company;
-use Modules\Finance\Traits\FinanceTrait;
-use Modules\Finance\Http\Resources\MovementCollection;
-use Modules\Finance\Exports\MovementExport;
-use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Tenant\Establishment;
-use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Modules\Finance\Exports\MovementExport;
+use Modules\Finance\Http\Resources\MovementCollection;
+use Modules\Finance\Models\GlobalPayment;
+use Modules\Finance\Traits\FinanceTrait;
 use Modules\Pos\Models\CashTransaction;
 
 class MovementController extends Controller
@@ -31,8 +28,12 @@ class MovementController extends Controller
 
     public function records(Request $request)
     {
+        ini_set('max_execution_time', 0);
         $records = $this->getRecords($request->all(), GlobalPayment::class);
-
+        $records->orderBy('id');
+        if($request->has('paginate')){
+            return new MovementCollection($records->paginate(1000));
+        }
         return new MovementCollection($records->paginate(config('tenant.items_per_page')));
 
     }

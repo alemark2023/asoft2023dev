@@ -26,7 +26,7 @@ class PosCollection extends ResourceCollection
                 'full_description' => ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description,
                 'name' => $row->name,
                 'second_name' => $row->second_name,
-                'description' => $row->description,
+                'description' => ($row->brand->name) ? $row->description.' - '.$row->brand->name : $row->description,
                 'currency_type_id' => $row->currency_type_id,
                 'internal_id' => $row->internal_id,
                 'currency_type_symbol' => $row->currency_type->symbol,

@@ -247,9 +247,12 @@
 
                             <div class="col-md-6">
                                 <div class="form-group p-t-20">
-                                    <label class="control-label">
+                                    <a class="control-label"
+                                       :href="'https://docs.google.com/document/d/1ix2vPsiqSoK9jNAOF2gPjWhNa3BdajU5x8I5aBvEz0o/edit?usp=sharing'"
+                                       target="_new"
+                                    >
                                         Para correos Gmail verificar el manual
-                                    </label>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -401,7 +404,7 @@
                     smtp_host: 'smtp.gmail.com',
                     smtp_port: 465,
                     smtp_user: 'username',
-                    smtp_password: 'password',
+                    smtp_password: null,
                     smtp_encryption: 'ssl',
                 }
             },

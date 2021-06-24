@@ -3,35 +3,35 @@
       <Keypress key-event="keyup" :key-code="113" @success="handleFn113" />
 
         <div class="col-lg-4 col-md-6 bg-white m-0 p-0" style="height: calc(100vh - 110px)">
-            <div class="h-75 bg-light" style="overflow-y: auto">
+            <div class="h-60 bg-white" style="overflow-y: auto">
 
-                <div class="row pl-3 py-2 border-bottom m-0 p-0 bg-white">
-                    <div class="col-12 px-0 py-3">
+                <div class="row pl-3 pt-3 border-bottom m-0 p-0 bg-white">
+                    <div class="col-12 px-0">
                         <h4 class="font-weight-semibold m-0 text-secondary">{{customer.description}}</h4>
                     </div>
                 </div>
 
                  <template v-for="(item,index) in form.items">
-                    <div class="row py-1 border-bottom m-0 p-0" :key="index">
+                    <div class="row py-1 border-bottom m-0 p-0 bg-white" :key="index">
                         <div class="col-2 p-r-0 m-l-2">
-                            <h4 class="font-weight-semibold m-0 text-center text-secondary">{{item.quantity}}</h4>
+                            <h5 class="font-weight-semibold m-0 text-secondary">{{item.quantity}}</h5>
 
                         </div>
                         <div class="col-6 px-0">
-                            <h4 class="font-weight-semibold m-0 text-center m-b-0 text-secondary">{{item.item.description}}</h4>
+                            <h5 class="font-weight-semibold m-0 m-b-0 text-secondary">{{item.item.description}}</h5>
                             <!-- <p class="m-b-0">Descripción del producto</p> -->
                             <!-- <p class="text-muted m-b-0"><small>Descuento 2%</small></p> -->
                         </div>
                         <div class="col-4 p-l-0">
                             <!-- <p class="font-weight-semibold m-b-0">{{currencyTypeActive.symbol}} 240.00</p> -->
-                            <h4 class="font-weight-semibold m-0 text-center text-secondary">{{currencyTypeActive.symbol}} {{item.total}}</h4>
+                            <h5 class="font-weight-semibold m-0 text-right text-secondary">{{currencyTypeActive.symbol}} {{item.total}}</h5>
                         </div>
                     </div>
                 </template>
 
 
             </div>
-            <div class="h-25 bg-info" style="overflow-y: auto">
+            <div class="h-40 bg-info" style="overflow-y: auto">
                 <template v-if="form.total_plastic_bag_taxes > 0">
                     <div class="row m-0 p-0 bg-white h-17 d-flex align-items-center">
                         <div class="col-sm-6 py-1">
@@ -85,12 +85,20 @@
                         <p class="font-weight-semibold mb-0">{{currencyTypeActive.symbol}} 4.00</p>
                     </div>
                 </div> -->
-                <div class="row m-0 p-0 h-50 d-flex align-items-center">
+                <div class="row m-0 p-0 h-25 d-flex align-items-center">
                     <div class="col-sm-6 py-2">
                         <p class="font-weight-semibold mb-0 text-white">TOTAL</p>
                     </div>
                     <div class="col-sm-6 py-2 text-right">
-                        <p class="font-weight-semibold mb-0 text-white">{{currencyTypeActive.symbol}} {{ form.total }}</p>
+                        <h4 class="font-weight-semibold mb-0 text-white">{{currencyTypeActive.symbol}} {{ form.total }}</h4>
+                    </div>
+                </div>
+                <div class="row m-0 p-0 h-25 d-flex align-items-center bg-white">
+                    <div class="col-lg-6">
+                        <button class="btn btn-block btn-primary" @click="clickPayment" :disabled="button_payment">PAGAR</button>
+                    </div>
+                    <div class="col-lg-6">
+                        <button class="btn btn-block btn-danger" @click="clickCancel">CANCELAR</button>
                     </div>
                 </div>
             </div>
@@ -194,23 +202,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-lg-8">
-                    <div class="card card-default">
-                        <div class="card-body text-center">
-                            <div class="row col-lg-12">
-                                <div class="col-md-12 col-lg-12">
-                                    <div class="form-group">
-                                        <label class="control-label">Datos de referencia</label>
-                                        <el-input type="textarea" v-model="form.reference_data"></el-input>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
                 <div class="col-lg-8">
                     <div class="card card-default">
                         <div class="card-body">
@@ -301,13 +292,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-8 mb-4">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <button class="btn btn-block btn-primary" @click="clickPayment" :disabled="button_payment">PAGAR</button>
-                        </div>
-                        <div class="col-lg-6">
-                            <button class="btn btn-block btn-danger" @click="clickCancel">CANCELAR</button>
+                <div class="col-lg-8">
+                    <div class="card card-default">
+                        <div class="card-body text-center">
+                            <div class="row col-lg-12">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-group">
+                                        <label class="control-label">Datos de referencia</label>
+                                        <el-input type="textarea" v-model="form.reference_data"></el-input>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -342,7 +337,18 @@
     padding: 0!important;
     margin-right: 0!important;
 }
-
+.card {
+    margin-bottom: 2px;
+}
+.card-body {
+    padding: 10px;
+}
+.h-40 {
+  height: 40% !important;
+}
+.h-60 {
+  height: 60% !important;
+}
 </style>
 
 <script>

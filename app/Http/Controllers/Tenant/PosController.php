@@ -79,7 +79,7 @@ class PosController extends Controller
                                     'id' => $row->id,
                                     'item_id' => $row->id,
                                     'full_description' => $full_description,
-                                    'description' => $row->description,
+                                    'description' => ($row->brand->name) ? $row->description.' - '.$row->brand->name : $row->description,
                                     'currency_type_id' => $row->currency_type_id,
                                     'internal_id' => $row->internal_id,
                                     'currency_type_symbol' => $row->currency_type->symbol,
@@ -178,7 +178,7 @@ class PosController extends Controller
                                     'id' => $row->id,
                                     'item_id' => $row->id,
                                     'full_description' => $full_description,
-                                    'description' => $row->description,
+                                    'description' => ($row->brand->name) ? $row->description.' - '.$row->brand->name : $row->description,
                                     'currency_type_id' => $row->currency_type_id,
                                     'internal_id' => $row->internal_id,
                                     'currency_type_symbol' => $row->currency_type->symbol,
@@ -355,6 +355,7 @@ class PosController extends Controller
 
         if ($request->input_item && !empty($request->input_item)) {
             $whereItem[] = ['description', 'like', '%'.$request->input_item.'%'];
+            $whereItem[] = ['barcode', '=', $request->input_item];
             $whereItem[] = ['internal_id', 'like', '%'.$request->input_item.'%'];
             $whereExtra[] = ['name', 'like', '%'.$request->input_item.'%'];
         }

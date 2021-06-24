@@ -18,6 +18,9 @@ use Modules\Sale\Models\TechnicalServicePayment;
 trait FinanceTrait
 {
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
     public function getPaymentDestinations(){
 
         $bank_accounts = self::getBankAccounts();
@@ -25,7 +28,7 @@ trait FinanceTrait
 
         // dd($cash);
         if($cash){
-            return collect($bank_accounts)->push($cash);
+            return $bank_accounts->push($cash);
         }
 
         return $bank_accounts;
@@ -46,6 +49,9 @@ trait FinanceTrait
     }
 
 
+    /**
+     * @return array|null
+     */
     public function getCash()
     {
         $cash =  Cash::query()->where([['user_id',auth()->id()],['state',true]])->first();
@@ -139,12 +145,24 @@ trait FinanceTrait
         ];
     }
 
+    /**
+     * @return \string[][]
+     */
     public function getCollectionDestinationTypes(){
 
-        return [
-            ['id'=> Cash::class, 'description' => 'CAJA GENERAL'],
-            ['id'=> BankAccount::class, 'description' => 'CUENTA BANCARIA'],
+        $return = [
+            ['id' => Cash::class, 'description' => 'CAJA GENERAL'],
+            ['id' => BankAccount::class, 'description' => 'CUENTA BANCARIA'],
         ];
+        /** @var Collection $banks */
+        $banks = BankAccount::SelectIdDescription()->get()->transform(function ($v) {
+            // Añade el banco con el standar App\Models\Tenant\BankAccount, separado por :: el id del banco
+            $v = $v->toArray();
+            $v['id'] = BankAccount::class."::".$v['id'];
+            return $v;
+        })->toArray();
+        $return = array_merge($return, $banks);
+        return $return;
     }
 
     /**

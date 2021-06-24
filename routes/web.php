@@ -160,6 +160,7 @@ if ($hostname) {
             Route::delete('items/{item}', 'Tenant\ItemController@destroy');
             Route::delete('items/item-unit-type/{item}', 'Tenant\ItemController@destroyItemUnitType');
             Route::post('items/import', 'Tenant\ItemController@import');
+            Route::post('items/catalog', 'Tenant\ItemController@catalog');
             Route::get('items/import/tables', 'Tenant\ItemController@tablesImport');
             Route::post('items/upload', 'Tenant\ItemController@upload');
             Route::post('items/visible_store', 'Tenant\ItemController@visibleStore');
@@ -287,6 +288,7 @@ if ($hostname) {
             Route::post('dispatches/tables', 'Tenant\DispatchController@tables');
             Route::post('dispatches', 'Tenant\DispatchController@store');
             Route::get('dispatches/record/{id}', 'Tenant\DispatchController@record');
+            Route::post('dispatches/sendSunat/{document}', 'Tenant\DispatchController@sendDispatchToSunat');
             Route::post('dispatches/email', 'Tenant\DispatchController@email');
             Route::get('dispatches/generate/{sale_note}', 'Tenant\DispatchController@generate');
             Route::get('dispatches/record/{id}/tables', 'Tenant\DispatchController@generateDocumentTables');
@@ -432,6 +434,7 @@ if ($hostname) {
             Route::get('sale-notes/create/{salenote?}', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create')->middleware('redirect.level');
 
             Route::get('sale-notes/tables', 'Tenant\SaleNoteController@tables');
+            Route::post('sale-notes/duplicate', 'Tenant\SaleNoteController@duplicate');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');
             Route::get('sale-notes/record/{salenote}', 'Tenant\SaleNoteController@record');
@@ -662,6 +665,31 @@ if ($hostname) {
 
             Route::get('backup/last-backup', 'System\BackupController@mostRecent');
             Route::get('backup/download/{filename}', 'System\BackupController@download');
+
+            /*
+            Route::get('ajuste_claves_mysql', function(){
+
+                $sites = \Hyn\Tenancy\Models\Website::all();
+                $passwords = [];
+                foreach($sites as $site){
+                    $contra =md5(sprintf(
+                                     '%s.%d',
+                                     \Config::get('app.key'),
+                                     $site->id
+                                 ));
+                    $temp = [
+                        'username'=>$site->uuid,
+                        'password'=>$contra,
+                        'query'=>"SET PASSWORD FOR '{$site->uuid}'@'%' = PASSWORD('$contra');"
+                    ];
+                    $passwords[] = $temp;
+                    \DB::update( $temp['query'] );
+                }
+            });
+            */
+
+
+
         });
     });
 }

@@ -33,7 +33,7 @@ class ReportGeneralItemController extends Controller
         $items = $this->getItems('items');
         $brands = $this->getBrands();
         $web_platforms = $this->getWebPlatforms();
-        $document_types = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', '07', '80'])->get();
         $categories = $this->getCategories();
         $users = $this->getUsers();
 
@@ -72,7 +72,7 @@ class ReportGeneralItemController extends Controller
         $category_id = $request['category_id'];
 
         $user_id = $request['user_id'];
-        $user_type = $request['user_type'];
+        $user_type = $request['user_type'] != null ? $request['user_type'] : 'VENDEDOR';
         $web_platform_id = $request['web_platform_id'];
 
         $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type);

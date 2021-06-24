@@ -40,6 +40,7 @@
                         <td class="text-center">
                             <button v-if="!row.reference_document_id" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
+                            <button v-if="showSentSunat(row)" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="sendSunat(row.id)">Enviar a Sunat</button>
                         </td>
                     </tr>
                 </data-table>
@@ -60,13 +61,14 @@
 </template>
 
 <script>
-    import DataTable from '../../../components/DataTable.vue'
-    import DispatchOptions from './partials/options.vue'
-    import FormGenerateDocument from "./generate-document";
-    import ModalGenerateCPE from './ModalGenerateCPE';
+import DataTable from '../../../components/DataTable.vue'
+import DispatchOptions from './partials/options.vue'
+import FormGenerateDocument from "./generate-document";
+import ModalGenerateCPE from './ModalGenerateCPE';
 
-    export default {
+export default {
         components: {DataTable, DispatchOptions, FormGenerateDocument, ModalGenerateCPE},
+        props:['configuration'],
         data() {
             return {
                 resource: 'dispatches',
@@ -76,7 +78,39 @@
                 showModalGenerateCPE: false,
             }
         },
+        created(){
+            this.$setStorage('configuration',this.configuration)
+        },
         methods: {
+            showSentSunat(row){
+                let data = row.soap_shipping_response;
+                if(this.configuration.auto_send_dispatchs_to_sunat === true) return false;
+                if(data === undefined || data === null) return true;
+                if(data.sent === null || data.sent === false) return true;
+                return false;
+            },
+            sendSunat(id){
+                this.$http.post(`/dispatches/sendSunat/${id}`)
+                    .then((result)=>{
+                        let data = result.data;
+                        if(data.sent === false){
+                            this.$notify.error({
+                                title: 'Envio no realizado',
+                                message: data.description,
+                            });
+                        }else{
+                            this.$notify.success({
+                                title: 'Se ha realizado el envio',
+                                message: data.description,
+                            });
+                        }
+                    }).catch(()=>{
+                    this.$notify.success({
+                        title: 'Error',
+                        message: 'Error desconocido',
+                    });
+                })
+            },
             onGenerateDocument(dispatchId) {
                 this.recordId = dispatchId;
                 this.showDialogGenerateDocument = true;

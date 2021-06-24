@@ -8,6 +8,27 @@ use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 
+/**
+ * App\Models\Tenant\DocumentItem
+ *
+ * @property-read AffectationIgvType $affectation_igv_type
+ * @property-read \App\Models\Tenant\Document $document
+ * @property-read mixed $additional_information
+ * @property mixed $attributes
+ * @property mixed $charges
+ * @property mixed $discounts
+ * @property mixed $item
+ * @property-read \App\Models\Tenant\Item $m_item
+ * @property-read PriceType $price_type
+ * @property-read \App\Models\Tenant\Item $relation_item
+ * @property-read SystemIscType $system_isc_type
+ * @property-read Warehouse $warehouse
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DocumentItem whereDefaultDocumentType($params)
+ * @mixin \Eloquent
+ */
 class DocumentItem extends ModelTenant
 {
     protected $with = ['affectation_igv_type', 'system_isc_type', 'price_type'];
@@ -92,36 +113,59 @@ class DocumentItem extends ModelTenant
         $this->attributes['discounts'] = (is_null($value))?null:json_encode($value);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function affectation_igv_type()
     {
         return $this->belongsTo(AffectationIgvType::class, 'affectation_igv_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function system_isc_type()
     {
         return $this->belongsTo(SystemIscType::class, 'system_isc_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function price_type()
     {
         return $this->belongsTo(PriceType::class, 'price_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function m_item()
     {
         return $this->belongsTo(Item::class,'item_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function document()
     {
         return $this->belongsTo(Document::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function relation_item()
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
 
+    /**
+     * @param $value
+     *
+     * @return false|string[]
+     */
     public function getAdditionalInformationAttribute($value)
     {
         // if($value){
@@ -134,6 +178,12 @@ class DocumentItem extends ModelTenant
     }
 
 
+    /**
+     * @param $query
+     * @param $params
+     *
+     * @return mixed
+     */
     public function scopeWhereDefaultDocumentType($query, $params)
     {
 
@@ -184,6 +234,9 @@ class DocumentItem extends ModelTenant
     }
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);

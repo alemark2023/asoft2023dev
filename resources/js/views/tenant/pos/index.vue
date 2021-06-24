@@ -107,7 +107,7 @@
             class="row col-lg-12 m-0 p-0"
             v-loading="loading"
         >
-            <div class="col-lg-8 col-md-6 px-4 pt-3 hyo">
+            <div class="col-lg-8 col-md-6 px-4 hyo">
                 <template v-if="!search_item_by_barcode">
                     <el-input
                         v-show="
@@ -121,7 +121,7 @@
                         @input="searchItems"
                         @keyup.native="keyupTabCustomer"
                         @keyup.enter.native="keyupEnterAddItem"
-                        class="m-bottom"
+                        class="m-bottom mt-3"
                         ref="ref_search_items"
                     >
                         <el-button
@@ -145,7 +145,7 @@
                         @change="searchItemsBarcode"
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
-                        class="m-bottom"
+                        class="m-bottom mt-3"
                     >
                         <el-button
                             slot="append"
@@ -1875,9 +1875,14 @@ export default {
                 this.items = this.all_items;
             } else {
                 this.items = this.all_items.map(i => {
-                    if (i.brand) {
-                        i.description = `${i.description} - ${i.brand}`;
-                    }
+                    console.log(i.description);
+                    // if (i.brand) {
+                    //     var desc = `${i.description} - ${i.brand}`;
+                    //     if(i.description != desc){
+                    //         i.description = `${i.description} - ${i.brand}`;
+                    //     }
+                    // }
+                    console.log(i.description);
                     return i;
                 });
             }

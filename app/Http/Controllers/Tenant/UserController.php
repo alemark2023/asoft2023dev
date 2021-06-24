@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenant\UserRequest;
+use App\Http\Resources\Tenant\UserCollection;
+use App\Http\Resources\Tenant\UserResource;
 use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Module;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\User;
-use App\Models\Tenant\Module;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
-use App\Models\Tenant\Establishment;
-use App\Http\Requests\Tenant\UserRequest;
-use App\Http\Resources\Tenant\UserResource;
-use Modules\LevelAccess\Models\ModuleLevel;
-use App\Http\Resources\Tenant\UserCollection;
 
 class UserController extends Controller
 {
@@ -45,43 +43,39 @@ class UserController extends Controller
         return $module;
     }
 
-    public function tables()
-    {
-        $modulesTenant = DB::connection('tenant')
-            ->table('module_user')
-            ->where('user_id', 1)
-            ->select('module_id')
-            ->get()
-            ->pluck('module_id')
-            ->all();
+    public function tables() {
+        /** @var User $user */
+        $user = User::find(1);
+        $modulesTenant = $user->getCurrentModuleByTenant()
+                              ->pluck('module_id')
+                              ->all();
 
-        $levelsTenant = DB::connection('tenant')
-            ->table('module_level_user')
-            ->where('user_id', 1)
-            ->get()
-            ->pluck('module_level_id')
-            ->toArray();
+        $levelsTenant = $user->getCurrentModuleLevelByTenant()
+                             ->pluck('module_level_id')
+                             ->toArray();
+
 
         $modules = Module::with(['levels' => function ($query) use ($levelsTenant) {
             $query->whereIn('id', $levelsTenant);
         }])
-            ->orderBy('order_menu')
-            ->whereIn('id', $modulesTenant)
-            ->get()
-            ->each(function ($module) {
-                return $this->prepareModules($module);
-            });
-
+                         ->orderBy('order_menu')
+                         ->whereIn('id', $modulesTenant)
+                         ->get()
+                         ->each(function ($module) {
+                             return $this->prepareModules($module);
+                         });
         $establishments = Establishment::orderBy('description')->get();
         $documents = DocumentType::OnlyAvaibleDocuments()->get();
         $series = Series::FilterEstablishment()->FilterDocumentType()->get();
-        $types = [['type' => 'admin', 'description' => 'Administrador'], ['type' => 'seller', 'description' => 'Vendedor']];
+        $types = [
+            ['type' => 'admin', 'description' => 'Administrador'],
+            ['type' => 'seller', 'description' => 'Vendedor'],
+        ];
 
         return compact('modules', 'establishments', 'types', 'documents', 'series');
     }
 
-    public function store(UserRequest $request)
-    {
+    public function store(UserRequest $request) {
         $id = $request->input('id');
 
         if (!$id) { //VALIDAR EMAIL DISPONIBLE
@@ -93,7 +87,7 @@ class UserController extends Controller
                 ];
             }
         }
-
+        /** @var User $user */
         $user = User::firstOrNew(['id' => $id]);
         $user->name = $request->input('name');
         $user->email = $request->input('email');
@@ -113,6 +107,8 @@ class UserController extends Controller
         $user->save();
 
         if ($user->id != 1) {
+            $user->setModuleAndLevelModule($request->modules,$request->levels);
+            /*
             $array_modules = [];
             $array_levels = [];
             DB::connection('tenant')->table('module_user')->where('user_id', $user->id)->delete();
@@ -129,6 +125,7 @@ class UserController extends Controller
             }
             DB::connection('tenant')->table('module_user')->insert($array_modules);
             DB::connection('tenant')->table('module_level_user')->insert($array_levels);
+            */
         }
 
         return [

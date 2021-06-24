@@ -58,6 +58,10 @@ class ToPayController extends Controller
         $suppliers = array_merge($supplier,$supplier_temp->toArray());
 
         $query_users = User::all();
+        if(auth()->user()->type === 'admin') {
+            $newUser = new User(['id' => 0, 'name' => 'Seleccionar Todos']);
+            $query_users = $query_users->add($newUser)->sortBy('id');
+        }
         $users = new UserCollection($query_users);
 
         $establishments = DashboardView::getEstablishments();
@@ -66,13 +70,21 @@ class ToPayController extends Controller
     }
 
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return array
+     */
     public function records(Request $request)
     {
         return [
-            'records' => (new ToPay())->getToPay($request->all())
+            'records' => ToPay::getToPay($request->all())
        ];
     }
 
+    /**
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function toPayAll()
     {
 
@@ -81,13 +93,19 @@ class ToPayController extends Controller
     }
 
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function toPay(Request $request) {
 
         $company = Company::first();
-        return (new ToPayExport)
-                ->company($company)
-                ->records((new ToPay())->getToPay($request->all()))
-                ->download('Reporte_Cuentas_Por_Pagar'.Carbon::now().'.xlsx');
+        $export = new ToPayExport();
+        $records = ToPay::getToPay($request->all());
+        $export ->company($company)
+                ->records($records);
+        return $export ->download('Reporte_Cuentas_Por_Pagar'.Carbon::now().'.xlsx');
 
     }
 

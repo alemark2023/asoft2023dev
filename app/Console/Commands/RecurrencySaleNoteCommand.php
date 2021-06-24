@@ -11,6 +11,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
+/**
+ * Class RecurrencySaleNoteCommand
+ *
+ * @package App\Console\Commands
+ * @mixin Command
+ */
 class RecurrencySaleNoteCommand extends Command
 {
     /**
@@ -48,7 +54,13 @@ class RecurrencySaleNoteCommand extends Command
 
             $today = Carbon::now()->format('Y-m-d');
 
-            $sale_notes = SaleNote::where([['apply_concurrency', false], ['automatic_date_of_issue','<=', $today], ['enabled_concurrency', true]])->sharedLock()->get();
+            $sale_notes = SaleNote::
+            where(
+                [
+                    ['apply_concurrency', false],
+                    ['automatic_date_of_issue','<=', $today],
+                    ['enabled_concurrency', true]
+                ])->sharedLock()->get();
 
             foreach ($sale_notes as $sale_note) {
                 // Log::info("init create");
@@ -119,6 +131,7 @@ class RecurrencySaleNoteCommand extends Command
                     }
 
                     $replicate_sale_note->automatic_date_of_issue = $automatic_date_of_issue;
+                    $replicate_sale_note->number = SaleNote::getLastNumberByModel($sale_note);
 
                     $replicate_sale_note->save();
 

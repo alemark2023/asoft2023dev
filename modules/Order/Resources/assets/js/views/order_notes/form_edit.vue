@@ -190,11 +190,13 @@
             </div>
         </div>
 
-        <order-note-form-item :showDialog.sync="showDialogAddItem"
-                           :currency-type-id-active="form.currency_type_id"
-                           :typeUser="typeUser"
-                           :exchange-rate-sale="form.exchange_rate_sale"
-                           @add="addRow"></order-note-form-item>
+        <order-note-form-item
+            :configuration="configuration"
+            :currency-type-id-active="form.currency_type_id"
+            :exchange-rate-sale="form.exchange_rate_sale"
+            :showDialog.sync="showDialogAddItem"
+            :typeUser="typeUser"
+            @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
                        type="customers"
@@ -228,6 +230,7 @@
             'typeUser': {
                 required: true,
             },
+            'configuration': {},
         },
         mixins: [functions, exchangeRate],
         data() {

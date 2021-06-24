@@ -609,8 +609,10 @@
                 </div>
             </form>
         </div>
-        <document-form-item :showDialog.sync="showDialogAddItem"
+        <document-form-item
+            :showDialog.sync="showDialogAddItem"
             :recordItem="recordItem"
+            :documentId="documentId"
             :isEditItemNote="false"
             :operation-type-id="form.operation_type_id"
             :currency-type-id-active="form.currency_type_id"
@@ -1529,6 +1531,7 @@ export default {
                     this.cash_payment_metod[0] !== undefined){
                     id = this.cash_payment_metod[0].id
                 }
+                this.form.date_of_due = moment().format('YYYY-MM-DD');
                 this.form.payments.push({
                     id: null,
                     document_id: null,
@@ -1768,13 +1771,29 @@ export default {
                 if(this.establishment.customer_id){
 
                     await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
-                        this.all_customers = response.data.customers
+                        this.all_customers = [...this.all_customers,...response.data.customers]
+                        this.customers = [...this.customers,...response.data.customers]
+                        // this.all_customers = response.data.customers
                     })
-
+                    this.all_customers =  this.all_customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                             t.id === item.id
+                        ))
+                    )
+                    this.customers =  this.customers.filter((item, index, self) =>
+                        index === self.findIndex((t) => (
+                             t.id === item.id
+                        ))
+                    )
                     await this.filterCustomers()
-                    this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
+                    // this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
+                    let alt = _.find(this.customers, {'id': this.establishment.customer_id});
+                    if (alt !== undefined) {
+                        this.form.customer_id = this.establishment.customer_id
+                    }
 
-                }
+
+                    }
 
             },
             changeDocumentType() {
@@ -2200,6 +2219,7 @@ export default {
                 }
             },
             clickAddFee() {
+                this.form.date_of_due = moment().format('YYYY-MM-DD');
                 this.form.fee.push({
                     id: null,
                     date: moment().format('YYYY-MM-DD'),
@@ -2219,7 +2239,7 @@ export default {
                 let date = moment()
                     .add(first.number_days,'days')
                     .format('YYYY-MM-DD')
-
+                this.form.date_of_due = date;
                 this.form.fee.push({
                     id: null,
                     document_id: null,

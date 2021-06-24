@@ -124,7 +124,7 @@
                             <div class="col-12">
                                 <div class="row">
                                     <div class="form-group col-6 col-md-2">
-                                        <label for="seller">Vendedor</label>
+                                        <label>Vendedor</label>
                                         <el-select v-model="form.seller_id" clearable>
                                             <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
                                         </el-select>

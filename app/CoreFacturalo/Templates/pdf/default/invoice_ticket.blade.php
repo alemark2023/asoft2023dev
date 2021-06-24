@@ -515,6 +515,28 @@
             </td>
         </tr>
     @endif
+    @php
+        if($document->payment_condition_id === '01') {
+            $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '10')->first();
+        }else{
+            $paymentCondition = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
+        }
+    @endphp
+    {{-- Condicion de pago  Crédito / Contado --}}
+    <tr>
+        <td class="desc pt-5">
+            <strong>CONDICIÓN DE PAGO: {{ $paymentCondition->description }} </strong>
+        </td>
+    </tr>
+
+    @if($document->payment_method_type_id)
+        <tr>
+            <td class="desc pt-5">
+                <strong>MÉTODO DE PAGO: </strong>{{ $document->payment_method_type->description }}
+            </td>
+        </tr>
+    @endif
+
     @if ($document->payment_condition_id === '01')
 
         @if($payments->count())
@@ -530,22 +552,11 @@
             @endforeach
         @endif
     @else
-        @php
-            $paymentMethod = \App\Models\Tenant\PaymentMethodType::where('id', '09')->first();
-        @endphp
-        <table class="full-width">
+        @foreach($document->fee as $key => $quote)
             <tr>
-                <td class="desc pt-5">
-                    <strong>PAGOS: {{ $paymentMethod->description }}</strong>
-                </td>
+                <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
             </tr>
-                @foreach($document->fee as $key => $quote)
-                    <tr>
-                        <td class="desc">&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1). ' / ' : $quote->getStringPaymentMethodType() ." / ") }}Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
-                    </tr>
-                @endforeach
-            </tr>
-        </table>
+        @endforeach
     @endif
 
     <tr>

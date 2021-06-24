@@ -3,8 +3,8 @@
 namespace Modules\Finance\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Modules\Finance\Models\GlobalPayment;
 use Modules\Finance\Http\Controllers\MovementController;
+use Modules\Finance\Models\GlobalPayment;
 
 
 class MovementCollection extends ResourceCollection
@@ -20,14 +20,12 @@ class MovementCollection extends ResourceCollection
     protected static $request;
 
 
-    public function toArray($request)
-    {
-
+    public function toArray($request) {
         self::$request = $request;
         $this->calculateResiduary(self::$request);
+        /** @var \Illuminate\Support\Collection $data */
 
-
-        return $this->collection->transform(function($row, $key) {
+        $data = $this->collection->transform(function ($row, $key)  use ($request ){
             $data_person = $row->data_person;
 
             $amount = $row->payment->payment;
@@ -40,19 +38,22 @@ class MovementCollection extends ResourceCollection
             }
             self::$balance =  ($row->type_movement == 'input') ?  self::$balance + $amount : self::$balance - $amount;
 
+            $index = $key +1;
             return [
-                'id' => $row->id,
-                'destination_description' => $row->destination_description,
-                'date_of_payment' => $row->payment->date_of_payment->format('Y-m-d'),
+                'index'                              => $index,
+                'id'                              => $row->id,
+                'destination_description'         => $row->destination_description,
+                'date_of_payment_class'           => get_class($row->payment),
+                'date_of_payment'                 => $row->payment->date_of_payment->format('Y-m-d'),
                 'payment_method_type_description' => $this->getPaymentMethodTypeDescription($row),
-                'reference' => $row->payment->reference,
-                'total' => $amount,
-                'number_full' => $row->payment->associated_record_payment->number_full,
-                'currency_type_id' => $row->payment->associated_record_payment->currency_type_id,
+                'reference'                       => $row->payment->reference,
+                'total'                           => $amount,
+                'number_full'                     => $row->payment->associated_record_payment->number_full,
+                'currency_type_id'                => $row->payment->associated_record_payment->currency_type_id,
                 // 'document_type_description' => ($row->payment->associated_record_payment->document_type) ? $row->payment->associated_record_payment->document_type->description:'NV',
-                'document_type_description' => $this->getDocumentTypeDescription($row),
-                'person_name' => $data_person->name,
-                'person_number' => $data_person->number,
+                'document_type_description'       => $this->getDocumentTypeDescription($row),
+                'person_name'                     => $data_person->name,
+                'person_number'                   => $data_person->number,
                 // 'payment' => $row->payment,
                 // 'payment_type' => $row->payment_type,
                 'instance_type' => $row->instance_type,
@@ -61,15 +62,16 @@ class MovementCollection extends ResourceCollection
                 'user_name' => optional($row->user)->name,
 
                 'type_movement' => $row->type_movement,
-                'input' => ($row->type_movement == 'input') ? number_format($amount, 2, ".", "") : '-',
-                'output' => ($row->type_movement == 'output') ? number_format($amount, 2, ".", "") : '-',
-                'balance' => number_format(self::$balance, 2, ".", ""),
-                'items' => $this->getItems($row),
+                'input'         => ($row->type_movement == 'input') ? number_format($amount, 2, ".", "") : '-',
+                'output'        => ($row->type_movement == 'output') ? number_format($amount, 2, ".", "") : '-',
+                'balance'       => number_format(self::$balance, 2, ".", ""),
+                'items'         => $this->getItems($row),
 
 
             ];
         });
 
+        return $data;
     }
 
     public function getItems($row){

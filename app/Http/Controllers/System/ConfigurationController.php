@@ -134,11 +134,20 @@ class ConfigurationController extends Controller
         $memory_limit = ini_get('memory_limit');
         $memory_in_byte = number_format(self::return_bytes($memory_limit),'2',',','.');
         $pcre_backtrack_limit = ini_get('pcre.backtrack_limit');
+        $all_config = [
+            'max_execution_time' =>ini_get('max_execution_time'),
+            'max_input_time' =>ini_get('max_input_time'),
+            'post_max_size' =>ini_get('post_max_size'),
+            'upload_max_filesize' =>ini_get('upload_max_filesize'),
+            'request_terminate_timeout' =>ini_get('request_terminate_timeout'),
+            'date_timezone' =>ini_get('date.timezone'),
+        ];
 
         return view('system.configuration.info', compact(
             'memory_limit',
             'memory_in_byte',
-            'pcre_backtrack_limit'
+            'pcre_backtrack_limit',
+            'all_config'
         ));
 
     }

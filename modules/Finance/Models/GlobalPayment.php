@@ -2,17 +2,45 @@
 
 namespace Modules\Finance\Models;
 
-use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\{DocumentPayment, PurchasePayment, SaleNotePayment, User};
 use App\Models\Tenant\Cash;
-use App\Models\Tenant\BankAccount;
+use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\SoapType;
-use Modules\Sale\Models\QuotationPayment;
 use Modules\Expense\Models\ExpensePayment;
-use App\Models\Tenant\{DocumentPayment, SaleNote, SaleNotePayment, PurchasePayment, User};
-use Modules\Sale\Models\ContractPayment;
 use Modules\Pos\Models\CashTransaction;
+use Modules\Sale\Models\ContractPayment;
+use Modules\Sale\Models\QuotationPayment;
 use Modules\Sale\Models\TechnicalServicePayment;
 
+/**
+ * Modules\Finance\Models\GlobalPayment
+ *
+ * @property-read CashTransaction $cas_transaction
+ * @property-read ContractPayment $con_payment
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $destination
+ * @property-read DocumentPayment $doc_payments
+ * @property-read ExpensePayment $exp_payment
+ * @property-read mixed $data_person
+ * @property-read mixed $destination_description
+ * @property-read mixed $instance_type
+ * @property-read mixed $instance_type_description
+ * @property-read mixed $type_movement
+ * @property-read mixed $type_record
+ * @property-read \Modules\Finance\Models\IncomePayment $inc_payment
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $payment
+ * @property-read PurchasePayment $pur_payment
+ * @property-read QuotationPayment $quo_payment
+ * @property-read SaleNotePayment $sln_payments
+ * @property-read SoapType $soap_type
+ * @property-read TechnicalServicePayment $tec_serv_payment
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|GlobalPayment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GlobalPayment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GlobalPayment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|GlobalPayment whereDefinePaymentType($payment_type)
+ * @method static \Illuminate\Database\Eloquent\Builder|GlobalPayment whereFilterPaymentType($params)
+ * @mixin \Eloquent
+ */
 class GlobalPayment extends ModelTenant
 {
 
@@ -26,69 +54,106 @@ class GlobalPayment extends ModelTenant
     ];
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function soap_type()
     {
         return $this->belongsTo(SoapType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
     public function destination()
     {
         return $this->morphTo();
     }
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
     public function payment()
     {
         return $this->morphTo();
     }
 
+    /**
+     * @return mixed
+     */
     public function doc_payments()
     {
         return $this->belongsTo(DocumentPayment::class, 'payment_id')
                     ->wherePaymentType(DocumentPayment::class);
     }
+
+    /**
+     * @return mixed
+     */
     public function exp_payment()
     {
         return $this->belongsTo(ExpensePayment::class, 'payment_id')
                     ->wherePaymentType(ExpensePayment::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function sln_payments()
     {
         return $this->belongsTo(SaleNotePayment::class, 'payment_id')
                     ->wherePaymentType(SaleNotePayment::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function pur_payment()
     {
         return $this->belongsTo(PurchasePayment::class, 'payment_id')
                     ->wherePaymentType(PurchasePayment::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function quo_payment()
     {
         return $this->belongsTo(QuotationPayment::class, 'payment_id')
                     ->wherePaymentType(QuotationPayment::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function con_payment()
     {
         return $this->belongsTo(ContractPayment::class, 'payment_id')
                     ->wherePaymentType(ContractPayment::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function inc_payment()
     {
         return $this->belongsTo(IncomePayment::class, 'payment_id')
                     ->wherePaymentType(IncomePayment::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function cas_transaction()
     {
         return $this->belongsTo(CashTransaction::class, 'payment_id')
                     ->wherePaymentType(CashTransaction::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function tec_serv_payment()
     {
         return $this->belongsTo(TechnicalServicePayment::class, 'payment_id')
@@ -219,72 +284,81 @@ class GlobalPayment extends ModelTenant
     }
 
 
-    public function scopeWhereFilterPaymentType($query, $params)
-    {
+    public function scopeWhereFilterPaymentType($query, $params) {
 
-        return $query->whereHas('doc_payments', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+        /** DocumentPayment  */
+        $query->whereHas('doc_payments', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
+        });
+        $query->OrWhereHas('exp_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
+        });
+        /*SaleNotePayment*/
+        $query->OrWhereHas('sln_payments', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser()
+                    ->whereNotChanged();
+              });
+        });
+        /*PurchasePayment*/
+        $query->OrWhereHas('pur_payment', function ($q) use ($params) {
+            $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+              ->whereHas('associated_record_payment', function ($p) {
+                  $p->whereStateTypeAccepted()->whereTypeUser();
+              });
 
-                })
-                ->OrWhereHas('exp_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+        });
+        /*QuotationPayment*/
+        $query
+            ->OrWhereHas('quo_payment', function ($q) use ($params) {
+                $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                  ->whereHas('associated_record_payment', function ($p) {
+                      $p->whereStateTypeAccepted()->whereTypeUser()
+                        ->whereNotChanged();
+                  });
 
-                })
-                ->OrWhereHas('sln_payments', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser()
-                                ->whereNotChanged();
-                        });
+            });
+        /*ContractPayment*/
+        $query
+            ->OrWhereHas('con_payment', function ($q) use ($params) {
+                $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                  ->whereHas('associated_record_payment', function ($p) {
+                      $p->whereStateTypeAccepted()->whereTypeUser()
+                        ->whereNotChanged();
+                  });
 
-                })
-                ->OrWhereHas('pur_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
+            });
+        /* IncomePayment */
+        $query
+            ->OrWhereHas('inc_payment', function ($q) use ($params) {
+                $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                  ->whereHas('associated_record_payment', function ($p) {
+                      $p->whereStateTypeAccepted()->whereTypeUser();
+                  });
 
-                })
-                ->OrWhereHas('quo_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser()
-                                ->whereNotChanged();
-                        });
+            });
+        /*CashTransaction*/
+        $query
+            ->OrWhereHas('cas_transaction', function ($q) use ($params) {
+                $q->whereBetween('date', [$params->date_start, $params->date_end]);
+            });
+        /* TechnicalServicePayment */
+        $query
+            ->OrWhereHas('tec_serv_payment', function ($q) use ($params) {
+                $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
+                  ->whereHas('associated_record_payment', function ($p) {
+                      $p->whereTypeUser();
+                  });
 
-                })
-                ->OrWhereHas('con_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser()
-                                ->whereNotChanged();
-                        });
-
-                })
-                ->OrWhereHas('inc_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereStateTypeAccepted()->whereTypeUser();
-                        });
-
-                })
-                ->OrWhereHas('cas_transaction', function($q) use($params){
-                    $q->whereBetween('date', [$params->date_start, $params->date_end]);
-                })
-                ->OrWhereHas('tec_serv_payment', function($q) use($params){
-                    $q->whereBetween('date_of_payment', [$params->date_start, $params->date_end])
-                        ->whereHas('associated_record_payment', function($p){
-                            $p->whereTypeUser();
-                        });
-
-                });
-
+            });
+        return $query;
     }
 
     public function user()

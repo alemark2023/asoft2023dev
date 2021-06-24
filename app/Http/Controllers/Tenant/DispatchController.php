@@ -2,43 +2,43 @@
 
 namespace App\Http\Controllers\Tenant;
 
-use App\Models\Tenant\Configuration;
-use Exception;
-use App\Models\Tenant\Item;
-use Illuminate\Http\Request;
-use App\Models\Tenant\Person;
-use App\Models\Tenant\Series;
-use App\Models\Tenant\Company;
-use App\Models\Tenant\Dispatch;
-use App\Models\Tenant\Document;
-use App\Models\Tenant\SaleNote;
 use App\CoreFacturalo\Facturalo;
-use App\Models\Tenant\Quotation;
-use Illuminate\Support\Facades\DB;
-use Modules\Order\Models\OrderNote;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Controllers\Controller;
-use App\Models\Tenant\Establishment;
-use Illuminate\Support\Facades\Mail;
-use Modules\Order\Mail\DispatchEmail;
-use App\Models\Tenant\Catalogs\Country;
-use App\Models\Tenant\Catalogs\District;
-use App\Models\Tenant\Catalogs\Province;
-use App\Models\Tenant\Catalogs\UnitType;
-use App\Models\Tenant\PaymentMethodType;
-use Modules\Document\Traits\SearchTrait;
-use Modules\Finance\Traits\FinanceTrait;
-use App\Models\Tenant\Catalogs\Department;
-use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Requests\Tenant\DispatchRequest;
 use App\Http\Resources\Tenant\DispatchCollection;
-use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\TransferReasonType;
-use Modules\Order\Http\Resources\DispatchResource;
+use App\Models\Tenant\Catalogs\Country;
+use App\Models\Tenant\Catalogs\Department;
+use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Models\Tenant\Catalogs\TransferReasonType;
+use App\Models\Tenant\Catalogs\TransportModeType;
+use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\DispatchItem;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\Quotation;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\Series;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Modules\Document\Traits\SearchTrait;
+use Modules\Finance\Traits\FinanceTrait;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use Modules\Order\Http\Resources\DispatchResource;
+use Modules\Order\Mail\DispatchEmail;
+use Modules\Order\Models\Dispatcher;
+use Modules\Order\Models\Driver;
+use Modules\Order\Models\OrderNote;
 
 class DispatchController extends Controller
 {
@@ -51,7 +51,8 @@ class DispatchController extends Controller
 
     public function index()
     {
-        return view('tenant.dispatches.index');
+        $configuration = Configuration::getPublicConfig();
+        return view('tenant.dispatches.index',compact('configuration'));
     }
 
     public function columns()
@@ -101,23 +102,48 @@ class DispatchController extends Controller
         return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'sale_note'));
     }
 
+    public function sendDispatchToSunat(Dispatch $document) {
+
+        $data = [
+            'sent'        => false,
+            'code'        => null,
+            'description' => "El elemento ya fue enviado",
+        ];
+        if(!$document->wasSend()) {
+            $facturalo = $document->getFacturalo();
+
+            $facturalo
+                ->setActions(['send_xml_signed' => true])
+                ->loadXmlSigned()
+                ->senderXmlSignedBill();
+            $data = $facturalo->getResponse();
+        }
+
+        return json_encode($data);
+    }
+
     public function store(DispatchRequest $request)
     {
+
+        $configuration = Configuration::first();
         if ($request->series[0] == 'T') {
-            $fact = DB::connection('tenant')->transaction(function () use ($request) {
+            /** @var Facturalo $fact */
+            $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
                 $facturalo = new Facturalo();
                 $facturalo->save($request->all());
                 $facturalo->createXmlUnsigned();
                 $facturalo->signXmlUnsigned();
                 $facturalo->createPdf();
-                $facturalo->senderXmlSignedBill();
-
+                if($configuration->isAutoSendDispatchsToSunat()) {
+                     $facturalo->senderXmlSignedBill();
+                }
                 return $facturalo;
             });
 
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
         } else {
+            /** @var Facturalo $fact */
             $fact = DB::connection('tenant')->transaction(function () use ($request) {
                 $facturalo = new Facturalo();
                 $facturalo->save($request->all());
@@ -128,6 +154,14 @@ class DispatchController extends Controller
 
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
+        }
+        $configuration = Configuration::first();
+
+        if(!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
+            $reference = Document::find($document->reference_document_id);
+            if(!empty($reference)) {
+                $reference->updatePdfs();
+            }
         }
 
         return [
@@ -141,8 +175,10 @@ class DispatchController extends Controller
 
     /**
      * Tables
+     *
      * @param  Request $request
-     * @return \Illuminate\Http\Response
+     *
+     * @return array
      */
     public function tables(Request $request)
     {
@@ -290,6 +326,8 @@ class DispatchController extends Controller
         $establishments = Establishment::all();
         $series = Series::all()->toArray();
         $company = Company::select('number')->first();
+        $drivers = Driver::all();
+        $dispachers = Dispatcher::all();
 
         // ya se tiene un locations con lo siguiente combinado
         // $departments = Department::whereActive()->get();
@@ -311,6 +349,8 @@ class DispatchController extends Controller
             'items',
             'locations',
             'company',
+            'drivers',
+            'dispachers',
             'itemsFromSummary'
         );
     }
@@ -479,7 +519,7 @@ class DispatchController extends Controller
     {
         $records = Dispatch::without(['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
         'transfer_reason_type', 'items', 'reference_document'])
-            ->select('series', 'number', 'id', 'date_of_issue')
+            ->select('series', 'number', 'id', 'date_of_issue','soap_shipping_response')
             ->where('customer_id', $clientId)
             ->whereNull('reference_document_id')
             ->orderBy('series')
