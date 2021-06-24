@@ -35,20 +35,30 @@
                                 class="dropdown-item text-1"
                                 href="#"
                                 @click.prevent="clickExport()"
-                            >Listado</a
                             >
+                                Listado
+                            </a>
                             <a
                                 class="dropdown-item text-1"
                                 href="#"
                                 @click.prevent="clickExportWp()"
-                            >Woocommerce</a
                             >
+                                Woocommerce
+                            </a>
                             <a
                                 class="dropdown-item text-1"
                                 href="#"
                                 @click.prevent="clickExportBarcode()"
-                            >Etiquetas</a
                             >
+                                Etiquetas
+                            </a>
+                            <a
+                                class="dropdown-item text-1"
+                                href="#"
+                                @click.prevent="clickExportDigemid()"
+                            >
+                                DIGEMID
+                            </a>
                         </div>
                     </div>
                     <div class="btn-group flex-wrap">
@@ -138,11 +148,13 @@
                         <th>Nombre</th>
                         <th v-if="columns.description.visible">Descripción</th>
                         <th v-if="columns.model.visible">Modelo</th>
-                        <th v-if="columns.brand.visible">Marca</th>
+                        <th >Marca</th>
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
                         <th >R.S.</th>
-                        <th >DIGEMID
-                        </th>
+                        <th >DIGEMID </th>
+                        <th >Nom. DIGEMID </th>
+                        <th >Laboratorio </th>
+                        <th >Exportable </th>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
@@ -164,11 +176,20 @@
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
                         <td v-if="columns.model.visible">{{ row.model }}</td>
-                        <td v-if="columns.brand.visible">{{ row.brand }}</td>
+                        <td >{{ row.brand }}</td>
                         <td v-if="columns.description.visible">{{ row.name }}</td>
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td >{{ row.sanitary }} </td>
                         <td >{{ row.cod_digemid }} </td>
+                        <td >{{ row.name_disa }} </td>
+                        <td >{{ row.laboratory }} </td>
+                        <td >
+                            <el-checkbox
+                                @change="updateExportable(row.id,row)"
+                                v-model="row.exportable_pharmacy"
+                            >{{ (row.exportable_pharmacy === true) ? 'Si' : 'No' }}
+                            </el-checkbox>
+                        </td>
                         <td>
                             <div v-if="config.product_only_location == true">
                                 {{ row.stock }}
@@ -305,6 +326,11 @@
                 :showDialog.sync="showExportBarcodeDialog"
             ></items-export-barcode>
 
+            <item-export-digemid
+                :pharmacy="pharmacy"
+                :showDialog.sync="showExportDigemid"
+            ></item-export-digemid>
+
             <warehouses-detail
                 :item_unit_types="item_unit_types"
                 :showDialog.sync="showWarehousesDetail"
@@ -328,6 +354,7 @@ import ItemsImportListPrice from "../../../../../../resources/js/views/tenant/it
 import ItemsExport from "../../../../../../resources/js/views/tenant/items/partials/export.vue";
 import ItemsExportWp from "../../../../../../resources/js/views/tenant/items/partials/export_wp.vue";
 import ItemsExportBarcode from "../../../../../../resources/js/views/tenant/items/partials/export_barcode.vue";
+import ItemExportDigemid from "../../../../../../resources/js/views/tenant/items/partials/export_digemid.vue";
 import DataTable from "../../../../../../resources/js/views/tenant/items/../../../components/DataTable.vue";
 import {deletable} from "../../../../../../resources/js/mixins/deletable";
 
@@ -339,6 +366,7 @@ export default {
     ],
     mixins: [deletable],
     components: {
+        ItemExportDigemid,
         ItemsForm,
         ItemsImport,
         ItemsExport,
@@ -358,6 +386,7 @@ export default {
             showExportDialog: false,
             showExportWpDialog: false,
             showExportBarcodeDialog: false,
+            showExportDigemid: false,
             showImportListPriceDialog: false,
             pharmacy: true,
             showWarehousesDetail: false,
@@ -390,6 +419,10 @@ export default {
                     title: 'Marca',
                     visible: false
                 },
+                exportable_pharmacy: {
+                    title: 'Exportable',
+                    visible: true
+                },
             },
             item_unit_types: [],
             titleTopBar: '',
@@ -416,6 +449,18 @@ export default {
         }
     },
     methods: {
+        updateExportable(id,row){
+            row.exportable_pharmacy = !row.exportable_pharmacy;
+            this.$http
+                .post(`digemid/update_exportable/${id}`, {id})
+                .then((response) => {
+                    this.$eventHub.$emit("reloadData");
+                })
+                .catch((error) => {
+                    this.$message.error("No se guardaron los cambios");
+                });
+            //
+        },
         canCreateProduct() {
             if (this.typeUser === 'admin') {
                 this.can_add_new_product = true
@@ -466,6 +511,9 @@ export default {
         },
         clickExportBarcode() {
             this.showExportBarcodeDialog = true;
+        },
+        clickExportDigemid() {
+            this.showExportDigemid = true;
         },
         clickImportListPrice() {
             this.showImportListPriceDialog = true;
