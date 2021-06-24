@@ -29,7 +29,7 @@
                     <table class="">
                         <thead>
                             <tr>
-                                <th class="" width="8%">#</th>
+                                <th class="">#</th>
                                 <th class="">Fecha de emisión</th>
                                 <th class="">Proveedor</th>
                                 <th class="">N° Doc. identidad</th>
