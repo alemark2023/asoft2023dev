@@ -1531,6 +1531,10 @@ export default {
                     this.cash_payment_metod[0] !== undefined){
                     id = this.cash_payment_metod[0].id
                 }
+                let total = 0;
+                if(this.form.total !== undefined){
+                    total = this.form.total
+                }
                 this.form.date_of_due = moment().format('YYYY-MM-DD');
                 this.form.payments.push({
                     id: null,
@@ -1539,7 +1543,7 @@ export default {
                     payment_method_type_id: id,
                     reference: null,
                     payment_destination_id: this.getPaymentDestinationId(),
-                    payment: 0,
+                    payment: total,
                 });
 
             },
@@ -1770,21 +1774,25 @@ export default {
 
                 if(this.establishment.customer_id){
 
+                    let temp_all_customers =   this.all_customers;
+                    let temp_customers =  this.customers;
                     await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
-                        this.all_customers = [...this.all_customers,...response.data.customers]
-                        this.customers = [...this.customers,...response.data.customers]
+                        temp_all_customers = [...this.all_customers,...response.data.customers]
+                        temp_customers = [...this.customers,...response.data.customers]
                         // this.all_customers = response.data.customers
                     })
-                    this.all_customers =  this.all_customers.filter((item, index, self) =>
+                    temp_all_customers =  this.all_customers.filter((item, index, self) =>
                         index === self.findIndex((t) => (
                              t.id === item.id
                         ))
                     )
-                    this.customers =  this.customers.filter((item, index, self) =>
+                    temp_customers =  this.customers.filter((item, index, self) =>
                         index === self.findIndex((t) => (
                              t.id === item.id
                         ))
                     )
+                    this.all_customers = temp_all_customers;
+                    this.customers = temp_customers;
                     await this.filterCustomers()
                     // this.form.customer_id = (this.customers.length > 0) ? this.establishment.customer_id : null
                     let alt = _.find(this.customers, {'id': this.establishment.customer_id});
