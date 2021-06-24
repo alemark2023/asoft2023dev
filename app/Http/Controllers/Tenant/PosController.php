@@ -396,4 +396,26 @@ class PosController extends Controller
         return new PosCollection($item->paginate(50));
 
     }
+
+    /**
+     * vista de venta rapida para POS
+     *
+     * @param
+     *
+     * @return view
+     */
+    public function fast()
+    {
+        $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
+
+        if(!$cash) return redirect()->route('tenant.cash.index');
+
+        $configuration = Configuration::first();
+
+        $company = Company::select('soap_type_id')->first();
+        $soap_company  = $company->soap_type_id;
+        $business_turns = BusinessTurn::select('active')->where('id', 4)->first();
+
+        return view('tenant.pos.fast', compact('configuration', 'soap_company', 'business_turns'));
+    }
 }

@@ -410,3 +410,7 @@ html.dark .card.card-dashboard small.text-muted  {
 html.dark .card.card-reports .card-report-links li a {
   color: #808697;
 }
+
+.sidebar-left-collapsed ul.nav-main li.nav-description {
+  margin-left: -25px;
+}
