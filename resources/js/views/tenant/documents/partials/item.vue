@@ -119,11 +119,11 @@
                         </div>
                     </div>
 
-                    <div style="padding-top: 1%;" class="col-md-2 col-sm-2" v-if="form.item_id && form.item.lots_enabled && form.lots_group.length > 0">
+                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3" v-if="showLots">
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004; Seleccionar lote]</a>
                     </div>
 
-                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3" v-if="form.item_id && form.item.series_enabled">
+                    <div style="padding-top: 1%;" class="col-md-3 col-sm-3" v-if="showSeries">
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickSelectLots">[&#10004; Seleccionar series]</a>
                     </div>
 
@@ -427,6 +427,26 @@
             this.canCreateProduct();
         },
         computed: {
+            showLots(){
+                if(
+                    this.form.item_id &&
+                    this.form.item.lots_enabled &&
+                    this.form.lots_group.length > 0
+                ){
+                    return true;
+                }
+
+                return false;
+            },
+            showSeries(){
+                if(
+                    this.form.item_id &&
+                    this.form.item.series_enabled
+                ){
+                    return true
+                }
+                return false;
+            },
             documentItem(){
                 if(this.recordItem !== undefined &&
                     this.recordItem !== null &&
