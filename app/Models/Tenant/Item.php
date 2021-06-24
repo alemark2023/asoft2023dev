@@ -9,6 +9,7 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
 use Illuminate\Support\Facades\Config;
 use Modules\Account\Models\Account;
+use Modules\Digemid\Models\CatDigemid;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
@@ -213,6 +214,15 @@ class Item extends ModelTenant
         return $this->hasMany(InventoryKardex::class);
     }
 
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function cat_digemid()
+    {
+        return $this->hasOne(CatDigemid::class);
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -302,7 +312,11 @@ class Item extends ModelTenant
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     public function scopePharmacy($query){
-        return $query->whereNotNull('sanitary')->whereNotNull('cod_digemid');
+        return $query
+            ->whereNotNull('items.cod_digemid')
+            ->select('items.*')
+            ->join('cat_digemid','cat_digemid.item_id','=','items.id')
+            ;
     }
 
     /**
@@ -691,6 +705,13 @@ class Item extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|mixed|\Modules\Digemid\Models\CatDigemid|object|null
+     */
+    public function getCatDigemid(){
+        return CatDigemid::where('item_id',$this->id)->first();
+    }
+
+    /**
      * Retorna un standar de nomenclatura para el modelo
      *
      * @param \App\Models\Tenant\Configuration|null $configuration
@@ -721,8 +742,22 @@ class Item extends ModelTenant
         } else {
             $purchase_has_igv_description = ((bool)$this->purchase_has_igv) ? 'Si' : 'No';
         }
+        $digemid_exportable = false;
+        $name_disa = '';
+        $laboratory = '';
+        if($configuration->isPharmacy()) {
+            $digemid = $this->getCatDigemid();
+            if (!empty($digemid)) {
+                $digemid_exportable = (bool)$digemid->active;
+                $name_disa = $digemid->getNomProd();
+                $laboratory = $digemid->getNomTitular();
+            }
+        }
 
         return [
+            'name_disa'                           => $name_disa,
+            'laboratory'                           => $laboratory,
+            'exportable_pharmacy'                           => $digemid_exportable,
             'id'                           => $this->id,
             'sanitary'                 => $this->sanitary,
             'cod_digemid'                 => $this->cod_digemid,
@@ -899,5 +934,15 @@ class Item extends ModelTenant
         }
 
         return $this;
+    }
+
+    /**
+     * @param $cod
+     *
+     * @return \App\Models\Tenant\Item|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|mixed|object|null
+     */
+    public static function FindByCodDigemid($cod){
+        return self::where('cod_digemid',$cod)->first();
+
     }
 }

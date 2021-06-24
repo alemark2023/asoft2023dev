@@ -112,19 +112,26 @@
                 errors: {},
                 form: {},
                 company: {},
-                locked_emission:{}
+                locked_emission:{},
+                config:{}
             }
         },
-        async created() {
+        created() {
+            if (this.configuration !== undefined && this.configuration !== null && this.configuration.length > 0) {
+                this.$setStorage('configuration', this.configuration)
+            }
+            this.config = this.$getStorage('configuration');
+        },
+        mounted(){
             this.initForm()
         },
         computed: {
             Ticket58: function(){
 
                 if(
-                    this.configuration.ticket_58 !== undefined &&
-                    this.configuration.ticket_58){
-                    return this.configuration.ticket_58;
+                    this.config.ticket_58 !== undefined &&
+                    this.config.ticket_58 !== null){
+                    return this.config.ticket_58;
                 }
 
                 return false;

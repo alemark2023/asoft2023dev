@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Tenant;
 
+use App\Exports\DigemidItemExport;
 use App\Exports\ItemExport;
 use App\Exports\ItemExportWp;
 use App\Http\Controllers\Controller;
@@ -15,6 +16,7 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Catalogs\UnitType;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
@@ -30,6 +32,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
+use Modules\Digemid\Models\CatDigemid;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Item\Models\Brand;
@@ -118,7 +121,8 @@ class ItemController extends Controller
             $isPharmacy = ($request->isPharmacy==='true')?true:false;
         }
         if($isPharmacy == true){
-            $records->Pharmacy();
+            $records->Pharmacy()
+                ->with(['cat_digemid']);
         }
         return $records->orderBy('description');
 
@@ -525,17 +529,14 @@ class ItemController extends Controller
         ]);
         if ($request->hasFile('file')) {
             try {
+                $old_digemid = CatDigemid::setInactiveMassive();
                 $import = new CatalogImport();
                 $import->import($request->file('file'), null, Excel::XLSX);
-                $items = $import->getItems();
-                $new = $import->getNews();
                 $updated  = $import->getUpdated();
                 return [
                     'success' => true,
                     'message' =>  __('app.actions.upload.success'),
-                    'data' => count($items),
-                    'new' => count($new),
-                    'updated' => count($updated),
+                    'data' => count($updated),
                 ];
             } catch (Exception $e) {
                 return [
@@ -830,6 +831,27 @@ class ItemController extends Controller
 
         $pdf->output('etiquetas_'.now()->format('Y_m_d').'.pdf', 'I');
 
+    }
+
+    /**
+     * Exporta items al formato de DIGEMID
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportDigemid(Request $request)
+    {
+        ini_set('max_execution_time', 0);
+        $company = Company::first();
+        $company_cod_digemid = $company->cod_digemid;
+        $records = CatDigemid::where('active',1);
+        $max_prices = $records->max('max_prices');
+            $records = $records->get();
+        $export = new DigemidItemExport();
+        $export->setRecords($records)->setCompanyCodDigemid($company_cod_digemid)->setMaxPrice($max_prices);
+
+        return $export->download('Reporte_Items_Digemid_'.Carbon::now().'.xlsx');
     }
 
     public function printBarCode(Request $request)
