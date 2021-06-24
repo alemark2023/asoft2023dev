@@ -10,6 +10,42 @@ use Carbon\Carbon;
  *
  * @package App\Models\Tenant
  * @mixin \App\Models\Tenant\ModelTenant
+ * @property-read CurrencyType $currency_type
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
+ * @property-read int|null $documents_count
+ * @property \App\Models\Tenant\Establishment $establishment
+ * @property mixed $charges
+ * @property mixed $customer
+ * @property mixed $detraction
+ * @property mixed $discounts
+ * @property mixed $guides
+ * @property-read mixed $identifier
+ * @property mixed $legends
+ * @property-read string $number_full
+ * @property-read mixed $number_to_letter
+ * @property mixed $perception
+ * @property mixed $prepayments
+ * @property mixed $related
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
+ * @property-read int|null $inventory_kardex_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNoteItem[] $items
+ * @property-read int|null $items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
+ * @property-read int|null $kardex_count
+ * @property-read \App\Models\Tenant\PaymentMethodType $payment_method_type
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNotePayment[] $payments
+ * @property-read int|null $payments_count
+ * @property-read \App\Models\Tenant\Person $person
+ * @property-read \App\Models\Tenant\Quotation $quotation
+ * @property-read \App\Models\Tenant\SoapType $soap_type
+ * @property-read \App\Models\Tenant\StateType $state_type
+ * @property-read \App\Models\Tenant\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SaleNote query()
+ * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereNotChanged()
+ * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereStateTypeAccepted()
+ * @method static \Illuminate\Database\Eloquent\Builder|SaleNote whereTypeUser()
  */
 class SaleNote extends ModelTenant
 {
@@ -215,56 +251,89 @@ class SaleNote extends ModelTenant
         return $this->prefix.'-'.$this->id;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function soap_type()
     {
         return $this->belongsTo(SoapType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function state_type()
     {
         return $this->belongsTo(StateType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function person() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
 
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function currency_type()
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function items()
     {
         return $this->hasMany(SaleNoteItem::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function kardex()
     {
         return $this->hasMany(Kardex::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
     public function inventory_kardex()
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function payments()
     {
         return $this->hasMany(SaleNotePayment::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function documents()
     {
         return $this->hasMany(Document::class);
@@ -278,6 +347,9 @@ class SaleNote extends ModelTenant
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return mixed
+     */
     public function getNumberToLetterAttribute()
     {
         $legends = $this->legends;
@@ -285,6 +357,9 @@ class SaleNote extends ModelTenant
         return $legend->value;
     }
 
+    /**
+     * @return string
+     */
     public function getNumberFullAttribute()
     {
         $number_full = ($this->series && $this->number) ? $this->series.'-'.$this->number : $this->prefix.'-'.$this->id;
@@ -293,6 +368,11 @@ class SaleNote extends ModelTenant
     }
 
 
+    /**
+     * @param $query
+     *
+     * @return null
+     */
     public function scopeWhereTypeUser($query)
     {
         $user = auth()->user();
@@ -300,21 +380,37 @@ class SaleNote extends ModelTenant
     }
 
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeWhereNotChanged($query)
     {
         return $query->where('changed', false);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
@@ -460,5 +556,169 @@ class SaleNote extends ModelTenant
                 'payment_filename' => ($row->payment_file) ? $row->payment_file->filename:null,
             ];
         });
+    }
+
+    /**
+     * Genera la estructura necesaria para exportar por api
+     *
+     * @return array
+     */
+    public function getDataToApiExport() {
+
+        $date_of_issue = ($this->date_of_issue) ? $this->date_of_issue->format('Y-m-d') : '';
+        $sale_note_items = SaleNoteItem::where('sale_note_id', $this->id)->get();
+        $items = [];
+        foreach ($sale_note_items as $item) {
+            /** @var SaleNoteItem $item */
+            $tem_item = $item->toArray();
+            $tem_item['item'] = $item->item;
+            $items[] = $tem_item;
+        }
+        $payments_model = SaleNotePayment::where('sale_note_id', $this->id)->get();
+        $payments = [];
+
+        foreach ($payments_model as $payment) {
+            /** @var SaleNotePayment $payment */
+            $payments[] = $payment->toArray();
+        }
+        $attributes = $this->attributes;
+
+        $customer = (array)$this->customer;
+        $datos_del_cliente_o_receptor = [
+            'codigo_tipo_documento_identidad'    => isset($customer['identity_document_type_id'])
+                ? $customer['identity_document_type_id'] : '6',
+            'numero_documento'                   => isset($customer['number']) ? $customer['number'] : '',
+            'apellidos_y_nombres_o_razon_social' => isset($customer['name']) ? $customer['name'] : '',
+            'codigo_pais'                        => isset($customer['country_id']) ? $customer['country_id'] : 'PE',
+            'ubigeo'                             => isset($customer['district_id']) ? $customer['district_id'] : '',
+            'direccion'                          => isset($customer['address']) ? $customer['address'] : '',
+            'correo_electronico'                 => isset($customer['email']) ? $customer['email'] : '',
+            'telefono'                           => isset($customer['telephone']) ? $customer['telephone'] : '',
+        ];
+        $datos_del_cliente_o_receptor = array_merge($datos_del_cliente_o_receptor, $customer);
+        $empty_ob = (object)[];
+        $data = [
+
+            'prefix'                 => $this->prefix,
+            'series_id'              => 10,
+            'establishment_id'       => null,
+            'date_of_issue'          => $date_of_issue,
+            'time_of_issue'          => $this->time_of_issue,
+            'customer_id'            => $this->customer_id,
+            'currency_type_id'       => $this->currency_type_id,
+            'purchase_order'         => $this->purchase_order,
+            'exchange_rate_sale'     => $this->exchange_rate_sale,
+            'total_prepayment'       => $this->total_prepayment,
+            'total_charge'           => $this->total_charge,
+            'total_discount'         => $this->total_discount,
+            'total_free'             => $this->total_free,
+            'total_exportation'      => $this->total_exportation,
+            'total_taxed'            => $this->total_taxed,
+            'total_unaffected'       => $this->total_unaffected,
+            'total_exonerated'       => $this->total_exonerated,
+            'total_igv'              => $this->total_igv,
+            'total_base_isc'         => $this->total_base_isc,
+            'total_isc'              => $this->total_isc,
+            'total_base_other_taxes' => $this->total_base_other_taxes,
+            'total_other_taxes'      => $this->total_other_taxes,
+            'total_taxes'            => $this->total_taxes,
+            'total_value'            => $this->total_value,
+            'total'                  => $this->total,
+            'operation_type_id'      => $this->operation_type_id,
+            'items'                  => $items,
+
+            'charges'                => $this->charge,
+            'attributes'             => $attributes,
+            'guides'                 => isset($attributes['guides']) ? $attributes['guides'] : $empty_ob,
+            'discounts'              => isset($attributes['discounts']) ? $attributes['discounts'] : $empty_ob,
+            'payments'               => $payments,
+            'additional_information' => $this->additional_information,
+
+            'actions'                      => ['format_pdf' => 'a4'],
+            'apply_concurrency'            => (bool)$this->apply_concurrency,
+            'type_period'                  => $this->type_period,
+            'quantity_period'              => $this->quantity_period,
+            'automatic_date_of_issue'      => $this->automatic_date_of_issue,
+            'enabled_concurrency'          => $this->enabled_concurrency,
+            'datos_del_cliente_o_receptor' => $datos_del_cliente_o_receptor,
+
+        ];
+
+
+        $e = [
+            'items' => [
+                [
+                    'item_id'                 => 1181,
+                    'item'                    => [
+                        'id'                               => 1181,
+                        'item_id'                          => 1181,
+                        'name'                             => null,
+                        'full_description'                 => '111111111111 - agua',
+                        'description'                      => 'agua',
+                        'currency_type_id'                 => 'PEN',
+                        'internal_id'                      => '111111111111',
+                        'item_code'                        => null,
+                        'currency_type_symbol'             => 'S/',
+                        'sale_unit_price'                  => '100.00',
+                        'purchase_unit_price'              => '0.000000',
+                        'unit_type_id'                     => 'NIU',
+                        'sale_affectation_igv_type_id'     => '20',
+                        'purchase_affectation_igv_type_id' => '10',
+                        'calculate_quantity'               => false,
+                        'has_igv'                          => true,
+                        'is_set'                           => false,
+                        'aux_quantity'                     => 1,
+                        'brand'                            => 'CIELO',
+                        'category'                         => 'CIELO',
+                        'stock'                            => -145,
+                        'image'                            => 'https=>//demo.facturalo.pro/logo/imagen-no-disponible.jpg',
+                        'warehouses'                       => [
+                            [
+                                'warehouse_description' => 'Almacén Oficina Principal', 'stock' => '-145.0000',
+                                'warehouse_id'          => 1],
+                            [
+                                'warehouse_description' => 'Almacén - Oficina Arequipa', 'stock' => '-1.0000',
+                                'warehouse_id'          => 4],
+                        ],
+                        'unit_price'                       => '100.00',
+                        'presentation'                     => null,
+                    ],
+                    'currency_type_id'        => 'PEN',
+                    'quantity'                => 1,
+                    'unit_value'              => 100,
+                    'affectation_igv_type_id' => '20',
+                    'affectation_igv_type'    => [
+                        'id'          => '20', 'active' => 1, 'exportation' => 0, 'free' => 0,
+                        'description' => 'Exonerado - Operación Onerosa'],
+                    'total_base_igv'          => 100,
+                    'percentage_igv'          => 18,
+                    'total_igv'               => 0,
+                    'system_isc_type_id'      => null,
+                    'total_base_isc'          => 0,
+                    'percentage_isc'          => 0,
+                    'total_isc'               => 0,
+                    'total_base_other_taxes'  => 0,
+                    'percentage_other_taxes'  => 0,
+                    'total_other_taxes'       => 0,
+                    'total_plastic_bag_taxes' => 0,
+                    'total_taxes'             => 0,
+                    'price_type_id'           => '01',
+                    'unit_price'              => 100,
+                    'total_value'             => 100,
+                    'total_discount'          => 0,
+                    'total_charge'            => 0,
+                    'total'                   => 100,
+                    'attributes'              => [],
+                    'charges'                 => [],
+                    'discounts'               => [],
+                ],
+            ],
+
+        ];
+        $data['quantity_period'] = (int)$data['quantity_period'];
+        $data['apply_concurrency'] = (bool)$data['apply_concurrency'];
+        $data['enabled_concurrency'] = (bool)$data['enabled_concurrency'];
+
+        return $data;
     }
 }

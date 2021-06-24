@@ -75,6 +75,44 @@ class SaleNoteController extends Controller
         return view('tenant.sale_notes.form', compact('id'));
     }
 
+
+    public function EnviarOtroSitio(){
+
+        $sale_note = SaleNote::find(93);
+        $data = $sale_note->getDataToApiExport();
+
+
+        $curl = curl_init();
+        $token = 'vRjJGSj8DmK7DjJIWsRPgI3reIl5LKmhSAOVGcfNhSiM4l4t6P';
+        $web = "empresa3.facturalo.carlangas.online";
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'http://'.$web.'/api/sale-note',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>json_encode($data),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer '.$token,
+                'Content-Type: application/json',
+                'Cookie: Cookie_1=value'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+         $response = json_decode($response);
+        dd([
+               $data,
+               $response,
+           ]);
+    }
+
+
     public function columns()
     {
         return [
