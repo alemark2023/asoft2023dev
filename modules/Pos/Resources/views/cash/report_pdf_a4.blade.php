@@ -179,6 +179,28 @@
                 </p>
             </td>
         </tr>
+        <tr>
+            <td><hr></td>
+            <td><hr></td>
+        </tr>
+        <tr>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Notas de Débito:
+                    </strong>
+                    S/. {{$data['nota_debito']}}
+                </p>
+            </td>
+            <td class="td-custom">
+                <p>
+                    <strong>
+                        Notas de Crédito:
+                    </strong>
+                    S/. {{ $data['nota_credito'] }}
+                </p>
+            </td>
+        </tr>
 
         <tr>
             <td class="td-custom">

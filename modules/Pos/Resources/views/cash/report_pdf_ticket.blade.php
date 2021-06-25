@@ -76,7 +76,10 @@
     <p><strong>Ingreso: </strong>S/. {{ $data['cash_income'] }} </p>
     <p><strong>Saldo final: </strong>S/. {{$data['cash_final_balance']}} </p>
     <p><strong>Egreso: </strong>S/. {{$data['cash_egress']}} </p>
+    <p>&nbsp;</p>
     <p><strong>Por cobrar: </strong>S/. {{$data['credit']}} </p>
+    <p><strong>Notas de Débito:</strong>S/. {{$data['nota_debito']}}</p>
+    <p><strong>Notas de Crédito: </strong> S/. {{ $data['nota_credito'] }}</p>
 </div>
 @if($data['cash_documents_total']>0)
     <div class="" style="width:100% !important">

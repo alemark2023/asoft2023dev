@@ -10,6 +10,72 @@ use Modules\BusinessTurn\Models\DocumentTransport;
 use Modules\Order\Models\OrderNote;
 
 
+/**
+ * App\Models\Tenant\Document
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Note[] $affected_documents
+ * @property-read int|null $affected_documents_count
+ * @property-read CurrencyType $currency_type
+ * @property-read DocumentType $document_type
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DocumentFee[] $fee
+ * @property-read int|null $fee_count
+ * @property-read mixed $additional_information
+ * @property mixed $charges
+ * @property-read mixed $company
+ * @property mixed $customer
+ * @property mixed $data_json
+ * @property mixed $detraction
+ * @property mixed $discounts
+ * @property-read mixed $download_external_cdr
+ * @property-read mixed $download_external_pdf
+ * @property-read mixed $download_external_xml
+ * @property mixed $establishment
+ * @property mixed $guides
+ * @property-read mixed $is_editable
+ * @property mixed $legends
+ * @property-read mixed $number_full
+ * @property-read mixed $number_to_letter
+ * @property mixed $perception
+ * @property mixed $prepayments
+ * @property mixed $related
+ * @property mixed $response_regularize_shipping
+ * @property mixed $soap_shipping_response
+ * @property-read \App\Models\Tenant\Group $group
+ * @property-read DocumentHotel|null $hotel
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
+ * @property-read int|null $inventory_kardex_count
+ * @property-read \App\Models\Tenant\Invoice|null $invoice
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DocumentItem[] $items
+ * @property-read int|null $items_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
+ * @property-read int|null $kardex_count
+ * @property-read \App\Models\Tenant\Note|null $note
+ * @property-read OrderNote $order_note
+ * @property-read \App\Models\Tenant\PaymentMethodType $payment_method_type
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\DocumentPayment[] $payments
+ * @property-read int|null $payments_count
+ * @property-read \App\Models\Tenant\Person $person
+ * @property-read \App\Models\Tenant\Quotation $quotation
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Dispatch[] $reference_guides
+ * @property-read int|null $reference_guides_count
+ * @property-read \App\Models\Tenant\SaleNote $sale_note
+ * @property-read \App\Models\Tenant\User $seller
+ * @property-read \App\Models\Tenant\SoapType $soap_type
+ * @property-read \App\Models\Tenant\StateType $state_type
+ * @property-read \App\Models\Tenant\SummaryDocument|null $summary_document
+ * @property-read DocumentTransport|null $transport
+ * @property-read \App\Models\Tenant\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Document newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereAffectationTypePrepayment($type)
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereHasPrepayment()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereNotSent()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereRegularizeShipping()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereStateTypeAccepted()
+ * @method static \Illuminate\Database\Eloquent\Builder|Document whereTypeUser()
+ * @mixin \Eloquent
+ */
 class Document extends ModelTenant
 {
     protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments'];
@@ -233,65 +299,104 @@ class Document extends ModelTenant
         return $arr;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function soap_type()
     {
         return $this->belongsTo(SoapType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function state_type()
     {
         return $this->belongsTo(StateType::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function person() {
         return $this->belongsTo(Person::class, 'customer_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function group()
     {
         return $this->belongsTo(Group::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function document_type()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function currency_type()
     {
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
 
+    /**
+     * @return \App\Models\Tenant\Company|\Illuminate\Database\Eloquent\Model|mixed|object|null
+     */
     public function getCompanyAttribute()
     {
         return Company::first();
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function invoice()
     {
         return $this->hasOne(Invoice::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function note()
     {
         return $this->hasOne(Note::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function items()
     {
         return $this->hasMany(DocumentItem::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function kardex()
     {
         return $this->hasMany(Kardex::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function payments()
     {
         return $this->hasMany(DocumentPayment::class);
@@ -305,31 +410,49 @@ class Document extends ModelTenant
         return $this->hasMany(DocumentFee::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
     public function inventory_kardex()
     {
         return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function quotation()
     {
         return $this->belongsTo(Quotation::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function sale_note()
     {
         return $this->belongsTo(SaleNote::class, 'sale_note_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function hotel()
     {
         return $this->hasOne(DocumentHotel::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function transport()
     {
         return $this->hasOne(DocumentTransport::class);
     }
 
+    /**
+     * @return string
+     */
     public function getNumberFullAttribute()
     {
         return $this->series.'-'.$this->number;
@@ -342,84 +465,148 @@ class Document extends ModelTenant
         return $legend->value;
     }
 
+    /**
+     * @return string
+     */
     public function getDownloadExternalXmlAttribute()
     {
         return route('tenant.download.external_id', ['model' => 'document', 'type' => 'xml', 'external_id' => $this->external_id]);
     }
 
+    /**
+     * @return string
+     */
     public function getDownloadExternalPdfAttribute()
     {
         return route('tenant.download.external_id', ['model' => 'document', 'type' => 'pdf', 'external_id' => $this->external_id]);
     }
 
+    /**
+     * @return string
+     */
     public function getDownloadExternalCdrAttribute()
     {
         return route('tenant.download.external_id', ['model' => 'document', 'type' => 'cdr', 'external_id' => $this->external_id]);
     }
 
 
+    /**
+     * @param $query
+     *
+     * @return null
+     */
     public function scopeWhereTypeUser($query)
     {
+        /** @var \App\Models\Tenant\User $user */
         $user = auth()->user();
-        return ($user->type == 'admin') ? null : $query->where('user_id', $user->id)->orWhere('seller_id', $user->id)->latest();
+        return ($user->type === 'admin') ? null : $query->where('user_id', $user->id)->orWhere('seller_id', $user->id)->latest();
         // return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeWhereNotSent($query)
     {
         return  $query->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'));
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function affected_documents()
     {
         return $this->hasMany(Note::class, 'affected_document_id');
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeWhereHasPrepayment($query)
     {
         return $query->where([['has_prepayment', true],['was_deducted_prepayment', false],['state_type_id','05']]);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function reference_guides()
     {
         return $this->hasMany(Dispatch::class, 'reference_document_id', 'id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function summary_document()
     {
         return $this->hasOne(SummaryDocument::class);
     }
 
+    /**
+     * @param $query
+     * @param $type
+     *
+     * @return mixed
+     */
     public function scopeWhereAffectationTypePrepayment($query, $type)
     {
         return $query->where('affectation_type_prepayment', $type);
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeWhereStateTypeAccepted($query)
     {
         return $query->whereIn('state_type_id', ['01','03','05','07','13']);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function payment_method_type()
     {
         return $this->belongsTo(PaymentMethodType::class);
     }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeWhereRegularizeShipping($query)
     {
         return  $query->where('state_type_id', '01')->where('regularize_shipping', true);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function order_note()
     {
         return $this->belongsTo(OrderNote::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function seller()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @param $value
+     *
+     * @return bool
+     */
     public function getIsEditableAttribute($value)
     {
         return $value ? true : false;
@@ -490,4 +677,33 @@ class Document extends ModelTenant
         return $this;
 
     }
+
+    /**
+     * Devuelve notas de credito o debito que afectan al documento
+     *
+     * @return \App\Models\Tenant\Note[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     */
+    public function getNotes(){
+        return Note::where('affected_document_id',$this->id)->get();
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotal()
+    : float {
+        return $this->total;
+    }
+
+    /**
+     * @param float $total
+     *
+     * @return Document
+     */
+    public function setTotal(float $total)
+    : Document {
+        $this->total = $total;
+        return $this;
+    }
+
 }
