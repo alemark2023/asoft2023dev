@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models\Tenant
  * @mixin Model
+ * @mixin \Eloquent
  * @mixin \Illuminate\Database\Query\Builder as Builder
  * @mixin \Illuminate\Database\Eloquent\Collection
  * @method static \Illuminate\Database\Eloquent\Builder|ModelTenant newModelQuery()

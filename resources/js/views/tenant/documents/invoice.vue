@@ -1545,6 +1545,7 @@ export default {
                     payment_destination_id: this.getPaymentDestinationId(),
                     payment: total,
                 });
+                this.calculatePayments()
 
             },
             getPaymentDestinationId() {
@@ -2265,6 +2266,21 @@ export default {
             clickRemoveFee(index) {
                 this.form.fee.splice(index, 1);
                 this.calculateFee();
+            },
+            calculatePayments() {
+                let payment_count = this.form.payments.length;
+                let total = this.form.total;
+                let payment = 0;
+                let amount = _.round(total / payment_count, 2);
+                console.log(amount);
+                _.forEach(this.form.payments, row => {
+                    payment += amount;
+                    if (total - payment < 0) {
+                        amount = _.round(total - payment + amount, 2);
+                    }
+                    row.payment = amount;
+                    console.error(row.payment)
+                })
             },
             calculateFee() {
                 let fee_count = this.form.fee.length;
