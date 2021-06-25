@@ -175,6 +175,7 @@ if ($hostname) {
             Route::get('items/export/barcode', 'Tenant\ItemController@exportBarCode')->name('tenant.items.export.barcode');
             Route::get('items/export/barcode/print', 'Tenant\ItemController@printBarCode')->name('tenant.items.export.barcode.print');
             Route::get('items/export/barcode/last', 'Tenant\ItemController@itemLast')->name('tenant.items.last');
+            Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
             //Persons
             Route::get('persons/columns', 'Tenant\PersonController@columns');

@@ -1,5 +1,6 @@
 export default {
-    typeUser: '',
-    customers: {},
-    configuration: {},
+    userType: '',
+    config: {},
+    warehouses: {},
+    all_items:{},
 }
