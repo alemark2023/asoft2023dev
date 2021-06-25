@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Tenant\Api;
 
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment as EstablishmentModel;
+use App\Models\Tenant\Person as PersonModel;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Mpdf\Mpdf;
 use Carbon\Carbon;
 use Mpdf\HTMLParserMode;
@@ -106,6 +109,7 @@ class SaleNoteController extends Controller
 
 		$type_period = $inputs['type_period'];
 		$quantity_period = $inputs['quantity_period'];
+        $force_create_if_not_exist = isset($inputs['force_create_if_not_exist'])?(bool)$inputs['force_create_if_not_exist']:false;
 		$d_of_issue = new Carbon($inputs['date_of_issue']);
 		$automatic_date_of_issue = null;
 
@@ -113,6 +117,74 @@ class SaleNoteController extends Controller
 			$add_period_date = ($type_period == 'month') ? $d_of_issue->addMonths($quantity_period) : $d_of_issue->addYears($quantity_period);
 			$automatic_date_of_issue = $add_period_date->format('Y-m-d');
 		}
+        if($force_create_if_not_exist === true){
+            $person = PersonModel::find($inputs['customer_id']);
+            if(empty($person)) {
+                $client_data = $inputs['datos_del_cliente_o_receptor'];
+                $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
+                $person = PersonModel::where('number',$client_number)->first();
+
+                if(empty($person) && !empty($client_number)){
+                    $person = new PersonModel([
+                        'number'=>$client_number,
+                        'identity_document_type_id'=>isset($client_data['codigo_tipo_documento_identidad']) ? $client_data['codigo_tipo_documento_identidad']:'6',
+                        'name'=>isset($client_data['apellidos_y_nombres_o_razon_social']) ? $client_data['apellidos_y_nombres_o_razon_social']:'',
+                        'country_id'=>isset($client_data['codigo_pais']) ? $client_data['codigo_pais']:'PE',
+                        'district_id'=>isset($client_data['ubigeo']) ? $client_data['ubigeo']:'',
+                        'address'=>isset($client_data['direccion']) ? $client_data['direccion']:'',
+                        'email'=>isset($client_data['correo_electronico']) ? $client_data['correo_electronico']:'',
+                        'telephone'=>isset($client_data['telefono']) ? $client_data['telefono']:'',
+                                              ]);
+                    $person->push();
+                    $inputs['customer_id'] = $person->id;
+
+                }
+                $items = $inputs['items'];
+                foreach($items as $key => $item){
+
+                    $item_in = $item['item'];
+                    $new_item = 'no' ;
+                    $item_with_internal_id = Item::where('internal_id',$item_in['internal_id'])->where('id','!=',$item['id'])->first();
+                    $item_with_id = Item::find($item['id']);
+                    if(empty($item_with_id)){
+                        // no existe el item con el id
+                        if(!empty($item_with_internal_id)){
+                            $items[$key]['id']=$item_with_internal_id->id;
+                            $items[$key]['item']['id']=$item_with_internal_id->id;
+                            $items[$key]['item']['item_id']=$item_with_internal_id->id;
+                        }else{
+                            $new_item = new Item($item_in);
+                        }
+
+                    }else{
+                        // existe
+                        if($item_with_id->id != $item_in['internal_id']){
+                            // existe pero el id interno es diferente
+                            if(!empty($item_with_internal_id)){
+                                $items[$key]['id']=$item_with_internal_id->id;
+                                $items[$key]['item']['id']=$item_with_internal_id->id;
+                                $items[$key]['item']['item_id']=$item_with_internal_id->id;
+                            }else{
+                                // no existe y el codigo interno es diferente
+                                $new_item = new Item($item_in);
+                            }
+                        }else{
+                            // existe y el codigo es el mismo
+                            $items[$key]['id']=$item_with_id->id;
+                            $items[$key]['item']['id']=$item_with_id->id;
+                            $items[$key]['item']['item_id']=$item_with_id->id;
+                        }
+                    }
+                    if($new_item !== 'no'){
+                        $new_item->push();
+                        $items[$key]['id']=$new_item->id;
+                        $items[$key]['item']['id']=$new_item->id;
+                        $items[$key]['item']['item_id']=$new_item->id;
+                    }
+                }
+                $inputs['items'] = $items ;
+            }
+        }
 
 		$data_series = $this->getDataSeries($inputs['series_id'], $inputs['id'], $inputs['number']);
 

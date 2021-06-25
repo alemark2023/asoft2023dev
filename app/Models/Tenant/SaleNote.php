@@ -570,8 +570,71 @@ class SaleNote extends ModelTenant
         $items = [];
         foreach ($sale_note_items as $item) {
             /** @var SaleNoteItem $item */
-            $tem_item = $item->toArray();
-            $tem_item['item'] = $item->item;
+            $tem_item = [];
+            $tem_item['id']=$item->id;
+            $tem_item['currency_type_id']=$item->currency_type_id;
+            $tem_item['quantity']=$item->quantity;
+            $tem_item['unit_value']=$item->unit_value;
+            $tem_item['affectation_igv_type_id']=$item->affectation_igv_type_id;
+            $tem_item['total_base_igv']=$item->total_base_igv;
+            $tem_item['percentage_igv']=$item->percentage_igv;
+            $tem_item['total_igv']=$item->total_igv;
+            $tem_item['system_isc_type_id']=$item->system_isc_type_id;
+            $tem_item['total_base_isc']=$item->total_base_isc;
+            $tem_item['percentage_isc']=$item->percentage_isc;
+            $tem_item['total_isc']=$item->total_isc;
+            $tem_item['total_base_other_taxes']=$item->total_base_other_taxes;
+            $tem_item['percentage_other_taxes']=$item->percentage_other_taxes;
+            $tem_item['total_other_taxes']=$item->total_other_taxes;
+            $tem_item['total_plastic_bag_taxes']=$item->total_plastic_bag_taxes;
+            $tem_item['total_taxes']=$item->total_taxes;
+            $tem_item['price_type_id']=$item->price_type_id;
+            $tem_item['unit_price']=$item->unit_price;
+            $tem_item['total_value']=$item->total_value;
+            $tem_item['total_discount']=$item->total_discount;
+            $tem_item['total_charge']=$item->total_charge;
+            $tem_item['total']=$item->total;
+            $tem_item['attributes']=$item->attributes;
+            $tem_item['charges']=$item->charges;
+            $tem_item['discounts']=$item->discounts;
+            $tem_item['affectation_igv_type']=$item->affectation_igv_type;
+            $it = $item->item;
+            $ot = Item::find($it->id);
+            $property = [
+                'full_description',
+                'name',
+                'description',
+                'currency_type_id',
+                'internal_id',
+                'item_code',
+                'currency_type_symbol',
+                'sale_unit_price',
+                'purchase_unit_price',
+                'unit_type_id',
+                'sale_affectation_igv_type_id',
+                'purchase_affectation_igv_type_id',
+                'calculate_quantity',
+                'has_igv',
+                'is_set',
+                'aux_quantity',
+                'brand',
+                'category',
+                'stock',
+                'image',
+                'warehouses',
+                'unit_price',
+                'presentation',
+            ];
+            $t_it = [
+                'id'=> property_exists($it,'id')?$it->id:$ot->id,
+                'item_id'=> property_exists($it,'id')?$it->id:$ot->id,
+
+            ];
+            for($i=0;$i<count($property);$i++){
+                $w = $property[$i];
+                $t_it[$w] = property_exists($it,$w)?$it->{$w}:$ot->{$w};
+            }
+            $tem_item['item'] = $t_it;
             $items[] = $tem_item;
         }
         $payments_model = SaleNotePayment::where('sale_note_id', $this->id)->get();
@@ -595,7 +658,6 @@ class SaleNote extends ModelTenant
             'correo_electronico'                 => isset($customer['email']) ? $customer['email'] : '',
             'telefono'                           => isset($customer['telephone']) ? $customer['telephone'] : '',
         ];
-        $datos_del_cliente_o_receptor = array_merge($datos_del_cliente_o_receptor, $customer);
         $empty_ob = (object)[];
         $data = [
 
@@ -626,15 +688,17 @@ class SaleNote extends ModelTenant
             'total'                  => $this->total,
             'operation_type_id'      => $this->operation_type_id,
             'items'                  => $items,
+            'force_create_if_not_exist'                  => true,
 
             'charges'                => $this->charge,
             'attributes'             => $attributes,
-            'guides'                 => isset($attributes['guides']) ? $attributes['guides'] : $empty_ob,
+            'guides'                 => null,
+            // 'guides'                 => isset($attributes['guides']) ? $attributes['guides'] : $empty_ob,
             'discounts'              => isset($attributes['discounts']) ? $attributes['discounts'] : $empty_ob,
             'payments'               => $payments,
             'additional_information' => $this->additional_information,
 
-            'actions'                      => ['format_pdf' => 'a4'],
+            'actions'                      => [],
             'apply_concurrency'            => (bool)$this->apply_concurrency,
             'type_period'                  => $this->type_period,
             'quantity_period'              => $this->quantity_period,
@@ -644,77 +708,6 @@ class SaleNote extends ModelTenant
 
         ];
 
-
-        $e = [
-            'items' => [
-                [
-                    'item_id'                 => 1181,
-                    'item'                    => [
-                        'id'                               => 1181,
-                        'item_id'                          => 1181,
-                        'name'                             => null,
-                        'full_description'                 => '111111111111 - agua',
-                        'description'                      => 'agua',
-                        'currency_type_id'                 => 'PEN',
-                        'internal_id'                      => '111111111111',
-                        'item_code'                        => null,
-                        'currency_type_symbol'             => 'S/',
-                        'sale_unit_price'                  => '100.00',
-                        'purchase_unit_price'              => '0.000000',
-                        'unit_type_id'                     => 'NIU',
-                        'sale_affectation_igv_type_id'     => '20',
-                        'purchase_affectation_igv_type_id' => '10',
-                        'calculate_quantity'               => false,
-                        'has_igv'                          => true,
-                        'is_set'                           => false,
-                        'aux_quantity'                     => 1,
-                        'brand'                            => 'CIELO',
-                        'category'                         => 'CIELO',
-                        'stock'                            => -145,
-                        'image'                            => 'https=>//demo.facturalo.pro/logo/imagen-no-disponible.jpg',
-                        'warehouses'                       => [
-                            [
-                                'warehouse_description' => 'Almacén Oficina Principal', 'stock' => '-145.0000',
-                                'warehouse_id'          => 1],
-                            [
-                                'warehouse_description' => 'Almacén - Oficina Arequipa', 'stock' => '-1.0000',
-                                'warehouse_id'          => 4],
-                        ],
-                        'unit_price'                       => '100.00',
-                        'presentation'                     => null,
-                    ],
-                    'currency_type_id'        => 'PEN',
-                    'quantity'                => 1,
-                    'unit_value'              => 100,
-                    'affectation_igv_type_id' => '20',
-                    'affectation_igv_type'    => [
-                        'id'          => '20', 'active' => 1, 'exportation' => 0, 'free' => 0,
-                        'description' => 'Exonerado - Operación Onerosa'],
-                    'total_base_igv'          => 100,
-                    'percentage_igv'          => 18,
-                    'total_igv'               => 0,
-                    'system_isc_type_id'      => null,
-                    'total_base_isc'          => 0,
-                    'percentage_isc'          => 0,
-                    'total_isc'               => 0,
-                    'total_base_other_taxes'  => 0,
-                    'percentage_other_taxes'  => 0,
-                    'total_other_taxes'       => 0,
-                    'total_plastic_bag_taxes' => 0,
-                    'total_taxes'             => 0,
-                    'price_type_id'           => '01',
-                    'unit_price'              => 100,
-                    'total_value'             => 100,
-                    'total_discount'          => 0,
-                    'total_charge'            => 0,
-                    'total'                   => 100,
-                    'attributes'              => [],
-                    'charges'                 => [],
-                    'discounts'               => [],
-                ],
-            ],
-
-        ];
         $data['quantity_period'] = (int)$data['quantity_period'];
         $data['apply_concurrency'] = (bool)$data['apply_concurrency'];
         $data['enabled_concurrency'] = (bool)$data['enabled_concurrency'];
