@@ -1,18 +1,17 @@
 <?php
 
 namespace App\Models\Tenant;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
-use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Account\Models\Account;
 use Modules\Digemid\Models\CatDigemid;
 use Modules\Inventory\Models\Warehouse;
-use Modules\Item\Models\Category;
 use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\WebPlatform;
@@ -777,6 +776,7 @@ class Item extends ModelTenant
             'currency_type_id'             => $this->currency_type_id,
             'currency_type_symbol'         => $this->currency_type->symbol,
             'sale_affectation_igv_type_id' => $this->sale_affectation_igv_type_id,
+            'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'amount_sale_unit_price'       => $this->sale_unit_price,
             'calculate_quantity'           => (bool)$this->calculate_quantity,
             'has_igv'                      => (bool)$this->has_igv,

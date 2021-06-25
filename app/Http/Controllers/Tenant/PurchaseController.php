@@ -773,7 +773,8 @@ class PurchaseController extends Controller
             {
                 return [
                     'success' => false,
-                    'data' => 'Supplier not exist.'
+                    'data' => 'Supplier not exist.',
+                    'message' => 'Supplier not exist.'
                 ];
             }
             $model['supplier_id'] = $supplier->id;

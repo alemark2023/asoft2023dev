@@ -28,6 +28,7 @@ use App\Models\Tenant\Warehouse;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
@@ -110,6 +111,7 @@ class ItemController extends Controller
                 break;
 
             default:
+                if($request->has('column'))
                 $records->where($request->column, 'like', "%{$request->value}%");
                 break;
         }
@@ -915,5 +917,18 @@ class ItemController extends Controller
         return response()->json([
             'warehouses' => $warehouses->get(),
         ], 200);
+    }
+
+    /**
+     * Obtiene una lista de items del sistema
+     *
+     * @param \Illuminate\Http\Request $r
+     *
+     * @return \App\Http\Resources\Tenant\ItemCollection
+     */
+    public function getAllItems(Request $r){
+        $records = $this->getRecords($r);
+        return new ItemCollection($records->paginate(600));
+
     }
 }

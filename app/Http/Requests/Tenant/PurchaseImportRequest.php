@@ -5,6 +5,12 @@ namespace App\Http\Requests\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * Class PurchaseImportRequest
+ *
+ * @package App\Http\Requests\Tenant
+ * @mixin FormRequest
+ */
 class PurchaseImportRequest  extends FormRequest
 {
 
