@@ -1,6 +1,7 @@
 require('./bootstrap');
 
 import Vue from 'vue'
+import store from './store'
 import ElementUI from 'element-ui'
 
 import lang from 'element-ui/lib/locale/lang/es'
@@ -352,5 +353,6 @@ Vue.mixin({
     }
 })
 const app = new Vue({
+    store: store,
     el: '#main-wrapper'
 });
