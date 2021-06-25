@@ -928,7 +928,7 @@ class ItemController extends Controller
      */
     public function getAllItems(Request $r){
         $records = $this->getRecords($r);
-        return new ItemCollection($records->paginate(600));
+        return new ItemCollection($records->paginate(5000));
 
     }
 }
