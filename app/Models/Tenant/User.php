@@ -360,4 +360,25 @@ class User extends Authenticatable
 
     }
 
+    /**
+     * Devuelve una lista de usuarios vendedores junto con el usuario actual.
+     * Si $withEstablishment es verdadero, devuelve usuarios con establecimientos asignados carlomagno83/facturadorpro4#627
+     * Si $withEstablishment es falso, devuelve usuarios sin establecimientos asignados carlomagno83/facturadorpro4#233
+     *
+     * @param \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder $query
+     * @param bool                               $withEstablishment
+     *
+     * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeGetSellers(\Illuminate\Database\Query\Builder $query,$withEstablishment = true){
+        if($withEstablishment == false) {
+            $query->without(['establishment']);
+        }else{
+            $query->with(['establishment']);
+
+        }
+        $query->whereIn('type', ['seller']);
+        $query->orWhere('id', auth()->user()->id);
+        return  $query;
+    }
 }
