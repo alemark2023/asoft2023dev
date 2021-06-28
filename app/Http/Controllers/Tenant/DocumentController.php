@@ -69,7 +69,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
         $import_documents = config('tenant.import_documents');
         $import_documents_second = config('tenant.import_documents_second_format');
-        $configuration = Configuration::first();
+        $configuration = Configuration::getPublicConfig();
 
         return view('tenant.documents.index', compact('is_client','import_documents','import_documents_second','configuration'));
     }
