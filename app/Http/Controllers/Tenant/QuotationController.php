@@ -171,10 +171,15 @@ class QuotationController extends Controller
         $payment_method_types = PaymentMethodType::orderBy('id','desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale')->first();
+        /*
+        carlomagno83/facturadorpro4#233
+
         $sellers = User::without(['establishment'])
             ->whereIn('type', ['seller'])
             ->orWhere('id', auth()->user()->id)
             ->get();
+        */
+        $sellers = User::GetSellers(false)->get();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'charge_types', 'configuration',
                         'company', 'document_type_03_filter','payment_method_types', 'payment_destinations', 'sellers');
@@ -189,10 +194,7 @@ class QuotationController extends Controller
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
-        $sellers = User::without(['establishment'])
-                       ->whereIn('type', ['seller'])
-                       ->orWhere('id', auth()->user()->id)
-                       ->get();
+        $sellers = User::GetSellers(true)->get();
 
         return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers');
     }
