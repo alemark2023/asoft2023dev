@@ -2,9 +2,10 @@
 
 namespace App\Models\Tenant;
 
-use Hyn\Tenancy\Abstracts\TenantModel;
+// use Hyn\Tenancy\Abstracts\TenantModel;
+use Modules\Inventory\Models\ItemWarehouse;
 
-class ItemWarehousePrice extends TenantModel
+class ItemWarehousePrice extends ModelTenant
 {
     protected $table = 'item_warehouse_prices';
 
@@ -12,7 +13,7 @@ class ItemWarehousePrice extends TenantModel
         'item_id',
         'warehouse_id',
         'price',
-        ];
+    ];
 
     protected $casts = [
         'price' => 'float',
@@ -21,6 +22,12 @@ class ItemWarehousePrice extends TenantModel
     ];
 
     public $timestamps = false;
+
+    
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
+    }
 
     /**
      * @return mixed
