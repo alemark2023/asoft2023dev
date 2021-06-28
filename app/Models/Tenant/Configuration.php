@@ -101,7 +101,8 @@ class Configuration extends ModelTenant
      */
     public function isPharmacy()
     : bool {
-        return $this->is_pharmacy;
+        if(empty($this->is_pharmacy)) $this->is_pharmacy = false;
+        return (bool) $this->is_pharmacy;
     }
 
     /**
@@ -111,7 +112,7 @@ class Configuration extends ModelTenant
      */
     public function setIsPharmacy(bool $is_pharmacy)
     : Configuration {
-        $this->is_pharmacy = $is_pharmacy;
+        $this->is_pharmacy = (bool) $is_pharmacy;
         return $this;
     }
 
