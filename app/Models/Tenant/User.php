@@ -4,12 +4,12 @@ namespace App\Models\Tenant;
 
 use App\Notifications\Tenant\PasswordResetNotification;
 use Hyn\Tenancy\Traits\UsesTenantConnection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
-use Illuminate\Database\Eloquent\Model;
 
 
 /**
@@ -370,7 +370,7 @@ class User extends Authenticatable
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
-    public function scopeGetSellers(\Illuminate\Database\Query\Builder $query,$withEstablishment = true){
+    public function scopeGetSellers(  $query,$withEstablishment = true){
         if($withEstablishment == false) {
             $query->without(['establishment']);
         }else{
