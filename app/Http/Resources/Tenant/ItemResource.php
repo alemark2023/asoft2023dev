@@ -20,6 +20,7 @@ class ItemResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'id' => $this->id,
             'description' => $this->description,
@@ -107,7 +108,16 @@ class ItemResource extends JsonResource
             //         'stock' => $row->stock,
             //     ];
             // })
-            'warehouse_prices' => $this->warehousePrices,
+            // 'warehouse_prices' => $this->warehousePrices,
+            'item_warehouse_prices' => $this->warehousePrices->transform(function($row){
+                return [
+                    'id' => $row->id,
+                    'item_id' => $row->item_id,
+                    'warehouse_id' => $row->warehouse_id,
+                    'price' => $row->price,
+                    'description' => $row->warehouse->description,
+                ];
+            }),
             'sanitary'         => $this->sanitary,
             'cod_digemid'      => $this->cod_digemid,
         ];

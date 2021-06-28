@@ -266,12 +266,18 @@
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <tbody>
-                                        <tr v-for="w in warehouses" :key="w.id">
+                                        <tr v-for="item in form.item_warehouse_prices" :key="item.id">
+                                            <td>{{ item.description }}</td>
+                                            <td width="150">
+                                                <el-input placeholder="Precio" v-model="item.price" type="number" min="0" step="0.01"></el-input>
+                                            </td>
+                                        </tr>
+                                        <!-- <tr v-for="w in warehouses" :key="w.id">
                                             <td>{{ w.description }}</td>
                                             <td width="150">
                                                 <el-input placeholder="Precio" v-model="w.price" type="number" min="0" step="0.01"></el-input>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                     </tbody>
                                 </table>
                             </div>
@@ -781,6 +787,7 @@ export default {
                     purchase_has_igv: true,
                     web_platform_id:null,
                     has_plastic_bag_taxes: false,
+                    item_warehouse_prices: [],
                 }
                 this.show_has_igv = true
                 this.purchase_show_has_igv = true
@@ -827,43 +834,69 @@ export default {
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                 this.setDefaultConfiguration()
             },
-            create() {
-                this.warehouses = this.warehouses.map(w => {
-                    delete w.price;
-                    return w;
-                });
-
+            async create() {
+                // console.log(this.warehouses)
+                // this.warehouses = this.warehouses.map(w => {
+                //     delete w.price;
+                //     return w;
+                // });
 
                 if (this.type) {
                     this.form.unit_type_id = 'ZZ';
                 }
                 this.titleDialog = (this.recordId)? 'Editar Producto':'Nuevo Producto'
+
                 if (this.recordId) {
-                    this.$http.get(`/${this.resource}/record/${this.recordId}`)
+                    await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
                             this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                             this.changeAffectationIgvType()
                             this.changePurchaseAffectationIgvType()
-                            let warehousePrices = response.data.data.warehouse_prices;
-                            console.error(warehousePrices);
-                            if (warehousePrices.length > 0) {
-                                this.warehouses = this.warehouses.map(w => {
-                                    let price = warehousePrices.find(wp => wp.warehouse_id === w.id);
-                                    if (price) {
-                                        var priceToJson = {...price};
-                                        w.price = priceToJson.price;
-                                    }
-                                    return w;
-                                });
-                            } else {
-                                this.warehouses = this.warehouses.map(w => {
-                                    delete w.price;
-                                    return w;
-                                });
-                            }
+                            // let warehousePrices = response.data.data.warehouse_prices;
+                            // console.error(warehousePrices);
+                            // if (warehousePrices.length > 0) {
+                            //     this.warehouses = this.warehouses.map(w => {
+                            //         let price = warehousePrices.find(wp => wp.warehouse_id === w.id);
+                            //         if (price) {
+                            //             var priceToJson = {...price};
+                            //             w.price = priceToJson.price;
+                            //         }
+                            //         return w;
+                            //     });
+                            // } else {
+                            //     this.warehouses = this.warehouses.map(w => {
+                            //         delete w.price;
+                            //         return w;
+                            //     });
+                            // }
                         })
-                }
+
+                } 
+                
+                this.setDataToItemWarehousePrices()
+
+            },
+            setDataToItemWarehousePrices(){
+
+                this.warehouses.forEach(warehouse => {
+                    
+                    let item_warehouse_price = _.find(this.form.item_warehouse_prices, {warehouse_id : warehouse.id})
+
+                    if(!item_warehouse_price){
+
+                        this.form.item_warehouse_prices.push({
+                            id: null,
+                            item_id: null,
+                            warehouse_id: warehouse.id,
+                            price: null,
+                            description: warehouse.description,
+                        })
+                    }
+
+                });
+
+                this.form.item_warehouse_prices = _.orderBy(this.form.item_warehouse_prices, ['warehouse_id'])
 
             },
             loadRecord(){
@@ -951,7 +984,8 @@ export default {
                 }
 
                 this.loading_submit = true
-                this.form.warehouses = this.warehouses.filter(w => w.price);
+                // this.form.warehouses = this.warehouses.filter(w => w.price);
+
                 await this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {

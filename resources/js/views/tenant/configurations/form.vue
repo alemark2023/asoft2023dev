@@ -221,6 +221,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Aplicar precios por almacén
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible POS"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.active_warehouse_prices}">
+                                            <el-switch v-model="form.active_warehouse_prices" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.active_warehouse_prices" v-text="errors.active_warehouse_prices[0]"></small>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -463,6 +479,7 @@
                     update_document_on_dispaches: false,
                     auto_send_dispatchs_to_sunat: true,
                     is_pharmacy: false,
+                    active_warehouse_prices: false,
                 };
             },
             submit() {

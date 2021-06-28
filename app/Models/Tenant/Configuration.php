@@ -64,6 +64,7 @@ class Configuration extends ModelTenant
         'update_document_on_dispaches',
         'is_pharmacy',
         'auto_send_dispatchs_to_sunat',
+        'active_warehouse_prices',
     ];
 
     protected $casts = [
@@ -372,6 +373,8 @@ class Configuration extends ModelTenant
             'is_pharmacy'                            => (bool)$this->is_pharmacy,
             'auto_send_dispatchs_to_sunat'           => (bool)$this->auto_send_dispatchs_to_sunat,
             'item_per_page'           => config('tenant.items_per_page'),
+            'active_warehouse_prices'           => (bool) $this->active_warehouse_prices,
+
         ];
     }
 }

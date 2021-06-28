@@ -540,7 +540,7 @@ class Item extends ModelTenant
      */
     public function warehousePrices()
     {
-        return $this->hasMany(ItemWarehousePrice::class, 'item_id')->select('item_id', 'price', 'warehouse_id');
+        return $this->hasMany(ItemWarehousePrice::class, 'item_id')->select('id','item_id', 'price', 'warehouse_id');
     }
 
     public static function getSaleUnitPriceByWarehouse(Item $item, int $warehouseId): string

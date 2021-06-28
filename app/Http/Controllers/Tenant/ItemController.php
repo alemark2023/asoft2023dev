@@ -414,25 +414,28 @@ class ItemController extends Controller
         /********************************* SECCION PARA PRECIO POR ALMACENES ******************************************/
 
         // Precios por almacenes
-        $warehouses = $request->warehouses;
-        if ($warehouses) {
-            /** @var ItemWarehousePrice $price */
+        // $warehouses = $request->warehouses;
 
-            foreach ($warehouses as $warehouse) {
-                $price = ItemWarehousePrice::where([
-                    'item_id' => $item->id,
-                    'warehouse_id' => $warehouse['id'],
-                ])->first();
-                if(empty($price)){
-                    $price = new ItemWarehousePrice([
-                        'item_id' => $item->id,
-                        'warehouse_id' => $warehouse['id'],
-                    ]) ;
-                }
-                $price
-                    ->setPrice($warehouse['price'])
-                    ->push();
-            }
+        $this->createItemWarehousePrices($request, $item);
+
+        // if ($warehouses) {
+            // /** @var ItemWarehousePrice $price */
+
+            // foreach ($warehouses as $warehouse) {
+            //     $price = ItemWarehousePrice::where([
+            //         'item_id' => $item->id,
+            //         'warehouse_id' => $warehouse['id'],
+            //     ])->first();
+            //     if(empty($price)){
+            //         $price = new ItemWarehousePrice([
+            //             'item_id' => $item->id,
+            //             'warehouse_id' => $warehouse['id'],
+            //         ]) ;
+            //     }
+            //     $price
+            //         ->setPrice($warehouse['price'])
+            //         ->push();
+            // }
 
             /*
             ItemWarehousePrice::where('item_id', $item->id)
@@ -453,7 +456,7 @@ class ItemController extends Controller
                 }
             }
             */
-        }
+        // }
 
         return [
             'success' => true,
@@ -461,6 +464,33 @@ class ItemController extends Controller
             'id' => $item->id
         ];
     }
+
+
+    private function createItemWarehousePrices($request, $item){
+
+        foreach ($request->item_warehouse_prices as $item_warehouse_price) {
+        
+            if($item_warehouse_price['price'] && $item_warehouse_price['price'] != ''){
+
+                ItemWarehousePrice::updateOrCreate([
+                    'item_id' => $item->id,
+                    'warehouse_id' => $item_warehouse_price['warehouse_id'],
+                ], [
+                    'price' => $item_warehouse_price['price'], 
+                ]);
+
+            }else{
+
+                if($item_warehouse_price['id']){
+                    ItemWarehousePrice::findOrFail($item_warehouse_price['id'])->delete();
+                }
+
+            }
+
+        }
+
+    }
+
 
     public function destroy($id)
     {
