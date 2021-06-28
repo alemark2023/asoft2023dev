@@ -618,8 +618,8 @@
             :currency-type-id-active="form.currency_type_id"
             :exchange-rate-sale="form.exchange_rate_sale"
             :typeUser="typeUser"
-            :configuration="configuration"
-            :editNameProduct="configuration.edit_name_product"
+            :configuration="config"
+            :editNameProduct="config.edit_name_product"
             @add="addRow"></document-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -629,11 +629,11 @@
             :document_type_id = form.document_type_id></person-form>
 
         <document-options :showDialog.sync="showDialogOptions"
-            :recordId="documentNewId"
-            :isContingency="is_contingency"
-            :isUpdate="isUpdate"
-            :showClose="false"
-            :configuration="configuration"></document-options>
+                          :configuration="config"
+                          :isContingency="is_contingency"
+                          :isUpdate="isUpdate"
+                          :recordId="documentNewId"
+                          :showClose="false"></document-options>
 
 
         <document-hotel-form
@@ -692,6 +692,7 @@ import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/ass
 import DocumentTransportForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/transports/form.vue'
 import DocumentDetraction from './partials/detraction.vue'
 import moment from 'moment'
+import  {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
         props: ['idUser', 'typeUser', 'configuration', 'documentId', 'isUpdate'],
@@ -767,7 +768,10 @@ export default {
             }
         },
     computed: {
-      credit_payment_metod:function(){
+        ...mapState([
+            'config',
+        ]),
+        credit_payment_metod:function(){
           return _.filter(this.payment_method_types, {'is_credit': true})
       },
       cash_payment_metod:function(){
@@ -776,6 +780,8 @@ export default {
     },
 
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -995,6 +1001,9 @@ export default {
             }
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
             setDefaultDocumentType() {
                 if (this.default_document_type === undefined) this.default_document_type = null;

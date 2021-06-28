@@ -137,7 +137,7 @@
                             <small class="form-control-feedback" v-if="errors.total_item" v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
-                    <div v-if="configuration.edit_name_product" class="col-md-12 col-sm-12 mt-2">
+                    <div v-if="config.edit_name_product" class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
                             <label class="control-label">Nombre producto en PDF</label>
                             <vue-ckeditor type="classic" v-model="form.name_product_pdf" :editors="editors"></vue-ckeditor>
@@ -345,6 +345,7 @@
 
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
     import VueCkeditor from 'vue-ckeditor5'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
     export default {
         props: [
@@ -402,8 +403,12 @@
                 //item_unit_type: {}
             }
         },
-        created() {
+        created(){
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             this.initForm()
+        },
+        mounted() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 this.all_items = response.data.items
                 this.operation_types = response.data.operation_types
@@ -427,6 +432,9 @@
             this.canCreateProduct();
         },
         computed: {
+            ...mapState([
+                    'config',
+                    ]),
             showLots(){
                 if(
                     this.form.item_id &&
@@ -462,18 +470,21 @@
                     return true
                 }
                 if(this.typeUser === 'seller') {
-                    return this.configuration.allow_edit_unit_price_to_seller;
+                    return this.config.allow_edit_unit_price_to_seller;
                 }
                 return false;
             }
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             canCreateProduct(){
                 if(this.typeUser === 'admin') {
                     this.can_add_new_product =  true
                 }else if(this.typeUser === 'seller') {
-                    if (this.configuration !== undefined && this.configuration.seller_can_create_product !== undefined) {
-                        this.can_add_new_product = this.configuration.seller_can_create_product;
+                    if (this.config !== undefined && this.config.seller_can_create_product !== undefined) {
+                        this.can_add_new_product = this.config.seller_can_create_product;
                     }
                 }
                 return this.can_add_new_product;

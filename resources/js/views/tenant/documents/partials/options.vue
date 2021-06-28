@@ -102,6 +102,8 @@
 </template>
 
 <script>
+    import {mapState,mapActions} from "vuex/dist/vuex.mjs";
+
     export default {
         props: ['showDialog', 'recordId', 'showClose','isContingency','generatDispatch','dispatchId', 'isUpdate','configuration'],
         data() {
@@ -113,21 +115,22 @@
                 form: {},
                 company: {},
                 locked_emission:{},
-                config:{}
+                // config:{}
             }
         },
         created() {
-            if (this.configuration !== undefined && this.configuration !== null && this.configuration.length > 0) {
-                this.$setStorage('configuration', this.configuration)
-            }
-            this.config = this.$getStorage('configuration');
+            this.loadConfiguration(this.$store)
+            this.$store.commit('setConfiguration',this.configuration)
+
         },
         mounted(){
             this.initForm()
         },
         computed: {
+            ...mapState([
+                'config',
+            ]),
             Ticket58: function(){
-
                 if(
                     this.config.ticket_58 !== undefined &&
                     this.config.ticket_58 !== null){
@@ -138,6 +141,7 @@
             }
         },
         methods: {
+            ...mapActions(['loadConfiguration']),
             clickSendWhatsapp() {
 
                 if(!this.form.customer_telephone){
