@@ -19,6 +19,18 @@ export default {
             store.state.warehouses = JSON.parse(w)
         }
     },
+    loadOffices(store){
+        let w = localStorage.getItem('offices')
+        if (w !== null) {
+            store.state.offices = JSON.parse(w)
+        }
+    },
+    loadWorkers(store){
+        let w = localStorage.getItem('workers')
+        if (w !== null) {
+            store.state.workers = JSON.parse(w)
+        }
+    },
     loadAllItems(store){
         let w = localStorage.getItem('all_items')
         if (w !== null) {

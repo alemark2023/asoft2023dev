@@ -7,6 +7,17 @@ export default {
         state.customers = customers
         localStorage.setItem('customers', JSON.stringify(customers))
     },
+    setOffices(state, offices) {
+        state.offices = offices
+        localStorage.setItem('offices', JSON.stringify(offices))
+    },
+    setWorkers(state, workers) {
+        state.workers = workers
+        localStorage.setItem('workers', JSON.stringify(workers))
+    },
+    setOffice(state, office) {
+        state.office = office
+    },
     setTypeUser(state, userType) {
         state.userType = userType
         localStorage.setItem('userType', userType)

@@ -381,4 +381,47 @@ class User extends Authenticatable
         $query->orWhere('id', auth()->user()->id);
         return  $query;
     }
+
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeGetWorkers($query){
+        $query->whereIn('type', ['seller','admin']);
+        return  $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCollectionData(){
+        $type = '';
+        switch ($this->type) {
+            case 'admin':
+                $type =  'Administrador' ;
+                break;
+            case 'seller':
+                $type =  'Vendedor' ;
+                break;
+            case 'client':
+                $type =  'Cliente' ;
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'name' => $this->name,
+            'api_token' => $this->api_token,
+            'document_id' => $this->document_id,
+            'serie_id' => ($this->series_id == 0)?null:$this->series_id,
+            'establishment_description' => optional($this->establishment)->description,
+            'type' => $type,
+            'locked' => (bool) $this->locked,
+        ];
+    }
 }

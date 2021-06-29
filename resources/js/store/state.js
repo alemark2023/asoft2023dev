@@ -3,4 +3,7 @@ export default {
     config: {},
     warehouses: {},
     all_items:{},
+    office:{},
+    offices:[],
+    workers:[],
 }
