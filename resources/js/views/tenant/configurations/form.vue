@@ -92,6 +92,10 @@
                                             <small class="form-control-feedback" v-if="errors.destination_sale" v-text="errors.destination_sale[0]"></small>
                                         </div>
                                     </div>
+                                    
+                                    <div class="col-md-6 mt-4">
+                                        <a href="#" @click.prevent="showDialogAllowanceCharge = true" class="text-center font-weight-bold text-info">[+ Recargo al consumo]</a>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="third">
@@ -370,6 +374,10 @@
                         <terms-condition-sale :showDialog.sync="showDialogTermsConditionSales"
                             :form="form"
                             :showClose="false"></terms-condition-sale>
+
+                        <allowance-charge :showDialog.sync="showDialogAllowanceCharge"
+                            :form="form"
+                            :showClose="false"></allowance-charge>
                     </form>
                 </template>
             </div>
@@ -381,16 +389,18 @@
 
     import TermsCondition from '@views/quotations/partials/terms_condition.vue'
     import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
+    import AllowanceCharge from './partials/allowance_charge.vue'
 
     export default {
         props:['typeUser'],
-        components: {TermsCondition, TermsConditionSale},
+        components: {TermsCondition, TermsConditionSale, AllowanceCharge},
 
         data() {
             return {
                 headers: headers_token,
                 showDialogTermsCondition: false,
                 showDialogTermsConditionSales: false,
+                showDialogAllowanceCharge: false,
                 loading_submit: false,
                 resource: 'configurations',
                 errors: {},
