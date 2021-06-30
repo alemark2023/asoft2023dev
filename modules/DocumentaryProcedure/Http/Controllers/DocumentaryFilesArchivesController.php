@@ -33,21 +33,26 @@
          * @throws \Exception
          */
         public function destroy(DocumentaryFilesArchives $id) {
+            $file = $id->getAttachedFile();
             $data = [
                 'success' => false,
+                'file' => $file,
             ];
-            $e = Storage::exists($id->getAttachedFile());
+            $e = Storage::exists($file);
             if ($e) {
-                Storage::delete($id->getAttachedFile());
+                Storage::delete($file);
                 $id->delete();
                 $data['success'] = true;
                 $data['message'] = 'El registro se ha borrado';
             } else {
+                if($id != null) {
+                    $id->delete();
+                }
                 $data['success'] = true;
                 $data['message'] = "El archivo no existe";
             }
 
-            return response()->json($data[200]);
+            return json_encode($data);
         }
 
     }

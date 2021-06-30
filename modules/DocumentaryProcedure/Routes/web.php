@@ -40,6 +40,7 @@ if ($hostname) {
             Route::get('files/download/{id}', 'DocumentaryFilesArchivesController@download')
                  ->name('documentaryprocedure.download.file');
             route::get('file/remove/{id}', 'DocumentaryFilesArchivesController@destroy');
+            route::post('file/reload/{id?}', 'DocumentaryFileController@getData');
 		});
 	});
 }

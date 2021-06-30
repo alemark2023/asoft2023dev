@@ -109,7 +109,7 @@
          *
          * @return array
          */
-        public function getCollectionData($extended = false) {
+        public function getCollectionData($extended = false, $level = 0) {
 
             $data = $this->toArray();
             $parent = [];
@@ -119,6 +119,7 @@
             }
 
             $data['parent'] = $parent;
+            $data['child'] = $this->getChildren($level);
             $data['rel_user_to_documentary_offices'] =
                 RelUserToDocumentaryOffices::where('documentary_office_id',
                                                    $this->id)
@@ -162,14 +163,26 @@
             return (int)$this->parent_id;
         }
 
-        public function getBack(){
+        public function getChildren($level = 0) {
+            if($this->parent_id == 0) return [];
+            if($level > 0) return [];
+            $childs = self::where('parent_id', $this->id)->get();
+            if(!empty($childs)){
+                $childs = $childs->transform(function ($row) use($level) {
+                    return $row->getCollectionData(false, $level +1 );
+                });
+            }
+            return $childs;
+        }
+
+        public function getBack() {
             $parent = $this->getParentId();
-            $work = self::where('id','<',$this->id);
-            if($parent != 0){
-                 $work->where('parent_id',$parent);
+            $work = self::where('id', '<', $this->id);
+            if ($parent != 0) {
+                $work->where('parent_id', $parent);
             }
             $work = $work->max('id');
-            dd($work);
+//            dd($work);
 
             return $work;
         }

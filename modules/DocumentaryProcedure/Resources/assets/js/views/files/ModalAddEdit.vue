@@ -8,7 +8,6 @@
         >
             <form autocomplete="off" @submit.prevent="onSubmit">
                 <div class="form-body">
-
                     <el-tabs v-model="tabActive">
                         <el-tab-pane class name="first">
                             <span slot="label">Datos del Expediente</span>
@@ -192,59 +191,16 @@
                                 </div>
                             </div>
                         </el-tab-pane>
-                        <el-tab-pane class name="second">
+
+                        <el-tab-pane v-if="showArchives" class name="second">
+                            <span slot="label">Archivos</span>
+                            <table-archives
+                            ></table-archives>
+                        </el-tab-pane>
+
+                        <el-tab-pane class name="thirdh">
                             <span slot="label">Datos Complementarios</span>
 
-
-                            <div
-                                v-if="hasFiles"
-                                class="form-group table-responsive">
-                                <table class="table table-responsive">
-                                    <thead>
-                                    <tr>
-                                        <th>
-                                            #
-                                        </th>
-
-<!--                                        <th>
-                                            observation
-                                        </th>-->
-                                        <th>
-                                            Nombre de archivo
-                                        </th>
-                                        <th>
-                                            Accion
-                                        </th>
-                                    </tr>
-
-
-                                    </thead>
-                                    <tbody>
-                                    <tr v-for="(archive,index) in file.documentary_file_archives"
-                                        v-if="hasFiles"
-                                        :key="archive.id"
-                                    >
-                                        <td>
-                                            {{ index +1 }}
-<!--                                        </td>
-                                        <td>
-                                            {{ archive.observation }}
-
-                                        </td>-->
-                                        <td>
-                                                {{ archive.public_name }}
-                                        </td>
-                                        <td>
-                                            <el-button type="primary"
-                                                    @click.prevent="downloadFile(archive.public_url)">Descargar</el-button>
-                                            <el-button type="danger"
-                                                    @click.prevent="removeFile(archive.id)">Borrar</el-button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-
-                                </table>
-                            </div>
 
                             <vue-dropzone
                                 id="dropzone"
@@ -294,6 +250,7 @@
 
 <script>
 import moment from "moment";
+import TableArchives from "./TableArchives";
 import PersonForm from "../../../../../../../resources/js/views/tenant/persons/form.vue";
 import OfficesRows from './Offices.vue';
 import vue2Dropzone from 'vue2-dropzone'
@@ -302,6 +259,7 @@ import {mapActions, mapState} from "vuex";
 
 export default {
     components: {
+        TableArchives,
         PersonForm,
         OfficesRows,
         vueDropzone: vue2Dropzone
@@ -390,15 +348,14 @@ export default {
             'processes',
             'customers',
         ]),
-        hasFiles: function () {
-            let file = this.file
-            if (file == null) return false;
-            if (file.documentary_file_archives == null) return false;
-            if (
-                file.documentary_file_archives !== undefined &&
-                file.documentary_file_archives !== null &&
-                file.documentary_file_archives.length > 0
-            ) return true;
+        showArchives:function (){
+            if(this.file === undefined) return false
+            if(this.file === null) return false
+            if(this.file.documentary_file_archives === undefined) return false
+            if(this.file.documentary_file_archives === null) return false
+
+            if( this.file.documentary_file_archives.length > 0 )
+                return true;
             return false;
         }
 
@@ -412,18 +369,7 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
-        // function called for every file dropped or selected
-        downloadFile(url){
-            window.open(url, '_blank');
-        },
-        removeFile(id){
-            console.log(`${this.basePath}/remove/${id}`)/*
-            this.$http
-                .get(`${this.basePath}/remove/${id}`)
-                .then((result)=>{
-
-            })*/
-        }, fileAdded(file) {
+        fileAdded(file) {
             console.log("File Dropped => ", file);
             // Construct your file object to render in the UI
             this.filesa = [...this.filesa, file]

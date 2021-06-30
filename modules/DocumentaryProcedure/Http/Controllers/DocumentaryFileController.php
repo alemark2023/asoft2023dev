@@ -24,6 +24,62 @@
      */
     class DocumentaryFileController extends Controller {
 
+        public function getData(Request $request, $id = 0) {
+
+
+            $files = $this->getDocumentaryFile($request);
+            if ($request->has('subject')) {
+                $files->where('subject', 'like', "%".$request->subject."%");
+            }
+            if ($request->has('documentary_office_id')) {
+                $files->whereHas('offices', function ($query) use ($request) {
+                    $query->where('documentary_office_id', $request->documentary_office_id);
+                });
+            }
+            if ($id != 0) {
+                $files->where('id', $id);
+                $files = $files->first();
+
+                if (!empty($files)) {
+                    $files = ['item' => $files->getCollectionData()];
+                }
+            } else {
+                $files = json_encode($files->get()->transform(function ($row) {
+                    return $row->getCollectionData();
+                }));
+            }
+
+            return $files;
+        }
+
+        /**
+         * @param \Illuminate\Http\Request $request
+         *
+         * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|\Modules\DocumentaryProcedure\Models\DocumentaryFile
+         */
+        public function getDocumentaryFile(Request $request) {
+            $files = DocumentaryFile::with('offices')
+                                    ->orderBy('id', 'DESC');
+            $dateStart = null;
+            $dateEnd = null;
+            if ($request->has('date_start')) {
+                $dateStart = $request->date_start;
+            }
+            if ($request->has('date_end')) {
+                // $dateStart = request('date_start', now()->format('Y-m-d'));
+                $dateEnd = $request->date_end;
+            }
+            if ($dateStart && $dateEnd) {
+                $files = $files->whereBetween('date_register', [$dateStart, $dateEnd]);
+            } else {
+                if ($dateStart) {
+                    $files = $files->whereDate('date_register', $dateStart);
+                }
+            }
+            return $files;
+
+        }
+
         public function index(Request $request) {
 
 
@@ -97,34 +153,6 @@
                 'actions',
                 'customers',
                 'offices'));
-        }
-
-        /**
-         * @param \Illuminate\Http\Request $request
-         *
-         * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|\Modules\DocumentaryProcedure\Models\DocumentaryFile
-         */
-        public function getDocumentaryFile(Request $request) {
-            $files = DocumentaryFile::with('offices')
-                                    ->orderBy('id', 'DESC');
-            $dateStart = null;
-            $dateEnd = null;
-            if ($request->has('date_start')) {
-                $dateStart = $request->date_start;
-            }
-            if ($request->has('date_end')) {
-                // $dateStart = request('date_start', now()->format('Y-m-d'));
-                $dateEnd = $request->date_end;
-            }
-            if ($dateStart && $dateEnd) {
-                $files = $files->whereBetween('date_register', [$dateStart, $dateEnd]);
-            } else {
-                if ($dateStart) {
-                    $files = $files->whereDate('date_register', $dateStart);
-                }
-            }
-            return $files;
-
         }
 
         public function store(FileRequest $request) {
@@ -205,19 +233,26 @@
 
         public function nextStep(Request $request) {
 
+            $documentary_action_id = (int)$request->documentary_action_id;
+            $documentary_office_id = (int)$request->documentary_office_id;
+            $observation = (string)$request->observation;
+            if (empty($observation)) $observation = '';
 
             $office = DocumentaryFile::find($request->id);
-            $next = DocumentaryOffice::where('id','>',$office->documentary_office_id)->first();
+            $current_office = $office->documentary_office_id;
+            $next = DocumentaryOffice::where('id', '>', $office->documentary_office_id)->first();
+
             $record = new DocumentaryFileOffice();
             $record
-                ->setDocumentaryOfficeId( (int)$office->documentary_office_id)
-                ->setDocumentaryActionId( (int)$office->documentary_action_id)
-                ->setDocumentaryFileId( (int)$office->id)
+                ->setDocumentaryOfficeId((int)$office->documentary_office_id)
+                ->setDocumentaryActionId((int)$office->documentary_action_id)
+                ->setDocumentaryFileId((int)$office->id)
                 ->setObservation($office->getObservation());
             $record->push();
-            $office->setDocumentaryOfficeId($next->id)
-                   ->setObservation($request->observation);
-            // $office->push();
+            $office
+                ->setDocumentaryOfficeId($next->id)
+                ->setObservation($observation);
+            $office->push();
 
             $files = $this->getDocumentaryFile($request)
                           ->get()
@@ -226,6 +261,22 @@
                               return $row->getCollectionData();
                           });
 
+
+            if ($request->has('file')) {
+                foreach ($request->file as $file) {
+                    /** @var \Illuminate\Http\UploadedFile $file */
+                    $data = [
+                        'user_id'               => auth()->user()->id,
+                        'documentary_file_id'   => $request->id,
+                        'documentary_office_id' => $current_office,
+                        'observation'           => $observation,
+                        'attached_file'         => $this->storeFile($file),
+                    ];
+                    $newFile = new DocumentaryFilesArchives($data);
+                    $newFile->push();
+                }
+
+            }
             return response()->json([
                                         'data'    => $office,
                                         // 'request'   => $request->all(),
@@ -235,24 +286,46 @@
                                         'succes'  => true,
                                     ], 200);
         }
+
         public function backStep(Request $request) {
 
+            $documentary_action_id = (int)$request->documentary_action_id;
+            $documentary_office_id = (int)$request->documentary_office_id;
+            $observation = (string)$request->observation;
+            if (empty($observation)) $observation = '';
 
             $office = DocumentaryFile::find($request->id);
             $back = DocumentaryOffice::find($office->documentary_office_id)->getBack();
+            $current_office = $office->documentary_office_id;
 
             $record = new DocumentaryFileOffice();
             $record
-                ->setDocumentaryOfficeId( (int)$office->documentary_office_id)
-                ->setDocumentaryActionId( (int)$office->documentary_action_id)
-                ->setDocumentaryFileId( (int)$office->id)
+                ->setDocumentaryOfficeId((int)$office->documentary_office_id)
+                ->setDocumentaryActionId((int)$office->documentary_action_id)
+                ->setDocumentaryFileId((int)$office->id)
                 ->setObservation($office->getObservation());
             $record->push();
             $office->setObservation($request->observation);
-            if(!empty($back)){
+            if (!empty($back)) {
                 $office->setDocumentaryOfficeId($back->id);
             }
-            // $office->push();
+             $office->push();
+
+            if ($request->has('file')) {
+                foreach ($request->file as $file) {
+                    /** @var \Illuminate\Http\UploadedFile $file */
+                    $data = [
+                        'user_id'               => auth()->user()->id,
+                        'documentary_file_id'   => $request->id,
+                        'documentary_office_id' => $current_office,
+                        'observation'           => $observation,
+                        'attached_file'         => $this->storeFile($file),
+                    ];
+                    $newFile = new DocumentaryFilesArchives($data);
+                    $newFile->push();
+                }
+
+            }
             $files = $this->getDocumentaryFile($request)
                           ->get()
                           ->transform(function ($row) {
@@ -416,6 +489,7 @@
                                         ->whereActive(true)
                                         ->get()
                                         ->transform(function ($row) {
+                                            /** @var DocumentaryOffice $row */
                                             return $row->getCollectionData();
                                         });
 
