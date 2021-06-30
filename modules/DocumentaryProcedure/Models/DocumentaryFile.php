@@ -90,11 +90,17 @@
             $data['documentary_process'] = $documentary_process->getCollectionData();
             $data['documentary_office'] = $documentary_file_office->getCollectionData();
             $data['documentary_file_archives'] = $documentary_file_archives->transform(function ($row){return $row->getCollectionData();});
+
+            $data['observations'] =DocumentaryFileOffice::where('documentary_file_id',$this->id)
+                                                        ->orderBy('id','DESC')->take(50)->get()
+                                                                              ->transform(function($row){
+                return $row->getCollectionData();
+            });
             /*
-                       $documentary_document = DocumentaryDocument::find($this->documentary_document_id);
-                       $documentary_file_office = DocumentaryOffice::find($this->documentary_process_id);
-                       $data['documentary_document'] = $documentary_document->getCollectionData();
-                       */
+                                  $documentary_document = DocumentaryDocument::find($this->documentary_document_id);
+                                  $documentary_file_office = DocumentaryOffice::find($this->documentary_process_id);
+                                  $data['documentary_document'] = $documentary_document->getCollectionData();
+                                  */
             $data['person'] = $person->getCollectionData();
             return $data;
 

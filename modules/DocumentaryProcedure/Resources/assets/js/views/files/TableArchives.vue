@@ -5,14 +5,8 @@
         file.documentary_file_archives !== null &&
         file.documentary_file_archives.length > 0
         "
-        class="row form-group table-responsive">
-
-        <!--
-        <el-button type="primary"
-                   @click.prevent="updateFiles()">Actualizar
-        </el-button>
-        -->
-        <table class="table table-responsive">
+        class="table-responsive">
+        <table class="table">
             <thead>
             <tr>
                 <th>
@@ -106,13 +100,9 @@ export default {
                 })
 
         },
+
         updateFiles() {
-            this.$http
-                .post(`/documentary-procedure/file/reload`)
-                .then((result) => {
-                    let files = result.data;
-                    this.$store.commit('setFiles', files)
-                })
+            this.$emit("updateFiles");
         },
         updateFile(id) {
             this.$http

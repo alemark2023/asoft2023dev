@@ -184,6 +184,7 @@
             $work = $work->max('id');
 //            dd($work);
 
+
             return $work;
         }
     }

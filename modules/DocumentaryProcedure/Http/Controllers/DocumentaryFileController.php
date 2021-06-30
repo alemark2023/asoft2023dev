@@ -240,6 +240,7 @@
 
             $office = DocumentaryFile::find($request->id);
             $current_office = $office->documentary_office_id;
+
             $next = DocumentaryOffice::where('id', '>', $office->documentary_office_id)->first();
 
             $record = new DocumentaryFileOffice();
@@ -281,6 +282,8 @@
                                         'data'    => $office,
                                         // 'request'   => $request->all(),
                                         'files'   => $files,
+                                        'current_office'   => $current_office,
+                                        'next_office'   => $office->documentary_office_id,
                                         // 'next'   => $next,
                                         'message' => 'Expediente guardada de forma correcta.',
                                         'succes'  => true,
@@ -307,7 +310,7 @@
             $record->push();
             $office->setObservation($request->observation);
             if (!empty($back)) {
-                $office->setDocumentaryOfficeId($back->id);
+                $office->setDocumentaryOfficeId($back);
             }
              $office->push();
 
@@ -337,6 +340,8 @@
                                         'data'    => $office,
                                         'files'   => $files,
                                         'message' => 'Expediente guardada de forma correcta.',
+                                        'back'  => $back,
+                                        'current_office'  => $current_office,
                                         'succes'  => true,
                                     ], 200);
         }
