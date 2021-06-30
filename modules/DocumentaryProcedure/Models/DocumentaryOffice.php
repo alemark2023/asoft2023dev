@@ -3,6 +3,7 @@
     namespace Modules\DocumentaryProcedure\Models;
 
     use App\Models\Tenant\ModelTenant;
+    use App\Models\Tenant\User;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
 
@@ -72,7 +73,8 @@
          */
         public function setParentId($parent_id)
         : DocumentaryOffice {
-            $this->parent_id = $parent_id;
+            if($parent_id == $this->id) $parent_id = 0;
+            $this->parent_id = (int) $parent_id;
             return $this;
         }
 
@@ -91,7 +93,7 @@
          */
         public function setOrder($order)
         : DocumentaryOffice {
-            $this->order = $order;
+            $this->order = (int)$order;
             return $this;
         }
 
@@ -130,6 +132,12 @@
             $data['users'] = RelUserToDocumentaryOffices::
             where('documentary_office_id', $this->id)->where('active', 1)
                                                         ->get()->pluck('user_id');
+            $user = User::wherein('id',$data['users'])->first();
+            $data['user'] = null;
+            if(!empty($user)){
+                $data['user'] = $user->getCollectionData();
+            }
+
             $data['print_name'] = $this->id." - ".$this->name;
 
             if ($extended === true) {
@@ -183,6 +191,7 @@
             }
             $work = $work->max('id');
 //            dd($work);
+
 
             return $work;
         }

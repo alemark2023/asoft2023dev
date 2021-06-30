@@ -50,11 +50,11 @@
                     <el-tab-pane v-if="showArchives" class name="second">
                         <span slot="label">Archivos</span>
                         <table-archives
+                            @updateFiles="updateFiles"
                         ></table-archives>
                     </el-tab-pane>
-                    <el-tab-pane class name="thirdh">
+                    <el-tab-pane class name="thirdhob">
                         <span slot="label">Complemento de archivos</span>
-
                         <vue-dropzone
                             id="dropzone"
                             ref="myVueDropObservaction"
@@ -70,6 +70,12 @@
                             @vdropzone-removed-file="getFileCount"
                             @vdropzone-file-added-manually="getFileCount">
                         </vue-dropzone>
+                    </el-tab-pane>
+                    <el-tab-pane class name="four" v-if="file!== undefined &&file.observations !== undefined && file.observations.length > 0">
+                        <span slot="label">Observaciones</span>
+
+                        <table-observation></table-observation>
+
                     </el-tab-pane>
 
                     <div class="col-12 text-center p-t-20">
@@ -90,10 +96,12 @@ import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import {mapState} from "vuex";
 import TableArchives from "./TableArchives";
+import TableObservation from "./TableObservation";
 
 export default {
     components: {
         TableArchives,
+        TableObservation,
         vueDropzone: vue2Dropzone
     },
     props: {
@@ -147,7 +155,7 @@ export default {
                 paramName: function (n) {
                     return "file[]";
                 },
-                dictDefaultMessage: "Upload Files Here xD",
+                dictDefaultMessage: "Arrastra y suelta los archivos aqui.",
                 // includeStyling: false,
                 // previewsContainer: false,
                 parallelUploads: 10,
@@ -272,6 +280,7 @@ export default {
 
             this.$emit("onUploadComplete", null);
             this.onClose();
+            this.tabActive = 'first';
             this.updateFiles()
         },
         sendingEvent(file, xhr, formData) {
@@ -351,12 +360,7 @@ export default {
                 });
         },
         updateFiles() {
-            this.$http
-                .post(`/documentary-procedure/file/reload`)
-                .then((result) => {
-                    let files = result.data;
-                    this.$store.commit('setFiles', files)
-                })
+            this.$emit("updateFiles");
         },
         NextStep() {
 
@@ -460,7 +464,7 @@ export default {
                 });
         },
         onOpened() {
-            this.title = `Derivar expediente: ${this.file.subject}`;
+            this.title = `Observaciones para el expediente: ${this.file.subject}`;
         },
         /*
         onClose() {
