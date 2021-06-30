@@ -189,7 +189,7 @@
             if ($parent != 0) {
                 $temp_work = $work;
                 $temp_work->where('parent_id', $parent)->max('id');
-                if(null === $temp_work){
+                if(empty($temp_work)){
                     $work = $work->max('id');
                 }else{
                      $work = $temp_work;
