@@ -35,6 +35,12 @@ if ($hostname) {
             Route::get('files/create', 'DocumentaryFileController@create');
             Route::get('files/document-number', 'DocumentaryFileController@getDocumentNumber');
             Route::post('files/{id}/add-office', 'DocumentaryFileController@addOffice');
+            Route::post('files/next', 'DocumentaryFileController@nextStep');
+            Route::post('files/back', 'DocumentaryFileController@backStep');
+            Route::get('files/download/{id}', 'DocumentaryFilesArchivesController@download')
+                 ->name('documentaryprocedure.download.file');
+            route::get('file/remove/{id}', 'DocumentaryFilesArchivesController@destroy');
+            route::post('file/reload/{id?}', 'DocumentaryFileController@getData');
 		});
 	});
 }
