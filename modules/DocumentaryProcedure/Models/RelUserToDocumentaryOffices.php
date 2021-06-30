@@ -54,7 +54,7 @@ class RelUserToDocumentaryOffices extends ModelTenant
      *
      * @return RelUserToDocumentaryOffices
      */
-    public function setUserId(int $user_id)
+    public function setUserId($user_id)
     : RelUserToDocumentaryOffices {
         $this->user_id = $user_id;
         return $this;
@@ -73,7 +73,7 @@ class RelUserToDocumentaryOffices extends ModelTenant
      *
      * @return RelUserToDocumentaryOffices
      */
-    public function setDocumentaryOfficeId(int $documentary_office_id)
+    public function setDocumentaryOfficeId($documentary_office_id)
     : RelUserToDocumentaryOffices {
         $this->documentary_office_id = $documentary_office_id;
         return $this;

@@ -55,7 +55,7 @@
          *
          * @return DocumentaryFilesArchives
          */
-        public function setUserId(int $user_id)
+        public function setUserId($user_id)
         : DocumentaryFilesArchives {
             $this->user_id = $user_id;
             return $this;
@@ -74,7 +74,7 @@
          *
          * @return DocumentaryFilesArchives
          */
-        public function setDocumentaryFileId(int $documentary_file_id)
+        public function setDocumentaryFileId($documentary_file_id)
         : DocumentaryFilesArchives {
             $this->documentary_file_id = $documentary_file_id;
             return $this;
@@ -93,7 +93,7 @@
          *
          * @return DocumentaryFilesArchives
          */
-        public function setDocumentaryOfficeId(int $documentary_office_id)
+        public function setDocumentaryOfficeId($documentary_office_id)
         : DocumentaryFilesArchives {
             $this->documentary_office_id = $documentary_office_id;
             return $this;
@@ -112,7 +112,7 @@
          *
          * @return DocumentaryFilesArchives
          */
-        public function setObservation(string $observation)
+        public function setObservation( $observation)
         : DocumentaryFilesArchives {
             $this->observation = $observation;
             return $this;
@@ -131,7 +131,7 @@
          *
          * @return DocumentaryFilesArchives
          */
-        public function setAttachedFile(string $attached_file)
+        public function setAttachedFile( $attached_file)
         : DocumentaryFilesArchives {
             $this->attached_file = $attached_file;
             return $this;

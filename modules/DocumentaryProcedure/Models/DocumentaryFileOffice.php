@@ -40,7 +40,7 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setDocumentaryFileId(int $documentary_file_id = 0)
+        public function setDocumentaryFileId($documentary_file_id = 0)
         : DocumentaryFileOffice {
             $this->documentary_file_id = (int) $documentary_file_id;
             return $this;
@@ -59,7 +59,7 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setDocumentaryOfficeId(int $documentary_office_id = 0)
+        public function setDocumentaryOfficeId($documentary_office_id = 0)
         : DocumentaryFileOffice {
             $this->documentary_office_id =  (int)$documentary_office_id;
             return $this;
@@ -78,7 +78,7 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setDocumentaryActionId(int $documentary_action_id = 0)
+        public function setDocumentaryActionId($documentary_action_id = 0)
         : DocumentaryFileOffice {
             $this->documentary_action_id = (int) $documentary_action_id;
             return $this;

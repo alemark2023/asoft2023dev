@@ -38,7 +38,7 @@
          *
          * @return DocumentaryAction
          */
-        public function setDescription(string $description)
+        public function setDescription( $description)
         : DocumentaryAction {
             $this->description = $description;
             return $this;
@@ -57,7 +57,7 @@
          *
          * @return DocumentaryAction
          */
-        public function setName(string $name)
+        public function setName( $name)
         : DocumentaryAction {
             $this->name = $name;
             return $this;

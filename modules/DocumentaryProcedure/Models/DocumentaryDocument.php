@@ -42,7 +42,7 @@ class DocumentaryDocument extends ModelTenant
      *
      * @return DocumentaryDocument
      */
-    public function setDescription(string $description)
+    public function setDescription( $description)
     : DocumentaryDocument {
         $this->description = $description;
         return $this;
@@ -61,7 +61,7 @@ class DocumentaryDocument extends ModelTenant
      *
      * @return DocumentaryDocument
      */
-    public function setName(string $name)
+    public function setName( $name)
     : DocumentaryDocument {
         $this->name = $name;
         return $this;

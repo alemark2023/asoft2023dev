@@ -31,7 +31,7 @@
          *
          * @return DocumentaryProcess
          */
-        public function setDescription(string $description)
+        public function setDescription( $description)
         : DocumentaryProcess {
             $this->description = $description;
             return $this;
@@ -53,7 +53,7 @@
          *
          * @return DocumentaryProcess
          */
-        public function setName(string $name)
+        public function setName( $name)
         : DocumentaryProcess {
             $this->name = $name;
             return $this;

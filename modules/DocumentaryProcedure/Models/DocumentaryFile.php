@@ -53,7 +53,7 @@
          *
          * @return DocumentaryFile
          */
-        public function setDocumentaryOfficeId(int $documentary_office_id)
+        public function setDocumentaryOfficeId($documentary_office_id)
         : DocumentaryFile {
             $this->documentary_office_id = $documentary_office_id;
             return $this;

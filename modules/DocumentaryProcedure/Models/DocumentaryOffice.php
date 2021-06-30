@@ -40,7 +40,7 @@
          *
          * @return DocumentaryOffice
          */
-        public function setDescription(string $description)
+        public function setDescription( $description)
         : DocumentaryOffice {
             $this->description = $description;
             return $this;
@@ -59,7 +59,7 @@
          *
          * @return DocumentaryOffice
          */
-        public function setName(string $name)
+        public function setName( $name)
         : DocumentaryOffice {
             $this->name = $name;
             return $this;
@@ -70,7 +70,7 @@
          *
          * @return DocumentaryOffice
          */
-        public function setParentId(int $parent_id)
+        public function setParentId($parent_id)
         : DocumentaryOffice {
             $this->parent_id = $parent_id;
             return $this;
@@ -89,7 +89,7 @@
          *
          * @return DocumentaryOffice
          */
-        public function setOrder(int $order)
+        public function setOrder($order)
         : DocumentaryOffice {
             $this->order = $order;
             return $this;
