@@ -103,6 +103,7 @@
                             <th>Fecha/Hora registro</th>
                             <th>Remitente</th>
                             <th>Proceso</th>
+                            <th>Etapa</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -112,7 +113,12 @@
                             <td>{{ item.subject }}</td>
                             <td>{{ item.date_register }} - {{ item.time_register }}</td>
                             <td>{{ item.sender.name }}</td>
-                            <td>{{ item.documentary_process.name }}</td>
+                            <td>
+                                {{ returnProcessName(item) }}
+                            </td>
+                            <td>
+                                {{ returnEtapa(item) }}
+                            </td>
                             <td class="text-center td-btns">
                                 <el-dropdown trigger="click">
                                     <el-button>
@@ -120,6 +126,7 @@
                                         <i class="el-icon-arrow-down el-icon--right"></i>
                                     </el-button>
                                     <el-dropdown-menu slot="dropdown">
+                                        <!--
                                         <el-dropdown-item
                                             :disabled="loading"
                                             @click.native="onShowModalDerive(item)"
@@ -127,6 +134,17 @@
                                             <i class="fa fa-file-export"></i>
                                             <span class="ml-3">Derivar</span>
                                         </el-dropdown-item>
+                                        -->
+
+                                        <el-dropdown-item
+                                            :disabled="loading"
+                                            @click.native="onShowModalObservation(item)"
+                                        >
+                                            <i class="fa fa-file-export"></i>
+                                            <span class="ml-3">Observaciones</span>
+                                        </el-dropdown-item>
+
+
                                         <template v-if="onShowExtraButtons(item)">
                                             <el-dropdown-item
                                                 :disabled="loading"
@@ -153,44 +171,79 @@
             </div>
         </div>
         <ModalAddEdit
-            :file="file"
             :visible.sync="openModalAddEdit"
             @onAddItem="onAddItem"
             @onUpdateItem="onUpdateItem"
+            @onUploadComplete="onUploadComplete"
         ></ModalAddEdit>
         <ModalDerive
             :file="file"
             :visible.sync="showModalDerive"
             @onAddOffice="onAddOffice"
         ></ModalDerive>
+        <ModalObservation
+            :visible.sync="showModalObservation"
+            @onNextStep="onNextStep"
+        ></ModalObservation>
     </div>
 </template>
 
 <script>
 import ModalAddEdit from "./ModalAddEdit";
 import ModalDerive from "./ModalDerive";
+import ModalObservation from "./ModalObservation";
 import moment from "moment";
+import {mapState,mapActions} from "vuex";
+import state from "../../../../../../../resources/js/store/state";
 
 export default {
     props: {
-        files: {
+        local_files: {
             type: Array,
             required: true,
         },
-        offices: {
+        local_offices: {
             type: Array,
             required: true,
         },
+        local_processes: {
+            type: Array,
+            required: false,
+        },
+        local_actions: {
+            type: Array,
+            required: false,
+        },
+        local_customers: {
+            type: Array,
+            required: false,
+        },
+        local_documentTypes: {
+            type: Array,
+            required: false,
+        },
+    },
+    computed:{
+        ...mapState([
+            'offices',
+            'file',
+            'files',
+            'processes',
+            'actions',
+            'customers',
+            'documentTypes',
+        ]),
     },
     components: {
         ModalAddEdit,
         ModalDerive,
+        ModalObservation,
     },
     data() {
         return {
             showModalDerive: false,
+            showModalObservation: false,
             items: [],
-            file: null,
             openModalAddEdit: false,
             loading: false,
             filter: {
@@ -210,10 +263,52 @@ export default {
             ],
         };
     },
+    created(){
+        this.loadOffices()
+        this.loadActions()
+        this.loadCustomers()
+        this.loadProcesses()
+        this.loadFiles()
+        this.loadDocumentTypes()
+
+    },
     mounted() {
+        this.$store.commit('setOffices',this.local_offices)
+        this.$store.commit('setFiles',this.local_files)
+        this.$store.commit('setProcesses',this.local_processes)
+        this.$store.commit('setActions',this.local_actions)
+        this.$store.commit('setCustomers',this.local_customers)
+        this.$store.commit('setDocumentTypes',this.local_documentTypes)
         this.items = this.files;
+
     },
     methods: {
+        ...mapActions([
+            'loadOffices',
+            'loadActions',
+            'loadCustomers',
+            'loadProcesses',
+            'loadDocumentTypes',
+            'loadFiles',
+        ]),
+        returnEtapa(item){
+            if(
+                item !== undefined &&
+                item.documentary_office !== undefined &&
+                item.documentary_office.name !== undefined
+            )return item.documentary_office.name;
+
+            return '';
+        },
+        returnProcessName(item){
+            if(
+                item !== undefined &&
+                item.documentary_process !== undefined &&
+                item.documentary_process.name !== undefined
+            )return item.documentary_process.name;
+
+            return '';
+        },
         onShowExtraButtons(file) {
             if (file.offices) {
                 if (file.offices.length > 0) {
@@ -221,6 +316,9 @@ export default {
                 }
             }
             return true;
+        },
+        onNextStep(office) {
+            console.log('algo')
         },
         onAddOffice(office) {
             this.items = this.items.map((i) => {
@@ -233,6 +331,11 @@ export default {
         onShowModalDerive(file) {
             this.file = file;
             this.showModalDerive = true;
+        },
+        onShowModalObservation(file) {
+            //this.file = file;
+            this.$store.commit('setFile',file)
+            this.showModalObservation = true;
         },
         onPrepareFilterDate() {
             const date = moment();
@@ -310,7 +413,8 @@ export default {
                 .catch();
         },
         onEdit(item) {
-            this.file = {...item};
+            // this.file = {...item};
+            this.$store.commit('setFile',item)
             this.openModalAddEdit = true;
         },
         onUpdateItem(data) {
@@ -321,11 +425,14 @@ export default {
                 return i;
             });
         },
+        onUploadComplete(){
+
+        },
         onAddItem(data) {
             this.items.unshift(data);
         },
         onCreate() {
-            this.file = null;
+            this.$store.commit('setFile',null)
             this.openModalAddEdit = true;
         },
     },

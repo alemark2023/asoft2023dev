@@ -41,7 +41,7 @@
             });
 
             Schema::table('documentary_files', function (Blueprint $table) {
-                $table->unsignedInteger('documentary_file_office_id')->default(0)->after('status')->comment('Define el ultimo proceso');
+                $table->unsignedInteger('documentary_office_id')->default(0)->after('status')->comment('Define el ultimo proceso');
             });
         }
 
@@ -67,7 +67,7 @@
             Schema::table('documentary_files', function (Blueprint $table) {
                 //
                 $table->dropColumn([
-                                       'documentary_file_office_id',
+                                       'documentary_office_id',
                                    ]);
             });
             Schema::dropIfExists('rel_user_to_documentary_offices');

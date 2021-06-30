@@ -3,6 +3,7 @@
 namespace Modules\DocumentaryProcedure\Models;
 
 use App\Models\Tenant\ModelTenant;
+use Hyn\Tenancy\Traits\UsesTenantConnection;
 
 /**
  * Modules\DocumentaryProcedure\Models\DocumentaryDocument
@@ -15,9 +16,13 @@ use App\Models\Tenant\ModelTenant;
  */
 class DocumentaryDocument extends ModelTenant
 {
-	protected $table = 'documentary_documents';
+    use UsesTenantConnection;
+    protected $table = 'documentary_documents';
 
-	protected $fillable = ['description', 'active', 'name'];
+	protected $fillable = [
+	    'description',
+        'active',
+        'name'];
 
 	public function getActiveAttribute($value)
 	{
@@ -63,7 +68,14 @@ class DocumentaryDocument extends ModelTenant
     }
 
     public function getCollectionData() {
-        $data = $this->toArray();
+        // $data = $this->toArray();
+
+        $data = [
+            'id' => $this->id,
+            'description'=> $this->getDescription(),
+            'active' => (bool)$this->active,
+            'name' => $this->getName()
+        ];
         return $data
             ;
     }

@@ -55,13 +55,19 @@ class DocumentaryOfficeController extends Controller
 	{
 		$office = DocumentaryOffice::create($request->only('name','parent_id', 'description', 'active'));
 
-        foreach($request->users as $user){
-            $e =  RelUserToDocumentaryOffices::firstOrCreate([
-                                                                 'documentary_office_id'=>$office->id,
-                                                                 'user_id'=>$user
-                                                             ]);
-            $e->setActive(true)->push();
-        }
+        $e =  RelUserToDocumentaryOffices::firstOrCreate([
+                                                             'documentary_office_id'=>$office->id,
+                                                             'user_id'=>$request->users
+                                                         ]);
+        $e->setActive(true)->push();
+        /*
+                foreach($request->users as $user){
+                    $e =  RelUserToDocumentaryOffices::firstOrCreate([
+                                                                         'documentary_office_id'=>$office->id,
+                                                                         'user_id'=>$user
+                                                                     ]);
+                    $e->setActive(true)->push();
+                }*/
         return response()->json([
             'data' => $office,
             'message' => 'Oficina guardada de forma correcta.',
@@ -83,14 +89,22 @@ class DocumentaryOfficeController extends Controller
 		$office->save();
 
 		$delete =  RelUserToDocumentaryOffices::where('documentary_office_id',$office->id)
-                                              ->wherenotin('user_id',$request->users)->delete();
-		foreach($request->users as $user){
+                                              ->where('user_id','!=',$request->users)->delete();
+
+
+        $e =  RelUserToDocumentaryOffices::firstOrCreate([
+                                                             'documentary_office_id'=>$office->id,
+                                                             'user_id'=>$request->users
+                                                         ]);
+        $e->setActive(true)->push();
+/*
+        foreach($request->users as $user){
 		    $e =  RelUserToDocumentaryOffices::firstOrCreate([
                                                                  'documentary_office_id'=>$office->id,
                                                                  'user_id'=>$user
                                                              ]);
 		    $e->setActive(true)->push();
-        }
+        }*/
 		return response()->json([
             'data' => $office,
             'message' => 'Oficina actualizada de forma correcta.',

@@ -4,6 +4,7 @@ namespace Modules\DocumentaryProcedure\Models;
 
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\User;
+use Hyn\Tenancy\Traits\UsesTenantConnection;
 
 /**
  * Modules\DocumentaryProcedure\Models\RelUserToDocumentaryOffices
@@ -16,6 +17,7 @@ use App\Models\Tenant\User;
 class RelUserToDocumentaryOffices extends ModelTenant
 {
 	protected $table = 'rel_user_to_documentary_offices';
+    use UsesTenantConnection;
 
 	protected $fillable = [
         'active',

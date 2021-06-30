@@ -1,47 +1,49 @@
+import state from './state'
+import {getUniqueArray} from "../helpers/functions";
+
+function readStorageData(variable, json = false) {
+    let w = localStorage.getItem(variable)
+    if (w === 'undefined') {
+        w = null;
+    }
+    if (json === true) {
+        w = JSON.parse(w)
+    }
+    return w;
+}
+
 export default {
-  loadConfiguration(store) {
-    let w = localStorage.getItem('config')
-    if (w !== null) {
-      store.state.config = JSON.parse(w)
-    }
-     w = localStorage.getItem('customers')
-    if (w !== null) {
-      store.state.customers = JSON.parse(w)
-    }
-     w = localStorage.getItem('userType')
-    if (w !== null) {
-      store.state.userType = w
-    }
-  },
-    loadWarehouses(store){
-        let w = localStorage.getItem('warehouses')
-        if (w !== null) {
-            store.state.warehouses = JSON.parse(w)
-        }
+    loadConfiguration(store) {
+        state.config = readStorageData('config', true)
+        state.customers = readStorageData('customers', true)
+        state.userType = readStorageData('userType', false)
     },
-    loadOffices(store){
-        let w = localStorage.getItem('offices')
-        if (w !== null) {
-            store.state.offices = JSON.parse(w)
-        }
+    loadWarehouses(store) {
+        state.warehouses = readStorageData('warehouses', true)
     },
-    loadWorkers(store){
-        let w = localStorage.getItem('workers')
-        if (w !== null) {
-            store.state.workers = JSON.parse(w)
-        }
+    loadOffices(store) {
+        state.offices = readStorageData('offices', true)
     },
-    loadAllItems(store){
-        let w = localStorage.getItem('all_items')
-        if (w !== null) {
-            let temp_item = JSON.parse(w);
-            temp_item = temp_item.filter((item, index, self) =>
-                index === self.findIndex((t) => (
-                    t.id === item.id
-                ))
-            )
-            store.state.all_items = temp_item
-        }
+    loadCustomers(store) {
+        state.customers = readStorageData('customers', true)
+    },
+    loadActions(store) {
+        state.actions = readStorageData('actions', true)
+    },
+    loadProcesses(store) {
+        state.processes = readStorageData('processes', true)
+    },
+    loadFiles(store) {
+        state.files = readStorageData('files', true)
+    },
+    loadDocumentTypes(store) {
+        state.documentTypes = readStorageData('documentTypes', true)
+    },
+    loadWorkers(store) {
+        state.workers = readStorageData('workers', true)
+    },
+    loadAllItems(store) {
+        state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
     },
 
 }

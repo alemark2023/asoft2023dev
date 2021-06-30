@@ -3,6 +3,7 @@
     namespace Modules\DocumentaryProcedure\Models;
 
     use App\Models\Tenant\ModelTenant;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
 
     /**
@@ -15,6 +16,7 @@
      * @mixin \Eloquent
      */
     class DocumentaryProcess extends ModelTenant {
+        use UsesTenantConnection;
         protected $table = 'documentary_processes';
 
         protected $fillable = [
@@ -23,14 +25,6 @@
             'price',
             'name',
         ];
-
-        /**
-         * @return string
-         */
-        public function getDescription()
-        : string {
-            return $this->description;
-        }
 
         /**
          * @param string $description
@@ -44,14 +38,6 @@
         }
 
         /**
-         * @return float
-         */
-        public function getPrice()
-        : float {
-            return $this->price;
-        }
-
-        /**
          * @param float $price
          *
          * @return DocumentaryProcess
@@ -60,14 +46,6 @@
         : DocumentaryProcess {
             $this->price = $price;
             return $this;
-        }
-
-        /**
-         * @return string
-         */
-        public function getName()
-        : string {
-            return $this->name;
         }
 
         /**
@@ -90,17 +68,46 @@
             return $value ? true : false;
         }
 
-public function priceWithDecimal($decimal = 2){ return number_format($this->price,$decimal,'.','');}
         /**
-         * @param false $extended
-         *
          * @return array
          */
         public function getCollectionData() {
-
-            $data = $this->toArray();
-            $data['active'] = (bool)$data['active'];
-            $data['name_price'] = $this->name." - S/ ".$this->priceWithDecimal();
+            $data = [
+                'id'          => $this->id,
+                'description' => $this->getDescription(),
+                'price'       => $this->getPrice(),
+                'name'        => $this->getName(),
+                'name_price'  => $this->getName().' - S/ '.$this->priceWithDecimal(),
+                'active'      => (bool)$this->active,
+            ];
             return $data;
+        }
+
+        /**
+         * @return string
+         */
+        public function getDescription()
+        : string {
+            return $this->description;
+        }
+
+        /**
+         * @return float
+         */
+        public function getPrice()
+        : float {
+            return $this->price;
+        }
+
+        /**
+         * @return string
+         */
+        public function getName()
+        : string {
+            return $this->name;
+        }
+
+        public function priceWithDecimal($decimal = 2) {
+            return number_format($this->price, $decimal, '.', '');
         }
     }

@@ -1,30 +1,60 @@
+function writeLocal(variable, data) {
+    if (data === undefined || data === 'undefined') {
+        localStorage.removeItem(variable)
+    } else {
+        localStorage.setItem(variable, data)
+    }
+}
 export default {
     setConfiguration(state, config) {
         state.config = config
-        localStorage.setItem('config', JSON.stringify(config))
+        writeLocal('config', JSON.stringify(config))
     },
     setCustomers(state, customers) {
         state.customers = customers
-        localStorage.setItem('customers', JSON.stringify(customers))
+        writeLocal('customers', JSON.stringify(customers))
     },
     setOffices(state, offices) {
         state.offices = offices
-        localStorage.setItem('offices', JSON.stringify(offices))
+        writeLocal('offices', JSON.stringify(offices))
     },
+    setDocumentTypes(state, documentTypes) {
+        state.documentTypes = documentTypes
+        writeLocal('documentTypes', JSON.stringify(documentTypes))
+    },
+    setFiles(state, files) {
+        state.files = files
+        writeLocal('files', JSON.stringify(files))
+    },
+    setProcesses(state, processes) {
+        state.processes = processes
+        writeLocal('processes', JSON.stringify(processes))
+    },
+    setActions(state, actions) {
+        state.actions = actions
+        writeLocal('actions', JSON.stringify(actions))
+    },
+
+    setFile(state, file) {
+        state.file = file
+        writeLocal('file', JSON.stringify(file))
+    },
+
+
     setWorkers(state, workers) {
         state.workers = workers
-        localStorage.setItem('workers', JSON.stringify(workers))
+        writeLocal('workers', JSON.stringify(workers))
     },
     setOffice(state, office) {
         state.office = office
     },
     setTypeUser(state, userType) {
         state.userType = userType
-        localStorage.setItem('userType', userType)
+        writeLocal('userType', userType)
     },
     setWarehouses(state, warehouses) {
         state.warehouses = warehouses
-        localStorage.setItem('warehouses', JSON.stringify(warehouses))
+        writeLocal('warehouses', JSON.stringify(warehouses))
     },
     setAllItems(state, all_items) {
         if(state.all_items !== undefined) {
@@ -38,6 +68,6 @@ export default {
         }else{
             state.all_items = all_items
         }
-        localStorage.setItem('all_items', JSON.stringify(all_items))
+        writeLocal('all_items', JSON.stringify(all_items))
     },
 }

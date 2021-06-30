@@ -3,6 +3,7 @@
     namespace Modules\DocumentaryProcedure\Models;
 
     use App\Models\Tenant\ModelTenant;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
 
     /**
@@ -16,6 +17,7 @@
      */
     class DocumentaryOffice extends ModelTenant {
         protected $table = 'documentary_offices';
+        use UsesTenantConnection;
 
         protected $fillable = [
             'description',
@@ -127,6 +129,8 @@
             $data['users'] = RelUserToDocumentaryOffices::
             where('documentary_office_id', $this->id)->where('active', 1)
                                                         ->get()->pluck('user_id');
+            $data['print_name'] = $this->id." - ".$this->name;
+
             if ($extended === true) {
 
                 $data['documentary_files_archives'] =
@@ -156,5 +160,17 @@
         public function getParentId()
         : int {
             return (int)$this->parent_id;
+        }
+
+        public function getBack(){
+            $parent = $this->getParentId();
+            $work = self::where('id','<',$this->id);
+            if($parent != 0){
+                 $work->where('parent_id',$parent);
+            }
+            $work = $work->max('id');
+            dd($work);
+
+            return $work;
         }
     }

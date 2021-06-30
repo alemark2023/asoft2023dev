@@ -3,6 +3,7 @@
     namespace Modules\DocumentaryProcedure\Models;
 
     use App\Models\Tenant\ModelTenant;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
 
     /**
@@ -15,6 +16,7 @@
      * @mixin \Eloquent
      */
     class DocumentaryAction extends ModelTenant {
+        use UsesTenantConnection;
         protected $table = 'documentary_actions';
 
         protected $fillable = ['description', 'active', 'name'];
@@ -23,8 +25,52 @@
             return $value ? true : false;
         }
 
+        /**
+         * @return string
+         */
+        public function getDescription()
+        : string {
+            return $this->description;
+        }
+
+        /**
+         * @param string $description
+         *
+         * @return DocumentaryAction
+         */
+        public function setDescription(string $description)
+        : DocumentaryAction {
+            $this->description = $description;
+            return $this;
+        }
+
+        /**
+         * @return string
+         */
+        public function getName()
+        : string {
+            return $this->name;
+        }
+
+        /**
+         * @param string $name
+         *
+         * @return DocumentaryAction
+         */
+        public function setName(string $name)
+        : DocumentaryAction {
+            $this->name = $name;
+            return $this;
+        }
+
         public function getCollectionData() {
-            $data = $this->toArray();
+            //$data = $this->toArray();
+            $data = [
+                'id'=> $this->id,
+                'description'=> $this->getDescription(),
+                'active'=>(bool)$this->active,
+                'name'=>$this->getName()
+            ];
             return $data;
         }
     }

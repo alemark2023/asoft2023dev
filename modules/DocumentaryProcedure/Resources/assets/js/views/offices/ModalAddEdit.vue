@@ -59,7 +59,7 @@
                         <el-select
                             v-model="office.users"
                             :clearable="true"
-                            :multiple="true">
+                            :multiple="false">
                             <el-option v-for="option in workers"
                                        :key="option.id"
                                        :label="option.name"

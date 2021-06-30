@@ -3,6 +3,7 @@
     namespace Modules\DocumentaryProcedure\Models;
 
     use App\Models\Tenant\ModelTenant;
+    use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
 
     /**
@@ -15,6 +16,7 @@
      */
     class DocumentaryFileOffice extends ModelTenant {
         protected $table = 'documentary_file_offices';
+        use UsesTenantConnection;
 
         protected $fillable = [
             'documentary_file_id',
@@ -24,15 +26,6 @@
             'status',
         ];
 
-
-        /** @var int */
-        protected $documentary_file_id;
-        /** @var int */
-        protected $documentary_office_id;
-        /** @var int */
-        protected $documentary_action_id;
-        /** @var string */
-        protected $observation;
 
         /**
          * @return int
@@ -47,9 +40,9 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setDocumentaryFileId(int $documentary_file_id)
+        public function setDocumentaryFileId(int $documentary_file_id = 0)
         : DocumentaryFileOffice {
-            $this->documentary_file_id = $documentary_file_id;
+            $this->documentary_file_id = (int) $documentary_file_id;
             return $this;
         }
 
@@ -66,9 +59,9 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setDocumentaryOfficeId(int $documentary_office_id)
+        public function setDocumentaryOfficeId(int $documentary_office_id = 0)
         : DocumentaryFileOffice {
-            $this->documentary_office_id = $documentary_office_id;
+            $this->documentary_office_id =  (int)$documentary_office_id;
             return $this;
         }
 
@@ -85,9 +78,9 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setDocumentaryActionId(int $documentary_action_id)
+        public function setDocumentaryActionId(int $documentary_action_id = 0)
         : DocumentaryFileOffice {
-            $this->documentary_action_id = $documentary_action_id;
+            $this->documentary_action_id = (int) $documentary_action_id;
             return $this;
         }
 
@@ -95,7 +88,7 @@
          * @return string
          */
         public function getObservation()
-        : string {
+         {
             return $this->observation;
         }
 
@@ -104,8 +97,9 @@
          *
          * @return DocumentaryFileOffice
          */
-        public function setObservation(string $observation)
+        public function setObservation( $observation = '')
         : DocumentaryFileOffice {
+            if(empty($observation)) $observation = '';
             $this->observation = $observation;
             return $this;
         }

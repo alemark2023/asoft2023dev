@@ -1,0 +1,53 @@
+<?php
+
+    namespace Modules\DocumentaryProcedure\Http\Controllers;
+
+    use Illuminate\Routing\Controller;
+    use Illuminate\Support\Facades\Storage;
+    use Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives;
+
+    class DocumentaryFilesArchivesController extends Controller {
+
+        /**
+         * @param \Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives $id
+         *
+         * @return \Symfony\Component\HttpFoundation\StreamedResponse
+         */
+        public function download(DocumentaryFilesArchives $id) {
+            //getPublicName
+            // $path = config('filesystems.disks.public.root')
+
+            $e = Storage::exists($id->getAttachedFile());
+            if ($e) {
+                return Storage::download($id->getAttachedFile(), $id->getPublicName());
+
+            }
+            abort(404);
+
+        }
+
+        /**
+         * @param \Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives $id
+         *
+         * @return \Illuminate\Http\JsonResponse
+         * @throws \Exception
+         */
+        public function destroy(DocumentaryFilesArchives $id) {
+            $data = [
+                'success' => false,
+            ];
+            $e = Storage::exists($id->getAttachedFile());
+            if ($e) {
+                Storage::delete($id->getAttachedFile());
+                $id->delete();
+                $data['success'] = true;
+                $data['message'] = 'El registro se ha borrado';
+            } else {
+                $data['success'] = true;
+                $data['message'] = "El archivo no existe";
+            }
+
+            return response()->json($data[200]);
+        }
+
+    }

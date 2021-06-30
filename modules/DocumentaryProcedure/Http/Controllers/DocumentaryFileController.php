@@ -3,31 +3,31 @@
     namespace Modules\DocumentaryProcedure\Http\Controllers;
 
     use App\Models\Tenant\Person;
+    use Illuminate\Database\Eloquent\Model;
+    use Illuminate\Http\Request;
     use Illuminate\Http\UploadedFile;
     use Illuminate\Routing\Controller;
-    use Illuminate\Support\Facades\DB;
     use Modules\DocumentaryProcedure\Http\Requests\FileRequest;
     use Modules\DocumentaryProcedure\Models\DocumentaryAction;
     use Modules\DocumentaryProcedure\Models\DocumentaryDocument;
     use Modules\DocumentaryProcedure\Models\DocumentaryFile;
+    use Modules\DocumentaryProcedure\Models\DocumentaryFileOffice;
+    use Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives;
     use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
     use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
     use Throwable;
 
+    /**
+     * Class DocumentaryFileController
+     *
+     * @package Modules\DocumentaryProcedure\Http\Controllers
+     */
     class DocumentaryFileController extends Controller {
-        public function index() {
-            $files = DocumentaryFile::with('offices')
-                                    ->orderBy('id', 'DESC');
 
-            $dateStart = request('date_start', now()->format('Y-m-d'));
-            $dateEnd = request('date_end');
-            if ($dateStart && $dateEnd) {
-                $files = $files->whereBetween('date_register', [$dateStart, $dateEnd]);
-            } else {
-                if ($dateStart) {
-                    $files = $files->whereDate('date_register', $dateStart);
-                }
-            }
+        public function index(Request $request) {
+
+
+            $files = $this->getDocumentaryFile($request);
 
             if (request()->ajax()) {
                 $filter = request('subject');
@@ -45,40 +45,145 @@
                 });
                 return response()->json(['data' => $files], 200);
             }
-            $files = $files->get()->transform(function ($row) {
+            $files = $files->get();
+
+            $files = $files->transform(function ($row) {
+                /** @var DocumentaryFile $row */
                 return $row->getCollectionData();
             });
-            // $files->load('offices');
 
-            // return $files;
-            $offices = DocumentaryOffice::whereActive(true)
-                                        ->get();
-            return view('documentaryprocedure::files', compact('files', 'offices'));
+            $processes = DocumentaryProcess::orderBy('name')
+                                           ->whereActive(true)
+                                           ->get()
+                                           ->transform(function ($row) {
+                                               return $row->getCollectionData();
+                                           });
+
+            $actions = DocumentaryAction::orderBy('name')
+                                        ->whereActive(true)
+                                        ->get()
+                                        ->transform(function ($row) {
+                                            return $row->getCollectionData();
+                                        });
+
+            $customers = Person::with('addresses')
+                               ->whereIsEnabled()
+                               ->orderBy('name')
+                               ->take(20)
+                               ->get()
+                               ->transform(function ($row) {
+                                   return $row->getCollectionData();
+                               });
+
+            $offices = DocumentaryOffice::orderBy('id')
+                                        ->whereActive(true)
+                                        ->get()
+                                        ->transform(function ($row) {
+                                            /** @var DocumentaryOffice $row */
+                                            return $row->getCollectionData();
+                                        });
+
+
+            $documentTypes = DocumentaryDocument::orderBy('name')
+                                                ->whereActive(true)
+                                                ->get()
+                                                ->transform(function ($row) {
+                                                    return $row->getCollectionData();
+                                                });
+            return view('documentaryprocedure::files', compact(
+                'files',
+                'processes',
+                'documentTypes',
+                'actions',
+                'customers',
+                'offices'));
+        }
+
+        /**
+         * @param \Illuminate\Http\Request $request
+         *
+         * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|\Modules\DocumentaryProcedure\Models\DocumentaryFile
+         */
+        public function getDocumentaryFile(Request $request) {
+            $files = DocumentaryFile::with('offices')
+                                    ->orderBy('id', 'DESC');
+            $dateStart = null;
+            $dateEnd = null;
+            if ($request->has('date_start')) {
+                $dateStart = $request->date_start;
+            }
+            if ($request->has('date_end')) {
+                // $dateStart = request('date_start', now()->format('Y-m-d'));
+                $dateEnd = $request->date_end;
+            }
+            if ($dateStart && $dateEnd) {
+                $files = $files->whereBetween('date_register', [$dateStart, $dateEnd]);
+            } else {
+                if ($dateStart) {
+                    $files = $files->whereDate('date_register', $dateStart);
+                }
+            }
+            return $files;
+
         }
 
         public function store(FileRequest $request) {
-            DB::connection('tenant')->beginTransaction();
+
             try {
                 $sender = json_decode($request->person);
-                if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                    $request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
+                if ($request->hasFile('attachFile')) {
+                    $request->merge(['attached_file' => $this->storeFile($request->file('attachFile'))]);
                 }
                 $request->merge(['sender' => $sender]);
-                $file = DocumentaryFile::create($request->only('documentary_document_id', 'documentary_process_id',
-                                                               'number', 'year', 'invoice', 'date_register',
-                                                               'time_register', 'person_id', 'sender', 'subject',
-                                                               'attached_file', 'observation'));
+
+                $file = new DocumentaryFile($request->all());
+                /*
+
+                $file = DocumentaryFile::create($request->only(
+                    'documentary_office_id',
+                    'documentary_document_id',
+                    'documentary_process_id',
+                    'number',
+                    'year',
+                    'invoice',
+                    'date_register',
+                    'time_register',
+                    'person_id',
+                    'sender',
+                    'subject',
+                    'attached_file',
+                    'observation'
+                ));
+                */
 
                 $file->load('offices');
+                $file->push();
+                $file_id = $file->id;
 
-                DB::connection('tenant')->commit();
+
+                if ($request->has('attachments')) {
+                    foreach ($request->attachments as $file) {
+                        /** @var \Illuminate\Http\UploadedFile $file */
+                        $data = [
+                            'user_id'               => auth()->user()->id,
+                            'documentary_file_id'   => $file_id,
+                            'documentary_office_id' => 0,
+                            'observation'           => '',
+                            'attached_file'         => $this->storeFile($file),
+                        ];
+                        $files = new DocumentaryFilesArchives($data);
+                        $files->push();
+                    }
+
+                }
+
                 return response()->json([
                                             'data'    => $file,
                                             'message' => 'Expediente guardada de forma correcta.',
                                             'succes'  => true,
                                         ], 200);
             } catch (Throwable $th) {
-                DB::connection('tenant')->rollBack();
+
                 return response()->json([
                                             'message' => 'Ocurrió un error al procesar su petición. Detalles: '.$th->getMessage(),
                                             'succes'  => false,
@@ -98,7 +203,72 @@
             return $fullpath;
         }
 
-        public function addOffice($fileId) {
+        public function nextStep(Request $request) {
+
+
+            $office = DocumentaryFile::find($request->id);
+            $next = DocumentaryOffice::where('id','>',$office->documentary_office_id)->first();
+            $record = new DocumentaryFileOffice();
+            $record
+                ->setDocumentaryOfficeId( (int)$office->documentary_office_id)
+                ->setDocumentaryActionId( (int)$office->documentary_action_id)
+                ->setDocumentaryFileId( (int)$office->id)
+                ->setObservation($office->getObservation());
+            $record->push();
+            $office->setDocumentaryOfficeId($next->id)
+                   ->setObservation($request->observation);
+            // $office->push();
+
+            $files = $this->getDocumentaryFile($request)
+                          ->get()
+                          ->transform(function ($row) {
+                              /** @var DocumentaryFile $row */
+                              return $row->getCollectionData();
+                          });
+
+            return response()->json([
+                                        'data'    => $office,
+                                        // 'request'   => $request->all(),
+                                        'files'   => $files,
+                                        // 'next'   => $next,
+                                        'message' => 'Expediente guardada de forma correcta.',
+                                        'succes'  => true,
+                                    ], 200);
+        }
+        public function backStep(Request $request) {
+
+
+            $office = DocumentaryFile::find($request->id);
+            $back = DocumentaryOffice::find($office->documentary_office_id)->getBack();
+
+            $record = new DocumentaryFileOffice();
+            $record
+                ->setDocumentaryOfficeId( (int)$office->documentary_office_id)
+                ->setDocumentaryActionId( (int)$office->documentary_action_id)
+                ->setDocumentaryFileId( (int)$office->id)
+                ->setObservation($office->getObservation());
+            $record->push();
+            $office->setObservation($request->observation);
+            if(!empty($back)){
+                $office->setDocumentaryOfficeId($back->id);
+            }
+            // $office->push();
+            $files = $this->getDocumentaryFile($request)
+                          ->get()
+                          ->transform(function ($row) {
+                              /** @var DocumentaryFile $row */
+                              return $row->getCollectionData();
+                          });
+
+            return response()->json([
+                                        'data'    => $office,
+                                        'files'   => $files,
+                                        'message' => 'Expediente guardada de forma correcta.',
+                                        'succes'  => true,
+                                    ], 200);
+        }
+
+        public function addOffice(Request $request, $fileId) {
             request()->validate([
                                     'documentary_office_id' => 'required|numeric',
                                     'documentary_action_id' => 'required|numeric',
@@ -106,11 +276,23 @@
                                 ]);
 
             $file = DocumentaryFile::findOrFail($fileId);
+
+            /*
             $office = $file->offices()->create(request()->only('documentary_office_id', 'documentary_action_id',
                                                                'observation'));
+            */
+
+
+            $files = $this->getDocumentaryFile($request)
+                          ->get()
+                          ->transform(function ($row) {
+                              /** @var DocumentaryFile $row */
+                              return $row->getCollectionData();
+                          });
 
             return response()->json([
                                         'data'    => $office,
+                                        'files'   => $files,
                                         'message' => 'Expediente guardada de forma correcta.',
                                         'succes'  => true,
                                     ], 200);
@@ -118,16 +300,50 @@
 
         public function update(FileRequest $request, $id) {
             $sender = json_decode($request->person);
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                $request->merge(['attached_file' => $this->storeFile($request->file('file'))]);
+            if ($request->hasFile('attachFile') && $request->file('attachFile')->isValid()) {
+                $request->merge(['attached_file' => $this->storeFile($request->file('attachFilefile'))]);
             }
             $request->merge(['sender' => $sender]);
 
             $file = DocumentaryFile::findOrFail($id);
-            $file->fill($request->only('documentary_document_id', 'documentary_process_id', 'number', 'year', 'invoice',
-                                       'date_register', 'time_register', 'person_id', 'sender', 'subject',
-                                       'attached_file', 'observation'));
-            $file->save();
+            if (!empty($file)) {
+
+                $file
+                    ->setDocumentaryOfficeId($request->documentary_office_id)
+                    ->setDocumentaryDocumentId($request->documentary_document_id)
+                    ->setDocumentaryProcessId($request->documentary_process_id)
+                    ->setSubject($request->subject)
+                    ->setNumber($request->number)
+                    ->setYear($request->year)
+                    ->setInvoice($request->invoice)
+                    ->setDateRegister($request->date_register)
+                    ->setTimeRegister($request->time_register)
+                    ->setPersonId($request->person_id)
+                    ->setAttachedFile($request->attached_file)
+                    ->setObservation($request->observation);
+                $file->fill([
+                                'sender' => $request->sender,
+                            ]);
+            }
+            $file->push();
+            $file_id = $file->id;
+            $file_documentary_office_id = $file->documentary_office_id;
+            if ($request->has('attachments')) {
+                foreach ($request->attachments as $file) {
+                    /** @var \Illuminate\Http\UploadedFile $file */
+                    $data = [
+                        'user_id'               => auth()->user()->id,
+                        'documentary_file_id'   => $file_id,
+                        'documentary_office_id' => $file_documentary_office_id,
+                        'observation'           => '',
+                        'attached_file'         => DocumentaryFilesArchives::saveFile($file),
+                        //'attached_file'         => $this->storeFile($file),
+                    ];
+                    $files = new DocumentaryFilesArchives($data);
+                    $files->push();
+                }
+
+            }
 
             return response()->json([
                                         'data'    => $file,
@@ -196,7 +412,7 @@
                                    ];
                                });
 
-            $offices = DocumentaryOffice::orderBy('name')
+            $offices = DocumentaryOffice::orderBy('id')
                                         ->whereActive(true)
                                         ->get()
                                         ->transform(function ($row) {
