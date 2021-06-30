@@ -87,7 +87,7 @@
          * @return string
          */
         public function getDescription()
-        : string {
+         {
             return $this->description;
         }
 
@@ -95,7 +95,7 @@
          * @return float
          */
         public function getPrice()
-        : float {
+        {
             return $this->price;
         }
 
@@ -103,7 +103,7 @@
          * @return string
          */
         public function getName()
-        : string {
+         {
             return $this->name;
         }
 

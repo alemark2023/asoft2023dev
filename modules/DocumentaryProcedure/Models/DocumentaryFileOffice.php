@@ -31,7 +31,7 @@
          * @return int
          */
         public function getDocumentaryFileId()
-        : int {
+         {
             return $this->documentary_file_id;
         }
 
@@ -50,7 +50,7 @@
          * @return int
          */
         public function getDocumentaryOfficeId()
-        : int {
+         {
             return $this->documentary_office_id;
         }
 
@@ -69,7 +69,7 @@
          * @return int
          */
         public function getDocumentaryActionId()
-        : int {
+         {
             return $this->documentary_action_id;
         }
 

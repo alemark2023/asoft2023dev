@@ -45,7 +45,7 @@ class RelUserToDocumentaryOffices extends ModelTenant
      * @return int
      */
     public function getUserId()
-    : int {
+     {
         return $this->user_id;
     }
 
@@ -64,7 +64,7 @@ class RelUserToDocumentaryOffices extends ModelTenant
      * @return int
      */
     public function getDocumentaryOfficeId()
-    : int {
+     {
         return $this->documentary_office_id;
     }
 

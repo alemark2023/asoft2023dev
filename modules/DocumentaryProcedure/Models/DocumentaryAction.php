@@ -29,7 +29,7 @@
          * @return string
          */
         public function getDescription()
-        : string {
+         {
             return $this->description;
         }
 
@@ -48,7 +48,7 @@
          * @return string
          */
         public function getName()
-        : string {
+         {
             return $this->name;
         }
 

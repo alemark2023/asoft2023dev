@@ -44,7 +44,7 @@
          * @return int
          */
         public function getDocumentaryOfficeId()
-        : int {
+         {
             return $this->documentary_office_id;
         }
 

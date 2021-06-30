@@ -46,7 +46,7 @@
          * @return int
          */
         public function getUserId()
-        : int {
+         {
             return $this->user_id;
         }
 
@@ -65,7 +65,7 @@
          * @return int
          */
         public function getDocumentaryFileId()
-        : int {
+         {
             return $this->documentary_file_id;
         }
 
@@ -84,7 +84,7 @@
          * @return int
          */
         public function getDocumentaryOfficeId()
-        : int {
+         {
             return $this->documentary_office_id;
         }
 
@@ -103,7 +103,7 @@
          * @return string
          */
         public function getObservation()
-        : string {
+         {
             return $this->observation;
         }
 
@@ -122,7 +122,7 @@
          * @return string
          */
         public function getAttachedFile()
-        : string {
+         {
             return $this->attached_file;
         }
 

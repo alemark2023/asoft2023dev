@@ -31,7 +31,7 @@
          * @return string
          */
         public function getDescription()
-        : string {
+         {
             return $this->description;
         }
 
@@ -50,7 +50,7 @@
          * @return string
          */
         public function getName()
-        : string {
+         {
             return $this->name;
         }
 
@@ -80,7 +80,7 @@
          * @return int
          */
         public function getOrder()
-        : int {
+         {
             return $this->order;
         }
 
@@ -159,7 +159,7 @@
          * @return int
          */
         public function getParentId()
-        : int {
+         {
             return (int)$this->parent_id;
         }
 
