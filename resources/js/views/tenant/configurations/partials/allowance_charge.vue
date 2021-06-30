@@ -5,7 +5,8 @@
                 <div class="row">
                     <div class="col-md-8"> 
                         <div class="form-group">
-                            <label class="control-label">Aplicar recargo al consumo automático</label>
+                            <label class="control-label">Aplicar cargo automático
+                            </label>
                             <el-switch v-model="form.active_allowance_charge" active-text="Si" inactive-text="No"></el-switch>
                             <small class="form-control-feedback" ></small>
                         </div>
@@ -36,7 +37,7 @@
             return {
                 showImportDialog: false,
                 recordId: null,
-                titleDialog: 'Recargo al consumo',
+                titleDialog: 'Configurar cargo',
             }
         },
         created() {

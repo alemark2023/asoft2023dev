@@ -2,6 +2,17 @@
     $invoice = $document->invoice;
     $establishment = $document->establishment;
     $customer = $document->customer;
+
+    $tot_charges = 0;
+    
+    if($document->charges){
+        foreach($document->charges as $charge){
+            if($charge->charge_type_id == '50'){
+                $tot_charges += $charge->amount;
+            }
+        }
+    }
+
 @endphp
 {!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -381,7 +392,12 @@
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_value }}</cbc:LineExtensionAmount>
+        {{-- no incluye cargos globales que no afectan a la base imponible --}}
+        @if($tot_charges > 0)
+        <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_charges}}</cbc:TaxInclusiveAmount>
+        @else
         <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:TaxInclusiveAmount>
+        @endif
         @if($document->total_discount > 0)
         <cbc:AllowanceTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_discount }}</cbc:AllowanceTotalAmount>
         @endif

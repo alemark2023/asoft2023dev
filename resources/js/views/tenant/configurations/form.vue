@@ -94,7 +94,14 @@
                                     </div>
                                     
                                     <div class="col-md-6 mt-4">
-                                        <a href="#" @click.prevent="showDialogAllowanceCharge = true" class="text-center font-weight-bold text-info">[+ Recargo al consumo]</a>
+                                        <a href="#" @click.prevent="showDialogAllowanceCharge = true" class="text-center font-weight-bold text-info">[+ Aplicar cargos]</a>
+                                        <el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Disponible en Ventas - Comprobante electrónico"
+                                            placement="top-start">
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
                                     </div>
                                 </div>
                             </el-tab-pane>

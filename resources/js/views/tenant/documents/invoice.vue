@@ -231,6 +231,13 @@
                                                 </tr>
 
                                                 <tr v-if="form.total > 0">
+                                                    <td>OTROS CARGOS:</td>
+                                                    <td>{{ currency_type.symbol }} 
+                                                        <el-input-number class="input-custom" v-model="total_global_charge" controls-position="right" @change="calculateTotal" :min="0" :disabled="configuration.active_allowance_charge == 1 ? true:false"></el-input-number>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <tr v-if="form.total > 0">
                                                     <td><strong>TOTAL A PAGAR</strong>:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total }}</td>
                                                 </tr>
@@ -481,6 +488,16 @@
                                             </div>
                                         </div>
                                     </template>
+
+                                    <div class="col-12 py-2 px-0" v-if="configuration.active_allowance_charge && form.total > 0">
+                                        <div class="row no-gutters">
+                                            <div class="col-8"><strong>Porcentaje otros cargos</strong></div>
+                                            <div class="col-4">
+                                                <el-input-number  v-model="configuration.percentage_allowance_charge" controls-position="right" @change="calculateTotal" :min="0" size="mini"></el-input-number>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </template>
                             </div>
                             <el-collapse v-model="activePanel" accordion>
@@ -747,6 +764,7 @@ export default {
                 prepayment_deduction:false,
                 activePanel: 0,
                 total_global_discount:0,
+                total_global_charge : 0,
                 loading_search:false,
                 is_amount:true,
                 enabled_discount_global:false,
@@ -1671,6 +1689,7 @@ export default {
                 this.clickAddInitGuides()
                 this.is_receivable = false
                 this.total_global_discount = 0
+                this.total_global_charge = 0
                 this.is_amount = true
                 this.prepayment_deduction = false
                 this.imageDetraction = {}
@@ -1983,6 +2002,9 @@ export default {
                 this.setPendingAmount()
 
                 this.calculateFee();
+
+                this.chargeGlobal()
+
             },
             setTotalDefaultPayment(){
 
@@ -1993,6 +2015,73 @@ export default {
             },
             changeTypeDiscount(){
                 this.calculateTotal()
+            },
+            chargeGlobal(){
+
+                let base = parseFloat(this.form.total)
+
+                if(this.configuration.active_allowance_charge){
+                    let percentage_allowance_charge = parseFloat(this.configuration.percentage_allowance_charge)
+                    this.total_global_charge = _.round(base * (percentage_allowance_charge / 100), 2)
+                }
+
+                if(this.total_global_charge == 0){
+                    this.deleteChargeGlobal()
+                    return
+                }
+
+
+                let amount = parseFloat(this.total_global_charge)
+                // let base = this.form.total_taxed + amount
+                let factor = _.round(amount/base,5)
+
+                // console.log(base,factor, amount)
+
+                let charge = _.find(this.form.charges,{ charge_type_id : '50'})
+
+                if(amount > 0 && !charge){
+
+                    this.form.total_charge = _.round(amount, 2)
+                    this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+
+                    this.form.charges.push({
+                        charge_type_id: '50',
+                        description: 'Cargos globales que no afectan la base imponible del IGV/IVAP',
+                        factor: factor,
+                        amount: amount,
+                        base: base
+                    })
+
+                }else{
+
+                    let pos = this.form.charges.indexOf(charge);
+
+                    if(pos > -1){
+
+                        this.form.total_charge = _.round(amount,2)
+                        this.form.total = _.round(this.form.total + this.form.total_charge, 2)
+
+                        this.form.charges[pos].base = base
+                        this.form.charges[pos].amount = amount
+                        this.form.charges[pos].factor = factor
+
+                    }
+                }
+
+
+
+ 
+            },
+            deleteChargeGlobal(){
+
+                let charge = _.find(this.form.charges,{ charge_type_id : '50'})
+                let index = this.form.charges.indexOf(charge)
+
+                if (index > -1) {
+                    this.form.charges.splice(index, 1)
+                    this.form.total_charge = 0
+                }
+
             },
             discountGlobal(){
 
@@ -2288,7 +2377,7 @@ export default {
                         amount = _.round(total - payment + amount, 2);
                     }
                     row.payment = amount;
-                    console.error(row.payment)
+                    // console.error(row.payment)
                 })
             },
             calculateFee() {
