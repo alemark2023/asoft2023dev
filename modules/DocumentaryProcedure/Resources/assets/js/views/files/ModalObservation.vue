@@ -53,9 +53,8 @@
                             @updateFiles="updateFiles"
                         ></table-archives>
                     </el-tab-pane>
-                    <el-tab-pane class name="thirdh">
+                    <el-tab-pane class name="thirdhob">
                         <span slot="label">Complemento de archivos</span>
-
                         <vue-dropzone
                             id="dropzone"
                             ref="myVueDropObservaction"
@@ -281,6 +280,7 @@ export default {
 
             this.$emit("onUploadComplete", null);
             this.onClose();
+            this.tabActive = 'first';
             this.updateFiles()
         },
         sendingEvent(file, xhr, formData) {

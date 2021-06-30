@@ -55,22 +55,29 @@
                             <th>Etapa</th>
                             <th>Descripción</th>
                             <th>Visible</th>
+                            <th>Responsable</th>
                             <th>Padre</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr
-                            v-for="item in items"
+                            v-for="(item,index) in items"
                             :key="item.id"
                             :class="{ 'table-danger': !item.active }"
                         >
-                            <td class="text-right">{{ item.id }}</td>
+                            <td class="text-right">{{ index +1 }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.description }}</td>
                             <td class="text-center">
                                 <span v-if="item.active">Si</span>
                                 <span v-else>No</span>
+                            </td>
+                            <td>
+                                <span
+                                v-if=" (item.user !== undefined &&  item.user !== null) ">
+                                {{item.user.name}}
+                                </span>
                             </td>
                             <td>
                                 <div v-if="item.parent !== undefined && item.parent.name !== undefined">
@@ -102,7 +109,7 @@
         <ModalAddEdit
             :parent_offices="parents"
             :visible.sync="openModalAddEdit"
-            @onAddItem="onAddItem"
+            @onAddItem="onFilter"
             @onUpdateItem="onUpdateItem"
         ></ModalAddEdit>
     </div>
@@ -110,19 +117,20 @@
 
 <script>
 import ModalAddEdit from "./ModalAddEdit";
-import {mapState,mapActions} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 export default {
     props: {
         parents: {
             type: Array,
-            required: true,
+            required: false,
+            default:[]
         },
         etapas: {
             type: Array,
             required: true,
         },
-        configuration:{},
+        configuration: {},
         users: {
             type: Array,
             required: false,
@@ -131,12 +139,12 @@ export default {
     components: {
         ModalAddEdit,
     },
-    computed:{
-      ...mapState([
-          'workers',
-          'offices',
-          'config'
-      ])
+    computed: {
+        ...mapState([
+            'workers',
+            'offices',
+            'config'
+        ])
     },
     data() {
         return {
@@ -150,18 +158,17 @@ export default {
             basePath: '/documentary-procedure/offices'
         };
     },
-    created(){
-        this.$store.commit('setOffices',this.etapas);
-        this.$store.commit('setConfiguration',this.configuration);
-        this.$store.commit('setWorkers',this.users);
+    created() {
+        this.$store.commit('setOffices', this.etapas);
+        this.$store.commit('setConfiguration', this.configuration);
+        this.$store.commit('setWorkers', this.users);
 
         this.loadConfiguration()
         this.loadWorkers()
         this.loadOffices()
-
+this.items = this.offices
     },
     mounted() {
-        this.items = this.offices;
     },
     methods: {
         ...mapActions([
@@ -169,13 +176,20 @@ export default {
             'loadConfiguration',
             'loadOffices'
         ]),
-        onFilter() {
+        WorkAssociated(item) {
+            if (item === undefined || item === null) return '';
+            if (item.user === undefined || item.user === null) return '';
+            return item.user.name;
+        }, onFilter() {
             this.loading = true;
             const params = this.filter;
             this.$http
                 .get(this.basePath, {params})
                 .then((response) => {
-                    this.items = response.data.data;
+                    let item = response.data.data;
+                    console.error(item)
+                    this.$store.commit('setOffices', item)
+                    this.items = this.offices
                 })
                 .finally(() => {
                     this.loading = false;
@@ -199,7 +213,7 @@ export default {
                                 type: "success",
                                 message: response.data.message,
                             });
-                            this.items = this.items.filter((i) => i.id !== item.id);
+                            this.onFilter()
                         })
                         .catch((error) => {
                             this.axiosError(error);
@@ -208,22 +222,16 @@ export default {
                 .catch();
         },
         onEdit(item) {
-            this.$store.commit('setOffice',item)
+            this.$store.commit('setOffice', item)
             // this.office = {...item};
             this.openModalAddEdit = true;
         },
         onUpdateItem(data) {
-            this.items = this.items.map((i) => {
-                if (i.id === data.id) {
-                    return data;
-                }
-                return i;
-            });
-            this.$store.commit('setOffices',this.items)
-            this.onFilter();
+            this.onFilter()
+
         },
         onAddItem(data) {
-            this.items.unshift(data);
+            this.onFilter()
         },
         onCreate() {
             this.$store.commit('setOffice', {})

@@ -35,10 +35,11 @@
                         {{ errors.description[0] }}
                     </div>
                 </div>
-                <div v-if="hasParent" :class="{'has-danger': errors.type}" class="form-group">
+                <!-- v-if="hasParent"  -->
+                <div  :class="{'has-danger': errors.type}" class="form-group">
                     <label class="control-label">Etapa principal</label>
                     <el-select
-                        v-model="office.parent_id"
+                        v-model="form.parent_id"
                         :clearable="true">
                         <el-option
                             v-for="item in parent_offices"
@@ -55,11 +56,13 @@
 
                 <div v-if="office!==undefined" class="form-group">
                     <div :class="{'has-danger': errors.type}" class="form-group">
-                        <label class="control-label">Trabajador asociado</label>
+                        <label class="control-label">Responsable</label>
                         <el-select
-                            v-model="office.users"
+                            v-model="form.users"
                             :clearable="true"
-                            :multiple="false">
+                        :multiple="true"
+                        :multiple-limit="1"
+                        >
                             <el-option v-for="option in workers"
                                        :key="option.id"
                                        :label="option.name"
@@ -124,7 +127,6 @@ export default {
             'workers',
         ]),
         OfficeNotNull: function () {
-
             if (this.office !== null) return true
             return false;
         },

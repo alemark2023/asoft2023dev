@@ -15,6 +15,7 @@
     use Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives;
     use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
     use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
+    use Modules\DocumentaryProcedure\Models\RelUserToDocumentaryOffices;
     use Throwable;
 
     /**
@@ -25,6 +26,7 @@
     class DocumentaryFileController extends Controller {
 
         public function getData(Request $request, $id = 0) {
+
 
 
             $files = $this->getDocumentaryFile($request);
@@ -76,6 +78,15 @@
                     $files = $files->whereDate('date_register', $dateStart);
                 }
             }
+            $userType = auth()->user()->type;
+            if($userType!=='admin'){
+                $etapas = RelUserToDocumentaryOffices::where([
+                                                                 'user_id'=>auth()->user()->id,
+                                                             ])->get()->pluck('documentary_office_id');
+
+                $files->wherein('documentary_office_id',$etapas);
+            }
+
             return $files;
 
         }

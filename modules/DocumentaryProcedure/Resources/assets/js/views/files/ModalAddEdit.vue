@@ -631,6 +631,7 @@ export default {
 
         },
         onClose() {
+            this.tabActive = 'first';
             this.$refs.myVueDropzone.dropzone.removeAllFiles(true);
             this.$emit("update:visible", false);
         },
