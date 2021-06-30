@@ -30,7 +30,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="row">
+                                <div class="row">
                                     <div class="col-md-6 mt-4" v-if="typeUser != 'integrator'">
                                         <label class="control-label">Envío de comprobantes a servidor alterno de SUNAT</label>
                                         <div class="form-group" :class="{'has-danger': errors.sunat_alternate_server}">
@@ -38,7 +38,7 @@
                                             <small class="form-control-feedback" v-if="errors.sunat_alternate_server" v-text="errors.sunat_alternate_server[0]"></small>
                                         </div>
                                     </div>
-                                </div> -->
+                                </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="second">
                                 <span slot="label"><h3>Contable</h3></span>
