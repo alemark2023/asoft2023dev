@@ -187,10 +187,17 @@
             $parent = $this->getParentId();
             $work = self::where('id', '<', $this->id);
             if ($parent != 0) {
-                $work->where('parent_id', $parent);
+                $temp_work = $work;
+                $temp_work->where('parent_id', $parent)->max('id');
+                if(null === $temp_work){
+                    $work = $work->max('id');
+                }else{
+                     $work = $temp_work;
+                }
+            }else{
+                $work = $work->max('id');
+
             }
-            $work = $work->max('id');
-//            dd($work);
 
 
             return $work;
