@@ -723,7 +723,7 @@
                         <ul class="nav nav-children">
                             @if(in_array('documentary_offices', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
+                                <a class="nav-link" href="{{ route('documentary.offices') }}">Etapas</a>
                             </li>
                             @endif
                             @if(in_array('documentary_process', $vc_module_levels))

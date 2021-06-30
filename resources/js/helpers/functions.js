@@ -248,4 +248,14 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     return row
 }
 
-export {calculateRowItem}
+function getUniqueArray(arr, keyProps) {
+    if(arr == null )return  null
+    return Object.values(
+        arr.reduce((uniqueMap, entry) => {
+            const key = keyProps.map((k) => entry[k]).join('|')
+            if (!(key in uniqueMap)) uniqueMap[key] = entry
+            return uniqueMap
+        }, {})
+    )
+}
+export {calculateRowItem,getUniqueArray}
