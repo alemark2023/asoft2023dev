@@ -106,6 +106,7 @@ class DocumentUpdateInput
 			'note'                      => $note,
 			'hotel'                     => self::hotel($inputs),
 			'additional_information'    => Functions::valueKeyInArray($inputs, 'additional_information'),
+            'plate_number' 				=> Functions::valueKeyInArray($inputs, 'plate_number'),
 			'legends'                   => LegendInput::set($inputs),
 			'actions'                   => ActionInput::set($inputs),
 			'data_json'                 => $data_json,
@@ -217,7 +218,7 @@ class DocumentUpdateInput
 					$attributes[] = [
 						'attribute_type_id'   => $attribute_type_id,
 						'description'         => $description,
-						'title'               => $row['title'],
+						'title'               => $row['title'] ?? null,
 						'value'               => $value,
 						'start_date'          => $start_date,
 						'end_date'            => $end_date,
