@@ -119,4 +119,12 @@ class Cash extends ModelTenant
 
     }
 
+    public function scopeWhereActive($query)
+    { 
+        return $query->where([
+            ['user_id', auth()->user()->id],
+            ['state', true],
+        ]);
+    }
+
 }

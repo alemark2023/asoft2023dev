@@ -64,6 +64,7 @@ class CashController extends Controller
      * @return array
      */
     public function setDataToReport($cash_id = 0) {
+
         set_time_limit(0);
         $data = [];
         /** @var Cash $cash */
@@ -128,6 +129,7 @@ class CashController extends Controller
             $temp = [];
             $notes = [];
             $usado = '';
+
             /** Documentos de Tipo Nota de venta */
             if ($cash_document->sale_note) {
                 $sale_note = $cash_document->sale_note;
@@ -315,6 +317,50 @@ class CashController extends Controller
                     'tipo' => 'expense_payment',
                 ];
             }
+            
+            /** Documentos de Tipo compras */
+            else if ($cash_document->purchase) {
+
+                $purchase = $cash_document->purchase;
+
+                if (in_array($purchase->state_type_id, $status_type_id)) {
+
+                    $record_total = 0;
+                    $total = self::CalculeTotalOfCurency($purchase->total, $purchase->currency_type_id, $purchase->exchange_rate_sale);
+
+                    $cash_egress += $total;
+                    $final_balance -= $total;
+
+                    if (count($purchase->payments) > 0) {
+
+                        $pays = $purchase->payments;
+
+                        foreach ($methods_payment as $record) {
+                            $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
+                            $record->sum = ($record->sum - $record_total);
+                        }
+
+                    }
+
+                }
+
+                $temp = [
+                    'type_transaction'          => 'Compra',
+                    'document_type_description' => $purchase->document_type->description,
+                    'number'                    => $purchase->number_full,
+                    'date_of_issue'             => $purchase->date_of_issue->format('Y-m-d'),
+                    'date_sort'                 => $purchase->date_of_issue,
+                    'customer_name'             => $purchase->supplier->name,
+                    'customer_number'           => $purchase->supplier->number,
+                    'total'                     => ((!in_array($purchase->state_type_id, $status_type_id)) ? 0 : $purchase->total),
+                    'currency_type_id'          => $purchase->currency_type_id,
+                    'usado'                     => $usado." ".__LINE__,
+                    'tipo'                      => 'purchase',
+                ];
+            }
+
+
+
 
             if (!empty($temp)) {
                 $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
@@ -519,6 +565,7 @@ class CashController extends Controller
      */
     public function reportExcel($cash) {
         $data = $this->setDataToReport($cash);
+        // dd($data);
 
         /*
          $cash = Cash::findOrFail($cash);
