@@ -15,6 +15,7 @@
     use Modules\DocumentaryProcedure\Models\DocumentaryFilesArchives;
     use Modules\DocumentaryProcedure\Models\DocumentaryOffice;
     use Modules\DocumentaryProcedure\Models\DocumentaryProcess;
+    use Modules\DocumentaryProcedure\Models\RelUserToDocumentaryOffices;
     use Throwable;
 
     /**
@@ -25,6 +26,7 @@
     class DocumentaryFileController extends Controller {
 
         public function getData(Request $request, $id = 0) {
+
 
 
             $files = $this->getDocumentaryFile($request);
@@ -76,6 +78,15 @@
                     $files = $files->whereDate('date_register', $dateStart);
                 }
             }
+            $userType = auth()->user()->type;
+            if($userType!=='admin'){
+                $etapas = RelUserToDocumentaryOffices::where([
+                                                                 'user_id'=>auth()->user()->id,
+                                                             ])->get()->pluck('documentary_office_id');
+
+                $files->wherein('documentary_office_id',$etapas);
+            }
+
             return $files;
 
         }
@@ -240,6 +251,7 @@
 
             $office = DocumentaryFile::find($request->id);
             $current_office = $office->documentary_office_id;
+
             $next = DocumentaryOffice::where('id', '>', $office->documentary_office_id)->first();
 
             $record = new DocumentaryFileOffice();
@@ -281,6 +293,8 @@
                                         'data'    => $office,
                                         // 'request'   => $request->all(),
                                         'files'   => $files,
+                                        'current_office'   => $current_office,
+                                        'next_office'   => $office->documentary_office_id,
                                         // 'next'   => $next,
                                         'message' => 'Expediente guardada de forma correcta.',
                                         'succes'  => true,
@@ -307,7 +321,7 @@
             $record->push();
             $office->setObservation($request->observation);
             if (!empty($back)) {
-                $office->setDocumentaryOfficeId($back->id);
+                $office->setDocumentaryOfficeId($back);
             }
              $office->push();
 
@@ -337,6 +351,8 @@
                                         'data'    => $office,
                                         'files'   => $files,
                                         'message' => 'Expediente guardada de forma correcta.',
+                                        'back'  => $back,
+                                        'current_office'  => $current_office,
                                         'succes'  => true,
                                     ], 200);
         }

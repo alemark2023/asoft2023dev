@@ -195,6 +195,7 @@
                         <el-tab-pane v-if="showArchives" class name="second">
                             <span slot="label">Archivos</span>
                             <table-archives
+                                @updateFiles="updateFiles"
                             ></table-archives>
                         </el-tab-pane>
 
@@ -217,6 +218,13 @@
                                 @vdropzone-removed-file="getFileCount"
                                 @vdropzone-file-added-manually="getFileCount">
                             </vue-dropzone>
+                        </el-tab-pane>
+
+                        <el-tab-pane class name="four" v-if="file!== undefined &&file.observations !== undefined && file.observations.length > 0">
+                            <span slot="label">Observaciones</span>
+
+                            <table-observation></table-observation>
+
                         </el-tab-pane>
                     </el-tabs>
                     <div class="row text-center p-t-20">
@@ -256,9 +264,11 @@ import OfficesRows from './Offices.vue';
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import {mapActions, mapState} from "vuex";
+import TableObservation from "./TableObservation";
 
 export default {
     components: {
+        TableObservation,
         TableArchives,
         PersonForm,
         OfficesRows,
@@ -298,7 +308,7 @@ export default {
                 paramName: function (n) {
                     return "file[]";
                 },
-                dictDefaultMessage: "Upload Files Here xD",
+                dictDefaultMessage: "Arrastra y suelta los archivos aqui.",
                 // includeStyling: false,
                 // previewsContainer: false,
                 parallelUploads: 10,
@@ -369,6 +379,9 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
+        updateFiles() {
+            this.$emit("updateFiles");
+        },
         fileAdded(file) {
             console.log("File Dropped => ", file);
             // Construct your file object to render in the UI
@@ -618,6 +631,7 @@ export default {
 
         },
         onClose() {
+            this.tabActive = 'first';
             this.$refs.myVueDropzone.dropzone.removeAllFiles(true);
             this.$emit("update:visible", false);
         },

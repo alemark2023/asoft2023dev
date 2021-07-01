@@ -98,7 +98,7 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th></th>
+                            <th>#</th>
                             <th>Asunto</th>
                             <th>Fecha/Hora registro</th>
                             <th>Remitente</th>
@@ -108,8 +108,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="item in items" :key="item.id">
-                            <td class="text-right">{{ item.id }}</td>
+                        <tr v-for="(item,index) in items" :key="item.id">
+                            <td class="text-right">{{ index + 1}}</td>
                             <td>{{ item.subject }}</td>
                             <td>{{ item.date_register }} - {{ item.time_register }}</td>
                             <td>{{ item.sender.name }}</td>
@@ -141,7 +141,17 @@
                                             @click.native="onShowModalObservation(item)"
                                         >
                                             <i class="fa fa-file-export"></i>
-                                            <span class="ml-3">Observaciones</span>
+                                            <span class="ml-3">
+                                                Etapas
+                                            </span>
+                                        </el-dropdown-item>
+                                        <el-dropdown-item
+                                            v-if="haveObservation(item)"
+                                            :disabled="loading"
+                                            @click.native="onShowHistoricalObservation(item)"
+                                        >
+                                            <i class="fa fa-file-export"></i>
+                                            <span class="ml-3">Historico de observaciones</span>
                                         </el-dropdown-item>
 
 
@@ -184,13 +194,19 @@
         <ModalObservation
             :visible.sync="showModalObservation"
             @onNextStep="onNextStep"
+            @onBackStep="onBackStep"
+            @updateFiles="updateFiles"
         ></ModalObservation>
+        <ModalHistoricalObservation
+            :visible.sync="showModalHistoricalObservation"
+        ></ModalHistoricalObservation>
     </div>
 </template>
 
 <script>
 import ModalAddEdit from "./ModalAddEdit";
 import ModalDerive from "./ModalDerive";
+import ModalHistoricalObservation from "./ModalHistoricalObservation";
 import ModalObservation from "./ModalObservation";
 import moment from "moment";
 import {mapState,mapActions} from "vuex";
@@ -237,12 +253,14 @@ export default {
     components: {
         ModalAddEdit,
         ModalDerive,
+        ModalHistoricalObservation,
         ModalObservation,
     },
     data() {
         return {
             showModalDerive: false,
             showModalObservation: false,
+            showModalHistoricalObservation: false,
             items: [],
             openModalAddEdit: false,
             loading: false,
@@ -291,6 +309,15 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
+        haveObservation(item){
+            if(item === null) return false;
+            if(item === undefined) return false;
+            if(item.observations === undefined) return false;
+            if(item.observations == null) return false;
+            if(item.observations.length == null) return false;
+            if(item.observations.length < 1) return false;
+              return true
+        },
         returnEtapa(item){
             if(
                 item !== undefined &&
@@ -318,7 +345,23 @@ export default {
             return true;
         },
         onNextStep(office) {
-            console.log('algo')
+            this.updateFiles();
+        },
+        onBackStep(office) {
+            this.updateFiles();
+        },
+        updateFiles() {
+            this.loading = true;
+            this.$http
+                .post(`/documentary-procedure/file/reload`,this.filter)
+                .then((result) => {
+                    let files = result.data;
+                    this.$store.commit('setFiles', files)
+                    this.items = this.files
+                    this.loading = false;
+                }).catch((err)=>{
+                this.loading = false;
+            })
         },
         onAddOffice(office) {
             this.items = this.items.map((i) => {
@@ -375,6 +418,8 @@ export default {
             }
         },
         onFilter() {
+            this.updateFiles()
+            /*
             this.loading = true;
             const params = this.filter;
             this.$http
@@ -385,8 +430,10 @@ export default {
                 .finally(() => {
                     this.loading = false;
                 });
+            */
         },
         onDelete(item) {
+            this.loading = true;
             this.$confirm(
                 `¿estás seguro de eliminar al elemento ${item.subject}?`,
                 "Atención",
@@ -397,6 +444,8 @@ export default {
                 }
             )
                 .then(() => {
+                    this.updateFiles()
+                    /*
                     this.$http
                         .delete(`${this.basePath}/${item.id}/delete`)
                         .then((response) => {
@@ -404,11 +453,16 @@ export default {
                                 type: "success",
                                 message: response.data.message,
                             });
+
                             this.items = this.items.filter((i) => i.id !== item.id);
+
+
+                            this.loading = false;
                         })
                         .catch((error) => {
+                            this.loading = false;
                             this.axiosError(error);
-                        });
+                        });*/
                 })
                 .catch();
         },
@@ -416,6 +470,12 @@ export default {
             // this.file = {...item};
             this.$store.commit('setFile',item)
             this.openModalAddEdit = true;
+        },
+        onShowHistoricalObservation(item) {
+            // this.file = {...item};
+            this.$store.commit('setFile',item)
+            console.error(item);
+            this.showModalHistoricalObservation = true;
         },
         onUpdateItem(data) {
             this.items = this.items.map((i) => {
@@ -429,7 +489,8 @@ export default {
 
         },
         onAddItem(data) {
-            this.items.unshift(data);
+            this.updateFiles()
+            // this.items.unshift(data);
         },
         onCreate() {
             this.$store.commit('setFile',null)

@@ -157,6 +157,7 @@
 
         public function getCollectionData() {
             $data = $this->toArray();
+            $data['created_at'] = $this->created_at->format('Y-m-d H:m');
             $data['documentary_office'] = DocumentaryOffice::find($this->documentary_office_id);
             $data['documentary_file'] = DocumentaryFile::find($this->documentary_file_id);
             $data['documentary_action'] = DocumentaryAction::find($this->documentary_action_id);
