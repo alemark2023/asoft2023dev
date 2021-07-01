@@ -138,7 +138,8 @@
                 $data['user'] = $user->getCollectionData();
             }
 
-            $data['print_name'] = $this->id." - ".$this->name;
+            // $data['print_name'] = $this->id." - ".$this->name;
+            $data['print_name'] = $this->name;
 
             if ($extended === true) {
 
@@ -186,21 +187,14 @@
         public function getBack() {
             $parent = $this->getParentId();
             $work = self::where('id', '<', $this->id);
+            $lastest = $work->max('id');
             if ($parent != 0) {
-                $temp_work = $work;
-                $temp_work = $temp_work->where('parent_id', $parent)->max('id');
+                $temp_work = self::where('id', '<', $this->id)->where('parent_id', $parent)->max('id');
                 if($temp_work == null){
-                    $work = $work->max('id');
-                }else{
-                     $work = $temp_work;
+                    $temp_work = self::where('id', '<',$parent)->max('id');
                 }
-            }else{
-                $work = $work->max('id');
-
+                $lastest = ($temp_work == null)? $lastest:$temp_work;
             }
-
-
-
-            return $work;
+            return $lastest;
         }
     }

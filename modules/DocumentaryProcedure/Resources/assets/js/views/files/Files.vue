@@ -36,7 +36,7 @@
                         <el-select
                             v-model="filter.documentary_office_id"
                             clearable
-                            placeholder="Oficina"
+                            placeholder="Etapa"
                         >
                             <el-option
                                 v-for="of in offices"
@@ -150,8 +150,8 @@
                                             :disabled="loading"
                                             @click.native="onShowHistoricalObservation(item)"
                                         >
-                                            <i class="fa fa-file-export"></i>
-                                            <span class="ml-3">Historico de observaciones</span>
+                                            <i class="fa fa-eye"></i>
+                                            <span class="ml-3">Histórico de observaciones</span>
                                         </el-dropdown-item>
 
 

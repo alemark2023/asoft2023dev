@@ -220,7 +220,7 @@
                             </vue-dropzone>
                         </el-tab-pane>
 
-                        <el-tab-pane class name="four" v-if="file!== undefined &&file.observations !== undefined && file.observations.length > 0">
+                        <el-tab-pane class name="four" v-if="file!== undefined &&file.observations !== null &&file.observations !== undefined && file.observations.length > 0">
                             <span slot="label">Observaciones</span>
 
                             <table-observation></table-observation>
