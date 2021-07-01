@@ -15,7 +15,10 @@ trait PurchaseTrait
         Purchase::created(function ($purchase) {
             
             $cash = Cash::whereActive()->first();
-            $cash->cash_documents()->create(['purchase_id' => $purchase->id]); 
+
+            if($cash){
+                $cash->cash_documents()->create(['purchase_id' => $purchase->id]); 
+            }
 
         });
 
