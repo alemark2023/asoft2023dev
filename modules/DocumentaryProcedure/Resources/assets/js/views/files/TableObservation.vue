@@ -1,10 +1,6 @@
 <template>
     <div
-        v-if="
-        file !== null &&
-        file.observations !== null &&
-        file.observations.length > 0
-        "
+        v-if="haveObservation(file)"
         class="table-responsive">
         <table class="table">
                 <thead>
@@ -52,6 +48,17 @@ export default {
     mounted() {
 
     },
-    methods: {},
+    methods: {
+
+        haveObservation(file){
+            if(file === null) return false;
+            if(file === undefined) return false;
+            if(file.observations === undefined) return false;
+            if(file.observations == null) return false;
+            if(file.observations.length == null) return false;
+            if(file.observations.length < 1) return false;
+            return true
+        },
+    },
 };
 </script>
