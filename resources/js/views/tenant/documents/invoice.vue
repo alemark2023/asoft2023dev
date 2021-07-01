@@ -96,7 +96,8 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input>
+                                    <el-input v-model="form.exchange_rate_sale"></el-input>
+                                    <!-- <el-input :disabled="isUpdate" v-model="form.exchange_rate_sale"></el-input> -->
                                     <small class="form-control-feedback" v-if="errors.exchange_rate_sale" v-text="errors.exchange_rate_sale[0]"></small>
                                 </div>
                             </div>
@@ -1121,24 +1122,56 @@ export default {
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             },
             onPrepareAdditionalInformation(data) {
-                if (typeof data === 'object') {
-                    if (data[0]) {
-                        return data;
+
+                let obs = null
+
+                if(Array.isArray(data)){
+
+                    if(data.length > 0){
+                        if(data[0] == ''){
+                            return obs;
+                        }
                     }
-                    return null;
+                    
+                    obs = data.join('|')
+                     
                 }
-                return null;
+                // if (typeof data === 'object') {
+                //     if (data[0]) {
+                //         return data;
+                //     }
+                //     return null;
+                // }
+
+                return obs;
             },
             onPrepareItems(items) {
-                return items.map(i => {
+                return items.map(i => { 
                     i.unit_price_value = i.unit_value;
-                    i.input_unit_price_value = i.unit_value;
+                    // i.input_unit_price_value = i.unit_value;
+                    i.input_unit_price_value = i.unit_price;
                     i.discounts = i.discounts || [];
                     i.charges = i.charges || [];
+                    i.attributes = i.attributes || [];
                     i.item.id = i.item_id;
                     i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
+                    i.item = this.onPrepareIndividualItem(i);
                     return i;
                 });
+            },
+            onPrepareIndividualItem(data) {
+                
+                let new_item = data.item
+                let currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+
+                new_item.currency_type_id = currency_type.id
+                new_item.currency_type_symbol = currency_type.symbol
+ 
+                new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
+                new_item.sale_unit_price = data.unit_price 
+                new_item.unit_price = data.unit_price 
+
+                return new_item
             },
             onSetSeriesId(documentType, serie) {
                 const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
@@ -1848,11 +1881,11 @@ export default {
                 this.dateValid=false
               } else { this.dateValid = true }
                 this.form.date_of_due = this.form.date_of_issue
-                if (! this.isUpdate) {
+                // if (! this.isUpdate) {
                     this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                         this.form.exchange_rate_sale = response
                     });
-                }
+                // }
             },
             assignmentDateOfPayment(){
                 this.form.payments.forEach((payment)=>{
@@ -1920,7 +1953,7 @@ export default {
             changeCurrencyType() {
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
-                this.form.items.forEach((row) => {
+                this.form.items.forEach((row) => { 
                     items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
                 });
                 this.form.items = items
@@ -2138,6 +2171,11 @@ export default {
                                 end_date: null,
                                 duration: null,
                             })
+                        }else{
+
+                            if(this.isUpdate){
+                                at.value = this.form.plate_number
+                            }
                         }
 
                     });
