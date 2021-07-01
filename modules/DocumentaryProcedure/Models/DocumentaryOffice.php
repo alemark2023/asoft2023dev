@@ -188,8 +188,8 @@
             $work = self::where('id', '<', $this->id);
             if ($parent != 0) {
                 $temp_work = $work;
-                $temp_work->where('parent_id', $parent)->max('id');
-                if(empty($temp_work)){
+                $temp_work = $temp_work->where('parent_id', $parent)->max('id');
+                if($temp_work == null){
                     $work = $work->max('id');
                 }else{
                      $work = $temp_work;
@@ -198,6 +198,7 @@
                 $work = $work->max('id');
 
             }
+
 
 
             return $work;
