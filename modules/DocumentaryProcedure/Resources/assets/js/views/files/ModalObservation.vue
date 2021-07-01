@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="form-group col-6">
                                 <label>Etapa</label>
-                                <el-select v-model="form.documentary_office_id">
+                                <el-select v-model="form.documentary_office_id" :disabled="true">
                                     <el-option
                                         v-for="item in offices"
                                         :key="item.id"

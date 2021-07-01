@@ -3,7 +3,7 @@
     namespace Modules\DocumentaryProcedure\Http\Controllers;
 
     use App\Models\Tenant\Person;
-    use Illuminate\Database\Eloquent\Model;
+    use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Http\UploadedFile;
     use Illuminate\Routing\Controller;
@@ -28,15 +28,18 @@
         public function getData(Request $request, $id = 0) {
 
 
-
             $files = $this->getDocumentaryFile($request);
             if ($request->has('subject')) {
                 $files->where('subject', 'like', "%".$request->subject."%");
             }
-            if ($request->has('documentary_office_id')) {
+            if ($request->has('documentary_office_id') && !empty($request->documentary_office_id)) {
+                $files->where('documentary_office_id', $request->documentary_office_id);
+
+                /*
                 $files->whereHas('offices', function ($query) use ($request) {
                     $query->where('documentary_office_id', $request->documentary_office_id);
                 });
+                */
             }
             if ($id != 0) {
                 $files->where('id', $id);
@@ -62,31 +65,26 @@
         public function getDocumentaryFile(Request $request) {
             $files = DocumentaryFile::with('offices')
                                     ->orderBy('id', 'DESC');
-            $dateStart = null;
-            $dateEnd = null;
-            if ($request->has('date_start')) {
-                $dateStart = $request->date_start;
-            }
-            if ($request->has('date_end')) {
-                // $dateStart = request('date_start', now()->format('Y-m-d'));
-                $dateEnd = $request->date_end;
-            }
-            if ($dateStart && $dateEnd) {
-                $files = $files->whereBetween('date_register', [$dateStart, $dateEnd]);
-            } else {
-                if ($dateStart) {
-                    $files = $files->whereDate('date_register', $dateStart);
-                }
-            }
+            $dateStart = ($request->has('date_start')) ? $request->date_start : Carbon::now()->format('Y-m-d');
+            $dateEnd = ($request->has('date_end')) ? $request->date_end : Carbon::now()->format('Y-m-d');
+
+            $files->where('date_register', '>=', $dateStart);
+            $files->where('date_register', '<=', $dateEnd);
+
             $userType = auth()->user()->type;
-            if($userType!=='admin'){
+            if ($userType !== 'admin') {
                 $etapas = RelUserToDocumentaryOffices::where([
-                                                                 'user_id'=>auth()->user()->id,
+                                                                 'user_id' => auth()->user()->id,
                                                              ])->get()->pluck('documentary_office_id');
 
-                $files->wherein('documentary_office_id',$etapas);
+                $files->wherein('documentary_office_id', $etapas);
             }
-
+            /*
+dd([
+    $files->toSql(),
+    $files->getBindings()
+   ]);
+            */
             return $files;
 
         }
@@ -290,14 +288,14 @@
 
             }
             return response()->json([
-                                        'data'    => $office,
+                                        'data'           => $office,
                                         // 'request'   => $request->all(),
-                                        'files'   => $files,
-                                        'current_office'   => $current_office,
-                                        'next_office'   => $office->documentary_office_id,
+                                        'files'          => $files,
+                                        'current_office' => $current_office,
+                                        'next_office'    => $office->documentary_office_id,
                                         // 'next'   => $next,
-                                        'message' => 'Expediente guardada de forma correcta.',
-                                        'succes'  => true,
+                                        'message'        => 'Expediente guardada de forma correcta.',
+                                        'succes'         => true,
                                     ], 200);
         }
 
@@ -323,7 +321,7 @@
             if (!empty($back)) {
                 $office->setDocumentaryOfficeId($back);
             }
-             $office->push();
+            $office->push();
 
             if ($request->has('file')) {
                 foreach ($request->file as $file) {
@@ -348,12 +346,12 @@
                           });
 
             return response()->json([
-                                        'data'    => $office,
-                                        'files'   => $files,
-                                        'message' => 'Expediente guardada de forma correcta.',
-                                        'back'  => $back,
-                                        'current_office'  => $current_office,
-                                        'succes'  => true,
+                                        'data'           => $office,
+                                        'files'          => $files,
+                                        'message'        => 'Expediente guardada de forma correcta.',
+                                        'back'           => $back,
+                                        'current_office' => $current_office,
+                                        'succes'         => true,
                                     ], 200);
         }
 
