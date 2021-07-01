@@ -71,7 +71,7 @@
                             @vdropzone-file-added-manually="getFileCount">
                         </vue-dropzone>
                     </el-tab-pane>
-                    <el-tab-pane class name="four" v-if="file!== undefined &&file.observations !== undefined && file.observations.length > 0">
+                    <el-tab-pane class name="four" v-if="haveObservation(file)">
                         <span slot="label">Observaciones</span>
 
                         <table-observation></table-observation>
@@ -206,6 +206,16 @@ export default {
             .finally(() => (this.loading = false));
     },
     methods: {
+
+        haveObservation(file){
+            if(file === null) return false;
+            if(file === undefined) return false;
+            if(file.observations === undefined) return false;
+            if(file.observations == null) return false;
+            if(file.observations.length == null) return false;
+            if(file.observations.length < 1) return false;
+            return true
+        },
         fileAdded(file) {
             console.log("File Dropped => ", file);
             // Construct your file object to render in the UI

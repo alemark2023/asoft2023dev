@@ -131,6 +131,10 @@
                 'config',
             ]),
             Ticket58: function(){
+                if(this.config === undefined) return false;
+                if(this.config == null) return false;
+                if(this.config.ticket_58 === undefined) return false;
+                if(this.config.ticket_58 == null) return false;
                 if(
                     this.config.ticket_58 !== undefined &&
                     this.config.ticket_58 !== null){

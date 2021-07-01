@@ -220,7 +220,7 @@
                             </vue-dropzone>
                         </el-tab-pane>
 
-                        <el-tab-pane class name="four" v-if="file!== undefined &&file.observations !== null &&file.observations !== undefined && file.observations.length > 0">
+                        <el-tab-pane class name="four" v-if="haveObservation(file)">
                             <span slot="label">Observaciones</span>
 
                             <table-observation></table-observation>
@@ -379,6 +379,16 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
+        haveObservation(file){
+            if(file === null) return false;
+            if(file === undefined) return false;
+            if(file.observations === undefined) return false;
+            if(file.observations == null) return false;
+            if(file.observations.length == null) return false;
+            if(file.observations.length < 1) return false;
+
+            return true
+        },
         updateFiles() {
             this.$emit("updateFiles");
         },

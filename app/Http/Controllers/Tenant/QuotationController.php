@@ -194,7 +194,8 @@ class QuotationController extends Controller
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
-        $sellers = User::GetSellers(true)->get();
+        // $sellers = User::GetSellers(true)->get();
+        $sellers = User::where('establishment_id', auth()->user()->establishment_id)->whereIn('type', ['seller', 'admin'])->orWhere('id', auth()->user()->id)->get();
 
         return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers');
     }
