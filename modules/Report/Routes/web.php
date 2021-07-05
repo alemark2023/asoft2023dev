@@ -9,7 +9,7 @@
             Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
 
 
-                Route::prefix('reports')->group(function () {
+               Route::prefix('reports')->group(function () {
 
                     Route::get('data-table/persons/{type}', 'ReportController@dataTablePerson');
                     Route::get('data-table/items', 'ReportController@dataTableItem');
@@ -26,8 +26,9 @@
                          */
                         Route::get('/', 'ReportPurchaseController@index')->name('tenant.reports.purchases.index');
                         /** Nuevo */
-                        Route::get('items', 'ReportPurchaseController@index')
-                             ->name('tenant.reports.purchases.items.index');
+
+                        Route::get('items', 'ReportPurchaseItemController@index')->name('tenant.reports.purchases.items.index');
+
                         /*
                          * reports/purchases/general_items/
                          * reports/purchases/general_items/records
@@ -36,12 +37,11 @@
                          * reports/purchases/general_items/filter
                          */
                         Route::prefix('general_items')->group(function () {
-                            Route::get('/', 'ReportPurchaseController@general_items')
-                                 ->name('tenant.reports.purchases.general_items.index');
-                            Route::get('records', 'ReportPurchaseController@records');
-                            Route::get('excel', 'ReportPurchaseController@general_items');
-                            Route::get('pdf', 'ReportPurchaseController@general_items');
-                            Route::get('filter', 'ReportPurchaseController@filter');
+                            Route::get('/', 'ReportPurchaseItemController@general_items')->name('tenant.reports.purchases.general_items.index');
+                            Route::get('records', 'ReportPurchaseItemController@records');
+                            Route::get('excel', 'ReportPurchaseItemController@general_items');
+                            Route::get('pdf', 'ReportPurchaseItemController@general_items');
+                            Route::get('filter', 'ReportPurchaseItemController@filter');
 
                         });
                         /** Nuevo */
@@ -49,11 +49,12 @@
 
                         Route::get('pdf', 'ReportPurchaseController@pdf')->name('tenant.reports.purchases.pdf');
                         Route::get('excel', 'ReportPurchaseController@excel')->name('tenant.reports.purchases.excel');
-                        Route::get('filter', 'ReportPurchaseController@filter')
-                             ->name('tenant.reports.purchases.filter');
-                        Route::get('records', 'ReportPurchaseController@records')
-                             ->name('tenant.reports.purchases.records');
+                        Route::get('filter', 'ReportPurchaseController@filter')->name('tenant.reports.purchases.filter');
+                        Route::get('records', 'ReportPurchaseController@records')->name('tenant.reports.purchases.records');
+
                     });
+
+
                     Route::get('sales', 'ReportDocumentController@index')->name('tenant.reports.sales.index')
                          ->middleware('tenant.internal.mode');
                     Route::get('sales/pdf', 'ReportDocumentController@pdf')->name('tenant.reports.sales.pdf');
