@@ -1038,6 +1038,9 @@ export default {
                 }
             },
             async onSetFormData(data) {
+
+                this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
+
                 this.form.establishment_id = data.establishment_id;
                 this.form.document_type_id = data.document_type_id;
                 this.form.id = data.id;
@@ -1119,7 +1122,7 @@ export default {
                 this.filterCustomers();
                 this.changeDestinationSale();
                 this.calculateTotal();
-                this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+                // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             },
             onPrepareAdditionalInformation(data) {
 
