@@ -1109,8 +1109,12 @@ export default {
                     operation_type_id: data.invoice.operation_type_id,
                     date_of_due: data.invoice.date_of_due,
                 };
-                this.form.payment_condition_id = '01';
-                this.form.fee = [];
+                // this.form.payment_condition_id = '01';
+
+                let is_credit_installments = await _.find(data.fee, {payment_method_type_id : null})
+                this.form.payment_condition_id = (is_credit_installments) ? '03' : data.payment_condition_id;
+                this.form.fee = data.fee;
+                // this.form.fee = [];
 
                 if (! data.guides) {
                     this.clickAddInitGuides();
@@ -1120,9 +1124,25 @@ export default {
 
                 this.changeDateOfIssue();
                 this.filterCustomers();
-                this.changeDestinationSale();
+                this.updateChangeDestinationSale();
                 this.calculateTotal();
                 // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            },
+            updateChangeDestinationSale() {
+                
+                if(this.form.payment_condition_id == '01'){
+
+                    if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                        let cash = _.find(this.payment_destinations, {id : 'cash'})
+                        if (cash) {
+                            this.form.payments[0].payment_destination_id = cash.id
+                        } else {
+                            this.form.payment_destination_id = this.payment_destinations[0].id
+                            this.form.payments[0].payment_destination_id = this.payment_destinations[0].id
+                        }
+                    }
+
+                }
             },
             onPrepareAdditionalInformation(data) {
 
@@ -1150,9 +1170,11 @@ export default {
             },
             onPrepareItems(items) {
                 return items.map(i => { 
+
                     i.unit_price_value = i.unit_value;
-                    // i.input_unit_price_value = i.unit_value;
-                    i.input_unit_price_value = i.unit_price;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+
+                    // i.input_unit_price_value = i.unit_price;
                     i.discounts = i.discounts || [];
                     i.charges = i.charges || [];
                     i.attributes = i.attributes || [];
