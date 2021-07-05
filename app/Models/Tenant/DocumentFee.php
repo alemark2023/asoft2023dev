@@ -30,7 +30,7 @@ class DocumentFee extends ModelTenant
     /**
      * @return mixed
      */
-    public function getPaymentMethodTypesId() {
+    public function getPaymentMethodTypeId() {
         return $this->payment_method_type_id;
     }
 
@@ -39,7 +39,7 @@ class DocumentFee extends ModelTenant
      *
      * @return DocumentFee
      */
-    public function setPaymentMethodTypesId($payment_method_type_id) {
+    public function setPaymentMethodTypeId($payment_method_type_id) {
         $this->payment_method_type_id = $payment_method_type_id;
         return $this;
     }

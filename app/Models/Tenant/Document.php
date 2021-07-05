@@ -78,7 +78,7 @@ use Modules\Order\Models\OrderNote;
  */
 class Document extends ModelTenant
 {
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items', 'invoice', 'note', 'payments', 'fee'];
 
     protected $fillable = [
         'user_id',

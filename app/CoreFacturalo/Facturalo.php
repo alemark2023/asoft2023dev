@@ -1007,6 +1007,9 @@ class Facturalo
                 $document->payments()->delete();
                 $this->savePayments($document, $inputs['payments']);
 
+                $document->fee()->delete();
+                $this->saveFee($document, $inputs['fee']);
+
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
                 foreach ($document->items as $it) {
                     $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
