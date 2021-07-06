@@ -14,16 +14,44 @@
                         <div class="row">
                             <div class="form-group col-6">
                                 <label>Etapa</label>
-                                <el-select v-model="form.documentary_office_id" :disabled="true">
-                                    <el-option
-                                        v-for="item in offices"
-                                        :key="item.id"
-                                        :label="item.print_name"
-                                        :value="item.id"
-                                    ></el-option>
+                                <el-select
+                                    slot="prepend"
+                                    v-model="form.documentary_office_id"
+                                >
+                                    <el-tooltip
+                                        v-for="item in form.documentary_file_offices"
+                                        :key="item.documentary_office_id"
+                                        placement="top"
+                                    >
+                                        <div slot="content">
+                                            Dias: {{ item.days }} <br>
+                                            Fecha de inicio: {{ item.start_date }} <br>
+                                            Fecha de finalizacion: {{ item.end_date }}
+                                            <br>
+                                        </div>
+
+                                        <el-option
+                                            :label="item.office_name"
+                                            :value="item.documentary_office_id"
+                                        ></el-option>
+
+                                    </el-tooltip>
+
                                 </el-select>
+
                             </div>
-                            <div class="form-group col-6">
+                            <div class="col-6 form-group">
+                                <label>&nbsp;</label>
+                                <el-checkbox
+                                    v-model="hadObservation"
+                                    :false-label="'false'"
+                                    :true-label="'true'"
+                                    @change="toggleObserved"
+                                >
+                                    ¿Ha sido observado?
+                                </el-checkbox>
+                            </div>
+                            <!-- <div class="form-group col-6">
                                 <label>Acción</label>
                                 <el-select v-model="form.documentary_action_id">
                                     <el-option
@@ -33,16 +61,50 @@
                                         :value="item.id"
                                     ></el-option>
                                 </el-select>
-                            </div>
-                            <div class="form-group col-12">
+                            </div> -->
+                            <div class="form-group col-12" v-if="hadObservation=='true'">
                                 <label>Observación</label>
-
-                                <el-input v-model="form.observation" type="textarea"></el-input>
+                                <el-input v-model="form.observation"
+                                          :disabled="form.hadObservation"
+                                          :readonly="form.hadObservation"
+                                          type="textarea"></el-input>
                                 <div
                                     v-if="errors!== undefined && errors.observation !== undefined && errors.observation.length > 0"
                                     class="invalid-feedback">
                                     {{ errors.observation }}
                                 </div>
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Numeros de seguimiento </label>
+                                <a class="" href="#" @click.prevent="addObservation">
+                                    <i class="fa fa-plus font-weight-bold text-info"></i> <span
+                                    style="color: #777777"></span></a>
+
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>
+                                                Institucion
+                                            </th>
+                                            <th>
+                                                Guia
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="(row, index) in form.guides" :key="index">
+                                            <td>
+                                                <el-input v-model="row.origin"></el-input>
+                                            </td>
+                                            <td>
+                                                <el-input v-model="row.guide"></el-input>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
                             </div>
                         </div>
                     </el-tab-pane>
@@ -70,7 +132,7 @@
                             @vdropzone-file-added-manually="getFileCount">
                         </vue-dropzone>
                     </el-tab-pane>
-                    <el-tab-pane class name="four" v-if="haveObservation(file)">
+                    <el-tab-pane v-if="haveObservation(file)" class name="four">
                         <span slot="label">Observaciones</span>
 
                         <table-observation></table-observation>
@@ -137,6 +199,7 @@ export default {
     data() {
         return {
             // form: {},
+            hadObservation: false,
             tabActive: 'first',
             dropzoneOptions: {
                 url: 'https://httpbin.org/post',
@@ -172,8 +235,13 @@ export default {
             'offices',
         ]),
         form: function () {
-            if (this.file === null) return {documentary_office_id: ''};
-            return this.file
+            if (this.file === null) return {documentary_office_id: '',observation:null,};
+
+            let temp  = this.file;
+            temp.observation = '';
+            this.hadObservation = false;
+            this.observation = null;
+            return temp;
         },
         showArchives: function () {
 
@@ -205,14 +273,16 @@ export default {
             .finally(() => (this.loading = false));
     },
     methods: {
-
-        haveObservation(file){
-            if(file === null) return false;
-            if(file === undefined) return false;
-            if(file.observations === undefined) return false;
-            if(file.observations == null) return false;
-            if(file.observations.length == null) return false;
-            if(file.observations.length < 1) return false;
+        toggleObserved() {
+            !this.form.hadObservation
+        },
+        haveObservation(file) {
+            if (file === null) return false;
+            if (file === undefined) return false;
+            if (file.observations === undefined) return false;
+            if (file.observations == null) return false;
+            if (file.observations.length == null) return false;
+            if (file.observations.length < 1) return false;
             return true
         },
         fileAdded(file) {
@@ -296,6 +366,9 @@ export default {
             formData.append("documentary_office_id", this.form.documentary_office_id);
             formData.append("documentary_action_id", this.form.documentary_action_id);
             formData.append("observation", this.form.observation);
+            formData.append("hadObservation", this.hadObservation);
+            formData.append("guides", JSON.stringify(this.form.guides));
+
             formData.append("id", this.form.id);
         },
         getFileCount() {
@@ -313,7 +386,9 @@ export default {
         onGenerateData() {
             const data = new FormData();
             data.append("id", this.form.id);
+            data.append("hadObservation", this.hadObservation);
             data.append("documentary_office_id", this.form.documentary_office_id);
+            data.append("guides", JSON.stringify(this.form.guides));
             data.append("documentary_action_id", this.form.documentary_action_id);
             data.append("observation", this.form.observation);
 
@@ -434,27 +509,6 @@ export default {
             }
 
         },
-        /*
-        onSubmit() {
-            const data = this.onGenerateData();
-            let dropfile = this.$refs.myVueDropObservaction.dropzone.files.length;
-            if (dropfile > 0) {
-
-                if (this.file) {
-                    this.$refs.myVueDropObservaction.dropzone.options.url = `${this.basePath}/${this.file.id}/update`
-                } else {
-                    this.$refs.myVueDropObservaction.dropzone.options.url = `${this.basePath}/store`
-                }
-                this.$refs.myVueDropObservaction.dropzone.processQueue()
-            } else {
-                if (this.file) {
-                    this.onUpdate(data)
-                } else {
-                    this.onStore(data)
-                }
-            }
-        },
-        */
         onSubmit() {
             this.loading = true;
             this.$http
@@ -474,16 +528,19 @@ export default {
         },
         onOpened() {
             this.tabActive = 'first'
-            this.title = `Observaciones para el tramite: ${this.file.invoice}`;
+            this.hadObservation = false;
+            this.title = `Etapas para el tramite: ${this.file.invoice}`;
         },
-        /*
-        onClose() {
-            this.$emit("update:visible", false);
-        },
-        */
         onClose() {
             this.$refs.myVueDropObservaction.dropzone.removeAllFiles(true);
             this.$emit("update:visible", false);
+        },
+
+        addObservation(row) {
+            this.form.guides.push({
+                guide: null,
+            });
+
         },
     },
 };

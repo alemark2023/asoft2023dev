@@ -8,6 +8,10 @@ function writeLocal(variable, data) {
 export default {
     setConfiguration(state, config) {
         state.config = config
+        if(config === undefined){
+            state.config=    JSON.parse(localStorage.getItem('config'))
+            config = state.config;
+        }
         writeLocal('config', JSON.stringify(config))
     },
     setCustomers(state, customers) {

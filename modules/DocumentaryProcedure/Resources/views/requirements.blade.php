@@ -1,9 +1,8 @@
 @extends('tenant.layouts.app')
 
 @section('content')
-    <tenant-documentary-offices
+    <tenant-documentary-requirements
         :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
-        :etapas='@json($stages)'
-        :users='@json($users)'
-    ></tenant-documentary-offices>
+        :requirements='@json($requirements_list)'
+    ></tenant-documentary-requirements>
 @endsection

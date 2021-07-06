@@ -53,7 +53,7 @@ export default {
             this.$emit("update:visible", false);
         },
         onOpened() {
-            this.title = `Historico de Observaciones para el expediente: ${this.file.subject}`;
+            this.title = `Historico de Observaciones para el tramite: ${this.file.invoice}`;
         },
     },
 };
