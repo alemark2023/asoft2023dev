@@ -104,19 +104,27 @@
                                                               /** @var DocumentaryObservation $row */
                                                               return $row->getCollectionData();
                                                           });
+            $nextStep = 0;
             $data['documentary_file_offices'] =
                 DocumentaryFileOffice::where('documentary_file_id', $this->id)
                                      ->get()
-                                     ->transform(function ($row) use (&$lastComplete) {
+                                     ->transform(function ($row) use (&$lastComplete, &$nextStep) {
                                          /** @var DocumentaryFileOffice $row */
                                          $data = $row->getCollectionData();
                                          if (count($lastComplete) == 0) {
                                              // se guarda el primer proceso
                                              $lastComplete = $data;
                                          }
-                                         if ($data['complete'] == true) {
+                                         if($nextStep == 1 ){
+                                             // si hay uno cumpleto, se tomara el siguiente paso.
+                                             $lastComplete = $data;
+                                             $nextStep = 2;
+                                         }
+                                         if ($data['complete'] == true && $nextStep == 0) {
                                              // se guarda el ultimo proceso completo
                                              $lastComplete = $data;
+                                             $nextStep = 1;
+
                                          }
 
                                          return $data;
