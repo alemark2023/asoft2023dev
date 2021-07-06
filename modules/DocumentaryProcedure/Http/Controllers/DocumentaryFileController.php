@@ -345,12 +345,14 @@
                 }
             }
 
-            $office
-                ->setDocumentaryOfficeId($documentary_office_id)
-                ->setObservation($observation);
-            $office->push();
+            if($hadObservation == false) {
+                $office
+                    ->setDocumentaryOfficeId($documentary_office_id)
+                    ->setObservation($observation);
+                $office->push();
+            }
             // Si no tiene observacion y si existe la etapa actual, se guarda
-
+            $nextstages = null;
             if ($hadObservation == false && !empty($currentStage)) {
                 if ($currentStage->getDocumentaryOfficeId() <= $documentary_office_id) {
                     $nextstages = FileRelStage::where([
@@ -359,7 +361,7 @@
                                                       ])->where('documentary_office_id', '<=', $documentary_office_id)
                                               ->get();
                     foreach ($nextstages as $st) {
-                        $st->setComplete(0)->push();
+                        $st->setComplete(1)->push();
                     }
                 }
             }
@@ -390,6 +392,7 @@
             }
             return response()->json([
                                         'data'           => $office,
+                                        'nextstages'          => $nextstages,
                                         'files'          => $files,
                                         'current_office' => $current_office,
                                         'next_office'    => $office->documentary_office_id,
@@ -450,11 +453,13 @@
                 }
             }
 
+            if($hadObservation == false) {
 
-            $office
-                ->setDocumentaryOfficeId($documentary_office_id)
-                ->setObservation($observation);
-            $office->push();
+                $office
+                    ->setDocumentaryOfficeId($documentary_office_id)
+                    ->setObservation($observation);
+                $office->push();
+            }
             if ($hadObservation == false && !empty($currentStage)) {
                 if ($currentStage->getDocumentaryOfficeId() <= $documentary_office_id) {
                     $nextstages = FileRelStage::where([
