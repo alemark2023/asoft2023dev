@@ -104,18 +104,19 @@
                                                               /** @var DocumentaryObservation $row */
                                                               return $row->getCollectionData();
                                                           });
+            $nextStep = $this->documentary_office_id;
             $data['documentary_file_offices'] =
                 DocumentaryFileOffice::where('documentary_file_id', $this->id)
                                      ->get()
-                                     ->transform(function ($row) use (&$lastComplete) {
+                                     ->transform(function ($row) use (&$lastComplete, $nextStep) {
                                          /** @var DocumentaryFileOffice $row */
                                          $data = $row->getCollectionData();
+
                                          if (count($lastComplete) == 0) {
                                              // se guarda el primer proceso
                                              $lastComplete = $data;
                                          }
-                                         if ($data['complete'] == true) {
-                                             // se guarda el ultimo proceso completo
+                                         if($row->documentary_office_id == $nextStep){
                                              $lastComplete = $data;
                                          }
 

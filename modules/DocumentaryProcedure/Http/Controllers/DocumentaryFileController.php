@@ -3,8 +3,6 @@
     namespace Modules\DocumentaryProcedure\Http\Controllers;
 
     use App\Models\Tenant\Company;
-    use App\Models\Tenant\Document;
-    use App\Models\Tenant\Establishment;
     use App\Models\Tenant\Person;
     use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
@@ -307,7 +305,7 @@
             $documentary_action_id = (int)$request->documentary_action_id;
             $documentary_office_id = (int)$request->documentary_office_id;
             $next = null;
-            $hadObservation = (bool)$request->hadObservation;
+            $hadObservation = ($request->hadObservation == 'true') ? true : false;
             $observation = $request->observation;
             if (empty($observation)) $observation = null;
             $office = Expediente::find($request->id);
@@ -315,15 +313,15 @@
                                                     'documentary_file_id'   => $office->id,
                                                     'documentary_office_id' => $office->documentary_office_id,
                                                 ])->first();
-            $current_office = $office->documentary_office_id;
-            if ($current_office < $documentary_office_id) {
+            $current_office = (int)$office->documentary_office_id;
+            $next = FileRelStage::where('documentary_file_id', $office->id)
+                                ->where('documentary_office_id', '>', $office->documentary_office_id)
+                                ->first();
+            if ($current_office <= $documentary_office_id) {
                 if ($hadObservation === true) {
                     // No debe avanzar por tener observacion
                     $documentary_office_id = $current_office;
-                } elseif ($current_office === $documentary_office_id) {
-                    $next = FileRelStage::where('documentary_file_id', $office->id)
-                                        ->where('documentary_office_id', '>', $office->documentary_office_id)
-                                        ->first();
+                } elseif ($current_office == $documentary_office_id) {
                     if (!empty($next)) {
                         /*Se toma el siguiente id */
                         $documentary_office_id = $next->documentary_office_id;
@@ -347,18 +345,28 @@
                 }
             }
 
-            $office
-                ->setDocumentaryOfficeId($documentary_office_id)
-                ->setObservation($observation);
-            $office->push();
+            if($hadObservation == false) {
+                $office
+                    ->setDocumentaryOfficeId($documentary_office_id)
+                    ->setObservation($observation);
+                $office->push();
+            }
             // Si no tiene observacion y si existe la etapa actual, se guarda
+            $nextstages = null;
             if ($hadObservation == false && !empty($currentStage)) {
-                if ($currentStage->getDocumentaryOfficeId() < $documentary_office_id) {
-                    $currentStage->setComplete(1)->push();
-                } elseif ($currentStage->getDocumentaryOfficeId() == $documentary_office_id) {
-                    $currentStage->setComplete(0)->push();
+                if ($currentStage->getDocumentaryOfficeId() <= $documentary_office_id) {
+                    $nextstages = FileRelStage::where([
+                                                          'documentary_file_id' => $office->id,
+                                                          //'documentary_office_id' => $office->documentary_office_id,
+                                                      ])->where('documentary_office_id', '<=', $documentary_office_id)
+                                              ->get();
+                    foreach ($nextstages as $st) {
+                        $st->setComplete(1)->push();
+                    }
                 }
             }
+
+
             $files = $this->getRecords($request)
                           ->get()
                           ->transform(function ($row) {
@@ -384,6 +392,7 @@
             }
             return response()->json([
                                         'data'           => $office,
+                                        'nextstages'          => $nextstages,
                                         'files'          => $files,
                                         'current_office' => $current_office,
                                         'next_office'    => $office->documentary_office_id,
@@ -404,7 +413,7 @@
             $documentary_action_id = (int)$request->documentary_action_id;
             $documentary_office_id = (int)$request->documentary_office_id;
             $observation = $request->observation;
-            $hadObservation = (bool)$request->hadObservation;
+            $hadObservation = ($request->hadObservation == 'true') ? true : false;
             if (empty($observation)) $observation = null;
 
             $office = Expediente::find($request->id);
@@ -418,21 +427,17 @@
                 // No debe avanzar por tener observacion
                 $documentary_office_id = $current_office;
             } else {
-                if (
-                    ($current_office === $documentary_office_id) ||
-                    ($current_office > $documentary_office_id)
-                ) {
+                if ($current_office === $documentary_office_id) {
                     $next = FileRelStage::where('documentary_file_id', $office->id)
                                         ->where('documentary_office_id', '<', $office->documentary_office_id)
                                         ->first();
                     if (!empty($next)) {
                         $documentary_office_id = $next->documentary_office_id;
-
                     }
                 }
             }
 
-                if ($hadObservation == true) {
+            if ($hadObservation == true) {
                 $ob = new Observation();
                 $ob->setDocFileId($office->id)->setObservation($observation)->push();
                 $ob->push();
@@ -448,16 +453,23 @@
                 }
             }
 
+            if($hadObservation == false) {
 
-            $office
-                ->setDocumentaryOfficeId($documentary_office_id)
-                ->setObservation($observation);
-            $office->push();
+                $office
+                    ->setDocumentaryOfficeId($documentary_office_id)
+                    ->setObservation($observation);
+                $office->push();
+            }
             if ($hadObservation == false && !empty($currentStage)) {
-                if ($currentStage->getDocumentaryOfficeId() > $documentary_office_id) {
-                    $currentStage->setComplete(1)->push();
-                } elseif ($currentStage->getDocumentaryOfficeId() == $documentary_office_id) {
-                    $currentStage->setComplete(0)->push();
+                if ($currentStage->getDocumentaryOfficeId() <= $documentary_office_id) {
+                    $nextstages = FileRelStage::where([
+                                                          'documentary_file_id' => $office->id,
+                                                          //'documentary_office_id' => $office->documentary_office_id,
+                                                      ])->where('documentary_office_id', '>=', $documentary_office_id)
+                                              ->get();
+                    foreach ($nextstages as $st) {
+                        $st->setComplete(0)->push();
+                    }
                 }
             }
 
@@ -676,13 +688,13 @@
             $company = Company::first();
             $establishment = auth()->user()->establishment;
             $records = $this->getRecords($request)->get()
-                           ->transform(function ($row) {
-                               /** @var Expediente $row */
-                               return $row->getCollectionData();
-                           });
+                            ->transform(function ($row) {
+                                /** @var Expediente $row */
+                                return $row->getCollectionData();
+                            });
 
             return view('documentaryprocedure::exports.report_excel',
-                                 compact('records', 'company', 'establishment'));;
+                        compact('records', 'company', 'establishment'));
 
             $pdf = PDF::loadView('documentaryprocedure::exports.report_excel',
                                  compact('records', 'company', 'establishment'));
