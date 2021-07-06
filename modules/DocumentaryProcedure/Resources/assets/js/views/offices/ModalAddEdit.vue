@@ -3,13 +3,12 @@
         v-if="OfficeNotNull"
         :title="title"
         :visible="visible"
-        width="400px"
         @close="onClose"
         @open="onCreate"
     >
         <form autocomplete="off" @submit.prevent="onSubmit">
-            <div class="form-body">
-                <div class="form-group">
+            <div class="form-body row">
+                <div class="form-group col-md-12">
                     <label for="name">Nombre de la etapa</label>
                     <input
                         id="name"
@@ -22,7 +21,7 @@
                         {{ errors.name[0] }}
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label for="description">Descripción</label>
                     <input
                         id="description"
@@ -35,7 +34,21 @@
                         {{ errors.description[0] }}
                     </div>
                 </div>
+                <div class="form-group col-md-6">
+                    <div :class="{'has-danger': errors.days}" class="form-group">
+                        <label class="control-label">Dias de tramite</label>
+                        <el-input-number
+                            v-model="form.days"
+                        >
+
+                        </el-input-number>
+
+                        <small v-if="errors.days" class="form-control-feedback"
+                               v-text="errors.days[0]"></small>
+                    </div>
+                </div>
                 <!-- v-if="hasParent"  -->
+                <!--
                 <div  :class="{'has-danger': errors.type}" class="form-group">
                     <label class="control-label">Etapa principal</label>
                     <el-select
@@ -53,15 +66,15 @@
 
 
                 </div>
+                -->
 
-                <div v-if="office!==undefined" class="form-group">
+                <div v-if="office!==undefined" class="form-group col-md-12">
                     <div :class="{'has-danger': errors.type}" class="form-group">
                         <label class="control-label">Responsable</label>
                         <el-select
                             v-model="form.users"
                             :clearable="true"
                         :multiple="true"
-                        :multiple-limit="1"
                         >
                             <el-option v-for="option in workers"
                                        :key="option.id"
@@ -72,11 +85,12 @@
                                v-text="errors.rel_user_to_documentary_offices[0]"></small>
                     </div>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group col-md-12">
                     <label>Mostrar etapa</label>
                     <el-switch v-model="form.active"></el-switch>
                 </div>
-                <div class="row text-center">
+                <div class="row text-center col-md-12">
                     <div class="col-6">
                         <el-button
                             :disabled="loading"
@@ -106,12 +120,12 @@ export default {
             type: Boolean,
             required: true,
             default: false,
-        },
+        },/*
         parent_offices: {
             type: Array,
             required: false,
             default: [],
-        }
+        }*/
         /*
         office: {
             type: Object,

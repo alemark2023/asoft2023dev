@@ -177,6 +177,13 @@ class PurchaseController extends Controller
                 foreach ($data['items'] as $row) {
                     $p_item = new PurchaseItem;
                     $p_item->fill($row);
+                    $lots = $row['lots'] ?? null;
+                    if($lots != null){
+                        // en compras, se guardan los lotes si existen en el campo item de purchase_items
+                        $temp_item = $row['item'];
+                        $temp_item['lots'] = $lots;
+                        $p_item->item = $temp_item;
+                    }
                     $p_item->purchase_id = $doc->id;
                     $p_item->save();
 

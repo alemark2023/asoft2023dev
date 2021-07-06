@@ -8,10 +8,9 @@
     >
         <form autocomplete="off" @submit.prevent="onSubmit">
             <div class="form-body">
-
                 <el-tabs v-model="tabActive">
                     <el-tab-pane class name="first">
-                        <span slot="label">Datos del Expediente</span>
+                        <span slot="label">Datos del Tramite</span>
                         <div class="row">
                             <div class="form-group col-6">
                                 <label>Etapa</label>
@@ -474,7 +473,8 @@ export default {
                 });
         },
         onOpened() {
-            this.title = `Observaciones para el expediente: ${this.file.subject}`;
+            this.tabActive = 'first'
+            this.title = `Observaciones para el tramite: ${this.file.invoice}`;
         },
         /*
         onClose() {

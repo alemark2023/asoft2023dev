@@ -6,15 +6,14 @@
     use App\Models\Tenant\Person;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
-    use Illuminate\Database\Eloquent\Model;
 
     /**
      * Modules\DocumentaryProcedure\Models\DocumentaryFile
      *
-     * @property-read mixed                                                                                                 $active
-     * @property mixed                                                                                                      $sender
+     * @property-read mixed                                                                                             $active
+     * @property mixed                                                                                                  $sender
      * @property-read \Illuminate\Database\Eloquent\Collection|\Modules\DocumentaryProcedure\Models\DocumentaryOffice[] $offices
-     * @property-read int|null                                                                                              $offices_count
+     * @property-read int|null                                                                                          $offices_count
      * @method static Builder|DocumentaryFile newModelQuery()
      * @method static Builder|DocumentaryFile newQuery()
      * @method static Builder|DocumentaryFile query()
@@ -22,6 +21,7 @@
      */
     class DocumentaryFile extends ModelTenant {
         use UsesTenantConnection;
+
         protected $table = 'documentary_files';
 
         protected $fillable = [
@@ -37,14 +37,13 @@
             'sender',
             'subject',
             'attached_file',
-            'observation',
+            'requirements',
         ];
 
         /**
          * @return int
          */
-        public function getDocumentaryOfficeId()
-         {
+        public function getDocumentaryOfficeId() {
             return $this->documentary_office_id;
         }
 
@@ -69,6 +68,7 @@
 
         public function setSenderAttribute($value) {
             $this->attributes['sender'] = (is_null($value)) ? null : json_encode($value);
+            return $this;
         }
 
         /**
@@ -78,34 +78,80 @@
             return $this->hasMany(DocumentaryFileOffice::class, 'documentary_file_id');
         }
 
+        /**
+         * @return array
+         */
         public function getCollectionData() {
             $data = $this->toArray();
-            $person =  Person::find($this->person_id);
+            $person = Person::find($this->person_id);
             $documentary_process = DocumentaryProcess::find($this->documentary_process_id);
-            $documentary_file_archives = DocumentaryFilesArchives::where('documentary_file_id',$this->id)->get();
+            $documentary_file_archives = DocumentaryFilesArchives::where('documentary_file_id', $this->id)->get();
             $documentary_file_office = DocumentaryOffice::find($this->documentary_office_id);
-            if(empty($documentary_process)) $documentary_process = new DocumentaryProcess();
-            if(empty($documentary_file_office)) $documentary_file_office = new DocumentaryOffice();
+            if (empty($documentary_process)) $documentary_process = new DocumentaryProcess();
+            if (empty($documentary_file_office)) $documentary_file_office = new DocumentaryOffice();
 
+            $data['guides'] = DocumentaryGuidesNumber::where('doc_file_id', $this->id)->get();
             $data['documentary_process'] = $documentary_process->getCollectionData();
+            $data['documentary_process_id'] = (int)$this->documentary_process_id;
             $data['documentary_office'] = $documentary_file_office->getCollectionData();
-            $data['documentary_file_archives'] = $documentary_file_archives->transform(function ($row){return $row->getCollectionData();});
-
-            $data['observations'] =DocumentaryFileOffice::where('documentary_file_id',$this->id)
-                                                        ->orderBy('id','DESC')->take(50)->get()
-                                                                              ->transform(function($row){
+            $data['documentary_file_archives'] = $documentary_file_archives->transform(function ($row) {
+                /** @var DocumentaryFilesArchives $row */
                 return $row->getCollectionData();
             });
-            /*
-                                  $documentary_document = DocumentaryDocument::find($this->documentary_document_id);
-                                  $documentary_file_office = DocumentaryOffice::find($this->documentary_process_id);
-                                  $data['documentary_document'] = $documentary_document->getCollectionData();
-                                  */
+            $lastComplete = [];
+            $data['observations'] = DocumentaryObservation::where('doc_file_id', $this->id)->get()
+                                                          ->transform(function ($row) {
+                                                              /** @var DocumentaryObservation $row */
+                                                              return $row->getCollectionData();
+                                                          });
+            $nextStep = $this->documentary_office_id;
+            $data['documentary_file_offices'] =
+                DocumentaryFileOffice::where('documentary_file_id', $this->id)
+                                     ->get()
+                                     ->transform(function ($row) use (&$lastComplete, $nextStep) {
+                                         /** @var DocumentaryFileOffice $row */
+                                         $data = $row->getCollectionData();
+
+                                         if (count($lastComplete) == 0) {
+                                             // se guarda el primer proceso
+                                             $lastComplete = $data;
+                                         }
+                                         if($row->documentary_office_id == $nextStep){
+                                             $lastComplete = $data;
+                                         }
+
+                                         return $data;
+                                     });
             $data['person'] = $person->getCollectionData();
+            $data['last_complete'] = $lastComplete;
+            $requirement_array = [];
+            foreach ($this->getRequirements() as $requirement) {
+                /* para el-checkbox se requiere el id del elemento => true para estar seleccionado*/
+                $requirement_array[$requirement] = true;
+            }
+            $data['requirements_id'] = $requirement_array;
             return $data;
 
         }
 
+        /**
+         * @return false|int[]
+         */
+        public function getRequirements()
+        : ?array {
+
+            return self::makeArray($this->requirements);
+        }
+
+        /**
+         * @param string|null $text
+         *
+         * @return false|int[]
+         */
+        protected static function makeArray(?string $text = '') {
+            return array_map('intval', explode(',', $text));
+
+        }
 
         /**
          * @return \Illuminate\Database\Eloquent\Collection|\Modules\DocumentaryProcedure\Models\DocumentaryOffice[]
@@ -326,11 +372,31 @@
          * @return DocumentaryFile
          */
         public function setObservation($observation) {
-            $this->observation = $observation;
+            if(!empty($observation)){
+                $this->observation = $observation;
+            }
             return $this;
         }
 
+        /**
+         * @param array|null $requirements
+         *
+         * @return DocumentaryFile
+         */
+        public function setRequirements(?array $requirements = [])
+        : DocumentaryFile {
+            $this->requirements = self::splitArray($requirements);
 
+            return $this;
+        }
 
+        /**
+         * @param array|null $array
+         *
+         * @return string
+         */
+        protected static function splitArray(?array $array = []) {
+            return implode(',', $array);
 
+        }
     }

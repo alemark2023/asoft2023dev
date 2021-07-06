@@ -94,6 +94,11 @@ class GeneralItemCollection extends ResourceCollection
     public static function getLotsHasSale($row)
     {
         if (isset($row->item->lots)) {
+            $class = get_class($row);
+            if($class == 'App\Models\Tenant\PurchaseItem'){
+                // para compras
+                return collect($row->item->lots);
+            }
             return collect($row->item->lots)->where('has_sale', 1);
         } else {
             return [];
