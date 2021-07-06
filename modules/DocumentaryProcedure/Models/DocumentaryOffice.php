@@ -145,7 +145,7 @@
             $total_dias = $this->days;
             $data['start_date'] = $today->format('Y-m-d H:i');
             $days = [];
-            while ($currentDay < $total_dias) {
+            while ($currentDay <= $total_dias) {
                 if ($today->isWeekend()) {
                     // fin de semana, no hace nada
                     $days[]="Fin de semana ".$today->format('Y-m-d');
