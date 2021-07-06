@@ -16,11 +16,9 @@ export default {
     },
     setCustomers(state, customers) {
         state.customers = customers
-        writeLocal('customers', JSON.stringify(customers))
     },
     setOffices(state, offices) {
         state.offices = offices
-        writeLocal('offices', JSON.stringify(offices))
     },
     setDocumentTypes(state, documentTypes) {
         state.documentTypes = documentTypes
@@ -28,26 +26,21 @@ export default {
     },
     setFiles(state, files) {
         state.files = files
-        writeLocal('files', JSON.stringify(files))
     },
     setProcesses(state, processes) {
         state.processes = processes
-        writeLocal('processes', JSON.stringify(processes))
     },
     setActions(state, actions) {
         state.actions = actions
-        writeLocal('actions', JSON.stringify(actions))
     },
 
     setFile(state, file) {
         state.file = file
-        writeLocal('file', JSON.stringify(file))
     },
 
 
     setWorkers(state, workers) {
         state.workers = workers
-        writeLocal('workers', JSON.stringify(workers))
     },
     setOffice(state, office) {
         state.office = office
@@ -58,7 +51,6 @@ export default {
     },
     setWarehouses(state, warehouses) {
         state.warehouses = warehouses
-        writeLocal('warehouses', JSON.stringify(warehouses))
     },
     setAllItems(state, all_items) {
         if(state.all_items !== undefined) {
@@ -72,6 +64,5 @@ export default {
         }else{
             state.all_items = all_items
         }
-        writeLocal('all_items', JSON.stringify(all_items))
     },
 }
