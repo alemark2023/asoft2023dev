@@ -29,6 +29,33 @@
      */
     class DocumentaryFileController extends Controller {
 
+        protected $holidays;
+
+        /**
+         * DocumentaryFileController constructor.
+         *
+         * @param $holidays
+         */
+        public function __construct() {
+            $year = Carbon::now()->format('Y');
+
+            // Dias feriados
+            $this->holidays = [
+                '01-01-'.$year,
+                '01-04-'.$year,
+                '02-04-'.$year,
+                '01-05-'.$year,
+                '02-06-'.$year,
+                '28-07-'.$year,
+                '29-07-'.$year,
+                '30-08-'.$year,
+                '08-10-'.$year,
+                '01-11-'.$year,
+                '08-12-'.$year,
+                '25-12-'.$year,
+            ];
+        }
+
         /**
          * Return Collection to json
          *
@@ -38,12 +65,13 @@
          */
         public function getData(Request $request) {
 
+            $holiday = $this->holidays;
             $record = $this
                 ->getRecords($request)
                 ->get()
-                ->transform(function ($row) {
+                ->transform(function ($row) use($holiday){
                     /** @var Expediente $row */
-                    return $row->getCollectionData();
+                    return $row->getCollectionData($holiday);
                 });
             return json_decode($record);
         }
@@ -98,23 +126,24 @@
          * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Http\JsonResponse|\Illuminate\View\View
          */
         public function index(Request $request) {
+            $holiday = $this->holidays;
             $files = $this
                 ->getRecords($request)
                 ->get()
-                ->transform(function ($row) {
+                ->transform(function ($row) use($holiday) {
                     /** @var Expediente $row */
-                    return $row->getCollectionData();
+                    return $row->getCollectionData($holiday);
                 });
             if (request()->ajax()) {
                 return response()->json(['data' => $files], 200);
             }
-
+            $holidays = $this->holidays;
             $processes = Tramite::orderBy('name')
                                 ->whereActive(true)
                                 ->get()
-                                ->transform(function ($row) {
+                                ->transform(function ($row) use ($holidays) {
                                     /** @var Tramite $row */
-                                    return $row->getCollectionData();
+                                    return $row->getCollectionData($holidays);
                                 });
             $actions = DocumentaryAction::orderBy('name')
                                         ->whereActive(true)
@@ -226,10 +255,10 @@
             $file->push();
             $file_id = $file->id;
 
-
+            $holidays = $this->holidays;
             $tramite = Tramite::find($request->documentary_process_id);
 
-            $col = $tramite->getCollectionData();
+            $col = $tramite->getCollectionData($holidays);
             $etapas = $col['full_stages'];
             /** @var \Illuminate\Database\Eloquent\Collection $relacion_etapas */
             $relacion_etapas = FileRelStage::where('documentary_file_id', $file_id)->get();
@@ -345,7 +374,7 @@
                 }
             }
 
-            if($hadObservation == false) {
+            if ($hadObservation == false) {
                 $office
                     ->setDocumentaryOfficeId($documentary_office_id)
                     ->setObservation($observation);
@@ -392,7 +421,7 @@
             }
             return response()->json([
                                         'data'           => $office,
-                                        'nextstages'          => $nextstages,
+                                        'nextstages'     => $nextstages,
                                         'files'          => $files,
                                         'current_office' => $current_office,
                                         'next_office'    => $office->documentary_office_id,
@@ -453,7 +482,7 @@
                 }
             }
 
-            if($hadObservation == false) {
+            if ($hadObservation == false) {
 
                 $office
                     ->setDocumentaryOfficeId($documentary_office_id)
@@ -586,11 +615,12 @@
                                                     return $row->getCollectionData();
                                                 });
 
+            $holiday = $this->holidays;
             $processes = Tramite::orderBy('name')
                                 ->whereActive(true)
                                 ->get()
-                                ->transform(function ($row) {
-                                    return $row->getCollectionData();
+                                ->transform(function ($row)use($holiday) {
+                                    return $row->getCollectionData($holiday);
                                 });
 
             $actions = DocumentaryAction::orderBy('name')
