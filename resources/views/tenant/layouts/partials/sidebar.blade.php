@@ -723,14 +723,22 @@
                         <ul class="nav nav-children">
                             @if(in_array('documentary_offices', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.offices') }}">Etapas</a>
+                                <a class="nav-link" href="{{ route('documentary.offices') }}">Listado de Etapas</a>
                             </li>
                             @endif
+                                @if(in_array('documentary_requirements', $vc_module_levels))
+
+                                <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'requirements')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('documentary.requirements') }}">Listado de requerimientos</a>
+                                </li>
+
+                                @endif
                             @if(in_array('documentary_process', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'processes')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.processes') }}">Procesos</a>
+                                <a class="nav-link" href="{{ route('documentary.processes') }}">Tipos de tramites</a>
                             </li>
                             @endif
+                                {{--
                             @if(in_array('documentary_documents', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'documents')) ? 'nav-active' : '' }}">
                                 <a class="nav-link" href="{{ route('documentary.documents') }}">Tipos de Documento</a>
@@ -741,9 +749,10 @@
                                 <a class="nav-link" href="{{ route('documentary.actions') }}">Acciones</a>
                             </li>
                             @endif
+                                --}}
                             @if(in_array('documentary_files', $vc_module_levels))
                             <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'files')) ? 'nav-active' : '' }}">
-                                <a class="nav-link" href="{{ route('documentary.files') }}">Expedientes</a>
+                                <a class="nav-link" href="{{ route('documentary.files') }}">Listado de tramites</a>
                             </li>
                             @endif
                         </ul>

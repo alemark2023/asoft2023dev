@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>REGISTRO DE TRÁMITES</span></li>
+                <li class="active"><span>REGISTRO DE REQUERIMIENTOS</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
@@ -21,7 +21,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de trámites</h3>
+                <h3 class="my-0">Listado de requerimientos</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -52,10 +52,8 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Trámite</th>
-                            <th>Descripción</th>
-                            <th>Visible</th>
-                            <th>Precio</th>
+                            <th>Requerimiento</th>
+                            <!--<th>Requiere la carga de archivo</th>-->
                             <th></th>
                         </tr>
                         </thead>
@@ -63,16 +61,15 @@
                         <tr
                             v-for="(item,index) in items"
                             :key="item.id"
-                            :class="{ 'table-danger': !item.active }"
                         >
-                            <td class="text-right">{{ index +1 }}</td>
+                            <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.name }}</td>
-                            <td>{{ item.description }}</td>
+                            <!--
                             <td class="text-center">
-                                <span v-if="item.active">Si</span>
+                                <span v-if="item.file">Si</span>
                                 <span v-else>No</span>
                             </td>
-                            <td>{{ item.price }}</td>
+                            -->
                             <td class="text-center">
                                 <el-button
                                     :disabled="loading"
@@ -96,9 +93,7 @@
             </div>
         </div>
         <ModalAddEdit
-            :process="process"
-            :stages="stages"
-            :requirements="requirements"
+            :requirement="requirement"
             :visible.sync="openModalAddEdit"
             @onAddItem="onAddItem"
             @onUpdateItem="onUpdateItem"
@@ -110,44 +105,31 @@
 import ModalAddEdit from "./ModalAddEdit";
 
 export default {
-    props: {
-        processes: {
-            type: Array,
-            required: true,
-        },
-        stages: {
-            type: Array,
-            required: true,
-        },
-        requirements: {
-            type: Array,
-            required: true,
-        },
-    },
+    props: ['requirements'],
     components: {
         ModalAddEdit,
     },
     data() {
         return {
             items: [],
-            process: null,
+            requirement: null,
             openModalAddEdit: false,
             loading: false,
             filter: {
                 name: "",
             },
-            basePath: '/documentary-procedure/processes'
+            basePath: '/documentary-procedure/requirements'
         };
     },
     mounted() {
-        this.items = this.processes;
+        this.items = this.requirements;
     },
     methods: {
         onFilter() {
             this.loading = true;
             const params = this.filter;
             this.$http
-                .get(this.basePath, {params})
+                .post(this.basePath, {params})
                 .then((response) => {
                     this.items = response.data.data;
                 })
@@ -182,7 +164,7 @@ export default {
                 .catch();
         },
         onEdit(item) {
-            this.process = {...item};
+            this.requirement = {...item};
             this.openModalAddEdit = true;
         },
         onUpdateItem(data) {
@@ -197,7 +179,7 @@ export default {
             this.items.unshift(data);
         },
         onCreate() {
-            this.process = null;
+            this.requirement = null;
             this.openModalAddEdit = true;
         },
     },

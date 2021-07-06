@@ -6,7 +6,6 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>Etapa</th>
                     <th>Observacion</th>
                     <th>Fecha</th>
                 </tr>
@@ -14,9 +13,6 @@
                 <tbody>
                 <tr v-for="(item,index) in file.observations" :key="item.id">
                     <td>{{ index + 1 }}</td>
-                    <td>
-                        {{ item.documentary_office.name }}
-                    </td>
                     <td>
                         {{ item.observation }}
                     </td>

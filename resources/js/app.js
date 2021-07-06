@@ -260,6 +260,7 @@ Vue.component('tenant-documentary-processes', require('@viewsModuleDocumentary/p
 Vue.component('tenant-documentary-documents', require('@viewsModuleDocumentary/documents/Documents.vue'));
 Vue.component('tenant-documentary-actions', require('@viewsModuleDocumentary/actions/Actions.vue'));
 Vue.component('tenant-documentary-files', require('@viewsModuleDocumentary/files/Files.vue'));
+Vue.component('tenant-documentary-requirements', require('@viewsModuleDocumentary/requirements/Requirements.vue'));
 
 Vue.component('system-plans-index', require('./views/system/plans/index.vue'));
 Vue.component('system-plans-form', require('./views/system/plans/form.vue'));

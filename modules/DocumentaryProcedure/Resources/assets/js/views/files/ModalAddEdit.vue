@@ -10,64 +10,49 @@
                 <div class="form-body">
                     <el-tabs v-model="tabActive">
                         <el-tab-pane class name="first">
-                            <span slot="label">Datos del Expediente</span>
-
-                            <div class="form-group row">
-                                <!-- Código -->
-                                <div class="col-6">
-                                    <label>Código <span class="text-danger">*</span></label>
-                                    <el-input v-model="nextId" readonly type="text"></el-input>
-                                </div>
-                                <!-- Tipo de documento  -->
+                            <span slot="label">Datos del Tramite</span>
+                            <div class="row">
+                                <!-- Tipo de tramite -->
                                 <div
-                                    :class="{ 'has-danger': errors.documentary_document_id }"
-                                    class="form-group col-6"
-                                >
-                                    <label>Tipo de documento <span class="text-danger">*</span></label>
+                                    :class="{ 'has-danger': errors.documentary_process_id }"
+                                    class="form-group col-12">
+                                    <label>Tipo de tramite <span class="text-danger">*</span></label>
                                     <el-select
-                                        v-model="form.documentary_document_id"
-                                        @change="onGetDocumentNumber"
+                                        v-model="form.documentary_process_id"
+                                        @change="ChangeSelect"
                                     >
                                         <el-option
-                                            v-for="item in documentTypes"
+                                            @change="ChangeSelect"
+                                            v-for="item in processes"
                                             :key="item.id"
-                                            :label="item.name"
+                                            :label="item.name_price"
                                             :value="item.id"
                                         ></el-option>
                                     </el-select>
-                                    <small
-                                        v-if="errors.documentary_document_id"
-                                        class="form-control-feedback"
-                                        v-text="errors.documentary_document_id[0]"
-                                    ></small>
+                                    <div v-if="errors.documentary_process_id" class="invalid-feedback">
+                                        {{ errors.documentary_process_id[0] }}
+                                    </div>
                                 </div>
-                                <!-- Número de documento -->
-                                <div
-                                    :class="{ 'has-danger': errors.number }"
-                                    class="form-group col-6"
-                                >
-                                    <label>Número de documento <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.number">
-                                        <template slot="append">-{{ currentYear }}</template>
-                                    </el-input>
-                                    <small
-                                        v-if="errors.number"
-                                        class="form-control-feedback"
-                                        v-text="errors.number[0]"
-                                    ></small>
-                                </div>
-                                <!-- Folio -->
-                                <div
-                                    :class="{ 'has-danger': errors.number }"
-                                    class="form-group col-6"
-                                >
-                                    <label>Folio <span class="text-danger">*</span></label>
-                                    <el-input v-model="form.invoice"></el-input>
-                                    <small
-                                        v-if="errors.number"
-                                        class="form-control-feedback"
-                                        v-text="errors.number[0]"
-                                    ></small>
+
+                                <div v-if="hasRequiements" class="col-12 form-group">
+                                    <label>Requerimientos del tramite <span class="text-danger">*</span></label>
+
+                                    <!-- v-if="form.requirements_id !== undefined" -->
+                                    <div class="row " >
+
+
+                                        <el-checkbox
+                                            class="col-6"
+                                            v-for="(item,index) in  requirements_in_process.requirements"
+                                            v-model="form.requirements_id[item.requirement_id]"
+                                            @change="convertRequirementsIntoArray"
+                                            :label="item.requirement_id"
+                                            :true-label="item.requirement_id"
+                                            :false-label="null"
+                                            :key="item.requirement_id">
+                                            {{item.requirement_name}}
+                                        </el-checkbox>
+                                    </div>
                                 </div>
                                 <!-- Fecha de registro -->
                                 <div
@@ -101,95 +86,175 @@
                                         v-text="errors.time_register[0]"
                                     ></small>
                                 </div>
-                            </div>
-                            <div :class="{ 'has-danger': errors.person_id }" class="form-group">
-                                <label class="control-label font-weight-bold text-info">
-                                    Remitente <span class="text-danger">*</span>
-                                    <a href="#" @click.prevent="showDialogNewPerson = true"
-                                    >[+ Nuevo]</a
+                                <!-- cliente -->
+                                <div :class="{ 'has-danger': errors.person_id }" class="form-group col-12">
+                                    <label class="control-label font-weight-bold text-info">
+                                        Cliente <span class="text-danger">*</span>
+                                        <a href="#" @click.prevent="showDialogNewPerson = true"
+                                        >[+ Nuevo]</a
+                                        >
+                                    </label>
+                                    <el-select
+                                        v-model="form.person_id"
+                                        :loading="loading"
+                                        :remote-method="searchRemoteCustomers"
+                                        class="border-left rounded-left border-info"
+                                        filterable
+                                        placeholder="Escriba el nombre o número de documento del cliente"
+                                        popper-class="el-select-customers"
+                                        remote
+                                        @change="changeCustomer"
                                     >
-                                </label>
-                                <el-select
-                                    v-model="form.person_id"
-                                    :loading="loading"
-                                    :remote-method="searchRemoteCustomers"
-                                    class="border-left rounded-left border-info"
-                                    filterable
-                                    placeholder="Escriba el nombre o número de documento del cliente"
-                                    popper-class="el-select-customers"
-                                    remote
-                                    @change="changeCustomer"
+                                        <el-option
+                                            v-for="option in customers"
+                                            :key="option.id"
+                                            :label="option.description"
+                                            :value="option.id"
+                                        ></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.person_id"
+                                        class="form-control-feedback"
+                                        v-text="errors.person_id[0]"
+                                    ></small>
+                                </div>
+
+
+                                <!-- Folio -->
+                                <div
+                                    :class="{ 'has-danger': errors.number }"
+                                    class="form-group col-6"
                                 >
-                                    <el-option
-                                        v-for="option in customers"
-                                        :key="option.id"
-                                        :label="option.description"
-                                        :value="option.id"
-                                    ></el-option>
-                                </el-select>
-                                <small
-                                    v-if="errors.person_id"
-                                    class="form-control-feedback"
-                                    v-text="errors.person_id[0]"
-                                ></small>
-                            </div>
-                            <div :class="{ 'has-danger': errors.subject }" class="form-group">
-                                <label>Asunto <span class="text-danger">*</span></label>
-                                <el-input v-model="form.subject" type="text"></el-input>
-                                <div v-if="errors.subject" class="invalid-feedback">
-                                    {{ errors.subject[0] }}
+                                    <label>Código de expediente (interno) </label>
+                                    <el-input v-model="form.invoice"></el-input>
+                                    <small
+                                        v-if="errors.invoice"
+                                        class="form-control-feedback"
+                                        v-text="errors.invoice[0]"
+                                    ></small>
                                 </div>
-                            </div>
-                            <div :class="{ 'has-danger': errors.attachFile }" class="form-group">
-                                <label>Archivo adjunto <span class="text-danger">*</span></label>
-                                <el-button @click="onSearchFile">Buscar archivo</el-button>
-                                <input
-                                    ref="inputFile"
-                                    class="hidden"
-                                    type="file"
-                                    @change="onSelectFile"
-                                />
-                                <span v-if="filename">{{ filename }}</span>
-                                <div v-if="errors.attachFile" class="invalid-feedback">
-                                    {{ errors.attachFile[0] }}
-                                </div>
-                            </div>
 
 
-                            <div
-                                :class="{ 'has-danger': errors.documentary_process_id }"
-                                class="form-group"
-                            >
-                                <label>Proceso <span class="text-danger">*</span></label>
-                                <el-select v-model="form.documentary_process_id">
-                                    <el-option
-                                        v-for="item in processes"
-                                        :key="item.id"
-                                        :label="item.name_price"
-                                        :value="item.id"
-                                    ></el-option>
-                                </el-select>
-                                <div v-if="errors.documentary_process_id" class="invalid-feedback">
-                                    {{ errors.documentary_process_id[0] }}
+                                <!-- Código -->
+
+                                <!--                                <div class="col-6">
+                                                                    <label>Código <span class="text-danger">*</span></label>
+                                                                    <el-input v-model="nextId" readonly type="text"></el-input>
+                                                                </div>-->
+                                <!-- Tipo de documento  -->
+                                <!---
+                                <div
+                                    :class="{ 'has-danger': errors.documentary_document_id }"
+                                    class="form-group col-6"
+                                >
+                                    <label>Tipo de documento <span class="text-danger">*</span></label>
+                                    <el-select
+                                        v-model="form.documentary_document_id"
+                                        @change="onGetDocumentNumber"
+                                    >
+                                        <el-option
+                                            v-for="item in documentTypes"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id"
+                                        ></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.documentary_document_id"
+                                        class="form-control-feedback"
+                                        v-text="errors.documentary_document_id[0]"
+                                    ></small>
                                 </div>
-                            </div>
-                            <div
-                                :class="{ 'has-danger': errors.documentary_process_id }"
-                                class="form-group"
-                            >
-                                <label>Etapa <span class="text-danger">*</span></label>
-                                <el-select v-model="form.documentary_office_id">
-                                    <el-option
-                                        v-for="item in offices"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id"
-                                    ></el-option>
-                                </el-select>
-                                <div v-if="errors.documentary_office_id" class="invalid-feedback">
-                                    {{ errors.documentary_office_id[0] }}
+                                -->
+                                <!-- Número de documento -->
+                                <div class="col-12">
+                                    <label>Numeros de referencia </label>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                            <tr>
+                                                <th>
+                                                    Institucion
+                                                </th>
+                                                <th>
+                                                    Guia
+                                                </th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="(row, index) in form.guides" :key="index">
+                                                <td>
+                                                    {{ row.origin }}
+                                                </td>
+                                                <td>
+                                                    {{ row.guide}}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </div>
+
+<!--                                <div
+                                    :class="{ 'has-danger': errors.number }"
+                                    class="form-group col-6"
+                                >
+                                    <label>Número de documento <span class="text-danger">*</span></label>
+                                    <el-input v-model="form.number">
+
+                                    </el-input>
+                                    &lt;!&ndash; <template slot="append">-{{ currentYear }}</template> &ndash;&gt;
+                                    <small
+                                        v-if="errors.number"
+                                        class="form-control-feedback"
+                                        v-text="errors.number[0]"
+                                    ></small>
+                                </div>-->
+                                <!-- asunto -->
+                                <!--
+                                                                <div :class="{ 'has-danger': errors.invoice }" class="form-group col-12">
+                                                                    <label>Asunto <span class="text-danger">*</span></label>
+                                                                    <el-input v-model="form.invoice" type="text"></el-input>
+                                                                    <div v-if="errors.invoice" class="invalid-feedback">
+                                                                        {{ errors.invoice[0] }}
+                                                                    </div>
+                                                                </div>-->
+                                <!-- archivo adjunto -->
+
+                                <!--                                <div :class="{ 'has-danger': errors.attachFile }" class="form-group col-12">
+                                                                    <label>Archivo adjunto <span class="text-danger">*</span></label>
+                                                                    <el-button @click="onSearchFile">Buscar archivo</el-button>
+                                                                    <input
+                                                                        ref="inputFile"
+                                                                        class="hidden"
+                                                                        type="file"
+                                                                        @change="onSelectFile"
+                                                                    />
+                                                                    <span v-if="filename">{{ filename }}</span>
+                                                                    <div v-if="errors.attachFile" class="invalid-feedback">
+                                                                        {{ errors.attachFile[0] }}
+                                                                    </div>
+                                                                </div>-->
+
+
+                                <!--                                <div
+                                                                    :class="{ 'has-danger': errors.documentary_office_id }"
+                                                                    class="form-group col-12"
+                                                                >
+                                                                    <label>Etapa <span class="text-danger">*</span></label>
+                                                                    <div v-for="(item,index) in form.full_stage" :key="item.id" class="col-12">
+                                                                        <span :class="form.documentary_office_id === item.id ? 'text-danger':''" v-if="item !== undefined">
+                                                                            {{ item.print_name }} {{ item.string_days }}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div v-if="errors.documentary_office_id" class="invalid-feedback">
+                                                                        {{ errors.documentary_office_id[0] }}
+                                                                    </div>
+                                                                </div>
+                                                                -->
                             </div>
+
                         </el-tab-pane>
 
                         <el-tab-pane v-if="showArchives" class name="second">
@@ -220,17 +285,17 @@
                             </vue-dropzone>
                         </el-tab-pane>
 
-                        <el-tab-pane class name="four" v-if="haveObservation(file)">
+                        <el-tab-pane v-if="haveObservation(file)" class name="four">
                             <span slot="label">Observaciones</span>
 
                             <table-observation></table-observation>
 
                         </el-tab-pane>
                     </el-tabs>
-                    <div class="row text-center p-t-20">
-                        <div class="col-6">
+                    <div class="row text-center col-12 p-t-20">
+                        <div class="col-6" v-if="!onlyShow">
                             <el-button
-                                :disabled="loading"
+                                :disabled="canSubmit"
                                 :loading="loading"
                                 class="btn-block"
                                 native-type="submit"
@@ -280,37 +345,20 @@ export default {
             required: true,
             default: false,
         },
-        /*
-        file: {
-            type: Object,
-            required: false,
-            default: {
-                documentary_file_archives: [],
-            },
-        },
-        */
     },
     data() {
         return {
             dropzoneOptions: {
                 url: 'https://httpbin.org/post',
-                // thumbnailWidth: 50,
-                // thumbnailHeight: 50,
-                //maxFilesize: 0.5,
                 headers: {
                     "X-Requested-With": "X-Requested-With",
                     "X-CSRF-TOKEN": document.head.querySelector('meta[name="csrf-token"]').content,
                 },
-
                 autoProcessQueue: false,
-
-                // The way you want to receive the files in the server
                 paramName: function (n) {
                     return "file[]";
                 },
                 dictDefaultMessage: "Arrastra y suelta los archivos aqui.",
-                // includeStyling: false,
-                // previewsContainer: false,
                 parallelUploads: 10,
                 maxFiles: 10,
                 uploadMultiple: true,
@@ -318,12 +366,11 @@ export default {
             tabActive: "first",
             tempAttachments: [],
             current_files: [],
-            filesa: [],
             attachments: [],
             input_person: null,
             urlDropzone: null,
             form: {
-                tempAttachments: [],
+                requirements_id : [],
             },
             title: "",
             loading: false,
@@ -335,15 +382,12 @@ export default {
             attachFile: null,
             filename: "",
             fileCount: 0,
+            requirements_in_process:{
+                requirements:[],
+            }
         };
     },
     created() {
-        this.loadOffices()
-        this.loadActions()
-        this.loadCustomers()
-        this.loadProcesses()
-        this.loadFiles()
-        this.loadDocumentTypes()
     },
     mounted() {
         this.onInitializeForm();
@@ -357,14 +401,43 @@ export default {
             'documentTypes',
             'processes',
             'customers',
-        ]),
-        showArchives:function (){
-            if(this.file === undefined) return false
-            if(this.file === null) return false
-            if(this.file.documentary_file_archives === undefined) return false
-            if(this.file.documentary_file_archives === null) return false
 
-            if( this.file.documentary_file_archives.length > 0 )
+        ]),
+        onlyShow(){
+           if(this.form!== undefined && this.form.disable !== undefined) return this.form.disable
+            return false;
+        },
+        canSubmit(){
+            // if(this.loading)
+            if(
+                this.form.documentary_process_id !== null &&
+                this.form.person_id !== null  &&
+                this.loading === false
+            ) {
+                return false
+            }
+            return true;
+        },
+        hasRequiements: function () {
+
+            if (
+                this.requirements_in_process !== undefined &&
+                this.requirements_in_process !== null &&
+                this.requirements_in_process.requirements !== undefined &&
+                this.requirements_in_process.requirements !== null &&
+                this.requirements_in_process.requirements.length > 0
+            ) {
+                return true;
+            }
+            return false;
+        },
+        showArchives: function () {
+            if (this.form === undefined) return false
+            if (this.form === null) return false
+            if (this.form.documentary_file_archives === undefined) return false
+            if (this.form.documentary_file_archives === null) return false
+
+            if (this.form.documentary_file_archives.length > 0)
                 return true;
             return false;
         }
@@ -379,13 +452,55 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
-        haveObservation(file){
-            if(file === null) return false;
-            if(file === undefined) return false;
-            if(file.observations === undefined) return false;
-            if(file.observations == null) return false;
-            if(file.observations.length == null) return false;
-            if(file.observations.length < 1) return false;
+        convertRequirementsIntoArray(val){
+          return  this.form.requirements_id;
+
+        },
+        setRequirement() {
+            this.requirements_in_process = [];
+            if (
+                (this.form !== undefined || this.form !== null) &&
+                (this.form.documentary_process_id !== undefined) &&
+                (this.form.documentary_process_id !== null)
+            ) {
+
+                let temp = this.processes.find((it) => {
+                    return it.id === this.form.documentary_process_id
+                });
+                if (temp.requirements !== undefined) {
+                    if (temp.requirements !== null) {
+                        let wo = this.form.requirements_id;
+
+                        if(wo === undefined || wo == null) {
+                            wo = [];
+                        }
+                        /*
+                        temp.requirements.forEach(function (item, index) {
+                            wo.push(item.requirement_id)
+                        })*/
+
+                        this.form.requirements_id = wo;
+
+
+                    }
+                }
+
+                this.requirements_in_process = temp;
+
+            }
+            this.convertRequirementsIntoArray()
+        },
+        ChangeSelect() {
+            this.setRequirement()
+            this.convertRequirementsIntoArray()
+        },
+        haveObservation(file) {
+            if (file === null) return false;
+            if (file === undefined) return false;
+            if (file.observations === undefined) return false;
+            if (file.observations == null) return false;
+            if (file.observations.length == null) return false;
+            if (file.observations.length < 1) return false;
 
             return true
         },
@@ -394,8 +509,6 @@ export default {
         },
         fileAdded(file) {
             console.log("File Dropped => ", file);
-            // Construct your file object to render in the UI
-            this.filesa = [...this.filesa, file]
             let attachment = {};
             attachment._id = file.upload.uuid;
             attachment.title = file.name;
@@ -410,11 +523,9 @@ export default {
             attachment.size = file.size;
             this.tempAttachments = [...this.tempAttachments, attachment];
         },
-        // a middle layer function where you can change the XHR request properties
         sendingFiles(files, xhr, formData) {
             this.current_files = files;
         },
-        // function where we get the upload progress
         uploadProgress(file, progress, bytesSent) {
             this.tempAttachments.map(attachment => {
                 if (attachment.title === file.name) {
@@ -422,7 +533,6 @@ export default {
                 }
             });
         },
-        // called on successful upload of a file
         error(file, response) {
             if (response !== undefined && response.status !== undefined) {
                 this.axiosError(response)
@@ -432,10 +542,7 @@ export default {
             }
             let dropzone = this.$refs.myVueDropzone.dropzone;
             file.previewTemplate.classList.toggle('dz-error');
-            // file.previewTemplate.classList.toggle('dz-complete');
-
             if (file.status === 'error') file.status = 'added';
-            // if(file.status === 'error') file.status = 'queued';
             this.addOnError(dropzone, file)
 
         },
@@ -457,36 +564,33 @@ export default {
         },
         addOnError(dropzone, file) {
             dropzone.enqueueFile(file)
-            // this.$refs.myVueDropzone.dropzone.enqueueFile(file)
         },
         // called on successful upload of a file
         success(file, response) {
 
             this.$emit("onUploadComplete", null);
             this.onClose();
-            console.log("File uploaded successfully");
-            console.log("Response is ->", response);
         },
         sendingEvent(file, xhr, formData) {
-            formData.append("documentary_document_id", this.form.documentary_document_id);
-            formData.append("documentary_process_id", this.form.documentary_process_id);
-            formData.append("documentary_office_id", this.form.documentary_office_id);
-            formData.append("number", this.form.number);
-            formData.append("year", this.currentYear);
-            formData.append("invoice", this.form.invoice);
             formData.append("date_register", this.form.date_register);
             formData.append("time_register", this.form.time_register);
+            formData.append("offices", this.form.offices);
+            formData.append("documentary_process_id", this.form.documentary_process_id);
+            formData.append("requirements_id", JSON.stringify(this.form.requirements_id));
             formData.append("person_id", this.form.person_id);
+            formData.append("invoice", this.form.invoice);
+
+            formData.append("year", this.currentYear);
+
             if (this.form.sender) {
                 formData.append("person", JSON.stringify(this.form.sender));
             }
             if (this.form.offices) {
                 formData.append("offices", JSON.stringify(this.form.offices));
             }
-            formData.append("subject", this.form.subject || "");
+            formData.append("invoice", this.form.invoice || "");
             formData.append("observation", this.form.observation || "");
             if (this.attachFile) {
-                // formData.append("file", this.attachFile);
                 formData.append("attachFile", this.attachFile);
             }
             for (let files in this.$refs.myVueDropzone.dropzone.files) {
@@ -521,23 +625,22 @@ export default {
         onGenerateData() {
             const data = new FormData();
 
-            data.append("documentary_office_id", this.form.documentary_office_id);
-            data.append("documentary_document_id", this.form.documentary_document_id);
-            data.append("documentary_process_id", this.form.documentary_process_id);
-            data.append("number", this.form.number);
-            data.append("year", this.currentYear);
-            data.append("invoice", this.form.invoice);
             data.append("date_register", this.form.date_register);
             data.append("time_register", this.form.time_register);
+            data.append("offices", this.form.offices);
+            data.append("documentary_process_id", this.form.documentary_process_id);
+            data.append("requirements_id",  JSON.stringify(this.form.requirements_id));
             data.append("person_id", this.form.person_id);
+            data.append("invoice", this.form.invoice);
+
+            data.append("year", this.currentYear);
+
             if (this.form.sender) {
                 data.append("person", JSON.stringify(this.form.sender));
             }
             if (this.form.offices) {
                 data.append("offices", JSON.stringify(this.form.offices));
             }
-            data.append("subject", this.form.subject || "");
-            data.append("observation", this.form.observation || "");
             if (this.attachFile) {
                 data.append("attachFile", this.attachFile);
             }
@@ -575,7 +678,7 @@ export default {
         onUpdate(data) {
             this.loading = true;
             this.$http
-                .post(`${this.basePath}/${this.file.id}/update`, data, {
+                .post(`${this.basePath}/${this.form.id}/update`, data, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -625,14 +728,14 @@ export default {
             let dropfile = this.$refs.myVueDropzone.dropzone.files.length;
             if (dropfile > 0) {
 
-                if (this.file) {
-                    this.$refs.myVueDropzone.dropzone.options.url = `${this.basePath}/${this.file.id}/update`
+                if (this.form && this.form.id) {
+                    this.$refs.myVueDropzone.dropzone.options.url = `${this.basePath}/${this.form.id}/update`
                 } else {
                     this.$refs.myVueDropzone.dropzone.options.url = `${this.basePath}/store`
                 }
                 this.$refs.myVueDropzone.dropzone.processQueue()
             } else {
-                if (this.file) {
+                if (this.form && this.form.id) {
                     this.onUpdate(data)
                 } else {
                     this.onStore(data)
@@ -685,35 +788,55 @@ export default {
             this.form = {
                 date_register: date.format("YYYY-MM-DD"),
                 time_register: date.format("H:mm:ss"),
-                offices: []
+                offices: [],
+                documentary_process_id: null,
+                tempAttachments: [],
+                requirements_id: [],
+                full_stages: [],
+                disable : false
             };
             this.filename = "";
             this.attachFile = null;
+            this.setRequirement()
         },
-        async onCreate() {
-            if (this.file) {
-                this.form = this.file;
-                this.title = "Editar expediente";
+        onCreate() {
+            this.tabActive = 'first'
+            console.dir(this.file)
+            if(this.file == null){
+                this.title = "Crear tramite";
+                this.onInitializeForm();
+                this.onGetDataForNewFile();
+            }else{
+                let f =  this.file;
+                if(f.offices == null ) f.offices = [];
+                if(f.documentary_process_id == null ) f.documentary_process_id = null;
+                if(f.tempAttachments == null ) f.tempAttachments = [];
+                if(f.requirements_id == null ) f.requirements_id = [];
+                if(f.full_stages == null ) f.full_stages = [];
+                if(f.disable == null ) f.disable = disable;
+
+                this.form =f
+
+
+
+                this.title = "Editar tramite";
                 this.filename = this.onGetFilenameFromPath(this.form.attached_file);
                 this.nextId = this.form.id;
                 this.number = this.form.number;
                 this.currentYear = this.form.year;
                 this.attachFile = null;
-            } else {
-                this.title = "Crear expediente";
-                this.onInitializeForm();
-                await this.onGetDataForNewFile();
+                this.ChangeSelect();
             }
             this.loading = true;
-            await this.$http
+            this.$http
                 .get(`${this.basePath}/tables`)
                 .then((response) => {
                     const data = response.data.data;
                     this.$store.commit('setCustomers', data.customers)
                     this.$store.commit('setDocumentTypes', data.document_types)
                     this.$store.commit('setActions', data.actions)
-                    this.$store.commit('setProcesses', data.processes)
-                    this.$store.commit('setOffices', data.offices)
+                    // this.$store.commit('setProcesses', data.processes)
+                    // this.$store.commit('setOffices', data.offices)
 
                 })
                 .catch((error) => this.axiosError(error))
