@@ -139,6 +139,12 @@
                                             @case($models[5])
                                                 {{"Devolución"}}
                                                 @break
+                                                
+                                            @case($models[6])
+                                                {{
+                                                    isset($value->inventory_kardexable->transfer_reason_type->description) ? $value->inventory_kardexable->transfer_reason_type->description : ''
+                                                }}
+                                                @break
                                         @endswitch
 
 
@@ -168,6 +174,10 @@
                                             @case($models[5])
                                                 {{  optional($value->inventory_kardexable)->number_full }}
                                                 @break
+
+                                            @case($models[6])
+                                                {{  optional($value->inventory_kardexable)->number_full }}
+                                                @break
                                         @endswitch
 
                                     </td>
@@ -177,6 +187,11 @@
 
                                                 {{ isset($value->inventory_kardexable->sale_note_id)  ? optional($value->inventory_kardexable)->sale_note->number_full:"-" }}
                                                 @break
+                                                
+                                            @case($models[6])
+                                                {{ isset($value->inventory_kardexable->reference_sale_note_id)  ? optional($value->inventory_kardexable)->sale_note->number_full:"-" }}
+                                                @break
+
                                             @default
                                                 {{"-"}}
                                                 @break
@@ -190,6 +205,12 @@
 
                                                 {{ isset($value->inventory_kardexable->order_note_id)  ? optional($value->inventory_kardexable)->order_note->number_full:"-" }}
                                                 @break
+
+                                            @case($models[6])
+
+                                                {{ isset($value->inventory_kardexable->reference_order_note_id)  ? optional($value->inventory_kardexable)->order_note->number_full:"-" }}
+                                                @break
+
                                             @default
                                                 {{"-"}}
                                                 @break
@@ -218,6 +239,12 @@
                                             @case($models[5])
                                                 {{"-"}}
                                                 @break
+                                            @case($models[6])
+                                                {{ isset($value->inventory_kardexable->reference_document) ? $value->inventory_kardexable->reference_document->getNumberFullAttribute() : '' }}
+                                                @break
+                                            @default
+                                                {{"-"}}
+                                                @break
                                         @endswitch
 
                                     </td>
@@ -241,6 +268,9 @@
                                                 {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                 @break
                                             @case($models[5])
+                                                {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
+                                                @break
+                                            @case($models[6])
                                                 {{ isset($value->inventory_kardexable->date_of_issue) ? $value->inventory_kardexable->date_of_issue->format('Y-m-d') : '' }}
                                                 @break
                                         @endswitch
@@ -306,6 +336,22 @@
                                                 {{ ($value->quantity > 0) ?  $value->quantity:"-"}}
                                                 @break
 
+                                            @case($models[6])
+                                                {{ 
+                                                    ($value->quantity > 0) ?  ( 
+                                                        isset($value->inventory_kardexable->reference_sale_note_id) || 
+                                                        isset($value->inventory_kardexable->reference_order_note_id)  || 
+                                                        isset($row->inventory_kardexable->reference_document_id)
+                                                      ? "-" : $value->quantity) : "-"
+                                                }}
+                                                @php
+                                                    if( isset($value->inventory_kardexable->reference_sale_note_id) || isset($value->inventory_kardexable->reference_order_note_id) || isset($value->inventory_kardexable->reference_document_id)){
+                                                        $value->quantity = 0;
+                                                    }
+                                                @endphp
+                                                @break
+ 
+
                                             @default
                                                 {{"-"}}
                                                 @break
@@ -360,6 +406,15 @@
 
                                             @case($models[5])
                                                 {{  ($value->quantity < 0) ?  $value->quantity:"-" }}
+                                                @break
+
+                                            @case($models[6])
+
+                                                {{ ($value->quantity < 0) ?  ( isset($value->inventory_kardexable->reference_sale_note_id) || isset($value->inventory_kardexable->reference_order_note_id) || isset($row->inventory_kardexable->reference_document_id)  ? "-":$value->quantity):"-" }}
+
+                                                @php
+                                                ($value->quantity < 0) ?  ( isset($value->inventory_kardexable->reference_sale_note_id) || isset($value->inventory_kardexable->reference_order_note_id) || isset($row->inventory_kardexable->reference_document_id) ? $value->quantity = 0:$value->quantity):"-";
+                                                @endphp
                                                 @break
 
                                             @default

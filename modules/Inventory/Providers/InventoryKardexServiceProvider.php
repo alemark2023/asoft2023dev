@@ -14,6 +14,7 @@ use Modules\Order\Models\OrderNoteItem;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Models\DevolutionItem;
+use App\Models\Tenant\DispatchItem;
 
 
 class InventoryKardexServiceProvider extends ServiceProvider
@@ -37,6 +38,8 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         $this->devolution();
 
+        $this->dispatch();
+
     }
 
     private function purchase() {
@@ -54,6 +57,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
     }
 
     private function sale() {
+        
         DocumentItem::created(function($document_item) {
             if(!$document_item->item->is_set){
 
@@ -404,6 +408,40 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     }
 
                 }
+            }
+
+        });
+    }
+
+
+    
+    private function dispatch() {
+
+        DispatchItem::created(function($dispatch_item) {
+            
+            $dispatch = $dispatch_item->dispatch;
+
+            if($dispatch->transfer_reason_type->discount_stock){
+
+                $warehouse = $this->findWarehouse();
+
+                $this->createInventoryKardex($dispatch, $dispatch_item->item_id, -$dispatch_item->quantity, $warehouse->id);
+
+                if(!$dispatch->reference_sale_note_id && !$dispatch->reference_order_note_id && !$dispatch->reference_document_id){
+
+                    $this->updateStock($dispatch_item->item_id, -$dispatch_item->quantity, $warehouse->id);
+                    
+                    if(isset($dispatch_item->item->IdLoteSelected)){
+
+                        if($dispatch_item->item->IdLoteSelected != null){
+
+                            $lot = ItemLotsGroup::query()->find($dispatch_item->item->IdLoteSelected);
+                            $lot->quantity = $lot->quantity - $dispatch_item->quantity;
+                            $lot->save();
+
+                        }
+                    }
+                } 
             }
 
         });

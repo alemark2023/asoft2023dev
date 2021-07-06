@@ -9,7 +9,8 @@ use App\Models\Tenant\Catalogs\TransportModeType;
 use App\Models\Tenant\Catalogs\UnitType;
 use Illuminate\Support\Facades\DB;
 use Modules\Order\Models\OrderForm;
-
+use Modules\Inventory\Models\InventoryKardex;
+use Modules\Order\Models\OrderNote;
 
 /**
  * Class Dispatch
@@ -238,6 +239,14 @@ class Dispatch extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function generate_document()
+    {
+        return $this->hasOne(Document::class);
+    }
+
+    /**
      * @return string
      */
     public function getNumberFullAttribute()
@@ -284,6 +293,14 @@ class Dispatch extends ModelTenant
     {
         return $this->belongsTo(OrderForm::class, 'reference_order_form_id');
     }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function inventory_kardex()
+    {
+        return $this->morphMany(InventoryKardex::class, 'inventory_kardexable');
+    }
 
     public function getSecondaryLicensePlatesAttribute($value)
     {
@@ -313,6 +330,15 @@ class Dispatch extends ModelTenant
     {
         return $this->belongsTo(SaleNote::class, 'reference_sale_note_id');
     }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function order_note()
+    {
+        return $this->belongsTo(OrderNote::class, 'reference_order_note_id');
+    }
+    
 
     /**
      * Retorna un standar de nomenclatura para el modelo
@@ -320,6 +346,7 @@ class Dispatch extends ModelTenant
      * @return array
      */
     public function  getCollectionData() {
+
         $has_cdr = false;
 
         if (in_array($this->state_type_id, ['05', '07'])) {
@@ -352,6 +379,7 @@ class Dispatch extends ModelTenant
             'created_at'             => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at'             => $this->updated_at->format('Y-m-d H:i:s'),
             'soap_shipping_response' => $this->soap_shipping_response,
+            'btn_generate_document' => $this->generate_document ? false : true,
         ];
     }
 

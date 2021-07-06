@@ -6,6 +6,7 @@ use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\Document;  
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Traits\InventoryTrait;
+use App\Models\Tenant\Dispatch;  
 
 class InventoryVoidedServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
     {
         $this->voided();
         $this->voided_order_note();
+        $this->voided_dispatch();
     }
 
     private function voided()
@@ -100,5 +102,34 @@ class InventoryVoidedServiceProvider extends ServiceProvider
         });
 
     }
+
+
+    
+    private function voided_dispatch()
+    {
+        Dispatch::updated(function ($dispatch) {
+
+            // dd($dispatch, $dispatch['state_type_id'],$dispatch->state_type_id);
+            if($dispatch->transfer_reason_type->discount_stock){
+
+                if(in_array($dispatch->state_type_id, [ '09', '11' ], true)){
+
+                    $warehouse = $this->findWarehouse($dispatch->establishment_id);
+
+                    foreach ($dispatch->items as $detail) {
+                        
+                        $this->createInventoryKardex($dispatch, $detail->item_id, $detail->quantity, $warehouse->id);
+
+                        if(!$detail->dispatch->reference_sale_note_id && !$detail->dispatch->reference_order_note_id && !$detail->dispatch->reference_document_id){
+                            $this->updateStock($detail->item_id, $detail->quantity, $warehouse->id);
+                        }
+                    
+                        $this->updateDataLots($detail);
+                    }
+                }
+            }
+        });
+    }
+
 
 }

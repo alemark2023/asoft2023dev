@@ -49,6 +49,14 @@ class DispatchItem extends ModelTenant
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function dispatch()
+    {
+        return $this->belongsTo(Dispatch::class);
+    }
+
+    /**
      * @param \Illuminate\Database\Eloquent\Builder $query
      *
      * @return \Illuminate\Database\Eloquent\Builder

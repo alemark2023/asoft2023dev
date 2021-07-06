@@ -9,6 +9,7 @@ use Modules\Inventory\Models\Warehouse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Modules\Inventory\Models\Devolution;
+use App\Models\Tenant\Dispatch;
 
 
 class ReportKardexCollection extends ResourceCollection
@@ -36,7 +37,8 @@ class ReportKardexCollection extends ResourceCollection
             "App\Models\Tenant\SaleNote",
             "Modules\Inventory\Models\Inventory",
             "Modules\Order\Models\OrderNote",
-            Devolution::class
+            Devolution::class,
+            Dispatch::class
         ];
 
         switch ($row->inventory_kardexable_type) {
@@ -173,6 +175,34 @@ class ReportKardexCollection extends ResourceCollection
                     'doc_asoc' => '-'
 
                 ];
+
+            case $models[6]: // Dispatch
+
+                return [
+                    'id' => $row->id,
+                    'item_name' => $row->item->description,
+                    'date_time' => $row->created_at->format('Y-m-d H:i:s'),
+                    'type_transaction' =>  isset($row->inventory_kardexable->transfer_reason_type->description) ? $row->inventory_kardexable->transfer_reason_type->description : '',
+                    // 'type_transaction' => "Guía",
+                    'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
+                    'number' => optional($row->inventory_kardexable)->number_full,
+
+                    // 'input' => ($row->quantity > 0) ?  $row->quantity:"-",
+                    // 'output' => ($row->quantity < 0) ?  $row->quantity:"-",
+                    // 'balance' => self::$balance+= $row->quantity,
+
+                    'input' => ($row->quantity > 0) ? ( isset($row->inventory_kardexable->reference_sale_note_id) || isset($row->inventory_kardexable->reference_order_note_id) || isset($row->inventory_kardexable->reference_document_id) ? "-" : $row->quantity) : "-",
+                    'output' => ($row->quantity < 0) ?  (isset($row->inventory_kardexable->reference_sale_note_id) || isset($row->inventory_kardexable->reference_order_note_id) || isset($row->inventory_kardexable->reference_document_id) ? "-" : $row->quantity):"-",
+                    'balance' => (isset($row->inventory_kardexable->reference_sale_note_id) || isset($row->inventory_kardexable->reference_order_note_id) || isset($row->inventory_kardexable->reference_document_id)) ? self::$balance+=0 : self::$balance+= $row->quantity,
+
+                    // 'sale_note_asoc' => '-',
+                    // 'order_note_asoc' => '-',
+                    // 'doc_asoc' => '-'
+                    'sale_note_asoc' => isset($row->inventory_kardexable->reference_sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->number_full:"-",
+                    'order_note_asoc' => isset($row->inventory_kardexable->reference_order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full:"-",
+                    'doc_asoc' => isset($row->inventory_kardexable->reference_document_id) ? $row->inventory_kardexable->reference_document->getNumberFullAttribute() : '-'
+                ];
+
         }
 
 

@@ -105,6 +105,13 @@
         /**
          * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
          */
+        public function listTransferReasonTypes() {
+            return view('tenant.settings.list_transfer_reason_types');
+        }
+
+        /**
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+         */
         public function indexSettings() {
             return view('tenant.settings.list_settings');
         }
