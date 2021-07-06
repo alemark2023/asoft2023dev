@@ -90,7 +90,7 @@
 
                 if(data && data.length > 0)
                 {
-                    const lots_sale = data.filter(x=> x.has_sale == true)
+                    const lots_sale = data.filter(x=> (x.has_sale == true||(x.warehouse_id == undefined && x.id == null)) )
                     if(lots_sale)
                     {
                         return lots_sale.map(p=> p.series).join(' - ')
