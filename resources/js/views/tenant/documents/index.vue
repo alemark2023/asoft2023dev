@@ -47,6 +47,7 @@
                         <th>Cliente</th>
                         <th>Número</th>
                         <th v-if="columns.notes.visible">Notas C/D</th>
+                        <th v-if="columns.dispatch.visible">Guía de Remisión</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
@@ -88,6 +89,12 @@
                                 <label class="d-block"   :key="index">{{row.note_type_description}}: {{row.description}}</label>
                             </template>
                         </td>
+                        <td v-if="columns.dispatch.visible">
+                            <template v-for="(row,index) in row.dispatches">
+                                <label class="d-block"   :key="index">{{row.description}}</label>
+                            </template>
+                        </td>
+
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
                                 <div slot="content">{{tooltip(row)}}</div>
@@ -250,6 +257,10 @@
                 columns: {
                     notes: {
                         title: 'Notas C/D',
+                        visible: false
+                    },
+                    dispatch: {
+                        title: 'Guía de Remisión',
                         visible: false
                     },
                     user_name: {

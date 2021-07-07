@@ -23,6 +23,7 @@ use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
 use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 use Modules\Inventory\Models\Devolution;
+use App\Models\Tenant\Dispatch;
 
 
 class ReportKardexController extends Controller
@@ -39,7 +40,8 @@ class ReportKardexController extends Controller
         "App\Models\Tenant\SaleNote",
         "Modules\Inventory\Models\Inventory",
         "Modules\Order\Models\OrderNote",
-        Devolution::class
+        Devolution::class,
+        Dispatch::class
     ];
 
     public function index() {

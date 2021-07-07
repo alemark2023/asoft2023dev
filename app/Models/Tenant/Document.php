@@ -156,6 +156,7 @@ class Document extends ModelTenant
         'terms_condition',
         'payment_condition_id',
         'is_editable',
+        'dispatch_id'
     ];
 
     protected $casts = [
@@ -432,6 +433,14 @@ class Document extends ModelTenant
     public function sale_note()
     {
         return $this->belongsTo(SaleNote::class, 'sale_note_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function dispatch()
+    {
+        return $this->belongsTo(Dispatch::class, 'dispatch_id');
     }
 
     /**

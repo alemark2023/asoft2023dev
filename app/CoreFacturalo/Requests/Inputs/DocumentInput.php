@@ -84,6 +84,7 @@ class DocumentInput
             'quotation_id' => Functions::valueKeyInArray($inputs, 'quotation_id'),
             'sale_note_id' => Functions::valueKeyInArray($inputs, 'sale_note_id'),
             'order_note_id' => Functions::valueKeyInArray($inputs, 'order_note_id'),
+            'dispatch_id' => Functions::valueKeyInArray($inputs, 'dispatch_id'),
             'exchange_rate_sale' => $inputs['exchange_rate_sale'],
             'total_prepayment' => Functions::valueKeyInArray($inputs, 'total_prepayment', 0),
             'total_discount' => Functions::valueKeyInArray($inputs, 'total_discount', 0),
