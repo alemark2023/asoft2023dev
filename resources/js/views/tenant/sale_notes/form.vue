@@ -153,6 +153,14 @@
                                     <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-4">
+                                    <div class="form-group">
+                                        <label>Vendedor</label>
+                                        <el-select v-model="form.seller_id" clearable>
+                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
+                                        </el-select>
+                                </div>
+                            </div>
                             <!-- Pagos -->
                             <div class="col-12 pt-3">
                                 <table>
@@ -319,7 +327,7 @@
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
                           :showClose="false"
-                          :configuration="configuration"></sale-notes-options>
+                          :configuration="config"></sale-notes-options>
 
     </div>
 </template>
@@ -331,12 +339,20 @@
     import {functions, exchangeRate} from '../../../mixins/functions'
     import {calculateRowItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
     export default {
-        props: ['id', 'typeUser'],
+        props: [
+            'id',
+            'typeUser',
+            'configuration',
+        ],
         components: {SaleNotesFormItem, PersonForm, SaleNotesOptions, Logo},
         mixins: [functions, exchangeRate],
         computed:{
+            ...mapState([
+                'config',
+            ]),
             sms_periodo : function(){
                 let text = '';
                 let type = this.form.type_period;
@@ -364,6 +380,7 @@
                         return date.getTime() < (now.getTime());
                     },
                 },
+                sellers: [],
                 resource: 'sale-notes',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -392,11 +409,12 @@
                 is_contingency: false,
                 enabled_payments: true,
                 payment_destinations:  [],
-                configuration: {},
 
             }
         },
         async created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
             await this.initForm()
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -412,7 +430,8 @@
                     this.type_periods = [{id:'month',description:'Mensual'}, {id:'year',description:'Anual'}]
                     this.all_series = response.data.series
                     this.payment_destinations = response.data.payment_destinations
-                    this.configuration = response.data.configuration
+                    // this.configuration = response.data.configuration
+                    this.sellers = response.data.sellers;
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
@@ -426,6 +445,9 @@
             this.isUpdate()
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             changePaymentMethodType(index){
 
                 let payment_method_type = _.find(this.payment_method_types, {'id':this.form.payments[index].payment_method_type_id})
@@ -449,7 +471,7 @@
             },
             selectDestinationSale() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.config.destination_sale && this.payment_destinations.length > 0) {
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
                     this.form.payments[0].payment_destination_id = (cash) ? cash.id : this.payment_destinations[0].id
                 }
@@ -457,7 +479,7 @@
             },
             getPaymentDestinationId() {
 
-                if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
+                if(this.config.destination_sale && this.payment_destinations.length > 0) {
 
                     let cash = _.find(this.payment_destinations, {id : 'cash'})
 

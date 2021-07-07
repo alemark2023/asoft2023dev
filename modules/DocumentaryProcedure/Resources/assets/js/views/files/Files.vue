@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>EXPEDIENTES</span></li>
+                <li class="active"><span>TRAMITES</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
@@ -21,14 +21,14 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Todos los expedientes</h3>
+                <h3 class="my-0">Todos los tramites</h3>
             </div>
             <div class="card-body">
                 <form class="row" @submit.prevent="onFilter">
                     <div class="col-6 col-md-2 mb-3">
                         <el-input
-                            v-model="filter.subject"
-                            placeholder="Filtrar por asunto"
+                            v-model="filter.invoice"
+                            placeholder="Filtrar por numero de expediente"
                             type="text"
                         />
                     </div>
@@ -87,37 +87,99 @@
                         >
                         </el-date-picker>
                     </div>
+                    <!--
                     <div class="col-6 col-md-2 mb-3">
                         <el-button native-type="submit">
                             <i class="fa fa-search"></i>
                             <span class="ml-2">Buscar</span>
                         </el-button>
+                    </div> -->
+
+                    <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
+
+                    <el-button class="submit" type="primary"
+                               native-type="submit"
+                                icon="el-icon-search" >Buscar</el-button>
+
+                    <template v-if="items.length>0">
+
+                        <el-button class="submit" type="success"
+                                   @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exporta Excel</el-button>
+                        <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownload('pdf')" >Exportar PDF</el-button>
+
+                    </template>
                     </div>
+
                 </form>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Asunto</th>
+                            <th>Numero de expediente</th>
                             <th>Fecha/Hora registro</th>
                             <th>Remitente</th>
                             <th>Proceso</th>
                             <th>Etapa</th>
+                            <th>Fecha de fin</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="(item,index) in items" :key="item.id">
-                            <td class="text-right">{{ index + 1}}</td>
-                            <td>{{ item.subject }}</td>
+                            <td class="text-right">{{ index + 1 }}</td>
+                            <td>{{ item.invoice }}</td>
                             <td>{{ item.date_register }} - {{ item.time_register }}</td>
                             <td>{{ item.sender.name }}</td>
                             <td>
-                                {{ returnProcessName(item) }}
+                                <span
+                                    v-if=" item.documentary_process !== undefined && item.documentary_process.name !== undefined ">
+                                     {{ item.documentary_process.name }}
+                                </span>
                             </td>
                             <td>
-                                {{ returnEtapa(item) }}
+                                <div v-if="item.last_complete">
+                                    <el-tooltip
+                                        class="item"
+                                        effect="dark" placement="top-start"
+
+                                    >
+                                        <div slot="content" >
+                                            {{ item.last_complete.office_name }}<br>Inicia
+                                            {{ item.last_complete.start_date }}<br>Finaliza
+                                            {{ item.last_complete.end_date }}
+                                        </div>
+                                        <div :class="item.last_complete.class">{{
+                                                item.last_complete.office_name
+                                                                               }}
+                                        </div>
+                                    </el-tooltip>
+                                </div>
+                                <!--
+                                <div
+                                    v-for="(stage,i) in item.documentary_file_offices"
+                                    v-if="item !== undefined && item.documentary_file_offices !== undefined"
+                                    :key="i"
+                                >
+                                    <el-tooltip
+                                        class="item"
+                                        effect="dark" placement="top-start"
+
+                                    >
+                                        <div slot="content">
+                                            {{ stage.office_name }}<br>Inicia {{ stage.start_date }}<br>Finaliza
+                                            {{ stage.end_date }}
+                                        </div>
+                                        <div :class="stage.class">{{ stage.office_name }}</div>
+                                    </el-tooltip>
+                                </div>
+                                -->
+
+                            </td>
+                            <td>
+                                <div v-if="item.last_complete.end_date" :class="item.last_complete.class">
+                                    {{ item.last_complete.end_date }}
+                                </div>
                             </td>
                             <td class="text-center td-btns">
                                 <el-dropdown trigger="click">
@@ -138,7 +200,7 @@
 
                                         <el-dropdown-item
                                             :disabled="loading"
-                                            @click.native="onShowModalObservation(item)"
+                                            @click.native="onShowModalStage(item)"
                                         >
                                             <i class="fa fa-file-export"></i>
                                             <span class="ml-3">
@@ -146,12 +208,20 @@
                                             </span>
                                         </el-dropdown-item>
                                         <el-dropdown-item
-                                            v-if="haveObservation(item)"
+                                            v-if="haveStage(item)"
                                             :disabled="loading"
-                                            @click.native="onShowHistoricalObservation(item)"
+                                            @click.native="onShowHistoricalStage(item)"
                                         >
                                             <i class="fa fa-eye"></i>
                                             <span class="ml-3">Histórico de observaciones</span>
+                                        </el-dropdown-item>
+
+                                        <el-dropdown-item
+                                            :disabled="loading"
+                                            @click.native="showDocument(item)"
+                                        >
+                                            <i class="fa fa-eye"></i>
+                                            <span class="ml-3">Ver</span>
                                         </el-dropdown-item>
 
 
@@ -191,26 +261,27 @@
             :visible.sync="showModalDerive"
             @onAddOffice="onAddOffice"
         ></ModalDerive>
-        <ModalObservation
-            :visible.sync="showModalObservation"
-            @onNextStep="onNextStep"
+        <ModalStage
+            :visible.sync="showModalStage"
             @onBackStep="onBackStep"
+            @onNextStep="onNextStep"
             @updateFiles="updateFiles"
-        ></ModalObservation>
-        <ModalHistoricalObservation
-            :visible.sync="showModalHistoricalObservation"
-        ></ModalHistoricalObservation>
+        ></ModalStage>
+        <StageModalObservationStage
+            :visible.sync="showStageModalObservationStage"
+        ></StageModalObservationStage>
     </div>
 </template>
 
 <script>
 import ModalAddEdit from "./ModalAddEdit";
 import ModalDerive from "./ModalDerive";
-import ModalHistoricalObservation from "./ModalHistoricalObservation";
-import ModalObservation from "./ModalObservation";
+import StageModalObservationStage from "./ModalHistoricalObservation";
+import ModalStage from "./ModalStage";
 import moment from "moment";
-import {mapState,mapActions} from "vuex";
-import state from "../../../../../../../resources/js/store/state";
+import queryString from 'query-string'
+
+import {mapActions, mapState} from "vuex";
 
 export default {
     props: {
@@ -239,7 +310,7 @@ export default {
             required: false,
         },
     },
-    computed:{
+    computed: {
         ...mapState([
             'offices',
             'file',
@@ -253,14 +324,14 @@ export default {
     components: {
         ModalAddEdit,
         ModalDerive,
-        ModalHistoricalObservation,
-        ModalObservation,
+        StageModalObservationStage,
+        ModalStage,
     },
     data() {
         return {
             showModalDerive: false,
-            showModalObservation: false,
-            showModalHistoricalObservation: false,
+            showModalStage: false,
+            showStageModalObservationStage: false,
             items: [],
             openModalAddEdit: false,
             loading: false,
@@ -281,7 +352,7 @@ export default {
             ],
         };
     },
-    created(){
+    created() {
         this.loadOffices()
         this.loadActions()
         this.loadCustomers()
@@ -291,12 +362,12 @@ export default {
 
     },
     mounted() {
-        this.$store.commit('setOffices',this.local_offices)
-        this.$store.commit('setFiles',this.local_files)
-        this.$store.commit('setProcesses',this.local_processes)
-        this.$store.commit('setActions',this.local_actions)
-        this.$store.commit('setCustomers',this.local_customers)
-        this.$store.commit('setDocumentTypes',this.local_documentTypes)
+        this.$store.commit('setOffices', this.local_offices)
+        this.$store.commit('setFiles', this.local_files)
+        this.$store.commit('setProcesses', this.local_processes)
+        this.$store.commit('setActions', this.local_actions)
+        this.$store.commit('setCustomers', this.local_customers)
+        this.$store.commit('setDocumentTypes', this.local_documentTypes)
         this.items = this.files;
 
     },
@@ -309,32 +380,20 @@ export default {
             'loadDocumentTypes',
             'loadFiles',
         ]),
-        haveObservation(item){
-            if(item === null) return false;
-            if(item === undefined) return false;
-            if(item.observations === undefined) return false;
-            if(item.observations == null) return false;
-            if(item.observations.length == null) return false;
-            if(item.observations.length < 1) return false;
-              return true
+        haveStage(item) {
+            if (item === null) return false;
+            if (item === undefined) return false;
+            if (item.observations === undefined) return false;
+            if (item.observations == null) return false;
+            if (item.observations.length == null) return false;
+            if (item.observations.length < 1) return false;
+            return true
         },
-        returnEtapa(item){
-            if(
-                item !== undefined &&
-                item.documentary_office !== undefined &&
-                item.documentary_office.name !== undefined
-            )return item.documentary_office.name;
-
-            return '';
-        },
-        returnProcessName(item){
-            if(
-                item !== undefined &&
-                item.documentary_process !== undefined &&
-                item.documentary_process.name !== undefined
-            )return item.documentary_process.name;
-
-            return '';
+        showDocument(item) {
+            item.disable = true;
+            this.$store.commit('setFile', item)
+            this.$store.commit('setOffices', this.offices)
+            this.openModalAddEdit = true;
         },
         onShowExtraButtons(file) {
             if (file.offices) {
@@ -353,13 +412,13 @@ export default {
         updateFiles() {
             this.loading = true;
             this.$http
-                .post(`/documentary-procedure/file/reload`,this.filter)
+                .post(`/documentary-procedure/file/reload`, this.filter)
                 .then((result) => {
                     let files = result.data;
                     this.$store.commit('setFiles', files)
                     this.items = this.files
                     this.loading = false;
-                }).catch((err)=>{
+                }).catch((err) => {
                 this.loading = false;
             })
         },
@@ -375,10 +434,10 @@ export default {
             this.file = file;
             this.showModalDerive = true;
         },
-        onShowModalObservation(file) {
+        onShowModalStage(file) {
             //this.file = file;
-            this.$store.commit('setFile',file)
-            this.showModalObservation = true;
+            this.$store.commit('setFile', file)
+            this.showModalStage = true;
         },
         onPrepareFilterDate() {
             const date = moment();
@@ -419,23 +478,11 @@ export default {
         },
         onFilter() {
             this.updateFiles()
-            /*
-            this.loading = true;
-            const params = this.filter;
-            this.$http
-                .get(this.basePath, {params})
-                .then((response) => {
-                    this.items = response.data.data;
-                })
-                .finally(() => {
-                    this.loading = false;
-                });
-            */
         },
         onDelete(item) {
             this.loading = true;
             this.$confirm(
-                `¿estás seguro de eliminar al elemento ${item.subject}?`,
+                `¿estás seguro de eliminar al elemento ${item.invoice}?`,
                 "Atención",
                 {
                     confirmButtonText: "Si, continuar",
@@ -466,16 +513,9 @@ export default {
                 })
                 .catch();
         },
-        onEdit(item) {
-            // this.file = {...item};
-            this.$store.commit('setFile',item)
-            this.openModalAddEdit = true;
-        },
-        onShowHistoricalObservation(item) {
-            // this.file = {...item};
-            this.$store.commit('setFile',item)
-            console.error(item);
-            this.showModalHistoricalObservation = true;
+        onShowHistoricalStage(item) {
+            this.$store.commit('setFile', item)
+            this.showStageModalObservationStage = true;
         },
         onUpdateItem(data) {
             this.items = this.items.map((i) => {
@@ -485,17 +525,37 @@ export default {
                 return i;
             });
         },
-        onUploadComplete(){
+        onUploadComplete() {
+            this.updateFiles()
 
         },
         onAddItem(data) {
             this.updateFiles()
-            // this.items.unshift(data);
         },
         onCreate() {
-            this.$store.commit('setFile',null)
+            this.$store.commit('setFile', null)
+            this.$store.commit('setOffices', this.offices)
             this.openModalAddEdit = true;
         },
+        onEdit(item) {
+            this.$store.commit('setFile', item)
+            this.$store.commit('setOffices', this.offices)
+            this.openModalAddEdit = true;
+        },
+        clickDownload(type){
+
+            let query = queryString.stringify({
+                ...this.filter
+            });
+            if(type == 'excel') {
+                window.open(`/documentary-procedure/files/export/excel?${query}`, '_blank');
+            }else{
+                window.open(`/documentary-procedure/files/export/pdf?${query}`, '_blank');
+
+            }
+
+
+        }
     },
 };
 </script>

@@ -34,6 +34,16 @@
                         </el-input>
                     </div>
                 </div>
+                <div class="col-lg-4 col-md-4">
+                    <div :class="{'has-danger': errors.seller_id}" class="form-group">
+                        <label class="control-label">Vendedor</label>
+                        <el-select v-model="document.seller_id" clearable>
+                            <el-option v-for="option in sellers" :key="option.id" :label="option.name"
+                                       :value="option.id">{{ option.name }}
+                            </el-option>
+                        </el-select>
+                    </div>
+                </div>
                 <div class="col-lg-4">
                     <div class="form-group" :class="{'has-danger': errors.payment_condition_id}">
                         <!--<label class="control-label">Fecha de emisión</label>-->
@@ -245,9 +255,15 @@
     export default {
         components: {DocumentOptions},
 
-        props: ['show', 'recordId', 'showClose','showGenerate'],
+        props: [
+            'show',
+            'recordId',
+            'showClose',
+            'showGenerate',
+        ],
         data() {
             return {
+                sellers: [],
                 titleDialog: null,
                 loading: false,
                 resource: 'sale-notes',
@@ -348,6 +364,7 @@
                     external_id: null,
                     identifier: null,
                     date_of_issue:null,
+                    seller_id:null,
                     sale_note:null,
                 }
                 this.generate_dispatch = false
@@ -394,6 +411,7 @@
                     quotation_id:null,
                     sale_note_id:null,
                     payments: [],
+                    seller_id: null,
                     fee: [],
                     hotel: {},
                 }
@@ -506,7 +524,7 @@
                 };
                 this.document.sale_note_id = this.form.id;
                 this.document.payments = q.payments;
-                this.document.seller_id = q.user_id;
+                this.document.seller_id = q.seller_id;
                 this.document.user_id = q.user_id;
                 this.document.fee = [];
                 this.document.payment_condition_id =q.payment_condition_id;
@@ -522,6 +540,7 @@
                     this.all_series = response.data.series;
                     this.payment_destinations = response.data.payment_destinations;
                     this.payment_method_types = response.data.payment_method_types;
+                    this.sellers = response.data.sellers
                     // this.document.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     // this.changeDocumentType();
                 });
@@ -574,7 +593,7 @@
                 this.clickClose()
             },
             clickClose() {
-                this.$emit('update:showDialog', false)
+                this.$emit('update:show', false)
                 this.initForm()
                 this.resetDocument()
                 this.flag_generate = true

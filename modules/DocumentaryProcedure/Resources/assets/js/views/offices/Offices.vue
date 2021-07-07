@@ -51,12 +51,12 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th></th>
+                            <th>#</th>
                             <th>Etapa</th>
                             <th>Descripción</th>
                             <th>Visible</th>
                             <th>Responsable</th>
-                            <th>Padre</th>
+                            <th>Dias</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -66,7 +66,7 @@
                             :key="item.id"
                             :class="{ 'table-danger': !item.active }"
                         >
-                            <td class="text-right">{{ index +1 }}</td>
+                            <td class="text-right">{{ index + 1 }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.description }}</td>
                             <td class="text-center">
@@ -75,14 +75,14 @@
                             </td>
                             <td>
                                 <span
-                                v-if=" (item.user !== undefined &&  item.user !== null) ">
-                                {{item.user.name}}
+                                    v-for="users in item.users_name" :key="users.id"
+
+                                >
+                                    <!--v-if=" (item.user !== undefined &&  item.user !== null) "-->
+                                {{ users.name }} <br>
                                 </span>
                             </td>
-                            <td>
-                                <div v-if="item.parent !== undefined && item.parent.name !== undefined">
-                                    {{ item.parent.name }}
-                                </div>
+                            <td> {{ item.string_days }}
                             </td>
                             <td class="text-center">
                                 <el-button
@@ -107,7 +107,6 @@
             </div>
         </div>
         <ModalAddEdit
-            :parent_offices="parents"
             :visible.sync="openModalAddEdit"
             @onAddItem="onFilter"
             @onUpdateItem="onUpdateItem"
@@ -121,11 +120,6 @@ import {mapActions, mapState} from "vuex";
 
 export default {
     props: {
-        parents: {
-            type: Array,
-            required: false,
-            default:[]
-        },
         etapas: {
             type: Array,
             required: true,
@@ -166,7 +160,7 @@ export default {
         this.loadConfiguration()
         this.loadWorkers()
         this.loadOffices()
-this.items = this.offices
+        this.items = this.offices
     },
     mounted() {
     },

@@ -5,7 +5,7 @@
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>
             </h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>REGISTRO DE PROCESOS</span></li>
+                <li class="active"><span>REGISTRO DE TRÁMITES</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <div class="btn-group flex-wrap">
@@ -21,7 +21,7 @@
         </div>
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Listado de procesos</h3>
+                <h3 class="my-0">Listado de trámites</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -51,26 +51,28 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th></th>
-                            <th>Oficina</th>
+                            <th>#</th>
+                            <th>Trámite</th>
                             <th>Descripción</th>
                             <th>Visible</th>
+                            <th>Precio</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr
-                            v-for="item in items"
+                            v-for="(item,index) in items"
                             :key="item.id"
                             :class="{ 'table-danger': !item.active }"
                         >
-                            <td class="text-right">{{ item.id }}</td>
+                            <td class="text-right">{{ index +1 }}</td>
                             <td>{{ item.name }}</td>
                             <td>{{ item.description }}</td>
                             <td class="text-center">
                                 <span v-if="item.active">Si</span>
                                 <span v-else>No</span>
                             </td>
+                            <td>{{ item.price }}</td>
                             <td class="text-center">
                                 <el-button
                                     :disabled="loading"
@@ -95,6 +97,8 @@
         </div>
         <ModalAddEdit
             :process="process"
+            :stages="stages"
+            :requirements="requirements"
             :visible.sync="openModalAddEdit"
             @onAddItem="onAddItem"
             @onUpdateItem="onUpdateItem"
@@ -108,6 +112,14 @@ import ModalAddEdit from "./ModalAddEdit";
 export default {
     props: {
         processes: {
+            type: Array,
+            required: true,
+        },
+        stages: {
+            type: Array,
+            required: true,
+        },
+        requirements: {
             type: Array,
             required: true,
         },

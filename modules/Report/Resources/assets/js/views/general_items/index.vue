@@ -43,7 +43,9 @@
                             <td>{{ row.brand }}</td>
                             <td>{{row.description}}</td>
                             <td>{{row.unit_type_id}}</td>
-                            <td>{{row.quantity}}</td>
+                            <td>
+                                {{row.quantity}}<span v-if="row.factor > 0"> X {{row.factor}}</span>
+                            </td>
                             <td>
                                 {{ row.lot_has_sale | filterLots }}
                             </td>
@@ -90,7 +92,7 @@
 
                 if(data && data.length > 0)
                 {
-                    const lots_sale = data.filter(x=> x.has_sale == true)
+                    const lots_sale = data.filter(x=> (x.has_sale == true||(x.warehouse_id == undefined && x.id == null)) )
                     if(lots_sale)
                     {
                         return lots_sale.map(p=> p.series).join(' - ')

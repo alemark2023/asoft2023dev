@@ -3,8 +3,7 @@
 @section('content')
     <tenant-documentary-offices
         :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
-        :etapas='@json($offices)'
-        :parents='@json($parents)'
+        :etapas='@json($stages)'
         :users='@json($users)'
     ></tenant-documentary-offices>
 @endsection

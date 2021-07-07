@@ -190,7 +190,7 @@
         <sale-notes-options :showDialog.sync="showDialogOptions"
                           :recordId="saleNotesNewId"
                           :showClose="true"
-                          :configuration="configuration"></sale-notes-options>
+                          :configuration="config"></sale-notes-options>
 
         <sale-note-generate :show.sync="showDialogGenerate"
                            :recordId="recordId"
@@ -207,11 +207,21 @@
     import SaleNoteGenerate from './partials/option_documents'
     import {deletable} from '../../../mixins/deletable'
     import ModalGenerateCPE from './ModalGenerateCPE'
+    import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
     export default {
-        props: ['soapCompany','typeUser','configuration'],
+        props: [
+            'soapCompany',
+            'typeUser',
+            'configuration'
+        ],
         mixins: [deletable],
         components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate, ModalGenerateCPE},
+        computed:{
+            ...mapState([
+                'config',
+            ]),
+        },
         data() {
             return {
                 showModalGenerateCPE: false,
@@ -278,6 +288,10 @@
                 }
             }
         },
+        created() {
+            this.loadConfiguration()
+            this.$store.commit('setConfiguration', this.configuration)
+        },
         filters:{
             period(name)
             {
@@ -299,6 +313,9 @@
             }
         },
         methods: {
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             duplicate(id){
                 this.$http.post(`${this.resource}/duplicate`, {id})
                     .then(response => {
@@ -312,7 +329,6 @@
                     .catch(error => {
 
                     })
-                console.error('Duplicado '+id)
                 this.$eventHub.$emit('reloadData')
             },
             onOpenModalGenerateCPE() {

@@ -697,6 +697,8 @@ class Item extends ModelTenant
             'series_enabled'                   => (bool)$this->series_enabled,
             'is_set'                           => (bool)$this->is_set,
 
+            'lot_code' => $this->lot_code,
+            'date_of_due' => $this->date_of_due
 
         ];
 

@@ -228,10 +228,10 @@
                 affected_documents: [],
             }
         },
-        async created() {
+        created() {
             this.document = this.document_affected
-            await this.initForm()
-            await this.$http.get(`/${this.resource}/tables`)
+            this.initForm()
+             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.document_types = response.data.document_types_note
                     this.currency_types = response.data.currency_types
@@ -250,8 +250,8 @@
                     this.changeDateOfIssue()
                 })
 
-            await this.getCustomer()
-            await this.getHasDocuments()
+             this.getCustomer()
+             this.getHasDocuments()
         },
         mounted() {
 
