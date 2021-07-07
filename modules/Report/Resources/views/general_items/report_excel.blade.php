@@ -1,4 +1,48 @@
-<!DOCTYPE html>
+<?php
+function getLocationData($value, $type = 'sale') {
+    $stablihsment = null;
+    $district = '';
+    $department = '';
+    $province = '';
+    $type_doc = null;
+    if ($type == 'sale') {
+        $type_doc = $value->document;
+    }
+    if (
+        $value &&
+        $type_doc &&
+        $type_doc->establishment
+    ) {
+        $stablihsment = $type_doc->establishment;
+    }
+
+    if ($stablihsment != null) {
+        if (
+            $stablihsment->district &&
+            $stablihsment->district->description
+        ) {
+            $district = $stablihsment->district->description;
+        }
+        if (
+            $stablihsment->department &&
+            $stablihsment->department->description
+        ) {
+            $department = $stablihsment->department->description;
+        }
+        if (
+            $stablihsment->province &&
+            $stablihsment->province->description
+        ) {
+            $province = $stablihsment->province->description;
+        }
+    }
+    return [
+        'district'   => $district,
+        'department' => $department,
+        'province'   => $province,
+    ];
+}
+?><!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
@@ -15,6 +59,11 @@
                         <thead>
                             <tr>
                                 <th>FECHA DE EMISIÓN</th>
+                                @if($document_type_id != '80' && $type == 'sale')
+                                <th>DEPARTAMENTO</th>
+                                <th>PROVINCIA</th>
+                                <th>DISTRITO</th>
+                                @endif
                                 <th>TIPO DOCUMENTO</th>
                                 <th>ID TIPO</th>
                                 <th>SERIE</th>
@@ -132,28 +181,34 @@
                                     @foreach($records as $key => $value)
 
                                         @php
-                                            $series = '';
+                                        $series = '';
                                             if(isset($value->item->lots) )
                                             {
                                                 $series_data =  collect($value->item->lots)->where('has_sale', 1)->pluck('series')->toArray();
-                                                $series = implode(" - ", $series_data);
-                                            }
+                                            $series = implode(" - ", $series_data);
+                                        }
 
-                                            // $purchase_unit_price = 0;
+                                        // $purchase_unit_price = 0;
 
-                                            // if($value->relation_item->purchase_unit_price > 0){
-                                            //     $purchase_unit_price = $value->relation_item->purchase_unit_price;
-                                            // }else{
-                                            //     $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
-                                            //     $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
-                                            // }
+                                        // if($value->relation_item->purchase_unit_price > 0){
+                                        //     $purchase_unit_price = $value->relation_item->purchase_unit_price;
+                                        // }else{
+                                        //     $purchase_item = \App\Models\Tenant\PurchaseItem::select('unit_price')->where('item_id', $value->item_id)->latest('id')->first();
+                                        //     $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $value->unit_price;
+                                        // }
 
-                                            $total_item_purchase = \Modules\Report\Http\Resources\GeneralItemCollection::getPurchaseUnitPrice($value);
-                                            $utility_item = $value->total - $total_item_purchase;
+                                        $total_item_purchase = \Modules\Report\Http\Resources\GeneralItemCollection::getPurchaseUnitPrice($value);
+                                        $utility_item = $value->total - $total_item_purchase;
                                         @endphp
 
                                     <tr>
                                         <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td>
+                                        @if($document_type_id != '80' && $type == 'sale')
+                                        <?php $stablihsment = getLocationData($value,$type); ?>
+                                        <td class="celda">{{$stablihsment['district']}}</td>
+                                        <td class="celda">{{$stablihsment['department']}}</td>
+                                        <td class="celda">{{$stablihsment['province']}}</td>
+                                        @endif
                                         <td class="celda">{{$value->document->document_type->description}}</td>
                                         <td class="celda">{{$value->document->document_type_id}}</td>
                                         <td class="celda">{{$value->document->series}}</td>
