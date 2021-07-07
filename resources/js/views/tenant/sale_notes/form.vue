@@ -153,6 +153,14 @@
                                     <small class="form-control-feedback" v-if="errors.observation" v-text="errors.observation[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-4">
+                                    <div class="form-group">
+                                        <label>Vendedor</label>
+                                        <el-select v-model="form.seller_id" clearable>
+                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
+                                        </el-select>
+                                </div>
+                            </div>
                             <!-- Pagos -->
                             <div class="col-12 pt-3">
                                 <table>
@@ -364,6 +372,7 @@
                         return date.getTime() < (now.getTime());
                     },
                 },
+                sellers: [],
                 resource: 'sale-notes',
                 showDialogAddItem: false,
                 showDialogNewPerson: false,
@@ -413,6 +422,7 @@
                     this.all_series = response.data.series
                     this.payment_destinations = response.data.payment_destinations
                     this.configuration = response.data.configuration
+                    this.sellers = response.data.sellers;
                     this.changeEstablishment()
                     this.changeDateOfIssue()
                     this.changeCurrencyType()
