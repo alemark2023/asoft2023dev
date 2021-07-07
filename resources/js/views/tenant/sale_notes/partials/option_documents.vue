@@ -364,6 +364,7 @@
                     external_id: null,
                     identifier: null,
                     date_of_issue:null,
+                    seller_id:null,
                     sale_note:null,
                 }
                 this.generate_dispatch = false
@@ -410,6 +411,7 @@
                     quotation_id:null,
                     sale_note_id:null,
                     payments: [],
+                    seller_id: null,
                     fee: [],
                     hotel: {},
                 }
@@ -522,7 +524,7 @@
                 };
                 this.document.sale_note_id = this.form.id;
                 this.document.payments = q.payments;
-                this.document.seller_id = q.user_id;
+                this.document.seller_id = q.seller_id;
                 this.document.user_id = q.user_id;
                 this.document.fee = [];
                 this.document.payment_condition_id =q.payment_condition_id;
