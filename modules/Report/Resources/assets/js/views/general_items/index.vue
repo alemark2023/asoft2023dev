@@ -43,7 +43,9 @@
                             <td>{{ row.brand }}</td>
                             <td>{{row.description}}</td>
                             <td>{{row.unit_type_id}}</td>
-                            <td>{{row.quantity}}</td>
+                            <td>
+                                {{row.quantity}}<span v-if="row.factor > 0"> X {{row.factor}}</span>
+                            </td>
                             <td>
                                 {{ row.lot_has_sale | filterLots }}
                             </td>

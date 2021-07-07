@@ -13,6 +13,9 @@ class GeneralItemCollection extends ResourceCollection
         return $this->collection->transform(function ($row, $key) {
             $resource = self::getDocument($row);
             $total_item_purchase = self::getPurchaseUnitPrice($row);
+            if ($row->item->presentation) {
+                $total_item_purchase = $total_item_purchase * $row->item->presentation->quantity_unit;
+            }
             $utility_item = $row->total - $total_item_purchase;
 
             return [
@@ -40,6 +43,7 @@ class GeneralItemCollection extends ResourceCollection
 
                 'total_item_purchase' => number_format($total_item_purchase, 2),
                 'utility_item' => number_format($utility_item, 2),
+                'factor' => $row->item->presentation ? number_format($row->item->presentation->quantity_unit, 2) : 0,
 
                 'document_type_description' => $resource['document_type_description'],
                 'document_type_id' => $resource['document_type_id'],
@@ -59,7 +63,9 @@ class GeneralItemCollection extends ResourceCollection
                 $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set) * $item_set->quantity) * $record->quantity;
             }
 
-        } else {
+        } /*elseif() {
+
+        }*/ else {
 
             $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record) * $record->quantity;
 
