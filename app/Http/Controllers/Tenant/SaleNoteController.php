@@ -91,6 +91,11 @@ class SaleNoteController extends Controller
         ];
     }
 
+    /**
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \App\Http\Resources\Tenant\SaleNoteCollection
+     */
     public function records(Request $request)
     {
 
@@ -101,37 +106,35 @@ class SaleNoteController extends Controller
     }
 
 
+    /**
+     * @param $request
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     private function getRecords($request){
-
+        $records = SaleNote::whereTypeUser();
         if($request->column == 'customer'){
-
-            $records = SaleNote::whereHas('person', function($query) use($request){
-                                    $query->where('name', 'like', "%{$request->value}%")
+            $records->whereHas('person', function($query) use($request){
+                                    $query
+                                        ->where('name', 'like', "%{$request->value}%")
                                         ->orWhere('number', 'like', "%{$request->value}%");
                                 })
-                                ->whereTypeUser()
                                 ->latest();
 
         }else{
-
-            $records = SaleNote::where($request->column, 'like', "%{$request->value}%")
-                                ->whereTypeUser()
-                                ->latest('id');
-
+            $records->where($request->column, 'like', "%{$request->value}%")
+                    ->latest('id');
         }
-
         if($request->series) {
-            $records = $records->where('series', 'like', '%' . $request->series . '%');
+            $records->where('series', 'like', '%' . $request->series . '%');
         }
-
         if($request->total_canceled != null) {
-            $records = $records->where('total_canceled', $request->total_canceled);
+            $records->where('total_canceled', $request->total_canceled);
         }
 
         if($request->purchase_order) {
-            $records = $records->where('purchase_order', $request->purchase_order);
+            $records->where('purchase_order', $request->purchase_order);
         }
-
         return $records;
     }
 
