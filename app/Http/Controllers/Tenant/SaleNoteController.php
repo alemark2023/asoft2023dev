@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Models\Tenant\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -176,9 +177,10 @@ class SaleNoteController extends Controller
         });
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale','ticket_58')->first();
+        $sellers = User::GetSellers(false)->get();
 
         return compact('customers', 'establishments','currency_types', 'discount_types', 'configuration',
-                         'charge_types','company','payment_method_types', 'series', 'payment_destinations');
+                         'charge_types','company','payment_method_types', 'series', 'payment_destinations','sellers');
     }
 
     public function changed($id)
@@ -379,10 +381,18 @@ class SaleNoteController extends Controller
             $number = ($document) ? $document->number + 1 : 1;
 
         }
+        $seller_id = isset($inputs['seller_id'])?(int)$inputs['seller_id']:0;
+        if($seller_id == 0){
+            $seller_id = auth()->id();
+        }
+        $additional_information = isset($inputs['additional_information'])?$inputs['additional_information']:'';
+
 
         $values = [
+            'additional_information' => $additional_information,
             'automatic_date_of_issue' => $automatic_date_of_issue,
             'user_id' => auth()->id(),
+            'seller_id' => $seller_id,
             'external_id' => Str::uuid()->toString(),
             'customer' => PersonInput::set($inputs['customer_id']),
             'establishment' => EstablishmentInput::set($inputs['establishment_id']),
@@ -658,7 +668,7 @@ class SaleNoteController extends Controller
 
                 $establishment_id = auth()->user()->establishment_id;
                 $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
-                $warehouse_id = ($warehouse) ? $warehouse->id:null;
+                // $warehouse_id = ($warehouse) ? $warehouse->id:null;
 
                 $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
 
@@ -666,7 +676,11 @@ class SaleNoteController extends Controller
 
                 $items = $items_u->merge($items_s);
 
-                return collect($items)->transform(function($row) use($warehouse_id, $warehouse){
+                return collect($items)->transform(function($row) use($warehouse){
+
+                    /** @var Item $row */
+                    return $row->getDataToItemModal($warehouse);
+                    /* Movido al modelo */
                     $detail = $this->getFullDescription($row, $warehouse);
                     return [
                         'id' => $row->id,
@@ -910,8 +924,9 @@ class SaleNoteController extends Controller
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
+        $sellers = User::GetSellers(false)->get();
 
-        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
+        return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations','sellers');
     }
 
     public function email(Request $request)

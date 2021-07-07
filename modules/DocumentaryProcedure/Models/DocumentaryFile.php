@@ -81,7 +81,7 @@
         /**
          * @return array
          */
-        public function getCollectionData() {
+        public function getCollectionData($holiday = []) {
             $data = $this->toArray();
             $person = Person::find($this->person_id);
             $documentary_process = DocumentaryProcess::find($this->documentary_process_id);
@@ -91,7 +91,7 @@
             if (empty($documentary_file_office)) $documentary_file_office = new DocumentaryOffice();
 
             $data['guides'] = DocumentaryGuidesNumber::where('doc_file_id', $this->id)->get();
-            $data['documentary_process'] = $documentary_process->getCollectionData();
+            $data['documentary_process'] = $documentary_process->getCollectionData($holiday);
             $data['documentary_process_id'] = (int)$this->documentary_process_id;
             $data['documentary_office'] = $documentary_file_office->getCollectionData();
             $data['documentary_file_archives'] = $documentary_file_archives->transform(function ($row) {

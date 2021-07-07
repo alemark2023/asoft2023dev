@@ -73,7 +73,10 @@ class SaleNote extends ModelTenant
         'plate_number',
         'purchase_order',
         'due_date',
-    ];
+        'total_plastic_bag_taxes',
+        'additional_information',
+        'seller_id',
+];
 
     protected $casts = [
         'date_of_issue' => 'date',
@@ -265,6 +268,13 @@ class SaleNote extends ModelTenant
         return $this->hasMany(Document::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function seller()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function getNumberToLetterAttribute()
     {

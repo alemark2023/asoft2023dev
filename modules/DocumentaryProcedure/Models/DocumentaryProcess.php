@@ -71,7 +71,7 @@
         /**
          * @return array
          */
-        public function getCollectionData() {
+        public function getCollectionData($holidays = []) {
             Carbon::setWeekendDays([
                                        Carbon::SATURDAY,
                                        Carbon::SUNDAY,
@@ -88,9 +88,9 @@
                 'disable'       => !((bool)$this->active),
                 'stages'        => $this->getDocumentaryOffices(),
                 'full_stages'   => DocumentaryOffice::wherein('id', $this->getDocumentaryOffices())->get()
-                                                    ->transform(function ($row) use(&$today) {
+                                                    ->transform(function ($row) use(&$today,$holidays) {
                                                         /** @var DocumentaryOffice $row */
-                                                        $data = $row->getCollectionData(false, $today);
+                                                        $data = $row->getCollectionData(false, $today,$holidays);
                                                         $today = $data['carbon_end_date'];
                                                         return $data;
                                                     }),

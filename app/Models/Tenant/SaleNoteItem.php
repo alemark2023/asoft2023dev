@@ -48,6 +48,9 @@ class SaleNoteItem extends ModelTenant
         'discounts',
         'inventory_kardex_id',
         'warehouse_id',
+        'total_plastic_bag_taxes',
+        'additional_information',
+        'name_product_pdf',
 
     ];
 
@@ -110,17 +113,17 @@ class SaleNoteItem extends ModelTenant
     {
         return $this->belongsTo(SaleNote::class, 'sale_note_id');
     }
-    
+
     public function relation_item()
     {
         return $this->belongsTo(Item::class, 'item_id');
     }
 
-    
+
     public function scopeWhereDefaultDocumentType($query, $params)
     {
-        
-        $db_raw =  DB::raw("sale_note_items.id as id, sale_notes.series as series, sale_notes.number as number, 
+
+        $db_raw =  DB::raw("sale_note_items.id as id, sale_notes.series as series, sale_notes.number as number,
                             sale_note_items.item as item, sale_note_items.quantity as quantity, sale_note_items.item_id as item_id,sale_notes.date_of_issue as date_of_issue");
 
         if (isset($params['establishment_id'])) {
@@ -136,10 +139,10 @@ class SaleNoteItem extends ModelTenant
                         ->join('sale_notes', 'sale_note_items.sale_note_id', '=', 'sale_notes.id')
                         ->select($db_raw)
                         ->latest('id');
-                        
+
         }
 
-        
+
         $data = $query->whereHas('sale_note', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         // ->where('user_id', $params['seller_id'])
@@ -149,7 +152,7 @@ class SaleNoteItem extends ModelTenant
                 ->select($db_raw)
                 ->latest('id');
 
-        
+
         $sellers = json_decode($params['sellers']);
 
         if(count($sellers) > 0){

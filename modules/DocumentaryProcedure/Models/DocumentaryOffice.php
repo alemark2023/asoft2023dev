@@ -100,7 +100,7 @@
          *
          * @return array
          */
-        public function getCollectionData($extended = false, Carbon $today = null) {
+        public function getCollectionData($extended = false, Carbon $today = null,$holidays=[]) {
 
             if(empty($today)){
                 $today = Carbon::now();
@@ -140,7 +140,6 @@
             });
 
 
-            $holyday = false;
             $currentDay = 1;
             $total_dias = $this->days;
             $data['start_date'] = $today->format('Y-m-d H:i');
@@ -149,7 +148,7 @@
                 if ($today->isWeekend()) {
                     // fin de semana, no hace nada
                     $days[]="Fin de semana ".$today->format('Y-m-d');
-                } elseif ($holyday) {
+                } elseif (in_array($today->format('d-m-Y'),$holidays)) {
                     // Dia festivo, no hace nada
                     $days[] = 'Feriado '.$today->format('Y-m-d');
                 } else {
