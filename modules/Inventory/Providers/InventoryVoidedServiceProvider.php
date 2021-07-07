@@ -39,7 +39,21 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                             $presentationQuantity = (!empty($detail['item']->presentation)) ? $detail['item']->presentation->quantity_unit : 1;
 
                             $this->createInventoryKardex($document, $detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
-                            if(!$detail->document->sale_note_id && !$detail->document->order_note_id) $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+
+                            if(!$detail->document->sale_note_id && !$detail->document->order_note_id && !$detail->document->dispatch_id){
+
+                                $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+
+                            }else{
+                                
+                                if($detail->document->dispatch){
+
+                                    if(!$detail->document->dispatch->transfer_reason_type->discount_stock){
+                                        $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
+                                    }
+                                }
+                            }
+
                             $this->updateDataLots($detail);
 
                         }

@@ -379,7 +379,7 @@ class Dispatch extends ModelTenant
             'created_at'             => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at'             => $this->updated_at->format('Y-m-d H:i:s'),
             'soap_shipping_response' => $this->soap_shipping_response,
-            'btn_generate_document' => $this->generate_document ? false : true,
+            'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
         ];
     }
 

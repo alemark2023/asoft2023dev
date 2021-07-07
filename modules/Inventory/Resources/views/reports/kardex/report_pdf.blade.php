@@ -222,7 +222,14 @@
 
                                         @switch($value->inventory_kardexable_type)
                                             @case($models[0])
-                                                {{ isset($value->inventory_kardexable->note) ? $value->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '' }}
+                                                @php
+                                                    $cpe_doc_asoc = isset($value->inventory_kardexable->note) ? $value->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '';
+                                                    
+                                                    if(isset($value->inventory_kardexable->dispatch)){
+                                                        $cpe_doc_asoc = ($cpe_doc_asoc == '') ? $value->inventory_kardexable->dispatch->number_full :  $cpe_doc_asoc.' | '.$value->inventory_kardexable->dispatch->number_full;
+                                                    }
+                                                @endphp
+                                                {{ $cpe_doc_asoc }}
                                                 @break
                                             @case($models[1])
                                                 {{'-'}}
@@ -286,6 +293,7 @@
                                         }
                                     @endphp
                                     <td class="celda">
+                                        {{-- input --}}
                                         @switch($value->inventory_kardexable_type)
 
                                             @case($models[0])
@@ -358,14 +366,27 @@
                                         @endswitch
                                     </td>
                                     <td class="celda">
-
+                                        {{-- output --}}
                                         @switch($value->inventory_kardexable_type)
                                             @case($models[0])
-                                                {{ ($value->quantity < 0) ?  ( isset($value->inventory_kardexable->sale_note_id) || isset($value->inventory_kardexable->order_note_id)  ? "-":$value->quantity):"-" }}
 
                                                 @php
-                                                ($value->quantity < 0) ?  ( isset($value->inventory_kardexable->sale_note_id) || isset($value->inventory_kardexable->order_note_id) ? $value->quantity = 0:$value->quantity):"-";
+                                                    
+                                                    $cpe_output = ($value->quantity < 0) ?  ( isset($value->inventory_kardexable->sale_note_id) || isset($value->inventory_kardexable->order_note_id)  ? "-":$value->quantity):"-";
+                                                    ($value->quantity < 0) ?  ( isset($value->inventory_kardexable->sale_note_id) || isset($value->inventory_kardexable->order_note_id) ? $value->quantity = 0:$value->quantity):"-";
+
+                                                    if(isset($value->inventory_kardexable->dispatch)){
+
+                                                        if($value->inventory_kardexable->dispatch->transfer_reason_type->discount_stock){
+                                                            $cpe_output = '-';
+                                                            $value->quantity = 0;
+                                                        }
+                                                        
+                                                    }
                                                 @endphp
+
+                                                {{ $cpe_output }}
+ 
                                                 @break
 
                                             @case($models[1])

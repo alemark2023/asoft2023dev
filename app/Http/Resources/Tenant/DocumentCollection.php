@@ -83,6 +83,8 @@ class DocumentCollection extends ResourceCollection
                 $message_regularize_shipping = "Por regularizar: {$row->response_regularize_shipping->code} - {$row->response_regularize_shipping->description}";
             }
 
+             
+
             return [
 
                 'id' => $row->id,
@@ -153,7 +155,34 @@ class DocumentCollection extends ResourceCollection
                 'regularize_shipping' => (bool) $row->regularize_shipping,
                 'purchase_order' => $row->purchase_order,
                 'is_editable' => $row->is_editable,
+                'dispatches' => $this->getDispatches($row),
             ];
         });
     }
+
+
+    private function getDispatches($row){
+
+        $dispatches = [];
+
+        if(in_array($row->document_type_id, ['01', '03'])) {
+
+            $dispatches = $row->reference_guides->transform(function($row) {
+                return [
+                    'description' => $row->number_full,
+                ];
+            });
+
+            if($row->dispatch){
+                $dispatches = $dispatches->push([
+                    'description' => $row->dispatch->number_full,
+                ]);
+            }
+
+        }
+
+        return $dispatches;
+
+    }
+
 }
