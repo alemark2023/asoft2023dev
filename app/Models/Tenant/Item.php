@@ -595,6 +595,16 @@ class Item extends ModelTenant
     }
 
     /**
+     * Devuelve la relacion con el almacen dado
+     * @param int $warehouse_id
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function getCurrentItemWarehouse($warehouse_id){
+        return $this->warehouses()->where('warehouse_id',$warehouse_id);
+    }
+
+    /**
      * Devuelve un estandar de estructura para items.
      *
      * Es utilizado en :
@@ -613,7 +623,7 @@ class Item extends ModelTenant
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         }
-        $detail = $this->getFullDescription($warehouse,$extended_description);
+        $detail = $this->getFullDescription($warehouse, $extended_description);
         $realtion_item_unit_types = $this->item_unit_types;
         $lots_grp = $this->lots_group;
         $lots = [];
@@ -638,6 +648,13 @@ class Item extends ModelTenant
                 ];
             })->values();
         }
+        $stock = $detail['stock'];
+
+        // Obtiene el stock basado el en almacen itemwarehouse
+        $stockItemWarehouse = $this->getCurrentItemWarehouse($warehouse->id)->first();
+        if(is_object($stockItemWarehouse)) {
+            $stock = $stockItemWarehouse->stock;
+        }
 
 
         $data = [
@@ -647,7 +664,7 @@ class Item extends ModelTenant
             'brand'                            => $detail['brand'],
             'warehouse_description'            => $detail['warehouse_description'],
             'category'                         => $detail['category'],
-            'stock'                            => $detail['stock'],
+            'stock'                            => $stock,
             'internal_id'                      => $this->internal_id,
             'description'                      => $this->description,
             'currency_type_id'                 => $this->currency_type_id,
@@ -664,7 +681,7 @@ class Item extends ModelTenant
             'item_unit_types'                  => collect($realtion_item_unit_types)->transform(function ($item_unit_types) {
                 return [
                     'id'            => $item_unit_types->id,
-                    'description'   => "{$this->description}",
+                    'description'   => "{$item_unit_types->description}",
                     'item_id'       => $item_unit_types->item_id,
                     'unit_type_id'  => $item_unit_types->unit_type_id,
                     'quantity_unit' => $item_unit_types->quantity_unit,
@@ -674,16 +691,16 @@ class Item extends ModelTenant
                     'price_default' => $item_unit_types->price_default,
                 ];
             }),
-            'warehouses'                       => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
+            'warehouses' => collect($this->warehouses)->transform(function ($warehouses) use ($warehouse) {
                 return [
                     'warehouse_description' => $warehouses->warehouse->description,
-                    'stock'                 => $warehouses->stock,
+                    'stock'                 => (!empty($warehouses->stock)) ? $warehouses->stock : 0,
                     'warehouse_id'          => $warehouses->warehouse_id,
                     'checked'               => ($warehouses->warehouse_id == $warehouse->id) ? true : false,
                 ];
             }),
-            'attributes'                       => $this->attributes ? $this->attributes : [],
-            'lots_group'                       => collect($lots_grp)->transform(function ($lots_group) {
+            'attributes'     => $this->attributes ? $this->attributes : [],
+            'lots_group'     => collect($lots_grp)->transform(function ($lots_group) {
                 return [
                     'id'          => $lots_group->id,
                     'code'        => $lots_group->code,
@@ -692,13 +709,14 @@ class Item extends ModelTenant
                     'checked'     => false,
                 ];
             }),
-            'lots'                             => $lots,
-            'lots_enabled'                     => (bool)$this->lots_enabled,
-            'series_enabled'                   => (bool)$this->series_enabled,
-            'is_set'                           => (bool)$this->is_set,
+            'lots'           => $lots,
+            'lots_enabled'   => (bool)$this->lots_enabled,
+            'series_enabled' => (bool)$this->series_enabled,
+            'is_set'         => (bool)$this->is_set,
 
-            'lot_code' => $this->lot_code,
-            'date_of_due' => $this->date_of_due
+            'lot_code'    => $this->lot_code,
+            'date_of_due' => $this->date_of_due,
+            'barcode'     => $this->barcode,
 
         ];
 

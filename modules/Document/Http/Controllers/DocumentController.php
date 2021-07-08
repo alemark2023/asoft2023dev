@@ -299,79 +299,81 @@ class DocumentController extends Controller
         $items_services = $this->getItemsServices($request);
         $all_items = $items_not_services->merge($items_services);
 
-        $items = collect($all_items)->transform(function($row) use($warehouse){
+        $items = collect($all_items)->transform(function ($row) use ($warehouse) {
+            /** @var \App\Models\Tenant\Item $row */
+            return $row->getDataToItemModal($warehouse);
+            /**  Movido al modelo */
+            $detail = $this->getFullDescription($row, $warehouse);
 
-                $detail = $this->getFullDescription($row, $warehouse);
-
-                return [
-                    'id' => $row->id,
-                    'full_description' => $detail['full_description'],
-                    'brand' => $detail['brand'],
-                    'category' => $detail['category'],
-                    'warehouse_description' => $detail['warehouse_description'],
-                    'stock' => $detail['stock'],
-                    'barcode' => $row->barcode,
-                    'internal_id' => $row->internal_id,
-                    'description' => $row->description,
-                    'currency_type_id' => $row->currency_type_id,
-                    'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => Item::getSaleUnitPriceByWarehouse($row, $warehouse->id),
-                    'purchase_unit_price' => $row->purchase_unit_price,
-                    'unit_type_id' => $row->unit_type_id,
-                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                    'calculate_quantity' => (bool) $row->calculate_quantity,
-                    'has_igv' => (bool) $row->has_igv,
-                    'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
-                    'item_unit_types' => collect($row->item_unit_types)->transform(function($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => "{$row->description}",
-                            'item_id' => $row->item_id,
-                            'unit_type_id' => $row->unit_type_id,
-                            'quantity_unit' => $row->quantity_unit,
-                            'price1' => $row->price1,
-                            'price2' => $row->price2,
-                            'price3' => $row->price3,
-                            'price_default' => $row->price_default,
-                        ];
-                    }),
-                    'warehouses' => collect($row->warehouses)->transform(function($row) use($warehouse){
-                        return [
-                            'warehouse_description' => $row->getWarehouseDescription(),
-                            'stock' => (!empty($row->stock))?$row->stock:0,
-                            'warehouse_id' => $row->warehouse_id,
-                            'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
-                        ];
-                    }),
-                    'attributes' => $row->attributes ? $row->attributes : [],
-                    'lots_group' => collect($row->lots_group)->transform(function($row){
-                        return [
-                            'id'  => $row->id,
-                            'code' => $row->code,
-                            'quantity' => $row->quantity,
-                            'date_of_due' => $row->date_of_due,
+            return [
+                'id'                               => $row->id,
+                'full_description'                 => $detail['full_description'],
+                'brand'                            => $detail['brand'],
+                'category'                         => $detail['category'],
+                'warehouse_description'            => $detail['warehouse_description'],
+                'stock'                            => $detail['stock'],
+                'barcode'                          => $row->barcode,
+                'internal_id'                      => $row->internal_id,
+                'description'                      => $row->description,
+                'currency_type_id'                 => $row->currency_type_id,
+                'currency_type_symbol'             => $row->currency_type->symbol,
+                'sale_unit_price'                  => Item::getSaleUnitPriceByWarehouse($row, $warehouse->id),
+                'purchase_unit_price'              => $row->purchase_unit_price,
+                'unit_type_id'                     => $row->unit_type_id,
+                'sale_affectation_igv_type_id'     => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'calculate_quantity'               => (bool)$row->calculate_quantity,
+                'has_igv'                          => (bool)$row->has_igv,
+                'amount_plastic_bag_taxes'         => $row->amount_plastic_bag_taxes,
+                'item_unit_types'                  => collect($row->item_unit_types)->transform(function ($row) {
+                    return [
+                        'id'            => $row->id,
+                        'description'   => "{$row->description}",
+                        'item_id'       => $row->item_id,
+                        'unit_type_id'  => $row->unit_type_id,
+                        'quantity_unit' => $row->quantity_unit,
+                        'price1'        => $row->price1,
+                        'price2'        => $row->price2,
+                        'price3'        => $row->price3,
+                        'price_default' => $row->price_default,
+                    ];
+                }),
+                'warehouses'                       => collect($row->warehouses)->transform(function ($row) use ($warehouse) {
+                    return [
+                        'warehouse_description' => $row->getWarehouseDescription(),
+                        'stock'                 => (!empty($row->stock)) ? $row->stock : 0,
+                        'warehouse_id'          => $row->warehouse_id,
+                        'checked'               => ($row->warehouse_id == $warehouse->id) ? true : false,
+                    ];
+                }),
+                'attributes'                       => $row->attributes ? $row->attributes : [],
+                'lots_group'                       => collect($row->lots_group)->transform(function ($row) {
+                    return [
+                        'id'          => $row->id,
+                        'code'        => $row->code,
+                        'quantity'    => $row->quantity,
+                        'date_of_due' => $row->date_of_due,
                             'checked'  => false
-                        ];
-                    }),
-                    'lots' => [],
-                    // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
-                    //     return [
-                    //         'id' => $row->id,
-                    //         'series' => $row->series,
-                    //         'date' => $row->date,
-                    //         'item_id' => $row->item_id,
-                    //         'warehouse_id' => $row->warehouse_id,
-                    //         'has_sale' => (bool)$row->has_sale,
-                    //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
-                    //     ];
-                    // }),
-                    'lots_enabled' => (bool) $row->lots_enabled,
-                    'series_enabled' => (bool) $row->series_enabled,
-                    'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
-                    'model' => $row->model,
-                ];
-            });
+                    ];
+                }),
+                'lots'                             => [],
+                // 'lots' => $row->item_lots->where('has_sale', false)->where('warehouse_id', $warehouse->id)->transform(function($row) {
+                //     return [
+                //         'id' => $row->id,
+                //         'series' => $row->series,
+                //         'date' => $row->date,
+                //         'item_id' => $row->item_id,
+                //         'warehouse_id' => $row->warehouse_id,
+                //         'has_sale' => (bool)$row->has_sale,
+                //         'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
+                //     ];
+                // }),
+                'lots_enabled'                     => (bool)$row->lots_enabled,
+                'series_enabled'                   => (bool)$row->series_enabled,
+                'has_plastic_bag_taxes'            => (bool)$row->has_plastic_bag_taxes,
+                'model'                            => $row->model,
+            ];
+        });
 
         return compact('items');
 
