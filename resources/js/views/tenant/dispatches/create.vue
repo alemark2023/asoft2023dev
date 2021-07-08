@@ -478,8 +478,18 @@
             await this.setDefaultCustomer()
 
             await this.createFromOrderForm()
+
+            this.$eventHub.$on('reloadDataPersons', (customer_id) => {
+                this.reloadDataCustomers(customer_id)
+            })
         },
         methods: {
+            reloadDataCustomers(customer_id) {
+                this.$http.get(`/documents/search/customer/${customer_id}`).then((response) => {
+                    this.customers = response.data.customers
+                    this.form.customer_id = customer_id
+                })
+            },
             changeTransport(){
                 let v =  _.find(this.dispachers, {'id': this.dispacher})
                 if(v !== undefined){
