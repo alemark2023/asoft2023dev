@@ -40,6 +40,7 @@ if ($hostname) {
             Route::get('services/ruc/{number}', 'Tenant\Api\ServiceController@ruc');
             Route::get('services/dni/{number}', 'Tenant\Api\ServiceController@dni');
             Route::post('services/consult_cdr_status', 'Tenant\Api\ServiceController@consultCdrStatus');
+            Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
             Route::post('perceptions', 'Tenant\Api\PerceptionController@store');
 
             Route::post('documents_server', 'Tenant\Api\DocumentController@storeServer');
@@ -47,7 +48,6 @@ if ($hostname) {
         });
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
-        Route::post('services/validate_cpe', 'Tenant\Api\ServiceController@validateCpe');
         // Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
         Route::post('documents/status', 'Tenant\Api\ServiceController@documentStatus');
 
