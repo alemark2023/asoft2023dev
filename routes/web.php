@@ -37,6 +37,7 @@ if ($hostname) {
             Route::get('list-incomes', 'Tenant\SettingController@listIncomes');
             Route::get('list-payments', 'Tenant\SettingController@listPayments');
             Route::get('list-vouchers-type', 'Tenant\SettingController@listVouchersType');
+            Route::get('list-transfer-reason-types', 'Tenant\SettingController@listTransferReasonTypes');
 
             Route::get('advanced', 'Tenant\AdvancedController@index')->name('tenant.advanced.index');
 
@@ -326,6 +327,12 @@ if ($hostname) {
             Route::get('unit_types/record/{code}', 'Tenant\UnitTypeController@record');
             Route::post('unit_types', 'Tenant\UnitTypeController@store');
             Route::delete('unit_types/{code}', 'Tenant\UnitTypeController@destroy');
+            
+            //Transfer Reason Types
+            Route::get('transfer-reason-types/records', 'Tenant\TransferReasonTypeController@records');
+            Route::get('transfer-reason-types/record/{code}', 'Tenant\TransferReasonTypeController@record');
+            Route::post('transfer-reason-types', 'Tenant\TransferReasonTypeController@store');
+            Route::delete('transfer-reason-types/{code}', 'Tenant\TransferReasonTypeController@destroy');
 
             //Detractions
             Route::get('detraction_types/records', 'Tenant\DetractionTypeController@records');

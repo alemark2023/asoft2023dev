@@ -77,6 +77,9 @@
                     <li>
                         <a href="{{url('list-units')}}">Listado de unidades</a>
                     </li>
+                    <li>
+                        <a href="{{url('list-transfer-reason-types')}}">Tipos de motivos de transferencias</a>
+                    </li>
                     @endif
                 </ul>
             </div>

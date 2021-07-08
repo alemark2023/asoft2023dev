@@ -64,7 +64,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.transport_mode_type_id}" class="form-group">
-                                <label class="control-label">Modo de translado<span
+                                <label class="control-label">Modo de traslado<span
                                     class="text-danger"> *</span></label>
                                 <el-select v-model="form.transport_mode_type_id">
                                     <el-option v-for="option in transportModeTypes" :key="option.id" :label="option.description"
@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.transfer_reason_type_id}" class="form-group">
-                                <label class="control-label">Motivo de translado<span
+                                <label class="control-label">Motivo de traslado<span
                                     class="text-danger"> *</span></label>
                                 <el-select v-model="form.transfer_reason_type_id">
                                     <el-option v-for="option in transferReasonTypes" :key="option.id" :label="option.description"

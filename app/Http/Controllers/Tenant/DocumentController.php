@@ -487,9 +487,14 @@ class DocumentController extends Controller
             foreach ($notes as $note) {
                 $noteArray = explode('-', $note);
                 if (count($noteArray) === 2) {
-                    SaleNote::where('series', $noteArray[0])
-                        ->where('number', $noteArray[1])
-                        ->update(['document_id' => $documentId]);
+                    $sale_note = SaleNote::where([
+                                                     'series'=> $noteArray[0],
+                                                     'number'=> $noteArray[1],
+                                                 ])->first();
+                    if(!empty($sale_note)) {
+                        $sale_note->document_id = $documentId;
+                        $sale_note->push();
+                    }
                 }
             }
         }

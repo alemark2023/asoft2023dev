@@ -467,7 +467,8 @@ class DispatchController extends Controller
         });
 
         $series = Series::where('establishment_id', $establishment->id)->get();
-        $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
+        $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
+        // $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
         $payment_method_types = PaymentMethodType::all();
         $payment_destinations = $this->getPaymentDestinations();
         $affectation_igv_types = AffectationIgvType::whereActive()->get();

@@ -4,6 +4,7 @@ namespace Modules\Inventory\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
+use DB;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Company;
@@ -40,18 +41,55 @@ class ReportInventoryController extends Controller
     public function records(Request $request)
     {
         $warehouse_id = $request->input('warehouse_id');
+        $brand_id = (int)$request->brand_id;
+        $category_id = (int)$request->category_id;
         $filter = $request->input('filter');
 
         $records = $this->getRecords($warehouse_id);
-        if ($request->has('brand_id') && (int)$request->brand_id != 0) {
-            $records->where('items.brand_id', $request->brand_id);
+
+        if ($brand_id != 0) {
+            $records->where('items.brand_id', $brand_id);
         }
-        if ($request->has('category_id') && (int)$request->category_id != 0) {
-            $records->where('items.category_id', $request->category_id);
+        if ($category_id != 0) {
+            $records->where('items.category_id', $category_id);
         }
         $records->orderBy('items.name','desc');
-        $records = $records->latest()->get();
 
+        $records = $records->latest()->get()->transform(function($row) use ($filter,&$data) {
+            /** @var \Modules\Inventory\Models\ItemWarehouse $row */
+
+            $stock = $row->stock;
+            $add = true;
+            if ($filter === '02') {
+                $add = ($stock < 0);
+            }
+            if ($filter === '03') {
+                $add = ($stock == 0);
+            }
+            if ($filter === '04') {
+                $add = ($stock > 0 && $stock <= $row->item->stock_min);
+            }
+            if ($filter === '05') {
+                $add = ($stock > $row->item->stock_min);
+            }
+            if ($add) {
+                $data[] = [
+                    'barcode' => $row->item->barcode,
+                    'internal_id' => $row->item->internal_id,
+                    'name' => $row->item->description,
+                    'item_category_name' => optional($row->item->category)->name,
+                    'stock_min' => $row->item->stock_min,
+                    'stock' => $stock,
+                    'sale_unit_price' => $row->item->sale_unit_price,
+                    'purchase_unit_price' => $row->item->purchase_unit_price,
+                    'brand_name' => $row->item->brand->name,
+                    'date_of_due' => optional($row->item->date_of_due)->format('d/m/Y'),
+                    'warehouse_name' => $row->warehouse->description
+                ];
+            }
+        });
+
+        return $data;
 //        return $records;
 
         $data = [];
@@ -101,17 +139,24 @@ class ReportInventoryController extends Controller
 //        });
     }
 
-    private function getRecords($warehouse_id)
-    {
-        $query =  ItemWarehouse::with(['item', 'item.category', 'item.brand'])
-            ->whereHas('item', function ($q) {
-                $q->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
-                    ->whereNotIsSet();
-            })
-            ->join('items', 'items.id', 'item_warehouse.item_id')
-            ->select(\DB::raw('item_warehouse.*'));
-        if($warehouse_id != 0){
-            $query->where('item_warehouse.warehouse_id',$warehouse_id);
+    /**
+     * @param int $warehouse_id Id de almacen
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|mixed|\Modules\Inventory\Models\ItemWarehouse
+     */
+    private function getRecords($warehouse_id = 0) {
+        $query = ItemWarehouse::with(['item', 'item.category', 'item.brand'])
+                              ->whereHas('item', function ($q) {
+                                  $q->where([
+                                                ['item_type_id', '01'],
+                                                ['unit_type_id', '!=', 'ZZ'],
+                                            ])
+                                    ->whereNotIsSet();
+                              })
+                              ->join('items', 'items.id', 'item_warehouse.item_id')
+                              ->select(DB::raw('item_warehouse.*'));
+        if ($warehouse_id != 0) {
+            $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }
         return $query;
 

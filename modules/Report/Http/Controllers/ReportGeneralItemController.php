@@ -82,6 +82,22 @@ class ReportGeneralItemController extends Controller
     }
 
 
+    /**
+     * @param $date_start
+     * @param $date_end
+     * @param $document_type_id
+     * @param $data_type
+     * @param $person_id
+     * @param $type_person
+     * @param $item_id
+     * @param $web_platform_id
+     * @param $brand_id
+     * @param $category_id
+     * @param $user_id
+     * @param $user_type
+     *
+     * @return \App\Models\Tenant\SaleNoteItem|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
+     */
     private function dataItems($date_start, $date_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type)
     {
         /* columna state_type_id */
@@ -204,12 +220,13 @@ class ReportGeneralItemController extends Controller
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $document_type_id = $request['document_type_id'];
+        $generalItemExport= new GeneralItemExport();
+        $generalItemExport
+            ->records($records)
+            ->type($request->type)
+            ->document_type_id($document_type_id);
 
-        return (new GeneralItemExport)
-                ->records($records)
-                ->type($request->type)
-                ->document_type_id($document_type_id)
-                ->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
+        return$generalItemExport->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
 
     }
 }

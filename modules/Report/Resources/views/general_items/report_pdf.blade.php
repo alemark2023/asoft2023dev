@@ -1,4 +1,46 @@
-<!DOCTYPE html>
+<?php
+    function getLocationData($value, $type = 'sale') {
+        $stablihsment = null;
+        $district = '';
+        $department = '';
+        $province = '';
+        $type_doc = null;
+        if($type == 'sale'){ $type_doc = $value->document; }
+        if (
+            $value &&
+            $type_doc &&
+            $type_doc->establishment
+        ) {
+            $stablihsment = $type_doc->establishment;
+        }
+
+        if($stablihsment != null) {
+            if (
+                $stablihsment->district &&
+                $stablihsment->district->description
+            ) {
+                $district = $stablihsment->district->description;
+            }
+            if (
+                $stablihsment->department &&
+                $stablihsment->department->description
+            ) {
+                $department = $stablihsment->department->description;
+            }
+            if (
+                $stablihsment->province &&
+                $stablihsment->province->description
+            ) {
+                $province = $stablihsment->province->description;
+            }
+        }
+        return [
+            'district' => $district,
+            'department'=>$department,
+            'province'=>$province,
+        ];
+    }
+?><!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
@@ -62,19 +104,32 @@
                 <div class=" ">
                     <table class="" style="table-layout:fixed;">
                         <thead>
+                        <?php
+                        $plus = 4;
+                        if($document_type_id != '80' && $type == 'sale'){
+                            // para añadir dpto, prov y dist se le resta 1 al width de 9 elementos
+                            $plus = 3;
+                        }
+
+                        ?>
                             <tr width="100%">
-                                <th style="width:6%;">FECHA DE EMISIÓN</th>
+                                <th style="width:{{$plus+2}}%;">FECHA DE EMISIÓN</th>
+                                @if($document_type_id != '80' && $type == 'sale')
+                                    <th style="width:3%;">DPTO</th>
+                                    <th style="width:3%;">PROV</th>
+                                    <th style="width:3%;">DIST</th>
+                                @endif
                                 <th style="width:4%;">SERIE</th>
                                 <th style="width:4%;">NÚMERO</th>
-                                <th style="width:6%;">DOC ENTIDAD TIPO DNI RUC</th>
-                                <th style="width:8%;">DOC ENTIDAD NÚMERO</th>
+                                <th style="width:{{$plus+2}}%;">DOC ENTIDAD TIPO DNI RUC</th>
+                                <th style="width:{{$plus+4}}%;">DOC ENTIDAD NÚMERO</th>
                                 <th style="width:11%;">DENOMINACIÓN ENTIDAD</th>
-                                <th style="width:4%;">MONEDA</th>
-                                <th style="width:5%;">UNIDAD DE MEDIDA</th>
-                                <th style="width:5%;">MARCA</th>
-                                <th style="width:12%;">DESCRIPCIÓN</th>
-                                <th style="width:5%;">CATEGORÍA</th>
-                                <th style="width:5%;">CANTIDAD</th>
+                                <th style="width:{{$plus}}%;">MONEDA</th>
+                                <th style="width:{{$plus+1}}%;">UNIDAD DE MEDIDA</th>
+                                <th style="width:{{$plus+1}}%;">MARCA</th>
+                                <th style="width:{{$plus+8}}%;">DESCRIPCIÓN</th>
+                                <th style="width:{{$plus+1}}%;">CATEGORÍA</th>
+                                <th style="width:{{$plus+1}}%;">CANTIDAD</th>
                                 <th style="width:5%;">PRECIO UNITARIO</th>
                                 <th style="width:5%;">TOTAL</th>
                                 @if($type == 'sale')
@@ -142,6 +197,12 @@
                                     <tr>
 
                                         <td class="celda">{{$value->document->date_of_issue->format('Y-m-d')}}</td>
+                                        @if($document_type_id != '80' && $type == 'sale')
+                                            <?php $stablihsment = getLocationData($value,$type); ?>
+                                            <td class="celda">{{$stablihsment['district']}}</td>
+                                            <td class="celda">{{$stablihsment['department']}}</td>
+                                            <td class="celda">{{$stablihsment['province']}}</td>
+                                        @endif
                                         <td class="celda">{{$value->document->series}}</td>
                                         <td class="celda">{{$value->document->number}}</td>
                                         <td class="celda">{{$value->document->customer->identity_document_type_id}}</td>

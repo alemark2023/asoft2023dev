@@ -20,6 +20,18 @@ if($hostname) {
             });
 
             Route::prefix('inventory')->group(function () {
+                /**
+                 * inventory/
+                 * inventory/records
+                 * inventory/columns
+                 * inventory/tables
+                 * inventory/tables/transaction/{type}
+                 * inventory/record/{inventory}
+                 * inventory/
+                 * inventory/transaction
+                 * inventory/move
+                 * inventory/move-multilple
+                 */
                 Route::get('/', 'InventoryController@index')->name('inventory.index');
                 Route::get('records', 'InventoryController@records');
                 Route::get('columns', 'InventoryController@columns');
@@ -30,7 +42,13 @@ if($hostname) {
                 Route::post('/transaction', 'InventoryController@store_transaction');
                 Route::post('move', 'InventoryController@move');
                 Route::post('move-multilple', 'InventoryController@moveMultiples');
-
+                /**
+                 * inventory/moves
+                 * inventory/remove
+                 * inventory/initialize
+                 * inventory/regularize_stock
+                 * inventory/search_items
+                 */
                 Route::get('moves', 'MovesController@index')->name('inventory.moves.index');
 
                 Route::post('remove', 'InventoryController@remove');
@@ -38,7 +56,11 @@ if($hostname) {
                 Route::get('regularize_stock', 'InventoryController@regularize_stock');
 
                 Route::post('search_items', 'InventoryController@searchItems');
-
+                /*
+                 * inventory/report/tables
+                 * inventory/report/records
+                 * inventory/report/export
+                 */
                 Route::prefix('report')->group(function () {
                     Route::get('tables', 'ReportInventoryController@tables');
                     Route::post('records', 'ReportInventoryController@records');
