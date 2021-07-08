@@ -1,6 +1,6 @@
 <?php
 function getLocationData($value, $type = 'sale') {
-    $stablihsment = null;
+    $customer = null;
     $district = '';
     $department = '';
     $province = '';
@@ -11,29 +11,29 @@ function getLocationData($value, $type = 'sale') {
     if (
         $value &&
         $type_doc &&
-        $type_doc->establishment
+        $type_doc->customer
     ) {
-        $stablihsment = $type_doc->establishment;
+        $customer = $type_doc->customer;
     }
 
-    if ($stablihsment != null) {
+    if ($customer != null) {
         if (
-            $stablihsment->district &&
-            $stablihsment->district->description
+            $customer->district &&
+            $customer->district->description
         ) {
-            $district = $stablihsment->district->description;
+            $district = $customer->district->description;
         }
         if (
-            $stablihsment->department &&
-            $stablihsment->department->description
+            $customer->department &&
+            $customer->department->description
         ) {
-            $department = $stablihsment->department->description;
+            $department = $customer->department->description;
         }
         if (
-            $stablihsment->province &&
-            $stablihsment->province->description
+            $customer->province &&
+            $customer->province->description
         ) {
-            $province = $stablihsment->province->description;
+            $province = $customer->province->description;
         }
     }
     return [
