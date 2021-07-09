@@ -53,6 +53,7 @@
         >
           {{ errors.dispatches_id[0] }}
         </div>
+        <div style="overflow-y: auto;">
         <table class="table table-hover table-stripe">
           <thead>
             <tr>
@@ -78,6 +79,7 @@
             </tr>
           </tbody>
         </table>
+        </div>
         <div class="text-center">
           <el-button
             v-if="form.selecteds.length > 0"
