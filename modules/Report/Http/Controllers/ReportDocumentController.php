@@ -90,15 +90,15 @@ class ReportDocumentController extends Controller
             $categories_services = $this->getCategories($records, true);
         }
 
-
-        return (new DocumentExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->filters($filters)
-                ->categories($categories)
-                ->categories_services($categories_services)
-                ->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
+        $documentExport = new DocumentExport();
+        $documentExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->categories($categories)
+            ->categories_services($categories_services);
+        return $documentExport->download('Reporte_Ventas_'.Carbon::now().'.xlsx');
 
     }
 
