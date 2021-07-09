@@ -62,52 +62,33 @@ class ToPay
             ->select('purchase_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('purchase_id');
 
+        $purchases = DB::connection('tenant')
+                       ->table('purchases')
+            ->whereIn('state_type_id', ['01','03','05','07','13'])
+            ->whereIn('document_type_id', ['01','03','GU75', 'NE76'])
+            ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
+            ->leftJoinSub($purchase_payments, 'payments', function ($join) {
+                $join->on('purchases.id', '=', 'payments.purchase_id');
+            })
+            ->where('purchases.establishment_id', $establishment_id);
+        $select = DB::raw('purchases.id as id, '.
+                          "DATE_FORMAT(purchases.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
+                          "DATE_FORMAT(purchases.date_of_due, '%Y/%m/%d') as date_of_due, ".
+                          'persons.name as supplier_name, persons.id as supplier_id, purchases.document_type_id, '.
+                          "CONCAT(purchases.series,'-',purchases.number) AS number_full, ".
+                          'purchases.total as total, '.
+                          'purchases.user_id as user_id, '.
+                          'IFNULL(payments.total_payment, 0) as total_payment, '.
+                          "'purchase' AS 'type', ".'purchases.currency_type_id, '.'purchases.exchange_rate_sale');
+        $purchases->select($select);
+
         if($d_start && $d_end){
             // ->join('users', 'users.name', 'like', "%{$user}%")
-            $purchases = DB::connection('tenant')
-                ->table('purchases')
-                // ->where('supplier_id', $supplier_id)
-                // ->where('user_id', $user)
-                ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
-                ->leftJoinSub($purchase_payments, 'payments', function ($join) {
-                    $join->on('purchases.id', '=', 'payments.purchase_id');
-                })
-                ->whereIn('state_type_id', ['01','03','05','07','13'])
-                ->whereIn('document_type_id', ['01','03','GU75', 'NE76'])
-                ->select(DB::raw("purchases.id as id, ".
-                                    "DATE_FORMAT(purchases.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
-                                    "DATE_FORMAT(purchases.date_of_due, '%Y/%m/%d') as date_of_due, ".
-                                    "persons.name as supplier_name, persons.id as supplier_id, purchases.document_type_id,".
-                                    "CONCAT(purchases.series,'-',purchases.number) AS number_full, ".
-                                    "purchases.total as total, ".
-                                    "purchases.user_id as user_id, ".
-                                    "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "'purchase' AS 'type', ". "purchases.currency_type_id, " . "purchases.exchange_rate_sale"))
-                ->where('purchases.establishment_id', $establishment_id)
-                ->whereBetween('purchases.date_of_issue', [$d_start, $d_end]);
-
-        }else{
-
-            $purchases = DB::connection('tenant')
-                ->table('purchases')
-                // ->where('supplier_id', $supplier_id)
-                // ->where('user_id', $user)
-                ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
-                ->leftJoinSub($purchase_payments, 'payments', function ($join) {
-                    $join->on('purchases.id', '=', 'payments.purchase_id');
-                })
-                ->whereIn('state_type_id', ['01','03','05','07','13'])
-                ->whereIn('document_type_id', ['01','03','GU75', 'NE76'])
-                ->select(DB::raw("purchases.id as id, ".
-                                    "DATE_FORMAT(purchases.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
-                                    "DATE_FORMAT(purchases.date_of_due, '%Y/%m/%d') as date_of_due, ".
-                                    "persons.name as supplier_name, persons.id as supplier_id, purchases.document_type_id, ".
-                                    "CONCAT(purchases.series,'-',purchases.number) AS number_full, ".
-                                    "purchases.total as total, ".
-                                 "purchases.user_id as user_id, ".
-                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "'purchase' AS 'type', ". "purchases.currency_type_id, " . "purchases.exchange_rate_sale"))
-                ->where('purchases.establishment_id', $establishment_id);
+            // ->where('supplier_id', $supplier_id)
+            // ->where('user_id', $user)
+            $purchases
+                ->whereBetween('purchases.date_of_issue', [$d_start, $d_end])
+            ;
 
         }
         if ($supplier_id !== 0) {
@@ -120,51 +101,39 @@ class ToPay
         $expense_payments = DB::table('expense_payments')
             ->select('expense_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('expense_id');
-
+        $expenses = DB::connection('tenant')
+                      ->table('expenses')
+            ->join('persons', 'persons.id', '=', 'expenses.supplier_id')
+            ->leftJoinSub($expense_payments, 'payments', function ($join) {
+                $join->on('expenses.id', '=', 'payments.expense_id');
+            })
+            ->whereIn('state_type_id', ['01','03','05','07','13'])
+            ->where('expenses.establishment_id', $establishment_id)
+        ;
+        $select = 'expenses.id as id, '.
+            "DATE_FORMAT(expenses.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
+            'null as date_of_due, '.
+            'persons.name as supplier_name, persons.id as supplier_id, null as document_type_id, '.
+            'expenses.number as number_full, '.
+            'expenses.total as total, '.
+            'expenses.user_id as user_id, '.
+            'IFNULL(payments.total_payment, 0) as total_payment, ';
         if($d_start && $d_end){
-
-            $expenses = DB::connection('tenant')
-                ->table('expenses')
+            $expenses
                 // ->where('supplier_id', $supplier_id)
-                ->join('persons', 'persons.id', '=', 'expenses.supplier_id')
-                ->leftJoinSub($expense_payments, 'payments', function ($join) {
-                    $join->on('expenses.id', '=', 'payments.expense_id');
-                })
-                ->whereIn('state_type_id', ['01','03','05','07','13'])
-                ->select(DB::raw("expenses.id as id, ".
-                                "DATE_FORMAT(expenses.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
-                                "null as date_of_due, ".
-                                "persons.name as supplier_name, persons.id as supplier_id, null as document_type_id, ".
-                                "expenses.number as number_full, ".
-                                 'expenses.user_id as user_id, '.
-                                 "expenses.total as total, ".
-                                "IFNULL(payments.total_payment, 0) as total_payment, ".
+                ->select(DB::raw($select.
                                 "'expense' AS 'type', " . "expenses.currency_type_id, " . "expenses.exchange_rate_sale"))
-                ->where('expenses.establishment_id', $establishment_id)
                 // ->where('expenses.changed', false)
                 ->whereBetween('expenses.date_of_issue', [$d_start, $d_end]);
                 // ->where('expenses.total_canceled', false);
 
         }else{
 
-            $expenses = DB::connection('tenant')
-                ->table('expenses')
+            $expenses
                 // ->where('supplier_id', $supplier_id)
-                ->join('persons', 'persons.id', '=', 'expenses.supplier_id')
-                ->leftJoinSub($expense_payments, 'payments', function ($join) {
-                    $join->on('expenses.id', '=', 'payments.expense_id');
-                })
-                ->whereIn('state_type_id', ['01','03','05','07','13'])
-                ->select(DB::raw("expenses.id as id, ".
-                                "DATE_FORMAT(expenses.date_of_issue, '%Y/%m/%d') as date_of_issue, ".
-                                "null as date_of_due, ".
-                                "persons.name as supplier_name, persons.id as supplier_id, null as document_type_id, ".
-                                "expenses.number as number_full, ".
-                                 'expenses.user_id as user_id, '.
-                                 "expenses.total as total, ".
-                                "IFNULL(payments.total_payment, 0) as total_payment, ".
+                ->select(DB::raw($select.
                                 "'sale_note' AS 'type', " . "expenses.currency_type_id, " . "expenses.exchange_rate_sale"))
-                ->where('expenses.establishment_id', $establishment_id);
+                ;
                 // ->where('expenses.changed', false)
                 // ->where('expenses.total_canceled', false);
         }
@@ -174,14 +143,13 @@ class ToPay
         if ($user !== 0) {
             $purchases->where('user_id', $user);
             $expenses->where('user_id', $user);
-        }else{
-            if(auth()->user()->type!=='admin'){
+        }else {
+            if (auth()->user()->type !== 'admin') {
                 $purchases->where('user_id', $user);
                 $expenses->where('user_id', $user);
 
             }
         }
-
         $records = $purchases->union($expenses)->get();
 
         return $records->transform(function($row) {
