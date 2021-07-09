@@ -315,7 +315,7 @@
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="14"></td>
+                                <td colspan="15"></td>
                                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
@@ -331,7 +331,7 @@
                                 <td>{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td colspan="14"></td>
+                                <td colspan="15"></td>
                                 <td >Totales USD</td>
                                 <td></td>
                                 <td></td>

@@ -55,14 +55,23 @@
                     });
 
 
-                    Route::get('sales', 'ReportDocumentController@index')->name('tenant.reports.sales.index')
-                         ->middleware('tenant.internal.mode');
-                    Route::get('sales/pdf', 'ReportDocumentController@pdf')->name('tenant.reports.sales.pdf');
-                    Route::get('sales/excel', 'ReportDocumentController@excel')->name('tenant.reports.sales.excel');
-                    Route::get('sales/filter', 'ReportDocumentController@filter')->name('tenant.reports.sales.filter');
-                    Route::get('sales/records', 'ReportDocumentController@records')
-                         ->name('tenant.reports.sales.records');
-
+                   /**
+                    * /reports/sales
+                    * /reports/sales/pdf
+                    * /reports/sales/filter
+                    * /reports/sales/excel
+                    * /reports/sales/records
+                    */
+                   Route::prefix('sales')->group(function () {
+                       Route::get('', 'ReportDocumentController@index')->name('tenant.reports.sales.index')
+                            ->middleware('tenant.internal.mode');
+                       Route::get('/pdf', 'ReportDocumentController@pdf')->name('tenant.reports.sales.pdf');
+                       Route::get('/excel', 'ReportDocumentController@excel')->name('tenant.reports.sales.excel');
+                       Route::get('/filter', 'ReportDocumentController@filter')
+                            ->name('tenant.reports.sales.filter');
+                       Route::get('/records', 'ReportDocumentController@records')
+                            ->name('tenant.reports.sales.records');
+                   });
                     Route::get('sale-notes', 'ReportSaleNoteController@index')->name('tenant.reports.sale_notes.index');
                     Route::get('sale-notes/pdf', 'ReportSaleNoteController@pdf')->name('tenant.reports.sale_notes.pdf');
                     Route::get('sale-notes/excel', 'ReportSaleNoteController@excel')

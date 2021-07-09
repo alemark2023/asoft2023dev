@@ -47,14 +47,24 @@ if($hostname) {
                 Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
 
 
-                Route::get('to-pay', 'ToPayController@index')->name('tenant.finances.to_pay.index');
-                Route::get('to-pay/filter', 'ToPayController@filter');
-                Route::post('to-pay/records', 'ToPayController@records');
-                Route::get('to-pay/to-pay-all', 'ToPayController@toPayAll')->name('toPayAll');
-                Route::get('to-pay/to-pay', 'ToPayController@toPay');
-                Route::get('to-pay/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
-                Route::get('to-pay/pdf', 'ToPayController@pdf');
-
+                /**
+                 * finances/to-pay/
+                 * finances/to-pay/filter
+                 * finances/to-pay/records
+                 * finances/to-pay/to-pay-all
+                 * finances/to-pay/to-pay
+                 * finances/to-pay/report-payment-method-days
+                 * finances/to-pay/pdf
+                 */
+                Route::prefix('to-pay')->group(function () {
+                    Route::get('', 'ToPayController@index')->name('tenant.finances.to_pay.index');
+                    Route::get('/filter', 'ToPayController@filter');
+                    Route::post('/records', 'ToPayController@records');
+                    Route::get('/to-pay-all', 'ToPayController@toPayAll')->name('toPayAll');
+                    Route::get('/to-pay', 'ToPayController@toPay');
+                    Route::get('/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
+                    Route::get('/pdf', 'ToPayController@pdf');
+                });
 
                 Route::prefix('income')->group(function () {
 
