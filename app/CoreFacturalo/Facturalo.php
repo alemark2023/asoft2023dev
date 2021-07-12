@@ -363,14 +363,14 @@ class Facturalo
 
             //ajustes para footer amazonia
 
-            if($format_pdf === 'ticket') {
+            if($this->configuration->legend_footer AND $format_pdf === 'ticket') {
                 $height_legend = 15;
-            } elseif($format_pdf === 'ticket_58') {
+            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_58') {
                 $height_legend = 30;
-            } elseif($format_pdf === 'ticket_50') {
+            } elseif($this->configuration->legend_footer AND $format_pdf === 'ticket_50') {
                 $height_legend = 50;
             } else {
-                $height_legend = 0;
+                $height_legend = 10;
             }
 
             $pdf = new Mpdf([
@@ -538,6 +538,7 @@ class Facturalo
                 }
                 // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
                 // se quiere visuzalizar ahora la legenda amazona en todos los formatos
+                $html_footer_legend = '';
                 if($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03'])){
                     $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
                 }
