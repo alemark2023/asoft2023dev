@@ -117,9 +117,9 @@
                             <tr width="100%">
                                 <th style="width:{{$plus+2}}%;">FECHA DE EMISIÓN</th>
                                 @if($document_type_id != '80' && $type == 'sale')
+                                    <th style="width:3%;">DIST</th>
                                     <th style="width:3%;">DPTO</th>
                                     <th style="width:3%;">PROV</th>
-                                    <th style="width:3%;">DIST</th>
                                 @endif
                                 <th style="width:4%;">SERIE</th>
                                 <th style="width:4%;">NÚMERO</th>
