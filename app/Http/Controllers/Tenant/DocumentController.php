@@ -103,7 +103,10 @@ class DocumentController extends Controller
                             ->whereIn('identity_document_type_id',$identity_document_type_id)
                             ->whereIsEnabled()
                             ->get()->transform(function($row) {
-                                return [
+                /** @var  Person $row */
+                return $row->getCollectionData();
+                /* Movido al modelo */
+                return [
                                     'id' => $row->id,
                                     'description' => $row->number.' - '.$row->name,
                                     'name' => $row->name,
@@ -740,6 +743,9 @@ class DocumentController extends Controller
         $customers = Person::with('addresses')->whereType('customers')
                     ->where('id',$id)
                     ->get()->transform(function($row) {
+                        /** @var  Person $row */
+                        return $row->getCollectionData();
+                        /* Movido al modelo */
                         return [
                             'id' => $row->id,
                             'description' => $row->number.' - '.$row->name,
