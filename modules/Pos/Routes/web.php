@@ -16,6 +16,12 @@ if($current_hostname) {
 
             Route::prefix('cash')->group(function() {
 
+                /*
+                 * cash/report-a4/{cash}
+                 * cash/report-ticket/{cash}
+                 * cash/report-excel/{cash}
+                 * cash/email
+                 */
                 Route::get('report-a4/{cash}', 'CashController@reportA4');
                 Route::get('report-ticket/{cash}', 'CashController@reportTicket');
                 Route::get('report-excel/{cash}', 'CashController@reportExcel');

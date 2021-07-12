@@ -60,9 +60,9 @@ function getLocationData($value, $type = 'sale') {
                             <tr>
                                 <th>FECHA DE EMISIÓN</th>
                                 @if($document_type_id != '80' && $type == 'sale')
-                                <th>DEPARTAMENTO</th>
-                                <th>PROVINCIA</th>
-                                <th>DISTRITO</th>
+                                    <th>DISTRITO</th>
+                                    <th>DEPARTAMENTO</th>
+                                    <th>PROVINCIA</th>
                                 @endif
                                 <th>TIPO DOCUMENTO</th>
                                 <th>ID TIPO</th>
