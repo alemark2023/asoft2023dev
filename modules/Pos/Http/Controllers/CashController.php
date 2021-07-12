@@ -317,27 +317,31 @@ class CashController extends Controller
                     'tipo' => 'expense_payment',
                 ];
             }
-            
+
             /** Documentos de Tipo compras */
             else if ($cash_document->purchase) {
 
+                /**
+                 * @var \App\Models\Tenant\CashDocument $cash_document
+                 * @var \App\Models\Tenant\Purchase $purchase
+                 * @var \Illuminate\Database\Eloquent\Collection $payments
+                 */
                 $purchase = $cash_document->purchase;
 
                 if (in_array($purchase->state_type_id, $status_type_id)) {
 
+                    $payments = $purchase->purchase_payments;
                     $record_total = 0;
-                    $total = self::CalculeTotalOfCurency($purchase->total, $purchase->currency_type_id, $purchase->exchange_rate_sale);
-
-                    $cash_egress += $total;
-                    $final_balance -= $total;
-
-                    if (count($purchase->payments) > 0) {
-
-                        $pays = $purchase->payments;
-
+                    // $total = self::CalculeTotalOfCurency($purchase->total, $purchase->currency_type_id, $purchase->exchange_rate_sale);
+                    // $cash_egress += $total;
+                    // $final_balance -= $total;
+                    if (count($payments) > 0) {
+                        $pays = $payments;
                         foreach ($methods_payment as $record) {
                             $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
                             $record->sum = ($record->sum - $record_total);
+                            $cash_egress += $record_total;
+                            $final_balance -= $record_total;
                         }
 
                     }

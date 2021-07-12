@@ -233,11 +233,11 @@
 
                                                 <tr v-if="form.total > 0">
                                                     <td>OTROS CARGOS:</td>
-                                                    <td>{{ currency_type.symbol }} 
+                                                    <td>{{ currency_type.symbol }}
                                                         <el-input-number class="input-custom" v-model="total_global_charge" controls-position="right" @change="calculateTotal" :min="0" :disabled="configuration.active_allowance_charge == 1 ? true:false"></el-input-number>
                                                     </td>
                                                 </tr>
-                                                
+
                                                 <tr v-if="form.total > 0">
                                                     <td><strong>TOTAL A PAGAR</strong>:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total }}</td>
@@ -1129,7 +1129,7 @@ export default {
                 // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
             },
             updateChangeDestinationSale() {
-                
+
                 if(this.form.payment_condition_id == '01'){
 
                     if(this.configuration.destination_sale && this.payment_destinations.length > 0) {
@@ -1155,9 +1155,9 @@ export default {
                             return obs;
                         }
                     }
-                    
+
                     obs = data.join('|')
-                     
+
                 }
                 // if (typeof data === 'object') {
                 //     if (data[0]) {
@@ -1169,7 +1169,7 @@ export default {
                 return obs;
             },
             onPrepareItems(items) {
-                return items.map(i => { 
+                return items.map(i => {
 
                     i.unit_price_value = i.unit_value;
                     i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
@@ -1185,16 +1185,16 @@ export default {
                 });
             },
             onPrepareIndividualItem(data) {
-                
+
                 let new_item = data.item
                 let currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
 
                 new_item.currency_type_id = currency_type.id
                 new_item.currency_type_symbol = currency_type.symbol
- 
+
                 new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
-                new_item.sale_unit_price = data.unit_price 
-                new_item.unit_price = data.unit_price 
+                new_item.sale_unit_price = data.unit_price
+                new_item.unit_price = data.unit_price
 
                 return new_item
             },
@@ -1857,25 +1857,25 @@ export default {
                 this.filterSeries()
                 this.selectDefaultCustomer()
             },
-            async selectDefaultCustomer(){
+            async selectDefaultCustomer() {
 
-                if(this.establishment.customer_id){
+                if (this.establishment.customer_id) {
 
-                    let temp_all_customers =   this.all_customers;
-                    let temp_customers =  this.customers;
+                    let temp_all_customers = this.all_customers;
+                    let temp_customers = this.customers;
                     await this.$http.get(`/${this.resource}/search/customer/${this.establishment.customer_id}`).then((response) => {
-                        temp_all_customers = [...this.all_customers,...response.data.customers]
-                        temp_customers = [...this.customers,...response.data.customers]
-                        // this.all_customers = response.data.customers
+                        let data_customer = response.data.customers
+                        temp_all_customers = temp_all_customers.push(...data_customer)
+                        temp_customers = temp_customers.push(...data_customer)
                     })
-                    temp_all_customers =  this.all_customers.filter((item, index, self) =>
+                    temp_all_customers = this.all_customers.filter((item, index, self) =>
                         index === self.findIndex((t) => (
-                             t.id === item.id
+                            t.id === item.id
                         ))
                     )
-                    temp_customers =  this.customers.filter((item, index, self) =>
+                    temp_customers = this.customers.filter((item, index, self) =>
                         index === self.findIndex((t) => (
-                             t.id === item.id
+                            t.id === item.id
                         ))
                     )
                     this.all_customers = temp_all_customers;
@@ -1886,10 +1886,7 @@ export default {
                     if (alt !== undefined) {
                         this.form.customer_id = this.establishment.customer_id
                     }
-
-
-                    }
-
+                }
             },
             changeDocumentType() {
                 this.filterSeries();
@@ -1978,7 +1975,7 @@ export default {
             changeCurrencyType() {
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 let items = []
-                this.form.items.forEach((row) => { 
+                this.form.items.forEach((row) => {
                     items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale))
                 });
                 this.form.items = items
@@ -2128,7 +2125,7 @@ export default {
 
 
 
- 
+
             },
             deleteChargeGlobal(){
 
