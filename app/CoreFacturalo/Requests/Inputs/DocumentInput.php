@@ -143,6 +143,7 @@ class DocumentInput
             $items = [];
             foreach ($inputs['items'] as $row) {
                 $item = Item::query()->find($row['item_id']);
+                /** @var Item $item */
                 $items[] = [
                     'item_id' => $item->id,
                     'item' => [
@@ -158,6 +159,8 @@ class DocumentInput
                         'lots' => self::lots($row),
                         'IdLoteSelected' => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
                         'model' => $item->model,
+                        'sanitary' => $item->sanitary,
+                        'cod_digemid' => $item->cod_digemid,
                         'date_of_due' => (!empty($item->date_of_due)) ? $item->date_of_due->format('Y-m-d') : null,
                         'has_igv' => $row['item']['has_igv'] ?? true,
                         'unit_price' => $row['unit_price'] ?? 0,
