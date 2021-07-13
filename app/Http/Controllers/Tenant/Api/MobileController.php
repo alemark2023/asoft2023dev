@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Document;
 use App\Mail\Tenant\DocumentEmail;
 use Illuminate\Support\Facades\DB;
@@ -27,9 +28,11 @@ use Modules\Item\Http\Requests\ItemUpdateRequest;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Warehouse;
 use Modules\Inventory\Models\ItemWarehouse;
+use Modules\Finance\Traits\FinanceTrait;
 
 class MobileController extends Controller
 {
+    use  FinanceTrait;
 
     public function login(Request $request)
     {
@@ -48,6 +51,7 @@ class MobileController extends Controller
             'success' => true,
             'name' => $user->name,
             'email' => $user->email,
+            'seriedefault' => $user->series_id,
             'token' => $user->api_token,
             'ruc' => $company->number,
             'logo' => $company->logo
@@ -158,6 +162,14 @@ class MobileController extends Controller
                     });
 
     }
+
+    public function getPaymentmethod(){
+
+        $payment_method_type = PaymentMethodType::all();
+        $payment_destinations = $this->getPaymentDestinations(); 
+        return compact( 'payment_method_type','payment_destinations');
+    }
+
 
     public function document_email(Request $request)
     {

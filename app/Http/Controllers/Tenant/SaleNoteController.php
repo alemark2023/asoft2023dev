@@ -497,7 +497,7 @@ class SaleNoteController extends Controller
                 'mode' => 'utf-8',
                 'format' => [
                     $width,
-                    40 +
+                    60 +
                     (($quantity_rows * 8) + $extra_by_item_description) +
                     ($discount_global * 3) +
                     $company_logo +
@@ -623,8 +623,10 @@ class SaleNoteController extends Controller
                     $html_footer = $template->pdfFooter('default',$this->document);
                 }
                 $html_footer_legend = "";
-                if($this->configuration->legend_footer){
-                    $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
+                if ($base_template != 'legend_amazonia') {
+                    if($this->configuration->legend_footer){
+                        $html_footer_legend = $template->pdfFooterLegend($base_template, $this->document);
+                    }
                 }
                 $pdf->SetHTMLFooter($html_footer.$html_footer_legend);
             // }
