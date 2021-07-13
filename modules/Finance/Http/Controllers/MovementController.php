@@ -91,6 +91,37 @@ class MovementController extends Controller
     }
 
 
+    public function postPdf(Request $request){
+        $records = $request->data;
+        $order = $request->order;
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
+        $pdf = PDF::loadView('finance::movements.new_report_pdf',
+                             compact('records', 'company', 'establishment'))
+                  ->setPaper('a4', 'landscape');;
+
+
+        $filename = 'Reporte_Movimientos_'.date('YmdHis');
+
+        return $pdf->download($filename.'.pdf');
+    }
+
+    public function postExcel(Request $request) {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id)
+            : auth()->user()->establishment;
+        $records = $request->data;
+        $MovementExport = new MovementExport();
+        $MovementExport
+            ->records($records)
+            ->company($company)
+            ->setNewFormat(true)
+            ->establishment($establishment);
+
+        return $MovementExport->download('Reporte_Movimientos_'.Carbon::now().'.xlsx');
+    }
     public function excel(Request $request) {
 
         $company = Company::first();
