@@ -49,7 +49,7 @@
                 $type_movement = $row->type_movement;
                 $payments = $payment->payment;
 
-                if ($payment->associated_record_payment) {
+                if ($payment->associated_record_payment && $payment->associated_record_payment->date_of_issue) {
                     $timedate = $payment->associated_record_payment->date_of_issue->format('Y-m-d')." ".$payment->associated_record_payment->time_of_issue;
                     $timedate = Carbon::createFromFormat('Y-m-d H:i:s', $timedate)->toDateTimeString();
                 }
