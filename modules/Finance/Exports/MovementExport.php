@@ -38,7 +38,35 @@ class MovementExport implements FromView, ShouldAutoSize, WithTitle
         return $this;
     }
 
+    /**
+     * @return bool
+     */
+    public function isNewFormat(){
+        if(!property_exists($this,'newFormat')){
+            $this->newFormat = false;
+        }
+        return (bool) $this->newFormat;
+    }
+
+    /**
+     * @param bool $newFormat
+     *
+     * @return MovementExport
+     */
+    public function setNewFormat(bool $newFormat)
+    : MovementExport {
+        $this->newFormat = $newFormat;
+        return $this;
+    }
+
     public function view(): View {
+        if($this->isNewFormat()){
+            return view('finance::movements.new_report_excel', [
+                'records'=> $this->records,
+                'company' => $this->company,
+                'establishment'=>$this->establishment
+            ]);
+        }
         return view('finance::movements.report_excel', [
             'records'=> $this->records,
             'company' => $this->company,

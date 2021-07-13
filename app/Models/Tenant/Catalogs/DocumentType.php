@@ -83,4 +83,14 @@ class DocumentType extends ModelCatalog
     public function scopeOnlyAvaibleDocuments($query){
         return $query->OnlyActive()->wherein('id',['01', '03', '07', '08', '09', '20','40', '80']);
     }
+
+    /**
+     * Devuelve los elementos activos para compras
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDocumentsActiveToPurchase($query){
+        return $query->OnlyActive()->wherein('id', ['01', '02', '03', 'GU75', 'NE76', '14','07', '08']);
+    }
+
+
 }
