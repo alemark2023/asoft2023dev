@@ -71,6 +71,7 @@ class Dispatch extends ModelTenant
         'secondary_license_plates',
         'reference_sale_note_id',
         'soap_shipping_response',
+        'data_affected_document',
     ];
 
     protected $casts = [
@@ -293,7 +294,7 @@ class Dispatch extends ModelTenant
     {
         return $this->belongsTo(OrderForm::class, 'reference_order_form_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
@@ -330,7 +331,7 @@ class Dispatch extends ModelTenant
     {
         return $this->belongsTo(SaleNote::class, 'reference_sale_note_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -338,7 +339,7 @@ class Dispatch extends ModelTenant
     {
         return $this->belongsTo(OrderNote::class, 'reference_order_note_id');
     }
-    
+
 
     /**
      * Retorna un standar de nomenclatura para el modelo
@@ -408,6 +409,16 @@ class Dispatch extends ModelTenant
             return false;
         }
         return $temp->sent;
+    }
+
+    public function getDataAffectedDocumentAttribute($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setDataAffectedDocumentAttribute($value)
+    {
+        $this->attributes['data_affected_document'] = (is_null($value))?null:json_encode($value);
     }
 
 }
