@@ -705,12 +705,14 @@
                 this.$set(this.form.delivery, 'location_id', null);
             },
             addItem(form) {
-                let exist = this.form.items.find((item) => item.id == form.item.id);
+                let it = form.item;
+                let qty = form.quantity;
+                let exist = this.form.items.find((item) => item.id == it.id);
 
                 let attributes = null
 
-                if(form.item.attributes){
-                    attributes = form.item.attributes
+                if(it.attributes){
+                    attributes = it.attributes
                     this.incrementValueAttr(form)
                 }
 
@@ -719,18 +721,18 @@
                     return;
                 }
                 let lot_group = null;
-                if (form.item.IdLoteSelected) {
-                    lot_group = form.item.lots_group.find(l => l.id == form.item.IdLoteSelected);
+                if (it.IdLoteSelected) {
+                    lot_group = it.lots_group.find(l => l.id == it.IdLoteSelected);
                 }
                 this.form.items.push({
                     attributes: attributes,
-                    description: form.item.description,
-                    internal_id: form.item.internal_id,
+                    description: it.description,
+                    internal_id: it.internal_id,
                     quantity: form.quantity,
-                    item_id: form.item.id,
-                    unit_type_id: form.item.unit_type_id,
-                    id: form.item.id,
-                    IdLoteSelected: form.item.IdLoteSelected || '',
+                    item_id: it.id,
+                    unit_type_id: it.unit_type_id,
+                    id: it.id,
+                    IdLoteSelected: it.IdLoteSelected || '',
                     lot_group: lot_group || null,
                 });
             },
@@ -753,17 +755,29 @@
             },
             incrementValueAttr(form){
 
-                this.form.packages_number += parseFloat(form.quantity)
-
+                let qty = parseFloat(form.quantity)
+                let it = form.item
+                let attrib = it.attributes
+                this.form.packages_number += qty
                 let total_weight = 0
-
-                if(form.item.attributes){
-
-                    form.item.attributes.forEach(attr => {
+                if(attrib){
+                    for (const [key, value] of Object.entries(attrib)) {
+                        if(key === 'attributes'){
+                            let attr = JSON.parse(value)
+                            attr.forEach(attr => {
+                                if(attr.attribute_type_id === '5032'){
+                                    total_weight += parseFloat(attr.value) * qty
+                                }
+                            });
+                        }
+                    }
+                    /*
+                    attrib.attributes.forEach(attr => {
                         if(attr.attribute_type_id === '5032'){
-                            total_weight += parseFloat(attr.value) * parseFloat(form.quantity)
+                            total_weight += parseFloat(attr.value) * qty
                         }
                     });
+                    */
                 }
 
                 this.form.total_weight += total_weight
