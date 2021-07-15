@@ -738,17 +738,32 @@
             },
             decrementValueAttr(form){
 
-                this.form.packages_number -= parseFloat(form.quantity)
+
+
+                let it = form
+                let attrib = it.attributes
+                let qty = parseFloat(it.quantity)
+
+                //this.form.packages_number -= parseFloat(form.quantity)
+                this.form.packages_number -= qty
 
                 let total_weight = 0
 
-                if(form.attributes){
 
-                    form.attributes.forEach(attr => {
-                        if(attr.attribute_type_id === '5032'){
-                            total_weight -= parseFloat(attr.value) * parseFloat(form.quantity)
+
+                if(attrib){
+                    for (const [key, value] of Object.entries(attrib)) {
+                        if(key === 'attributes' &&  value !== null){
+                            let attr = JSON.parse(value)
+                            if(attr !== null) {
+                                attr.forEach(attr => {
+                                    if (attr.attribute_type_id === '5032') {
+                                        total_weight -= parseFloat(attr.value) * qty
+                                    }
+                                });
+                            }
                         }
-                    });
+                    }
                 }
 
                 this.form.total_weight += total_weight
@@ -762,13 +777,15 @@
                 let total_weight = 0
                 if(attrib){
                     for (const [key, value] of Object.entries(attrib)) {
-                        if(key === 'attributes'){
+                        if(key === 'attributes' &&  value !== null){
                             let attr = JSON.parse(value)
-                            attr.forEach(attr => {
-                                if(attr.attribute_type_id === '5032'){
-                                    total_weight += parseFloat(attr.value) * qty
-                                }
-                            });
+                            if(attr !== null) {
+                                attr.forEach(attr => {
+                                    if (attr.attribute_type_id === '5032') {
+                                        total_weight += parseFloat(attr.value) * qty
+                                    }
+                                });
+                            }
                         }
                     }
                     /*
