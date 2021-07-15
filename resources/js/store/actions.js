@@ -41,6 +41,10 @@ export default {
         if(state.customers === undefined) state.customers = [];
         // state.customers = readStorageData('customers', true)
     },
+    loadCurrencys(store) {
+        if(state.currencys === undefined) state.currencys = [];
+        // state.customers = readStorageData('customers', true)
+    },
     loadActions(store) {
         if(state.actions === undefined) state.actions = [];
         // state.actions = readStorageData('actions', true)

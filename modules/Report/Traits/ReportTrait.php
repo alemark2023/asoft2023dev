@@ -96,7 +96,7 @@ trait ReportTrait
      * @param      $purchase_order
      * @param null $guides
      *
-     * @return mixed
+     * @return \App\Models\Tenant\PurchaseItem|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
     private function data(
         $document_type_id,
