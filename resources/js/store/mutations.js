@@ -17,6 +17,9 @@ export default {
     setCustomers(state, customers) {
         state.customers = customers
     },
+    setCurrencys(state, currencys) {
+        state.currencys = currencys
+    },
     setOffices(state, offices) {
         state.offices = offices
     },

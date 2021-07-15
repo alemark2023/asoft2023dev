@@ -1,6 +1,7 @@
 export default {
     userType: '',
     config: {},
+    currencys: [],
     warehouses: {},
     all_items:{},
     office:{},
