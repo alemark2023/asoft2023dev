@@ -3,6 +3,7 @@
 namespace Modules\Account\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Purchase;

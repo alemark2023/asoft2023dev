@@ -94,7 +94,27 @@ class ReportItemController extends Controller
     }
 
 
-    private function dataItems($document_type_id, $establishment_id, $date_start, $date_end, $item_id, $model, $web_platform_id,$type = null)
+    /**
+     * @param      $document_type_id
+     * @param      $establishment_id
+     * @param      $date_start
+     * @param      $date_end
+     * @param      $item_id
+     * @param      $model
+     * @param      $web_platform_id
+     * @param null $type
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function dataItems(
+        $document_type_id,
+        $establishment_id,
+        $date_start,
+        $date_end,
+        $item_id,
+        $model,
+        $web_platform_id,
+        $type = null)
     {
         $data = $model::where('item_id', $item_id);
 
