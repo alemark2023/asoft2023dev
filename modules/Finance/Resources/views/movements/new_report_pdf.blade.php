@@ -102,16 +102,18 @@
                     $final_balance = 0;
                     $total_input = 0;
                     $total_output = 0;
+                    $i = 0;
                 @endphp
                 @foreach($records as $value)
                     <tr>
                         @php
+                        $i++;
                             $document_type = '';
                             $items = [];
                             $document_type = isset($value['document_type'])?$value['document_type']:'';
                             $payment_method_type_description = isset($value['payment_method_type_description'])?$value['payment_method_type_description']:'';
                              $payments = isset($value['payments'])?(float)$value['payments']:0;
-                             $type_movement = isset($value['type_movement'])?(float)$value['type_movement']:'';
+                             $type_movement = isset($value['type_movement'])? $value['type_movement']:'';
 
                             $balance =  ($type_movement == 'input') ?  $balance + $payments : $balance - $payments;
 
@@ -131,7 +133,7 @@
 
 
                         @endphp
-                        <td class="celda">{{$value['index']}}</td>
+                        <td class="celda">{{$i}}</td>
                         <td class="celda">{{$value['date_of_payment']}}</td>
                         <td class="celda">{{$value['person_name']}}</td>
                         <td class="celda">{{$value['person_number']}}</td>
