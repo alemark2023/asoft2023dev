@@ -48,7 +48,7 @@ class DispatchTransform
         if (isset($inputs['documento_afectado']) && isset($inputs['documento_afectado']['external_id'])) {
             $data['affected_document_external_id'] = Functions::valueKeyInArray($inputs['documento_afectado'],
                                                                                            'external_id');
-        }else{
+        }elseif(isset($inputs['documento_afectado'])){
             $data['data_affected_document']['number'] = Functions::valueKeyInArray($inputs['documento_afectado'],
                                                                                                'numero_documento');
             $data['data_affected_document']['series'] = Functions::valueKeyInArray($inputs['documento_afectado'],
