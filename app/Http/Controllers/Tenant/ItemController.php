@@ -807,7 +807,8 @@ class ItemController extends Controller
 
         $records = Item::whereBetween('created_at', [$start_date, $end_date]);
         $extradata = [];
-        if ($request->has('isPharmacy') && $request->isPharmacy == true) {
+        $isPharmacy = $request->isPharmacy == 'true' ? true : false;
+        if ($request->has('isPharmacy') && $isPharmacy == true) {
             $extradata[] = 'sanitary';
             $extradata[] = 'cod_digemid';
             $records->Pharmacy();

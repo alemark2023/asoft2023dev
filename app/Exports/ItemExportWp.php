@@ -38,7 +38,7 @@ class ItemExportWp implements FromView, ShouldAutoSize
      * @return ItemExport
      */
     public function setExtraData(array $extra_data)
-    : ItemExport {
+    : ItemExportWp {
         $this->extra_data = $extra_data;
         return $this;
     }
