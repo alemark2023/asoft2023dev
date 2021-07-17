@@ -21,6 +21,7 @@ use App\Mail\Tenant\CulqiEmail;
 use App\Http\Controllers\Tenant\Api\ServiceController;
 use Illuminate\Support\Facades\Validator;
 use Modules\Inventory\Models\InventoryConfiguration;
+use App\Http\Resources\Tenant\OrderCollection;
 
 class EcommerceController extends Controller
 {
@@ -103,7 +104,18 @@ class EcommerceController extends Controller
     public function detailCart()
     {
         $configuration = ConfigurationEcommerce::first();
-        return view('ecommerce::cart.detail', compact('configuration'));
+        // dd(Order::all());
+        $email_user = auth()->user()->email;
+        $history_records = Order::where('customer->correo_electronico', $email_user)
+                    ->get()
+                    ->transform(function($row) {
+                        /** @var  Order $row */
+                        return $row->getCollectionData();
+                    })->toArray();
+
+        // $orders = Order::where();
+        // dd($history_records);
+        return view('ecommerce::cart.detail', compact(['configuration','history_records']));
     }
 
     public function pay()

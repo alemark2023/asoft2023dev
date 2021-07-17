@@ -74,7 +74,7 @@
                 <el-input v-model="form.customer_telephone">
                     <template slot="prepend">+51</template>
                         <el-button slot="append" @click="clickSendWhatsapp" >Enviar
-                            <el-tooltip class="item" effect="dark"  content="Es necesario tener aperturado Whatsapp web" placement="top-start">
+                            <el-tooltip class="item" effect="dark"  content="Se recomienta tener abierta la sesión de Whatsapp web" placement="top-start">
                                 <i class="fab fa-whatsapp" ></i>
                             </el-tooltip>
                         </el-button>
