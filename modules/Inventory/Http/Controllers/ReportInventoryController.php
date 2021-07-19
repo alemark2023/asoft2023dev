@@ -60,6 +60,7 @@ class ReportInventoryController extends Controller
 
             $stock = $row->stock;
             $add = true;
+            $item = $row->item;
             if ($filter === '02') {
                 $add = ($stock < 0);
             }
@@ -67,23 +68,24 @@ class ReportInventoryController extends Controller
                 $add = ($stock == 0);
             }
             if ($filter === '04') {
-                $add = ($stock > 0 && $stock <= $row->item->stock_min);
+                $add = ($stock > 0 && $stock <= $item->stock_min);
             }
             if ($filter === '05') {
-                $add = ($stock > $row->item->stock_min);
+                $add = ($stock > $item->stock_min);
             }
             if ($add) {
                 $data[] = [
-                    'barcode' => $row->item->barcode,
-                    'internal_id' => $row->item->internal_id,
-                    'name' => $row->item->description,
-                    'item_category_name' => optional($row->item->category)->name,
-                    'stock_min' => $row->item->stock_min,
+                    'barcode' => $item->barcode,
+                    'internal_id' => $item->internal_id,
+                    'name' => $item->description,
+                    'item_category_name' => optional($item->category)->name,
+                    'stock_min' => $item->stock_min,
                     'stock' => $stock,
-                    'sale_unit_price' => $row->item->sale_unit_price,
-                    'purchase_unit_price' => $row->item->purchase_unit_price,
-                    'brand_name' => $row->item->brand->name,
-                    'date_of_due' => optional($row->item->date_of_due)->format('d/m/Y'),
+                    'sale_unit_price' => $item->sale_unit_price,
+                    'purchase_unit_price' => $item->purchase_unit_price,
+                    'profit'=>number_format($item->sale_unit_price-$item->purchase_unit_price,2,'.',''),
+                    'brand_name' => $item->brand->name,
+                    'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
                     'warehouse_name' => $row->warehouse->description
                 ];
             }
@@ -142,7 +144,7 @@ class ReportInventoryController extends Controller
     /**
      * @param int $warehouse_id Id de almacen
      *
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder|mixed|\Modules\Inventory\Models\ItemWarehouse
+     * @return \Illuminate\Database\Eloquent\Builder
      */
     private function getRecords($warehouse_id = 0) {
         $query = ItemWarehouse::with(['item', 'item.category', 'item.brand'])
@@ -158,6 +160,7 @@ class ReportInventoryController extends Controller
         if ($warehouse_id != 0) {
             $query->where('item_warehouse.warehouse_id', $warehouse_id);
         }
+        //dd($query);
         return $query;
 
     }
