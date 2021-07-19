@@ -64,6 +64,7 @@ class Person extends ModelTenant
         'observation',
         'zone',
         'website',
+        'credit_days',
     ];
 
     // protected static function boot()
@@ -238,6 +239,7 @@ class Person extends ModelTenant
             'contact' => $this->contact,
             'comment' => $this->comment,
             'addresses' => $addresses,
+            'credit_days' => (int)$this->credit_days,
         ];
         return $data;
     }

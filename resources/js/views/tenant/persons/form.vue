@@ -5,7 +5,7 @@
             <div class="form-body">
                 <el-tabs v-model="activeName">
                     <el-tab-pane class name="first">
-                        <span slot="label">Datos de Cliente</span>
+                        <span slot="label">{{ titleTabDialog }}</span>
                         <div class="row">
                             <div class="col-md-6">
                                 <div :class="{'has-danger': errors.identity_document_type_id}" class="form-group">
@@ -91,6 +91,18 @@
 
                         <div class="row">
                             <div class="col-md-3">
+                                <div :class="{'has-danger': errors.credit_days}" class="form-group">
+                                    <label class="control-label">Dias de crédito</label>
+                                    <el-input-number
+                                        :controls="false"
+                                        :precision="0"
+                                        :min="0"
+                                        v-model="form.credit_days"></el-input-number>
+                                    <small v-if="errors.credit_days" class="form-control-feedback"
+                                           v-text="errors.credit_days[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div :class="{'has-danger': errors.internal_code}" class="form-group">
                                     <label class="control-label">Código interno</label>
                                     <el-input v-model="form.internal_code"></el-input>
@@ -100,7 +112,9 @@
                             </div>
                             <div class="col-md-4">
                                 <div :class="{'has-danger': errors.person_type_id}" class="form-group">
-                                    <label class="control-label">Tipo de cliente</label>
+                                    <label class="control-label">
+                                        {{ typeDialog }}
+                                        </label>
                                     <el-select v-model="form.person_type_id" clearable filterable>
                                         <el-option v-for="option in person_types" :key="option.id"
                                                    :label="option.description"
@@ -389,6 +403,8 @@ export default {
         return {
             loading_submit: false,
             titleDialog: null,
+            titleTabDialog: null,
+            typeDialog: null,
             resource: 'persons',
             errors: {},
             api_service_token: false,
@@ -438,6 +454,7 @@ export default {
             this.form = {
                 id: null,
                 type: this.type,
+                credit_days:0,
                 identity_document_type_id: '6',
                 number: '',
                 name: null,
@@ -492,9 +509,13 @@ export default {
             }
             if (this.type === 'customers') {
                 this.titleDialog = (this.recordId) ? 'Editar Cliente' : 'Nuevo Cliente'
-            }
+                this.titleTabDialog =  'Datos de Cliente';
+                this.typeDialog= 'Tipo de cliente'
+             }
             if (this.type === 'suppliers') {
                 this.titleDialog = (this.recordId) ? 'Editar Proveedor' : 'Nuevo Proveedor'
+                this.titleTabDialog =  'Datos del proveedor';
+                this.typeDialog= 'Tipo de proveedor'
             }
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
