@@ -101,17 +101,22 @@
                 <div class="table-responsive">
                     <el-table
                         :data="currentTableData"
-                        :default-sort="{prop: 'index', order: 'ascending'}"
+                        :default-sort="{prop: 'date_of_payment', order: 'ascending'}"
                         :summary-method="getSummaries"
                         show-summary
                         style="width: 100%"
                         @sort-change="changeTableSort">
 
+
+                        <!--
                         <el-table-column
-                            class="" label="#"
+                            class="d-none"
+                            label="#"
                             prop="index"
-                            sortable
+
                         ></el-table-column>
+                        -->
+
                         <el-table-column
                             label="Fecha"
                             prop="date_of_payment"
@@ -358,7 +363,7 @@ export default {
             const {columns, data} = param;
             const sums = [];
             columns.forEach((column, index) => {
-                if (index < 7) {
+                if (index < 6) {
                     sums[index] = '';
                     return;
                 }

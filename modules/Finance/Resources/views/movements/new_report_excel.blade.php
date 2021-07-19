@@ -49,7 +49,7 @@
             <table class="">
                 <thead>
                 <tr>
-                    <th class="">#</th>
+<!--                    <th class="">#</th>-->
                     <th class="">Fecha</th>
                     <th class="">Adquiriente</th>
                     <th class="">N° Doc. Identidad</th>
@@ -100,7 +100,7 @@
 
 
                         @endphp
-                        <td class="celda">{{$i}}</td>
+<!--                        <td class="celda">{{$i}}</td>-->
                         <td class="celda">{{$value['date_of_payment']}}</td>
                         <td class="celda">{{$value['person_name']}}</td>
                         <td class="celda">{{$value['person_number']}}</td>
@@ -124,7 +124,7 @@
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="9" class="celda"></td>
+                    <td colspan="8" class="celda"></td>
                     <td class="celda">S/{{$total_input}}</td>
                     <td class="celda">S/{{$total_output}}</td>
                     <td class="celda">S/{{$total_input - $total_output}}</td>
