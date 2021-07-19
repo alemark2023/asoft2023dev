@@ -91,6 +91,18 @@
 
                         <div class="row">
                             <div class="col-md-3">
+                                <div :class="{'has-danger': errors.credit_days}" class="form-group">
+                                    <label class="control-label">Dias de crédito</label>
+                                    <el-input-number
+                                        :controls="false"
+                                        :precision="0"
+                                        :min="0"
+                                        v-model="form.credit_days"></el-input-number>
+                                    <small v-if="errors.credit_days" class="form-control-feedback"
+                                           v-text="errors.credit_days[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div :class="{'has-danger': errors.internal_code}" class="form-group">
                                     <label class="control-label">Código interno</label>
                                     <el-input v-model="form.internal_code"></el-input>
@@ -438,6 +450,7 @@ export default {
             this.form = {
                 id: null,
                 type: this.type,
+                credit_days:0,
                 identity_document_type_id: '6',
                 number: '',
                 name: null,

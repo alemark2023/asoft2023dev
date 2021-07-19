@@ -179,17 +179,29 @@ if ($hostname) {
             Route::post('get-items', 'Tenant\ItemController@getAllItems');
 
             //Persons
-            Route::get('persons/columns', 'Tenant\PersonController@columns');
-            Route::get('persons/tables', 'Tenant\PersonController@tables');
-            Route::get('persons/{type}', 'Tenant\PersonController@index')->name('tenant.persons.index');
-            Route::get('persons/{type}/records', 'Tenant\PersonController@records');
-            Route::get('persons/record/{person}', 'Tenant\PersonController@record');
-            Route::post('persons', 'Tenant\PersonController@store');
-            Route::delete('persons/{person}', 'Tenant\PersonController@destroy');
-            Route::post('persons/import', 'Tenant\PersonController@import');
-            Route::get('persons/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
-            Route::get('persons/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
-
+            Route::prefix('persons')->group(function () {
+                /**
+                 *persons/columns
+                 *persons/tables
+                 *persons/{type}
+                 *persons/{type}/records
+                 *persons/
+                 *persons/{person}
+                 *persons/import
+                 *persons/enabled/{type}/{person}
+                 *persons/{type}/exportation
+                 */
+                Route::get('/columns', 'Tenant\PersonController@columns');
+                Route::get('/tables', 'Tenant\PersonController@tables');
+                Route::get('/{type}', 'Tenant\PersonController@index')->name('tenant.persons.index');
+                Route::get('/{type}/records', 'Tenant\PersonController@records');
+                Route::get('/record/{person}', 'Tenant\PersonController@record');
+                Route::post('', 'Tenant\PersonController@store');
+                Route::delete('/{person}', 'Tenant\PersonController@destroy');
+                Route::post('/import', 'Tenant\PersonController@import');
+                Route::get('/enabled/{type}/{person}', 'Tenant\PersonController@enabled');
+                Route::get('/{type}/exportation', 'Tenant\PersonController@export')->name('tenant.persons.export');
+            });
             //Documents
             Route::post('documents/categories', 'Tenant\DocumentController@storeCategories');
             Route::post('documents/brands', 'Tenant\DocumentController@storeBrands');
@@ -327,7 +339,7 @@ if ($hostname) {
             Route::get('unit_types/record/{code}', 'Tenant\UnitTypeController@record');
             Route::post('unit_types', 'Tenant\UnitTypeController@store');
             Route::delete('unit_types/{code}', 'Tenant\UnitTypeController@destroy');
-            
+
             //Transfer Reason Types
             Route::get('transfer-reason-types/records', 'Tenant\TransferReasonTypeController@records');
             Route::get('transfer-reason-types/record/{code}', 'Tenant\TransferReasonTypeController@record');
