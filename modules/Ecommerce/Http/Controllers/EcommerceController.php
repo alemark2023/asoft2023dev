@@ -104,17 +104,17 @@ class EcommerceController extends Controller
     public function detailCart()
     {
         $configuration = ConfigurationEcommerce::first();
-        // dd(Order::all());
-        $email_user = auth()->user()->email;
-        $history_records = Order::where('customer->correo_electronico', $email_user)
+
+        $history_records = [];
+        if (auth()->user()) {
+            $email_user = auth()->user()->email;
+            $history_records = Order::where('customer', 'LIKE', '%'.$email_user.'%')
                     ->get()
                     ->transform(function($row) {
                         /** @var  Order $row */
                         return $row->getCollectionData();
                     })->toArray();
-
-        // $orders = Order::where();
-        // dd($history_records);
+        }
         return view('ecommerce::cart.detail', compact(['configuration','history_records']));
     }
 
