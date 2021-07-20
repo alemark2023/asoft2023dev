@@ -117,7 +117,9 @@ $col_span = 25;
             $ok = 0;
             if (
                 in_array($document_type_id, ['01', '03']) &&
-                in_array($state_type_id, ['09', '11'])) {
+                in_array($state_type_id, ['09', '11'])){
+                // do nothing
+                }else {
                 $total_exportation = $row['total_exportation'];
                 $total_taxed = $row['total_taxed'];
                 $total_exonerated = $row['total_exonerated'];

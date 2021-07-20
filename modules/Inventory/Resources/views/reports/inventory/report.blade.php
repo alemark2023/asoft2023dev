@@ -81,6 +81,7 @@
         <th align="right"><strong>Costo</strong></th>
         <th align="right"><strong>Costo Total</strong></th>
         <th align="right"><strong>Precio de venta</strong></th>
+        <th align="right"><strong>Ganancia</strong></th>
         <th><strong>Marca</strong></th>
         <th><strong>F. vencimiento</strong></th>
         <th><strong>Almacén</strong></th>
@@ -94,6 +95,7 @@
         @php
             $total_line = $row['stock'] * $row['purchase_unit_price'];
             $total = $total + $total_line;
+            $profit = number_format($row['sale_unit_price'] - $row['purchase_unit_price'],2,'.','');
         @endphp
         <tr>
             <td>{{ $loop->iteration}}</td>
@@ -106,6 +108,7 @@
             <td align="right">{{ $row['purchase_unit_price'] }}</td>
             <td align="right">{{ $total_line }}</td>
             <td align="right">{{ $row['sale_unit_price'] }}</td>
+            <td align="right">{{ $profit }}</td>
             <td>{{ $row['brand_name'] }}</td>
             <td>{{ $row['date_of_due'] }}</td>
             <td>{{ $row['warehouse_name'] }}</td>
