@@ -1,3 +1,66 @@
+## 4.1.2
+
+### docs
+2021-07-07 : docs | changelog<br>
+
+
+### fixed
+2021-07-20 : fixed | #770 #789 | Compile JS<br>
+2021-07-20 : fixed | #770 #789 | Nota de venta y CPE: Ajuste para igv en en exonerado al añadir item<br>
+2021-07-20 : fixed | #601 | consulta campo json en mariabd no soportada<br>
+2021-07-19 : fixed | #613 | Contabilidad: Exportar Reporte: Venta: Validando condicion para tipo de documento y status del documento<br>
+2021-07-16 : fixed | slack | problema al descargar reporte de items para wordpress<br>
+2021-07-16 : fixed | #782 | Nota de venta: Modal de pagos: Cambio de number fil de identifier a getNumberFullAttribute()<br>
+2021-07-15 : fixed | #761 | Guia de Remision: Ajuste para retirar el item de la guia.<br>
+2021-07-15 : fixed | #702 | $type_movement leido correctamente en el reporte excel y pdf<br>
+2021-07-15 : fixed | #613 | Llamado correcto al modelo en ReportItemController.php<br>
+2021-07-15 : fixed | #613 | Contabilidad: Exportar Reporte: Ajuste para mostrar la moneda de los movimientos en el reporte<br>
+2021-07-15 : fixed | #746 | Fixed index<br>
+2021-07-14 : fixed | #761 #775 | Compile JS<br>
+2021-07-14 : fixed | #761 | Comprobantes Avanzados: Guias de Remision: Añadir item: Ajuste para añadir items correctamente.<br>
+2021-07-13 : fixed | #702 | Ajuste error MovementCollection.php:53<br>
+2021-07-13 : fixed | #742 | plantillas de guias muestran productos compuestos nuevamente - se recrea el pdf a partir del boton opciones - mismo boton muestra el pdf en el navegador mientras el otro lo descarga directamente<br>
+2021-07-13 : fixed | #702 | Finanzas: Movimiento: Posiblidad de descargar el pdf y el xml ordenado<br>
+2021-07-12 : fixed | #686 | pie de pagina legenda amazonia - ajuste de espacios respecto a configuracion de visual pdf<br>
+2021-07-12 : fixed | #747 | Reporte de Venta: Cambio de orden de columnas distrito por departamento<br>
+2021-07-12 : fixed | #771 | Compile JS<br>
+2021-07-12 : fixed | #749 | Reporte Caja Chica POS: Ajuste para que los pagos de compra se sumen al egreso total.<br>
+2021-07-12 : fixed | #771 | Customer por defecto en CPE<br>
+2021-07-12 : fixed | #686 | pto1, plantilla legend_amazonia cuenta con leyenda correcta para todos los formatos tipo ticket de factura y boleta<br>
+2021-07-09 : fixed | #753 | Reporte de cuentas por cobrar: La columna total de expenses estaba en la posicion 9, la posicion correcta es 8<br>
+2021-07-09 : fixed | #652 | scroll para listado de guias al generar mediante multiple seleccion<br>
+2021-07-09 : fixed | #741 | Reporte de Venta: Ajuste de columna en reporte por documentos<br>
+2021-07-08 : fixed | #747 | Reporte de Venta: Cambio de localizacion de establecimiento por cliente<br>
+2021-07-08 : fixed | - | Añadiendo comentario de la ruta url para facilitar buscarla<br>
+2021-07-08 : fixed | #642 | Item: descripcion de productos: Se establece el stock para el establecimiento del usuario (no general) en los componentes d eañadir item<br>
+2021-07-08 : fixed | #310 | Guias: corrección ortográfica<br>
+2021-07-07 : fixed | #718 | Nota de venta: Generar CPE desde multiples NV: Corrige mostrar los CPE relacionados en el listado de nota de venta.<br>
+
+
+### feature
+2021-07-20 : feature | #771 | template basado en default3_new_account con mas espacio para las cuentas bancarias<br>
+2021-07-19 : feature | #702 | Removiendo # de las tablas<br>
+2021-07-19 : feature | #596 | Compile JS<br>
+2021-07-19 : feature | #596 | Compile JS<br>
+2021-07-19 : feature | #596 | Reporte de inventario: Añadiendo profit como diferencia entre costo y precio.<br>
+2021-07-19 : feature | #596 | Textos entre cliente y proveedor<br>
+2021-07-19 : feature | #596 | Cliente: Dias de crédito: Mostrando la columna de dias<br>
+2021-07-19 : feature | #596 | Cliente: Dias de crédito: Añadiendo campo de dias de credito<br>
+2021-07-16 : feature | #601 | envio de mensaje al administrador cuando se genera un pedido en ecommerce (plus : historial de pedidos)<br>
+2021-07-14 : feature | #746 | Api: Guias de remision:  PDF: Se muestra documento afectado.Se añade el campo documento_afectado de la forma siguiente :    "documento_afectado": {     "serie_documento": "F001",     "numero_documento": "190",     "codigo_tipo_documento": "01"   }<br>
+2021-07-13 : feature | #748 | Compile #702 #748 #679<br>
+2021-07-13 : feature | #748 | Template DEFAULT_DATE_END: Valida la configuracion, si es farmacia, se le ajusta el registro sanitario del producto<br>
+2021-07-13 : feature | #679 | Compras: Añadiendo Nota dedebito y nota de credito<br>
+2021-07-12 : feature | loretosot habilita metodo de pago en mobilecontroller para uso en app<br>
+2021-07-12 : feature | #686 | pie de pagina legenda amazonia - ajuste de espacios<br>
+2021-07-08 : feature | #640 | crear nuevo cliente en formulario de guia lo asigna automaticamente al campo correspondiente<br>
+2021-07-08 : feature | api validador para app<br>
+2021-07-07 : feature | #310 | Comprobantes avanzados: Se agrega funcionalidad para control de stock en guias<br>
+2021-07-07 : feature | #747 | Reporte de ventas: Añadiendo departamento, distrito y provincia para exportar pdf y excel<br>
+2021-07-07 : feature | #557 | estructura de plantilla heaer_image_full_width aplicada en cotizaciones, pedidos y notas de venta<br>
+2021-07-06 : feature | #310 | Comprobantes avanzados: Se agrega flujo inventario a guias (avance)<br>
+
+
 ## 4.1.1
 
 ### docs
