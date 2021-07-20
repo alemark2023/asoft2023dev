@@ -921,14 +921,29 @@ export default {
 
             if (this.validateTotalItem().total_item) return;
 
-            let unit_price = (this.form.has_igv) ? this.form.unit_price_value : this.form.unit_price_value * 1.18;
+            let affectation_igv_type_id = this.form.affectation_igv_type_id
+            // let unit_price = (this.form.has_igv) ? this.form.unit_price_value : this.form.unit_price_value * 1.18;
+            let unit_price = this.form.unit_price_value;
+            if (this.form.has_igv === false) {
+                if(
+                    affectation_igv_type_id === "20" ||
+                    affectation_igv_type_id === "21" ||
+                    affectation_igv_type_id === "40"
+                ){
+                    // do nothing
+                    // exonerado de igv
+                }else{
+                    unit_price = this.form.unit_price_value * 1.18;
+
+                }
+            }
 
             this.form.input_unit_price_value = this.form.unit_price_value;
 
             this.form.unit_price = unit_price;
             this.form.item.unit_price = unit_price;
             this.form.item.presentation = this.item_unit_type;
-            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
+            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': affectation_igv_type_id});
 
             let IdLoteSelected = this.form.IdLoteSelected
             let document_item_id = this.form.document_item_id
