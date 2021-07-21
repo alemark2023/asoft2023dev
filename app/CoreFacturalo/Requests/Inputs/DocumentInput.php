@@ -216,8 +216,8 @@ class DocumentInput
             if ($inputs['attributes']) {
                 $attributes = [];
                 foreach ($inputs['attributes'] as $row) {
-                    $attribute_type_id = $row['attribute_type_id'];
-                    $description = $row['description'];
+                    $attribute_type_id = $row['attribute_type_id'] ?? null;
+                    $description = $row['description'] ?? null;
                     $value = $row['value'] ?? null;
                     $start_date = $row['start_date'] ?? null;
                     $end_date = $row['end_date'] ?? null;
