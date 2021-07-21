@@ -218,10 +218,10 @@ class DocumentInput
                 foreach ($inputs['attributes'] as $row) {
                     $attribute_type_id = $row['attribute_type_id'];
                     $description = $row['description'];
-                    $value = array_key_exists('value', $row) ? $row['value'] : null;
-                    $start_date = array_key_exists('start_date', $row) ? $row['start_date'] : null;
-                    $end_date = array_key_exists('end_date', $row) ? $row['end_date'] : null;
-                    $duration = array_key_exists('duration', $row) ? $row['duration'] : null;
+                    $value = $row['value'] ?? null;
+                    $start_date = $row['start_date'] ?? null;
+                    $end_date = $row['end_date'] ?? null;
+                    $duration = $row['duration'] ?? null;
 
                     $attributes[] = [
                         'attribute_type_id' => $attribute_type_id,
