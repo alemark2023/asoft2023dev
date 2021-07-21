@@ -363,6 +363,7 @@
                     id: null,
                     external_id: null,
                     identifier: null,
+                    number_full: null,
                     date_of_issue:null,
                     seller_id:null,
                     sale_note:null,
@@ -551,7 +552,7 @@
                         this.validateIdentityDocumentType()
 
                         this.assignDocument();
-                        this.titleDialog = 'Nota de venta registrada: '+this.form.identifier
+                        this.titleDialog = 'Nota de venta registrada: '+this.form.number_full
                     })
 
 
