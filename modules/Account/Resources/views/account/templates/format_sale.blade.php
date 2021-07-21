@@ -2,12 +2,13 @@
     .text-center {
         text-align: center;
     }
+
     .font-weight {
         font-weight: bold;
     }
 </style>
 @php
-$col_span = 25;
+    $col_span = 25;
 @endphp
 <table>
     <tr>
@@ -23,7 +24,7 @@ $col_span = 25;
     --}}
     <tr>
         <td colspan="{{ $col_span }}" class="text-center font-weight">FORMATO 14.1 : "REGISTRO DE VENTAS E INGRESOS DEL
-                                                                      PERIODO {{ $period }}"
+            PERIODO {{ $period }}"
         </td>
     </tr>
     <tr>
@@ -102,10 +103,11 @@ $col_span = 25;
         <td>Nro.COMP.</td>
     </tr>
     @foreach($records as $row)
-    <tr>
+        <tr>
             <?php
             $date_of_issue = $row['date_of_issue'];
             $document_type_id = $row['document_type_id'];
+            $state_type_id = $row['state_type_id'];
             $total_exportation = 0;
             $total_taxed = 0;
             $total_exonerated = 0;
@@ -113,58 +115,69 @@ $col_span = 25;
             $total_plastic_bag_taxes = 0;
             $total_igv = 0;
             $total = 0;
-            $state_type_id = $row['state_type_id'];
             $ok = 0;
+            $total_isc = 0;
+
+            $series = $row['series'];
+            $number = $row['number'];
+            $customer_identity_document_type_id = $row['customer_identity_document_type_id'];
+            $customer_number = $row['customer_number'];
+            $customer_name = $row['customer_name'];
+            $exchange_rate_sale = $row['exchange_rate_sale'];
+            $currency_type_symbol = $row['currency_type_symbol'];
             if (
                 in_array($document_type_id, ['01', '03']) &&
-                in_array($state_type_id, ['09', '11'])){
+                in_array($state_type_id, ['09', '11'])) {
                 // do nothing
-                }else {
+            } else {
                 $total_exportation = $row['total_exportation'];
                 $total_taxed = $row['total_taxed'];
                 $total_exonerated = $row['total_exonerated'];
                 $total_unaffected = $row['total_unaffected'];
                 $total_plastic_bag_taxes = $row['total_plastic_bag_taxes'];
+                $total_igv = $row['total_igv'];
                 $total = $row['total'];
+                $total_isc = $row['total_isc'];
                 $ok = 1;
 
             }
             ?>
-        <td>06</td>
-        <td>{{ $loop->iteration }}</td>
+            <td>06</td>
+            <td>{{ $loop->iteration }}</td>
             <td>{{ $date_of_issue }}</td>
-        <td></td>
+            <td></td>
             <td>{{ $document_type_id }}</td>
-        <td>{{ $row['series'] }}</td>
-        <td>{{ $row['number'] }}</td>
-        <td>{{ $row['customer_identity_document_type_id'] }}</td>
-        <td>{{ $row['customer_number'] }}</td>
-        <td>{{ $row['customer_name'] }}</td>
+            <td>{{ $series }}</td>
+            <td>{{ $number }}</td>
+            <td>{{ $customer_identity_document_type_id }}</td>
+            <td>{{ $customer_number }}</td>
+            <td>{{ $customer_name }}</td>
 
             <td>{{ $total_exportation }}</td>
 
             <td>{{$total_taxed }}</td>
             <td>{{ $total_exonerated }}</td>
             <td>{{ $total_unaffected  }}</td>
-            <td>{{ $total_plastic_bag_taxes }}</td>
-        <td></td>
+            {{-- Aqui deberia ir $total_isc --}}
+            <td>{{ $total_plastic_bag_taxes }} </td>
+            <td></td>
             <td>{{ $total_igv }}</td>
-        <td></td>
+            <td></td>
             <td>{{ $total }}</td>
 
-        <td>{{ $row['exchange_rate_sale'] }}</td>
-        <td>{{ $row['currency_type_symbol'] }}</td>
-        @if($row['affected_document'])
-            <td>{{ $row['affected_document']['date_of_issue']}}</td>
-            <td>{{ $row['affected_document']['document_type_id']}}</td>
-            <td>{{ $row['affected_document']['series']}}</td>
-            <td>{{ $row['affected_document']['number']}}</td>
-        @else
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        @endif
-    </tr>
+            <td>{{ $exchange_rate_sale }}</td>
+            <td>{{ $currency_type_symbol }}</td>
+            @if($row['affected_document'])
+                <td>{{ $row['affected_document']['date_of_issue']}}</td>
+                <td>{{ $row['affected_document']['document_type_id']}}</td>
+                <td>{{ $row['affected_document']['series']}}</td>
+                <td>{{ $row['affected_document']['number']}}</td>
+            @else
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            @endif
+        </tr>
     @endforeach
 </table>
