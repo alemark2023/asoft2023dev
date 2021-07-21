@@ -182,14 +182,20 @@
                         Route::get('excel', 'ReportGuideController@excel');
                         Route::get('excel-totals', 'ReportGuideController@excelTotals');
                     });
-
-                    Route::get('general-items', 'ReportGeneralItemController@index')
-                         ->name('tenant.reports.general_items.index');
-                    Route::get('general-items/excel', 'ReportGeneralItemController@excel');
-                    Route::get('general-items/pdf', 'ReportGeneralItemController@pdf');
-                    Route::get('general-items/filter', 'ReportGeneralItemController@filter');
-                    Route::get('general-items/records', 'ReportGeneralItemController@records');
-
+                   /**
+                    * reports/general-items/
+                    * reports/general-items/excel
+                    * reports/general-items/pdf
+                    * reports/general-items/filter
+                    * reports/general-items/records
+                    */
+                   Route::prefix('general-items')->group(function () {
+                       Route::get('', 'ReportGeneralItemController@index')->name('tenant.reports.general_items.index');
+                       Route::get('/excel', 'ReportGeneralItemController@excel');
+                       Route::get('/pdf', 'ReportGeneralItemController@pdf');
+                       Route::get('/filter', 'ReportGeneralItemController@filter');
+                       Route::get('/records', 'ReportGeneralItemController@records');
+                   });
 
                     Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')
                          ->name('tenant.reports.order_notes_general.index');

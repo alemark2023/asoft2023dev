@@ -2,6 +2,7 @@
 
 namespace Modules\Report\Http\Resources;
 
+use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -11,8 +12,9 @@ class GeneralItemCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function ($row, $key) {
+            /** @var \App\Models\Tenant\DocumentItem|\App\Models\Tenant\PurchaseItem|mixed $row */
             $resource = self::getDocument($row);
-            $total_item_purchase = self::getPurchaseUnitPrice($row);
+            $total_item_purchase = self::getPurchaseUnitPrice($row,$resource);
             if ($row->item->presentation) {
                 $total_item_purchase = $total_item_purchase * $row->item->presentation->quantity_unit;
             }
@@ -24,27 +26,21 @@ class GeneralItemCollection extends ResourceCollection
                 'internal_id' => $row->relation_item->internal_id,
                 'description' => $row->item->description,
                 'currency_type_id' => $resource['currency_type_id'],
-
                 'lot_has_sale' => self::getLotsHasSale($row),
-
                 'date_of_issue' => $resource['date_of_issue'],
                 'customer_name' => $resource['customer_name'],
                 'customer_number' => $resource['customer_number'],
                 'brand' => $row->relation_item->brand->name,
-
                 'series' => $resource['series'],
                 'alone_number' => $resource['alone_number'],
                 'quantity' => number_format($row->quantity, 2),
-
                 'unit_value' => number_format($row->unit_value, 2),
-
                 'total' => number_format($row->total, 2),
                 'total_number' => $row->total,
-
                 'total_item_purchase' => number_format($total_item_purchase, 2),
+                'is_set' => (bool) $row->relation_item->is_set,
                 'utility_item' => number_format($utility_item, 2),
                 'factor' => $row->item->presentation ? number_format($row->item->presentation->quantity_unit, 2) : 0,
-
                 'document_type_description' => $resource['document_type_description'],
                 'document_type_id' => $resource['document_type_id'],
                 'web_platform_name' => optional($row->relation_item->web_platform)->name,
@@ -52,36 +48,50 @@ class GeneralItemCollection extends ResourceCollection
         });
     }
 
-    public static function getPurchaseUnitPrice($record)
+    public static function getPurchaseUnitPrice($record, $resource)
     {
-
-        $purchase_unit_price = 0;
-
+        $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource) * $record->quantity;
         if ($record->relation_item->is_set) {
-
+            $purchase_unit_price = 0;
             foreach ($record->relation_item->sets as $item_set) {
-                $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set) * $item_set->quantity) * $record->quantity;
+                $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set,$resource) * $item_set->quantity) * $record->quantity;
             }
-
         } /*elseif() {
-
-        }*/ else {
-
-            $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record) * $record->quantity;
-
-        }
+        }*/
 
         return $purchase_unit_price;
     }
 
-    public static function getIndividualPurchaseUnitPrice($record)
+    public static function getIndividualPurchaseUnitPrice($record, $resource)
     {
 
         $purchase_unit_price = 0;
-
-        $purchase_item = PurchaseItem::select('unit_price')->where('item_id', $record->item_id)->latest('id')->first();
-        $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : 0;
-        // TODO: revisar esta linea: Eliminando esta linea porque el precio de compra no puede ser igual al precio de venta, en conculusión esta condición nunca será 0, para los productos que no tienen una compra luego de registrarse
+        $currency_type_id = $resource['currency_type_id'];
+        // Se busca la compra del producto en el dia o antes de su venta,
+        // para sacar la ganancia correctamente
+        $purchase_item = PurchaseItem::where('item_id', $record->item_id)
+            ->where('date_of_due', '<=', $resource['date_of_issue'])
+            ->latest('id')
+            ->first();
+        $purchase_unit_price = 0;
+        if ($purchase_item) {
+            $purchase_unit_price = $purchase_item->unit_price;
+            $purchase = Purchase::find($purchase_item->purchase_id);
+            $exchange_rate_sale = $purchase->exchange_rate_sale * 1;
+            // Si la venta es en soles, y la compra del producto es en dolares, se hace la transformcaion
+            if ($currency_type_id == 'PEN') {
+                if ($purchase->currency_type_id !== $currency_type_id) {
+                    $purchase_unit_price = $purchase_unit_price * $exchange_rate_sale;
+                }
+            } else {
+                // Si la venta es en dolares, y la compra del producto es en soles, se hace la transformcaion
+                if ($purchase->currency_type_id !== $currency_type_id && $exchange_rate_sale !== 0) {
+                    $purchase_unit_price = $purchase_unit_price / $exchange_rate_sale;
+                }
+            }
+        }
+        // TODO: revisar esta linea: Eliminando esta linea porque el precio de compra no puede ser igual al precio de venta,
+        // en conculusión esta condición nunca será 0, para los productos que no tienen una compra luego de registrarse
         // $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
 
         if ($purchase_unit_price == 0 && $record->relation_item->purchase_unit_price > 0) {
