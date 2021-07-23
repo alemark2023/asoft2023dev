@@ -8,6 +8,7 @@ use Mpdf\HTMLParserMode;
 use App\Traits\KardexTrait;
 use App\Models\Tenant\Voided;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Invoice;
 use App\Models\Tenant\Summary;
 use App\Models\Tenant\Establishment;
@@ -122,7 +123,10 @@ class Facturalo
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
-                    $document->items()->create($row);
+                    // $document->items()->create($row);
+                    $row['document_id']=  $document->id;
+                    $item = new DocumentItem($row);
+                    $item->push();
                 }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
@@ -1033,7 +1037,13 @@ class Facturalo
                     $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
                 }
 
-                $document->items()->delete();
+                // Al editar el item, borra los registros anteriores
+                foreach ($document->items()->get() as $item) {
+                    /** @var \App\Models\Tenant\DocumentItem $item */
+                    DocumentItem::UpdateItemWarehous($item,'deleted');
+                    $item->delete();
+                }
+                //  $document->items()->delete();
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }

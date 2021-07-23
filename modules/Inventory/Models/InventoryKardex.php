@@ -5,6 +5,17 @@ namespace Modules\Inventory\Models;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
 
+/**
+ * Modules\Inventory\Models\InventoryKardex
+ *
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $inventory_kardexable
+ * @property-read Item $item
+ * @property-read \Modules\Inventory\Models\Warehouse $warehouse
+ * @method static \Illuminate\Database\Eloquent\Builder|InventoryKardex newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|InventoryKardex newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|InventoryKardex query()
+ * @mixin ModelTenant
+ */
 class InventoryKardex extends ModelTenant
 {
     protected $table = 'inventory_kardex';
