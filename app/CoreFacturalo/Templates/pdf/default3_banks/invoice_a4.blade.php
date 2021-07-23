@@ -433,13 +433,13 @@
 @if($document != null)
 
     <table class="full-width border-box my-2">
+        <tr>
+            <th class="p-1">Banco</th>
+            <th class="p-1">Moneda</th>
+            <th class="p-1">Código de Cuenta Interbancaria</th>
+            <th class="p-1">Código de Cuenta</th>
+        </tr>
         @foreach($accounts as $account)
-            <tr>
-                <th class="p-1">Banco</th>
-                <th class="p-1">Moneda</th>
-                <th class="p-1">Código de Cuenta Interbancaria</th>
-                <th class="p-1">Código de Cuenta</th>
-            </tr>
             <tr>
                 <td class="text-center">{{$account->bank->description}}</td>
                 <td class="text-center text-upp">{{$account->currency_type->description}}</td>
