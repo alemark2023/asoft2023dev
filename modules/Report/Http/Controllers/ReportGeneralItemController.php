@@ -200,7 +200,8 @@ class ReportGeneralItemController extends Controller
 
 
     public function pdf(Request $request) {
-
+        ini_set('memory_limit', '4026M');
+        ini_set("pcre.backtrack_limit", "5000000");
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type_name = ($request->type == 'sale') ? 'Ventas_':'Compras_';
         $type = $request->type;
@@ -215,7 +216,7 @@ class ReportGeneralItemController extends Controller
 
 
     public function excel(Request $request) {
-
+        ini_set('memory_limit', '4026M');
         ini_set("pcre.backtrack_limit", "5000000");
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
         $type = ($request->type == 'sale') ? 'Ventas_':'Compras_';
