@@ -2,6 +2,7 @@
 
 namespace App\Models\Tenant;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Models\Warehouse;
 use App\Models\Tenant\Catalogs\PriceType;
@@ -73,6 +74,70 @@ class DocumentItem extends ModelTenant
         'additional_information'
     ];
 
+    public static function boot() {
+        parent::boot();
+        static::creating(function (self $item) {
+            $document = $item->document;
+            if ($document !== null && empty($item->warehouse_id)) {
+                $item->warehouse_id = $document->establishment_id;
+            }
+        });
+    }
+
+    /**
+     * Ajusta el stock en ItemWarehouse que es usado como stock por almacen
+     * @param self $item
+     * @param string $event
+     */
+    public static function UpdateItemWarehous(&$item, $event = 'created'){
+        $document = $item->document;
+        if ($document !== null) {
+            $establishment_id = $document->establishment_id;
+            $search = [
+                'item_id' => $item->item_id,
+                'warehouse_id' => $establishment_id,
+            ];
+            $ItemWarehouse = ItemWarehouse::where($search)->first();
+            if ($ItemWarehouse !== null) {
+                $qty = (float)$item->quantity;
+                if($event === 'created') {
+                    $ItemWarehouse->addStock($qty * (-1))->push();
+                }else{
+                    $ItemWarehouse->addStock($qty * (1))->push();
+                    self::FixKardex($item);
+                }
+            }
+        }
+    }
+
+    /**
+     * Devuelve o quita la cantidad del item a kardex.
+     * @param self $model
+     * @param bool $deleting
+     */
+    public static function FixKardex(&$model, $deleting = true){
+        $search = [
+            'inventory_kardexable_id'=>$model->document_id,
+            'item_id'=>$model->item_id,
+            'inventory_kardexable_type'=>Document::class
+        ];
+        $kardex = \Modules\Inventory\Models\InventoryKardex::where($search)->orderBy('id','desc')->first();
+        if(!empty($kardex)) {
+            $qty = abs((float)$kardex->quantity * 1);
+            if($deleting !== true){
+                $qty = $qty * (-1);
+            }
+            $newKardex = new \Modules\Inventory\Models\InventoryKardex([
+                'date_of_issue' => Carbon::now()->format('Y-m-d'),
+                'warehouse_id' => $kardex->warehouse_id,
+                'quantity' => $qty,
+                'inventory_kardexable_id' => $kardex->inventory_kardexable_id,
+                'inventory_kardexable_type' => $kardex->inventory_kardexable_type,
+                'item_id' => $kardex->item_id,
+            ]);
+            $newKardex->push();
+        }
+    }
     public function getItemAttribute($value)
     {
         return (is_null($value))?null:(object) json_decode($value);
