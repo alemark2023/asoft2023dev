@@ -35,16 +35,20 @@
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
                     </div> -->
-                     <div class="col-md-9">
+                     <div class="col-md-6">
                         <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Descripción</label>
                             <el-input v-model="form.name" dusk="name"></el-input>
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
                     </div>
-
-
-
+                    <div class="col-md-3">
+                        <div class="form-group" :class="{'has-danger': errors.model}">
+                            <label class="control-label">Modelo</label>
+                            <el-input v-model="form.model" dusk="model"></el-input>
+                            <small class="form-control-feedback" v-if="errors.model" v-text="errors.model[0]"></small>
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group" :class="{'has-danger': errors.unit_type_id}">
                             <label class="control-label">Unidad</label>
@@ -684,4 +688,6 @@ import ItemSetFormItem from './partials/item.vue'
             }
         }
     }
+// Se puede usar datos de la siguiente direccion.
+// resources/js/views/tenant/items/form.vue
 </script>

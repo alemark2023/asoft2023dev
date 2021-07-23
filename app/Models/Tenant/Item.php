@@ -21,7 +21,21 @@ use Modules\Item\Models\WebPlatform;
  * Class Item
  *
  * @package App\Models\Tenant
- * @mixin  ModelTenant
+ * @mixin ModelTenant
+ * @method static Builder|Item newModelQuery()
+ * @method static Builder|Item newQuery()
+ * @method static Builder|Item pharmacy()
+ * @method static Builder|Item query()
+ * @method static Builder|Item whereFilterValuedKardex($params)
+ * @method static Builder|Item whereHasInternalId()
+ * @method static Builder|Item whereIsActive()
+ * @method static Builder|Item whereIsNotActive()
+ * @method static Builder|Item whereIsSet()
+ * @method static Builder|Item whereNotIsSet()
+ * @method static Builder|Item whereNotService()
+ * @method static Builder|Item whereService()
+ * @method static Builder|Item whereTypeUser()
+ * @method static Builder|Item whereWarehouse()
  */
 class Item extends ModelTenant
 {
@@ -731,6 +745,15 @@ class Item extends ModelTenant
     }
 
     /**
+     * Devuelte el conjunto de tipos de igv que estan exonerados
+     *
+     * @return string[]
+     */
+    public static function AffectationIgvTypesExoneratedUnaffected(){
+        return ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37'];
+    }
+
+    /**
      * Retorna un standar de nomenclatura para el modelo
      *
      * @param \App\Models\Tenant\Configuration|null $configuration
@@ -748,7 +771,7 @@ class Item extends ModelTenant
         $has_igv_description = null;
         $purchase_has_igv_description = null;
 
-        $affectation_igv_types_exonerated_unaffected = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37'];
+        $affectation_igv_types_exonerated_unaffected = self::AffectationIgvTypesExoneratedUnaffected();
 
         if (in_array($this->sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
             $has_igv_description = 'No';
