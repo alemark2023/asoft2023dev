@@ -19,6 +19,8 @@ class GeneralItemCollection extends ResourceCollection
                 $total_item_purchase = $total_item_purchase * $row->item->presentation->quantity_unit;
             }
             $utility_item = $row->total - $total_item_purchase;
+            $item = $row->getModelItem();
+            $model = $item->model;
 
             return [
                 'id' => $row->id,
@@ -29,6 +31,7 @@ class GeneralItemCollection extends ResourceCollection
                 'lot_has_sale' => self::getLotsHasSale($row),
                 'date_of_issue' => $resource['date_of_issue'],
                 'customer_name' => $resource['customer_name'],
+                'purchase_order' => $resource['purchase_order'],
                 'customer_number' => $resource['customer_number'],
                 'brand' => $row->relation_item->brand->name,
                 'series' => $resource['series'],
@@ -44,6 +47,7 @@ class GeneralItemCollection extends ResourceCollection
                 'document_type_description' => $resource['document_type_description'],
                 'document_type_id' => $resource['document_type_id'],
                 'web_platform_name' => optional($row->relation_item->web_platform)->name,
+                'model' => $model,
             ];
         });
     }
@@ -132,37 +136,45 @@ class GeneralItemCollection extends ResourceCollection
         $data['total'] = number_format($row->total,2);
         $data['unit_type_id'] = $row->item->unit_type_id;
         $data['description'] = $row->item->description;*/
+        $data['purchase_order'] = null;
 
         if ($row->document) {
-
-            $data['date_of_issue'] = $row->document->date_of_issue->format('Y-m-d');
-            $data['customer_name'] = $row->document->customer->name;
-            $data['customer_number'] = $row->document->customer->number;
-            $data['series'] = $row->document->series;
-            $data['alone_number'] = $row->document->number;
-            $data['document_type_description'] = $row->document->document_type->description;
-            $data['document_type_id'] = $row->document->document_type->id;
-            $data['currency_type_id'] = $row->document->currency_type_id;
+            /** @var \App\Models\Tenant\Document $document */
+            $document = $row->document;
+            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['customer_name'] = $document->customer->name;
+            $data['customer_number'] = $document->customer->number;
+            $data['series'] = $document->series;
+            $data['alone_number'] = $document->number;
+            $data['document_type_description'] = $document->document_type->description;
+            $data['document_type_id'] = $document->document_type->id;
+            $data['currency_type_id'] = $document->currency_type_id;
+            $data['purchase_order'] = $document->purchase_order;
 
         } else if ($row->purchase) {
-            $data['date_of_issue'] = $row->purchase->date_of_issue->format('Y-m-d');
-            $data['customer_name'] = $row->purchase->supplier->name;
-            $data['customer_number'] = $row->purchase->supplier->number;
-            $data['series'] = $row->purchase->series;
-            $data['alone_number'] = $row->purchase->number;
-            $data['document_type_description'] = $row->purchase->document_type->description;
-            $data['document_type_id'] = $row->purchase->document_type->id;
-            $data['currency_type_id'] = $row->purchase->currency_type_id;
+            /** @var \App\Models\Tenant\Purchase $document */
+            $document = $row->purchase;
+            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['customer_name'] = $document->supplier->name;
+            $data['customer_number'] = $document->supplier->number;
+            $data['series'] = $document->series;
+            $data['alone_number'] = $document->number;
+            $data['document_type_description'] = $document->document_type->description;
+            $data['document_type_id'] = $document->document_type->id;
+            $data['currency_type_id'] = $document->currency_type_id;
 
         } else if ($row->sale_note) {
-            $data['date_of_issue'] = $row->sale_note->date_of_issue->format('Y-m-d');
-            $data['customer_name'] = $row->sale_note->customer->name;
-            $data['customer_number'] = $row->sale_note->customer->number;
-            $data['series'] = $row->sale_note->series;
-            $data['alone_number'] = $row->sale_note->number;
+            /** @var \App\Models\Tenant\SaleNote $document */
+            $document = $row->sale_note;
+            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['customer_name'] = $document->customer->name;
+            $data['customer_number'] = $document->customer->number;
+            $data['series'] = $document->series;
+            $data['alone_number'] = $document->number;
             $data['document_type_description'] = 'NOTA DE VENTA';
             $data['document_type_id'] = 80;
-            $data['currency_type_id'] = $row->sale_note->currency_type_id;
+            $data['currency_type_id'] = $document->currency_type_id;
+            $data['purchase_order'] = $document->purchase_order;
         }
 
         return $data;

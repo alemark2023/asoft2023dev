@@ -261,4 +261,9 @@ class PurchaseItem extends ModelTenant
             $array[$index] = null;
         }
     }
+
+    /**
+     * @return Item|Item[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|null
+     */
+    public function getModelItem(){ return Item::find($this->item_id);}
 }
