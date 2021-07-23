@@ -48,8 +48,11 @@ class GeneralItemCollection extends ResourceCollection
         });
     }
 
-    public static function getPurchaseUnitPrice($record, $resource)
+    public static function getPurchaseUnitPrice($record, $resource = null)
     {
+        if($resource === null){
+            $resource = self::getDocument($record);
+        }
         $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource) * $record->quantity;
         if ($record->relation_item->is_set) {
             $purchase_unit_price = 0;
