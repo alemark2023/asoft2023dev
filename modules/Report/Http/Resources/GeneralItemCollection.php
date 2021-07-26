@@ -99,6 +99,8 @@ class GeneralItemCollection extends ResourceCollection
                     $purchase_unit_price = $purchase_unit_price / $exchange_rate_sale;
                 }
             }
+        }else{
+            $purchase_item  =$record->relation_item;
         }
         // TODO: revisar esta linea: Eliminando esta linea porque el precio de compra no puede ser igual al precio de venta,
         // en conculusión esta condición nunca será 0, para los productos que no tienen una compra luego de registrarse
