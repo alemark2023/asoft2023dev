@@ -49,8 +49,8 @@ class GeneralItemCollection extends ResourceCollection
                 'document_type_id' => $resource['document_type_id'],
                 'web_platform_name' => optional($row->relation_item->web_platform)->name,
                 'model' => $model,
-                'resource'=>$resource,
-                'purchase_item'=>$purchase_item,
+                // 'resource'=>$resource,
+                // 'purchase_item'=>$purchase_item,
             ];
         });
     }
@@ -74,31 +74,27 @@ class GeneralItemCollection extends ResourceCollection
 
     public static function getIndividualPurchaseUnitPrice($record, $resource, &$purchase_item = null)
     {
-
         $purchase_unit_price = 0;
         $currency_type_id = $resource['currency_type_id'];
         // Se busca la compra del producto en el dia o antes de su venta,
         // para sacar la ganancia correctamente
+
+        // La tabla purchase items parece eliminar due of date
         $purchase_item = PurchaseItem::where('item_id', $record->item_id)
+            ->latest('id')->get()->pluck('purchase_id');
+        // para ello se busca las compras
+        $purchase = Purchase::wherein('id',$purchase_item)
             ->where('date_of_due', '<=', $resource['date_of_issue'])
-            ->latest('id');
+        ->latest('id')->first();
 
-        $purchase_unit_price = 0;
-        $tm = explode('?',$purchase_item->toSql());
-        $s = '';
-        $b = $purchase_item->getBindings();
-        foreach($tm as $k=>$v){
-            $s.=$v;
-            if(isset($b[$k])){
-                $s.="'".$b[$k]."'";
+        if ($purchase) {
+            $purchase_item = PurchaseItem::where([
+                'purchase_id'=> $purchase->id,
+                'item_id'=> $record->item_id
+            ])
+                ->latest('id')
+                ->first();
 
-            }
-        }
-        \Log::debug('Atencion  '.$s);
-        $purchase_item = $purchase_item->first();
-
-        if ($purchase_item) {
-            \Log::debug('Entra en 1 '.__FILE__);
             $purchase_unit_price = $purchase_item->unit_price;
             $purchase = Purchase::find($purchase_item->purchase_id);
             $exchange_rate_sale = $purchase->exchange_rate_sale * 1;
@@ -113,39 +109,12 @@ class GeneralItemCollection extends ResourceCollection
                     $purchase_unit_price = $purchase_unit_price / $exchange_rate_sale;
                 }
             }
-        }else{
-            \Log::debug('Entra en 2 '.__FILE__);
-            $purchase_item  =$record->relation_item;
-            $item  =$record->relation_item;
-            $purchase_item = PurchaseItem::where('item_id', $item->id)
-                ->where('date_of_due', '<=', $resource['date_of_issue'])
-                ->latest('id')
-                ->first();
-            \Log::debug('Valor para 2 '.var_export($purchase_item,true));
-
-            if ($purchase_item) {
-                $purchase_unit_price = $purchase_item->unit_price;
-                $purchase = Purchase::find($purchase_item->purchase_id);
-                $exchange_rate_sale = $purchase->exchange_rate_sale * 1;
-                // Si la venta es en soles, y la compra del producto es en dolares, se hace la transformcaion
-                if ($currency_type_id === 'PEN') {
-                    if ($purchase->currency_type_id !== $currency_type_id) {
-                        $purchase_unit_price = $purchase_unit_price * $exchange_rate_sale;
-                    }
-                } else {
-                    // Si la venta es en dolares, y la compra del producto es en soles, se hace la transformcaion
-                    if ($purchase->currency_type_id !== $currency_type_id && $exchange_rate_sale !== 0) {
-                        $purchase_unit_price = $purchase_unit_price / $exchange_rate_sale;
-                    }
-                }
-            }
         }
         // TODO: revisar esta linea: Eliminando esta linea porque el precio de compra no puede ser igual al precio de venta,
         // en conculusión esta condición nunca será 0, para los productos que no tienen una compra luego de registrarse
         // $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
 
         if ($purchase_unit_price == 0 && $record->relation_item->purchase_unit_price > 0) {
-            \Log::debug('Entra en 3 '. __FILE__ );
             $purchase_unit_price = $record->relation_item->purchase_unit_price;
         }
 
