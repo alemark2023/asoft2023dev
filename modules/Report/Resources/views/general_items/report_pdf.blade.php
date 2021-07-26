@@ -138,6 +138,7 @@ function getLocationData($value, $type = 'sale')
                     <th style="width:{{$plus+8}}%;">DESCRIPCIÓN</th>
                     @if($type == 'sale')
                         <th style="width:{{$plus+1}}%;">MODELO</th>
+                        <th style="width:{{$plus+1}}%;">PLATAFORMA</th>
                     @endif
                     <th style="width:{{$plus+1}}%;">CATEGORÍA</th>
                     <th style="width:{{$plus+1}}%;">CANTIDAD</th>
@@ -165,6 +166,10 @@ function getLocationData($value, $type = 'sale')
                             $utility_item = $value->total - $total_item_purchase;
                             $item = $value->getModelItem();
                             $model = $item->model;
+                            $platform = $item->getWebPlatformModel();
+                            if($platform !== null){
+                                $platform = $platform->name;
+                            }
                             $saleNote = $value->sale_note;
                             ?>
                             <tr>
@@ -179,6 +184,7 @@ function getLocationData($value, $type = 'sale')
                                 <td class="celda">{{$value->relation_item->brand->name}}</td>
                                 <td class="celda">{{$value->item->description}}</td>
                                 <td class="celda">{{$model}}</td>
+                                <td class="celda">{{$platform}}</td>
                                 <td class="celda">{{$value->relation_item->category->name}}</td>
                                 <td class="celda">{{number_format($value->quantity, 2)}}</td>
                                 <td class="celda">{{number_format($value->unit_price, 2)}}</td>
@@ -203,7 +209,10 @@ function getLocationData($value, $type = 'sale')
                             $utility_item = $value->total - $total_item_purchase;
                             $item = $value->getModelItem();
                             $model = $item->model;
-                            /** @var  \App\Models\Tenant\Document $document */
+                            $platform = $item->getWebPlatformModel();
+                            if($platform !== null){
+                                $platform = $platform->name;
+                            } /** @var  \App\Models\Tenant\Document $document */
                             $document =  $value->document;
                             $purchseOrder = $document->purchase_order;
                             ?>
@@ -228,6 +237,7 @@ function getLocationData($value, $type = 'sale')
                                 <td class="celda">{{$value->relation_item->brand->name}}</td>
                                 <td class="celda">{{ (strlen($value->item->description) > 50) ? substr($value->item->description,0,50):$value->item->description}}</td>
                                 <td class="celda">{{$model}}</td>
+                                <td class="celda">{{$platform}}</td>
                                 <td class="celda">{{$value->relation_item->category->name}}</td>
                                 <td class="celda">{{number_format($value->quantity, 2)}}</td>
                                 <td class="celda">{{number_format($value->unit_price, 2)}}</td>

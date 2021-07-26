@@ -988,4 +988,13 @@ class Item extends ModelTenant
         return self::where('cod_digemid',$cod)->first();
 
     }
+
+    /**
+     * Devuelve el modelo de WebPlatform Asociado
+     *
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|WebPlatform|WebPlatform[]|null
+     */
+    public function getWebPlatformModel(){
+        return WebPlatform::find($this->web_platform_id);
+    }
 }

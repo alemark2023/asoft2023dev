@@ -38,6 +38,7 @@
                             <th>Marca</th>
                             <th class="">Descripción</th>
                             <th  v-if="columns.model.visible">Modelo</th>
+                            <th  v-if="columns.platform.visible">Plataforma</th>
                             <th class="">U. Medida</th>
                             <th class="">Cantidad</th>
                             <th>Series</th>
@@ -64,6 +65,7 @@
                             <td>{{ row.brand }}</td>
                             <td>{{row.description}}</td>
                         <td  v-if="columns.model.visible">{{row.model}}</td>
+                        <td  v-if="columns.platform.visible">{{row.platform}}</td>
                         <td>{{row.unit_type_id}}</td>
                             <td>
                                 {{row.quantity}}<span v-if="row.factor > 0"> X {{row.factor}}</span>
@@ -125,6 +127,11 @@
                         title: 'Orden de compra',
                         visible: false,
                         disable: this.PurchaseOrderDisable,
+                    },
+                    platform: {
+                        title: 'Plataforma',
+                        visible: false,
+                        disable: false,
                     },
                 }
 

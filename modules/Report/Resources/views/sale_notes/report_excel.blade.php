@@ -69,6 +69,7 @@
                                 <th class="">Usuario/Vendedor</th>
                                 <th>Cliente</th>
                                 <th>Nota de Venta</th>
+                                <th class="text-center">Estado pago</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
                                 <th class="text-center">Orden de compra</th>
@@ -91,6 +92,9 @@
                                 <td class="celda">{{$value->user->name}}</td>
                                 <td>{{$value->customer->name}}</td>
                                 <td>{{$value->number_full}}</td>
+                                <td>
+                                    {{$value->total_canceled ? 'Pagado':'Pendiente'}}
+                                </td>
                                 <td>{{$value->state_type->description}}</td>
                                 <td>{{$value->currency_type_id}}</td>
                                 <td>{{$value->purchase_order}}</td>
@@ -163,14 +167,14 @@
 
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="12"></td>
+                                <td class="celda" colspan="14"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="12"></td>
+                                <td class="celda" colspan="14"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

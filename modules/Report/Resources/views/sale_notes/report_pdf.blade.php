@@ -101,6 +101,7 @@
                                 <th>Cliente</th>
                                 <th>Nota de Venta</th>
                                 <th>Estado</th>
+                                <th class="text-center">Estado pago</th>
                                 <th class="text-center">Moneda</th>
                                 <th class="text-center">Orden de compra</th>
                                 <th class="text-center">Comprobantes</th>
@@ -120,6 +121,10 @@
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->number_full}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
+                                    <td class="celda">
+                                        {{$value->total_canceled ? 'Pagado':'Pendiente'}}
+                                    </td>
+
                                     <td class="celda">{{$value->currency_type_id}}</td>
                                     <td class="celda">{{$value->purchase_order}}</td>
                                     <td class="celda">
@@ -188,14 +193,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="10"></td>
+                                <td class="celda" colspan="11"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="10"></td>
+                                <td class="celda" colspan="11"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

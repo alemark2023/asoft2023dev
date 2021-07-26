@@ -29,7 +29,7 @@ class ReportSaleNoteController extends Controller
                 'name' => $row->description
             ];
         });
-        
+
         $sellers = $this->getSellers();
 
         return compact('document_types','establishments', 'sellers');
@@ -41,6 +41,10 @@ class ReportSaleNoteController extends Controller
         return view('report::sale_notes.index');
     }
 
+    /**
+     * @param Request $request
+     * @return SaleNoteCollection
+     */
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), SaleNote::class);
@@ -49,38 +53,43 @@ class ReportSaleNoteController extends Controller
     }
 
 
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function pdf(Request $request) {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = $this->getRecords($request->all(), SaleNote::class)->get();
         $filters = $request->all();
-
         $pdf = PDF::loadView('report::sale_notes.report_pdf', compact("records", "company", "establishment", "filters"))->setPaper('a4', 'landscape');
-
         $filename = 'Reporte_Nota_Ventas_'.date('YmdHis');
-
         return $pdf->download($filename.'.pdf');
     }
 
 
-
-
-    public function excel(Request $request) {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function excel(Request $request)
+    {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
         $records = $this->getRecords($request->all(), SaleNote::class)->get();
         $filters = $request->all();
+        $SaleNoteExport = new SaleNoteExport();
 
-        return (new SaleNoteExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->filters($filters)
-                ->download('Reporte_Nota_Ventas_'.Carbon::now().'.xlsx');
+        $SaleNoteExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters);
+
+        return $SaleNoteExport->download('Reporte_Nota_Ventas_' . Carbon::now() . '.xlsx');
 
     }
 }

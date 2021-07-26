@@ -16,6 +16,7 @@
                             <th class="text-center">Moneda</th>
                             <th>Orden de compra</th>
                             <th class="text-center">Comprobantes</th>
+                            <th class="text-center">Estado pago</th>
                             <th>Cotización</th>
                             <th>Caso</th>
                             <th class="text-right" >T.Exportación</th>
@@ -32,6 +33,9 @@
                             <td>{{row.user_name}}</td>
                             <td>{{row.customer_name}}</td>
                             <td>{{row.number_full}}</td>
+                            <td class="text-center">
+                                <span class="badge text-white" :class="{'bg-success': (row.total_canceled), 'bg-warning': (!row.total_canceled)}">{{row.total_canceled ? 'Pagado':'Pendiente'}}</span>
+                            </td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.currency_type_id}}</td>
                             <td>{{ row.purchase_order }}</td>
