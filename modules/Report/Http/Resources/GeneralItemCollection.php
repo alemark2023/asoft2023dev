@@ -84,7 +84,17 @@ class GeneralItemCollection extends ResourceCollection
             ->latest('id');
 
         $purchase_unit_price = 0;
-        \Log::debug('Atencion  '.$purchase_item->toSql());
+        $tm = explode('?',$purchase_item->toSql());
+        $s = '';
+        $b = $purchase_item->getBindings();
+        foreach($tm as $k=>$v){
+            $s.=$v;
+            if(isset($b[$k])){
+                $s.="'".$b[$k]."'";
+
+            }
+        }
+        \Log::debug('Atencion  '.$s);
         $purchase_item = $purchase_item->first();
 
         if ($purchase_item) {
