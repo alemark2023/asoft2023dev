@@ -81,10 +81,14 @@ class GeneralItemCollection extends ResourceCollection
         // para sacar la ganancia correctamente
         $purchase_item = PurchaseItem::where('item_id', $record->item_id)
             ->where('date_of_due', '<=', $resource['date_of_issue'])
-            ->latest('id')
-            ->first();
+            ->latest('id');
+
         $purchase_unit_price = 0;
+        \Log::debug('Atencion  '.$purchase_item->toSql());
+        $purchase_item = $purchase_item->first();
+
         if ($purchase_item) {
+            \Log::debug('Entra en 1 '.__FILE__);
             $purchase_unit_price = $purchase_item->unit_price;
             $purchase = Purchase::find($purchase_item->purchase_id);
             $exchange_rate_sale = $purchase->exchange_rate_sale * 1;
@@ -100,12 +104,15 @@ class GeneralItemCollection extends ResourceCollection
                 }
             }
         }else{
+            \Log::debug('Entra en 2 '.__FILE__);
             $purchase_item  =$record->relation_item;
             $item  =$record->relation_item;
             $purchase_item = PurchaseItem::where('item_id', $item->id)
                 ->where('date_of_due', '<=', $resource['date_of_issue'])
                 ->latest('id')
                 ->first();
+            \Log::debug('Valor para 2 '.var_export($purchase_item,true));
+
             if ($purchase_item) {
                 $purchase_unit_price = $purchase_item->unit_price;
                 $purchase = Purchase::find($purchase_item->purchase_id);
@@ -128,12 +135,10 @@ class GeneralItemCollection extends ResourceCollection
         // $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
 
         if ($purchase_unit_price == 0 && $record->relation_item->purchase_unit_price > 0) {
+            \Log::debug('Entra en 3 '. __FILE__ );
             $purchase_unit_price = $record->relation_item->purchase_unit_price;
         }
 
-        if($purchase_item !== null){
-
-        }
 
         // if ($record->relation_item->purchase_unit_price > 0) {
         //     $purchase_unit_price = $record->relation_item->purchase_unit_price;
