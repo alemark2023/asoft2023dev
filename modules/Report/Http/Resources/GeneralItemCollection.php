@@ -14,7 +14,8 @@ class GeneralItemCollection extends ResourceCollection
         return $this->collection->transform(function ($row, $key) {
             /** @var \App\Models\Tenant\DocumentItem|\App\Models\Tenant\PurchaseItem|mixed $row */
             $resource = self::getDocument($row);
-            $total_item_purchase = self::getPurchaseUnitPrice($row,$resource);
+            $purchase_item = null;
+            $total_item_purchase = self::getPurchaseUnitPrice($row,$resource,$purchase_item);
             if ($row->item->presentation) {
                 $total_item_purchase = $total_item_purchase * $row->item->presentation->quantity_unit;
             }
@@ -48,20 +49,22 @@ class GeneralItemCollection extends ResourceCollection
                 'document_type_id' => $resource['document_type_id'],
                 'web_platform_name' => optional($row->relation_item->web_platform)->name,
                 'model' => $model,
+                'resource'=>$resource,
+                'purchase_item'=>$purchase_item,
             ];
         });
     }
 
-    public static function getPurchaseUnitPrice($record, $resource = null)
+    public static function getPurchaseUnitPrice($record, $resource = null,&$purchase_item = null)
     {
         if($resource === null){
             $resource = self::getDocument($record);
         }
-        $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource) * $record->quantity;
+        $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource,$purchase_item) * $record->quantity;
         if ($record->relation_item->is_set) {
             $purchase_unit_price = 0;
             foreach ($record->relation_item->sets as $item_set) {
-                $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set,$resource) * $item_set->quantity) * $record->quantity;
+                $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set,$resource,$purchase_item) * $item_set->quantity) * $record->quantity;
             }
         } /*elseif() {
         }*/
@@ -69,7 +72,7 @@ class GeneralItemCollection extends ResourceCollection
         return $purchase_unit_price;
     }
 
-    public static function getIndividualPurchaseUnitPrice($record, $resource)
+    public static function getIndividualPurchaseUnitPrice($record, $resource, &$purchase_item = null)
     {
 
         $purchase_unit_price = 0;
