@@ -22,7 +22,10 @@ class GeneralItemCollection extends ResourceCollection
             $utility_item = $row->total - $total_item_purchase;
             $item = $row->getModelItem();
             $model = $item->model;
-
+            $platform = $item->getWebPlatformModel();
+            if($platform !== null){
+                $platform = $platform->name;
+            }
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
@@ -49,8 +52,9 @@ class GeneralItemCollection extends ResourceCollection
                 'document_type_id' => $resource['document_type_id'],
                 'web_platform_name' => optional($row->relation_item->web_platform)->name,
                 'model' => $model,
+                'platform' => $platform,
                 // 'resource'=>$resource,
-                // 'purchase_item'=>$purchase_item,
+                 'purchase_item'=>$purchase_item,
             ];
         });
     }
@@ -84,7 +88,7 @@ class GeneralItemCollection extends ResourceCollection
             ->latest('id')->get()->pluck('purchase_id');
         // para ello se busca las compras
         $purchase = Purchase::wherein('id',$purchase_item)
-            ->where('date_of_due', '<=', $resource['date_of_issue'])
+            ->where('date_of_issue', '<=', $resource['date_of_issue'])
         ->latest('id')->first();
 
         if ($purchase) {

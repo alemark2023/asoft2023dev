@@ -90,6 +90,7 @@ function getLocationData($value, $type = 'sale')
                     <th>SERIES</th>
                     @if($type == 'sale')
                         <th>MODELO</th>
+                        <th>PLATAFORMA</th>
                     @endif
                     <th>COSTO UNIDAD</th>
                     <th>VALOR UNITARIO</th>
@@ -138,6 +139,10 @@ function getLocationData($value, $type = 'sale')
                             $item = $value->getModelItem();
                             $model = $item->model;
                             $saleNote = $value->sale_note;
+                            $platform = $item->getWebPlatformModel();
+                            if($platform !== null){
+                                $platform = $platform->name;
+                            }
                             ?>
                             <tr>
                                 <td class="celda">{{$value->sale_note->date_of_issue->format('Y-m-d')}}</td>
@@ -159,6 +164,7 @@ function getLocationData($value, $type = 'sale')
 
                                 <td class="celda">{{$series}}</td>
                                 <td class="celda">{{$model}}</td>
+                                <td class="celda">{{$platform}}</td>
 
                                 <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
 
@@ -213,7 +219,10 @@ function getLocationData($value, $type = 'sale')
                             /** @var  \App\Models\Tenant\Document $document */
                             $document =  $value->document;
                             $purchseOrder = $document->purchase_order;
-
+                            $platform = $item->getWebPlatformModel();
+                            if($platform !== null){
+                                $platform = $platform->name;
+                            }
                             ?>
 
                             <tr>
@@ -244,6 +253,7 @@ function getLocationData($value, $type = 'sale')
 
                                 <td class="celda">{{$series}}</td>
                                 <td class="celda">{{$model}}</td>
+                                <td class="celda">{{$platform}}</td>
 
 
                                 <td class="celda">{{($value->relation_item) ? $value->relation_item->purchase_unit_price:0}}</td>
