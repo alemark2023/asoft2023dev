@@ -686,6 +686,7 @@ class Item extends ModelTenant
             'sale_unit_price'                  => self::getSaleUnitPriceByWarehouse($this, $warehouse->id),
             'purchase_unit_price'              => $this->purchase_unit_price,
             'unit_type_id'                     => $this->unit_type_id,
+            'sale_affectation_igv_type'     => $this->sale_affectation_igv_type,
             'sale_affectation_igv_type_id'     => $this->sale_affectation_igv_type_id,
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'calculate_quantity'               => (bool)$this->calculate_quantity,

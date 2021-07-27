@@ -85,10 +85,21 @@
                         <div class="col-md-6">
                             <div class="form-group" :class="{'has-danger': errors.sale_affectation_igv_type_id}">
                                 <label class="control-label">Tipo de afectación</label>
-                                <el-select v-model="form.sale_affectation_igv_type_id" @change="changeAffectationIgvType">
-                                    <el-option v-for="option in affectation_igv_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                <el-select
+                                    v-model="form.sale_affectation_igv_type_id"
+                                    @change="changeAffectationIgvType"
+                                    filterable>
+                                    <el-option
+                                        v-for="option in affectation_igv_types"
+                                        :key="option.id"
+                                        :value="option.id"
+                                        :label="option.description"
+                                    ></el-option>
                                 </el-select>
-                                <small class="form-control-feedback" v-if="errors.sale_affectation_igv_type_id" v-text="errors.sale_affectation_igv_type_id[0]"></small>
+                                <small
+                                    class="form-control-feedback"
+                                    v-if="errors.sale_affectation_igv_type_id"
+                                    v-text="errors.sale_affectation_igv_type_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-12"></div>
@@ -872,15 +883,15 @@ export default {
                             // }
                         })
 
-                } 
-                
+                }
+
                 this.setDataToItemWarehousePrices()
 
             },
             setDataToItemWarehousePrices(){
 
                 this.warehouses.forEach(warehouse => {
-                    
+
                     let item_warehouse_price = _.find(this.form.item_warehouse_prices, {warehouse_id : warehouse.id})
 
                     if(!item_warehouse_price){

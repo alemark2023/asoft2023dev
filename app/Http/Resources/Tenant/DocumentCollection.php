@@ -14,6 +14,7 @@ class DocumentCollection extends ResourceCollection
      */
     public function toArray($request) {
         return $this->collection->transform(function($row, $key) {
+            /** @var \App\Models\Tenant\Document $row */
             $has_xml = true;
             $has_pdf = true;
             $has_cdr = false;
@@ -82,8 +83,8 @@ class DocumentCollection extends ResourceCollection
             if($row->regularize_shipping) {
                 $message_regularize_shipping = "Por regularizar: {$row->response_regularize_shipping->code} - {$row->response_regularize_shipping->description}";
             }
+            $nvs = $row->getNvCollection();
 
-             
 
             return [
 
@@ -149,6 +150,7 @@ class DocumentCollection extends ResourceCollection
                         'description' => $row->document->number_full,
                     ];
                 }) : null,
+                'sales_note' => $nvs,
                 'balance' => $balance,
                 'guides' => !empty($row->guides)?(array)$row->guides:null,
                 'message_regularize_shipping' => $message_regularize_shipping,

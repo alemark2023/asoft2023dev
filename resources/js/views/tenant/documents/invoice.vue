@@ -871,55 +871,7 @@ export default {
                 localStorage.removeItem('items');
                 await this.$http.get('/documents/search-items', { params }).then(response => {
                     const itemsResponse = response.data.items.map(i => {
-                        i.affectation_igv_type = {
-                            active: 1,
-                            description: "Gravado - Operación Onerosa",
-                            exportation: 0,
-                            free: 0,
-                            id: "10",
-                        }
-                        i.presentation = {};
-                        i.unit_price = i.sale_unit_price;
-                        i.item = {
-                            amount_plastic_bag_taxes: i.amount_plastic_bag_taxes,
-                            attributes: i.attributes,
-                            brand: i.brand,
-                            calculate_quantity: i.calculate_quantity,
-                            category: i.category,
-                            currency_type_id: i.currency_type_id,
-                            currency_type_symbol: i.currency_type_symbol,
-                            description: i.description,
-                            full_description: i.full_description,
-                            has_igv: i.has_igv,
-                            has_plastic_bag_taxes: i.has_plastic_bag_taxes,
-                            id: i.id,
-                            internal_id: i.internal_id,
-                            item_unit_types: i.item_unit_types,
-                            lots: i.lots,
-                            lots_enabled: i.lots_enabled,
-                            lots_group: i.lots_group,
-                            model: i.model,
-                            presentation: {},
-                            purchase_affectation_igv_type_id: i.purchase_affectation_igv_type_id,
-                            purchase_unit_price: i.purchase_unit_price,
-                            sale_affectation_igv_type_id: i.sale_affectation_igv_type_id,
-                            sale_unit_price: i.sale_unit_price,
-                            series_enabled: i.series_enabled,
-                            stock: i.stock,
-                            unit_price: i.sale_unit_price,
-                            unit_type_id: i.unit_type_id,
-                            warehouses: i.warehouses,
-                        };
-                        i.IdLoteSelected = null;
-                        i.affectation_igv_type_id = "10";
-                        i.discounts = [];
-                        i.charges = [];
-                        i.item_id = i.id;
-                        i.unit_price_value = i.sale_unit_price;
-                        i.input_unit_price_value = i.sale_unit_price;
-                        i.quantity = itemsParsed.find(ip => ip.item_id == i.id).quantity;
-                        i.warehouse_id = null;
-                        return i;
+                        return  this.setItemFromResponse(i,itemsParsed);
                     });
                     this.form.items = itemsResponse.map(i => {
                         return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
@@ -937,55 +889,7 @@ export default {
                 localStorage.removeItem('itemsForNotes');
                 await this.$http.get('/documents/search-items', { params }).then(response => {
                     const itemsResponse = response.data.items.map(i => {
-                        i.affectation_igv_type = {
-                            active: 1,
-                            description: "Gravado - Operación Onerosa",
-                            exportation: 0,
-                            free: 0,
-                            id: "10",
-                        }
-                        i.presentation = {};
-                        i.unit_price = i.sale_unit_price;
-                        i.item = {
-                            amount_plastic_bag_taxes: i.amount_plastic_bag_taxes,
-                            attributes: i.attributes,
-                            brand: i.brand,
-                            calculate_quantity: i.calculate_quantity,
-                            category: i.category,
-                            currency_type_id: i.currency_type_id,
-                            currency_type_symbol: i.currency_type_symbol,
-                            description: i.description,
-                            full_description: i.full_description,
-                            has_igv: i.has_igv,
-                            has_plastic_bag_taxes: i.has_plastic_bag_taxes,
-                            id: i.id,
-                            internal_id: i.internal_id,
-                            item_unit_types: i.item_unit_types,
-                            lots: i.lots,
-                            lots_enabled: i.lots_enabled,
-                            lots_group: i.lots_group,
-                            model: i.model,
-                            presentation: {},
-                            purchase_affectation_igv_type_id: i.purchase_affectation_igv_type_id,
-                            purchase_unit_price: i.purchase_unit_price,
-                            sale_affectation_igv_type_id: i.sale_affectation_igv_type_id,
-                            sale_unit_price: i.sale_unit_price,
-                            series_enabled: i.series_enabled,
-                            stock: i.stock,
-                            unit_price: i.sale_unit_price,
-                            unit_type_id: i.unit_type_id,
-                            warehouses: i.warehouses,
-                        };
-                        i.IdLoteSelected = null;
-                        i.affectation_igv_type_id = "10";
-                        i.discounts = [];
-                        i.charges = [];
-                        i.item_id = i.id;
-                        i.unit_price_value = i.sale_unit_price;
-                        i.input_unit_price_value = i.sale_unit_price;
-                        i.quantity = itemsParsed.find(ip => ip.id == i.id).quantity;
-                        i.warehouse_id = null;
-                        return i;
+                        return  this.setItemFromResponse(i,itemsParsed);
                     });
                     this.form.items = itemsResponse.map(i => {
                         return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale)
@@ -1023,6 +927,73 @@ export default {
             ...mapActions([
                 'loadConfiguration',
             ]),
+            setItemFromResponse(item,itemsParsed){
+                /* Obtiene el igv del item, si no existe, coloca el gravado*/
+                if (item.sale_affectation_igv_type !== undefined) {
+                    item.affectation_igv_type = item.sale_affectation_igv_type
+                } else {
+                    item.affectation_igv_type = {
+                        active: 1,
+                        description: "Gravado - Operación Onerosa",
+                        exportation: 0,
+                        free: 0,
+                        id: "10",
+                    }
+                }
+                item.presentation = {};
+                item.unit_price = item.sale_unit_price;
+                item.item = {
+                    amount_plastic_bag_taxes: item.amount_plastic_bag_taxes,
+                    attributes: item.attributes,
+                    brand: item.brand,
+                    calculate_quantity: item.calculate_quantity,
+                    category: item.category,
+                    currency_type_id: item.currency_type_id,
+                    currency_type_symbol: item.currency_type_symbol,
+                    description: item.description,
+                    full_description: item.full_description,
+                    has_igv: item.has_igv,
+                    has_plastic_bag_taxes: item.has_plastic_bag_taxes,
+                    id: item.id,
+                    internal_id: item.internal_id,
+                    item_unit_types: item.item_unit_types,
+                    lots: item.lots,
+                    lots_enabled: item.lots_enabled,
+                    lots_group: item.lots_group,
+                    model: item.model,
+                    presentation: {},
+                    purchase_affectation_igv_type_id: item.purchase_affectation_igv_type_id,
+                    purchase_unit_price: item.purchase_unit_price,
+                    sale_affectation_igv_type_id: item.sale_affectation_igv_type_id,
+                    sale_unit_price: item.sale_unit_price,
+                    series_enabled: item.series_enabled,
+                    stock: item.stock,
+                    unit_price: item.sale_unit_price,
+                    unit_type_id: item.unit_type_id,
+                    warehouses: item.warehouses,
+                };
+                item.IdLoteSelected = null;
+                if( item.affectation_igv_type_id  === undefined) {
+                    item.affectation_igv_type_id = item.affectation_igv_type.id;
+                    // item.affectation_igv_type_id = "10";
+                }
+                item.discounts = [];
+                item.charges = [];
+                item.item_id = item.id;
+                item.unit_price_value = item.sale_unit_price;
+                item.input_unit_price_value = item.sale_unit_price;
+
+                item.quantity = 1;
+
+                let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+                if(tempItem !== undefined){
+                    item.quantity = tempItem.quantity
+                }
+                // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
+                item.warehouse_id = null;
+
+                return item
+            },
             // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
             setDefaultDocumentType() {
                 if (this.default_document_type === undefined) this.default_document_type = null;
@@ -2002,19 +1973,37 @@ export default {
                     if (row.affectation_igv_type_id === '10') {
                         total_taxed += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '20') {
+                    if (
+                        row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
+                        || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
+                    ) {
                         total_exonerated += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '30') {
+                    if (
+                        row.affectation_igv_type_id === '30'  // 30,Inafecto - Operación Onerosa
+                        || row.affectation_igv_type_id === '31'  // 31,Inafecto – Retiro por Bonificación
+                        || row.affectation_igv_type_id === '32'  // 32,Inafecto – Retiro
+                        || row.affectation_igv_type_id === '33'  // 33,Inafecto – Retiro por Muestras Médicas
+                        || row.affectation_igv_type_id === '34'  // 34,Inafecto - Retiro por Convenio Colectivo
+                        || row.affectation_igv_type_id === '35'  // 35,Inafecto – Retiro por premio
+                        || row.affectation_igv_type_id === '36' // 36,Inafecto - Retiro por publicidad
+                        || row.affectation_igv_type_id === '37'  // 37,Inafecto - Transferencia gratuita
+                    ) {
                         total_unaffected += parseFloat(row.total_value)
                     }
                     if (row.affectation_igv_type_id === '40') {
                         total_exportation += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                         '40'].indexOf(row.affectation_igv_type_id) < 0) {
                         total_free += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                        '40'].indexOf(row.affectation_igv_type_id) > -1) {
                         total_igv += parseFloat(row.total_igv)
                         total += parseFloat(row.total)
                     }
@@ -2434,7 +2423,7 @@ export default {
                 let total = this.form.total;
                 let payment = 0;
                 let amount = _.round(total / payment_count, 2);
-                console.log(amount);
+                // console.log(amount);
                 _.forEach(this.form.payments, row => {
                     payment += amount;
                     if (total - payment < 0) {

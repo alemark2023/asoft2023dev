@@ -1,4 +1,44 @@
-<!DOCTYPE html>
+<?php
+function getLocationData($value)
+{
+    $customer = null;
+    $district = '';
+    $department = '';
+    $province = '';
+    $type_doc = $value;
+    if (
+        $type_doc &&
+        $type_doc->customer
+    ) {
+        $customer = $type_doc->customer;
+    }
+    if ($customer != null) {
+        if (
+            $customer->district &&
+            $customer->district->description
+        ) {
+            $district = $customer->district->description;
+        }
+        if (
+            $customer->department &&
+            $customer->department->description
+        ) {
+            $department = $customer->department->description;
+        }
+        if (
+            $customer->province &&
+            $customer->province->description
+        ) {
+            $province = $customer->province->description;
+        }
+    }
+    return [
+        'district' => $district,
+        'department' => $department,
+        'province' => $province,
+    ];
+}
+?><!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
@@ -91,6 +131,11 @@
                                 <th># Guía</th>
                                 <th>Cotización</th>
                                 <th>Caso</th>
+
+                                <th>DIST</th>
+                                <th>DPTO</th>
+                                <th>PROV</th>
+
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
@@ -115,9 +160,16 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
+                                <?php
+                                    /** @var \App\Models\Tenant\Document  $value */
+                                    $iteration = $loop->iteration;
+
+                                    $user = $value->user->name;
+
+                                ?>
                             <tr>
-                                <td class="celda">{{$loop->iteration}}</td>
-                                <td class="celda">{{$value->user->name}}</td>
+                                <td class="celda">{{$iteration}}</td>
+                                <td class="celda">{{$user}}</td>
                                 <td class="celda">{{$value->document_type->id}}</td>
                                 <td class="celda">{{$value->series}}-{{$value->number}}</td>
                                 <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
@@ -143,6 +195,11 @@
                                 </td>
                                 <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
                                 <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
+
+                                <?php $stablihsment = getLocationData($value); ?>
+                                <td class="celda">{{$stablihsment['district']}}</td>
+                                <td class="celda">{{$stablihsment['department']}}</td>
+                                <td class="celda">{{$stablihsment['province']}}</td>
 
                                 <td class="celda">{{$value->customer->name}}</td>
                                 <td class="celda">{{$value->customer->number}}</td>
@@ -315,7 +372,7 @@
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="15"></td>
+                                <td colspan="18"></td>
                                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
@@ -331,7 +388,7 @@
                                 <td>{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td colspan="15"></td>
+                                <td colspan="18"></td>
                                 <td >Totales USD</td>
                                 <td></td>
                                 <td></td>
