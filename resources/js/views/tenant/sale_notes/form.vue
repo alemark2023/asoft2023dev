@@ -721,19 +721,36 @@
                     if (row.affectation_igv_type_id === '10') {
                         total_taxed += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '20') {
+                    if (row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
+                        || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
+                    ) {
                         total_exonerated += parseFloat(row.total_value)
                     }
-                    if (row.affectation_igv_type_id === '30') {
+                    if (
+                        row.affectation_igv_type_id === '30'  // 30,Inafecto - Operación Onerosa
+                        || row.affectation_igv_type_id === '31'  // 31,Inafecto – Retiro por Bonificación
+                        || row.affectation_igv_type_id === '32'  // 32,Inafecto – Retiro
+                        || row.affectation_igv_type_id === '33'  // 33,Inafecto – Retiro por Muestras Médicas
+                        || row.affectation_igv_type_id === '34'  // 34,Inafecto - Retiro por Convenio Colectivo
+                        || row.affectation_igv_type_id === '35'  // 35,Inafecto – Retiro por premio
+                        || row.affectation_igv_type_id === '36' // 36,Inafecto - Retiro por publicidad
+                        || row.affectation_igv_type_id === '37'  // 37,Inafecto - Transferencia gratuita
+                    ) {
                         total_unaffected += parseFloat(row.total_value)
                     }
                     if (row.affectation_igv_type_id === '40') {
                         total_exportation += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                        '40'].indexOf(row.affectation_igv_type_id) < 0) {
                         total_free += parseFloat(row.total_value)
                     }
-                    if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                    if (['10',
+                        '20', '21',
+                        '30', '31', '32', '33', '34', '35', '36',
+                        '40'].indexOf(row.affectation_igv_type_id) > -1) {
                         total_igv += parseFloat(row.total_igv)
                         total += parseFloat(row.total)
                     }
