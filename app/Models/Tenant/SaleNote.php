@@ -76,6 +76,7 @@ class SaleNote extends ModelTenant
         'due_date',
         'total_plastic_bag_taxes',
         'additional_information',
+        'document_id',
         'seller_id',
 ];
 

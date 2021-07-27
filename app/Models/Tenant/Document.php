@@ -715,4 +715,19 @@ class Document extends ModelTenant
         return $this;
     }
 
+    /**
+     * Retorna una coleccion de nota de ventas con el formato especificado
+     *
+     * @return SaleNote[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     */
+    public function getNvCollection(){
+
+        return SaleNote::where('document_id', $this->id)
+            ->orWhere('id', $this->sale_note_id)
+            ->get()
+            ->transform(function ($sale_note) {
+                /** @var SaleNote $sale_note */
+                return $sale_note->getCollectionData();
+            });
+    }
 }
