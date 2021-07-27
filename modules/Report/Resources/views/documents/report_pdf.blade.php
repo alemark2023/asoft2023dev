@@ -1,5 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+function getLocationData($value)
+{
+    $customer = null;
+    $district = '';
+    $department = '';
+    $province = '';
+    $type_doc = $value;
+    if (
+        $type_doc &&
+        $type_doc->customer
+    ) {
+        $customer = $type_doc->customer;
+    }
+    if ($customer != null) {
+        if (
+            $customer->district &&
+            $customer->district->description
+        ) {
+            $district = $customer->district->description;
+        }
+        if (
+            $customer->department &&
+            $customer->department->description
+        ) {
+            $department = $customer->department->description;
+        }
+        if (
+            $customer->province &&
+            $customer->province->description
+        ) {
+            $province = $customer->province->description;
+        }
+    }
+    return [
+        'district' => $district,
+        'department' => $department,
+        'province' => $province,
+    ];
+}
+?><!DOCTYPE html>
+<html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -119,6 +159,10 @@
                                 <th>Doc. Afectado</th>
                                 <th># Guía</th>
 
+                                <th>DIST</th>
+                                <th>DPTO</th>
+                                <th>PROV</th>
+
                                 <th>Cliente</th>
                                 <th>RUC</th>
                                 <th>Estado</th>
@@ -135,6 +179,13 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
+                                <?php
+                                    /** @var \App\Models\Tenant\Document  $value */
+                                    $iteration = $loop->iteration;
+
+                                    $user = $value->user->name;
+
+                                ?>
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->document_type->id}}</td>
@@ -162,6 +213,11 @@
                                             @endforeach
                                         @endif
                                     </td>
+                                    <?php $stablihsment = getLocationData($value); ?>
+                                    <td class="celda">{{$stablihsment['district']}}</td>
+                                    <td class="celda">{{$stablihsment['department']}}</td>
+                                    <td class="celda">{{$stablihsment['province']}}</td>
+
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->customer->number}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
@@ -274,14 +330,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="11"></td>
+                                <td class="celda" colspan="14"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="11"></td>
+                                <td class="celda" colspan="14"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

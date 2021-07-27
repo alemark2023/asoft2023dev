@@ -226,8 +226,7 @@ class ReportGeneralItemController extends Controller
             ->records($records)
             ->type($request->type)
             ->document_type_id($document_type_id);
-
-        return$generalItemExport->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
+        return $generalItemExport->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
 
     }
 }
