@@ -1993,6 +1993,8 @@ export default {
                 let total_value = 0
                 let total = 0
                 let total_plastic_bag_taxes = 0
+                let total_discount_no_base = 0
+
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
                     total_charge += parseFloat(row.total_charge)
@@ -2029,9 +2031,11 @@ export default {
                         total_value -= row.total_value
 
                     }
-
+ 
                 });
 
+
+                this.form.total_discount = _.round(total_discount, 2)
                 this.form.total_exportation = _.round(total_exportation, 2)
                 this.form.total_taxed = _.round(total_taxed, 2)
                 this.form.total_exonerated = _.round(total_exonerated, 2)
