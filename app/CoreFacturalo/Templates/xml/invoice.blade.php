@@ -13,6 +13,13 @@
         }
     }
 
+    $tot_discount_no_base = $document->items->sum(function($row){
+        return $row->discounts ? collect($row->discounts)->sum(function($discount){
+            return $discount->discount_type_id == '01' ? $discount->amount : 0;
+        }) : 0;
+    });
+
+
 @endphp
 {!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -407,7 +414,12 @@
         @if($document->total_prepayment > 0)
         <cbc:PrepaidAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_prepayment }}</cbc:PrepaidAmount>
         @endif
+        @if($tot_discount_no_base > 0)
+        <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_discount_no_base}}</cbc:PayableAmount>
+        @else
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:PayableAmount>
+        @endif
+
     </cac:LegalMonetaryTotal>
     @foreach($document->items as $row)
     <cac:InvoiceLine>
