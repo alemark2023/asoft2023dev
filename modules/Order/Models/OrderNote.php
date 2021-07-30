@@ -338,4 +338,48 @@ class OrderNote extends ModelTenant
         return $this;
     }
 
+    /**
+     * @return array
+     */
+    public function getCollectionData(){
+        $btn_generate = (count($this->documents) > 0 || count($this->sale_notes) > 0)?false:true;
+
+        return [
+            'id' => $this->id,
+            'soap_type_id' => $this->soap_type_id,
+            'external_id' => $this->external_id,
+            'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
+            'date_of_due' => ($this->date_of_due) ? $this->date_of_due->format('Y-m-d') : null,
+            'delivery_date' => ($this->delivery_date) ? $this->delivery_date->format('Y-m-d') : null,
+            'identifier' => $this->identifier,
+            'user_name' => $this->user->name,
+            'customer_name' => $this->customer->name,
+            'customer_number' => $this->customer->number,
+            'currency_type_id' => $this->currency_type_id,
+            'total_exportation' => number_format($this->total_exportation,2),
+            // 'total_free' => number_format($this->total_free,2),
+            'total_unaffected' => number_format($this->total_unaffected,2),
+            'total_exonerated' => number_format($this->total_exonerated,2),
+            'total_taxed' => number_format($this->total_taxed,2),
+            'total_igv' => number_format($this->total_igv,2),
+            'total' => number_format($this->total,2),
+            'state_type_id' => $this->state_type_id,
+            'state_type_description' => $this->state_type->description,
+            'documents' => $this->documents->transform(function($row) {
+                return [
+                    'number_full' => $row->number_full,
+                ];
+            }),
+            'sale_notes' => $this->sale_notes->transform(function($row) {
+                return [
+                    'identifier' => $row->identifier,
+                ];
+            }),
+            'btn_generate' => $btn_generate,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'print_a4' => url('')."/order-notes/print/{$this->external_id}/a4",
+        ];
+    }
+
 }

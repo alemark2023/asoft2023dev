@@ -85,6 +85,7 @@ class DocumentCollection extends ResourceCollection
             }
             $nvs = $row->getNvCollection();
 
+            $order_note = $row->getOrderNoteCollection();
 
             return [
 
@@ -151,6 +152,7 @@ class DocumentCollection extends ResourceCollection
                     ];
                 }) : null,
                 'sales_note' => $nvs,
+                'order_note' =>$order_note,
                 'balance' => $balance,
                 'guides' => !empty($row->guides)?(array)$row->guides:null,
                 'message_regularize_shipping' => $message_regularize_shipping,
