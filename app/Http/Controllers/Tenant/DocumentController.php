@@ -41,6 +41,7 @@ use Carbon\Carbon;
 use Config;
 use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -883,56 +884,54 @@ class DocumentController extends Controller
         $purchase_order = $request->purchase_order;
         $guides = $request->guides;
 
-
         $records = Document::query();
 		if ($d_start && $d_end) {
-			$records = $records->whereBetween('date_of_issue', [$d_start, $d_end]);
+			 $records->whereBetween('date_of_issue', [$d_start, $d_end]);
 		}
         if ($date_of_issue) {
             $records = Document::where('date_of_issue', 'like', '%' . $date_of_issue . '%');
         }
+        /** @var Builder $records */
         if ($document_type_id) {
-            $records = $records->where('document_type_id', 'like', '%' . $document_type_id . '%');
+            $records->where('document_type_id', 'like', '%' . $document_type_id . '%');
         }
         if ($series) {
-            $records = $records->where('series', 'like', '%' . $series . '%');
+            $records->where('series', 'like', '%' . $series . '%');
         }
         if ($number) {
-            $records = $records->where('number', $number);
+            $records->where('number', $number);
         }
         if ($state_type_id) {
-            $records = $records->where('state_type_id', 'like', '%' . $state_type_id . '%');
+            $records->where('state_type_id', 'like', '%' . $state_type_id . '%');
         }
         if ($purchase_order) {
-            $records = $records->where('purchase_order', $purchase_order);
+            $records->where('purchase_order', $purchase_order);
         }
-        $records = $records->whereTypeUser()
-            ->latest();
+        $records->whereTypeUser()->latest();
 
-        if($pending_payment){
-            $records = $records->where('total_canceled', false);
-        }
-
-        if($customer_id){
-            $records = $records->where('customer_id', $customer_id);
+        if ($pending_payment) {
+            $records->where('total_canceled', false);
         }
 
-        if($item_id){
-            $records = $records->whereHas('items', function($query) use($item_id){
-                                    $query->where('item_id', $item_id);
-                                });
+        if ($customer_id) {
+            $records->where('customer_id', $customer_id);
         }
 
-        if($category_id){
-
-            $records = $records->whereHas('items', function($query) use($category_id){
-                                    $query->whereHas('relation_item', function($q) use($category_id){
-                                        $q->where('category_id', $category_id);
-                                    });
-                                });
+        if ($item_id) {
+            $records->whereHas('items', function ($query) use ($item_id) {
+                $query->where('item_id', $item_id);
+            });
         }
-        if(!empty($guides)){
-            $records->where('guides','like', DB::raw("%\"number\":\"%").$guides. DB::raw("%\"%"));
+
+        if ($category_id) {
+            $records->whereHas('items', function ($query) use ($category_id) {
+                $query->whereHas('relation_item', function ($q) use ($category_id) {
+                    $q->where('category_id', $category_id);
+                });
+            });
+        }
+        if (!empty($guides)) {
+            $records->where('guides', 'like', DB::raw("%\"number\":\"%") . $guides . DB::raw("%\"%"));
         }
         return $records;
     }

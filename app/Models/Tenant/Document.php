@@ -5,6 +5,8 @@ namespace App\Models\Tenant;
 use App\Http\Controllers\Tenant\DownloadController;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
 use Modules\Order\Models\OrderNote;
@@ -690,7 +692,7 @@ class Document extends ModelTenant
     /**
      * Devuelve notas de credito o debito que afectan al documento
      *
-     * @return \App\Models\Tenant\Note[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     * @return \App\Models\Tenant\Note[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
      */
     public function getNotes(){
         return Note::where('affected_document_id',$this->id)->get();
@@ -718,9 +720,10 @@ class Document extends ModelTenant
     /**
      * Retorna una coleccion de nota de ventas con el formato especificado
      *
-     * @return SaleNote[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     * @return SaleNote[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
      */
-    public function getNvCollection(){
+    public function getNvCollection()
+    {
 
         return SaleNote::where('document_id', $this->id)
             ->orWhere('id', $this->sale_note_id)
@@ -730,4 +733,15 @@ class Document extends ModelTenant
                 return $sale_note->getCollectionData();
             });
     }
+
+    /**
+     * @return array
+     */
+    public function getOrderNoteCollection()
+    {
+        $orderNote = OrderNote::find($this->order_note_id);
+        if ($orderNote === null) return [];
+        return $orderNote->getCollectionData();
+    }
+
 }

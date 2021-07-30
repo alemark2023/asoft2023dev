@@ -58,6 +58,7 @@
                         <th v-if="columns.notes.visible">Notas C/D</th>
                         <th v-if="columns.dispatch.visible">Guía de Remisión</th>
                         <th v-if="columns.sales_note.visible">Nota de venta</th>
+                        <th v-if="columns.order_note.visible">Pedidos</th>
                         <th>Estado</th>
                         <th v-if="columns.user_name.visible">Usuario</th>
                         <th class="text-center">Moneda</th>
@@ -108,6 +109,11 @@
                         <td v-if="columns.sales_note.visible">
                             <template v-for="(row,index) in row.sales_note">
                                 <label class="d-block" :key="index">{{ row.number_full }} ({{row.state_type_description}})</label>
+                            </template>
+                        </td>
+                        <td v-if="columns.order_note.visible">
+                            <template v-if="row.order_note && row.order_note.identifier">
+                                {{ row.order_note.identifier }}
                             </template>
                         </td>
 
@@ -344,6 +350,10 @@ export default {
                 },
                 sales_note: {
                     title: 'Nota de ventas',
+                    visible: false
+                },
+                order_note: {
+                    title: 'Pedidos',
                     visible: false
                 },
             }
