@@ -12,7 +12,7 @@ class GeneralItemCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function ($row, $key) {
-            /** @var \App\Models\Tenant\DocumentItem|\App\Models\Tenant\PurchaseItem|mixed $row */
+            /** @var \App\Models\Tenant\DocumentItem|\App\Models\Tenant\PurchaseItem|mixed|\App\Models\Tenant\SaleNoteItem|mixed $row */
             $resource = self::getDocument($row);
             $purchase_item = null;
             $total_item_purchase = self::getPurchaseUnitPrice($row,$resource,$purchase_item);

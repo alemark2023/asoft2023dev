@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Modules\LevelAccess\Models\ModuleLevel;
 use Modules\Sale\Models\UserCommission;
 
@@ -390,6 +391,26 @@ class User extends Authenticatable
     public function scopeGetWorkers($query){
         $query->whereIn('type', ['seller','admin']);
         return  $query;
+    }
+
+    /**
+     * Devuelve verdadero si el usuario es Admin.
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->type === 'admin';
+    }
+
+    /**
+     * Genera un token al azar de $length caracteres
+     * @param int|null $length
+     * @return $this
+     */
+    public function updateToken($length = 60)
+    {
+        $this->api_token = Str::random($length);
+        return $this;
     }
 
     /**

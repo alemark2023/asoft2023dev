@@ -135,6 +135,7 @@ if ($hostname) {
             Route::get('users/tables', 'Tenant\UserController@tables');
             Route::get('users/record/{user}', 'Tenant\UserController@record');
             Route::post('users', 'Tenant\UserController@store');
+            Route::post('users/token/{user}', 'Tenant\UserController@regenerateToken');
             Route::get('users/records', 'Tenant\UserController@records');
             Route::delete('users/{user}', 'Tenant\UserController@destroy');
 
