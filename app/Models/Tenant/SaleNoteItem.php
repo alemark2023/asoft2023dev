@@ -167,4 +167,9 @@ class SaleNoteItem extends ModelTenant
         return $this->belongsTo(Warehouse::class);
     }
 
+    /**
+     * @return Item|Item[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|mixed|null
+     */
+    public function getModelItem(){ return Item::find($this->item_id);}
+
 }
