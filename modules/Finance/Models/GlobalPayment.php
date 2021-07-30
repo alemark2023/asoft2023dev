@@ -2,7 +2,7 @@
 
 namespace Modules\Finance\Models;
 
-use App\Models\Tenant\{DocumentPayment, PurchasePayment, SaleNotePayment, User};
+use App\Models\Tenant\{Bank, DocumentPayment, PurchasePayment, SaleNotePayment, User};
 use App\Models\Tenant\Cash;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\SoapType;
@@ -162,6 +162,27 @@ class GlobalPayment extends ModelTenant
 
     public function getDestinationDescriptionAttribute()
     {
+        if($this->destination_type  === Cash::class) return 'CAJA GENERAL';
+        $id= $this->id;
+        $destination = $this->destination;
+        try{
+            $bank_id = $destination->bank_id;
+            $bank = Bank::find($bank_id);
+            if($bank !== null){
+                try{
+                    $descrip =$bank->description;;
+                    return $descrip;
+                }catch (\Exception $e){
+                    \Log::debug(__FILE__."::".__LINE__." -> ".__FUNCTION__."\n error 1 No se ha encontrado descripcion de banco para $id");
+                    return '';
+                }
+            }else{
+                \Log::debug(__FILE__."::".__LINE__." -> ".__FUNCTION__."\n error 2 No se ha encontrado banco relacionado para $id con banco $bank_id");
+            }
+        }catch (\Exception $e){
+            \Log::debug(__FILE__."::".__LINE__." -> ".__FUNCTION__."\n error 4 No se ha encontrado asociacion para $id");
+        }
+        return '';
         return $this->destination_type === Cash::class ? 'CAJA GENERAL': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
     }
 
