@@ -163,24 +163,21 @@ class GlobalPayment extends ModelTenant
     public function getDestinationDescriptionAttribute()
     {
         if($this->destination_type  === Cash::class) return 'CAJA GENERAL';
-        $id= $this->id;
         $destination = $this->destination;
         try{
             $bank_id = $destination->bank_id;
             $bank = Bank::find($bank_id);
             if($bank !== null){
                 try{
-                    $descrip =$bank->description;;
-                    return $descrip;
+                    return $bank->description;
                 }catch (\Exception $e){
-                    \Log::debug(__FILE__."::".__LINE__." -> ".__FUNCTION__."\n error 1 No se ha encontrado descripcion de banco para $id");
+                    // do nothing
                     return '';
                 }
-            }else{
-                \Log::debug(__FILE__."::".__LINE__." -> ".__FUNCTION__."\n error 2 No se ha encontrado banco relacionado para $id con banco $bank_id");
             }
         }catch (\Exception $e){
-            \Log::debug(__FILE__."::".__LINE__." -> ".__FUNCTION__."\n error 4 No se ha encontrado asociacion para $id");
+            // do nothing
+            return '';
         }
         return '';
         return $this->destination_type === Cash::class ? 'CAJA GENERAL': "{$this->destination->bank->description} - {$this->destination->currency_type_id} - {$this->destination->description}";
