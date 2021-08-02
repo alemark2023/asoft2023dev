@@ -366,13 +366,17 @@ class OrderNote extends ModelTenant
             'state_type_id' => $this->state_type_id,
             'state_type_description' => $this->state_type->description,
             'documents' => $this->documents->transform(function($row) {
+                /** @var Document $row */
                 return [
                     'number_full' => $row->number_full,
+                    'state_type_id' => $row->state_type_id,
                 ];
             }),
             'sale_notes' => $this->sale_notes->transform(function($row) {
+                /** @var SaleNote $row */
                 return [
                     'identifier' => $row->identifier,
+                    'state_type_id' => $row->state_type_id,
                 ];
             }),
             'btn_generate' => $btn_generate,

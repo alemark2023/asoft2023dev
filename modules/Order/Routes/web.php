@@ -10,6 +10,31 @@ if($current_hostname) {
 
         Route::middleware(['auth', 'locked.tenant'])->group(function () {
 
+            /**
+             * order-notes/
+             * order-notes/columns
+             * order-notes/records
+             * order-notes/create
+             * order-notes/edit/{id}
+             * order-notes/tables
+             * order-notes/tables/{table}
+             * order-notes/update
+             * order-notes/record/{quotation}
+             * order-notes/update
+             * order-notes/voided/{id}
+             * order-notes/item/tables
+             * order-notes/option/tables
+             * order-notes/search/customers
+             * order-notes/search/customer/{id}
+             * order-notes/download/{external_id}/{format?}
+             * order-notes/email
+             * order-notes/duplicate
+             * order-notes/record2/{quotation}
+             * order-notes/destroy_order_note_item/{order_note_item}
+             * order-notes/documents
+             * order-notes/documents
+             * order-notes/document_tables
+             */
             Route::prefix('order-notes')->group(function () {
 
                 Route::get('/', 'OrderNoteController@index')->name('tenant.order_notes.index')->middleware(['redirect.level']);
