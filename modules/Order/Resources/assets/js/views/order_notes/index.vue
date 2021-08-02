@@ -56,7 +56,7 @@
                         </td>
                         <td>
                             <template v-for="(document,i) in row.documents">
-                                <label :key="i" v-text="document.number_full" class="d-block"></label>
+                                <label :key="i" v-text="showAnulateDoc(document)" class="d-block"></label>
                             </template>
                         </td>
                         <td v-if="columns.sale_notes.visible">
@@ -84,8 +84,14 @@
                              soapCompany != '03'"  type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)" >Generar comprobante</button>
 
-                            <a v-if="row.documents.length == 0 && row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
-                            <button v-if="row.documents.length == 0 && row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
+                            <a v-if="cantEdited(row)"
+                               :href="`/${resource}/edit/${row.id}`"
+                               type="button"
+                               class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                            <button
+                                v-if="canAnulate(row)"
+                                type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                @click.prevent="clickAnulate(row.id)">Anular</button>
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                             <a :href="`/dispatches/create/${row.id}/on`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
 
@@ -184,6 +190,40 @@
             },
         },
         methods: {
+            cantEdited(row){
+                if(row &&
+                    row.documents &&
+                    row.documents.length == 0 &&
+                    row.state_type_id != '11'
+                ) return true;
+                return false;
+            },
+            showAnulateDoc(document){
+                if(document.state_type_id == '11') return document.number_full + ' (Anulado)';
+                 return document.number_full;
+            },
+            canAnulate(row){
+                if(
+                    row &&
+                    row.documents
+                ) {
+                    if (
+                        row.documents.length == 0 &&
+                        row.state_type_id != '11'
+                    ) return true;
+                    if (
+                        row.documents.length > 0
+                    ) {
+                        let sal = false;
+                        row.documents.forEach(function(doc){
+                            sal = doc.state_type_id === '11';
+                        })
+                        return sal;
+                    }
+                }
+
+                return false;
+            },
             clickEdit(id)
             {
                 this.recordId = id
