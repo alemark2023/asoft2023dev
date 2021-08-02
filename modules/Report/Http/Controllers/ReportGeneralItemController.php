@@ -209,7 +209,7 @@ class ReportGeneralItemController extends Controller
 
         $pdf = PDF::loadView('report::general_items.report_pdf', compact("records", "type", "document_type_id"))->setPaper('a4', 'landscape');
 
-        $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now().'.xlsx';
+        $filename = 'Reporte_General_Productos_'.$type_name.Carbon::now();
 
         return $pdf->download($filename.'.pdf');
     }
