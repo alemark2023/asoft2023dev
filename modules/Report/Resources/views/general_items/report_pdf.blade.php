@@ -16,7 +16,6 @@ function getLocationData($value, $type = 'sale')
     ) {
         $customer = $type_doc->customer;
     }
-
     if ($customer != null) {
         if (
             $customer->district &&
@@ -57,20 +56,17 @@ function getLocationData($value, $type = 'sale')
             font-family: sans-serif;
             font-size: 12px;
         }
-
         table {
             width: 100%;
             border-spacing: 0;
             border: 1px solid black;
         }
-
         .celda {
             text-align: center;
             padding: 5px;
             border: 0.1px solid black;
             font-size: 9px;
         }
-
         th {
             padding: 5px;
             font-size: 9px;
@@ -78,26 +74,22 @@ function getLocationData($value, $type = 'sale')
             border-color: #0088cc;
             border: 0.1px solid black;
         }
-
         .title {
             font-weight: bold;
             padding: 5px;
             font-size: 20px !important;
             text-decoration: underline;
         }
-
         p > strong {
             margin-left: 5px;
             font-size: 13px;
         }
-
         thead {
             font-weight: bold;
             background: #0088cc;
             color: white;
             text-align: center;
         }
-
         @page {
             margin: 6px;
         }
@@ -115,47 +107,21 @@ function getLocationData($value, $type = 'sale')
                     // para añadir dpto, prov y dist se le resta 1 al width de 9 elementos
                     $plus = 3;
                 }
-
                 ?>
                 <tr width="100%">
-                    <th style="width:{{$plus+2}}%;">FECHA DE EMISIÓN</th>
-                    @if($document_type_id != '80' && $type == 'sale')
-                        <th style="width:3%;">DIST</th>
-                        <th style="width:3%;">DPTO</th>
-                        <th style="width:3%;">PROV</th>
-                    @endif
-                    <th style="width:4%;">SERIE</th>
-                    <th style="width:4%;">NÚMERO</th>
-                    @if($document_type_id != '80' && $type == 'sale')
-                        <th>ORDEN DE COMPRA</th>
-                    @endif
-                    <th style="width:{{$plus+2}}%;">DOC ENTIDAD TIPO DNI RUC</th>
-                    <th style="width:{{$plus+4}}%;">DOC ENTIDAD NÚMERO</th>
-                    <th style="width:11%;">DENOMINACIÓN ENTIDAD</th>
-                    <th style="width:{{$plus}}%;">MONEDA</th>
-                    <th style="width:{{$plus+1}}%;">UNIDAD DE MEDIDA</th>
-                    <th style="width:{{$plus+1}}%;">MARCA</th>
-                    <th style="width:{{$plus+8}}%;">DESCRIPCIÓN</th>
-                    @if($type == 'sale')
-                        <th style="width:{{$plus+1}}%;">MODELO</th>
-                        <th style="width:{{$plus+1}}%;">PLATAFORMA</th>
-                    @endif
-                    <th style="width:{{$plus+1}}%;">CATEGORÍA</th>
-                    <th style="width:{{$plus+1}}%;">CANTIDAD</th>
-                    <th style="width:5%;">PRECIO UNITARIO</th>
-                    <th style="width:5%;">TOTAL</th>
-                    @if($type == 'sale')
-                        <th style="width:6%;">TOTAL COMPRA</th>
-                        <th style="width:7%;">GANANCIA</th>
-                    @endif
+                    @include('report::general_items.partials.report_pdf_header',[
+                                                  'document_type_id'=>$document_type_id,
+                                                  'type'=>$type,
+                                                  'plus'=>$plus,
+                                              ])
                 </tr>
                 </thead>
                 <tbody>
                 @if($type == 'sale')
-
                     @if($document_type_id == '80')
                         @foreach($records as $key => $value)
                             <?php
+                            if(isset($qty)) unset($qty);
                             /** @var \App\Models\Tenant\DocumentItem $value */
                             $series = '';
                             if (isset($value->item->lots)) {
@@ -164,41 +130,48 @@ function getLocationData($value, $type = 'sale')
                             }
                             $total_item_purchase = \Modules\Report\Http\Resources\GeneralItemCollection::getPurchaseUnitPrice($value);
                             $utility_item = $value->total - $total_item_purchase;
+                            /** @var \App\Models\Tenant\Item $item */
                             $item = $value->getModelItem();
                             $model = $item->model;
+                            $document = $value->sale_note;
                             $platform = $item->getWebPlatformModel();
-                            if($platform !== null){
+                            if ($platform !== null) {
                                 $platform = $platform->name;
                             }
-                            $saleNote = $value->sale_note;
+                            $pack = $item->getSetItems();
                             ?>
-                            <tr>
-                                <td class="celda">{{$saleNote->date_of_issue->format('Y-m-d')}}</td>
-                                <td class="celda">{{$saleNote->series}}</td>
-                                <td class="celda">{{$saleNote->number}}</td>
-                                <td class="celda">{{$saleNote->customer->identity_document_type_id}}</td>
-                                <td class="celda">{{$saleNote->customer->number}}</td>
-                                <td class="celda">{{$saleNote->customer->name}}</td>
-                                <td class="celda">{{$saleNote->currency_type_id}}</td>
-                                <td class="celda">{{$value->item->unit_type_id}}</td>
-                                <td class="celda">{{$value->relation_item->brand->name}}</td>
-                                <td class="celda">{{$value->item->description}}</td>
-                                <td class="celda">{{$model}}</td>
-                                <td class="celda">{{$platform}}</td>
-                                <td class="celda">{{$value->relation_item->category->name}}</td>
-                                <td class="celda">{{number_format($value->quantity, 2)}}</td>
-                                <td class="celda">{{number_format($value->unit_price, 2)}}</td>
-                                <td class="celda">{{number_format($value->total, 2)}}</td>
-                                <td class="celda">{{number_format($total_item_purchase,2)}}</td>
-                                <td class="celda">{{number_format( $utility_item,2) }}</td>
-                            </tr>
+                            @include('report::general_items.partials.report_pdf_body_sale_80',[
+                                      'document_type_id'=>$document_type_id,
+                                      'document'=>$document,
+                                      'type'=>$type,
+                                      'value'=>$value,
+                                      'key'=>$key,
+                                      'item'=>$item,
+                                  ])
+                            @if($pack !== null)
+                                @foreach($pack as $item_pack)
+                                    <?php
+                                    /** @var \App\Models\Tenant\ItemSet $item_pack */
+                                    $value->item = $item_pack->individual_item;
+                                    /** @var \App\Models\Tenant\Item $item */
+                                    $item = $value->item;
+                                    $qty = $item_pack->quantity;
+                                    ?>
+                                    @include('report::general_items.partials.report_pdf_body_sale_80',[
+                                                                           'document_type_id'=>$document_type_id,
+                                                                          'document'=>$document,
+                                                                          'type'=>$type,
+                                                                          'value'=>$value,
+                                                                          'key'=>$key,
+                                                                          'item'=>$item,
+                                                                       ])
+                                @endforeach
+                            @endif
                         @endforeach
-
                     @else
-
                         @foreach($records as $key => $value)
-
                             <?php
+                                if(isset($qty)) unset($qty);
                             /** @var \App\Models\Tenant\DocumentItem $value */
                             $series = '';
                             if (isset($value->item->lots)) {
@@ -209,49 +182,52 @@ function getLocationData($value, $type = 'sale')
                             $utility_item = $value->total - $total_item_purchase;
                             $item = $value->getModelItem();
                             $model = $item->model;
-                            $platform = $item->getWebPlatformModel();
-                            if($platform !== null){
-                                $platform = $platform->name;
-                            } /** @var  \App\Models\Tenant\Document $document */
-                            $document =  $value->document;
+                            /** @var  \App\Models\Tenant\Document $document */
+                            $document = $value->document;
                             $purchseOrder = $document->purchase_order;
+                            $platform = $item->getWebPlatformModel();
+                            if ($platform !== null) {
+                                $platform = $platform->name;
+                            }
+                            $pack = $item->getSetItems();
+                            $item = $value->item;
+                            $stablihsment = getLocationData($value, $type);
                             ?>
-
-                            <tr>
-
-                                <td class="celda">{{$document->date_of_issue->format('Y-m-d')}}</td>
-                                @if($document_type_id != '80' && $type == 'sale')
-                                    <?php $stablihsment = getLocationData($value, $type); ?>
-                                    <td class="celda">{{$stablihsment['district']}}</td>
-                                    <td class="celda">{{$stablihsment['department']}}</td>
-                                    <td class="celda">{{$stablihsment['province']}}</td>
-                                @endif
-                                <td class="celda">{{$document->series}}</td>
-                                <td class="celda">{{$document->number}}</td>
-                                <td class="celda">{{$purchseOrder}}</td>
-                                <td class="celda">{{$document->customer->identity_document_type_id}}</td>
-                                <td class="celda">{{$document->customer->number}}</td>
-                                <td class="celda">{{$document->customer->name}}</td>
-                                <td class="celda">{{$document->currency_type_id}}</td>
-                                <td class="celda">{{$value->item->unit_type_id}}</td>
-                                <td class="celda">{{$value->relation_item->brand->name}}</td>
-                                <td class="celda">{{ (strlen($value->item->description) > 50) ? substr($value->item->description,0,50):$value->item->description}}</td>
-                                <td class="celda">{{$model}}</td>
-                                <td class="celda">{{$platform}}</td>
-                                <td class="celda">{{$value->relation_item->category->name}}</td>
-                                <td class="celda">{{number_format($value->quantity, 2)}}</td>
-                                <td class="celda">{{number_format($value->unit_price, 2)}}</td>
-                                <td class="celda">{{number_format($value->total, 2)}}</td>
-                                <td class="celda">{{ number_format($total_item_purchase,2) }}</td>
-                                <td class="celda">{{ number_format($utility_item ,2) }}</td>
-                            </tr>
+                            @include('report::general_items.partials.report_pdf_body_sale',[
+                                                                  'document_type_id'=>$document_type_id,
+                                                                  'document'=>$document,
+                                                                  'type'=>$type,
+                                                                  'value'=>$value,
+                                                                  'key'=>$key,
+                                                                  'item'=>$item,
+                                                                  'stablihsment'=>$stablihsment,
+                                                              ])
+                            @if($pack !== null)
+                                @foreach($pack as $item_pack)
+                                    <?php
+                                    /** @var \App\Models\Tenant\ItemSet $item_pack */
+                                    $value->item = $item_pack->individual_item;
+                                    /** @var \App\Models\Tenant\Item $item */
+                                    $item = $value->item;
+                                    $qty = $item_pack->quantity;
+                                    // dd($item);
+                                    ?>
+                                    @include('report::general_items.partials.report_pdf_body_sale',
+                                                                       [
+                                                                           'document_type_id'=>$document_type_id,
+                                                                           'document'=>$document,
+                                                                           'type'=>$type,
+                                                                           'value'=>$value,
+                                                                           'key'=>$key,
+                                                                           'item'=>$item,
+                                                                           'qty'=>$qty,
+                                                                           'stablihsment'=>$stablihsment,
+                                                                       ])
+                                @endforeach
+                            @endif
                         @endforeach
-
                     @endif
-
-
                 @else
-
                     @foreach($records as $key => $value)
                         <tr>
                             <td class="celda">{{$value->purchase->date_of_issue->format('Y-m-d')}}</td>

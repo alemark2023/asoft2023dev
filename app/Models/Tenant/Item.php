@@ -998,4 +998,17 @@ class Item extends ModelTenant
     public function getWebPlatformModel(){
         return WebPlatform::find($this->web_platform_id);
     }
+
+    /**
+     * @return ItemSet[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed|null
+     */
+    public function getSetItems(){
+
+        $is_set = (bool) $this->is_set;
+        if($is_set){
+            return  ItemSet::where('item_id',$this->id)->get();
+        }
+        return null;
+    }
+
 }
