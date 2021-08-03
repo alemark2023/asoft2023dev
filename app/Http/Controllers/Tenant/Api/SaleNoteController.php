@@ -128,20 +128,23 @@ class SaleNoteController extends Controller
         if($force_create_if_not_exist === true){
             $person = PersonModel::find($inputs['customer_id']);
             if($person === null) {
+
                 $client_data = $inputs['datos_del_cliente_o_receptor'];
+
                 $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
                 $person = PersonModel::where('number',$client_number)->first();
                 if($person ===  null && !empty($client_number)){
-                    $person = new PersonModel([
+                    $data_person = [
                         'number'=>$client_number,
-                        'identity_document_type_id'=>isset($client_data['codigo_tipo_documento_identidad']) ? $client_data['codigo_tipo_documento_identidad']:'6',
-                        'name'=>isset($client_data['apellidos_y_nombres_o_razon_social']) ? $client_data['apellidos_y_nombres_o_razon_social']:'',
-                        'country_id'=>isset($client_data['codigo_pais']) ? $client_data['codigo_pais']:'PE',
-                        'district_id'=>isset($client_data['ubigeo']) ? $client_data['ubigeo']:'',
-                        'address'=>isset($client_data['direccion']) ? $client_data['direccion']:'',
-                        'email'=>isset($client_data['correo_electronico']) ? $client_data['correo_electronico']:'',
-                        'telephone'=>isset($client_data['telefono']) ? $client_data['telefono']:'',
-                                              ]);
+                        'identity_document_type_id'=> $client_data['codigo_tipo_documento_identidad'] ?? '6',
+                        'name'=> $client_data['apellidos_y_nombres_o_razon_social'] ?? '',
+                        'country_id'=> $client_data['codigo_pais'] ?? 'PE',
+                        'district_id'=> $client_data['ubigeo'] ?? '',
+                        'address'=> $client_data['direccion'] ?? '',
+                        'email'=> $client_data['correo_electronico'] ?? '',
+                        'telephone'=> $client_data['telefono'] ?? '',
+                    ];
+                    $person = new PersonModel($data_person);
                     $person->push();
                 }
                 $inputs['customer_id'] = $person->id;

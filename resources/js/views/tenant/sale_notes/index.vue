@@ -176,6 +176,15 @@
                                     class="btn waves-effect waves-light btn-xs btn-info">
                                 <i class="fas fa-copy"></i>
                             </button>
+                            <button
+                                data-toggle="tooltip"
+                                data-placement="top"
+                                title="Enviar a otro servidor"
+                                v-if="row.state_type_id != '11' && row.send_other_server=== true"
+                                type="button"
+                                class="btn waves-effect waves-light btn-xs btn-inverse"
+                                @click.prevent="sendToServer(row.id)"><i class="fas fa-wifi"></i>
+                            </button>
                         </td>
 
 
@@ -340,6 +349,28 @@
             clickOptions(recordId) {
                 this.saleNotesNewId = recordId
                 this.showDialogOptions = true
+            },
+            sendToServer(recordId) {
+                this.$http.post('/sale-notes/UpToOther',{'sale_note_id':recordId}).then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit('reloadData')
+                    }
+                    else {
+                        this.$message.error(response.data.message);
+                    }
+                }).catch(error => {
+                    if(
+                        error.response!== undefined &&
+                        error.response.status !== undefined &&
+                        error.response.status.errors !== undefined &&
+                        error.response.status === 422 ) {
+                        this.errors = error.response.data.errors;
+                    } else {
+                         console.log(error);
+                    }
+                }).then(() => {
+                });
             },
             clickGenerate(recordId) {
                 this.recordId = recordId

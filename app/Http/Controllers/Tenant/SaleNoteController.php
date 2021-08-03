@@ -83,6 +83,7 @@ class SaleNoteController extends Controller
             'sale_note_id'=>$saleNoteId,
             'success' => false,
         ];
+
         if (auth()->user()->type !== 'admin') {
             $dataSend['message'] ='Solo los administradores pueden realizar esta accion';
             return $dataSend;
@@ -151,6 +152,7 @@ class SaleNoteController extends Controller
         ));
         $response = curl_exec($curl);
         curl_close($curl);
+
         if($response == false){
             \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-404: La respuesta ha sido falsa, posiblemente no se encuentre la web $web \n".
                 var_export($response,true));
@@ -158,10 +160,12 @@ class SaleNoteController extends Controller
 
             return $dataSend;
         }
+
         $response = json_decode($response);
         if (property_exists($response, 'success')) {
             $success = $response->success;
             $alreadySendit->setSuccess();
+
             if (property_exists($response, 'data')) {
                 $data = $response->data;
                 if ($success == true) {
@@ -172,12 +176,31 @@ class SaleNoteController extends Controller
                 }
             } else {
                 if (property_exists($response, 'message')) {
-                    $dataSend['message'] = $response->message;
+                    $message = $response->message;
+                    $err_gen = 'NV-GEN-';
+                    if ($this->searchInString('SQLSTATE[23000]', $message)) {
+                        $err_gen = 'NV-SQL-';
+                        if ($this->searchInString('`persons`', $message)) {
+                            $err_gen.="001";
+                            $dataSend['message'] = 'Problemas insertando datos del cliente. '.$err_gen;
+                        } else {
+                            $err_gen.="003";
+                            $dataSend['message'] = 'Problemas insertando datos'.$err_gen;
+                        }
+                    } else {
+                        $err_gen.="004";
+                        $dataSend['message'] = "Error desconocido. Codigo $err_gen";
+                        $dataSend['extra'] = $response->message;
+                    }
+                    \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n $err_gen: No se ha podido determinar el fallo. La respuesta es \n".
+                        var_export($response->message,true));
                     return $dataSend;
 
                 }
             }
             $alreadySendit->push();
+            $dataSend['message']='Se ha generado correctamente bajo el numero '.$alreadySendit->getNumber();
+            $dataSend['success'] = true;
         }else{
             \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-500: No se ha podido determinar el fallo. La respuesta es \n".
                 var_export($response,true));
@@ -198,6 +221,15 @@ class SaleNoteController extends Controller
 
     }
 
+    /**
+     * Busca el texto $search en la cadena de caracteres $text
+     * @param $search
+     * @param $text
+     * @return bool
+     */
+    public function searchInString($search, $text){
+        return !(strpos($text, $search) === false);
+    }
 
     public function columns()
     {

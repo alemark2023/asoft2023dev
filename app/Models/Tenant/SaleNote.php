@@ -694,18 +694,19 @@ class SaleNote extends ModelTenant
         }
         $attributes = $this->attributes;
 
-        $customer = (array)$this->customer;
-        $datos_del_cliente_o_receptor = [
-            'codigo_tipo_documento_identidad'    => isset($customer['identity_document_type_id'])
-                ? $customer['identity_document_type_id'] : '6',
-            'numero_documento'                   => isset($customer['number']) ? $customer['number'] : '',
-            'apellidos_y_nombres_o_razon_social' => isset($customer['name']) ? $customer['name'] : '',
-            'codigo_pais'                        => isset($customer['country_id']) ? $customer['country_id'] : 'PE',
-            'ubigeo'                             => isset($customer['district_id']) ? $customer['district_id'] : '',
-            'direccion'                          => isset($customer['address']) ? $customer['address'] : '',
-            'correo_electronico'                 => isset($customer['email']) ? $customer['email'] : '',
-            'telefono'                           => isset($customer['telephone']) ? $customer['telephone'] : '',
-        ];
+        $customer = Person::find($this->customer_id);
+        if(empty($customer->identity_document_type_id))$customer->identity_document_type_id = 6;
+        if(empty($customer->country_id))$customer->country_id = 'PE';
+        if(empty($customer->district_id))$customer->district_id = '';
+        $customer->codigo_tipo_documento_identidad =  $customer->identity_document_type_id;
+        $customer->numero_documento =  $customer->number;
+        $customer->apellidos_y_nombres_o_razon_social =  $customer->name;
+        $customer->codigo_pais =  $customer->country_id;
+        $customer->ubigeo =  $customer->district_id;
+        $customer->direccion =  $customer->address;
+        $customer->correo_electronico =  $customer->email;
+        $customer->telefono =  $customer->telephone;
+        $datos_del_cliente_o_receptor = $customer->toArray();
         $empty_ob = (object)[];
         $data = [
 
