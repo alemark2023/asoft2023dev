@@ -78,31 +78,30 @@ class SaleNoteController extends Controller
     }
 
 
-    public function EnviarOtroSitio(){
-        $saleNoteId = 95;
-        $data = [
+    public function sendDataToOtherSite($saleNoteId ){
+        $dataSend = [
             'sale_note_id'=>$saleNoteId,
             'success' => false,
         ];
         if (auth()->user()->type !== 'admin') {
-            $data['message'] ='Solo los administradores pueden realizar esta accion';
-            return $data;
+            $dataSend['message'] ='Solo los administradores pueden realizar esta accion';
+            return $dataSend;
         }
         $configuration = Configuration::first();
         if($configuration->isSendDataToOtherServer()!= true){
-            $data['message'] ='La configuracion no esta habilitada para el envio';
-            return $data;
+            $dataSend['message'] ='La configuracion no esta habilitada para el envio';
+            return $dataSend;
         }
 
 
         $migrationConfiguration = MigrationConfiguration::first();
 
         if ($migrationConfiguration === null || empty($migrationConfiguration->url) || empty($migrationConfiguration->api_key)) {
-            $data['message'] ='No hay datos configurados para la migracion';
-            return $data;
+            $dataSend['message'] ='No hay datos configurados para la migracion';
+            return $dataSend;
         };
         $token = $migrationConfiguration->getApiKey();
-        $web = $migrationConfiguration->getUrl()."jjnpjda";
+        $web = $migrationConfiguration->getUrl();
 
         $alreadySendit = SaleNoteMigration::where([
             'sale_notes_id' => $saleNoteId,
@@ -111,15 +110,15 @@ class SaleNoteController extends Controller
         ])->first();
         // ya se envio, no hacer nada
         if ($alreadySendit!==null) {
-            $data['message'] ="Ya se ha enviado al servidor $web. ".$alreadySendit->getNumber();
-            return $data;
+            $dataSend['message'] ="Ya se ha enviado al servidor $web. ".$alreadySendit->getNumber();
+            return $dataSend;
         };
 
         $sale_note = SaleNote::find($saleNoteId);
 
         if ($sale_note===null) {
-            $data['message'] ="No se ha encontrado la NV";
-            return $data;
+            $dataSend['message'] ="No se ha encontrado la NV";
+            return $dataSend;
         };
 
 
@@ -155,9 +154,9 @@ class SaleNoteController extends Controller
         if($response == false){
             \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-404: La respuesta ha sido falsa, posiblemente no se encuentre la web $web \n".
                 var_export($response,true));
-            $data['message'] = 'Problemas de conexion con el servidor. Revise la configuracion. Codigo : NV-M-404';
+            $dataSend['message'] = 'Problemas de conexion con el servidor. Revise la configuracion. Codigo : NV-M-404';
 
-            return $data;
+            return $dataSend;
         }
         $response = json_decode($response);
         if (property_exists($response, 'success')) {
@@ -173,8 +172,8 @@ class SaleNoteController extends Controller
                 }
             } else {
                 if (property_exists($response, 'message')) {
-                    $data['message'] = $response->message;
-                    return $data;
+                    $dataSend['message'] = $response->message;
+                    return $dataSend;
 
                 }
             }
@@ -182,12 +181,20 @@ class SaleNoteController extends Controller
         }else{
             \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-500: No se ha podido determinar el fallo. La respuesta es \n".
                 var_export($response,true));
-            $data['message'] = 'Error desconocido. Codigo : NV-M-500';
-            return $data;
+            $dataSend['message'] = 'Error desconocido. Codigo : NV-M-500';
+            return $dataSend;
 
         }
 
-        return $data;
+        return $dataSend;
+    }
+    public function EnviarOtroSitio(Request $request){
+        if($request->has('sale_note_id')){
+            // para una NV
+            $saleNoteId = $request->sale_note_id;
+            return $this->sendDataToOtherSite($saleNoteId);
+        }
+
 
     }
 

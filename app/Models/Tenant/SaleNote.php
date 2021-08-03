@@ -444,10 +444,15 @@ class SaleNote extends ModelTenant
         return number_format($number,$decimal);
     }
 
+
     /**
+     * @param Configuration|null $configuration
      * @return array
      */
-    public function getCollectionData(){
+    public function getCollectionData(Configuration $configuration = null){
+        if($configuration == null){
+            $configuration = Configuration::first();
+        }
         $total_paid = number_format($this->payments->sum('payment'), 2, '.', '');
         $total_pending_paid = number_format($this->total - $total_paid, 2, '.', '');
         $document_id = $this->document_id;
@@ -471,6 +476,16 @@ class SaleNote extends ModelTenant
         if(!empty($this->number_full) && !empty($this->external_id)){
             $message_text = "Su comprobante de nota de venta {$this->number_full} ha sido generado correctamente, puede revisarlo en el siguiente enlace: ".
                 url('')."/sale-notes/print/{$this->external_id}/a4".'';
+        }
+        $canSentToOtherServer = false;
+        if ($configuration->isSendDataToOtherServer() == true && auth()->user()->type === 'admin') {
+            $alreadySent = SaleNoteMigration::where([
+                'sale_notes_id' => $this->id,
+                'success' => true
+            ])->first();
+            if ($alreadySent == false) {
+                $canSentToOtherServer = true;
+            }
         }
 
         return [
@@ -530,6 +545,7 @@ class SaleNote extends ModelTenant
             'message_text' => $message_text,
             'serie' => $this->series,
             'number' => $this->number_full,
+            'send_other_server' => $canSentToOtherServer,
             // 'number' => $this->number,
         ];
     }

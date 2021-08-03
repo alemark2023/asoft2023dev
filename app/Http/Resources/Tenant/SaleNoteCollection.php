@@ -2,6 +2,7 @@
 
     namespace App\Http\Resources\Tenant;
 
+    use App\Models\Tenant\Configuration;
     use Illuminate\Http\Resources\Json\ResourceCollection;
 
     /**
@@ -18,9 +19,10 @@
          * @return array|\Illuminate\Support\Collection
          */
         public function toArray($request) {
-            return $this->collection->transform(function ($row, $key) {
+            $configuration = Configuration::first();
+            return $this->collection->transform(function ($row, $key) use($configuration) {
                 /** @var \App\Models\Tenant\SaleNote $row */
-                return $row->getCollectionData();
+                return $row->getCollectionData($configuration);
                 /** Movido al modelo */
                 $total_paid = number_format($row->payments->sum('payment'), 2, ".", "");
                 $total_pending_paid = number_format($row->total - $total_paid, 2, ".", "");
