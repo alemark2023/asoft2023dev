@@ -154,6 +154,11 @@
                         <a href="{{route('tenant.inventories.configuration.index')}}">Inventarios</a>
                     </li>
                     @endif
+                        @if(auth()->user()->type === 'admin')
+                            <li>
+                                <a href="{{route('tenant.sale_notes.configuration')}}">Nota de ventas</a>
+                            </li>
+                        @endif
                 </ul>
             </div>
         </div>

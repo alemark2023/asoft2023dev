@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Models\Tenant\MigrationConfiguration;
+use App\Models\Tenant\SaleNoteMigration;
 use App\Models\Tenant\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -77,16 +79,63 @@ class SaleNoteController extends Controller
 
 
     public function EnviarOtroSitio(){
+        $saleNoteId = 95;
+        $data = [
+            'sale_note_id'=>$saleNoteId,
+            'success' => false,
+        ];
+        if (auth()->user()->type !== 'admin') {
+            $data['message'] ='Solo los administradores pueden realizar esta accion';
+            return $data;
+        }
+        $configuration = Configuration::first();
+        if($configuration->isSendDataToOtherServer()!= true){
+            $data['message'] ='La configuracion no esta habilitada para el envio';
+            return $data;
+        }
 
-        $sale_note = SaleNote::find(93);
+
+        $migrationConfiguration = MigrationConfiguration::first();
+
+        if ($migrationConfiguration === null || empty($migrationConfiguration->url) || empty($migrationConfiguration->api_key)) {
+            $data['message'] ='No hay datos configurados para la migracion';
+            return $data;
+        };
+        $token = $migrationConfiguration->getApiKey();
+        $web = $migrationConfiguration->getUrl()."jjnpjda";
+
+        $alreadySendit = SaleNoteMigration::where([
+            'sale_notes_id' => $saleNoteId,
+            'success' => 1,
+            'url' => $web,
+        ])->first();
+        // ya se envio, no hacer nada
+        if ($alreadySendit!==null) {
+            $data['message'] ="Ya se ha enviado al servidor $web. ".$alreadySendit->getNumber();
+            return $data;
+        };
+
+        $sale_note = SaleNote::find($saleNoteId);
+
+        if ($sale_note===null) {
+            $data['message'] ="No se ha encontrado la NV";
+            return $data;
+        };
+
+
         $data = $sale_note->getDataToApiExport();
 
-
+        $alreadySendit = new SaleNoteMigration([
+            'sale_notes_id' => $saleNoteId,
+            'user_id' => auth()->user()->id,
+            'success' => 1,
+            'url' => $web,
+            'data' => json_encode($data),
+        ]);
         $curl = curl_init();
-        $token = 'vRjJGSj8DmK7DjJIWsRPgI3reIl5LKmhSAOVGcfNhSiM4l4t6P';
-        $web = "empresa3.facturalo.carlangas.online";
+
         curl_setopt_array($curl, array(
-            CURLOPT_URL => 'http://'.$web.'/api/sale-note',
+            CURLOPT_URL => 'http://' . $web . '/api/sale-note',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
@@ -94,23 +143,52 @@ class SaleNoteController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>json_encode($data),
+            CURLOPT_POSTFIELDS => json_encode($data),
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer '.$token,
+                'Authorization: Bearer ' . $token,
                 'Content-Type: application/json',
                 'Cookie: Cookie_1=value'
             ),
         ));
-
         $response = curl_exec($curl);
-
         curl_close($curl);
-         $response = json_decode($response);
-        dd([
-               json_encode($data),
-               $data,
-               $response,
-           ]);
+        if($response == false){
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-404: La respuesta ha sido falsa, posiblemente no se encuentre la web $web \n".
+                var_export($response,true));
+            $data['message'] = 'Problemas de conexion con el servidor. Revise la configuracion. Codigo : NV-M-404';
+
+            return $data;
+        }
+        $response = json_decode($response);
+        if (property_exists($response, 'success')) {
+            $success = $response->success;
+            $alreadySendit->setSuccess();
+            if (property_exists($response, 'data')) {
+                $data = $response->data;
+                if ($success == true) {
+                    $alreadySendit
+                        ->setSuccess(true)
+                        ->setNumber($data->number)
+                        ->setRemoteId($data->id);
+                }
+            } else {
+                if (property_exists($response, 'message')) {
+                    $data['message'] = $response->message;
+                    return $data;
+
+                }
+            }
+            $alreadySendit->push();
+        }else{
+            \Log::channel('facturalo')->error(__FILE__."::".__LINE__." \n NV-M-500: No se ha podido determinar el fallo. La respuesta es \n".
+                var_export($response,true));
+            $data['message'] = 'Error desconocido. Codigo : NV-M-500';
+            return $data;
+
+        }
+
+        return $data;
+
     }
 
 
@@ -1302,6 +1380,38 @@ class SaleNoteController extends Controller
                 'id' => $this->sale_note->id,
             ],
         ];
+
+    }
+
+
+    public function SetAdvanceConfiguration(){
+        $migrationConfiguration = MigrationConfiguration::getCollectionData();
+        return view('tenant.configuration.sale_notes',compact('migrationConfiguration'));
+
+    }
+    public function SaveSetAdvanceConfiguration(Request $request){
+
+        $data = $request->all();
+        $data['success'] = false;
+        $data['send_data_to_other_server'] = (bool)$data['send_data_to_other_server'];
+
+        if(auth()->user()->type !=='admin'){
+            $data['message'] = 'No puedes realizar cambios';
+            return $data;
+        }
+        $configuration = Configuration::first();
+        $migrationConfiguration = MigrationConfiguration::first();
+        if(empty($migrationConfiguration)) $migrationConfiguration = new MigrationConfiguration($data);
+
+        $migrationConfiguration->setUrl($data['url'])->setApiKey($data['apiKey'])->push();
+        $configuration->setSendDataToOtherServer($data['send_data_to_other_server'] )->push();
+
+        $data['url']=$migrationConfiguration->getUrl();
+        $data['apiKey']=$migrationConfiguration->getApiKey();
+        $data['send_data_to_other_server'] = $configuration->isSendDataToOtherServer();
+        $data['success'] = true;
+        $data['message'] = 'Ha sido acualizado';
+        return $data;
 
     }
 
