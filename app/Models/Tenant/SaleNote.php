@@ -600,6 +600,38 @@ class SaleNote extends ModelTenant
             $tem_item['affectation_igv_type']=$item->affectation_igv_type;
             $it = $item->item;
             $ot = Item::find($it->id);
+            $tem_item['full_item'] = Item::where('id', $it->id)->select(
+                'name',
+                'second_name',
+                'description',
+                'model',
+                'technical_specifications',
+                'item_type_id',
+                'item_code',
+                'date_of_due',
+                'account_id',
+                'item_code_gs1',
+                'unit_type_id',
+                'currency_type_id',
+                'sale_unit_price',
+                'purchase_has_igv',
+                'has_igv',
+                'amount_plastic_bag_taxes',
+                'sale_affectation_igv_type_id',
+                'purchase_affectation_igv_type_id',
+                'calculate_quantity',
+                'is_set',
+                'has_plastic_bag_taxes',
+                'lot_code',
+                'lots_enabled',
+                'series_enabled',
+                'attributes',
+                'web_platform_id',
+                'warehouse_id',
+                'status',
+                'cod_digemid',
+                'sanitary'
+            )->first();
             $property = [
                 'full_description',
                 'name',

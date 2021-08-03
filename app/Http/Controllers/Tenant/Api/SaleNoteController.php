@@ -53,11 +53,19 @@ class SaleNoteController extends Controller
 
 	public function store(SaleNoteRequest $request)
 	{
-		DB::connection('tenant')->transaction(function () use ($request) {
-			$request['establishment_id'] = $request['establishment_id'] ? $request['establishment_id'] : auth()->user()->establishment_id;
+        $request['establishment_id'] = $request['establishment_id'] ? $request['establishment_id'] : auth()->user()->establishment_id;
+        $force_create_if_not_exist = isset($request['force_create_if_not_exist'])?(bool)$request['force_create_if_not_exist']:false;
+        $request['force_create_if_not_exist'] = $force_create_if_not_exist;
 
-			$data = $this->mergeData($request);
+        if($request['force_create_if_not_exist']) {
+            // Se saca de tenant, para que pueda guardar el item correctamente.
+            $data = $this->mergeData($request);
+        }
 
+        DB::connection('tenant')->transaction(function () use ($request,$data) {
+            if(!$request['force_create_if_not_exist']) {
+                $data = $this->mergeData($request);
+            }
 			$this->sale_note = SaleNote::updateOrCreate(
 				['id' => $request->input('id')],
 				$data
@@ -119,12 +127,11 @@ class SaleNoteController extends Controller
 		}
         if($force_create_if_not_exist === true){
             $person = PersonModel::find($inputs['customer_id']);
-            if(empty($person)) {
+            if($person === null) {
                 $client_data = $inputs['datos_del_cliente_o_receptor'];
                 $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
                 $person = PersonModel::where('number',$client_number)->first();
-
-                if(empty($person) && !empty($client_number)){
+                if($person ===  null && !empty($client_number)){
                     $person = new PersonModel([
                         'number'=>$client_number,
                         'identity_document_type_id'=>isset($client_data['codigo_tipo_documento_identidad']) ? $client_data['codigo_tipo_documento_identidad']:'6',
@@ -136,63 +143,60 @@ class SaleNoteController extends Controller
                         'telephone'=>isset($client_data['telefono']) ? $client_data['telefono']:'',
                                               ]);
                     $person->push();
-                    $inputs['customer_id'] = $person->id;
-
                 }
+                $inputs['customer_id'] = $person->id;
                 $items = $inputs['items'];
-                foreach($items as $key => $item){
-
-                    $item_in = $item['item'];
-                    $new_item = 'no' ;
-                    $item_with_internal_id = Item::where('internal_id',$item_in['internal_id'])->where('id','!=',$item['id'])->first();
-                    $item_with_id = Item::find($item['id']);
-                    if(empty($item_with_id)){
-                        // no existe el item con el id
-                        if(!empty($item_with_internal_id)){
-                            $items[$key]['id']=$item_with_internal_id->id;
-                            $items[$key]['item']['id']=$item_with_internal_id->id;
-                            $items[$key]['item']['item_id']=$item_with_internal_id->id;
-                        }else{
-                            $new_item = new Item($item_in);
-                        }
-
-                    }else{
-                        // existe
-                        if($item_with_id->id != $item_in['internal_id']){
-                            // existe pero el id interno es diferente
-                            if(!empty($item_with_internal_id)){
-                                $items[$key]['id']=$item_with_internal_id->id;
-                                $items[$key]['item']['id']=$item_with_internal_id->id;
-                                $items[$key]['item']['item_id']=$item_with_internal_id->id;
-                            }else{
-                                // no existe y el codigo interno es diferente
-                                $new_item = new Item($item_in);
-                            }
-                        }else{
-                            // existe y el codigo es el mismo
-                            $items[$key]['id']=$item_with_id->id;
-                            $items[$key]['item']['id']=$item_with_id->id;
-                            $items[$key]['item']['item_id']=$item_with_id->id;
+                foreach ($items as $key => $item) {
+                    $item_in = $item['full_item'];
+                    unset(
+                        $item_in['item_id'],
+                        $item_in['internal_id'],
+                        $item_in['id'],
+                        $item_in['barcode'],
+                        $item_in['tags'],
+                        $item_in['unit_type'],
+                        $item_in['item_type'],
+                        $item_in['currency_type'],
+                        $item_in['warehouses'],
+                        $item_in['item_unit_types'],
+                    );
+                    foreach($item_in as $k=>$v){
+                        if(empty($v)){
+                            unset($item_in[$k]);
                         }
                     }
-                    if($new_item !== 'no'){
-                        $new_item->push();
-                        $items[$key]['id']=$new_item->id;
-                        $items[$key]['item']['id']=$new_item->id;
-                        $items[$key]['item']['item_id']=$new_item->id;
+                    $identicalItem = Item::where($item_in)->first();
+                    if ($identicalItem === null) {
+                        $identicalItem = new Item($item_in);
+                        $identicalItem->stock = 1;
+                        $identicalItem->stock_min = 1;
+                        $identicalItem->push();
+
                     }
+                    $items[$key]['id'] = $identicalItem->id;
+                    $items[$key]['attributes'] = $identicalItem->attributes;
+                    $items[$key]['item_id'] = $identicalItem->id;
+                    $items[$key]['barcode'] = $identicalItem->barcode;
+                    $items[$key]['item']['barcode'] = $identicalItem->barcode;
+                    $items[$key]['item']['id'] = $identicalItem->id;
+                    $items[$key]['item']['item_id'] = $identicalItem->id;
                 }
+
                 $inputs['items'] = $items ;
+            }
+            if(!isset($inputs['establishment_id']) || empty($inputs['establishment_id'])){
+                $inputs['establishment_id'] = $inputs['establishment_id'] ?: auth()->user()->establishment_id;
             }
         }
 
 		$data_series = $this->getDataSeries($inputs['series_id'], $inputs['id'], $inputs['number']);
+        $customer = PersonInput::set($inputs['customer_id']);
 
 		$values = [
 			'automatic_date_of_issue' => $automatic_date_of_issue,
 			'user_id'                 => auth()->id(),
 			'external_id'             => Str::uuid()->toString(),
-			'customer'                => PersonInput::set($inputs['customer_id']),
+			'customer'                => $customer,
 			'establishment'           => EstablishmentInput::set($inputs['establishment_id']),
 			'soap_type_id'            => $this->company->soap_type_id,
 			'state_type_id'           => '01',
@@ -201,7 +205,6 @@ class SaleNoteController extends Controller
 		];
 
 		$inputs->merge($values);
-
 		return $inputs->all();
 	}
 
