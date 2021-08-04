@@ -113,6 +113,28 @@
                                     </el-select>
                                 </div>
 
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="control-label">Plataforma</label>
+                                        <el-select v-model="form.web_platform_id"
+                                                   clearable
+                                                   @change="changeWebPlatform"
+                                        >
+                                            <el-option v-for="option in web_platforms" :key="option.id"
+                                                       :value="option.id" :label="option.name"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label>Orden de compra</label>
+                                        <el-input
+                                            @change="changePurchaseOrder"
+                                            v-model="form.purchase_order" clearable></el-input>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-2">
                                     <label class="control-label">Métodos de cobro
                                         <el-tooltip class="item" effect="dark" content="Aplica a CPE" placement="top-start">
@@ -391,6 +413,7 @@
                 recordId: null,
                 records:[],
                 establishments: [],
+                web_platforms: [],
                 pickerOptionsDates: {
                     disabledDate: (time) => {
                         time = moment(time).format('YYYY-MM-DD')
@@ -554,6 +577,7 @@
                     this.form.establishment_id = this.establishments.length > 0 ? this.establishments[0].id : null;
                     this.users = response.data.users
                     this.payment_method_types = response.data.payment_method_types
+                    this.web_platforms = response.data.web_platforms
                 });
             },
             customIndex(index) {
@@ -638,11 +662,16 @@
             },
             changeUser()
             {
-                //if (this.form.customer_id) {
-
                 this.loadUnpaid()
 
-
+            },
+            changePurchaseOrder(){
+                if(this.form.purchase_order !== undefined && this.form.purchase_order.length > 3){
+                    this.loadUnpaid()
+                }
+            },
+            changeWebPlatform(){
+                this.loadUnpaid()
             },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {

@@ -1,13 +1,19 @@
 <?php
 
 namespace Modules\Dashboard\Helpers;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\DocumentPayment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Item\Models\WebPlatform;
 
 class DashboardView
 {
@@ -227,15 +233,17 @@ class DashboardView
 
     public static function getUnpaidFilterUser($request)
     {
-        $establishment_id = $request['establishment_id'];
-        $period = $request['period'];
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        $month_start = $request['month_start'];
-        $month_end = $request['month_end'];
-        $customer_id = $request['customer_id'];
-        $user_id = $request['user_id'];
-        $payment_method_type_id = $request['payment_method_type_id'];
+        $establishment_id = $request['establishment_id']??null;
+        $period = $request['period']??null;
+        $date_start = $request['date_start']??null;
+        $date_end = $request['date_end']??null;
+        $month_start = $request['month_start']??null;
+        $month_end = $request['month_end']??null;
+        $customer_id = $request['customer_id']??null;
+        $user_id = $request['user_id']??null;
+        $web_platform_id = $request['web_platform_id']??0;
+        $purchase_order = $request['purchase_order']??null;
+        $payment_method_type_id = $request['payment_method_type_id']??null;
         $user_type = auth()->user()->type;
         $user_id_session = auth()->user()->id;
         $d_start = null;
@@ -307,18 +315,6 @@ class DashboardView
             ->whereIn('document_type_id', ['01', '03', '08'])
             ->select(DB::raw($document_select))
             ->where('documents.establishment_id', $establishment_id);
-        if ($user_type == 'seller') {
-            $documents->where('user_id', $user_id_session);
-        }
-        if ($user_type == 'admin' && $user_id) {
-            $documents->whereIn('user_id', [$user_id_session, $user_id]);
-        }
-        if ($customer_id) {
-            $documents->where('customer_id', $customer_id);
-        }
-        if ($d_start && $d_end) {
-            $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
-        }
 
         if ($payment_method_type_id) {
             $documents->where('payment_method_type_id', $payment_method_type_id);
@@ -344,19 +340,53 @@ class DashboardView
             ->where('sale_notes.establishment_id', $establishment_id)
             ->where('sale_notes.changed', false)
             ->where('sale_notes.total_canceled', false);
+
         if ($user_type == 'seller') {
             $sale_notes->where('user_id', $user_id_session);
+            $documents->where('user_id', $user_id_session);
         }
         if ($user_type == 'admin' && $user_id) {
             $sale_notes->whereIn('user_id', [$user_id_session, $user_id]);
+            $documents->whereIn('user_id', [$user_id_session, $user_id]);
         }
         if ($customer_id) {
             $sale_notes->where('customer_id', $customer_id);
+            $documents->where('customer_id', $customer_id);
         }
         if ($d_start && $d_end) {
             $sale_notes->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end]);
+            $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
         }
         // return $documents->union($sale_notes);
+        if($purchase_order !== null){
+            $documents->where('purchase_order',$purchase_order);
+            $sale_notes->where('purchase_order',$purchase_order);
+        }
+        if($web_platform_id != 0){
+            $web_platform_table_name = (new WebPlatform())->getTable();
+            $item_table_name = (new Item())->getTable();
+            $document_item_table = (new DocumentItem())->getTable();
+            $sale_note_item_table = (new SaleNoteItem())->getTable();
+            // Se busca las plataformas de los items para obtener los documentos respectivos.
+            $document_items_id = DocumentItem::
+            leftJoin($item_table_name, "$item_table_name.id", '=', "$document_item_table.item_id")
+                ->leftJoin($web_platform_table_name, "$web_platform_table_name.id", '=', "$item_table_name.web_platform_id")
+                ->where("$item_table_name.web_platform_id", $web_platform_id)
+                ->select($document_item_table . '.document_id as document_id')
+                ->get()
+                ->pluck('document_id');
+            $documents->wherein('documents.id', $document_items_id);
+
+            $sale_note_items_id = SaleNoteItem::
+            leftJoin($item_table_name, "$item_table_name.id", '=', "$sale_note_item_table.item_id")
+                ->leftJoin($web_platform_table_name, "$web_platform_table_name.id", '=', "$item_table_name.web_platform_id")
+                ->where("$item_table_name.web_platform_id", $web_platform_id)
+                ->select($sale_note_item_table . '.sale_note_id as document_id')
+                ->get()
+                ->pluck('document_id');
+            $sale_notes->wherein('sale_notes.id', $sale_note_items_id);
+
+        }
         return $documents->union($sale_notes)->havingRaw('total_subtraction > 0');
     }
 
