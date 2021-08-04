@@ -31,9 +31,9 @@
                             <th class="text-center">Estado pago</th>
                             <th>Estado</th>
                             <th class="text-center">Moneda</th>
+                            <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
                             <th class="text-center">Comprobantes</th>
-                            <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Cotización</th>
                             <th>Caso</th>
                             <th class="text-right" >T.Exportación</th>
@@ -55,17 +55,17 @@
                             </td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.currency_type_id}}</td>
-                            <td>{{ row.purchase_order }}</td>
-                            <td>
-                                <template v-for="(doc,i) in row.documents">
-                                    <label class="d-block"  :key="i">{{doc.number_full}}</label>
-                                </template>
-                            </td>
                         <td  v-if="columns.web_platforms.visible">
                             <template v-for="(platform,i) in row.web_platforms">
                                 <label class="d-block"  :key="i">{{platform.name}}</label>
                             </template>
                         </td>
+                        <td>{{ row.purchase_order }}</td>
+                        <td>
+                                <template v-for="(doc,i) in row.documents">
+                                    <label class="d-block"  :key="i">{{doc.number_full}}</label>
+                                </template>
+                            </td>
                         <td>{{row.quotation_number_full}}</td>
                             <td>{{row.sale_opportunity_number_full}}</td>
 

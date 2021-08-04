@@ -72,9 +72,9 @@
                                 <th class="text-center">Estado pago</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
+                                <th class="text-center">Plaforma</th>
                                 <th class="text-center">Orden de compra</th>
                                 <th class="text-center">Comprobantes</th>
-                                <th class="text-center">Plaforma</th>
                                 <th>Cotización</th>
                                 <th>Caso</th>
                                 <th class="text-right" >T.Exportación</th>
@@ -98,16 +98,15 @@
                                 </td>
                                 <td>{{$value->state_type->description}}</td>
                                 <td>{{$value->currency_type_id}}</td>
+                                <td class="celda">
+                                    @foreach ($value->getPlatformThroughItems() as $platform)
+                                        <label class="d-block">{{$platform->name}}</label>
+                                    @endforeach
+                                </td>
                                 <td>{{$value->purchase_order}}</td>
                                 <td>
                                     @foreach ($value->documents as $doc)
                                          <label class="d-block">{{$doc->number_full}}</label>
-                                    @endforeach
-                                </td>
-
-                                <td class="celda">
-                                    @foreach ($value->getPlatformThroughItems() as $platform)
-                                        <label class="d-block">{{$platform->name}}</label>
                                     @endforeach
                                 </td>
                                 <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
