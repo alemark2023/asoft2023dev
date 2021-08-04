@@ -79,6 +79,8 @@ if ($hostname) {
             Route::delete('card_brands/{card_brand}', 'Tenant\CardBrandController@destroy');
 
             //Configurations
+            Route::get('configurations/sale-notes', 'Tenant\SaleNoteController@SetAdvanceConfiguration')->name('tenant.sale_notes.configuration');
+            Route::post('configurations/sale-notes', 'Tenant\SaleNoteController@SaveSetAdvanceConfiguration');
             Route::get('configurations/addSeeder', 'Tenant\ConfigurationController@addSeeder');
             Route::get('configurations/preprinted/addSeeder', 'Tenant\ConfigurationController@addPreprintedSeeder');
             Route::get('configurations/getFormats', 'Tenant\ConfigurationController@getFormats');
@@ -456,6 +458,9 @@ if ($hostname) {
             Route::get('sale-notes/create/{salenote?}', 'Tenant\SaleNoteController@create')->name('tenant.sale_notes.create')->middleware('redirect.level');
 
             Route::get('sale-notes/tables', 'Tenant\SaleNoteController@tables');
+            Route::post('sale-notes/UpToOther', 'Tenant\SaleNoteController@EnviarOtroSitio');
+            Route::post('sale-notes/getUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSite');
+            Route::post('sale-notes/urlUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSiteUrl');
             Route::post('sale-notes/duplicate', 'Tenant\SaleNoteController@duplicate');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');

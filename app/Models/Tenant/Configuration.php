@@ -67,6 +67,7 @@ class Configuration extends ModelTenant
         'active_warehouse_prices',
         'active_allowance_charge',
         'percentage_allowance_charge',
+        'send_data_to_other_server',
     ];
 
     protected $casts = [
@@ -78,6 +79,7 @@ class Configuration extends ModelTenant
         'update_document_on_dispaches' => 'boolean',
         'is_pharmacy' => 'boolean',
         'auto_send_dispatchs_to_sunat' => 'boolean',
+        'send_data_to_other_server' => 'boolean',
     ];
 
     /**
@@ -374,6 +376,7 @@ class Configuration extends ModelTenant
             'update_document_on_dispaches' => (bool)$this->update_document_on_dispaches,
             'is_pharmacy' => (bool)$this->is_pharmacy,
             'auto_send_dispatchs_to_sunat' => (bool)$this->auto_send_dispatchs_to_sunat,
+            'send_data_to_other_server' => (bool)$this->send_data_to_other_server,
             'item_per_page' => config('tenant.items_per_page'),
             'active_warehouse_prices' => (bool)$this->active_warehouse_prices,
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
@@ -382,4 +385,27 @@ class Configuration extends ModelTenant
 
         ];
     }
+
+    /**
+     * Devuelve verdadero o falso si esta habilitado el envio de datos a otro servidor
+     *
+     * @return bool
+     */
+    public function isSendDataToOtherServer(): bool
+    {
+        return $this->send_data_to_other_server;
+    }
+
+    /**
+     * Establece el valor para el envio de datos a otro servidor
+     *
+     * @param bool $send_data_to_other_server
+     * @return Configuration
+     */
+    public function setSendDataToOtherServer(bool $send_data_to_other_server = false): Configuration
+    {
+        $this->send_data_to_other_server = (bool)$send_data_to_other_server;
+        return $this;
+    }
+
 }

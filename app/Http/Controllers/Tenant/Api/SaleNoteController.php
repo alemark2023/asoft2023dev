@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Tenant\Api;
 
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Establishment as EstablishmentModel;
+use App\Models\Tenant\Person as PersonModel;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Mpdf\Mpdf;
 use Carbon\Carbon;
 use Mpdf\HTMLParserMode;
@@ -50,11 +53,19 @@ class SaleNoteController extends Controller
 
 	public function store(SaleNoteRequest $request)
 	{
-		DB::connection('tenant')->transaction(function () use ($request) {
-			$request['establishment_id'] = $request['establishment_id'] ? $request['establishment_id'] : auth()->user()->establishment_id;
+        $request['establishment_id'] = $request['establishment_id'] ? $request['establishment_id'] : auth()->user()->establishment_id;
+        $force_create_if_not_exist = isset($request['force_create_if_not_exist'])?(bool)$request['force_create_if_not_exist']:false;
+        $request['force_create_if_not_exist'] = $force_create_if_not_exist;
 
-			$data = $this->mergeData($request);
+        if($request['force_create_if_not_exist']) {
+            // Se saca de tenant, para que pueda guardar el item correctamente.
+            $data = $this->mergeData($request);
+        }
 
+        DB::connection('tenant')->transaction(function () use ($request,$data) {
+            if(!$request['force_create_if_not_exist']) {
+                $data = $this->mergeData($request);
+            }
 			$this->sale_note = SaleNote::updateOrCreate(
 				['id' => $request->input('id')],
 				$data
@@ -106,6 +117,7 @@ class SaleNoteController extends Controller
 
 		$type_period = $inputs['type_period'];
 		$quantity_period = $inputs['quantity_period'];
+        $force_create_if_not_exist = isset($inputs['force_create_if_not_exist'])?(bool)$inputs['force_create_if_not_exist']:false;
 		$d_of_issue = new Carbon($inputs['date_of_issue']);
 		$automatic_date_of_issue = null;
 
@@ -113,14 +125,81 @@ class SaleNoteController extends Controller
 			$add_period_date = ($type_period == 'month') ? $d_of_issue->addMonths($quantity_period) : $d_of_issue->addYears($quantity_period);
 			$automatic_date_of_issue = $add_period_date->format('Y-m-d');
 		}
+        if($force_create_if_not_exist === true){
+            $person = PersonModel::find($inputs['customer_id']);
+            if($person === null) {
+
+                $client_data = $inputs['datos_del_cliente_o_receptor'];
+
+                $client_number = isset($client_data['numero_documento']) ? $client_data['numero_documento'] : null;
+                $person = PersonModel::where('number',$client_number)->first();
+                if($person ===  null && !empty($client_number)){
+                    $data_person = [
+                        'number'=>$client_number,
+                        'identity_document_type_id'=> $client_data['codigo_tipo_documento_identidad'] ?? '6',
+                        'name'=> $client_data['apellidos_y_nombres_o_razon_social'] ?? '',
+                        'country_id'=> $client_data['codigo_pais'] ?? 'PE',
+                        'district_id'=> $client_data['ubigeo'] ?? '',
+                        'address'=> $client_data['direccion'] ?? '',
+                        'email'=> $client_data['correo_electronico'] ?? '',
+                        'telephone'=> $client_data['telefono'] ?? '',
+                    ];
+                    $person = new PersonModel($data_person);
+                    $person->push();
+                }
+                $inputs['customer_id'] = $person->id;
+                $items = $inputs['items'];
+                foreach ($items as $key => $item) {
+                    $item_in = $item['full_item'];
+                    unset(
+                        $item_in['item_id'],
+                        $item_in['internal_id'],
+                        $item_in['id'],
+                        $item_in['barcode'],
+                        $item_in['tags'],
+                        $item_in['unit_type'],
+                        $item_in['item_type'],
+                        $item_in['currency_type'],
+                        $item_in['warehouses'],
+                        $item_in['item_unit_types'],
+                    );
+                    foreach($item_in as $k=>$v){
+                        if(empty($v)){
+                            unset($item_in[$k]);
+                        }
+                    }
+                    $identicalItem = Item::where($item_in)->first();
+                    if ($identicalItem === null) {
+                        $identicalItem = new Item($item_in);
+                        $identicalItem->stock = 1;
+                        $identicalItem->stock_min = 1;
+                        $identicalItem->push();
+
+                    }
+                    $items[$key]['id'] = $identicalItem->id;
+                    $items[$key]['attributes'] = $identicalItem->attributes;
+                    $items[$key]['item_id'] = $identicalItem->id;
+                    $items[$key]['barcode'] = $identicalItem->barcode;
+                    $items[$key]['item']['barcode'] = $identicalItem->barcode;
+                    $items[$key]['item']['id'] = $identicalItem->id;
+                    $items[$key]['item']['item_id'] = $identicalItem->id;
+                }
+
+                $inputs['items'] = $items ;
+            }
+            if(!isset($inputs['establishment_id']) || empty($inputs['establishment_id'])){
+                $inputs['establishment_id'] = $inputs['establishment_id'] ?: auth()->user()->establishment_id;
+            }
+        }
 
 		$data_series = $this->getDataSeries($inputs['series_id'], $inputs['id'], $inputs['number']);
+        $customer = PersonInput::set($inputs['customer_id']);
 
 		$values = [
 			'automatic_date_of_issue' => $automatic_date_of_issue,
 			'user_id'                 => auth()->id(),
 			'external_id'             => Str::uuid()->toString(),
-			'customer'                => PersonInput::set($inputs['customer_id']),
+			'customer'                => $customer,
 			'establishment'           => EstablishmentInput::set($inputs['establishment_id']),
 			'soap_type_id'            => $this->company->soap_type_id,
 			'state_type_id'           => '01',
@@ -129,7 +208,6 @@ class SaleNoteController extends Controller
 		];
 
 		$inputs->merge($values);
-
 		return $inputs->all();
 	}
 
