@@ -1498,11 +1498,23 @@ class SaleNoteController extends Controller
     }
 
 
+    /**
+     * Retorna la vistsa para la configuracion de migracion avanzada en Nota de venta
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+     */
     public function SetAdvanceConfiguration(){
         $migrationConfiguration = MigrationConfiguration::getCollectionData();
         return view('tenant.configuration.sale_notes',compact('migrationConfiguration'));
 
     }
+
+    /**
+     * Guarda los datos para la migracion de nota de venta
+     *
+     * @param Request $request
+     * @return array
+     */
     public function SaveSetAdvanceConfiguration(Request $request){
 
         $data = $request->all();

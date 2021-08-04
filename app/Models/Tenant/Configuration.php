@@ -387,6 +387,8 @@ class Configuration extends ModelTenant
     }
 
     /**
+     * Devuelve verdadero o falso si esta habilitado el envio de datos a otro servidor
+     *
      * @return bool
      */
     public function isSendDataToOtherServer(): bool
@@ -395,6 +397,8 @@ class Configuration extends ModelTenant
     }
 
     /**
+     * Establece el valor para el envio de datos a otro servidor
+     *
      * @param bool $send_data_to_other_server
      * @return Configuration
      */

@@ -10,36 +10,36 @@ use Carbon\Carbon;
  *
  * @package App\Models\Tenant
  * @mixin \App\Models\Tenant\ModelTenant
- * @property-read CurrencyType $currency_type
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
- * @property-read int|null $documents_count
+ * @property CurrencyType $currency_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Document[] $documents
+ * @property int|null $documents_count
  * @property \App\Models\Tenant\Establishment $establishment
  * @property mixed $charges
  * @property mixed $customer
  * @property mixed $detraction
  * @property mixed $discounts
  * @property mixed $guides
- * @property-read mixed $identifier
+ * @property mixed $identifier
  * @property mixed $legends
- * @property-read string $number_full
- * @property-read mixed $number_to_letter
+ * @property string $number_full
+ * @property mixed $number_to_letter
  * @property mixed $perception
  * @property mixed $prepayments
  * @property mixed $related
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
- * @property-read int|null $inventory_kardex_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNoteItem[] $items
- * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
- * @property-read int|null $kardex_count
- * @property-read \App\Models\Tenant\PaymentMethodType $payment_method_type
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNotePayment[] $payments
- * @property-read int|null $payments_count
- * @property-read \App\Models\Tenant\Person $person
- * @property-read \App\Models\Tenant\Quotation $quotation
- * @property-read \App\Models\Tenant\SoapType $soap_type
- * @property-read \App\Models\Tenant\StateType $state_type
- * @property-read \App\Models\Tenant\User $user
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\InventoryKardex[] $inventory_kardex
+ * @property int|null $inventory_kardex_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNoteItem[] $items
+ * @property int|null $items_count
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\Kardex[] $kardex
+ * @property int|null $kardex_count
+ * @property \App\Models\Tenant\PaymentMethodType $payment_method_type
+ * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Tenant\SaleNotePayment[] $payments
+ * @property int|null $payments_count
+ * @property \App\Models\Tenant\Person $person
+ * @property \App\Models\Tenant\Quotation $quotation
+ * @property \App\Models\Tenant\SoapType $soap_type
+ * @property \App\Models\Tenant\StateType $state_type
+ * @property \App\Models\Tenant\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SaleNote newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|SaleNote query()
