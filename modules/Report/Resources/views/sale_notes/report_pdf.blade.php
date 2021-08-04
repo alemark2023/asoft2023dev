@@ -105,6 +105,7 @@
                                 <th class="text-center">Moneda</th>
                                 <th class="text-center">Orden de compra</th>
                                 <th class="text-center">Comprobantes</th>
+                                <th class="text-center">Plataforma</th>
                                 <th class="text-right" >T.Exportación</th>
                                 <th class="text-right" >T.Inafecta</th>
                                 <th class="text-right" >T.Exonerado</th>
@@ -130,6 +131,11 @@
                                     <td class="celda">
                                         @foreach ($value->documents as $doc)
                                             <label class="d-block">{{$doc->number_full}}</label>
+                                        @endforeach
+                                    </td>
+                                    <td class="celda">
+                                        @foreach ($value->getPlatformThroughItems() as $platform)
+                                            <label class="d-block">{{$platform->name}}</label>
                                         @endforeach
                                     </td>
 
@@ -193,14 +199,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="11"></td>
+                                <td class="celda" colspan="12"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="11"></td>
+                                <td class="celda" colspan="12"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>
