@@ -459,6 +459,7 @@ if ($hostname) {
 
             Route::get('sale-notes/tables', 'Tenant\SaleNoteController@tables');
             Route::post('sale-notes/UpToOther', 'Tenant\SaleNoteController@EnviarOtroSitio');
+            Route::post('sale-notes/getUpToOther', 'Tenant\SaleNoteController@getSaleNoteToOtherSite');
             Route::post('sale-notes/duplicate', 'Tenant\SaleNoteController@duplicate');
             Route::get('sale-notes/table/{table}', 'Tenant\SaleNoteController@table');
             Route::post('sale-notes', 'Tenant\SaleNoteController@store');

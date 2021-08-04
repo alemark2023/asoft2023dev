@@ -212,15 +212,56 @@ class SaleNoteController extends Controller
         return $dataSend;
     }
     public function EnviarOtroSitio(Request $request){
+        $proccesed = [];
+        $text = '';
+        $success = false;
         if($request->has('sale_note_id')){
             // para una NV
             $saleNoteId = $request->sale_note_id;
             return $this->sendDataToOtherSite($saleNoteId);
+        }elseif($request->has('sale_notes_id')){
+            foreach($request->sale_notes_id as $saleNoteId){
+                $temp =$this->sendDataToOtherSite($saleNoteId);
+                $proccesed[] = $temp;
+                if($success == false){
+                    $success = $temp['success'];
+                }
+            }
         }
-
-
+        $data['success']= $success;
+        $data['message']= 'Se han enviado los datos';
+        $data['proccesed']= $proccesed;
+        return $data;
     }
 
+    public function getSaleNoteToOtherSite(Request $request){
+
+
+        $saleNoteAlready = SaleNoteMigration::where('success',1)
+            ->select('sale_notes_id')
+            ->get()
+            ->pluck('sale_notes_id');
+        $configuration = Configuration::first();
+        $saleNote = SaleNote::whereNotIn('id',$saleNoteAlready);
+        if($request->has('params')){
+            $param = $request->params;
+            if(isset($param['client_id'])) {
+                $saleNote->where('customer_id', $param['client_id']);
+            }
+            if(isset($param['date_of_issue'])) {
+                $saleNote->where('date_of_issue', $param['date_of_issue']);
+            }
+        }
+
+        $saleNote = $saleNote->where('state_type_id','!=','11')
+            ->get()
+            ->transform(function($row)use($configuration){
+                /** @var SaleNote $row */
+                return $row->getCollectionData($configuration);
+            });
+
+        return $saleNote;
+    }
     /**
      * Busca el texto $search en la cadena de caracteres $text
      * @param $search

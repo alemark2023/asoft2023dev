@@ -8,6 +8,7 @@
             <div class="right-wrapper pull-right">
                 <a href="#" @click.prevent="clickCreate()" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
                 <a href="#" @click.prevent="onOpenModalGenerateCPE" class="btn btn-custom btn-sm  mt-2 mr-2">Generar comprobante desde múltiples Notas</a>
+                <a href="#" v-if="config.send_data_to_other_server === true"@click.prevent="onOpenModalMigrateNv" class="btn btn-custom btn-sm  mt-2 mr-2">Migrar Datos</a>
             </div>
         </div>
         <div class="card mb-0">
@@ -206,11 +207,16 @@
                            :showGenerate="true"
                            :showClose="false"></sale-note-generate>
         <ModalGenerateCPE :show.sync="showModalGenerateCPE"></ModalGenerateCPE>
+        <UploadToOtherServer
+            :configuration="config"
+            :showMigrate.sync="showMigrateNv"
+        ></UploadToOtherServer>
     </div>
 </template>
 
 <script>
     import DataTable from '../../../components/DataTableSaleNote.vue'
+    import UploadToOtherServer from './partials/upload_other_server_group.vue'
     import SaleNotePayments from './partials/payments.vue'
     import SaleNotesOptions from './partials/options.vue'
     import SaleNoteGenerate from './partials/option_documents'
@@ -225,7 +231,14 @@
             'configuration'
         ],
         mixins: [deletable],
-        components: {DataTable, SaleNotePayments, SaleNotesOptions, SaleNoteGenerate, ModalGenerateCPE},
+        components: {
+            DataTable,
+            SaleNotePayments,
+            SaleNotesOptions,
+            SaleNoteGenerate,
+            ModalGenerateCPE,
+            UploadToOtherServer
+        },
         computed:{
             ...mapState([
                 'config',
@@ -234,6 +247,7 @@
         data() {
             return {
                 showModalGenerateCPE: false,
+                showMigrateNv: false,
                 resource: 'sale-notes',
                 showDialogPayments: false,
                 showDialogOptions: false,
@@ -342,6 +356,9 @@
             },
             onOpenModalGenerateCPE() {
                 this.showModalGenerateCPE = true;
+            },
+            onOpenModalMigrateNv() {
+                this.showMigrateNv = true;
             },
             clickDownload(external_id) {
                 window.open(`/sale-notes/downloadExternal/${external_id}`, '_blank');
