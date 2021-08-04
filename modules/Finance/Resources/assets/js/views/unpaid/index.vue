@@ -2,6 +2,18 @@
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
             <h3 class="my-0">Cuentas por cobrar</h3>
+            <div class="data-table-visible-columns" style="top: 10px;">
+                <el-dropdown :hide-on-click="false">
+                    <el-button type="primary">
+                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
         </div>
         <div class="card mb-0">
             <div class="card-body">
@@ -210,6 +222,8 @@
                                             <th>Días de retraso</th>
                                             <th>Penalidad</th>
                                             <th>Guías</th>
+                                            <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
+                                            <th v-if="columns.purchase_order.visible">Orden de compra</th>
 
                                             <th>Ver Cartera</th>
                                             <th>Moneda</th>
@@ -278,6 +292,12 @@
                                                         </template>
                                                     </td>
 
+                                                    <td  v-if="columns.web_platforms.visible">
+                                                        <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
+                                                            <label class="d-block"  :key="i">{{platform.name}}</label>
+                                                        </template>
+                                                    </td>
+                                                    <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
                                                     <td>
                                                         <el-popover placement="right" width="300" trigger="click">
                                                             <p>
@@ -389,6 +409,16 @@
                 payment_method_types:[],
                 pagination: {},
                 loading: false,
+                columns: {
+                    purchase_order: {
+                        title: 'Orden de compra',
+                        visible: false
+                    },
+                    web_platforms: {
+                        title: 'Plataformas web',
+                        visible: false
+                    },
+                }
             }
         },
         async created() {

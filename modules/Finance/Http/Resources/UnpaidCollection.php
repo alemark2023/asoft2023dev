@@ -59,12 +59,15 @@ class UnpaidCollection extends ResourceCollection
                 $date_payment_last = SaleNotePayment::where('sale_note_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
             }
 
+            $purchase_order = null;
             if ($row->type == 'document') {
                 $document = Document::find($row->id);
                 $web_platforms = $document->getPlatformThroughItems();
+                $purchase_order = $document->purchase_order;
             } elseif ($row->type == 'sale_note') {
                 $document = SaleNote::find($row->id);
                 $web_platforms = $document->getPlatformThroughItems();
+                $purchase_order = $document->purchase_order;
             } else {
                 $web_platforms = new \Illuminate\Database\Eloquent\Collection();
             }
@@ -88,6 +91,7 @@ class UnpaidCollection extends ResourceCollection
                 "total_subtraction" => $row->total_subtraction,
                 "total_payment" => $row->total_payment,
                 "web_platforms" => $web_platforms,
+                "purchase_order" => $purchase_order,
             ];
         });
     }
