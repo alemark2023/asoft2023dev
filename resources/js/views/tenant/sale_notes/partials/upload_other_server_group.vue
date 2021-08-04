@@ -111,8 +111,9 @@ export default {
     ],
     data() {
         return {
-            titleDialog: "Migracion a servidor",
+            titleDialog:'',
             loading: false,
+            url: '',
             clients: [],
             filter: {
                 type: "name",
@@ -124,19 +125,16 @@ export default {
             },
             notes: [],
             errors: {},
-            testing: {
-                "success": false,
-                "message": "Problemas insertando datos del cliente. NV-SQL-001<br>",
-                "proccesed": [{
-                    "sale_note_id": 108,
-                    "success": false,
-                    "message": "Problemas insertando datos del cliente. NV-SQL-001"
-                }]
-            },
         };
     },
     mounted() {
-        // @todo: obtener la url de destino para mostrarla
+        this.titleDialog =  "Migracion a servidor"
+        this.$http.post('/sale-notes/urlUpToOther').then(response => {
+            this.url = response.data;
+            this.titleDialog =  "Migracion a servidor "+this.url
+        })
+
+
     },
     methods: {
 

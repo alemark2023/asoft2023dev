@@ -78,6 +78,12 @@ class SaleNoteController extends Controller
     }
 
 
+    /**
+     * Envia la NV al servidor de destino. Devuelve el mensaje de exito o error del servidor
+     *
+     * @param $saleNoteId
+     * @return array
+     */
     public function sendDataToOtherSite($saleNoteId ){
         $dataSend = [
             'sale_note_id'=>$saleNoteId,
@@ -211,6 +217,13 @@ class SaleNoteController extends Controller
 
         return $dataSend;
     }
+
+    /**
+     * Evalua la forma de enviar la nv al servidor.
+     *
+     * @param Request $request
+     * @return array
+     */
     public function EnviarOtroSitio(Request $request){
         $proccesed = [];
         $text = '';
@@ -220,6 +233,7 @@ class SaleNoteController extends Controller
             $saleNoteId = $request->sale_note_id;
             return $this->sendDataToOtherSite($saleNoteId);
         }elseif($request->has('sale_notes_id')){
+            // multiples NV
             foreach($request->sale_notes_id as $saleNoteId){
                 $temp =$this->sendDataToOtherSite($saleNoteId);
                 $proccesed[] = $temp;
@@ -238,6 +252,22 @@ class SaleNoteController extends Controller
         return $data;
     }
 
+    /**
+     * Obtiene la url del servidor de destino configurada en la migracion.
+     *
+     * @return mixed|string|null
+     */
+    public function getSaleNoteToOtherSiteUrl(){
+            $e = MigrationConfiguration::first();
+        return $e!== null?$e->url:'';
+    }
+
+    /**
+     * Obtiene la lista de nota de ventas que pueden ser migradas a otro servidor.
+     *
+     * @param Request $request
+     * @return SaleNote[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     */
     public function getSaleNoteToOtherSite(Request $request){
 
 
