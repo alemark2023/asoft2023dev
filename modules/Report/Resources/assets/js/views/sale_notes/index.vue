@@ -56,7 +56,7 @@
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.currency_type_id}}</td>
                         <td  v-if="columns.web_platforms.visible">
-                            <template v-for="(platform,i) in row.web_platforms">
+                            <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
                                 <label class="d-block"  :key="i">{{platform.name}}</label>
                             </template>
                         </td>
