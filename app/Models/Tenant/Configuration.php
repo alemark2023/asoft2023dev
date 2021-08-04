@@ -393,7 +393,7 @@ class Configuration extends ModelTenant
      */
     public function isSendDataToOtherServer(): bool
     {
-        return $this->send_data_to_other_server;
+        return (bool)$this->send_data_to_other_server;
     }
 
     /**
