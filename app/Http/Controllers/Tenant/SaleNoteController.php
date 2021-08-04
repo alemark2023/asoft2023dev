@@ -223,13 +223,17 @@ class SaleNoteController extends Controller
             foreach($request->sale_notes_id as $saleNoteId){
                 $temp =$this->sendDataToOtherSite($saleNoteId);
                 $proccesed[] = $temp;
+                $proccesed[] = $temp;
+                $proccesed[] = $temp;
                 if($success == false){
                     $success = $temp['success'];
                 }
+                $sms = $temp['message']??null;
+                $text.=($sms !== null)?$sms."<br>":null;
             }
         }
         $data['success']= $success;
-        $data['message']= 'Se han enviado los datos';
+        $data['message']= $text;
         $data['proccesed']= $proccesed;
         return $data;
     }

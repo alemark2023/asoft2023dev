@@ -175,24 +175,31 @@ export default {
         },
 
         sendMessage(message,success){
+            let type = 'error'
             if (success) {
-                this.$message.success(message);
+                type = 'success';
+                // this.$message.success(message,{dangerouslyUseHTMLString:false});
             } else {
-                this.$message.error(message);
+                // this.$message.error(message,{dangerouslyUseHTMLString:false});
             }
+            this.$notify({
+                title: "",
+                dangerouslyUseHTMLString: true,
+                message: message,
+                type: type,
+                duration: 12000
+            })
         },
         sendToServer(recordId) {
             this.$http.post('/sale-notes/UpToOther',{'sale_notes_id':recordId}).then(response => {
                 let data = response.data;
-                console.log('0');
-
                 this.sendMessage(data.message,data.success)
-
-                console.log('1');
+                /*
                 let temp = this;
                 data.proccesed.forEach(function(a){
-                    temp.sendMessage(a.message,a.success)
+                   temp.sendMessage(a.message,a.success)
                 })
+                */
 
 
             }).catch(error => {
