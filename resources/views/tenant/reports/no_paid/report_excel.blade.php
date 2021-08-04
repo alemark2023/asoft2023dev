@@ -59,7 +59,6 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
-
                                 @if($value['total_to_pay'] > 0)
                                     <tr>
                                         <td class="celda">{{$loop->iteration}}</td>
