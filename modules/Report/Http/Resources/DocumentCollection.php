@@ -24,6 +24,7 @@ class DocumentCollection extends ResourceCollection
             $signal = $row->document_type_id;
             $state = $row->state_type_id;
 
+            $web_platforms = $row->getPlatformThroughItems();
 
 
             return [
@@ -70,6 +71,7 @@ class DocumentCollection extends ResourceCollection
                 }) : null,
                 'quotation_number_full' => ($row->quotation) ? $row->quotation->number_full : '',
                 'sale_opportunity_number_full' => isset($row->quotation->sale_opportunity) ? $row->quotation->sale_opportunity->number_full : '',
+                'web_platforms' => $web_platforms,
 
             ];
         });
