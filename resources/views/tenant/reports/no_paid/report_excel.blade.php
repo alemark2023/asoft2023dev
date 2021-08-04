@@ -49,6 +49,8 @@
                                 <th>Número</th>
                                 <th>Cliente</th>
                                 <th>Moneda</th>
+                                <th>Plataforma</th>
+                                <th>Orden de compra</th>
                                 <th>Por cobrar</th>
                                 <th>Total</th>
 
@@ -57,6 +59,7 @@
                         </thead>
                         <tbody>
                             @foreach($records as $key => $value)
+
                                 @if($value['total_to_pay'] > 0)
                                     <tr>
                                         <td class="celda">{{$loop->iteration}}</td>
@@ -64,6 +67,14 @@
                                         <td class="celda">{{$value['number_full']}}</td>
                                         <td class="celda">{{$value['customer_name']}}</td>
                                         <td class="celda">{{$value['currency_type_id']}}</td>
+                                        <td class="celda">
+                                            @if(isset($value['web_platforms']))
+                                            @foreach($value['web_platforms'] as $platform)
+                                                <label > {{$platform->name}}</label>
+                                                @endforeach
+                                                @endif
+                                        </td>
+                                        <td class="celda">{{$value['purchase_order']}}</td>
                                         <td class="celda">{{$value['total_to_pay']}}</td>
                                         <td class="celda">{{$value['total']}}</td>
                                     </tr>
