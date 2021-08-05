@@ -15,8 +15,8 @@
                             </label>
 
                             <template v-if="!search_item_by_barcode" id="select-append">
-                                <el-input id="custom-input">
-                                    <el-select id="select-width"
+                                <el-input id="custom-input"> 
+                                    <el-select id="select-width" ref="selectSearchNormal"
                                                slot="prepend"
                                                v-model="form.item_id"
                                                :disabled="recordItem != null"
@@ -621,6 +621,7 @@ export default {
                         this.items = response.data.items
                         this.loading_search = false
                         this.enabledSearchItemsBarcode()
+                        this.enabledSearchItemBySeries()
                         if (this.items.length == 0) {
                             this.filterItems()
                         }
@@ -642,6 +643,30 @@ export default {
                     this.changeItem();
                 }
             }
+        },
+        async enabledSearchItemBySeries() {
+            
+            if(this.configuration.search_item_by_series && this.items.length == 1){
+                
+                this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
+                this.form.item_id = this.items[0].id;
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+
+                await this.changeItem();
+
+                this.lots = await this.form.item.lots.map((lot)=>{
+                    lot.has_sale = true
+                })
+
+                await this.clickAddItem()
+
+                this.$refs.selectSearchNormal.$data.selectedLabel = '';
+            }
+
+            if(this.configuration.search_item_by_series && this.items.length == 0){
+                this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
+            }
+ 
         },
         filterMethod(query) {
 
@@ -849,6 +874,8 @@ export default {
             this.$emit('update:showDialog', false)
         },
         async changeItem() {
+
+            
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
@@ -877,6 +904,7 @@ export default {
                 })
             }
             this.form.lots_group = this.form.item.lots_group
+
             // if (!this.recordItem) {
             //     await this.form.item.warehouses.forEach(element => {
             //         if(element.checked){

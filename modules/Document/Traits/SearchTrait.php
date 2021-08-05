@@ -3,6 +3,8 @@
 namespace Modules\Document\Traits;
 
 use App\Models\Tenant\Item;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+
 
 trait SearchTrait
 {
@@ -39,21 +41,29 @@ trait SearchTrait
             ->get();
     }
 
-    public function getItemsNotServices($request)
+    public function getItemsNotServices($request, $search_item_by_series = false)
     {
         $item = Item::whereIsActive()
                 ->whereTypeUser();
+
+        if($search_item_by_series){
+            return $this->getItemsBySerie($item, $request);
+        }
+
         if ($request->items_id) {
             return $item
                 ->whereIn('id', $request->items_id)
                 ->get();
         }
+
         if ($request->search_by_barcode == 1) {
             return $item
                 ->where('barcode', $request->input)
                 ->limit(1)
                 ->get();
         }
+
+
         return $item
             ->with('warehousePrices')
             ->where('description','like', "%{$request->input}%")
@@ -68,6 +78,23 @@ trait SearchTrait
             ->whereWarehouse()
             ->orderBy('description')
             ->get();
+    }
+    
+
+    private function getItemsBySerie($item, $request)
+    {
+
+        $warehouse = ModuleWarehouse::select('id')->where('establishment_id', auth()->user()->establishment_id)->first();
+
+        $item = $item->wherehas('item_lots', function($query) use($request, $warehouse){
+                        return $query->where('has_sale', false)
+                                    ->where('warehouse_id', $warehouse->id)
+                                    ->where('series', $request->input);
+                        });
+
+
+        return $item->take(1)->get();
+
     }
 
 
