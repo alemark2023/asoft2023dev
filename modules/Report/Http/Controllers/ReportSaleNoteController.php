@@ -5,6 +5,7 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade as PDF;
+use Modules\Item\Models\WebPlatform;
 use Modules\Report\Exports\SaleNoteExport;
 use Illuminate\Http\Request;
 use Modules\Report\Traits\ReportTrait;
@@ -31,8 +32,10 @@ class ReportSaleNoteController extends Controller
         });
 
         $sellers = $this->getSellers();
+        $web_platforms = WebPlatform::get();
 
-        return compact('document_types','establishments', 'sellers');
+
+        return compact('document_types','establishments', 'sellers','web_platforms');
     }
 
 

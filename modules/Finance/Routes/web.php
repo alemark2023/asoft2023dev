@@ -34,6 +34,14 @@ if($hostname) {
                 Route::get('payment-method-types/filter', 'PaymentMethodTypeController@filter');
                 Route::get('payment-method-types/records', 'PaymentMethodTypeController@records');
 
+                /**
+                 * finances/unpaid
+                 * finances/balance/pdf
+                 * finances/unpaid/filter
+                 * finances/unpaid/records
+                 * finances/unpaid/unpaidall
+                 * finances/unpaid/report-payment-method-days
+                 */
                 Route::get('unpaid', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
                 // Route::post('unpaid', 'UnpaidController@unpaid');
                 Route::get('unpaid/filter', 'UnpaidController@filter');

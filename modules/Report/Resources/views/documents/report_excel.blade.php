@@ -140,6 +140,7 @@ function getLocationData($value)
                                 <th>RUC</th>
                                 <th>Estado</th>
                                 <th class="">Moneda</th>
+                                <th>Plaforma</th>
                                 <th>Orden de compra</th>
                                 <th class="">Forma de pago</th>
                                 <th>Total Exonerado</th>
@@ -211,6 +212,11 @@ function getLocationData($value)
                                 @endphp
 
                                 <td class="celda">{{$value->currency_type_id}}</td>
+                                <td class="celda">
+                                    @foreach ($value->getPlatformThroughItems() as $platform)
+                                        <label class="d-block">{{$platform->name}}</label>
+                                    @endforeach
+                                </td>
                                 <td class="celda">{{$value->purchase_order}}</td>
 
                                 <td class="celda">
@@ -372,7 +378,7 @@ function getLocationData($value)
                             @endphp
                             @endforeach
                             <tr>
-                                <td colspan="18"></td>
+                                <td colspan="19"></td>
                                 <!-- <td >Totales</td>
                                 <td>{{$acum_total_exonerado}}</td>
                                 <td>{{$acum_total_inafecto}}</td>
@@ -388,7 +394,7 @@ function getLocationData($value)
                                 <td>{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td colspan="18"></td>
+                                <td colspan="19"></td>
                                 <td >Totales USD</td>
                                 <td></td>
                                 <td></td>

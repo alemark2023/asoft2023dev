@@ -72,6 +72,7 @@
                                 <th class="text-center">Estado pago</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
+                                <th class="text-center">Plaforma</th>
                                 <th class="text-center">Orden de compra</th>
                                 <th class="text-center">Comprobantes</th>
                                 <th>Cotización</th>
@@ -97,13 +98,17 @@
                                 </td>
                                 <td>{{$value->state_type->description}}</td>
                                 <td>{{$value->currency_type_id}}</td>
+                                <td class="celda">
+                                    @foreach ($value->getPlatformThroughItems() as $platform)
+                                        <label class="d-block">{{$platform->name}}</label>
+                                    @endforeach
+                                </td>
                                 <td>{{$value->purchase_order}}</td>
                                 <td>
                                     @foreach ($value->documents as $doc)
                                          <label class="d-block">{{$doc->number_full}}</label>
                                     @endforeach
                                 </td>
-
                                 <td class="celda">{{ ($value->quotation) ? $value->quotation->number_full : '' }}</td>
                                 <td class="celda">{{ isset($value->quotation->sale_opportunity) ? $value->quotation->sale_opportunity->number_full : '' }}</td>
 
@@ -167,14 +172,14 @@
 
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="14"></td>
+                                <td class="celda" colspan="15"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="14"></td>
+                                <td class="celda" colspan="15"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>

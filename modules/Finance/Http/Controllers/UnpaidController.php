@@ -25,6 +25,7 @@ use App\Models\Tenant\User;
 use App\Models\Tenant\PaymentMethodType;
 use Modules\Finance\Http\Resources\UnpaidCollection;
 use Modules\Finance\Traits\UnpaidTrait;
+use Modules\Item\Models\WebPlatform;
 
 class UnpaidController extends Controller
 {
@@ -67,8 +68,9 @@ class UnpaidController extends Controller
         }
 
         $payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get();
+        $web_platforms = WebPlatform::all();
 
-        return compact('customers', 'establishments', 'users', 'payment_method_types');
+        return compact('customers', 'establishments', 'users', 'payment_method_types','web_platforms');
     }
 
     public function records(Request $request)
@@ -100,10 +102,11 @@ class UnpaidController extends Controller
 
         $company = Company::first();
 
-        return (new UnpaidPaymentMethodDayExport)
-                ->company($company)
-                ->records($records)
-                ->download('Reporte_C_Cobrar_F_Pago'.Carbon::now().'.xlsx');
+        $unpaidPaymentMethodDayExport = new UnpaidPaymentMethodDayExport();
+        $unpaidPaymentMethodDayExport
+            ->company($company)
+            ->records($records);
+        return $unpaidPaymentMethodDayExport->download('Reporte_C_Cobrar_F_Pago'.Carbon::now().'.xlsx');
 
     }
 
