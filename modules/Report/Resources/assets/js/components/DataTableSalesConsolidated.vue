@@ -207,10 +207,12 @@
                 document_types: [],
                 order_state_types: [],
                 sellers: [],
+                series: [],
                 pagination: {},
                 search: {},
                 totals: {},
                 establishment: null,
+                establishment_id: null,
                 parameters: null,
                 form: {},
                 pickerOptionsDates: {
@@ -219,7 +221,6 @@
                         return this.form.date_start > time
                     }
                 },
-                totals:0
             }
         },
         computed: {
