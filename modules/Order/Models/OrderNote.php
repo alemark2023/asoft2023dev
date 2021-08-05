@@ -3,6 +3,7 @@
 namespace Modules\Order\Models;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Quotation;
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
 use App\Models\Tenant\StateType;
@@ -17,7 +18,7 @@ use Modules\Item\Models\ItemLot;
 
 /**
  * Class OrderNote
- *
+ * @property $quotation_id
  * @package Modules\Order\Models
  * @mixin ModelTenant
  */
@@ -69,6 +70,7 @@ class OrderNote extends ModelTenant
         'legends',
         'filename',
         'shipping_address',
+        'quotation_id',
         'observation'
 
     ];
@@ -77,6 +79,7 @@ class OrderNote extends ModelTenant
         'date_of_issue' => 'date',
         'date_of_due' => 'date',
         'delivery_date' => 'date',
+        'quotation_id' => 'int',
     ];
 
     public function getEstablishmentAttribute($value)
@@ -343,9 +346,18 @@ class OrderNote extends ModelTenant
      */
     public function getCollectionData(){
         $btn_generate = (count($this->documents) > 0 || count($this->sale_notes) > 0)?false:true;
-
+        $quotation = Quotation::find($this->quotation_id);
+        if($quotation!== null){
+            $quotation = [
+                'id'=>$quotation->id,
+                'full_number'=>$quotation->getNumberFullAttribute(),
+            ];
+        }else{
+            $quotation = [];
+        }
         return [
             'id' => $this->id,
+            'quotation' => (object)$quotation,
             'soap_type_id' => $this->soap_type_id,
             'external_id' => $this->external_id,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
@@ -384,6 +396,24 @@ class OrderNote extends ModelTenant
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'print_a4' => url('')."/order-notes/print/{$this->external_id}/a4",
         ];
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQuotationId(): ?int
+    {
+        return $this->quotation_id;
+    }
+
+    /**
+     * @param int|null $quotation_id
+     * @return OrderNote
+     */
+    public function setQuotationId(?int $quotation_id): OrderNote
+    {
+        $this->quotation_id = $quotation_id;
+        return $this;
     }
 
 }

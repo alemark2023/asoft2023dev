@@ -13,4 +13,17 @@ export default {
     documentTypes:[],
     customers:[],
     workers:[],
+    company: {
+        logo:'',
+        name:'',
+    },
+    establishment: {
+        address:'-',
+        district: {description:''},
+        province: {description:''},
+        department: {description:''},
+        country: {description:''},
+        telephone:'-',
+        email:null,
+    },
 }
