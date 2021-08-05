@@ -33,6 +33,7 @@
                             <th>Cliente</th>
                             <th>Estado</th>
                             <th>Moneda</th>
+                            <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
                             <th>Total Exonerado</th>
                             <th>Total Inafecto</th>
@@ -68,6 +69,11 @@
                             <td>{{ row.currency_type_id }}</td>
 
 
+                        <td  v-if="columns.web_platforms.visible">
+                            <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
+                                <label class="d-block"  :key="i">{{platform.name}}</label>
+                            </template>
+                        </td>
                             <td>{{ row.purchase_order }}</td>
 
 
@@ -140,6 +146,10 @@
                     },
                     options: {
                         title: 'Opciones',
+                        visible: false
+                    },
+                    web_platforms: {
+                        title: 'Plataformas web',
                         visible: false
                     },
                 }

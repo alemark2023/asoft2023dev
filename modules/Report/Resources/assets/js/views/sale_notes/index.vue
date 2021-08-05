@@ -1,8 +1,24 @@
 <template>
     <div class="card mb-0 pt-2 pt-md-0">
-        <div class="card-header bg-info">
+        <div class="card-header bg-info p-b-30">
             <h3 class="my-0">Consulta de Notas de venta</h3>
+
+            <div class="data-table-visible-columns">
+                <el-dropdown :hide-on-click="false">
+                    <el-button type="primary">
+                        Mostrar/Ocultar columnas<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(column, index) in columns" :key="index">
+                            <el-checkbox v-model="column.visible">{{ column.title }}</el-checkbox>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
         </div>
+
+
+
         <div class="card mb-0">
                 <div class="card-body">
                     <data-table :resource="resource" :applyCustomer="true">
@@ -12,11 +28,12 @@
                             <th class="">Usuario/Vendedor</th>
                             <th>Cliente</th>
                             <th>Nota de Venta</th>
+                            <th class="text-center">Estado pago</th>
                             <th>Estado</th>
                             <th class="text-center">Moneda</th>
+                            <th class="text-center" v-if="columns.web_platforms.visible">Plataforma</th>
                             <th>Orden de compra</th>
                             <th class="text-center">Comprobantes</th>
-                            <th class="text-center">Estado pago</th>
                             <th>Cotización</th>
                             <th>Caso</th>
                             <th class="text-right" >T.Exportación</th>
@@ -38,14 +55,21 @@
                             </td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.currency_type_id}}</td>
-                            <td>{{ row.purchase_order }}</td>
-                            <td>
+                        <td  v-if="columns.web_platforms.visible">
+                            <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
+                                <label class="d-block"  :key="i">{{platform.name}}</label>
+                            </template>
+                        </td>
+                        <td>{{ row.purchase_order }}</td>
+                        <td>
                                 <template v-for="(doc,i) in row.documents">
                                     <label class="d-block"  :key="i">{{doc.number_full}}</label>
                                 </template>
                             </td>
-                            <td>{{row.quotation_number_full}}</td>
+                        <td>{{row.quotation_number_full}}</td>
                             <td>{{row.sale_opportunity_number_full}}</td>
+
+
                             <td >{{ (row.state_type_id == '11') ? "0.00" : row.total_exportation }}</td>
                             <td >{{ (row.state_type_id == '11') ? "0.00" : row.total_unaffected }}</td>
                             <td >{{ (row.state_type_id == '11') ? "0.00" : row.total_exonerated }}</td>
@@ -75,6 +99,12 @@
             return {
                 resource: 'reports/sale-notes',
                 form: {},
+                columns: {
+                    web_platforms: {
+                        title: 'Plataformas web',
+                        visible: false
+                    },
+                }
 
             }
         },

@@ -9,6 +9,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Modules\BusinessTurn\Models\DocumentHotel;
 use Modules\BusinessTurn\Models\DocumentTransport;
+use Modules\Item\Models\WebPlatform;
 use Modules\Order\Models\OrderNote;
 
 
@@ -742,6 +743,25 @@ class Document extends ModelTenant
         $orderNote = OrderNote::find($this->order_note_id);
         if ($orderNote === null) return [];
         return $orderNote->getCollectionData();
+    }
+
+    /**
+     * Devuelve una coleccion de plataformas web basado en los items.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed|WebPlatform|WebPlatform[]
+     */
+    public function getPlatformThroughItems(){
+        /**
+         * @var \Illuminate\Database\Eloquent\Collection $items
+         * @var WebPlatform $web_platforms
+         */
+        $items = $this->items->pluck('item_id');
+        $web_platform_table_name= (new WebPlatform())->getTable();
+        $item_table_name= (new Item())->getTable();
+        return WebPlatform::leftJoin('items', "$web_platform_table_name.id", '=', "$item_table_name.web_platform_id")
+            ->select("$web_platform_table_name.id","$web_platform_table_name.name")
+            ->wherein("$item_table_name.id",$items)
+            ->get();
     }
 
 }

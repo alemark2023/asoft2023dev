@@ -52,6 +52,7 @@ trait ReportTrait
         $state_type_id = FunctionController::InArray($request, 'state_type_id');
         $purchase_order = FunctionController::InArray($request, 'purchase_order');
         $guides = FunctionController::InArray($request, 'guides');
+        $web_platform = FunctionController::InArray($request, 'web_platform_id',0);
 
 
         $d_start = null;
@@ -76,7 +77,18 @@ trait ReportTrait
                 break;
         }
 
-        $records = $this->data($document_type_id, $establishment_id, $d_start, $d_end, $person_id, $type_person, $model, $seller_id, $state_type_id, $purchase_order,$guides);
+        $records = $this->data($document_type_id,
+            $establishment_id,
+            $d_start,
+            $d_end,
+            $person_id,
+            $type_person,
+            $model,
+            $seller_id,
+            $state_type_id,
+            $purchase_order,
+            $guides,
+            $web_platform);
 
         return $records;
 
@@ -109,8 +121,10 @@ trait ReportTrait
         $seller_id,
         $state_type_id,
         $purchase_order,
-        $guides = null) {
-
+        $guides = null,
+        $web_platform = null
+    ) {
+        $web_platform = (int)$web_platform;
         if($model !== PurchaseItem::class) {
             $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
                 ->latest()
@@ -118,7 +132,7 @@ trait ReportTrait
         }else{
             $data = PurchaseItem::whereNotNull('id');
         }
-
+        /** @var \Illuminate\Database\Eloquent\Builder  $data */
         if ($document_type_id && $establishment_id) {
             $data->where([['establishment_id', $establishment_id], ['document_type_id', $document_type_id]]);
         } elseif ($document_type_id) {
@@ -149,6 +163,27 @@ trait ReportTrait
             }
         }
 
+        // Se pueden tomar mas filtros de refencia en modules/Report/Http/Controllers/ReportGeneralItemController.php
+        //|| $brand_id || $category_id
+        if ($web_platform != 0) {
+            // , $brand_id, $category_id
+            // / ** @var SaleNote $data */
+            $data = $data->wherehas('items', function ($a) use ($web_platform) {
+                $a->whereHas('relation_item', function ($q) use ($web_platform) {
+                    if ($web_platform != 0) {
+                        $q->where('web_platform_id', $web_platform);
+                    }
+                    /*
+                    if ($brand_id) {
+                        $q->where('brand_id', $brand_id);
+                    }
+                    if ($category_id) {
+                        $q->where('category_id', $category_id);
+                    }
+                    */
+                });
+            });
+        }
         return $data;
 
     }
