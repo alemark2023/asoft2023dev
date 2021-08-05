@@ -618,6 +618,25 @@ class Item extends ModelTenant
         return $this->warehouses()->where('warehouse_id',$warehouse_id);
     }
 
+    private function getLotsBySerie($warehouse, $series,  $search_item_by_series)
+    {
+        $lots = [];
+
+
+        if($search_item_by_series){
+
+            $lots = $this->item_lots()->where('has_sale', false)
+                                ->where('warehouse_id', $warehouse->id)
+                                ->where('series', $series)
+                                ->take(1)
+                                ->get();
+
+        // dd($search_item_by_series, $lots, $this->item_lots);
+        }
+            
+        return $lots;
+    }
+
     /**
      * Devuelve un estandar de estructura para items.
      *
@@ -631,7 +650,7 @@ class Item extends ModelTenant
      *
      * @return array
      */
-    public function getDataToItemModal($warehouse = null, $with_lots_has_sale = false, $extended_description = false) {
+    public function getDataToItemModal($warehouse = null, $with_lots_has_sale = false, $extended_description = false, $series = null, $search_item_by_series = false) {
 
         if ($warehouse == null) {
             $establishment_id = auth()->user()->establishment_id;
@@ -640,7 +659,10 @@ class Item extends ModelTenant
         $detail = $this->getFullDescription($warehouse, $extended_description);
         $realtion_item_unit_types = $this->item_unit_types;
         $lots_grp = $this->lots_group;
-        $lots = [];
+
+        $lots = $this->getLotsBySerie($warehouse, $series, $search_item_by_series);
+        // dd($lots);
+
         if ($with_lots_has_sale == true) {
             $lots = $this->item_lots->where('has_sale', false)->transform(function ($row) {
                 return [

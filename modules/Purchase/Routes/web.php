@@ -8,6 +8,12 @@ if($current_hostname) {
 
             // Route::redirect('/', '/dashboard');
 
+            Route::prefix('purchases')->group(function () {
+
+                Route::post('import-series', 'PurchaseController@importSeries');
+            });
+
+
             Route::prefix('purchase-quotations')->group(function () {
 
                 Route::get('', 'PurchaseQuotationController@index')->name('tenant.purchase-quotations.index');

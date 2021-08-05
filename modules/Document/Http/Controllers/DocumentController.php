@@ -26,6 +26,7 @@ use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Document\Helpers\ConsultCdr;
 use Modules\Item\Models\ItemLot;
 use Modules\Document\Http\Resources\ItemLotCollection;
+use App\Models\Tenant\Configuration;
 
 
 class DocumentController extends Controller
@@ -294,14 +295,15 @@ class DocumentController extends Controller
 
         $establishment_id = auth()->user()->establishment_id;
         $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+        $search_item_by_series = (bool) Configuration::select('search_item_by_series')->first()->search_item_by_series;
 
-        $items_not_services = $this->getItemsNotServices($request);
+        $items_not_services = $this->getItemsNotServices($request, $search_item_by_series);
         $items_services = $this->getItemsServices($request);
         $all_items = $items_not_services->merge($items_services);
 
-        $items = collect($all_items)->transform(function ($row) use ($warehouse) {
+        $items = collect($all_items)->transform(function ($row) use ($warehouse, $request, $search_item_by_series) {
             /** @var \App\Models\Tenant\Item $row */
-            return $row->getDataToItemModal($warehouse);
+            return $row->getDataToItemModal($warehouse, false, false, $request->input, $search_item_by_series);
             /**  Movido al modelo */
             $detail = $this->getFullDescription($row, $warehouse);
 

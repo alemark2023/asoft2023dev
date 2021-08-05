@@ -68,6 +68,7 @@ class Configuration extends ModelTenant
         'active_allowance_charge',
         'percentage_allowance_charge',
         'send_data_to_other_server',
+        'search_item_by_series',
     ];
 
     protected $casts = [
@@ -380,9 +381,10 @@ class Configuration extends ModelTenant
             'item_per_page' => config('tenant.items_per_page'),
             'active_warehouse_prices' => (bool)$this->active_warehouse_prices,
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
+            'search_item_by_series' => (bool)$this->search_item_by_series,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
-
+            
         ];
     }
 
