@@ -55,6 +55,9 @@ function getLocationData($value, $type = 'sale')
 <body>
 @if(!empty($records))
     <div>
+        >>>{{$type}}/{{$document_type_id}}<<<
+    </div>
+    <div>
         <div class=" ">
             <table>
                 <thead>
@@ -97,7 +100,7 @@ function getLocationData($value, $type = 'sale')
                             }
                             $pack = $item->getSetItems();
                             ?>
-                            @include('report::general_items.partials.report_excel_body_sale_80',[
+                            @include('report::general_items.partials.report_excel_body_sale',[
                                       'document_type_id'=>$document_type_id,
                                       'document'=>$document,
                                       'type'=>$type,
@@ -114,7 +117,7 @@ function getLocationData($value, $type = 'sale')
                                     $item = $value->item;
                                     $qty = $item_pack->quantity;
                                     ?>
-                                    @include('report::general_items.partials.report_excel_body_sale_80',[
+                                    @include('report::general_items.partials.report_excel_body_sale',[
                                                                            'document_type_id'=>$document_type_id,
                                                                            'document'=>$document,
                                                                            'type'=>$type,
@@ -123,6 +126,7 @@ function getLocationData($value, $type = 'sale')
                                                                            'item'=>$item,
                                                                            'qty'=>$qty,
                                                                        ])
+
                                 @endforeach
                             @endif
                         @endforeach
@@ -191,42 +195,16 @@ function getLocationData($value, $type = 'sale')
                         <?php
                         /** @var \App\Models\Tenant\SaleNoteItem  $value */
                         $purchase = $value->purchase;
+
                         ?>
                         @if($purchase !== null)
-                        <tr>
-                            <td class="celda">{{$purchase->date_of_issue->format('Y-m-d')}}</td>
-                            <td class="celda">{{$purchase->document_type->description}}</td>
-                            <td class="celda">{{$purchase->document_type_id}}</td>
-                            <td class="celda">{{$purchase->series}}</td>
-                            <td class="celda">{{$purchase->number}}</td>
-                            <td class="celda">{{$purchase->state_type_id == '11' ? 'SI':'NO'}}</td>
-                            <td class="celda">{{$purchase->supplier->identity_document_type->description}}</td>
-                            <td class="celda">{{$purchase->supplier->number}}</td>
-                            <td class="celda">{{$purchase->supplier->name}}</td>
-                            <td class="celda">{{$purchase->currency_type_id}}</td>
-                            <td class="celda">{{$purchase->exchange_rate_sale}}</td>
-                            <td class="celda">{{$value->item->unit_type_id}}</td>
-                            <td class="celda">{{$value->relation_item ? $value->relation_item->internal_id:''}}</td>
-                            <td class="celda">{{$value->item->description}}</td>
-                            <td class="celda">{{$value->quantity}}</td>
-                            <td class="celda"></td>
-                            <td class="celda"></td>
-                            <td class="celda">{{$value->unit_value}}</td>
-                            <td class="celda">{{$value->unit_price}}</td>
-                            <td class="celda">
-                                @if($value->discounts)
-                                    {{collect($value->discounts)->sum('amount')}}
-                                @endif
-                            </td>
-                            <td class="celda">{{$value->total_value}}</td>
-                            <td class="celda">{{$value->affectation_igv_type_id}}</td>
-                            <td class="celda">{{$value->total_igv}}</td>
-                            <td class="celda">{{$value->system_isc_type_id}}</td>
-                            <td class="celda">{{$value->total_isc}}</td>
-                            <td class="celda">{{$value->total_plastic_bag_taxes}}</td>
-                            <td class="celda">{{$value->total}}</td>
-                            <td class="celda"></td>
-                        </tr>
+                            @include('report::general_items.partials.report_excel_body_purchase',
+                                                                       [
+                                                                           'document_type_id'=>$document_type_id,
+                                                                           'value'=>$value,
+                                                                           'purchase'=>$purchase,
+                                                                       ])
+
                         @endif
                     @endforeach
                 @endif

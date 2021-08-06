@@ -140,7 +140,7 @@ function getLocationData($value, $type = 'sale')
                             }
                             $pack = $item->getSetItems();
                             ?>
-                            @include('report::general_items.partials.report_pdf_body_sale_80',[
+                            @include('report::general_items.partials.report_pdf_body_sale',[
                                       'document_type_id'=>$document_type_id,
                                       'document'=>$document,
                                       'type'=>$type,
@@ -157,7 +157,7 @@ function getLocationData($value, $type = 'sale')
                                     $item = $value->item;
                                     $qty = $item_pack->quantity;
                                     ?>
-                                    @include('report::general_items.partials.report_pdf_body_sale_80',[
+                                    @include('report::general_items.partials.report_pdf_body_sale',[
                                                                            'document_type_id'=>$document_type_id,
                                                                           'document'=>$document,
                                                                           'type'=>$type,
@@ -229,30 +229,20 @@ function getLocationData($value, $type = 'sale')
                     @endif
                 @else
                     @foreach($records as $key => $value)
-                        <tr>
-                            <td class="celda">{{$value->purchase->date_of_issue->format('Y-m-d')}}</td>
-                            {{-- <td class="celda">{{$value->purchase->document_type->description}}</td> --}}
-                            {{-- <td class="celda">{{$value->purchase->document_type_id}}</td> --}}
-                            <td class="celda">{{$value->purchase->series}}</td>
-                            <td class="celda">{{$value->purchase->number}}</td>
-                            {{-- <td class="celda">{{$value->purchase->state_type_id == '11' ? 'SI':'NO'}}</td> --}}
-                            <td class="celda">{{$value->purchase->supplier->identity_document_type_id}}</td>
-                            <td class="celda">{{$value->purchase->supplier->number}}</td>
-                            <td class="celda">{{$value->purchase->supplier->name}}</td>
-                            <td class="celda">{{$value->purchase->currency_type_id}}</td>
-                            {{-- <td class="celda">{{$value->purchase->exchange_rate_sale}}</td> --}}
-                            <td class="celda">{{$value->item->unit_type_id}}</td>
 
-                            {{-- <td class="celda">{{$value->relation_item ? $value->relation_item->internal_id:''}}</td> --}}
-                            <td class="celda">{{$value->relation_item->brand->name}}</td>
-                            <td class="celda">{{$value->item->description}}</td>
-                            <td class="celda">{{$value->relation_item->category->name}}</td>
-                            <td class="celda">{{number_format($value->quantity, 2)}}</td>
-                            <td class="celda">{{number_format($value->unit_price, 2)}}</td>
-                            <td class="celda">{{number_format($value->total, 2)}}</td>
-                            {{-- <td class="celda"></td> --}}
+                        <?php
 
-                        </tr>
+                        /**@var \App\Models\Tenant\PurchaseItem $value */
+                        /** @var  \App\Models\Tenant\Purchase $document */
+                        $document = $value->purchase;
+                        ?>
+                        @include('report::general_items.partials.report_pdf_body_purchase',
+                                                           [
+                                                               'value'=>$value,
+                                                               'document'=>$document,
+
+                                                           ])
+
                     @endforeach
                 @endif
                 </tbody>

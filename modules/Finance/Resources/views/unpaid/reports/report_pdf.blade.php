@@ -102,7 +102,6 @@
                                         <td class="celda">{{$value['number_full']}}</td>
                                         <td class="celda">{{$value['customer_name']}}</td>
                                         <td class="celda">{{$value['currency_type_id']}}</td>
-                                        <td class="celda">{{$value['purchase_order']}}</td>
                                         <td class="celda">
                                             @if(isset($value['web_platforms']))
                                             @foreach($value['web_platforms'] as $platform)
@@ -110,6 +109,7 @@
                                                 @endforeach
                                                 @endif
                                         </td>
+                                        <td class="celda">{{$value['purchase_order']}}</td>
                                         <td class="celda">{{$value['total_to_pay']}}</td>
                                         <td class="celda">{{$value['total']}}</td>
                                     </tr>

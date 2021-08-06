@@ -15,10 +15,9 @@ $item = $value->getModelItem();
 $model = $item->model;
 $platform = $item->getWebPlatformModel();
 if ($platform !== null) {
-    $platform = $platform->name;
+ $platform = $platform->name;
 }*/
 $unit_price = number_format($value->unit_price, 2);
-
 $total = number_format($value->total, 2);
 $total_item_purchase = number_format($total_item_purchase, 2);
 $utility_item = number_format($utility_item, 2);
@@ -65,19 +64,23 @@ if (!isset($qty)) {
 $qty = $qty ?? $value->quantity;
 $qty = number_format($qty, 2);
 $description = (strlen($value->item->description) > 50) ? substr($value->item->description, 0, 50) : $value->item->description;
-$description = $pack_prefix.$description;
+$description = $pack_prefix . $description;
+$isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
 ?>
 <tr>
     <td class="celda">{{ $document->date_of_issue->format('Y-m-d') }}</td>
-    @if($document_type_id != '80' && $type == 'sale')
-        <?php $stablihsment = getLocationData($value, $type); ?>
+    @if($isSaleNote)
         <td class="celda">{{ $stablihsment['district'] }}</td>
         <td class="celda">{{ $stablihsment['department'] }}</td>
         <td class="celda">{{ $stablihsment['province'] }}</td>
     @endif
     <td class="celda">{{ $document->series }}</td>
     <td class="celda">{{ $document->number }}</td>
-    <td class="celda">{{ $purchseOrder }} </td>
+    @if( $type == 'sale')
+        <td class="celda">{{ $purchseOrder }} </td>
+        <td class="celda">{{ $web_platform }}</td>
+
+    @endif
     <td class="celda">{{ $document->customer->identity_document_type_id }}</td>
     <td class="celda">{{ $document->customer->number }}</td>
     <td class="celda">{{ $document->customer->name }}</td>
@@ -85,8 +88,9 @@ $description = $pack_prefix.$description;
     <td class="celda">{{ $unit_type_id }}</td>
     <td class="celda">{{ $brand }}</td>
     <td class="celda">{{ $description }}</td>
-    <td class="celda">{{ $model }}</td>
-    <td class="celda">{{ $web_platform }}</td>
+    @if($type == 'sale')
+        <td class="celda">{{ $model }}</td>
+    @endif
     <td class="celda">{{ $category }}</td>
     <td class="celda">{{ $qty }}</td>
     <td class="celda">{{ $unit_price }}</td>

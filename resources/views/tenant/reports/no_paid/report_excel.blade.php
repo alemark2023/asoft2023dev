@@ -49,8 +49,8 @@
                                 <th>Número</th>
                                 <th>Cliente</th>
                                 <th>Moneda</th>
-                                <th>Orden de compra</th>
                                 <th>Plataforma</th>
+                                <th>Orden de compra</th>
                                 <th>Por cobrar</th>
                                 <th>Total</th>
 
