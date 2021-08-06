@@ -2,6 +2,7 @@
 
 namespace Modules\Order\Http\Controllers;
 
+use App\Models\Tenant\Quotation;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -75,8 +76,9 @@ class OrderNoteController extends Controller
 
     public function create()
     {
-        $configuration = Configuration::first();
-        return view('order::order_notes.form', compact('configuration'));
+
+        return view('order::order_notes.form');
+
     }
 
     public function edit($id)
@@ -766,5 +768,12 @@ class OrderNoteController extends Controller
         return [
             'success' => true
         ];
+    }
+
+    public function getQuotationToOrderNote(Quotation $id){
+        $company = Company::query()->first();
+        $configuration = Configuration::query()->first();
+
+        return $id->getCollectionData($company,$configuration,true);
     }
 }

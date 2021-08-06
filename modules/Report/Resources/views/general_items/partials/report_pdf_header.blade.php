@@ -11,8 +11,9 @@ $plus = $plus ?? 4;
 @endif
 <th style="width:4%;">SERIE</th>
 <th style="width:4%;">NÚMERO</th>
-@if($document_type_id != '80' && $type == 'sale')
+@if( $type == 'sale')
     <th style="width:4%;">ORDEN DE COMPRA</th>
+    <th style="width:{{$plus+1}}%;">PLATAFORMA</th>
 @endif
 <th style="width:{{$plus+2}}%;">DOC ENTIDAD TIPO DNI RUC</th>
 <th style="width:{{$plus+4}}%;">DOC ENTIDAD NÚMERO</th>
@@ -23,7 +24,6 @@ $plus = $plus ?? 4;
 <th style="width:{{$plus+8}}%;">DESCRIPCIÓN</th>
 @if($type == 'sale')
     <th style="width:{{$plus+1}}%;">MODELO</th>
-    <th style="width:{{$plus+1}}%;">PLATAFORMA</th>
 @endif
 <th style="width:{{$plus+1}}%;">CATEGORÍA</th>
 <th style="width:{{$plus+1}}%;">CANTIDAD</th>

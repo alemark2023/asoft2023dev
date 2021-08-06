@@ -466,29 +466,29 @@ class ItemController extends Controller
     }
 
 
-    private function createItemWarehousePrices($request, $item){
-
-        foreach ($request->item_warehouse_prices as $item_warehouse_price) {
-        
-            if($item_warehouse_price['price'] && $item_warehouse_price['price'] != ''){
-
-                ItemWarehousePrice::updateOrCreate([
-                    'item_id' => $item->id,
-                    'warehouse_id' => $item_warehouse_price['warehouse_id'],
-                ], [
-                    'price' => $item_warehouse_price['price'], 
-                ]);
-
-            }else{
-
-                if($item_warehouse_price['id']){
-                    ItemWarehousePrice::findOrFail($item_warehouse_price['id'])->delete();
+    /**
+     * @param ItemRequest|null $request
+     * @param null $item
+     * @throws Exception
+     */
+    private function createItemWarehousePrices(ItemRequest $request = null, Item $item = null)
+    {
+        if ($request !== null && $request->has('item_warehouse_prices') && $item !== null) {
+            foreach ($request->item_warehouse_prices as $item_warehouse_price) {
+                if ($item_warehouse_price['price'] && $item_warehouse_price['price'] != '') {
+                    ItemWarehousePrice::updateOrCreate([
+                        'item_id' => $item->id,
+                        'warehouse_id' => $item_warehouse_price['warehouse_id'],
+                    ], [
+                        'price' => $item_warehouse_price['price'],
+                    ]);
+                } else {
+                    if ($item_warehouse_price['id']) {
+                        ItemWarehousePrice::findOrFail($item_warehouse_price['id'])->delete();
+                    }
                 }
-
             }
-
         }
-
     }
 
 

@@ -72,7 +72,7 @@
                                 <th class="text-center">Estado pago</th>
                                 <th>Estado</th>
                                 <th class="text-center">Moneda</th>
-                                <th class="text-center">Plaforma</th>
+                                <th class="text-center">Plataforma</th>
                                 <th class="text-center">Orden de compra</th>
                                 <th class="text-center">Comprobantes</th>
                                 <th>Cotización</th>

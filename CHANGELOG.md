@@ -1,3 +1,103 @@
+## 4.1.3
+
+### docs
+2021-07-20 : docs | changelog update<br>
+
+
+### fixed
+2021-08-06 : fixed | version php causa error sintaxis en consulta de series de notas de venta por api<br>
+2021-08-06 : fixed | #446 | Removiendo debug<br>
+2021-08-06 : fixed | #446 | Finanzas: Cuentas por cobrar: Ajuste de orden para orden de compra y plataforma<br>
+2021-08-06 : fixed | #446 | Finanzas: Cuentas por cobrar: Ajuste de orden para orden de compra y plataforma<br>
+2021-08-06 : fixed | #446 | Platform por Plataforma<br>
+2021-08-06 : fixed | #446 | Ajuste de columnas en reporte general de productos<br>
+2021-08-06 : fixed | - | Hoteles: Habitaciones: Ajuste para no seleccionar almacenes en habitaciones<br>
+2021-08-05 : fixed | #777 | Notas: Ajuste cargos globales en nota credito y debito<br>
+2021-08-04 : fixed | - | Formato de codigo y simplificacion de querys<br>
+2021-08-04 : fixed | - | Formato de codigo<br>
+2021-08-04 : fixed | - | Problemas de short tag en php,<br>
+2021-08-04 : fixed | - | validando retorno para null en configuracion<br>
+2021-08-02 : fixed | #787 |Compile JS<br>
+2021-08-02 : fixed | #787 | Guia: Añadiendo posiblidad de anular la guia, si el documento relacionado se encuentra anlulado (se tomará en cuenta el ultimo documento relacionado)<br>
+2021-08-02 : fixed | - | El reporte de venta, se le quita la extension xlsx para pdf, ya que no es necesaria<br>
+2021-08-02 : fixed | - | S extra en sale notes<br>
+2021-07-30 : fixed | #808 | Reporte General de Productos: Ajuste para SaleNoteItem<br>
+2021-07-30 : fixed | #787 | Compile JS<br>
+2021-07-30 : fixed | - | Añadiendo Log como Log::channel('facturalo')->debug('X'); para log especificos. Quitando log de error de bank en global payment<br>
+2021-07-30 : fixed | - | Propiedad Bank no se encuentra<br>
+2021-07-30 : fixed | #787 | Lista de Documentos: Aádido Pedidos a la tabla de documentos<br>
+2021-07-27 : fixed | #757 | Documentos: Ajustes observaciones descuentos por linea<br>
+2021-07-27 : fixed | #787 | Compile JS<br>
+2021-07-27 : fixed | #787 | Colecciones devuelven Nota de venta para Documentos<br>
+2021-07-27 : fixed | #787 | Documentos: En el listado de documentos, se añade nota de venta para cuando esta cuente con las relaciones. Tambien se añade el estado de las mismas<br>
+2021-07-27 : fixed | - | Minor: Ajuste de estilo<br>
+2021-07-27 : fixed | #656 | Comprobante: Se extiende la exoneracion de igv para los items:<br>
+2021-07-27 : fixed | #656 | Compile JS<br>
+2021-07-27 : fixed | #656 | Nota de venta : Se extiende la exoneracion de igv para los items:<br>
+2021-07-27 : fixed | #656 | Nota de venta / invoice: Cuando se generan notas de venta y pasan a factura, estas no generan correctamente el IGV, se ajusta para que se obtenga el IGV del item en DB<br>
+2021-07-26 : fixed | #446 | Compile JS<br>
+2021-07-26 : fixed | #446 | Reporte de general de venta: Se añade la columna plataforma. Reporte de nota de ventas: Se añade Status del pago.<br>
+2021-07-26 : fixed | #745 | Reporte de Venta: Ajuste para buscar correctamente purchase_item<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta AÑADIENDO LOG<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta AÑADIENDO LOG<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta<br>
+2021-07-26 : fixed | - | testingPrice en reporte - venta<br>
+2021-07-23 : fixed | #773 | Compile JS<br>
+2021-07-23 : fixed | #773 | Reporte de ventas general : Añadiento campos de modelo y orden de compra<br>
+2021-07-23 : fixed | #745 | Ajuste para evaluar el recurso cuando es llamado desde el reporte<br>
+2021-07-23 : fixed | #773 | Ajuste para evaluar el recurso cuadno es llamado desde el reporte<br>
+2021-07-23 : fixed | #711 | encabezado de tabla de banccos sobre plantilla default3_banks<br>
+2021-07-23 : fixed | #743 | Compile JS<br>
+2021-07-23 : fixed | #743 | Items Compuestos: Modelo pasa a la ultima columna<br>
+2021-07-23 : fixed | #743 | Items Compuestos: Añadiendo modelo a la edicion y al ejempo de xlsx para importar<br>
+2021-07-23 : fixed | #790 | Compile JS<br>
+2021-07-23 : fixed | #790 | Devolucion de Item: Se ajusta inventory warehouse y kardex para el item devuelto al editarlo.<br>
+2021-07-23 : fixed | #790 | Devolucion de Item: Se ajusta inventory warehouse y kardex para el item devuelto al editarlo.<br>
+2021-07-21 : fixed | #745 | Reportes: Reporte general de productos: Ajuste para validar los totales de ganancia en USD y PEN<br>
+2021-07-21 : fixed | #613 | Reporte de Venta: Ajuste para mostrar impuesto.<br>
+2021-07-21 : fixed | #718 | Nota de venta: Generar CPE: Titulo ajustado correctamente a su nota de venta<br>
+2021-07-21 : fixed | | Minor: Ajuste de array $attributes<br>
+2021-07-21 : fixed | | fixed error array_exist in  /Requests/Inputs/DocumentInput.php:221<br>
+2021-07-21 : fixed | | fixed error array_exist in  /Requests/Inputs/DocumentInput.php:221<br>
+
+
+### feature
+2021-08-06 : feature | #596 | Compile JS<br>
+2021-08-06 : feature | #596 | Cotizacion/Pedido: Pedido desde cotizacion, solo es posible por el admin y si no se tiene un pedido.<br>
+2021-08-05 : feature | #596 | Cotizacion/Pedido: Habilita generar pedido desde cotizaciones.<br>
+2021-08-05 : feature | #772 | Se agrega importacion series en compras - seleccion automatica de serie en ventas nuevo cpe<br>
+2021-08-05 : feature | #446 | Compile JS<br>
+2021-08-05 : feature | #446 | Finanzas: Cuentas por cobrar: Reporte de Todos. Añadiendo plataforma y orden de compra<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Reporte Formas de pago (dias)<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Exportar Pdf<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Exportar Excel<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Ajuste para componentes reactivos<br>
+2021-08-04 : feature | #446 | Finanzas: Cuentas por cobrar: Añadiendo plataforma y orden de compra.<br>
+2021-08-04 : feature | #446 | Añadiendo web_platforms a cuentas por cobrar<br>
+2021-08-04 : feature | #446 | Reporte Nota de venta: Añadiendo v-if="row.web_platforms !== undefined" en caso que la vista sea consultada desde otro modulo<br>
+2021-08-04 : feature | #446 | Reporte Documentos: Añadido plataforma antes de orden de compra<br>
+2021-08-04 : feature | #446 | Reporte Nota de Venta: Ajsute para añadir plataforma antes de orden de compra.<br>
+2021-08-04 : feature | #446 | Reporte Nota de Venta: Ajsute para añadir plataforma. Se origina desde los items, por lo que pueden haber mas de una plataforma<br>
+2021-08-04 : feature | #622 | Compile JS<br>
+2021-08-04 : feature | #622 | Nota de venta: Mostrar la url de destino de la consulta<br>
+2021-08-03 : feature | #622 | Nota de venta: Ajuste para mensajes de comunicacion e insercion.<br>
+2021-08-03 : feature | #622 | Nota de venta: Ajuste para mensajes de comunicacion e insercion.<br>
+2021-08-03 : feature | #622 | Nota de venta: Ajuste para mensajes de comunicacion e insercion.<br>
+2021-08-03 : feature | #622 | Nota de venta: Enviando Datos al servidor B<br>
+2021-08-03 : feature | #622 | Configuracion: Añadiendo web, token y habilitar por configuracion para el envio de nota de venta.<br>
+2021-08-03 : feature | #622 | Guarda la nota de venta en otro servidor mediante api. Si el item no se encuentra, se crea.<br>
+2021-06-24 : feature | #622 | Obliga al api a crear clientes.<br>
+2021-06-24 : feature | #622 | Exportar Nota de venta a otra plataforma Facturalo<br>
+2021-08-02 : feature | #773 | $web_platform por $platform<br>
+2021-08-02 : feature | #773 | Reporte General de Productos: Añadiendo items de pack en el reporte excel / pdf<br>
+2021-07-30 : feature | #794 | Compile JS<br>
+2021-07-30 : feature | #794 | Usuarios: Generando cambio de token<br>
+2021-07-27 : feature | - | Añadiendo filtrado a tipo de afectacion en el dialogo de item<br>
+2021-07-27 : feature | - | Añadiendo constantes para affectation_igv_types_exonerated_unaffected = '20', '21', '30', '31', '32', '33', '34', '35', '36', '37' en la coleccion de configuracion<br>
+2021-07-27 : feature | #800 | Reporte de Documentos: Añadiendo Distrito, provincia y departamento para descarga en PDF y XLSX<br>
+
+
 ## 4.1.2
 
 ### docs

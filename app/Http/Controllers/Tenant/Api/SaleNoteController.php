@@ -161,7 +161,7 @@ class SaleNoteController extends Controller
                         $item_in['item_type'],
                         $item_in['currency_type'],
                         $item_in['warehouses'],
-                        $item_in['item_unit_types'],
+                        $item_in['item_unit_types']
                     );
                     foreach($item_in as $k=>$v){
                         if(empty($v)){

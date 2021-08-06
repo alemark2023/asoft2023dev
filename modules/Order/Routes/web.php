@@ -61,6 +61,7 @@ if($current_hostname) {
                 Route::delete('destroy_order_note_item/{order_note_item}', 'OrderNoteController@destroy_order_note_item');
                 Route::get('documents', 'OrderNoteController@documents');
                 Route::post('documents', 'OrderNoteController@generateDocuments');
+                Route::post('Quotation/get/{id}', 'OrderNoteController@getQuotationToOrderNote');
                 Route::get('document_tables', 'OrderNoteController@document_tables');
 
             });
