@@ -340,8 +340,13 @@ class Configuration extends ModelTenant
      * @return array
      */
     public function getCollectionData() {
+        $company = Company::first();
+        // $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $establishment =   auth()->user()->establishment;
         return [
             'id' => $this->id,
+            'company' => $company,
+            'establishment' => $establishment,
             'send_auto' => (bool)$this->send_auto,
             'formats' => $this->formats,
             'stock' => (bool)$this->stock,

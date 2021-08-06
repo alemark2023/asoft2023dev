@@ -17,6 +17,8 @@ export default {
         state.config = readStorageData('config', true)
         state.customers = readStorageData('customers', true)
         state.userType = readStorageData('userType', false)
+        state.company = readStorageData('company', true)
+        state.establishment =  readStorageData('establishment', true)
         // Previenete limite de almacen exedido
         /*5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed; however, only a few browsers support this*/
         // alternativa posible sessionStorage
@@ -68,5 +70,31 @@ export default {
         if(state.all_items === undefined) state.all_items = [];
         // state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
     },
-
+    loadCompany(store){
+        let t  = readStorageData('company', true)
+        if(t !==null){
+            state.company = t
+        }else{
+            state.company = {
+                logo:null,
+                    name:'',
+            };
+        }
+    },
+    loadEstablishment(store){
+        let t  = readStorageData('establishment', true)
+        if(t !==null){
+            state.establishment = t
+        }else{
+            state.establishment = {
+                address:'-',
+                district: {description:''},
+                province: {description:''},
+                department: {description:''},
+                country: {description:''},
+                telephone:'-',
+                email:null,
+            };
+        }
+    },
 }

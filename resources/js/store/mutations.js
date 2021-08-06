@@ -1,3 +1,4 @@
+import state from './state'
 function writeLocal(variable, data) {
     if (data === undefined || data === 'undefined') {
         localStorage.removeItem(variable)
@@ -7,12 +8,28 @@ function writeLocal(variable, data) {
 }
 export default {
     setConfiguration(state, config) {
+        if(config !== undefined && config.company !== undefined){
+            state.company = config.company
+            writeLocal('company', JSON.stringify(config.company))
+        }
+        if(config !== undefined && config.establishment !== undefined){
+            state.establishment = config.establishment
+            writeLocal('establishment', JSON.stringify(config.establishment))
+        }
         state.config = config
         if(config === undefined){
             state.config=    JSON.parse(localStorage.getItem('config'))
             config = state.config;
         }
         writeLocal('config', JSON.stringify(config))
+    },
+    setEstablishment(state,establishment){
+        writeLocal('establishment', JSON.stringify(establishment))
+        return establishment;
+    },
+    setCompany(state,company){
+        writeLocal('company', JSON.stringify(company))
+        return company;
     },
     setCustomers(state, customers) {
         state.customers = customers
