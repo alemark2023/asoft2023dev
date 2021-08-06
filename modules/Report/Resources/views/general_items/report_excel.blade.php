@@ -55,9 +55,6 @@ function getLocationData($value, $type = 'sale')
 <body>
 @if(!empty($records))
     <div>
-        >>>{{$type}}/{{$document_type_id}}<<<
-    </div>
-    <div>
         <div class=" ">
             <table>
                 <thead>
