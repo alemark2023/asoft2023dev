@@ -510,6 +510,8 @@ class DocumentController extends Controller
                 'lots_enabled' => (bool) $row->lots_enabled,
                 'series_enabled' => (bool) $row->series_enabled,
                 'has_plastic_bag_taxes' => (bool) $row->has_plastic_bag_taxes,
+                'change_free_affectation_igv'     => false,
+                'original_affectation_igv_type_id'     => $row->sale_affectation_igv_type_id,
 
             ];
         });

@@ -103,6 +103,22 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </div>
+
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Modificar Tipo de afectación (Gravado - Bonificación)
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible Nuevo CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.change_free_affectation_igv}">
+                                            <el-switch v-model="form.change_free_affectation_igv" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.change_free_affectation_igv" v-text="errors.change_free_affectation_igv[0]"></small>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="third">
@@ -514,7 +530,8 @@
                     auto_send_dispatchs_to_sunat: true,
                     is_pharmacy: false,
                     active_warehouse_prices: false,
-                    search_item_by_series: false
+                    search_item_by_series: false,
+                    change_free_affectation_igv: false,
                 };
             },
             submit() {

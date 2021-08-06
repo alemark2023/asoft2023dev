@@ -348,7 +348,11 @@
         @if($document->total_free > 0)
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_free }}</cbc:TaxableAmount>
+            {{-- @if($document->total_igv > 0)
             <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_igv }}</cbc:TaxAmount>
+            @else --}}
+            <cbc:TaxAmount currencyID="{{ $document->currency_type_id }}">{{ round($document->total_free * 0.18, 2) }}</cbc:TaxAmount>
+            {{-- @endif --}}
             <cac:TaxCategory>
                 <cac:TaxScheme>
                     <cbc:ID>9996</cbc:ID>

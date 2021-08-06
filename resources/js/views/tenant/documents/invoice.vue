@@ -163,6 +163,12 @@
                                         <td class="text-right">{{currency_type.symbol}} {{row.total_value}}</td>
                                         <td class="text-right">{{currency_type.symbol}} {{row.total}}</td>
                                         <td class="text-right">
+                                            <template v-if="configuration.change_free_affectation_igv">
+                                                <el-tooltip class="item" effect="dark" content="Modificar afectación Gravado – Bonificaciones" placement="top-start">
+                                                    <el-checkbox v-model="row.item.change_free_affectation_igv" @change="changeRowFreeAffectationIgv(row, index)"></el-checkbox>
+                                                </el-tooltip>
+                                            </template>
+                                            
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i></button>
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
 
@@ -783,21 +789,21 @@ export default {
                 readonly_date_of_due: false,
                 seller_class: 'col-lg-6 pb-2',
                 btnText: 'Generar',
-                payment_conditions: []
+                payment_conditions: [],
+                affectation_igv_types: [],
             }
         },
-    computed: {
-        ...mapState([
-            'config',
-        ]),
-        credit_payment_metod:function(){
-          return _.filter(this.payment_method_types, {'is_credit': true})
-      },
-      cash_payment_metod:function(){
-          return  _.filter(this.payment_method_types, {'is_credit': false})
-      },
-    },
-
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+            credit_payment_metod:function(){
+                return _.filter(this.payment_method_types, {'is_credit': true})
+            },
+            cash_payment_metod:function(){
+                return  _.filter(this.payment_method_types, {'is_credit': false})
+            },
+        },
         async created() {
             this.loadConfiguration()
             this.$store.commit('setConfiguration', this.configuration)
@@ -826,6 +832,7 @@ export default {
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
                     this.form.seller_id = (this.sellers.length > 0)?this.idUser:null;
+                    this.affectation_igv_types = response.data.affectation_igv_types
                     // this.prepayment_documents = response.data.prepayment_documents;
                     this.is_client = response.data.is_client;
                     // this.cat_payment_method_types = response.data.cat_payment_method_types;
@@ -927,6 +934,23 @@ export default {
             ...mapActions([
                 'loadConfiguration',
             ]),
+            async changeRowFreeAffectationIgv(row, index){
+
+                if(row.item.change_free_affectation_igv){
+
+                    this.form.items[index].affectation_igv_type_id = '15'
+                    this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
+                
+                }else{
+ 
+                    this.form.items[index].affectation_igv_type_id = this.form.items[index].item.original_affectation_igv_type_id
+                    this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
+                }
+                
+                this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
+                await this.calculateTotal()
+
+            },
             setItemFromResponse(item,itemsParsed){
                 /* Obtiene el igv del item, si no existe, coloca el gravado*/
                 if (item.sale_affectation_igv_type !== undefined) {
@@ -1621,7 +1645,7 @@ export default {
             clickCancel(index) {
                 this.form.payments.splice(index, 1);
             },
-            ediItem(row, index) {
+            async ediItem(row, index) {
                 row.indexi = index
                 this.recordItem = row
                 this.showDialogAddItem = true
@@ -1965,6 +1989,7 @@ export default {
                 let total = 0
                 let total_plastic_bag_taxes = 0
                 let total_discount_no_base = 0
+                // let total_free_igv = 0
 
                 this.form.items.forEach((row) => {
                     total_discount += parseFloat(row.total_discount)
@@ -2009,18 +2034,22 @@ export default {
                     }
                     total_value += parseFloat(row.total_value)
                     total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
-
+ 
                     if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
 
-                        let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                        // let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
+                        let unit_value = row.total_value/row.quantity 
                         let total_value_partial = unit_value * row.quantity
                         row.total_taxes = row.total_value - total_value_partial
-                        row.total_igv = row.total_value - total_value_partial
+                        // row.total_igv = row.total_value - total_value_partial
+                        // row.total_taxes = total_value_partial * (row.percentage_igv / 100)
+                        row.total_igv = total_value_partial * (row.percentage_igv / 100)
                         row.total_base_igv = total_value_partial
                         total_value -= row.total_value
-
+                        // total_free_igv += parseFloat(row.total_igv)
+                        // console.log(total_value_partial, unit_value, row)
                     }
- 
+
                 });
 
 
@@ -2030,6 +2059,7 @@ export default {
                 this.form.total_exonerated = _.round(total_exonerated, 2)
                 this.form.total_unaffected = _.round(total_unaffected, 2)
                 this.form.total_free = _.round(total_free, 2)
+                // this.form.total_igv = _.round(total_igv + total_free_igv, 2)
                 this.form.total_igv = _.round(total_igv, 2)
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)

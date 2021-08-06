@@ -769,6 +769,15 @@ export default {
                 //     this.form.name_product_pdf = this.recordItem.name_product_pdf
                 // }
 
+                if(this.recordItem.item.change_free_affectation_igv){
+                    
+                    this.form.affectation_igv_type_id = '15'
+                    this.form.item.change_free_affectation_igv = true
+                    
+                }else{
+                    this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                }
+
 
                 this.calculateQuantity()
             } else {
