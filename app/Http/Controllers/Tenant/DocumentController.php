@@ -199,6 +199,7 @@ class DocumentController extends Controller
         $payment_destinations = $this->getPaymentDestinations();
         $document_id =  auth()->user()->document_id;
         $series_id =  auth()->user()->series_id;
+        $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
         return compact(
             'document_id',
@@ -225,7 +226,8 @@ class DocumentController extends Controller
             'is_client',
             'select_first_document_type_03',
             'payment_destinations',
-            'payment_conditions'
+            'payment_conditions',
+            'affectation_igv_types'
         );
 
     }

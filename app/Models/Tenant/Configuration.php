@@ -69,6 +69,7 @@ class Configuration extends ModelTenant
         'percentage_allowance_charge',
         'send_data_to_other_server',
         'search_item_by_series',
+        'change_free_affectation_igv',
     ];
 
     protected $casts = [
@@ -387,6 +388,7 @@ class Configuration extends ModelTenant
             'active_warehouse_prices' => (bool)$this->active_warehouse_prices,
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
             'search_item_by_series' => (bool)$this->search_item_by_series,
+            'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
             

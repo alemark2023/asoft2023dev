@@ -754,6 +754,8 @@ class Item extends ModelTenant
             'lot_code'    => $this->lot_code,
             'date_of_due' => $this->date_of_due,
             'barcode'     => $this->barcode,
+            'change_free_affectation_igv'     => false,
+            'original_affectation_igv_type_id'     => $this->sale_affectation_igv_type_id,
 
         ];
 
