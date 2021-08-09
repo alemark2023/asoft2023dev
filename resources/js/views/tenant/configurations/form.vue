@@ -281,6 +281,22 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Seleccionar precio disponible - Lista de precios
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible POS"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.select_available_price_list}">
+                                            <el-switch v-model="form.select_available_price_list" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.select_available_price_list" v-text="errors.select_available_price_list[0]"></small>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -532,6 +548,7 @@
                     active_warehouse_prices: false,
                     search_item_by_series: false,
                     change_free_affectation_igv: false,
+                    select_available_price_list: false,
                 };
             },
             submit() {
