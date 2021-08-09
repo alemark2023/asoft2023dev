@@ -70,8 +70,9 @@ class Configuration extends ModelTenant
         'send_data_to_other_server',
         'search_item_by_series',
         'change_free_affectation_igv',
+        'select_available_price_list',
     ];
-
+    
     protected $casts = [
         'quotation_allow_seller_generate_sale' => 'boolean',
         'allow_edit_unit_price_to_seller' => 'boolean',
@@ -82,6 +83,7 @@ class Configuration extends ModelTenant
         'is_pharmacy' => 'boolean',
         'auto_send_dispatchs_to_sunat' => 'boolean',
         'send_data_to_other_server' => 'boolean',
+        'select_available_price_list' => 'boolean',
     ];
 
     /**
@@ -389,6 +391,7 @@ class Configuration extends ModelTenant
             'active_allowance_charge' => (bool)$this->active_allowance_charge,
             'search_item_by_series' => (bool)$this->search_item_by_series,
             'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
+            'select_available_price_list' => (bool)$this->select_available_price_list,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
             
