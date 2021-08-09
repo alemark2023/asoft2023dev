@@ -389,7 +389,8 @@ class ConfigurationController extends Controller
     {
         $configuration = Configuration::first();
         $visual = $configuration->visual;
-        $visual->bg = $visual->bg === 'dark' ? 'light' : 'dark';
+        $visual->sidebar_theme = $visual->bg === 'dark' ? 'white' : 'dark';
+        $visual->bg = $visual->bg === 'dark' ? 'white' : 'dark';
         $configuration->visual = $visual;
         $configuration->save();
 
