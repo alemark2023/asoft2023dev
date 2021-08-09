@@ -7,13 +7,13 @@
                         <div class="col-xl-2 col-md-2 col-12">
                             <logo url="/" :path_logo="(company.logo != null) ? `/storage/uploads/logos/${company.logo}` : ''" :position_class="'text-left'"></logo>
                         </div>
-                        <div class="col-xl-6 col-md-6 col-12 pl-2">
-                            <address class="mb-0 mt-2" >
+                        <div class="col-xl-6 col-md-6 col-12 pl-2 align-self-center">
+                            <address class="mb-0" style="line-height: initial;">
                                 <span class="font-weight-bold">{{company.name}}</span>
                                 <br>
-                                <div v-if="establishment.address != '-'">{{ establishment.address }} </div>
+                                <span v-if="establishment.address != '-'">{{ establishment.address }} </span>
                                 <br>
-                                {{establishment.email}} - <span v-if="establishment.telephone != '-'">{{establishment.telephone}}</span>
+                                <span v-if="establishment.email != '-'">{{establishment.email}} </span><span v-if="establishment.telephone != '-'">- {{establishment.telephone}}</span>
                             </address>
                         </div>
                         <div class="col-xl-4 col-md-4 col-12 align-self-end">
