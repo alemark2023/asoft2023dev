@@ -130,7 +130,9 @@
                         <th v-if="columns.item_code.visible">Cód. SUNAT</th>
                         <th v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">R.S.</th>
                         <th v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">DIGEMID</th>
-                        <th class="text-center">Historial</th>
+                        <template v-if="typeUser == 'admin'">
+                            <th class="text-center">Historial</th>
+                        </template>
                         <th class="text-left">Stock</th>
                         <th class="text-right">P.Unitario (Venta)</th>
                         <th v-if="typeUser != 'seller' && columns.purchase_unit_price.visible" class="text-right">
@@ -157,15 +159,17 @@
                         <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{ row.sanitary }}</td>
                         <td v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">{{ row.cod_digemid }}</td>
                         
-                        <td class="text-center">
-                            <button
-                                type="button"
-                                class="btn waves-effect waves-light btn-xs btn-primary"
-                                @click.prevent="clickHistory(row.id)"
-                            >
-                                <i class="fa fa-history"></i>
-                            </button>
-                        </td>
+                        <template v-if="typeUser == 'admin'">
+                            <td class="text-center">
+                                <button
+                                    type="button"
+                                    class="btn waves-effect waves-light btn-xs btn-primary"
+                                    @click.prevent="clickHistory(row.id)"
+                                >
+                                    <i class="fa fa-history"></i>
+                                </button>
+                            </td>
+                        </template>
 
                         <td>
                             <div v-if="config.product_only_location == true">
