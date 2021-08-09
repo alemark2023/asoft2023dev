@@ -81,16 +81,25 @@ if($hostname) {
                 // Route::post('kardex/excel', 'ReportKardexController@excel')->name('reports.kardex.report_excel');
 
 
-
-                Route::get('kardex', 'ReportKardexController@index')->name('reports.kardex.index');
-                Route::get('kardex/pdf', 'ReportKardexController@pdf')->name('reports.kardex.pdf');
-                Route::get('kardex/excel', 'ReportKardexController@excel')->name('reports.kardex.excel');
-                Route::get('kardex/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
+                /**
+                 * reports/kardex/
+                 * reports/kardex/pdf
+                 * reports/kardex/excel
+                 * reports/kardex/filter
+                 * reports/kardex/records
+                 * reports/kardex/lots/filter
+                 **/
+                Route::prefix('kardex')->group(function () {
+                    Route::get('', 'ReportKardexController@index')->name('reports.kardex.index');
+                    Route::get('/pdf', 'ReportKardexController@pdf')->name('reports.kardex.pdf');
+                    Route::get('/excel', 'ReportKardexController@excel')->name('reports.kardex.excel');
+                    Route::get('/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
+                    Route::get('/records', 'ReportKardexController@records')->name('reports.kardex.records');
+                    Route::get('/lots/filter', 'ReportKardexController@records_lots');
+                });
                 Route::get('kardex_lots/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
                 Route::get('kardex_series/filter', 'ReportKardexController@filter')->name('reports.kardex.filter');
 
-                Route::get('kardex/records', 'ReportKardexController@records')->name('reports.kardex.records');
-                Route::get('kardex/lots/filter', 'ReportKardexController@records_lots');
 
                 Route::get('kardex_lots/records', 'ReportKardexController@records_lots_kardex')->name('reports.kardex_lots.records');
                 Route::get('kardex_lots/pdf', 'ReportKardexLotsController@pdf');
