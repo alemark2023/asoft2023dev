@@ -847,6 +847,12 @@
             :item_unit_types="[]"
         >
         </warehouses-detail>
+        
+        <item-unit-types
+            :showDialog.sync="showDialogItemUnitTypes"
+            :itemUnitTypes="itemUnitTypes"
+        >
+        </item-unit-types>
     </div>
 </template>
 <style>
@@ -927,6 +933,7 @@ import PersonForm from "../persons/form.vue";
 import WarehousesDetail from "../items/partials/warehouses.vue";
 import queryString from "query-string";
 import TableItems from "./partials/table.vue";
+import ItemUnitTypes from "./partials/item_unit_types.vue";
 
 export default {
     props: ["configuration", "soapCompany", "businessTurns", "typeUser"],
@@ -937,6 +944,7 @@ export default {
         HistoryPurchasesForm,
         PersonForm,
         WarehousesDetail,
+        ItemUnitTypes,
         Keypress,
         TableItems
     },
@@ -945,6 +953,7 @@ export default {
     data() {
         return {
             place: "cat",
+            showDialogItemUnitTypes: false,
             history_item_id: null,
             search_item_by_barcode: false,
             warehousesDetail: [],
@@ -977,7 +986,8 @@ export default {
             colors: ["#1cb973", "#bf7ae6", "#fc6304", "#9b4db4", "#77c1f3"],
             pagination: {},
             category_selected: "",
-            focusClienteSelect: false
+            focusClienteSelect: false,
+            itemUnitTypes: []
         };
     },
     async created() {
@@ -1067,9 +1077,21 @@ export default {
             }
 
             if (this.items.length == 1) {
-                this.clickAddItem(this.items[0], 0);
-                this.filterItems();
-                this.cleanInput();
+
+                if(this.items[0].unit_type.length > 0 && this.configuration.select_available_price_list){
+
+                    // console.log(this.configuration.select_available_price_list)
+                    this.itemUnitTypes = this.items[0].unit_type
+                    this.showDialogItemUnitTypes = true
+                
+                }else{
+
+                    this.clickAddItem(this.items[0], 0);
+                    this.filterItems();
+                    this.cleanInput();
+                }
+
+
             } else {
                 this.$message.warning(
                     "No puede añadir directamente el producto al listado, hay más de uno ubicado en la búsqueda"
@@ -1382,6 +1404,21 @@ export default {
                 this.getTables();
                 this.setFormPosLocalStorage();
             });
+
+            await this.$eventHub.$on("enterSelectItemUnitType", (unit_type) => {
+                this.selectItemUnitType(unit_type)
+            });
+
+
+        },
+        selectItemUnitType(unit_type){
+
+            this.setPriceItem(unit_type, 0)
+            this.clickAddItem(this.items[0], 0)
+            this.filterItems()
+            this.cleanInput()
+            this.initFocus()
+
         },
         initForm() {
             this.form = {
@@ -1501,7 +1538,7 @@ export default {
                 unit_type_id: item.unit_type_id
             });
 
-            console.log(exist_item)
+            // console.log(exist_item)
 
             let pos = this.form.items.indexOf(exist_item);
             let response = null;
@@ -1875,14 +1912,14 @@ export default {
                 this.items = this.all_items;
             } else {
                 this.items = this.all_items.map(i => {
-                    console.log(i.description);
+                    // console.log(i.description);
                     // if (i.brand) {
                     //     var desc = `${i.description} - ${i.brand}`;
                     //     if(i.description != desc){
                     //         i.description = `${i.description} - ${i.brand}`;
                     //     }
                     // }
-                    console.log(i.description);
+                    // console.log(i.description);
                     return i;
                 });
             }
