@@ -167,7 +167,7 @@ function getLocationData($value)
                                 <th>RUC</th>
                                 <th>Estado</th>
                                 <th class="">Moneda</th>
-                                <th>Plaforma</th>
+                                <th>Plataforma</th>
                                 <th>Orden de compra</th>
                                 <!-- <th>Total Exonerado</th>
                                 <th>Total Inafecto</th>
