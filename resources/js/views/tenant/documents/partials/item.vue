@@ -1012,10 +1012,18 @@ export default {
 
             this.$emit('add', this.row);
 
+            if (this.search_item_by_barcode) {
+                this.cleanItems()
+            }
 
             if (this.recordItem) {
                 this.close()
             }
+        },
+        cleanItems(){
+            this.items = []
+            this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
+            // console.log("add cart barcode")
         },
         validateTotalItem() {
 
