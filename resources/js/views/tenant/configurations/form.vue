@@ -92,7 +92,7 @@
                                             <small class="form-control-feedback" v-if="errors.destination_sale" v-text="errors.destination_sale[0]"></small>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <a href="#" @click.prevent="showDialogAllowanceCharge = true" class="text-center font-weight-bold text-info">[+ Aplicar cargos]</a>
                                         <el-tooltip
@@ -117,6 +117,29 @@
                                         <div class="form-group" :class="{'has-danger': errors.change_free_affectation_igv}">
                                             <el-switch v-model="form.change_free_affectation_igv" active-text="Si" inactive-text="No" @change="submit"></el-switch>
                                             <small class="form-control-feedback" v-if="errors.change_free_affectation_igv" v-text="errors.change_free_affectation_igv[0]"></small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Moneda predeterminada
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                content="Solo en Nota de venta y CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
+                                            <el-select v-model="form.currency_type_id"   filterable>
+                                                <el-option v-for="option in config.currency_types"
+                                                           :key="option.id"
+                                                           :value="option.id"
+                                                           :label="option.symbol+' - '+option.description"></el-option>
+                                            </el-select>
+                                            <small
+                                                class="form-control-feedback"
+                                                v-if="errors.currency_type_id"
+                                                v-text="errors.currency_type_id[0]"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -248,7 +271,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Aplicar precios por almacén
                                             <el-tooltip
@@ -264,7 +287,7 @@
                                             <small class="form-control-feedback" v-if="errors.active_warehouse_prices" v-text="errors.active_warehouse_prices[0]"></small>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6 mt-4">
                                         <label class="control-label">Buscar producto por serie
                                             <el-tooltip
@@ -446,11 +469,16 @@
     import TermsCondition from '@views/quotations/partials/terms_condition.vue'
     import TermsConditionSale from '@views/documents/partials/terms_condition.vue'
     import AllowanceCharge from './partials/allowance_charge.vue'
+    import {mapActions, mapState} from "vuex";
 
     export default {
         props:['typeUser'],
         components: {TermsCondition, TermsConditionSale, AllowanceCharge},
-
+        computed: {
+            ...mapState([
+                'config',
+            ]),
+        },
         data() {
             return {
                 headers: headers_token,
@@ -469,20 +497,29 @@
                 activeName: 'first'
             }
         },
-        async created() {
-            await this.loadTables()
-            await this.initForm();
-
-            await this.$http.get(`/${this.resource}/record`) .then(response => {
+        created() {
+            this.loadConfiguration()
+            this.form = this.config;
+        },
+        mounted() {
+             this.loadTables()
+             this.initForm();
+             this.$http.get(`/${this.resource}/record`) .then(response => {
                 if (response.data !== ''){
                     this.form = response.data.data;
+                    this.$store.commit('setConfiguration', this.form)
+
                 }
                 // console.log(this.placeholder)
             });
 
-            await this.events()
+             this.events()
         },
         methods: {
+
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             events(){
 
                 this.$eventHub.$on('submitFormConfigurations', (form) => {
