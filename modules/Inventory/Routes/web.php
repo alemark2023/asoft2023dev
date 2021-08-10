@@ -110,12 +110,19 @@ if($hostname) {
                 Route::get('kardex_series/pdf', 'ReportKardexSeriesController@pdf');
                 Route::get('kardex_series/excel', 'ReportKardexSeriesController@excel');
 
+                /**
+                 * reports/valued-kardex/
+                 * reports/valued-kardex/excel
+                 * reports/valued-kardex/filter
+                 * reports/valued-kardex/records
+                 **/
+                Route::prefix('valued-kardex')->group(function () {
+                    Route::get('', 'ReportValuedKardexController@index')->name('reports.valued_kardex.index');
+                    Route::get('/excel', 'ReportValuedKardexController@excel');
+                    Route::get('/filter', 'ReportValuedKardexController@filter');
+                    Route::get('/records', 'ReportValuedKardexController@records');
 
-                Route::get('valued-kardex', 'ReportValuedKardexController@index')->name('reports.valued_kardex.index');
-                Route::get('valued-kardex/excel', 'ReportValuedKardexController@excel');
-                Route::get('valued-kardex/filter', 'ReportValuedKardexController@filter');
-                Route::get('valued-kardex/records', 'ReportValuedKardexController@records');
-
+                });
             });
 
 

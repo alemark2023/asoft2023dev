@@ -23,7 +23,7 @@ class ItemWarehousePrice extends ModelTenant
 
     public $timestamps = false;
 
-    
+
     public function warehouse()
     {
         return $this->belongsTo(Warehouse::class);
@@ -75,6 +75,16 @@ class ItemWarehousePrice extends ModelTenant
         return $this->price;
     }
 
+    /**
+     * Devuelve la descripcion del almacen
+     * @return string|null
+     */
+    public function getWarehouseDescription(){
+        if(empty( $this->warehouse)) {
+            return null;
+        }
+        return $this->warehouse->description;
+    }
     /**
      * @param float $price
      *

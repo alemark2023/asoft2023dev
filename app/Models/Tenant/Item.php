@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Account\Models\Account;
 use Modules\Digemid\Models\CatDigemid;
+use Modules\Inventory\Helpers\InventoryValuedKardex;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
@@ -563,7 +564,7 @@ class Item extends ModelTenant
             ->where('warehouse_id', $warehouseId)
             ->first();
 
-        $price = $warehousePrice ? $warehousePrice->price : $item->sale_unit_price;
+        $price = $warehousePrice->price ?? $item->sale_unit_price;
         return number_format($price, 4, ".", "");
     }
 
@@ -633,7 +634,7 @@ class Item extends ModelTenant
 
         // dd($search_item_by_series, $lots, $this->item_lots);
         }
-            
+
         return $lots;
     }
 
@@ -1034,6 +1035,42 @@ class Item extends ModelTenant
             return  ItemSet::where('item_id',$this->id)->get();
         }
         return null;
+    }
+
+    /**
+     * Devuelve una estructura en comun para el reporte Kardex
+     * @return array
+     */
+    public function getReportValuedKardexCollection(){
+
+        $values_records = InventoryValuedKardex::getValuesRecords($this->document_items, $this->sale_note_items);
+        $quantity_sale = $values_records['quantity_sale'];
+        $total_sales = $values_records['total_sales'];
+        $item_cost = $quantity_sale * $this->purchase_unit_price;
+        $valued_unit = $total_sales - $item_cost;
+        $item = $this;
+        return [
+            'id' => $this->id,
+            'item_description' => $this->description,
+            'category_description' => optional($this->category)->name,
+            'brand_description' => optional($this->brand)->name,
+            'unit_type_id' => $this->unit_type_id,
+            'quantity_sale' => number_format($quantity_sale, 2, ".", ""),
+            'purchase_unit_price' => number_format($this->purchase_unit_price, 2, ".", ""),
+            'total_sales' => number_format($total_sales, 2, ".", ""),
+            'item_cost' => number_format($item_cost, 2, ".", ""),
+            'valued_unit' => number_format($valued_unit, 2, ".", ""),
+            'warehouses' => $this->warehouses->transform(function ($row, $key) use ($item) {
+                return [
+                    'id' => $row->id,
+                    'stock' => $row->stock,
+                    'warehouse_description' => $row->warehouse->description,
+                    'description' => "{$row->warehouse->description} - {$row->stock}",
+                    'sale_unit_price' => self::getSaleUnitPriceByWarehouse($item, $row->id),
+                ];
+            }),
+
+        ];
     }
 
 }
