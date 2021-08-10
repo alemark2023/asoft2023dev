@@ -3,6 +3,7 @@
 namespace App\Models\Tenant;
 
 
+use App\Models\Tenant\Catalogs\CurrencyType;
 use Illuminate\Support\Facades\Config;
 
 /**
@@ -71,8 +72,9 @@ class Configuration extends ModelTenant
         'search_item_by_series',
         'change_free_affectation_igv',
         'select_available_price_list',
+        'currency_type_id',
     ];
-    
+
     protected $casts = [
         'quotation_allow_seller_generate_sale' => 'boolean',
         'allow_edit_unit_price_to_seller' => 'boolean',
@@ -346,6 +348,7 @@ class Configuration extends ModelTenant
         $company = Company::first();
         // $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $establishment =   auth()->user()->establishment;
+        $currency = CurrencyType::all();
         return [
             'id' => $this->id,
             'company' => $company,
@@ -393,8 +396,10 @@ class Configuration extends ModelTenant
             'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
             'select_available_price_list' => (bool)$this->select_available_price_list,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
+            'currency_type_id' => $this->getCurrencyTypeId(),
+            'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
-            
+
         ];
     }
 
@@ -420,4 +425,20 @@ class Configuration extends ModelTenant
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getCurrencyTypeId(): ?string
+    {
+        return empty($this->currency_type_id)?'PEN':$this->currency_type_id;
+    }
+
+    /**
+     * @param string|null $currency_type_id
+     */
+    public function setCurrencyTypeId(?string $currency_type_id ='PEN'): Configuration
+    {
+        $this->currency_type_id = empty($currency_type_id)?'PEN':$currency_type_id;
+        return $this;
+    }
 }

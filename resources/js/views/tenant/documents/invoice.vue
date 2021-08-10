@@ -168,7 +168,7 @@
                                                     <el-checkbox v-model="row.item.change_free_affectation_igv" @change="changeRowFreeAffectationIgv(row, index)"></el-checkbox>
                                                 </el-tooltip>
                                             </template>
-                                            
+
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i></button>
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
 
@@ -827,7 +827,7 @@ export default {
                     this.user = response.data.user;
                     this.document_type_03_filter = response.data.document_type_03_filter;
                     this.select_first_document_type_03 = response.data.select_first_document_type_03
-                    this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
+                    // this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null;
                     this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null;
                     this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null;
                     this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null;
@@ -929,10 +929,12 @@ export default {
                 this.form.sale_notes_relateds = JSON.parse(notesNumbersFromNotes);
                 localStorage.removeItem('notes')
             }
+
         },
         methods: {
             ...mapActions([
                 'loadConfiguration',
+                'getCurrentCurrency',
             ]),
             async changeRowFreeAffectationIgv(row, index){
 
@@ -940,13 +942,13 @@ export default {
 
                     this.form.items[index].affectation_igv_type_id = '15'
                     this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
-                
+
                 }else{
- 
+
                     this.form.items[index].affectation_igv_type_id = this.form.items[index].item.original_affectation_igv_type_id
                     this.form.items[index].affectation_igv_type = await _.find(this.affectation_igv_types, {id: this.form.items[index].affectation_igv_type_id})
                 }
-                
+
                 this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
                 await this.calculateTotal()
 
@@ -1684,7 +1686,7 @@ export default {
                     date_of_issue: moment().format('YYYY-MM-DD'),
                     time_of_issue: moment().format('HH:mm:ss'),
                     customer_id: null,
-                    currency_type_id: null,
+                    currency_type_id: this.config.currency_type_id,
                     purchase_order: null,
                     exchange_rate_sale: 0,
                     total_prepayment: 0,
@@ -1766,7 +1768,7 @@ export default {
             resetForm() {
                 this.activePanel = 0
                 this.initForm()
-                this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
+                // this.form.currency_type_id = (this.currency_types.length > 0)?this.currency_types[0].id:null
                 this.form.establishment_id = (this.establishments.length > 0)?this.establishments[0].id:null
                 this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
                 this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
@@ -2034,11 +2036,11 @@ export default {
                     }
                     total_value += parseFloat(row.total_value)
                     total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
- 
+
                     if (['13', '14', '15'].includes(row.affectation_igv_type_id)) {
 
                         // let unit_value = (row.total_value/row.quantity) / (1 + row.percentage_igv / 100)
-                        let unit_value = row.total_value/row.quantity 
+                        let unit_value = row.total_value/row.quantity
                         let total_value_partial = unit_value * row.quantity
                         row.total_taxes = row.total_value - total_value_partial
                         // row.total_igv = row.total_value - total_value_partial

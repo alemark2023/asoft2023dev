@@ -245,6 +245,7 @@ class ConfigurationController extends Controller
     public function record()
     {
         $configuration = Configuration::first();
+        return ['data'=>$configuration->getCollectionData()];
         $record = new ConfigurationResource($configuration);
 
         return  $record;
