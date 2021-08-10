@@ -217,12 +217,18 @@ class DocumentInput
                 $attributes = [];
                 foreach ($inputs['attributes'] as $row) {
                     $attributes[] = [
-                        'attribute_type_id' => $row['attribute_type_id'] ?? null,
-                        'description' => $row['description'] ?? null,
-                        'value' => $row['value'] ?? null,
-                        'start_date' =>  $row['start_date'] ?? null,
-                        'end_date' => $row['end_date'] ?? null,
-                        'duration' =>  $row['duration'] ?? null,
+                        // 'attribute_type_id' => $row['attribute_type_id'] ?? null,
+                        // 'description' => $row['description'] ?? null,
+                        // 'value' => $row['value'] ?? null,
+                        // 'start_date' =>  $row['start_date'] ?? null,
+                        // 'end_date' => $row['end_date'] ?? null,
+                        // 'duration' =>  $row['duration'] ?? null,
+                        'attribute_type_id' => $row['attribute_type_id'],
+                        'description' => $row['description'],
+                        'value' => $row['value'],
+                        'start_date' =>  $row['start_date'],
+                        'end_date' => $row['end_date'],
+                        'duration' =>  $row['duration'],
                     ];
                 }
                 return $attributes;

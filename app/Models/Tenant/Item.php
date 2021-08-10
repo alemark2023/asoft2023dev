@@ -736,7 +736,8 @@ class Item extends ModelTenant
                     'checked'               => ($warehouses->warehouse_id == $warehouse->id) ? true : false,
                 ];
             }),
-            'attributes'     => $this->attributes ? $this->attributes : [],
+            // 'attributes'     => $this->attributes ? $this->attributes : [],
+            'attributes'     => $this->getAttributesAttribute($this->attributes['attributes']),
             'lots_group'     => collect($lots_grp)->transform(function ($lots_group) {
                 return [
                     'id'          => $lots_group->id,
