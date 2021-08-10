@@ -482,44 +482,68 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterValuedKardex(Builder $query, $params)
     {
+        $query->OrWhereHas('document_items', function ($q) use ($params) {
+            $q->whereHas('document', function ($q1) use ($params) {
+                $q1->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                if ($params->establishment_id) {
+                    $q1->where('establishment_id', $params->establishment_id);
+                }
+            });
+        });
+        $query->OrWhereHas('sale_note_items', function ($q) use ($params) {
+            $q->whereHas('sale_note', function ($q1) use ($params) {
+                $q1->whereStateTypeAccepted()
+                    ->whereNotChanged()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                if ($params->establishment_id) {
+                    $q1->where('establishment_id', $params->establishment_id);
+                }
+            });
 
-        if($params->establishment_id){
+        });
 
-            return $query->with(['document_items'=> function($q) use($params){
-                        $q->whereHas('document', function($q) use($params){
-                            $q->whereStateTypeAccepted()
-                                ->whereTypeUser()
-                                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
-                                ->where('establishment_id', $params->establishment_id);
-                        });
-                    },
-                    'sale_note_items' => function($q) use($params){
-                        $q->whereHas('sale_note', function($q) use($params){
-                            $q->whereStateTypeAccepted()
-                                ->whereNotChanged()
-                                ->whereTypeUser()
-                                ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
-                                ->where('establishment_id', $params->establishment_id);
-                        });
-                    }]);
+        return $query;
+        // No selecciona corectamente los establecimeintos.
+        if ($params->establishment_id) {
 
-        }
-
-        return $query->with(['document_items'=> function($q) use($params){
-                    $q->whereHas('document', function($q) use($params){
-                        $q->whereStateTypeAccepted()
-                            ->whereTypeUser()
-                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
-                    });
-                },
-                'sale_note_items' => function($q) use($params){
-                    $q->whereHas('sale_note', function($q) use($params){
+            return $query->with(['document_items' => function ($q) use ($params) {
+                $q->whereHas('document', function ($q) use ($params) {
+                    $q->whereStateTypeAccepted()
+                        ->whereTypeUser()
+                        ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+                        ->where('establishment_id', $params->establishment_id);
+                });
+            },
+                'sale_note_items' => function ($q) use ($params) {
+                    $q->whereHas('sale_note', function ($q) use ($params) {
                         $q->whereStateTypeAccepted()
                             ->whereNotChanged()
                             ->whereTypeUser()
-                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end])
+                            ->where('establishment_id', $params->establishment_id);
                     });
                 }]);
+
+        }
+
+        return $query->with(['document_items' => function ($q) use ($params) {
+            $q->whereHas('document', function ($q) use ($params) {
+                $q->whereStateTypeAccepted()
+                    ->whereTypeUser()
+                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+            });
+        },
+            'sale_note_items' => function ($q) use ($params) {
+                $q->whereHas('sale_note', function ($q) use ($params) {
+                    $q->whereStateTypeAccepted()
+                        ->whereNotChanged()
+                        ->whereTypeUser()
+                        ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+                });
+            }]);
     }
 
     /**
