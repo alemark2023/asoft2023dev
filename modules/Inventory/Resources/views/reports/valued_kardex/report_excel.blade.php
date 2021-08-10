@@ -77,7 +77,7 @@
                         <td class="text-center">{{ $value['valued_unit'] }}</td>
                         <td>
                             @foreach($value['warehouses'] as $item)
-                                <span>{{$item['description']}}</span> Precio: {{$item['sale_unit_price']}}<br>
+                                <span>{{$item['description']}} Precio: {{$item['sale_unit_price']}} </span>|
                             @endforeach
                         </td>
 
