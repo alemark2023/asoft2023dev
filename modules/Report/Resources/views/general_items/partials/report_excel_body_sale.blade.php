@@ -1,4 +1,7 @@
 <?php
+
+use App\Models\Tenant\ItemSet;
+
 $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -20,6 +23,7 @@ $system_isc_type_id = '';
 $total_isc = '';
 $total_plastic_bag_taxes = '';
 $pack_prefix = '';
+$pack_price_prefix = '';
 if (!isset($qty)) {
     /** Item normal */
     $discount = $value->total_discount;
@@ -39,10 +43,17 @@ if (!isset($qty)) {
     /** Item desde un pack */
     $item = \App\Models\Tenant\Item::find($item->id);
     $pack_prefix = "(Item de pack) - ";
+    $pack_price_prefix = "(pck) ";
     $unit_price = $item->sale_unit_price;
-    $total_item_purchase = '';
     $utility_item = '';
     $relation_item = $item;
+    $purchase_unit_price = ($relation_item) ? $relation_item->purchase_unit_price : 0;
+    $set = ItemSet::where('individual_item_id',$item->id)->first();
+
+    if($set !== null){
+        $qty = $set->quantity;
+        $total =number_format( $qty * (float)$purchase_unit_price,2);
+    }
     $item_web_platform = $item->getWebPlatformModel();
     if ($item_web_platform) {
         $web_platform = $item_web_platform->name;
@@ -110,7 +121,7 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
     <td class="celda">{{ $qty }}</td>
     <td class="celda">{{ $series }}</td>
     <td class="celda">{{ $model }}</td>
-    <td class="celda">{{ $purchase_unit_price }}</td>
+    <td class="celda">{{(!empty($purchase_unit_price)?$pack_price_prefix:'')}}{{ $purchase_unit_price }}</td>
     <td class="celda">{{ $unit_value }}</td>
     <td class="celda">{{ $unit_price }}</td>
     <td class="celda">{{ $discount }}</td>
@@ -120,8 +131,8 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
     <td class="celda">{{ $system_isc_type_id }}</td>
     <td class="celda">{{ $total_isc }}</td>
     <td class="celda">{{ $total_plastic_bag_taxes }}</td>
-    <td class="celda">{{ $total }}</td>
-    <td class="celda">{{ $total_item_purchase }}</td>
+    <td class="celda">{{(!empty($total)?$pack_price_prefix:'')}}{{ $total }}</td>
+    <td class="celda">{{(!empty($total_item_purchase)?$pack_price_prefix:'')}}{{ $total_item_purchase }}</td>
     <td class="celda">{{ $utility_item }}</td>
     <td class="celda">{{ $brand }}</td>
     <td class="celda">{{ $category }}</td>
