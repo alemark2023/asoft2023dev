@@ -107,6 +107,15 @@
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                         </th>
+                                        <th>Ganancia Total<el-tooltip
+                                            class="item"
+                                            effect="dark"
+                                            content="Precio de venta - Costo * Cantidad"
+                                            placement="top-start"
+                                        >
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                        </th>
                                         <th>Marca</th>
                                         <th class="text-center">F. vencimiento</th>
                                         <th>Almacén</th>
@@ -122,6 +131,7 @@
                                         <td class="text-right">{{ row.sale_unit_price }}</td>
                                         <td class="text-right">{{ row.purchase_unit_price }}</td>
                                         <td class="text-right">{{ row.profit }}</td>
+                                        <td class="text-right">{{ Math.abs(row.profit * row.stock).toFixed(2) }}</td>
                                         <td>{{ row.brand_name }}</td>
                                         <td class="text-center">{{ row.date_of_due }}</td>
                                         <td>{{ row.warehouse_name }}</td>

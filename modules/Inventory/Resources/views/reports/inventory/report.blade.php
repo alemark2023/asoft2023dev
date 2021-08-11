@@ -82,6 +82,7 @@
         <th align="right"><strong>Costo Total</strong></th>
         <th align="right"><strong>Precio de venta</strong></th>
         <th align="right"><strong>Ganancia</strong></th>
+        <th align="right"><strong>Ganancia Total</strong></th>
         <th><strong>Marca</strong></th>
         <th><strong>F. vencimiento</strong></th>
         <th><strong>Almacén</strong></th>
@@ -109,6 +110,7 @@
             <td align="right">{{ $total_line }}</td>
             <td align="right">{{ $row['sale_unit_price'] }}</td>
             <td align="right">{{ $profit }}</td>
+            <td align="right">{{ number_format(abs($profit * $row['stock']),2,'.','')}}</td>
             <td>{{ $row['brand_name'] }}</td>
             <td>{{ $row['date_of_due'] }}</td>
             <td>{{ $row['warehouse_name'] }}</td>
