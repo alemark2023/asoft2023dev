@@ -346,6 +346,7 @@ class Facturalo
             $total_plastic_bag_taxes       = $this->document->total_plastic_bag_taxes != '' ? '10' : '0';
             $quantity_rows     = count($this->document->items) + $was_deducted_prepayment;
             $document_payments     = count($this->document->payments);
+            $document_transport     = ($this->document->transport) ? 30 : 0;
 
             $extra_by_item_additional_information = 0;
             $extra_by_item_description = 0;
@@ -406,7 +407,8 @@ class Facturalo
                     $total_plastic_bag_taxes+
                     $quotation_id+
                     $extra_by_item_additional_information+
-                    $height_legend
+                    $height_legend+
+                    $document_transport
                 ],
                 'margin_top' => 0,
                 'margin_right' => 1,
