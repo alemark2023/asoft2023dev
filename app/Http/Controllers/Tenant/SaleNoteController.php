@@ -473,7 +473,8 @@ class SaleNoteController extends Controller
 
             foreach($data['items'] as $row) {
 
-                $item_id = isset($row['id']) ? $row['id'] : null;
+                // $item_id = isset($row['id']) ? $row['id'] : null;
+                $item_id = isset($row['record_id']) ? $row['record_id'] : null;
                 $sale_note_item = SaleNoteItem::query()->firstOrNew(['id' => $item_id]);
 
                 if(isset($row['item']['lots'])){

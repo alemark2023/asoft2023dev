@@ -267,8 +267,11 @@
                                                 <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-right">
 
-                                                    <template v-if="row.id">
+                                                    <!-- <template v-if="row.id">
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
+                                                    </template> -->
+                                                    <template v-if="row.record_id">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.record_id, index)">x</button>
                                                     </template>
                                                     <template v-else>
                                                         <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
