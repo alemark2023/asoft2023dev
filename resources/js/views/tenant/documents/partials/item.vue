@@ -511,11 +511,14 @@ export default {
             'config',
         ]),
         showLots() {
-            if (
-                this.form.item_id &&
-                this.form.item.lots_enabled &&
-                this.form.lots_group.length > 0
-            ) {
+            // if (
+            //     this.form.item_id &&
+            //     this.form.item.lots_enabled &&
+            //     this.form.lots_group.length > 0
+            // ) 
+            
+            if (this.form.item_id && this.form.item.lots_enabled ) 
+            {
                 return true;
             }
 

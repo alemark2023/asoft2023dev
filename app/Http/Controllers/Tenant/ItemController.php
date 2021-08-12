@@ -661,10 +661,17 @@ class ItemController extends Controller
 
     public function duplicate(Request $request)
     {
-       // return $request->id;
-       $obj = Item::find($request->id);
-       $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
-       $new->save();
+        // return $request->id;
+        $obj = Item::find($request->id);
+
+        if($obj->lots_enabled){
+            $obj->date_of_due = null;
+            $obj->lot_code = null;
+            $obj->stock = 0;
+        }
+
+        $new = $obj->setDescription($obj->getDescription().' (Duplicado)')->replicate();
+        $new->save();
 
         return [
             'success' => true,
