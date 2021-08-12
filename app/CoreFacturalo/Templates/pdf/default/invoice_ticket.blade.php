@@ -267,6 +267,71 @@
 </table>
 @endif
 
+
+@if ($document->transport)
+<p class="desc"><strong>Transporte de pasajeros</strong></p>
+
+@php
+    $transport = $document->transport;
+    $origin_district_id = (array)$transport->origin_district_id;
+    $destinatation_district_id = (array)$transport->destinatation_district_id;
+    $origin_district = Modules\Order\Services\AddressFullService::getDescription($origin_district_id[2]);
+    $destinatation_district = Modules\Order\Services\AddressFullService::getDescription($destinatation_district_id[2]);
+@endphp
+ 
+
+<table class="full-width mt-3">
+    <tr>
+        <td><p class="desc">{{ $transport->identity_document_type->description }}:</p></td>
+        <td><p class="desc">{{ $transport->number_identity_document }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc">Nombre:</p></td>
+        <td><p class="desc">{{ $transport->passenger_fullname }}</p></td>
+    </tr>
+
+
+    <tr>
+        <td><p class="desc">N° Asiento:</p></td>
+        <td><p class="desc">{{ $transport->seat_number }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc">M. Pasajero:</p></td>
+        <td><p class="desc">{{ $transport->passenger_manifest }}</p></td>
+    </tr>
+
+    <tr>
+        <td><p class="desc">F. Inicio:</p></td>
+        <td><p class="desc">{{ $transport->start_date }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc">H. Inicio:</p></td>
+        <td><p class="desc">{{ $transport->start_time }}</p></td>
+    </tr>
+
+
+    <tr>
+        <td><p class="desc">U. Origen:</p></td>
+        <td><p class="desc">{{ $origin_district }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc">D. Origen:</p></td>
+        <td><p class="desc">{{ $transport->origin_address }}</p></td>
+    </tr>
+   
+    <tr>
+        <td><p class="desc">U. Destino:</p></td>
+        <td><p class="desc">{{ $destinatation_district }}</p></td>
+    </tr>
+    <tr>
+        <td><p class="desc">D. Destino:</p></td>
+        <td><p class="desc">{{ $transport->destinatation_address }}</p></td>
+    </tr>
+    
+</table>
+@endif
+
+
 @if (count($document->reference_guides) > 0)
 <br/>
 <strong>Guias de remisión</strong>
