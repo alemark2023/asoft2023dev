@@ -52,6 +52,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
     // $table->json('charges')->nullable();
     // $table->json('discounts')->nullable();
 
+    // fixed for update sale_note 
+    let record_id = (row_old.record_id) ? row_old.record_id : (row_old.id ? row_old.id : null)
+
     let row = {
         item_id: row_old.item.id,
         // item_description: row_old.item.description,
@@ -84,7 +87,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale) {
         charges: row_old.charges,
         discounts: row_old.discounts,
         warehouse_id: warehouse_id,
-        name_product_pdf: row_old.name_product_pdf
+        name_product_pdf: row_old.name_product_pdf,
+        record_id: record_id, // fixed for update sale_note
     };
 
     let percentage_igv = 18
