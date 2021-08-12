@@ -900,21 +900,23 @@ export default {
             this.cleanTotalItem();
             this.showListStock = true
 
-
-            if (this.form.item.attributes.length > 0) {
-                const contex = this
-                this.form.item.attributes.forEach((row) => {
-
-                    contex.form.attributes.push({
-                        attribute_type_id: row.attribute_type_id,
-                        description: row.description,
-                        value: row.value,
-                        start_date: row.start_date,
-                        end_date: row.end_date,
-                        duration: row.duration,
+            if (this.form.item.attributes){
+                if (this.form.item.attributes.length > 0) {
+                    const contex = this
+                    this.form.item.attributes.forEach((row) => {
+    
+                        contex.form.attributes.push({
+                            attribute_type_id: row.attribute_type_id,
+                            description: row.description,
+                            value: row.value,
+                            start_date: row.start_date,
+                            end_date: row.end_date,
+                            duration: row.duration,
+                        })
                     })
-                })
+                }
             }
+
             this.form.lots_group = this.form.item.lots_group
 
             // if (!this.recordItem) {
