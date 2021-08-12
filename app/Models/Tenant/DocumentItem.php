@@ -79,7 +79,10 @@ class DocumentItem extends ModelTenant
         static::creating(function (self $item) {
             $document = $item->document;
             if ($document !== null && empty($item->warehouse_id)) {
-                $item->warehouse_id = $document->establishment_id;
+                $warehouse = Warehouse::find($document->establishment_id) ;
+                if($warehouse !== null) {
+                    $item->warehouse_id = $document->establishment_id;
+                }
             }
         });
     }
