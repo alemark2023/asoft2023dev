@@ -430,24 +430,28 @@ class QuotationController extends Controller
     }
 
 
-
+    /**
+     * Realiza la busqueda de producto en cotizacion.
+     * @param Request $request
+     * @return array
+     */
     public function searchItems(Request $request)
     {
-
-
-        $items = Item::orderBy('description')
-                        ->where('description','like', "%{$request->input}%")
-                        ->orWhere('internal_id','like', "%{$request->input}%")
-                        ->orWhereHas('category', function($query) use($request) {
-                            $query->where('name', 'like', '%' . $request->input . '%');
-                        })
-                        ->orWhereHas('brand', function($query) use($request) {
-                            $query->where('name', 'like', '%' . $request->input . '%');
-                        })
-                        ->whereIsActive()
-                        ->get();
-
-
+        $items = Item::orderBy('description')->whereIsActive();
+        if ($request->has('search_by_barcode') && (int)$request->search_by_barcode === 1) {
+            $items->where('barcode', $request->input)
+                ->limit(1);
+        }else{
+            $items->where('description', 'like', "%{$request->input}%")
+                ->orWhere('internal_id', 'like', "%{$request->input}%")
+                ->orWhereHas('category', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->input . '%');
+                })
+                ->orWhereHas('brand', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->input . '%');
+                });
+        }
+        $items = $items->get();
         $this->ReturnItem($items);
         return compact('items');
 
