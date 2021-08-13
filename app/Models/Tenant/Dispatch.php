@@ -354,6 +354,12 @@ class Dispatch extends ModelTenant
             $has_cdr = true;
         }
 
+        $documents = [];
+
+        if($this->generate_document) $documents [] = ['description' => $this->generate_document->number_full];
+        if($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
+        
+        // 
         return [
             'id'                     => $this->id,
             'external_id'            => $this->external_id,
@@ -381,7 +387,9 @@ class Dispatch extends ModelTenant
             'updated_at'             => $this->updated_at->format('Y-m-d H:i:s'),
             'soap_shipping_response' => $this->soap_shipping_response,
             'btn_generate_document' => $this->generate_document || $this->reference_document_id ? false : true,
+            'documents' => $documents
         ];
+        
     }
 
 

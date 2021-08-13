@@ -20,6 +20,7 @@
                         <th>Número</th>
                         <th>Estado</th>
                         <th class="text-center">Fecha Envío</th>
+                        <th class="text-center">N° Comprobante</th>
                         <th class="text-center">Descargas</th>
                         <th class="text-center">Acciones</th>
                     <tr>
@@ -32,6 +33,13 @@
                             <span class="badge bg-secondary text-white" :class="{'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{row.state_type_description}}</span>
                         </td>
                         <td class="text-center">{{ row.date_of_shipping }}</td>
+                        
+                        <td class="text-center">
+                            <template v-for="(row,index) in row.documents">
+                                <label class="d-block" :key="index">{{ row.description }}</label>
+                            </template>
+                        </td>
+
                         <td class="text-center">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_xml)">XML</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_pdf)">PDF</button>
@@ -62,7 +70,8 @@
 </template>
 
 <script>
-import DataTable from '../../../components/DataTable.vue'
+import DataTable from '../../../components/DataTableDispatch.vue'
+// import DataTable from '../../../components/DataTable.vue'
 import DispatchOptions from './partials/options.vue'
 import FormGenerateDocument from "./generate-document";
 import ModalGenerateCPE from './ModalGenerateCPE';
