@@ -226,9 +226,10 @@
                 <th>Correo</th>
                 <th>Entorno</th>
                 <th class="text-center">Total de Comprobantes</th>
-                  <th class="text-right">Inicio Ciclo Facturacion</th>
-                  <th class="text-center">Comprobantes Ciclo Facturacion</th>
-                  <th class="text-center">Usuarios</th>
+                <th class="text-center">Notificaciones</th>
+                <th class="text-right">Inicio Ciclo Facturacion</th>
+                <th class="text-center">Comprobantes Ciclo Facturacion</th>
+                <th class="text-center">Usuarios</th>
                 <th class="text-center">F.Creación</th>
 
                 <th class="text-center">Bloquear cuenta</th>
@@ -242,9 +243,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, index) in records">
+              <tr v-for="(row, index) in records" :key="index">
                 <td>{{ index + 1 }}</td>
-                <td>{{ row.hostname }}</td>
+                <td>
+                  <!-- {{ row.hostname }} -->
+                  <a :href="`http://${row.hostname}`" target="_blank" style="color:black">{{ row.hostname }}</a>
+                </td>
                 <td>{{ row.name }}</td>
                 <td>{{ row.number }}</td>
                 <td>{{ row.plan }}</td>
@@ -258,6 +262,22 @@
                     <label>
                         <strong>{{ row.count_doc }}</strong>
                     </label>
+                </td>
+                
+                <td class="text-center">
+
+                  <el-tooltip class="item" effect="dark" content="Comprobantes pendientes de envío" placement="top-start">
+                    <el-badge class="item" :value="row.document_not_sent">
+                      <i class="far fa-bell text-secondary"></i>
+                    </el-badge>
+                  </el-tooltip>
+
+                  <el-tooltip class="item" effect="dark" content="Comprobantes pendientes de rectificación" placement="top-start">
+                    <el-badge class="item  ml-4" :value="row.document_regularize_shipping">
+                      <i class="fas fa-exclamation-triangle text-secondary"></i>
+                    </el-badge>
+                  </el-tooltip>
+                  
                 </td>
                   <td>
                       <template v-if="row.start_billing_cycle">
