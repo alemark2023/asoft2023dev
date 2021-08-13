@@ -743,7 +743,6 @@ export default {
 
 
             if (this.recordItem) {
-                //console.log(this.recordItem);
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = this.recordItem.item_id
                 await this.changeItem();
@@ -759,24 +758,14 @@ export default {
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                 }
-                // console.log(this.form);
-                console.log('EEEEE')
-                console.error(this.recordItem)
                 if (this.recordItem.item.change_free_affectation_igv) {
-                    console.log('a')
                     this.form.affectation_igv_type_id = '15'
                     this.form.item.change_free_affectation_igv = true
-
                 } else {
-                    console.log('b')
-                    console.error(this.recordItem.item)
                     this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
                 }
-
-
                 this.calculateQuantity()
             } else {
-                console.log('c')
                 this.isUpdateWarehouseId = null
             }
 
@@ -1019,7 +1008,6 @@ export default {
         cleanItems() {
             this.items = []
             this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
-            // console.log("add cart barcode")
         },
         validateTotalItem() {
 
@@ -1094,7 +1082,6 @@ export default {
             this.form.unit_price_value = valor
             this.form.item.unit_type_id = row.unit_type_id
             this.getTables()
-            console.log('en selectedPrice(row) pendiente de lo que viene ')
             this.calculateQuantity()
         },
         addRowLotGroup(id) {
