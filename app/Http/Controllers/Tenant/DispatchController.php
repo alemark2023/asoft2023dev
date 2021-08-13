@@ -63,13 +63,59 @@ class DispatchController extends Controller
     }
 
     public function records(Request $request)
-    {
-        $records = Dispatch::where($request->column, 'like', "%{$request->value}%")
-            ->orderBy('series')
-            ->orderBy('number', 'desc');
+    { 
+        $records = $this->getRecords($request);
 
         return new DispatchCollection($records->paginate(config('tenant.items_per_page')));
     }
+
+
+    public function getRecords($request){
+
+        $d_end = $request->d_end;
+        $d_start = $request->d_start;
+        $number = $request->number;
+        $series = $request->series;
+        $customer_id = $request->customer_id;
+
+
+        if($d_start && $d_end){
+            $records = Dispatch::where('series', 'like', '%' . $series . '%')->whereBetween('date_of_issue', [$d_start , $d_end]);
+        }else{
+            $records = Dispatch::where('series', 'like', '%' . $series . '%');
+        }
+
+        if($number){
+            $records = $records->where('number', $number);
+        }
+
+        if($customer_id){
+            $records = $records->where('customer_id', $customer_id);
+        }
+
+        return $records->latest();
+
+    }
+
+    
+    public function data_table()
+    {
+        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'description' => $row->number.' - '.$row->name,
+                'name' => $row->name,
+                'number' => $row->number,
+                'identity_document_type_id' => $row->identity_document_type_id,
+            ];
+        });
+
+        $series = Series::where('document_type_id', '09')->get();
+
+        return compact( 'customers','series');
+
+    }
+
 
     public function create($document_id = null, $type = null, $dispatch_id = null)
     {

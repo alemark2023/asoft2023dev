@@ -314,6 +314,7 @@ if ($hostname) {
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');
             Route::get('dispatches/client/{id}', 'Tenant\DispatchController@dispatchesByClient');
             Route::post('dispatches/items', 'Tenant\DispatchController@getItemsFromDispatches');
+            Route::get('dispatches/data_table', 'Tenant\DispatchController@data_table');
 
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
             Route::post('reports/consistency-documents/lists', 'Tenant\ReportConsistencyDocumentController@lists');
