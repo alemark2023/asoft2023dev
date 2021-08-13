@@ -73,17 +73,24 @@ class ClientController extends Controller
         return compact('url_base','plans','types', 'modules', 'certificate_admin', 'soap_username', 'soap_password');
     }
 
+
     public function records()
     {
 
         $records = Client::latest()->get();
+
         foreach ($records as &$row) {
+
             $tenancy = app(Environment::class);
             $tenancy->tenant($row->hostname->website);
             // $row->count_doc = DB::connection('tenant')->table('documents')->count();
             $row->count_doc = DB::connection('tenant')->table('configurations')->first()->quantity_documents;
             $row->soap_type = DB::connection('tenant')->table('companies')->first()->soap_type_id;
             $row->count_user = DB::connection('tenant')->table('users')->count();
+
+            $quantity_pending_documents = $this->getQuantityPendingDocuments();
+            $row->document_regularize_shipping = $quantity_pending_documents['document_regularize_shipping'];
+            $row->document_not_sent = $quantity_pending_documents['document_not_sent'];
 
             if($row->start_billing_cycle)
             {
@@ -110,6 +117,17 @@ class ClientController extends Controller
         }
         return new ClientCollection($records);
     }
+
+    
+    private function getQuantityPendingDocuments(){
+        
+        return [
+            'document_regularize_shipping' => DB::connection('tenant')->table('documents')->where('state_type_id', '01')->where('regularize_shipping', true)->count(),
+            'document_not_sent' => DB::connection('tenant')->table('documents')->whereIn('state_type_id', ['01','03'])->where('date_of_issue','<=',date('Y-m-d'))->count(),
+        ];
+        
+    }
+
 
     public function record($id)
     {
