@@ -87,9 +87,7 @@ class DispatchController extends Controller
         }
 
         $dispatch = Dispatch::find($dispatch_id);
-        $sale_note = null;
-
-        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'sale_note'));
+        return view('tenant.dispatches.form', compact('document', 'type', 'dispatch'));
     }
 
     public function generate($sale_note_id)
@@ -155,7 +153,6 @@ class DispatchController extends Controller
             $document = $fact->getDocument();
             // $response = $fact->getResponse();
         }
-        $configuration = Configuration::first();
 
         if(!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
             $reference = Document::find($document->reference_document_id);

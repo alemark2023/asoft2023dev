@@ -3,6 +3,7 @@
 namespace Modules\Order\Models;
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
@@ -355,6 +356,15 @@ class OrderNote extends ModelTenant
         }else{
             $quotation = [];
         }
+        $dispatches= $this->getDispatches()->transform(function ($row) {
+            return $row->getCollectionData();
+        });
+        $state_type_description = $this->state_type->description;
+        if(!empty($dispatches) && count($dispatches)!=0){
+            $state_type_description = 'Despachado';
+            // #596
+        }
+
         return [
             'id' => $this->id,
             'quotation' => (object)$quotation,
@@ -376,7 +386,7 @@ class OrderNote extends ModelTenant
             'total_igv' => number_format($this->total_igv,2),
             'total' => number_format($this->total,2),
             'state_type_id' => $this->state_type_id,
-            'state_type_description' => $this->state_type->description,
+            'state_type_description' => $state_type_description,
             'documents' => $this->documents->transform(function($row) {
                 /** @var Document $row */
                 return [
@@ -392,6 +402,7 @@ class OrderNote extends ModelTenant
                 ];
             }),
             'btn_generate' => $btn_generate,
+            'dispatches' => $dispatches,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'print_a4' => url('')."/order-notes/print/{$this->external_id}/a4",
@@ -414,6 +425,13 @@ class OrderNote extends ModelTenant
     {
         $this->quotation_id = $quotation_id;
         return $this;
+    }
+    /**
+     * @return Dispatch[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection|mixed
+     */
+    public function getDispatches()
+    {
+        return Dispatch::where('reference_order_note_id', $this->id)->get();
     }
 
 }
