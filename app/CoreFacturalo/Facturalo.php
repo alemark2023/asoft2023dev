@@ -648,19 +648,31 @@ class Facturalo
     public function validationCodeResponse($code, $message)
     {
         //Errors
-        if($code === 'ERROR_CDR') {
-            return;
-        }
-        if($code === 'HTTP') {
-//            $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
-
-            if(in_array($this->type, ['retention', 'dispatch'])){
+        if(!is_numeric($code)){
+            
+            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
             $this->updateRegularizeShipping($code, $message);
             return;
         }
+
+        // if($code === 'ERROR_CDR') {
+        //     return;
+        // }
+        
+        // if($code === 'HTTP') {
+        //     // $message = 'La SUNAT no responde a su solicitud, vuelva a intentarlo.';
+
+        //     if(in_array($this->type, ['retention', 'dispatch'])){
+        //         throw new Exception("Code: {$code}; Description: {$message}");
+        //     }
+
+        //     $this->updateRegularizeShipping($code, $message);
+        //     return;
+        // }
+
         if((int)$code === 0) {
             $this->updateState(self::ACCEPTED);
             return;
@@ -668,7 +680,8 @@ class Facturalo
         if((int)$code < 2000) {
             //Excepciones
 
-            if(in_array($this->type, ['retention', 'dispatch'])){
+            if(in_array($this->type, ['retention', 'dispatch', 'perception'])){
+            // if(in_array($this->type, ['retention', 'dispatch'])){
                 throw new Exception("Code: {$code}; Description: {$message}");
             }
 
