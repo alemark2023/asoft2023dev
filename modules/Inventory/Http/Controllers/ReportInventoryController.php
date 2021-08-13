@@ -181,13 +181,15 @@ class ReportInventoryController extends Controller
                 $filename = 'ReporteInv_' . date('YmdHis');
                 return $pdf->download($filename . '.pdf');
             }
-
-            return (new InventoryExport)
+            $inventoryExport = new InventoryExport();
+            $inventoryExport
                 ->records($records)
                 ->company($company)
                 ->establishment($establishment)
                 ->format($format)
-                ->download('ReporteInv_' . Carbon::now() . '.xlsx');
+                ;
+            // return $inventoryExport->view();
+            return $inventoryExport->download('ReporteInv_' . Carbon::now() . '.xlsx');
 
         } catch (\Exception $e) {
             return [

@@ -349,6 +349,10 @@ class Configuration extends ModelTenant
         // $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $establishment =   auth()->user()->establishment;
         $currency = CurrencyType::all();
+        $typeUser = '';
+        if(\Auth::user()){
+            $typeUser = \Auth::user()->type;
+        }
         return [
             'id' => $this->id,
             'company' => $company,
@@ -399,6 +403,7 @@ class Configuration extends ModelTenant
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),
+            'typeUser'=>$typeUser,
 
         ];
     }

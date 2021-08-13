@@ -137,6 +137,13 @@
                                         <td>{{ row.warehouse_name }}</td>
                                     </tr>
                                     </tbody>
+                                    <tfoot>
+                                    <tr>
+                                        <td colspan="7" class="celda"></td>
+                                        <td class="celda">S/ {{total_profit}}</td>
+                                        <td class="celda">S/ {{total_all_profit}}</td>
+                                    </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -168,6 +175,8 @@ export default {
             // showDialogLots: false,
             // showDialogLotsOutput: false,
             // titleDialog: null,
+            total_profit: 0,
+            total_all_profit: 0,
             loading: false,
             loadingPdf: false,
             loadingXlsx: false,
@@ -178,7 +187,7 @@ export default {
             categories: [],
             brands: [],
             filters: [],
-            records: []
+            records: [],
         }
     },
     created() {
@@ -204,6 +213,19 @@ export default {
                 'brand_id': null,
             }
         },
+        calculeTotalProfit(){
+            this.total_profit = 0;
+            this.total_all_profit = 0;
+            if(this.records.length > 0) {
+                let el = this;
+                this.records.forEach(function (a, b) {
+                    el.total_profit +=  Math.abs(a.profit);
+                    el.total_all_profit += Math.abs(a.profit * a.stock);
+                })
+            }
+            this.total_profit = this.total_profit.toFixed(2)
+            this.total_all_profit = this.total_all_profit.toFixed(2)
+        },
         initTables() {
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
@@ -219,10 +241,14 @@ export default {
             }
             this.loading = true;
             this.records = [];
+            this.total_profit = 0;
+            this.total_all_profit = 0;
             await this.$http.post(`/${this.resource}/records`, this.form)
                 .then(response => {
+
                     this.records = response.data;
-                });
+                    this.calculeTotalProfit()
+                })
             this.loading = false;
         },
         changeWarehouse() {
