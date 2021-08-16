@@ -560,6 +560,8 @@
 
 <script>
 import LotsForm from './partials/lots.vue'
+import {mapActions, mapState} from "vuex";
+
 
 export default {
         props: [
@@ -571,12 +573,17 @@ export default {
         ],
         components: {LotsForm},
     computed:{
+
+        ...mapState([
+            'config',
+        ]),
       showPharmaElement(){
 
           if(this.fromPharmacy === true) return true;
-          if(this.configuration.is_pharmacy === true) return true;
+          if(this.config.is_pharmacy === true) return true;
           return false;
       },
+
     },
 
         data() {
@@ -595,7 +602,7 @@ export default {
                 errors: {},
                 headers: headers_token,
                 form: {},
-                configuration: {},
+                // configuration: {},
                 unit_types: [],
                 currency_types: [],
                 system_isc_types: [],
@@ -638,8 +645,9 @@ export default {
                     this.categories = response.data.categories
                     this.brands = response.data.brands
                     this.attribute_types = response.data.attribute_types
-                    this.configuration = response.data.configuration
-
+                    // this.config = response.data.configuration
+                    this.$store.commit('setConfiguration', response.data.configuration);
+                    this.loadConfiguration()
                     this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                     this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0)?this.affectation_igv_types[0].id:null
                 })
@@ -658,13 +666,19 @@ export default {
         },
 
         methods: {
+
+            ...mapActions([
+                'loadConfiguration',
+            ]),
             setDefaultConfiguration(){
-                this.form.sale_affectation_igv_type_id = (this.configuration) ? this.configuration.affectation_igv_type_id : '10'
+                this.form.sale_affectation_igv_type_id = (this.config) ? this.config.affectation_igv_type_id : '10'
 
                 this.$http.get(`/configurations/record`) .then(response => {
                     this.form.has_igv = response.data.data.include_igv
                     this.form.purchase_has_igv = response.data.data.include_igv
-                    this.$setStorage('configuration',response.data.data)
+                    // this.$setStorage('configuration',response.data.data)
+                    this.$store.commit('setConfiguration', response.data.data);
+                    this.loadConfiguration()
                 })
             },
             clickAddAttribute() {
