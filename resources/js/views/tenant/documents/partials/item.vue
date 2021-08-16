@@ -765,6 +765,8 @@ export default {
 
                 }
 
+                // console.log(this.recordItem)
+
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                 }
@@ -778,7 +780,9 @@ export default {
                     this.form.item.change_free_affectation_igv = true
                     
                 }else{
-                    this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    if(this.recordItem.item.original_affectation_igv_type_id){
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    }
                 }
 
 
