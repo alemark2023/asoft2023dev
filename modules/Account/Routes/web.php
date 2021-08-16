@@ -26,6 +26,8 @@ if($hostname) {
                 Route::get('summary-report/records', 'SummaryReportController@records');
                 Route::get('summary-report/format/download', 'SummaryReportController@download');
 
+                Route::get('format-ple/download', 'FormatPleController@download');
+
             });
 
             Route::prefix('company_accounts')->group(function () {
