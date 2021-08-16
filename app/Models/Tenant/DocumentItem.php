@@ -270,6 +270,7 @@ class DocumentItem extends ModelTenant
             return $query->whereHas('document', function($q) use($params){
                             $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                                 ->where('customer_id', $params['person_id'])
+                                ->whereStateTypeAccepted()
                                 ->whereTypeUser();
                         })
                         ->join('documents', 'document_items.document_id', '=', 'documents.id')
@@ -282,6 +283,7 @@ class DocumentItem extends ModelTenant
         $data = $query->whereHas('document', function($q) use($params){
                     $q->whereBetween($params['date_range_type_id'], [$params['date_start'], $params['date_end']])
                         // ->where('user_id', $params['seller_id'])
+                        ->whereStateTypeAccepted()
                         ->whereTypeUser();
                 })
                 ->join('documents', 'document_items.document_id', '=', 'documents.id')
