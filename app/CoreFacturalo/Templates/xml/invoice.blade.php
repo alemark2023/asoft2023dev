@@ -20,6 +20,10 @@
     });
 
 
+    $tot_global_discount_no_base =  $document->discounts ? collect($document->discounts)->sum(function($discount){
+            return $discount->discount_type_id == '03' ? $discount->amount : 0;
+        }) : 0;
+
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="utf-8" standalone="no"?'.'>'  !!}
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
@@ -409,7 +413,7 @@
         @else
         <cbc:TaxInclusiveAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:TaxInclusiveAmount>
         @endif
-        @if($document->total_discount > 0)
+        @if($document->total_discount > 0 && $tot_global_discount_no_base > 0)
         <cbc:AllowanceTotalAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total_discount }}</cbc:AllowanceTotalAmount>
         @endif
         @if($document->total_charge > 0)
