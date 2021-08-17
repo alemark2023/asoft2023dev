@@ -19,6 +19,10 @@
         }) : 0;
     });
 
+    //descuento globales que no afectan la base imponible
+    $tot_global_discount_no_base = $document->discounts ? collect($document->discounts)->sum(function($discount){
+        return $discount->discount_type_id == '03' ? $discount->amount : 0;
+    }) : 0;
 
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="utf-8" standalone="no"?'.'>'  !!}
@@ -420,6 +424,8 @@
         @endif
         @if($tot_discount_no_base > 0)
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_discount_no_base}}</cbc:PayableAmount>
+        @elseif($tot_global_discount_no_base > 0)
+        <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total - $tot_global_discount_no_base}}</cbc:PayableAmount>
         @else
         <cbc:PayableAmount currencyID="{{ $document->currency_type_id }}">{{ $document->total }}</cbc:PayableAmount>
         @endif

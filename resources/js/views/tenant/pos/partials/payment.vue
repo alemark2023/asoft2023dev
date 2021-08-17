@@ -358,6 +358,7 @@
     import SaleNotesOptions from '../../sale_notes/partials/options.vue'
     import OptionsForm from './options.vue'
     import MultiplePaymentForm from './multiple_payment.vue'
+    import {calculateRowItem} from "../../../../helpers/functions";
 
     export default {
         components: {OptionsForm, CardBrandsForm, SaleNotesOptions, MultiplePaymentForm, Keypress},
@@ -490,7 +491,7 @@
                     // console.log(this.discount_amount)
                 }
             },
-            discountGlobal(){
+            async discountGlobal(){
 
                 let global_discount = parseFloat(this.discount_amount)
 
@@ -543,6 +544,93 @@
                     }
 
                 }
+
+
+                //guardando valores iniciales antes de dscto
+                // this.form.items = await this.form.items.map(item => {
+                    
+                //     item.original_totals = {
+                //         total : item.total,
+                //         total_value : item.total_value,
+                //         total_base_igv : item.total_base_igv,
+                //         total_igv : item.total_igv,
+                //         total_taxes : item.total_taxes,
+                //         unit_price : item.unit_price,
+                //         unit_value : item.unit_value,
+                //     }
+                //     return item
+
+                // });
+
+                // this.setLocalStoragePayment('original_form', this.form)
+
+
+                this.form.items = await this.form.items.map((item, index) => {
+                    
+                    let aux_items  = this.getLocalStoragePayment('form_pos').items //usar otro json de local storage
+
+                    console.log(index, factor, amount, base)
+
+                    let discount_by_item = _.round(amount / this.form.items.length, 2)
+
+                    item.total = aux_items[index].total - discount_by_item
+                    item.total_value =  _.round(item.total / 1.18, 2)
+                    item.total_base_igv =  item.total_value
+                    item.total_igv =  _.round(item.total_value * 0.18, 2)
+                    item.total_taxes =  item.total_igv
+
+                    let aux_total_line = aux_items[index].unit_price * aux_items[index].quantity
+                    item.unit_price = aux_total_line - discount_by_item
+                    item.unit_value = item.unit_price / 1.18
+
+
+                    // let discount_by_item = _.round(amount / this.form.items.length, 2)
+
+                    // item.total = item.total - discount_by_item
+                    // item.total_value =  _.round(item.total / 1.18, 2)
+                    // item.total_base_igv =  item.total_value
+                    // item.total_igv =  _.round(item.total_value * 0.18, 2)
+                    // item.total_taxes =  item.total_igv
+
+                    // let aux_total_line = item.unit_price * item.quantity
+                    // item.unit_price = aux_total_line - discount_by_item
+                    // item.unit_value = item.unit_price / 1.18
+
+                    return item
+                    
+                });
+
+
+                // this.form.items = await this.form.items.map(item => {
+                    
+                //     console.log(factor, amount, base)
+                    
+                //     item.discounts.push({
+                //             discount_type_id: '01',
+                //             description: 'Descuentos que no afectan la base imponible del IGV/IVAP',
+                //             factor: factor,
+                //             amount: amount,
+                //             base: base, 
+                //             is_amount: true,
+                //             percentage: factor*100,
+                //             discount_type: {
+                //                 active: true,
+                //                 base: false,
+                //                 description: 'Descuentos que no afectan la base imponible del IGV/IVAP',
+                //                 id: '01',
+                //                 level: 'item',
+                //                 type: 'discount',
+                //             }
+                //         })
+                    
+                //     let new_row =  calculateRowItem(item, this.form.currency_type_id, this.form.exchange_rate_sale);
+
+                //     let discount_by_item = _.round(amount / this.form.items.length, 2)
+                //     let aux_total_line = item.unit_price * item.quantity
+                //     new_row.unit_price = aux_total_line - discount_by_item
+                //     new_row.discounts = []
+                //     return new_row
+                // });
 
                 this.difference = this.enter_amount - this.form.total
                 // console.log(this.form.discounts)
