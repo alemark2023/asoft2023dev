@@ -119,6 +119,7 @@ Vue.component('tenant-company-accounts', require('../../modules/Account/Resource
 Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
 //
 
+Vue.component('tenant-inventory-color-index', require('../../modules/Inventory/Resources/assets/js/color/index.vue'));
 
 Vue.component('tenant-inventory-devolutions-index', require('../../modules/Inventory/Resources/assets/js/devolutions/index.vue'));
 Vue.component('tenant-inventory-devolutions-form', require('../../modules/Inventory/Resources/assets/js/devolutions/form.vue'));

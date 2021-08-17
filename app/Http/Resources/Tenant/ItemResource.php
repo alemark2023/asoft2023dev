@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Tenant;
 
+use App\Models\Tenant\ItemColor;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -20,11 +21,15 @@ class ItemResource extends JsonResource
      */
     public function toArray($request)
     {
+        $currentColors = ItemColor::where('item_id', $this->id)->orderBy('cat_colors_item_id')->get()->transform(function ($row) {
+            return $row->cat_colors_item_id;
+        });
 
         return [
             'id' => $this->id,
             'description' => $this->description,
             'technical_specifications' => $this->technical_specifications,
+            'colors' => $currentColors,
             'name' => $this->name,
             'second_name' => $this->second_name,
             'model' => $this->model,

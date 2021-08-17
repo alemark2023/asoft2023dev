@@ -1,5 +1,8 @@
 export default {
     userType: '',
+    showColorDialog: false,
+    loading_submit: false,
+    color: {},
     config: {},
     currencys: [],
     warehouses: {},
@@ -8,6 +11,13 @@ export default {
     file: {},
     files:[],
     processes:[],
+    records:[],
+    colors:[],
+    pagination: {
+            current_page : 1,
+        total : 0,
+        per_page : 25,
+    },
     actions:[],
     offices:[],
     documentTypes:[],

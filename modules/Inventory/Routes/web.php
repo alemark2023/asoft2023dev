@@ -18,6 +18,12 @@ if($hostname) {
                 Route::post('/', 'WarehouseController@store');
                 Route::get('initialize', 'WarehouseController@initialize');
             });
+             Route::prefix('colors')->group(function () {
+                Route::get('/', 'ColorController@index')->name('colors.index');
+                Route::get('records', 'ColorController@records');
+                Route::post('record/{id}', 'ColorController@record');
+                Route::post('save/{id}', 'ColorController@store');
+            });
 
             Route::prefix('inventory')->group(function () {
                 /**

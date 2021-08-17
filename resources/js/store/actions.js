@@ -19,8 +19,13 @@ export default {
         state.userType = readStorageData('userType', false)
         state.company = readStorageData('company', true)
         state.establishment =  readStorageData('establishment', true)
+        if(state.colors === undefined) state.colors = []
+        if(state.loading_submit === undefined) state.loading_submit = false
         // Previenete limite de almacen exedido
-        /*5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed; however, only a few browsers support this*/
+        /*
+        5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
+         however, only a few browsers support this
+         */
         // alternativa posible sessionStorage
         localStorage.removeItem('customers')
         localStorage.removeItem('offices')

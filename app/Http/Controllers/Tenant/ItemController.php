@@ -12,6 +12,7 @@ use App\Imports\CatalogImport;
 use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
@@ -147,13 +148,26 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $colors = CatColorsItem::all();
         $configuration = Configuration::select(
             'affectation_igv_type_id',
             'is_pharmacy'
         )->firstOrFail();
 
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
+        return compact(
+            'unit_types',
+            'currency_types',
+            'attribute_types',
+            'system_isc_types',
+            'affectation_igv_types',
+            'warehouses',
+            'accounts',
+            'tags',
+            'categories',
+            'brands',
+            'configuration',
+            'colors'
+        );
     }
 
     public function record($id)
@@ -164,6 +178,7 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
+
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -248,6 +263,15 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
+
+        // Extra data
+        if($request->has('colors')){
+            $item->setColorCombination($request->colors);
+
+        }
+        // Extra data
+
+
 
         if ($request->tags_id) {
             ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));

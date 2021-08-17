@@ -158,7 +158,7 @@
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{ row.sanitary }}</td>
                         <td v-if="(columns.cod_digemid!== undefined && columns.cod_digemid.visible===true )">{{ row.cod_digemid }}</td>
-                        
+
                         <template v-if="typeUser == 'admin'">
                             <td class="text-center">
                                 <button
@@ -303,7 +303,7 @@
             <items-import-list-price
                 :showDialog.sync="showImportListPriceDialog"
             ></items-import-list-price>
-            
+
             <items-history
                 :showDialog.sync="showDialogHistory"
                 :recordId="recordId"
@@ -324,6 +324,7 @@ import ItemsExportBarcode from "./partials/export_barcode.vue";
 import DataTable from "../../../components/DataTable.vue";
 import { deletable } from "../../../mixins/deletable";
 import ItemsHistory from "@viewsModuleItem/items/history.vue";
+import {mapActions, mapState} from "vuex";
 
 export default {
     props: [
@@ -355,7 +356,6 @@ export default {
             resource: "items",
             recordId: null,
             warehousesDetail: [],
-            config: {},
             columns: {
                 description: {
                     title: 'Descripción',
@@ -397,7 +397,10 @@ export default {
         };
     },
     created() {
-         if(this.configuration.is_pharmacy !== true){
+        this.$store.commit('setConfiguration', this.configuration);
+        this.loadConfiguration()
+
+        if(this.config.is_pharmacy !== true){
             delete this.columns.sanitary;
             delete this.columns.cod_digemid;
          }
@@ -409,16 +412,24 @@ export default {
             this.title = 'Listado de productos';
         }
         this.$http.get(`/configurations/record`).then((response) => {
-            this.config = response.data.data;
+            this.$store.commit('setConfiguration',response.data.data);
+            //this.config = response.data.data;
         });
         this.canCreateProduct();
     },
     computed:{
+        ...mapState([
+            'config',
+        ]),
         columnsComputed:function(){
             return this.columns;
         }
     },
     methods: {
+
+        ...mapActions([
+            'loadConfiguration',
+        ]),
         clickHistory(recordId){
             this.recordId = recordId
             this.showDialogHistory = true
@@ -428,8 +439,8 @@ export default {
             if (this.typeUser === 'admin') {
                 this.can_add_new_product = true
             } else if (this.typeUser === 'seller') {
-                if (this.configuration !== undefined && this.configuration.seller_can_create_product !== undefined) {
-                    this.can_add_new_product = this.configuration.seller_can_create_product;
+                if (this.config !== undefined && this.config.seller_can_create_product !== undefined) {
+                    this.can_add_new_product = this.config.seller_can_create_product;
                 }
             }
             return this.can_add_new_product;

@@ -58,12 +58,37 @@ export default {
         state.file = file
     },
 
-
+    canShowColorDialog(state, showColorDialog) {
+        state.showColorDialog = showColorDialog
+    },
+    setColor(state, color) {
+        state.color = color
+    },
+    setLoadingSubmit(state, loading_submit) {
+        if(loading_submit === undefined) loading_submit = false;
+        state.loading_submit = loading_submit
+    },
     setWorkers(state, workers) {
         state.workers = workers
     },
     setOffice(state, office) {
         state.office = office
+    },
+    setColors(state, colors) {
+        if(colors == undefined ) colors = [];
+        state.colors = colors
+    },
+    setRecords(state, records) {
+        if(records == undefined ) records = [];
+        state.records = records
+    },
+    setPagination(state, pagination) {
+        if(pagination == undefined ) pagination = {
+            current_page : 1,
+            total : 0,
+            per_page : 25,
+        };
+        state.pagination = pagination
     },
     setTypeUser(state, userType) {
         state.userType = userType

@@ -838,6 +838,10 @@ class Item extends ModelTenant
         $digemid_exportable = false;
         $name_disa = '';
         $laboratory = '';
+        $currentColors = ItemColor::where('item_id', $this->id)->get()->transform(function ($row) {
+            return $row->TransformDatatoEdit();
+        });
+
         if($configuration->isPharmacy()) {
             $digemid = $this->getCatDigemid();
             if (!empty($digemid)) {
@@ -847,10 +851,12 @@ class Item extends ModelTenant
             }
         }
 
+
         return [
             'name_disa'                           => $name_disa,
             'laboratory'                           => $laboratory,
             'exportable_pharmacy'                           => $digemid_exportable,
+            'colors' => $currentColors,
             'id'                           => $this->id,
             'sanitary'                 => $this->sanitary,
             'cod_digemid'                 => $this->cod_digemid,
@@ -1095,6 +1101,38 @@ class Item extends ModelTenant
             }),
 
         ];
+    }
+
+
+    /**
+     * Almacena los colores para poder guardarlos en la tabla.
+     * @param array $colors
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setColorCombination($colors = []) {
+        $colors = collect($colors);
+        $currentColors = ItemColor::where('item_id',$this->id)->whereNotIn('cat_colors_item_id',$colors)->get();
+        foreach ($currentColors as $color)
+        {
+            $color->setActive(false)->push();
+            $color->delete();
+        }
+
+
+        foreach($colors as $item){
+
+            $ck = [
+                'item_id'=>$this->id,
+                'cat_colors_item_id'=>$item
+            ];
+            $newColors = ItemColor::where($ck)->first();
+            if(empty($newColors)) $newColors = new ItemColor($ck);
+
+            $newColors->setActive(true)->push();
+        }
+        return $this;
     }
 
 }
