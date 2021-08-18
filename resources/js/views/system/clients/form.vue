@@ -80,19 +80,42 @@
                 </div>
                 <el-collapse v-model="collapse">
                     <el-collapse-item title="Módulos" name="1">
-                        <div class="form-group tree-container-admin">
-                            <el-tree
-                                :data="modules"
-                                show-checkbox
-                                node-key="id"
-                                ref="tree"
-                                accordion
-                                :check-strictly="true"
-                                highlight-current
-                                @check="FixChildren"
-                                :props="defaultProps">
-                            </el-tree>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <span>Habilitar módulos</span>
+                                <div class="form-group tree-container-admin">
+                                    <el-tree
+                                        :data="modules"
+                                        show-checkbox
+                                        node-key="id"
+                                        ref="tree"
+                                        accordion
+                                        :check-strictly="true"
+                                        highlight-current
+                                        @check="FixChildren"
+                                        :props="defaultProps">
+                                    </el-tree>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <span>Habilitar apps</span>
+                                <div class="form-group tree-container-admin">
+                                    <el-tree
+                                        :data="apps"
+                                        show-checkbox
+                                        node-key="id"
+                                        ref="Apptree"
+                                        accordion
+                                        :check-strictly="true"
+                                        highlight-current
+                                        @check="FixAppChildren"
+                                        :props="defaultAppsProps">
+                                    </el-tree>
+                                </div>
+                            </div>
                         </div>
+
                     </el-collapse-item>
                     <el-collapse-item title="Entorno del sistema" name="2">
                         <div class="row mt-2">
@@ -296,6 +319,10 @@
                     children: 'childrens',
                     label: 'description'
                 },
+                defaultAppsProps: {
+                    children: 'childrens',
+                    label: 'description'
+                },
                 headers: headers_token,
                 loading_submit: false,
                 loading_search: false,
@@ -308,6 +335,7 @@
                 url_base: null,
                 plans:[],
                 modules: [],
+                apps: [],
                 types:[],
                 soap_sends: [ { value: '01', text: 'Sunat' }, { value: '02', text: 'Ose' }],
                 soap_types: [{id: "01", description: "Demo"}, {id: "02", description: "Producción"}],
@@ -330,6 +358,7 @@
                     this.url_base = response.data.url_base
                     this.plans = response.data.plans
                     this.modules = response.data.modules
+                    this.apps = response.data.apps
                     this.types = response.data.types
                     this.certificate_admin = response.data.certificate_admin
                     this.soap_username = response.data.soap_username
@@ -345,34 +374,52 @@
         },
         methods: {
             FixChildren(currentObj, treeStatus) {
+                let element = this.$refs.tree
                 if (currentObj !== undefined) {
                     let selected = treeStatus.checkedKeys.indexOf(currentObj.id) // -1 is unchecked
                     if (selected !== -1) {
-                        this.SelectParent(currentObj)
-                        this.FixSameValueToChild(currentObj, true)
+                        this.SelectParent(currentObj, element)
+                        this.FixSameValueToChild(currentObj, true, element)
                     } else {
                         if (currentObj.childrens !== undefined && currentObj.childrens.length !== 0) {
-                            this.FixSameValueToChild(currentObj, false)
+                            this.FixSameValueToChild(currentObj, false, element)
                         }
                     }
                 }
             },
-            FixSameValueToChild(treeList, isSelected) {
-                if (treeList !== undefined) {
-                    this.$refs.tree.setChecked(treeList.id, isSelected)
+            FixAppChildren(currentObj, treeStatus) {
+                let element = this.$refs.Apptree
+                if (currentObj !== undefined) {
+                    let selected = treeStatus.checkedKeys.indexOf(currentObj.id) // -1 is unchecked
+                    if (selected !== -1) {
+                        this.SelectParent(currentObj, element)
+                        this.FixSameValueToChild(currentObj, true, element)
+                    } else {
+                        if (currentObj.childrens !== undefined && currentObj.childrens.length !== 0) {
+                            this.FixSameValueToChild(currentObj, false, element)
+                        }
+                    }
+                }
+            },
+            //funcion fusion fixchildren
+            FixSameValueToChild(treeList, isSelected, element) {
+                console.dir(element);
+                if (treeList !== undefined && element !== undefined) {
+                    element.setChecked(treeList.id, isSelected)
                     if( treeList.childrens !== undefined) {
                         for (let i = 0; i < treeList.childrens.length; i++) {
-                            this.FixSameValueToChild(treeList.childrens[i], isSelected)
+                            this.FixSameValueToChild(treeList.childrens[i], isSelected, element)
                         }
                     }
                 }
             },
-            SelectParent(currentObj) {
+            SelectParent(currentObj, element) {
+                console.error(element);
                 if(currentObj !== undefined) {
-                    let currentNode = this.$refs.tree.getNode(currentObj)
+                    let currentNode = element.getNode(currentObj)
                     if (currentNode.parent.key !== undefined) {
-                        this.$refs.tree.setChecked(currentNode.parent, true)
-                        this.SelectParent(currentNode.parent)
+                        element.setChecked(currentNode.parent, true)
+                        this.SelectParent(currentNode.parent, element)
                     }
                 }
             },
@@ -390,6 +437,7 @@
                     type:null,
                     is_update:false,
                     modules: [],
+                    apps: [],
                     levels: [],
                     config_system_env: true,
                     soap_send_id: '01',
@@ -421,8 +469,17 @@
                         });
                     });
 
+                    const preAppSelecteds = [];
+                    this.apps.map(m => {
+                        preAppSelecteds.push(m.id);
+                        m.childrens.map(c => {
+                            preAppSelecteds.push(c.id);
+                        });
+                    });
+
                     setTimeout(() => {
                         this.$refs.tree.setCheckedKeys(preSelecteds);
+                        this.$refs.Apptree.setCheckedKeys(preAppSelecteds);
                     }, 1000);
                 }
 
@@ -430,11 +487,15 @@
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.$refs.tree.setCheckedKeys([]);
+                            this.$refs.Apptree.setCheckedKeys([]);
                             this.form = response.data.data;
                             this.form.is_update = true;
                             const preSelecteds = [];
                             const preSelectedsModules = this.form.modules;
                             const preSelectedsLevels = this.form.levels;
+
+                            const preAppSelecteds = [];
+                            const preSelectedsApps = this.form.apps;
                             this.modules.map(m => {
                                 if (preSelectedsModules.includes(m.id)) {
                                     preSelecteds.push(m.id);
@@ -446,22 +507,46 @@
                                     }
                                 })
                             });
+                            this.apps.map(m => {
+                                if (preSelectedsApps.includes(m.id)) {
+                                    preAppSelecteds.push(m.id);
+                                }
+                                m.childrens.map(c => {
+                                    const idArray = c.id.split('-');
+                                    if (preSelectedsLevels.includes(parseInt(idArray[1]))) {
+                                        preAppSelecteds.push(c.id);
+                                    }
+                                })
+                            });
                             setTimeout(() => {
                                 this.$refs.tree.setCheckedKeys(preSelecteds);
+                                this.$refs.Apptree.setCheckedKeys(preAppSelecteds);
                             }, 1000);
                         })
                 }
             },
             async submit() {
                 const modulesAndLevelsSelecteds = this.$refs.tree.getCheckedNodes();
+                const appsAndLevelsSelecteds = this.$refs.Apptree.getCheckedNodes();
                 const modules = [];
                 modulesAndLevelsSelecteds.map(m => {
                     if (m.is_parent) {
                         modules.push(m.id);
                     }
                 });
+                appsAndLevelsSelecteds.map(m => {
+                    if (m.is_parent) {
+                        modules.push(m.id);
+                    }
+                });
                 const levels = [];
                 modulesAndLevelsSelecteds.filter(l => {
+                    if (! l.is_parent) {
+                        const idArray = l.id.split('-');
+                        levels.push(idArray[1]);
+                    }
+                })
+                appsAndLevelsSelecteds.filter(l => {
                     if (! l.is_parent) {
                         const idArray = l.id.split('-');
                         levels.push(idArray[1]);

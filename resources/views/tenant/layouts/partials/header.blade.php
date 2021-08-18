@@ -118,7 +118,17 @@
             </a>
             <div class="dropdown-menu">
                 <ul class="list-unstyled mb-0">
-                    {{-- <li class="divider"></li> --}}
+                    @if(in_array('cuenta', $vc_modules))
+                        @if(in_array('account_users_list', $vc_module_levels))
+                        <li>
+                            <a role="menuitem" href="{{route('tenant.payment.index')}}">
+                                <i class="fas fa-dollar-sign" aria-hidden="true"></i>
+                                <span>Mis Pagos</span>
+                            </a>
+                        </li>
+                        @endif
+                    @endif
+                    <li class="divider"></li>
                     <li>
                         {{--<a role="menuitem" href="#"><i class="fas fa-user"></i> Perfil</a>--}}
                         <a role="menuitem" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

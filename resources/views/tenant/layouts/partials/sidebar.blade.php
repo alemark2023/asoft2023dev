@@ -655,7 +655,7 @@
                     </li>
                     @endif
 
-                    @if(in_array('cuenta', $vc_modules))
+                    {{-- @if(in_array('cuenta', $vc_modules))
                     <li class=" nav-parent
                         {{ ($path[0] === 'cuenta')?'nav-active nav-expanded':'' }}">
                         <a class="nav-link" href="#">
@@ -675,10 +675,10 @@
                             @endif
                         </ul>
                     </li>
-                    @endif
-                    @if(in_array('hotels', $vc_modules) || in_array('documentary-procedure', $vc_modules))
+                    @endif --}}
+                    {{-- @if(in_array('hotels', $vc_modules) || in_array('documentary-procedure', $vc_modules))
                     <li class="nav-description">Módulos extras</li>
-                    @endif
+                    @endif --}}
                     @if(in_array('hotels', $vc_modules))
                     <li class=" nav-parent {{ ($path[0] === 'hotels') ? 'nav-active nav-expanded' : '' }}">
                         <a class="nav-link" href="#">
@@ -760,30 +760,32 @@
                     @endif
 
                     {{-- DIGEMID --}}
-                        @if(in_array('digemid', $vc_modules) && $configuration->isPharmacy())
-                        <li class=" nav-parent {{ ($path[0] === 'digemid') ? 'nav-active nav-expanded' : '' }}">
-                            <a class="nav-link" href="#">
-                                <i class="fa fas fa-ambulance" aria-hidden="true"></i>
-                                <span>Farmácia</span>
-                            </a>
-                            <ul class="nav nav-children">
+                    @if(in_array('digemid', $vc_modules) && $configuration->isPharmacy())
+                    <li class=" nav-parent {{ ($path[0] === 'digemid') ? 'nav-active nav-expanded' : '' }}">
+                        <a class="nav-link" href="#">
+                            <i class="fa fas fa-ambulance" aria-hidden="true"></i>
+                            <span>Farmacia</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            @if(in_array('digemid', $vc_module_levels))
+                                {{-- <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
+                                </li> --}}
+                                <li class="{{ (($path[0] === 'digemid') && ($path[1] === 'digemid')) ? 'nav-active' : '' }}">
+                                    <a class="nav-link" href="{{ route('tenant.digemid.index') }}">Productos</a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+                    {{-- DIGEMID --}}
 
-                                @if(in_array('digemid', $vc_module_levels))
-<!--                                    <li class="{{ (($path[0] === 'documentary-procedure') && ($path[1] === 'offices')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{ route('documentary.offices') }}">Oficinas</a>
-                                    </li>-->
-
-                                    <li class="{{ (($path[0] === 'digemid') && ($path[1] === 'digemid')) ? 'nav-active' : '' }}">
-                                        <a class="nav-link" href="{{ route('tenant.digemid.index') }}">Productos</a>
-                                    </li>
-                                @endif
-
-
-                            </ul>
-                        </li>
-                        @endif
-
-                        {{-- DIGEMID --}}
+                    <li class="">
+                        <a class="nav-link" href="{{url('list-extras')}}">
+                            <i class="fas fa-cube"></i>
+                            <span>Apps</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>

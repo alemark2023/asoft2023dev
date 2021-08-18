@@ -58,6 +58,15 @@ class ClientController extends Controller
         $plans = Plan::all();
         $types = [['type' => 'admin', 'description'=>'Administrador'], ['type' => 'integrator', 'description'=>'Listar Documentos']];
         $modules = Module::with('levels')
+            ->where('sort', '<', 14)
+            ->orderBy('sort')
+            ->get()
+            ->each(function ($module) {
+                return $this->prepareModules($module);
+            });
+
+        $apps = Module::with('levels')
+            ->where('sort', '>', 13)
             ->orderBy('sort')
             ->get()
             ->each(function ($module) {
@@ -70,7 +79,7 @@ class ClientController extends Controller
         $soap_username =  $config->soap_username;
         $soap_password =  $config->soap_password;
 
-        return compact('url_base','plans','types', 'modules', 'certificate_admin', 'soap_username', 'soap_password');
+        return compact('url_base','plans','types', 'modules', 'apps', 'certificate_admin', 'soap_username', 'soap_password');
     }
 
 
@@ -135,7 +144,11 @@ class ClientController extends Controller
         $tenancy = app(Environment::class);
         $tenancy->tenant($client->hostname->website);
 
-        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->get()->pluck('module_id')->toArray();
+        $modules = DB::connection('tenant')->table('modules')->where('order_menu', '<', 14)->select('id');
+        $apps = DB::connection('tenant')->table('modules')->where('order_menu', '>', 13)->select('id');
+
+        $client->modules = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $modules)->get()->pluck('module_id')->toArray();
+        $client->apps = DB::connection('tenant')->table('module_user')->where('user_id', 1)->whereIn('module_id', $apps)->get()->pluck('module_id')->toArray();
         $client->levels = DB::connection('tenant')->table('module_level_user')->where('user_id', 1)->get()->pluck('module_level_id')->toArray();
 
         $config =  DB::connection('tenant')->table('configurations')->first();

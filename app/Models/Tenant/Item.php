@@ -482,6 +482,7 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterValuedKardex(Builder $query, $params)
     {
+        /*
         $query->OrWhereHas('document_items', function ($q) use ($params) {
             $q->whereHas('document', function ($q1) use ($params) {
                 $q1->whereStateTypeAccepted()
@@ -506,6 +507,7 @@ class Item extends ModelTenant
         });
 
         return $query;
+        */
         // No selecciona corectamente los establecimeintos.
         if ($params->establishment_id) {
 
@@ -761,8 +763,10 @@ class Item extends ModelTenant
                     'checked'               => ($warehouses->warehouse_id == $warehouse->id) ? true : false,
                 ];
             }),
-            // 'attributes'     => $this->attributes ? $this->attributes : [],
-            'attributes'     => $this->getAttributesAttribute($this->attributes['attributes']),
+            'attributes'     => $this->attributes ? $this->attributes : [],
+            // $this->getAttributesAttribute($this->attributes['attributes'] retorna: []
+            // $this->getAttributesAttribute($this->attributes) retorna: json_decode() expects parameter 1 to be string, array given
+            // 'attributes'     => $this->getAttributesAttribute($this->attributes['attributes']),
             'lots_group'     => collect($lots_grp)->transform(function ($lots_group) {
                 return [
                     'id'          => $lots_group->id,
