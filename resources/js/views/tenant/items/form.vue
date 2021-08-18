@@ -856,6 +856,13 @@ export default {
 
         ...mapState([
             'colors',
+            'CatItemUnitsPerPackage',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemMoldCavity',
+            'CatItemProductFamily',
             'config',
         ]),
         showPharmaElement() {
@@ -918,19 +925,29 @@ export default {
 
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
-                this.unit_types = response.data.unit_types
-                this.accounts = response.data.accounts
-                this.currency_types = response.data.currency_types
-                this.system_isc_types = response.data.system_isc_types
-                this.affectation_igv_types = response.data.affectation_igv_types
-                this.warehouses = response.data.warehouses
-                this.categories = response.data.categories
-                this.brands = response.data.brands
-                this.attribute_types = response.data.attribute_types
-                // this.config = response.data.configuration
-                // this.$store.commit('setColors', response.data.colors); // CMAR
-                this.$store.commit('setColors', response.data.colors);
-                this.$store.commit('setConfiguration', response.data.configuration);
+                let data = response.data;
+                this.unit_types = data.unit_types
+                this.accounts = data.accounts
+                this.currency_types = data.currency_types
+                this.system_isc_types = data.system_isc_types
+                this.affectation_igv_types = data.affectation_igv_types
+                this.warehouses = data.warehouses
+                this.categories = data.categories
+                this.brands = data.brands
+                this.attribute_types = data.attribute_types
+                // this.config = data.configuration
+                // this.$store.commit('setColors', data.colors); // CMAR
+                this.$store.commit('setColors', data.colors);
+                this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
+                this.$store.commit('setCatItemStatus', data.CatItemStatus);
+                this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);
+                this.$store.commit('setCatItemMoldProperty', data.CatItemMoldProperty);
+                this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
+                this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
+                this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+                this.$store.commit('setConfiguration', data.configuration);
+
+
                 this.loadConfiguration()
                 this.form.sale_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
                 this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null

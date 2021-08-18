@@ -20,6 +20,15 @@ export default {
         state.company = readStorageData('company', true)
         state.establishment =  readStorageData('establishment', true)
         if(state.colors === undefined) state.colors = []
+        if(state.CatItemMoldProperty === undefined) state.CatItemMoldProperty = []
+        if(state.CatItemUnitBusiness === undefined) state.CatItemUnitBusiness = []
+        if(state.CatItemStatus === undefined) state.CatItemStatus = []
+        if(state.CatItemProductFamily === undefined) state.CatItemProductFamily = []
+        if(state.CatItemPackageMeasurement === undefined) state.CatItemPackageMeasurement = []
+        if(state.CatItemUnitsPerPackage === undefined) state.CatItemUnitsPerPackage = []
+        if(state.CatItemMoldCavity === undefined) state.CatItemMoldCavity = []
+
+
         if(state.loading_submit === undefined) state.loading_submit = false
         // Previenete limite de almacen exedido
         /*

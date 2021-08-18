@@ -119,7 +119,15 @@ Vue.component('tenant-company-accounts', require('../../modules/Account/Resource
 Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
 //
 
-Vue.component('tenant-inventory-color-index', require('../../modules/Inventory/Resources/assets/js/color/index.vue'));
+Vue.component('tenant-inventory-color-index', require('../../modules/Inventory/Resources/assets/js/extra_info/color/index.vue'));
+Vue.component('tenant-inventory-item-units-per-package-index', require('../../modules/Inventory/Resources/assets/js/extra_info/item_units_per_package/index.vue'));
+Vue.component('tenant-inventory-item-units-business', require('../../modules/Inventory/Resources/assets/js/extra_info/item_units_business/index.vue'));
+Vue.component('tenant-inventory-item-package-measurements', require('../../modules/Inventory/Resources/assets/js/extra_info/item_package_measurements/index.vue'));
+Vue.component('tenant-inventory-mold-cavities', require('../../modules/Inventory/Resources/assets/js/extra_info/item_mold_cavities/index.vue'));
+Vue.component('tenant-inventory-mold-property', require('../../modules/Inventory/Resources/assets/js/extra_info/item_mold_property/index.vue'));
+Vue.component('tenant-inventory-item-status', require('../../modules/Inventory/Resources/assets/js/extra_info/item_status/index.vue'));
+Vue.component('tenant-inventory-item-product-family', require('../../modules/Inventory/Resources/assets/js/extra_info/item_product_family/index.vue'));
+Vue.component('tenant-inventory-extra-info-list', require('../../modules/Inventory/Resources/assets/js/extra_info/index.vue'));
 
 Vue.component('tenant-inventory-devolutions-index', require('../../modules/Inventory/Resources/assets/js/devolutions/index.vue'));
 Vue.component('tenant-inventory-devolutions-form', require('../../modules/Inventory/Resources/assets/js/devolutions/form.vue'));

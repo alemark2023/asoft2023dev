@@ -10,7 +10,7 @@
         @open="create">
         <div v-loading="loading">
             <div class="row">
-                <div class="col-lg-8 col-md-8">
+                <div class="col-lg-12 col-md-12">
                     <div :class="{'has-danger': errors['color.name']}"
                          class="form-group">
                         <label class="control-label">Nombre</label>
@@ -26,11 +26,11 @@
         <span slot="footer"
               class="dialog-footer">
             <div class="row">
-                <div class="col-4">&nbsp;</div>
-            <div class="col-lg-4 col-md-4">
+                <div class="col-6">&nbsp;</div>
+            <div class=" col-md-3">
                 <el-button @click.prevent="save()">Guardar</el-button>
             </div>
-            <div class="col-lg-4 col-md-4">
+            <div class="col-md-3">
                 <el-button @click="clickClose">Cerrar</el-button>
             </div>
             </div>
@@ -42,7 +42,9 @@
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: [],
+    props: [
+        'resource'
+    ],
     components: {},
     computed: {
         ...mapState([
@@ -55,8 +57,8 @@ export default {
     },
     data() {
         return {
-            titleDialog: 'Nuevo color',
-            resource: 'colors',
+            titleDialog: 'Nuevo elemento',
+            // resource: '${this.resource}',
             loading: false,
             showDialog: false,
             showDialogOptions: false,
@@ -96,7 +98,7 @@ export default {
                 id = this.ccolor.id
 
             }
-            this.$http.post(`./colors/record/${id}`)
+            this.$http.post(`/extra_info_items/${this.resource}/record/${id}`)
                 .then((response) => {
                     this.ccolor = response.data
                 })
@@ -105,9 +107,9 @@ export default {
                 })
                 .then(() => {
                     if (this.ccolor.id !== undefined) {
-                        this.titleDialog = `Editando el color ${this.ccolor.name}`
+                        this.titleDialog = `Editando el elemento ${this.ccolor.name}`
                     } else {
-                        this.titleDialog = `Nuevo color`
+                        this.titleDialog = `Nuevo elemento`
 
                     }
 
@@ -135,7 +137,7 @@ export default {
             }
 
             let param = this.ccolor;
-            this.$http.post(`./colors/save/${id}`, {param})
+            this.$http.post(`/extra_info_items/${this.resource}/save/${id}`, {param})
                 .then((response) => {
                     this.ccolor = response;
                 })
@@ -150,7 +152,7 @@ export default {
         clickClose() {
             this.$store.commit('setLoadingSubmit',true);
             return this.$http
-                .get(`/colors/records`)
+                .get(`/extra_info_items/${this.resource}/records`)
                 .then(response => {
                     let data = response.data;
                     this.$store.commit('setRecords',  data.data)

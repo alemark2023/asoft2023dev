@@ -13,6 +13,13 @@ use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
@@ -148,7 +155,16 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        /** Informacion adicional */
         $colors = CatColorsItem::all();
+        $CatItemStatus= CatItemStatus::all();
+        $CatItemUnitBusiness = CatItemUnitBusiness::all();
+        $CatItemMoldCavity = CatItemMoldCavity::all();
+        $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+        $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+        $CatItemMoldProperty = CatItemMoldProperty::all();
+        $CatItemProductFamily= CatItemProductFamily::all();
+        /** Informacion adicional */
         $configuration = Configuration::select(
             'affectation_igv_type_id',
             'is_pharmacy'
@@ -166,7 +182,14 @@ class ItemController extends Controller
             'categories',
             'brands',
             'configuration',
-            'colors'
+            'colors',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage'
         );
     }
 
@@ -266,9 +289,43 @@ class ItemController extends Controller
 
         // Extra data
         if($request->has('colors')){
-            $item->setColorCombination($request->colors);
+            $item->setItemColor($request->colors);
 
         }
+        if($request->has('CatItemUnitsPerPackage')){
+            $item->setItemUnitsPerPackage($request->CatItemUnitsPerPackage);
+
+        }
+
+        // nuevo
+
+        if($request->has('CatItemMoldCavity')){
+            $item->setItemMoldCavity($request->CatItemMoldCavity);
+
+        }
+
+        if($request->has('CatItemMoldProperty')){
+            $item->setItemMoldProperty($request->CatItemMoldProperty);
+
+        }
+
+        if($request->has('CatItemUnitBusiness')){
+            $item->setItemUnitBusiness($request->CatItemUnitBusiness);
+
+        }
+        if($request->has('CatItemStatus')){
+            $item->setItemStatus($request->CatItemStatus);
+
+        }
+        if($request->has('CatItemPackageMeasurement')){
+            $item->setItemPackageMeasurement($request->CatItemPackageMeasurement);
+
+        }
+        if($request->has('CatItemProductFamily')){
+            $item->setItemProductFamily($request->CatItemProductFamily);
+
+        }
+
         // Extra data
 
 

@@ -3,7 +3,9 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Colores</span></li>
+                <li class="active"><span>
+                    Familia de productos
+                </span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <!--
@@ -22,7 +24,9 @@
 
         <div class="card mb-0">
             <div class="card-header bg-info">
-                <h3 class="my-0">Colores de productos</h3>
+                <h3 class="my-0">
+                    Familia de productos
+                </h3>
             </div>
             <!--
             <div class="data-table-visible-columns">
@@ -87,10 +91,12 @@
                 </div>
             </div>
         </div>
-        <color-form
+
+        <item-per-package-form
+            :resource="resource"
         >
 
-        </color-form>
+        </item-per-package-form>
     </div>
 </template>
 <style scoped>
@@ -101,7 +107,7 @@
 <script>
 
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
-import ColorForm from './form.vue';
+import ItemPerPackageForm from '../form.vue';
 
 export default {
     props: [
@@ -109,7 +115,7 @@ export default {
     ],
     mixins: [],
     components: {
-        ColorForm
+        ItemPerPackageForm
     },
     computed: {
         ...mapState([
@@ -122,7 +128,7 @@ export default {
     },
     data() {
         return {
-            resource: 'colors',
+            resource: 'item-prodcut-family',
             ccolor: {},
             recordId: null,
             showDialogOptions: false,
@@ -160,7 +166,7 @@ export default {
         getRecords() {
             this.$store.commit('setLoadingSubmit', true);
             return this.$http
-                .get(`/colors/records`)
+                .get(`./${this.resource}/records`)
                 .then(response => {
                     let data = response.data;
                     this.$store.commit('setRecords', data.data)

@@ -78,6 +78,38 @@ export default {
         if(colors == undefined ) colors = [];
         state.colors = colors
     },
+    setCatItemStatus(state, CatItemStatus) {
+        if(CatItemStatus == undefined ) CatItemStatus = [];
+        state.CatItemStatus = CatItemStatus
+    },
+    setCatItemUnitsPerPackage(state, CatItemUnitsPerPackage) {
+        if(CatItemUnitsPerPackage == undefined ) CatItemUnitsPerPackage = [];
+        state.CatItemUnitsPerPackage = CatItemUnitsPerPackage
+    },
+    setCatItemMoldCavity(state, CatItemMoldCavity) {
+        if(CatItemMoldCavity == undefined ) CatItemMoldCavity = [];
+        state.CatItemMoldCavity = CatItemMoldCavity
+    },
+    setCatItemMoldProperty(state, CatItemMoldProperty) {
+        if(CatItemMoldProperty == undefined ) CatItemMoldProperty = [];
+        state.CatItemMoldProperty = CatItemMoldProperty
+    },
+    setCatItemUnitBusiness(state, CatItemUnitBusiness) {
+        if(CatItemUnitBusiness == undefined ) CatItemUnitBusiness = [];
+        state.CatItemUnitBusiness = CatItemUnitBusiness
+    },
+    setCatItemPackageMeasurement(state, CatItemPackageMeasurement) {
+        if(CatItemPackageMeasurement == undefined ) CatItemPackageMeasurement = [];
+        state.CatItemPackageMeasurement = CatItemPackageMeasurement
+    },
+
+    setCatItemProductFamily(state, CatItemProductFamily) {
+        if(CatItemProductFamily == undefined ) CatItemProductFamily = [];
+        state.CatItemProductFamily = CatItemProductFamily
+    },
+
+
+
     setRecords(state, records) {
         if(records == undefined ) records = [];
         state.records = records

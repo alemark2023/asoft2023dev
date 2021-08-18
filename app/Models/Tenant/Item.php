@@ -672,10 +672,18 @@ class Item extends ModelTenant
      * @param \App\Models\Tenant\Warehouse|\Modules\Inventory\Models\Warehouse|null $warehouse
      * @param false                                    $with_lots_has_sale
      * @param false                                    $extended_description
+
      *
      * @return array
      */
-    public function getDataToItemModal($warehouse = null, $with_lots_has_sale = false, $extended_description = false, $series = null, $search_item_by_series = false) {
+    public function getDataToItemModal(
+        $warehouse = null,
+        $with_lots_has_sale = false,
+        $extended_description = false,
+        $series = null,
+        $search_item_by_series = false,
+        $aditional_data = true
+    ) {
 
         if ($warehouse == null) {
             $establishment_id = auth()->user()->establishment_id;
@@ -686,7 +694,45 @@ class Item extends ModelTenant
         $lots_grp = $this->lots_group;
 
         $lots = $this->getLotsBySerie($warehouse, $series, $search_item_by_series);
-        // dd($lots);
+        $blank = [];
+        $currentColors = collect($blank);
+        $ItemUnitsPerPackage = collect($blank);
+        $ItemMoldProperty = collect($blank);
+        $ItemProductFamily = collect($blank);
+        $ItemMoldCavity = collect($blank);
+        $ItemPackageMeasurement = collect($blank);
+        $ItemStatus = collect($blank);
+        $ItemUnitBusiness = collect($blank);
+
+        if($aditional_data === true){
+            $currentColors = $this->getItemColor()->transform(function ($row) {
+                return $row->cat_colors_item_id;
+            });
+            $ItemUnitsPerPackage = $this->getItemUnitsPerPackage()->transform(function ($row) {
+                return $row->cat_item_units_per_package_id;
+            });
+            $ItemMoldProperty = $this->getItemMoldProperty()->transform(function ($row) {
+                return $row->cat_item_mold_properties_id;
+            });
+
+
+            $ItemProductFamily = $this->getItemProductFamily()->transform(function ($row) {
+                return $row->cat_item_product_family_id;
+            });
+            $ItemMoldCavity = $this->getItemMoldCavity()->transform(function ($row) {
+                return $row->cat_item_mold_cavities_id;
+            });
+            $ItemPackageMeasurement = $this->getItemPackageMeasurement()->transform(function ($row) {
+                return $row->cat_item_package_measurements_id;
+            });
+            $ItemStatus = $this->getItemStatus()->transform(function ($row) {
+                return $row->cat_item_status_id;
+            });
+            $ItemUnitBusiness = $this->getItemUnitBusiness()->transform(function ($row) {
+                return $row->cat_item_unit_business_id;
+            });
+
+        }
 
         if ($with_lots_has_sale == true) {
             $lots = $this->item_lots->where('has_sale', false)->transform(function ($row) {
@@ -740,6 +786,14 @@ class Item extends ModelTenant
             'has_igv'                          => (bool)$this->has_igv,
             'has_plastic_bag_taxes'            => (bool)$this->has_plastic_bag_taxes,
             'amount_plastic_bag_taxes'         => $this->amount_plastic_bag_taxes,
+            'colors' => $currentColors,
+            'CatItemUnitsPerPackage' => $ItemUnitsPerPackage,
+            'CatItemMoldProperty' => $ItemMoldProperty,
+            'CatItemProductFamily' => $ItemProductFamily,
+            'CatItemMoldCavity' => $ItemMoldCavity,
+            'CatItemPackageMeasurement' => $ItemPackageMeasurement,
+            'CatItemStatus' => $ItemStatus,
+            'CatItemUnitBusiness' => $ItemUnitBusiness,
             'item_unit_types'                  => collect($realtion_item_unit_types)->transform(function ($item_unit_types) {
                 return [
                     'id'            => $item_unit_types->id,
@@ -1105,34 +1159,109 @@ class Item extends ModelTenant
 
 
     /**
+     * Almacena las unidades por almacen para poder guardarlos en la tabla.
+     *
+     * @param array $ItemUnitsPerPackage
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setItemUnitsPerPackage(array $ItemUnitsPerPackage = []) {
+
+        return $this->setExtraData(ItemUnitsPerPackage::class,'cat_item_units_per_package_id',$ItemUnitsPerPackage);
+
+
+    }
+
+    public function getItemUnitsPerPackage(){
+        return ItemUnitsPerPackage::where('item_id', $this->id)->where('active',1)->get();
+    }
+    /**
      * Almacena los colores para poder guardarlos en la tabla.
      * @param array $colors
      *
      * @return $this
      * @throws \Exception
      */
-    public function setColorCombination($colors = []) {
-        $colors = collect($colors);
-        $currentColors = ItemColor::where('item_id',$this->id)->whereNotIn('cat_colors_item_id',$colors)->get();
-        foreach ($currentColors as $color)
-        {
-            $color->setActive(false)->push();
-            $color->delete();
+    public function setItemColor($colors = []) {
+        return $this->setExtraData(ItemColor::class,'cat_colors_item_id',$colors);
+    }
+    public function getItemColor(){
+        return ItemColor::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    public function setItemMoldProperty($data = []) {
+        return $this->setExtraData(ItemMoldProperty::class,'cat_item_mold_properties_id',$data);
+    }
+    public function getItemMoldProperty(){
+        return ItemMoldProperty::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemUnitBusiness($data = []) {
+        return $this->setExtraData(ItemUnitBusiness::class,'cat_item_unit_business_id',$data);
+    }
+
+    public function getItemUnitBusiness(){
+        return ItemUnitBusiness::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemStatus($data = []) {
+        return $this->setExtraData(ItemStatus::class,'cat_item_status_id',$data);
+    }
+
+    public function getItemStatus(){
+        return ItemStatus::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    public function setItemPackageMeasurement($data = []) {
+        return $this->setExtraData(ItemPackageMeasurement::class,'cat_item_package_measurements_id',$data);
+    }
+
+    public function getItemPackageMeasurement(){
+        return ItemPackageMeasurement::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemMoldCavity($data = []) {
+        return $this->setExtraData(ItemMoldCavity::class,'cat_item_mold_cavities_id',$data);
+    }
+
+    public function getItemMoldCavity(){
+        return ItemMoldCavity::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemProductFamily($data = []) {
+        return $this->setExtraData(ItemProductFamily::class,'cat_item_product_family_id',$data);
+    }
+
+    public function getItemProductFamily(){
+        return ItemProductFamily::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    /**
+     * @param  ItemMoldProperty|ItemUnitBusiness|ItemStatus|ItemColor|ItemUnitsPerPackage|ItemProductFamily|ItemMoldCavity|ItemPackageMeasurement|null      $class
+     * @param string $field_id
+     * @param array  $data
+     *
+     * @return $this
+     */
+    protected function setExtraData($class,$field_id = '',$data = []){
+        $dataCollection = collect($data);
+        $currentRow = $class::where('item_id',$this->id)
+            ->whereNotIn($field_id,$dataCollection)
+            ->get();
+        foreach ($currentRow as $row){
+            $row->setActive(false)->push();
+            $row->delete();
         }
 
 
-        foreach($colors as $item){
+        foreach($dataCollection as $item){
 
             $ck = [
                 'item_id'=>$this->id,
-                'cat_colors_item_id'=>$item
+                $field_id=>$item
             ];
-            $newColors = ItemColor::where($ck)->first();
-            if(empty($newColors)) $newColors = new ItemColor($ck);
+            $newRow = $class::where($ck)->first();
+            if(empty($newRow)) $newRow = new $class($ck);
 
-            $newColors->setActive(true)->push();
+            $newRow->setActive(true)->push();
         }
         return $this;
     }
-
 }
