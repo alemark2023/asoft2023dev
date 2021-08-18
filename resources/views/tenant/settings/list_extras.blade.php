@@ -32,7 +32,7 @@
                 <span class="badge badge-{{in_array('hotels', $vc_modules) ? 'success' : 'default'}}">
                     {{in_array('hotels', $vc_modules) ? 'Activo' : 'Inactivo'}}
                 </span>
-                @if(!in_array('documentary-procedure', $vc_modules))
+                @if(!in_array('hotels', $vc_modules))
                     <small class="text-muted">Debe consultar con su administrador para poder habilitarlo</small>
                 @endif
             </div>
@@ -71,7 +71,7 @@
                 <span class="badge badge-{{in_array('digemid', $vc_modules) ? 'success' : 'default'}}">
                     {{in_array('digemid', $vc_modules) ? 'Activo' : 'Inactivo'}}
                 </span>
-                @if(!in_array('documentary-procedure', $vc_modules))
+                @if(!in_array('digemid', $vc_modules))
                     <small class="text-muted">Debe consultar con su administrador para poder habilitarlo</small>
                 @endif
             </div>
