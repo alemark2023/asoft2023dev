@@ -40,6 +40,7 @@ class ClientResource extends JsonResource
                 'locked' => (bool) $this->locked,
                 'locked_emission' => (bool) $this->locked_emission,
                 'modules' => $this->modules,
+                'apps' => $this->apps,
                 'levels' => $this->levels,
                 //'count_doc' => $this->count_doc,
                // 'max_documents' => (int) $this->plan->limit_documents,

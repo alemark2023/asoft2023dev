@@ -115,4 +115,11 @@
         public function indexSettings() {
             return view('tenant.settings.list_settings');
         }
+
+        /**
+         * @return \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\View\View
+         */
+        public function listExtras() {
+            return view('tenant.settings.list_extras');
+        }
     }
