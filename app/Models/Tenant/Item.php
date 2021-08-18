@@ -482,6 +482,7 @@ class Item extends ModelTenant
      */
     public function scopeWhereFilterValuedKardex(Builder $query, $params)
     {
+        /*
         $query->OrWhereHas('document_items', function ($q) use ($params) {
             $q->whereHas('document', function ($q1) use ($params) {
                 $q1->whereStateTypeAccepted()
@@ -506,6 +507,7 @@ class Item extends ModelTenant
         });
 
         return $query;
+        */
         // No selecciona corectamente los establecimeintos.
         if ($params->establishment_id) {
 
