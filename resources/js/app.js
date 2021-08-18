@@ -19,6 +19,9 @@ export default ElementUI;
 Vue.use(ElementUI, { size: 'small' })
 Vue.prototype.$eventHub = new Vue()
 
+Vue.component('tenant-item-aditional-info-selector', require('./views/tenant/components/partials/item_extra_info.vue'));
+
+
 Vue.component('tenant-dashboard-index', require('../../modules/Dashboard/Resources/assets/js/views/index.vue'));
 
 Vue.component('x-graph', require('./components/graph/src/Graph.vue'));
@@ -118,6 +121,7 @@ Vue.component('tenant-company-accounts', require('../../modules/Account/Resource
 //
 Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
 //
+
 
 Vue.component('tenant-inventory-color-index', require('../../modules/Inventory/Resources/assets/js/extra_info/color/index.vue'));
 Vue.component('tenant-inventory-item-units-per-package-index', require('../../modules/Inventory/Resources/assets/js/extra_info/item_units_per_package/index.vue'));

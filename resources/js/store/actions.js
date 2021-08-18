@@ -1,5 +1,4 @@
 import state from './state'
-import {getUniqueArray} from "../helpers/functions";
 
 function readStorageData(variable, json = false) {
     let w = localStorage.getItem(variable)
@@ -18,18 +17,26 @@ export default {
         state.customers = readStorageData('customers', true)
         state.userType = readStorageData('userType', false)
         state.company = readStorageData('company', true)
-        state.establishment =  readStorageData('establishment', true)
-        if(state.colors === undefined) state.colors = []
-        if(state.CatItemMoldProperty === undefined) state.CatItemMoldProperty = []
-        if(state.CatItemUnitBusiness === undefined) state.CatItemUnitBusiness = []
-        if(state.CatItemStatus === undefined) state.CatItemStatus = []
-        if(state.CatItemProductFamily === undefined) state.CatItemProductFamily = []
-        if(state.CatItemPackageMeasurement === undefined) state.CatItemPackageMeasurement = []
-        if(state.CatItemUnitsPerPackage === undefined) state.CatItemUnitsPerPackage = []
-        if(state.CatItemMoldCavity === undefined) state.CatItemMoldCavity = []
+        state.establishment = readStorageData('establishment', true)
+        if (state.colors === undefined) state.colors = []
+        if (state.CatItemMoldProperty === undefined) state.CatItemMoldProperty = []
+        if (state.CatItemUnitBusiness === undefined) state.CatItemUnitBusiness = []
+        if (state.CatItemStatus === undefined) state.CatItemStatus = []
+        if (state.CatItemProductFamily === undefined) state.CatItemProductFamily = []
+        if (state.CatItemPackageMeasurement === undefined) state.CatItemPackageMeasurement = []
+        if (state.CatItemUnitsPerPackage === undefined) state.CatItemUnitsPerPackage = []
+        if (state.CatItemMoldCavity === undefined) state.CatItemMoldCavity = []
 
 
-        if(state.loading_submit === undefined) state.loading_submit = false
+        if (state.extra_colors === undefined) state.extra_colors = []
+        if (state.extra_CatItemUnitsPerPackage === undefined) state.extra_CatItemUnitsPerPackage = []
+        if (state.extra_CatItemMoldProperty === undefined) state.extra_CatItemMoldProperty = []
+        if (state.extra_CatItemUnitBusiness === undefined) state.extra_CatItemUnitBusiness = []
+        if (state.extra_CatItemStatus === undefined) state.extra_CatItemStatus = []
+        if (state.extra_CatItemPackageMeasurement === undefined) state.extra_CatItemPackageMeasurement = []
+        if (state.extra_CatItemMoldCavity === undefined) state.extra_CatItemMoldCavity = []
+        if (state.extra_CatItemProductFamily === undefined) state.extra_CatItemProductFamily = []
+        if (state.loading_submit === undefined) state.loading_submit = false
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
@@ -45,69 +52,79 @@ export default {
         localStorage.removeItem('warehouses')
         localStorage.removeItem('all_items')
     },
+    clearExtraInfoItem() {
+        state.extra_colors = []
+        state.extra_CatItemUnitsPerPackage = []
+        state.extra_CatItemMoldProperty = []
+        state.extra_CatItemUnitBusiness = []
+        state.extra_CatItemStatus = []
+        state.extra_CatItemPackageMeasurement = []
+        state.extra_CatItemMoldCavity = []
+        state.extra_CatItemProductFamily = []
+    },
     loadWarehouses(store) {
-        if(state.warehouses === undefined) state.warehouses = [];
+        if (state.warehouses === undefined) state.warehouses = [];
         // state.warehouses = readStorageData('warehouses', true)
     },
     loadOffices(store) {
-        if(state.offices === undefined) state.offices = [];
+        if (state.offices === undefined) state.offices = [];
         // state.offices = readStorageData('offices', true)
     },
     loadCustomers(store) {
-        if(state.customers === undefined) state.customers = [];
+        if (state.customers === undefined) state.customers = [];
         // state.customers = readStorageData('customers', true)
     },
     loadCurrencys(store) {
-        if(state.currencys === undefined) state.currencys = [];
+        if (state.currencys === undefined) state.currencys = [];
         // state.customers = readStorageData('customers', true)
     },
     loadActions(store) {
-        if(state.actions === undefined) state.actions = [];
+        if (state.actions === undefined) state.actions = [];
         // state.actions = readStorageData('actions', true)
     },
     loadProcesses(store) {
-        if(state.processes === undefined) state.processes = [];
+        if (state.processes === undefined) state.processes = [];
         // state.processes = readStorageData('processes', true)
     },
     loadFiles(store) {
-        if(state.files === undefined) state.files = [];
+        if (state.files === undefined) state.files = [];
         // state.files = readStorageData('files', true)
     },
     loadDocumentTypes(store) {
         state.documentTypes = readStorageData('documentTypes', true)
     },
     loadWorkers(store) {
-        if(state.workers === undefined) state.workers = [];
+        if (state.workers === undefined) state.workers = [];
         // state.workers = readStorageData('workers', true)
     },
     loadAllItems(store) {
-        if(state.all_items === undefined) state.all_items = [];
+        if (state.all_items === undefined) state.all_items = [];
         // state.all_items = getUniqueArray(readStorageData('all_items', true), ['id'])
     },
-    loadCompany(store){
-        let t  = readStorageData('company', true)
-        if(t !==null){
+    loadCompany(store) {
+        let t = readStorageData('company', true)
+        if (t !== null) {
             state.company = t
-        }else{
+        } else {
             state.company = {
-                logo:null,
-                    name:'',
+                logo: null,
+                name: '',
             };
         }
     },
-    loadEstablishment(store){
-        let t  = readStorageData('establishment', true)
-        if(t !==null){
+    loadEstablishment(store) {
+        let t = readStorageData('establishment', true)
+        if (t !== null) {
             state.establishment = t
-        }else{
+        } else {
             state.establishment = {
-                address:'-',
-                district: {description:''},
-                province: {description:''},
-                department: {description:''},
-                country: {description:''},
-                telephone:'-',
-                email:null,
+                address: '-',
+                district: {description: ''},
+                province: {description: ''},
+                department: {description: ''},
+                country: {description: ''},
+                telephone: '-',
+                email: null,
             };
         }
     },

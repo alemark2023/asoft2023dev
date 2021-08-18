@@ -15,6 +15,14 @@ use App\Imports\DocumentsImportTwoFormat;
 use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
@@ -245,8 +253,27 @@ class DocumentController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
 
+        /** Informacion adicional */
+        $colors = CatColorsItem::all();
+        $CatItemStatus= CatItemStatus::all();
+        $CatItemUnitBusiness = CatItemUnitBusiness::all();
+        $CatItemMoldCavity = CatItemMoldCavity::all();
+        $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+        $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+        $CatItemMoldProperty = CatItemMoldProperty::all();
+        $CatItemProductFamily= CatItemProductFamily::all();
+        /** Informacion adicional */
+
         return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',
-                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client');
+                       'operation_types', 'discount_types', 'charge_types', 'attribute_types','is_client',
+            'colors',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage');
     }
 
     public function table($table)

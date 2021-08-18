@@ -75,47 +75,79 @@ export default {
         state.office = office
     },
     setColors(state, colors) {
-        if(colors == undefined ) colors = [];
+        if(colors === undefined ) colors = [];
         state.colors = colors
     },
     setCatItemStatus(state, CatItemStatus) {
-        if(CatItemStatus == undefined ) CatItemStatus = [];
+        if(CatItemStatus === undefined ) CatItemStatus = [];
         state.CatItemStatus = CatItemStatus
     },
     setCatItemUnitsPerPackage(state, CatItemUnitsPerPackage) {
-        if(CatItemUnitsPerPackage == undefined ) CatItemUnitsPerPackage = [];
+        if(CatItemUnitsPerPackage === undefined ) CatItemUnitsPerPackage = [];
         state.CatItemUnitsPerPackage = CatItemUnitsPerPackage
     },
     setCatItemMoldCavity(state, CatItemMoldCavity) {
-        if(CatItemMoldCavity == undefined ) CatItemMoldCavity = [];
+        if(CatItemMoldCavity === undefined ) CatItemMoldCavity = [];
         state.CatItemMoldCavity = CatItemMoldCavity
     },
     setCatItemMoldProperty(state, CatItemMoldProperty) {
-        if(CatItemMoldProperty == undefined ) CatItemMoldProperty = [];
+        if(CatItemMoldProperty === undefined ) CatItemMoldProperty = [];
         state.CatItemMoldProperty = CatItemMoldProperty
     },
     setCatItemUnitBusiness(state, CatItemUnitBusiness) {
-        if(CatItemUnitBusiness == undefined ) CatItemUnitBusiness = [];
+        if(CatItemUnitBusiness === undefined ) CatItemUnitBusiness = [];
         state.CatItemUnitBusiness = CatItemUnitBusiness
     },
     setCatItemPackageMeasurement(state, CatItemPackageMeasurement) {
-        if(CatItemPackageMeasurement == undefined ) CatItemPackageMeasurement = [];
+        if(CatItemPackageMeasurement === undefined ) CatItemPackageMeasurement = [];
         state.CatItemPackageMeasurement = CatItemPackageMeasurement
     },
 
     setCatItemProductFamily(state, CatItemProductFamily) {
-        if(CatItemProductFamily == undefined ) CatItemProductFamily = [];
+        if(CatItemProductFamily === undefined ) CatItemProductFamily = [];
         state.CatItemProductFamily = CatItemProductFamily
     },
 
+    setExtraColors(state, extra_colors) {
+        if(extra_colors === undefined ) extra_colors = [];
+        state.extra_colors = extra_colors
+    },
+    setExtraCatItemUnitsPerPackage(state, extra_CatItemUnitsPerPackage) {
+        if(extra_CatItemUnitsPerPackage === undefined ) extra_CatItemUnitsPerPackage = [];
+        state.extra_CatItemUnitsPerPackage = extra_CatItemUnitsPerPackage
+    },
+    setExtraCatItemMoldProperty(state, extra_CatItemMoldProperty) {
+        if(extra_CatItemMoldProperty === undefined ) extra_CatItemMoldProperty = [];
+        state.extra_CatItemMoldProperty = extra_CatItemMoldProperty
+    },
+    setExtraCatItemUnitBusiness(state, extra_CatItemUnitBusiness) {
+        if(extra_CatItemUnitBusiness === undefined ) extra_CatItemUnitBusiness = [];
+        state.extra_CatItemUnitBusiness = extra_CatItemUnitBusiness
+    },
+    setExtraCatItemStatus(state, extra_CatItemStatus) {
+        if(extra_CatItemStatus === undefined ) extra_CatItemStatus = [];
+        state.extra_CatItemStatus = extra_CatItemStatus
+    },
+    setExtraCatItemPackageMeasurement(state, extra_CatItemPackageMeasurement) {
+        if(extra_CatItemPackageMeasurement === undefined ) extra_CatItemPackageMeasurement = [];
+        state.extra_CatItemPackageMeasurement = extra_CatItemPackageMeasurement
+    },
+    setExtraCatItemMoldCavity(state, extra_CatItemMoldCavity) {
+        if(extra_CatItemMoldCavity === undefined ) extra_CatItemMoldCavity = [];
+        state.extra_CatItemMoldCavity = extra_CatItemMoldCavity
+    },
+    setExtraCatItemProductFamily(state, extra_CatItemProductFamily) {
+        if(extra_CatItemProductFamily === undefined ) extra_CatItemProductFamily = [];
+        state.extra_CatItemProductFamily = extra_CatItemProductFamily
+    },
 
 
     setRecords(state, records) {
-        if(records == undefined ) records = [];
+        if(records === undefined ) records = [];
         state.records = records
     },
     setPagination(state, pagination) {
-        if(pagination == undefined ) pagination = {
+        if(pagination === undefined ) pagination = {
             current_page : 1,
             total : 0,
             per_page : 25,

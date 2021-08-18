@@ -936,7 +936,6 @@ export default {
                 this.brands = data.brands
                 this.attribute_types = data.attribute_types
                 // this.config = data.configuration
-                // this.$store.commit('setColors', data.colors); // CMAR
                 this.$store.commit('setColors', data.colors);
                 this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
                 this.$store.commit('setCatItemStatus', data.CatItemStatus);
