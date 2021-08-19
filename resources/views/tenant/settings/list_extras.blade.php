@@ -18,8 +18,8 @@
 </div>
 
 <div class="row">
-    <div class="col-6 col-md-3 mb-4">
-        <section class="card mt-4">
+    <div class="col-6 col-md-2">
+        <section class="card mb-2">
             <header class="card-header bg-{{in_array('hotels', $vc_modules) ? 'primary' : 'dark'}}">
                 <div class="card-header-icon">
                     <i class="fas fa-hotel"></i>
@@ -39,8 +39,8 @@
             </div>
         </section>
     </div>
-    <div class="col-6 col-md-3 mb-4">
-        <section class="card mt-4">
+    <div class="col-6 col-md-2">
+        <section class="card mb-2">
             <header class="card-header bg-{{in_array('documentary-procedure', $vc_modules) ? 'primary' : 'dark'}}">
                 <div class="card-header-icon">
                     <i class="fas fa-archive"></i>
@@ -59,8 +59,8 @@
             </div>
         </section>
     </div>
-    <div class="col-6 col-md-3 mb-4">
-        <section class="card mt-4">
+    <div class="col-6 col-md-2">
+        <section class="card mb-2">
             <header class="card-header bg-{{in_array('digemid', $vc_modules) ? 'primary' : 'dark'}}">
                 <div class="card-header-icon">
                     <i class="fas fa-book-medical"></i>
@@ -76,6 +76,58 @@
                 @if(!in_array('digemid', $vc_modules))
                     <small class="text-muted">Debe consultar con su administrador para poder habilitarlo</small>
                 @endif
+            </div>
+        </section>
+    </div>
+    <div class="col-6 col-md-2">
+        <section class="card mb-2">
+            <header class="card-header bg-success">
+                <div class="card-header-icon">
+                    <i class="fab fa-android"></i>
+                </div>
+            </header>
+            <div class="card-body text-center">
+                <h3 class="font-weight-semibold mt-3 text-center">App Movil</h3>
+                <p class="text-center">Descarga la aplicación para tu teléfono android y genera comprobantes como Facturas, Boletas y más.</p>
+                <span class="badge badge-success">
+                    Activo
+                </span>
+                <br>
+                <small class="text-muted"><a href="https://facturaloperu.com/apk/app-debug.apk" target="_blank">Descargala aqui</a></small>
+            </div>
+        </section>
+    </div>
+    <div class="col-6 col-md-2">
+        <section class="card mb-2">
+            <header class="card-header bg-secondary">
+                <div class="card-header-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+            </header>
+            <div class="card-body text-center">
+                <h3 class="font-weight-semibold mt-3 text-center">Restaurantes</h3>
+                <p class="text-center">Gestion de mesas.</p>
+                <span class="badge badge-info">
+                    Próximamente
+                </span>
+                <br>
+            </div>
+        </section>
+    </div>
+    <div class="col-6 col-md-2">
+        <section class="card mb-2">
+            <header class="card-header bg-secondary">
+                <div class="card-header-icon">
+                    <i class="fas fa-bus-alt"></i>
+                </div>
+            </header>
+            <div class="card-body text-center">
+                <h3 class="font-weight-semibold mt-3 text-center">Transporte</h3>
+                <p class="text-center">Gestión de transporte de pasajeros.</p>
+                <span class="badge badge-info">
+                    Próximamente
+                </span>
+                <br>
             </div>
         </section>
     </div>
