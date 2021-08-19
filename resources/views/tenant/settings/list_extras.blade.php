@@ -28,7 +28,7 @@
             <div class="card-body text-center">
                 <h3 class="font-weight-semibold mt-3 text-center">Hoteles</h3>
 
-                <p class="text-center">Gestiona un edificio completo, sus pisos, habitaciones, caracteristicas de cada una y sus precios.</p>
+                <p class="text-center">Gestiona un edificio completo, sus pisos, habitaciones, características de cada una y sus precios.</p>
                 <span class="badge badge-{{in_array('hotels', $vc_modules) ? 'success' : 'default'}}">
                     {{in_array('hotels', $vc_modules) ? 'Activo' : 'Inactivo'}}
                 </span>
@@ -47,7 +47,7 @@
                 </div>
             </header>
             <div class="card-body text-center">
-                <h3 class="font-weight-semibold mt-3 text-center">Tramite documentario</h3>
+                <h3 class="font-weight-semibold mt-3 text-center">Trámite documentario</h3>
                 <p class="text-center">Los documentos puede pasar por varias etapas y ser aprobados en cada una de ellas.</p>
                 <span class="badge badge-{{in_array('documentary-procedure', $vc_modules) ? 'success' : 'default'}}">
                     {{in_array('documentary-procedure', $vc_modules) ? 'Activo' : 'Inactivo'}}
@@ -87,13 +87,13 @@
                 </div>
             </header>
             <div class="card-body text-center">
-                <h3 class="font-weight-semibold mt-3 text-center">App Movil</h3>
-                <p class="text-center">Descarga la aplicación para tu teléfono android y genera comprobantes como Facturas, Boletas y más.</p>
+                <h3 class="font-weight-semibold mt-3 text-center">App Móvil</h3>
+                <p class="text-center">Descarga la aplicación para tu teléfono Android y genera comprobantes como Facturas, Boletas y más.</p>
                 <span class="badge badge-success">
                     Activo
                 </span>
                 <br>
-                <small class="text-muted"><a href="https://facturaloperu.com/apk/app-debug.apk" target="_blank">Descargala aqui</a></small>
+                <small class="text-muted"><a href="https://facturaloperu.com/apk/app-debug.apk" target="_blank">Descargala aquí</a></small>
             </div>
         </section>
     </div>
@@ -106,7 +106,7 @@
             </header>
             <div class="card-body text-center">
                 <h3 class="font-weight-semibold mt-3 text-center">Restaurantes</h3>
-                <p class="text-center">Gestion de mesas.</p>
+                <p class="text-center">Gestión de mesas.</p>
                 <span class="badge badge-info">
                     Próximamente
                 </span>
