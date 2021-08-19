@@ -448,6 +448,7 @@ if ($hostname) {
 
             Route::get('quotations/search-items', 'Tenant\QuotationController@searchItems');
             Route::get('quotations/search/item/{item}', 'Tenant\QuotationController@searchItemById');
+            Route::get('quotations/item-warehouses/{item}', 'Tenant\QuotationController@itemWarehouses');
 
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');

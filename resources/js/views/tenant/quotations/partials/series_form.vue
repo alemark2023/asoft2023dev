@@ -85,9 +85,14 @@
 
         },
         methods:{
-            openSelectWarehouses(row, index) {
+            async openSelectWarehouses(row, index) {
 
                 // console.log(row) 
+                await this.$http.get(`/quotations/item-warehouses/${row.item_id}`)
+                    .then((response) => {
+                        row.item.warehouses = response.data
+                        // console.log(response.data) 
+                    });
 
                 this.selectWarehouses = row.item.warehouses
                 this.item_index = index
