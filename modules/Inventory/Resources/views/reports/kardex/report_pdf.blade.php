@@ -160,12 +160,13 @@
                         <td class="celda">
                             {{$itemKardex['output']}}
                         </td>
-                        @php
+                        {{-- @php
                             $balance += $value->quantity;
-                        @endphp
+                        @endphp --}}
 
                         @if($item_id)
-                            <td class="celda">{{number_format($balance, 4)}}</td>
+                            <td class="celda">{{number_format($itemKardex['balance'], 4)}}</td>
+                            {{-- <td class="celda">{{number_format($balance, 4)}}</td> --}}
                         @endif
                     </tr>
                 @endforeach

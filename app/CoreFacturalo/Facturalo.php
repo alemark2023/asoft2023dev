@@ -123,10 +123,10 @@ class Facturalo
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
-                    // $document->items()->create($row);
-                    $row['document_id']=  $document->id;
-                    $item = new DocumentItem($row);
-                    $item->push();
+                    $document->items()->create($row);
+                    // $row['document_id']=  $document->id;
+                    // $item = new DocumentItem($row);
+                    // $item->push();
                 }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
@@ -1048,17 +1048,21 @@ class Facturalo
                 $this->saveFee($document, $inputs['fee']);
 
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
+
                 foreach ($document->items as $it) {
-                    $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+                    //se usa el evento deleted del modelo - InventoryKardexServiceProvider document_item_delete
+                    $it->delete();
+                    // $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
                 }
 
                 // Al editar el item, borra los registros anteriores
-                foreach ($document->items()->get() as $item) {
-                    /** @var \App\Models\Tenant\DocumentItem $item */
-                    DocumentItem::UpdateItemWarehous($item,'deleted');
-                    $item->delete();
-                }
-                //  $document->items()->delete();
+                // foreach ($document->items()->get() as $item) {
+                //     /** @var \App\Models\Tenant\DocumentItem $item */
+                //     DocumentItem::UpdateItemWarehous($item,'deleted');
+                //     $item->delete();
+                // }
+                // $document->items()->delete();
+
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
                 }
