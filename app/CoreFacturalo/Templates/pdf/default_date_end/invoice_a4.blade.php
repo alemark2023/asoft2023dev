@@ -343,6 +343,11 @@ $establishment = $document->establishment;
         @if($is_pharma == true)
             <th class="border-top-bottom text-center py-2">RS</th>
         @endif
+        {{--
+            Falta validacion de plantilla del 596
+        <th class="border-top-bottom text-center py-2" width="8%">Color</th>
+        --}}
+
         <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
         <th class="border-top-bottom text-center py-2" width="8%">FECHA VCTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
@@ -352,6 +357,12 @@ $establishment = $document->establishment;
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        <?php
+        /*
+        Falta validacion de plantilla del 596
+        $extra_string = $row->getPrintExtraData();
+        */
+        ?>
 
         <tr>
             <td class="text-center align-top">
@@ -401,6 +412,13 @@ $establishment = $document->establishment;
                     {{$row->item->sanitary ?? '' }}
                 </td>
             @endif
+            {{--
+            Falta validacion de plantilla del 596
+            <td class="text-center align-top">
+                {{ (isset($extra_string['colors'])?$extra_string['colors']:null) }}
+            </td>
+            --}}
+
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                 {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}

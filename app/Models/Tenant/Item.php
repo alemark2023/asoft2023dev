@@ -2,6 +2,13 @@
 
 namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -1273,5 +1280,110 @@ class Item extends ModelTenant
             $newRow->setActive(true)->push();
         }
         return $this;
+    }
+
+    /**
+     * Genera una estructura unica para los datos extra.
+     *
+     * @param       $array
+     * @param array $row
+     */
+    public static function SaveExtraDataToRequest(&$array, $row = [])
+    {
+
+        $colors_id = isset($row['item']['extra']['colors']) ? (int)$row['item']['extra']['colors'] : null;
+        $CatItemUnitsPerPackage_id = isset($row['item']['extra']['CatItemUnitsPerPackage']) ? (int)$row['item']['extra']['CatItemUnitsPerPackage'] : null;
+        $CatItemMoldProperty_id = isset($row['item']['extra']['CatItemMoldProperty']) ? (int)$row['item']['extra']['CatItemMoldProperty'] : null;
+        $CatItemProductFamily_id = isset($row['item']['extra']['CatItemProductFamily']) ? (int)$row['item']['extra']['CatItemProductFamily'] : null;
+        $CatItemMoldCavity_id = isset($row['item']['extra']['CatItemMoldCavity']) ? (int)$row['item']['extra']['CatItemMoldCavity'] : null;
+        $CatItemPackageMeasurement_id = isset($row['item']['extra']['CatItemPackageMeasurement']) ? (int)$row['item']['extra']['CatItemPackageMeasurement'] : null;
+        $CatItemStatus_id = isset($row['item']['extra']['CatItemStatus']) ? (int)$row['item']['extra']['CatItemStatus'] : null;
+        $CatItemUnitBusiness_id = isset($row['item']['extra']['CatItemUnitBusiness']) ? (int)$row['item']['extra']['CatItemUnitBusiness'] : null;
+
+
+        $array['item']['extra']["colors"] = $colors_id;
+        $array['item']['extra']["CatItemUnitsPerPackage"] = $CatItemUnitsPerPackage_id;
+        $array['item']['extra']["CatItemMoldProperty"] = $CatItemMoldProperty_id;
+        $array['item']['extra']["CatItemProductFamily"] = $CatItemProductFamily_id;
+        $array['item']['extra']["CatItemMoldCavity"] = $CatItemMoldCavity_id;
+        $array['item']['extra']["CatItemPackageMeasurement"] = $CatItemPackageMeasurement_id;
+        $array['item']['extra']["CatItemStatus"] = $CatItemStatus_id;
+        $array['item']['extra']["CatItemUnitBusiness"] = $CatItemUnitBusiness_id;
+
+        // Guarda el nombre del campo si existe
+
+        $colors_string = '';
+        if (!empty($colors_id)) {
+            $temp = CatColorsItem::find($colors_id);
+            if ($temp !== null) {
+                $colors_string = $temp->getName();
+            }
+        }
+        $CatItemUnitsPerPackage_string = '';
+
+        if (!empty($CatItemUnitsPerPackage_id)) {
+            $temp = CatItemUnitBusiness::find($CatItemUnitsPerPackage_id);
+            if ($temp !== null) {
+                $CatItemUnitsPerPackage_string = $temp->getName();
+            }
+        }
+        $CatItemMoldProperty_string = '';
+
+        if (!empty($CatItemMoldProperty_id)) {
+            $temp = CatItemMoldProperty::find($CatItemMoldProperty_id);
+            if ($temp !== null) {
+                $CatItemMoldProperty_string = $temp->getName();
+            }
+        }
+        $CatItemProductFamily_string = '';
+
+        if (!empty($CatItemProductFamily_id)) {
+            $temp = CatItemProductFamily::find($CatItemProductFamily_id);
+            if ($temp !== null) {
+                $CatItemProductFamily_string = $temp->getName();
+            }
+        }
+        $CatItemMoldCavity_string = '';
+
+        if (!empty($CatItemMoldCavity_id)) {
+            $temp = CatItemMoldCavity::find($CatItemMoldCavity_id);
+            if ($temp !== null) {
+                $CatItemMoldCavity_string = $temp->getName();
+            }
+        }
+        $CatItemPackageMeasurement_string = '';
+
+        if (!empty($CatItemPackageMeasurement_id)) {
+            $temp = CatItemPackageMeasurement::find($CatItemPackageMeasurement_id);
+            if ($temp !== null) {
+                $CatItemPackageMeasurement_string = $temp->getName();
+            }
+        }
+        $CatItemStatus_string = '';
+
+        if (!empty($CatItemStatus_id)) {
+            $temp = CatItemStatus::find($CatItemStatus_id);
+            if ($temp !== null) {
+                $CatItemStatus_string = $temp->getName();
+            }
+        }
+        $CatItemUnitBusiness_string = '';
+
+        if (!empty($CatItemUnitBusiness_id)) {
+            $temp = CatItemUnitBusiness::find($CatItemUnitBusiness_id);
+            if ($temp !== null) {
+                $CatItemUnitBusiness_string = $temp->getName();
+            }
+        }
+
+
+        $array['item']['extra']["string"]["colors"] = $colors_string;
+        $array['item']['extra']["string"]["CatItemUnitsPerPackage"] = $CatItemUnitsPerPackage_string;
+        $array['item']['extra']["string"]["CatItemMoldProperty"] = $CatItemMoldProperty_string;
+        $array['item']['extra']["string"]["CatItemProductFamily"] = $CatItemProductFamily_string;
+        $array['item']['extra']["string"]["CatItemMoldCavity"] = $CatItemMoldCavity_string;
+        $array['item']['extra']["string"]["CatItemPackageMeasurement"] = $CatItemPackageMeasurement_string;
+        $array['item']['extra']["string"]["CatItemStatus"] = $CatItemStatus_string;
+        $array['item']['extra']["string"]["CatItemUnitBusiness"] = $CatItemUnitBusiness_string;
     }
 }
