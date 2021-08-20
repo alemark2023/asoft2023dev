@@ -39,6 +39,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 
 
 class QuotationController extends Controller
@@ -842,5 +843,26 @@ class QuotationController extends Controller
             'success' => true,
             'message' => 'Estado actualizado correctamente'
         ];
+    }
+
+    
+    public function itemWarehouses($item_id)
+    {
+
+        $record = Item::find($item_id);
+        // dd($record->warehouses);
+
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+
+        return collect($record->warehouses)->transform(function ($row) use ($warehouse) {
+            return [
+                'warehouse_description' => $row->warehouse->description,
+                'stock'                 => $row->stock,
+                'warehouse_id'          => $row->warehouse_id,
+                'checked'               => ($row->warehouse_id == $warehouse->id) ? true : false,
+            ];
+        });
+
     }
 }

@@ -85,9 +85,33 @@
 
         },
         methods:{
-            openSelectWarehouses(row, index) {
+            // verifyWarehouse(row){
 
-                // console.log(row) 
+            //     let warehouse = _.find(this.selectWarehouses, {warehouse_id : row.warehouse_id, checked : true})
+            //     return warehouse ? true : false
+
+            // },
+            // checkedWarehouse(){
+
+            //     _.forEach(this.selectWarehouses, row => _.set(row, 'checked', this.verifyWarehouse(row)))
+
+            // },
+            async openSelectWarehouses(row, index) {
+
+                if(!row.consulted_stock){
+
+                    await this.$http.get(`/quotations/item-warehouses/${row.item_id}`)
+                        .then((response) => {
+                            
+                            // this.selectWarehouses = response.data
+                            row.item.warehouses = response.data
+                            row.consulted_stock = true
+                            // this.checkedWarehouse()
+                            // row.item.warehouses = this.selectWarehouses
+    
+                        });
+
+                }
 
                 this.selectWarehouses = row.item.warehouses
                 this.item_index = index
