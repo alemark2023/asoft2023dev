@@ -39,6 +39,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
         $this->devolution();
 
         $this->dispatch();
+        $this->document_item_delete();
 
     }
 
@@ -475,5 +476,22 @@ class InventoryKardexServiceProvider extends ServiceProvider
     }
 
 
+    private function document_item_delete() {
+        
+        DocumentItem::deleted(function($document_item) {
+
+            if(!$document_item->item->is_set){
+
+                $this->processIndividualDocumentItem($document_item);
+
+            }else{
+
+                $this->voidedDocumentItemSet($document_item);
+                
+            }
+
+        });
+
+    }
 
 }
