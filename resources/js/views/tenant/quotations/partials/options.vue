@@ -686,6 +686,7 @@ export default {
                             this.showDialogDocumentOptions = true;
                         }
 
+                        this.getRecord()
                         this.$eventHub.$emit("reloadData");
                         this.resetDocument();
                         this.document.customer_id = this.form.quotation.customer_id;
@@ -771,26 +772,30 @@ export default {
                     // this.changeDocumentType()
                 });
 
-            await this.$http
-                .get(`/${this.resource}/record2/${this.recordId}`)
-                .then((response) => {
-                    this.form = response.data.data;
-                    this.document.payments =
-                        response.data.data.quotation.payments;
-                    this.document.total = this.form.quotation.total;
-                    this.document.currency_type_id = this.form.quotation.currency_type_id;
-                    this.document.payment_condition_id = this.form.quotation.payment_condition_id;
-                    if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
-                        this.document.payment_condition_id = "01";
-                    }
+            await this.getRecord()
+        },
+        async getRecord(){
 
-                    // console.log(this.form)
-                    // this.validateIdentityDocumentType()
-                    this.getCustomer();
-                    let type = this.type == "edit" ? "editada" : "registrada";
-                    this.titleDialog =
-                        `Cotización ${type}: ` + this.form.identifier;
-                });
+            await this.$http
+                        .get(`/${this.resource}/record2/${this.recordId}`)
+                        .then((response) => {
+                            this.form = response.data.data;
+                            this.document.payments =
+                                response.data.data.quotation.payments;
+                            this.document.total = this.form.quotation.total;
+                            this.document.currency_type_id = this.form.quotation.currency_type_id;
+                            this.document.payment_condition_id = this.form.quotation.payment_condition_id;
+                            if (this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
+                                this.document.payment_condition_id = "01";
+                            }
+
+                            // console.log(this.form)
+                            // this.validateIdentityDocumentType()
+                            this.getCustomer();
+                            let type = this.type == "edit" ? "editada" : "registrada";
+                            this.titleDialog =
+                                `Cotización ${type}: ` + this.form.identifier;
+                        })
         },
         changeDocumentType() {
             // this.filterSeries()
