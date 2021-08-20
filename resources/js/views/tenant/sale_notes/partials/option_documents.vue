@@ -532,7 +532,36 @@
                 if(this.document.payment_condition_id === undefined || this.document.payments.length > 0) {
                     this.document.payment_condition_id = "01";
                 }
+
+                this.assignPlateNumberToItems(q)
                 //console.log(this.document);
+            },
+            async assignPlateNumberToItems(sale_note) {
+
+                if(sale_note.plate_number) {
+
+                    await this.document.items.forEach(item => {
+
+                        let empty_attributes = _.isEmpty(item.attributes)
+
+                        if(empty_attributes){
+
+                            item.attributes = []
+                            let attribute = _.find(item.attributes, {'attribute_type_id': '7000'})
+    
+                            if(!attribute){
+                                item.attributes.push({
+                                    attribute_type_id: '7000',
+                                    description: "Gastos Art. 37 Renta:  Número de Placa",
+                                    value: sale_note.plate_number,
+                                    start_date: null,
+                                    end_date: null,
+                                    duration: null,
+                                })
+                            }
+                        }
+                    });
+                }
             },
             async create() {
 
