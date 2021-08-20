@@ -155,21 +155,32 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration= Configuration::first();
         /** Informacion adicional */
-        $colors = CatColorsItem::all();
-        $CatItemStatus= CatItemStatus::all();
-        $CatItemUnitBusiness = CatItemUnitBusiness::all();
-        $CatItemMoldCavity = CatItemMoldCavity::all();
-        $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
-        $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
-        $CatItemMoldProperty = CatItemMoldProperty::all();
-        $CatItemProductFamily= CatItemProductFamily::all();
+        $colors = collect([]);
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+            $colors = CatColorsItem::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
         /** Informacion adicional */
         $configuration = Configuration::select(
             'affectation_igv_type_id',
-            'is_pharmacy'
+            'is_pharmacy',
+            'show_extra_info_to_item'
         )->firstOrFail();
-
         return compact(
             'unit_types',
             'currency_types',
@@ -286,47 +297,35 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
-
-        // Extra data
-        if($request->has('colors')){
-            $item->setItemColor($request->colors);
-
+        $configuration = Configuration::first();
+        if($configuration->isShowExtraInfoToItem()){
+            // Extra data
+            if($request->has('colors')){
+                $item->setItemColor($request->colors);
+            }
+            if($request->has('CatItemUnitsPerPackage')){
+                $item->setItemUnitsPerPackage($request->CatItemUnitsPerPackage);
+            }
+            if($request->has('CatItemMoldCavity')){
+                $item->setItemMoldCavity($request->CatItemMoldCavity);
+            }
+            if($request->has('CatItemMoldProperty')){
+                $item->setItemMoldProperty($request->CatItemMoldProperty);
+            }
+            if($request->has('CatItemUnitBusiness')){
+                $item->setItemUnitBusiness($request->CatItemUnitBusiness);
+            }
+            if($request->has('CatItemStatus')){
+                $item->setItemStatus($request->CatItemStatus);
+            }
+            if($request->has('CatItemPackageMeasurement')){
+                $item->setItemPackageMeasurement($request->CatItemPackageMeasurement);
+            }
+            if($request->has('CatItemProductFamily')){
+                $item->setItemProductFamily($request->CatItemProductFamily);
+            }
+            // Extra data
         }
-        if($request->has('CatItemUnitsPerPackage')){
-            $item->setItemUnitsPerPackage($request->CatItemUnitsPerPackage);
-
-        }
-
-        // nuevo
-
-        if($request->has('CatItemMoldCavity')){
-            $item->setItemMoldCavity($request->CatItemMoldCavity);
-
-        }
-
-        if($request->has('CatItemMoldProperty')){
-            $item->setItemMoldProperty($request->CatItemMoldProperty);
-
-        }
-
-        if($request->has('CatItemUnitBusiness')){
-            $item->setItemUnitBusiness($request->CatItemUnitBusiness);
-
-        }
-        if($request->has('CatItemStatus')){
-            $item->setItemStatus($request->CatItemStatus);
-
-        }
-        if($request->has('CatItemPackageMeasurement')){
-            $item->setItemPackageMeasurement($request->CatItemPackageMeasurement);
-
-        }
-        if($request->has('CatItemProductFamily')){
-            $item->setItemProductFamily($request->CatItemProductFamily);
-
-        }
-
-        // Extra data
 
 
 

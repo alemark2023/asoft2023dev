@@ -2,6 +2,7 @@
 
     namespace App\Http\Resources\Tenant;
 
+    use App\Models\Tenant\Configuration;
     use Illuminate\Http\Request;
     use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,35 +23,41 @@
          */
         public function toArray($request)
         {
-            $currentColors = $this->getItemColor()->transform(function ($row) {
-                return $row->cat_colors_item_id;
-            });
-            $ItemUnitsPerPackage = $this->getItemUnitsPerPackage()->transform(function ($row) {
-                return $row->cat_item_units_per_package_id;
-            });
-            $ItemMoldProperty = $this->getItemMoldProperty()->transform(function ($row) {
-                return $row->cat_item_mold_properties_id;
-            });
-
-
-            $ItemProductFamily = $this->getItemProductFamily()->transform(function ($row) {
-                return $row->cat_item_product_family_id;
-            });
-            $ItemMoldCavity = $this->getItemMoldCavity()->transform(function ($row) {
-                return $row->cat_item_mold_cavities_id;
-            });
-            $ItemPackageMeasurement = $this->getItemPackageMeasurement()->transform(function ($row) {
-                return $row->cat_item_package_measurements_id;
-            });
-            $ItemStatus = $this->getItemStatus()->transform(function ($row) {
-                return $row->cat_item_status_id;
-            });
-            $ItemUnitBusiness = $this->getItemUnitBusiness()->transform(function ($row) {
-                return $row->cat_item_unit_business_id;
-            });
-
-
-
+            $configuration= Configuration::first();
+            $currentColors = collect([]);
+            $ItemUnitsPerPackage = $currentColors;
+            $ItemMoldProperty = $currentColors;
+            $ItemProductFamily = $currentColors;
+            $ItemMoldCavity = $currentColors;
+            $ItemPackageMeasurement = $currentColors;
+            $ItemStatus = $currentColors;
+            $ItemUnitBusiness = $currentColors;
+            if ($configuration->isShowExtraInfoToItem()) {
+                $currentColors = $this->getItemColor()->transform(function ($row) {
+                    return $row->cat_colors_item_id;
+                });
+                $ItemUnitsPerPackage = $this->getItemUnitsPerPackage()->transform(function ($row) {
+                    return $row->cat_item_units_per_package_id;
+                });
+                $ItemMoldProperty = $this->getItemMoldProperty()->transform(function ($row) {
+                    return $row->cat_item_mold_properties_id;
+                });
+                $ItemProductFamily = $this->getItemProductFamily()->transform(function ($row) {
+                    return $row->cat_item_product_family_id;
+                });
+                $ItemMoldCavity = $this->getItemMoldCavity()->transform(function ($row) {
+                    return $row->cat_item_mold_cavities_id;
+                });
+                $ItemPackageMeasurement = $this->getItemPackageMeasurement()->transform(function ($row) {
+                    return $row->cat_item_package_measurements_id;
+                });
+                $ItemStatus = $this->getItemStatus()->transform(function ($row) {
+                    return $row->cat_item_status_id;
+                });
+                $ItemUnitBusiness = $this->getItemUnitBusiness()->transform(function ($row) {
+                    return $row->cat_item_unit_business_id;
+                });
+            }
 
 
             return [

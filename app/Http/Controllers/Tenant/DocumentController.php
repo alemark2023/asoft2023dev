@@ -253,15 +253,30 @@ class DocumentController extends Controller
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
         $is_client = $this->getIsClient();
 
+        $configuration= Configuration::first();
+
         /** Informacion adicional */
-        $colors = CatColorsItem::all();
-        $CatItemStatus= CatItemStatus::all();
-        $CatItemUnitBusiness = CatItemUnitBusiness::all();
-        $CatItemMoldCavity = CatItemMoldCavity::all();
-        $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
-        $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
-        $CatItemMoldProperty = CatItemMoldProperty::all();
-        $CatItemProductFamily= CatItemProductFamily::all();
+        $colors = collect([]);
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+
+            $colors = CatColorsItem::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+
+
         /** Informacion adicional */
 
         return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types',

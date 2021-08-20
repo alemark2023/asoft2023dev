@@ -806,7 +806,7 @@
                     </div>
                 </el-tab-pane>
 
-                <el-tab-pane class
+                <el-tab-pane class v-if="canShowExtraData"
                              name="last">
                     <span slot="label">Informacion Adicional</span>
                     <extra-info
@@ -865,6 +865,12 @@ export default {
             'CatItemProductFamily',
             'config',
         ]),
+        canShowExtraData: function(){
+            if(this.config && this.config.show_extra_info_to_item  !== undefined){
+                return this.config.show_extra_info_to_item;
+            }
+            return false;
+        },
         showPharmaElement() {
 
             if (this.fromPharmacy === true) return true;
@@ -936,14 +942,16 @@ export default {
                 this.brands = data.brands
                 this.attribute_types = data.attribute_types
                 // this.config = data.configuration
-                this.$store.commit('setColors', data.colors);
-                this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
-                this.$store.commit('setCatItemStatus', data.CatItemStatus);
-                this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);
-                this.$store.commit('setCatItemMoldProperty', data.CatItemMoldProperty);
-                this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
-                this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
-                this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+                if(this.canShowExtraData){
+                    this.$store.commit('setColors', data.colors);
+                    this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
+                    this.$store.commit('setCatItemStatus', data.CatItemStatus);
+                    this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);
+                    this.$store.commit('setCatItemMoldProperty', data.CatItemMoldProperty);
+                    this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
+                    this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
+                    this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+                }
                 this.$store.commit('setConfiguration', data.configuration);
 
 

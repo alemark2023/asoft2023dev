@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row" v-if="canShowExtraData">
 
         <!-- Colores -->
         <div class="col-md-4">
@@ -236,6 +236,12 @@ export default {
             'CatItemProductFamily',
             'config',
         ]),
+        canShowExtraData: function () {
+            if (this.config && this.config.show_extra_info_to_item !== undefined) {
+                return this.config.show_extra_info_to_item;
+            }
+            return false;
+        },
     },
     data() {
         return {

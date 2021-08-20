@@ -4,14 +4,34 @@ namespace App\Models\Tenant;
 
 
 use App\Models\Tenant\Catalogs\CurrencyType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 
 /**
  * Class Configuration
  *
  * @package App\Models\Tenant
- * @mixin  ModelTenant
-
+ * @mixin ModelTenant
+ * @property bool $show_extra_info_to_item
+ * @method static Builder|Configuration newModelQuery()
+ * @method static Builder|Configuration newQuery()
+ * @method static Builder|Configuration query()
+ * @method static Builder|Configuration whereCertificate($value)
+ * @method static Builder|Configuration whereCreatedAt($value)
+ * @method static Builder|Configuration whereId($value)
+ * @method static Builder|Configuration whereLockedAdmin($value)
+ * @method static Builder|Configuration whereLogin($value)
+ * @method static Builder|Configuration whereSoapPassword($value)
+ * @method static Builder|Configuration whereSoapSendId($value)
+ * @method static Builder|Configuration whereSoapTypeId($value)
+ * @method static Builder|Configuration whereSoapUrl($value)
+ * @method static Builder|Configuration whereSoapUsername($value)
+ * @method static Builder|Configuration whereTokenApiruc($value)
+ * @method static Builder|Configuration whereTokenPrivateCulqui($value)
+ * @method static Builder|Configuration whereTokenPublicCulqui($value)
+ * @method static Builder|Configuration whereUpdatedAt($value)
+ * @method static Builder|Configuration whereUrlApiruc($value)
+ * @method static Builder|Configuration whereUseLoginGlobal($value)
  */
 class Configuration extends ModelTenant
 {
@@ -73,6 +93,7 @@ class Configuration extends ModelTenant
         'change_free_affectation_igv',
         'select_available_price_list',
         'currency_type_id',
+        'show_extra_info_to_item',
     ];
 
     protected $casts = [
@@ -86,6 +107,7 @@ class Configuration extends ModelTenant
         'auto_send_dispatchs_to_sunat' => 'boolean',
         'send_data_to_other_server' => 'boolean',
         'select_available_price_list' => 'boolean',
+        'show_extra_info_to_item' => 'boolean',
     ];
 
     /**
@@ -399,6 +421,7 @@ class Configuration extends ModelTenant
             'search_item_by_series' => (bool)$this->search_item_by_series,
             'change_free_affectation_igv' => (bool)$this->change_free_affectation_igv,
             'select_available_price_list' => (bool)$this->select_available_price_list,
+            'show_extra_info_to_item' => (bool)$this->show_extra_info_to_item,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
@@ -446,4 +469,26 @@ class Configuration extends ModelTenant
         $this->currency_type_id = empty($currency_type_id)?'PEN':$currency_type_id;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isShowExtraInfoToItem(): bool
+    {
+        return (bool)$this->show_extra_info_to_item;
+    }
+
+    /**
+     * @param bool $show_extra_info_to_item
+     *
+     * @return Configuration
+     */
+    public function setShowExtraInfoToItem(bool $show_extra_info_to_item = false): Configuration
+    {
+        $this->show_extra_info_to_item = (bool) $show_extra_info_to_item;
+        return $this;
+    }
+
+
+
 }

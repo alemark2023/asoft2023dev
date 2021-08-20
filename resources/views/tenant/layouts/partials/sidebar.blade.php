@@ -443,7 +443,7 @@
                         {{-- Inventario --}}
                         @if(in_array('inventory', $vc_modules))
                         <li class="nav-parent
-                            {{ (in_array($path[0], ['inventory', 'moves', 'transfers', 'devolutions']) |($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
+                            {{ (in_array($path[0], ['inventory', 'moves', 'transfers', 'devolutions', 'extra_info_items']) |($path[0] === 'reports' && in_array($path[1], ['kardex', 'inventory', 'valued-kardex'])))?'nav-active nav-expanded':'' }}
                         ">
                             <a class="nav-link" href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-archive"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
@@ -481,6 +481,11 @@
                                 </li> --}}
                                 <li class="{{(($path[0] === 'reports') && ($path[1] === 'valued-kardex')) ? 'nav-active' : ''}}">
                                     <a class="nav-link" href="{{route('reports.valued_kardex.index')}}">Kardex valorizado</a>
+                                </li>
+                                @endif
+                                @if(in_array('inventory_item_extra_data', $vc_module_levels) && $configuration->isShowExtraInfoToItem())
+                                <li class="{{($path[0] === 'extra_info_items') ? 'nav-active' : ''}}">
+                                    <a class="nav-link" href="{{route('extra_info_items.index')}}">Datos extra de items</a>
                                 </li>
                                 @endif
                             </ul>

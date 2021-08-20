@@ -320,6 +320,22 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">
+                                            Muestra campos opcionales para los Items a modo informativo
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Disponible en CPE"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.show_extra_info_to_item}">
+                                            <el-switch v-model="form.show_extra_info_to_item" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.show_extra_info_to_item" v-text="errors.show_extra_info_to_item[0]"></small>
+                                        </div>
+                                    </div>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">

@@ -20,7 +20,7 @@
                 });
                 Route::prefix('extra_info_items')->group(function () {
 
-                    Route::get('', 'InventoryController@ExtraDataList');
+                    Route::get('', 'InventoryController@ExtraDataList')->name('extra_info_items.index');
 
                     Route::prefix('colors')->group(function () {
                         Route::get('/', 'ColorController@index')->name('colors.index');
