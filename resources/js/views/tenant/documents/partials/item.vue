@@ -15,7 +15,7 @@
                             </label>
 
                             <template v-if="!search_item_by_barcode" id="select-append">
-                                <el-input id="custom-input"> 
+                                <el-input id="custom-input">
                                     <el-select id="select-width" ref="selectSearchNormal"
                                                slot="prepend"
                                                v-model="form.item_id"
@@ -187,6 +187,13 @@
                                           type="classic"></vue-ckeditor>
                         </div>
                     </div>
+                    <template v-if="canShowExtraData">
+                        <!-- resources/js/views/tenant/components/partials/item_extra_info.vue -->
+                        <tenant-item-aditional-info-selector
+                            :form="form"
+                            :errors="errors"
+                        ></tenant-item-aditional-info-selector>
+                    </template>
                     <template v-if="!is_client">
 
                         <div v-if="form.item_unit_types.length > 0" class="col-md-12">
@@ -438,6 +445,7 @@ export default {
     },
     data() {
         return {
+            extra_temp: undefined,
             can_add_new_product: false,
             loading_search: false,
             titleAction: '',
@@ -485,14 +493,27 @@ export default {
     },
     mounted() {
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            this.all_items = response.data.items
-            this.operation_types = response.data.operation_types
-            this.all_affectation_igv_types = response.data.affectation_igv_types
-            this.system_isc_types = response.data.system_isc_types
-            this.discount_types = response.data.discount_types
-            this.charge_types = response.data.charge_types
-            this.attribute_types = response.data.attribute_types
-            this.is_client = response.data.is_client;
+            let data = response.data
+            this.all_items = data.items
+            this.operation_types = data.operation_types
+            this.all_affectation_igv_types = data.affectation_igv_types
+            this.system_isc_types = data.system_isc_types
+            this.discount_types = data.discount_types
+            this.charge_types = data.charge_types
+            this.attribute_types = data.attribute_types
+            this.is_client = data.is_client;
+
+            if(this.canShowExtraData) {
+                this.$store.commit('setColors', data.colors);
+                this.$store.commit('setCatItemUnitsPerPackage', data.CatItemUnitsPerPackage);
+                this.$store.commit('setCatItemStatus', data.CatItemStatus);
+                this.$store.commit('setCatItemMoldCavity', data.CatItemMoldCavity);
+                this.$store.commit('setCatItemMoldProperty', data.CatItemMoldProperty);
+                this.$store.commit('setCatItemUnitBusiness', data.CatItemUnitBusiness);
+                this.$store.commit('setCatItemPackageMeasurement', data.CatItemPackageMeasurement);
+                this.$store.commit('setCatItemProductFamily', data.CatItemPackageMeasurement);
+            }
+            this.$store.commit('setConfiguration', data.configuration);
             this.filterItems()
 
         })
@@ -508,16 +529,39 @@ export default {
     },
     computed: {
         ...mapState([
+            'colors',
+            'CatItemUnitsPerPackage',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemMoldCavity',
+            'CatItemProductFamily',
+            'extra_colors',
+            'extra_CatItemUnitsPerPackage',
+            'extra_CatItemMoldProperty',
+            'extra_CatItemUnitBusiness',
+            'extra_CatItemStatus',
+            'extra_CatItemPackageMeasurement',
+            'extra_CatItemMoldCavity',
+            'extra_CatItemProductFamily',
+            'deb',
             'config',
         ]),
+        canShowExtraData: function(){
+            if(this.config && this.config.show_extra_info_to_item  !== undefined){
+                return this.config.show_extra_info_to_item;
+            }
+            return false;
+        },
         showLots() {
             // if (
             //     this.form.item_id &&
             //     this.form.item.lots_enabled &&
             //     this.form.lots_group.length > 0
-            // ) 
-            
-            if (this.form.item_id && this.form.item.lots_enabled ) 
+            // )
+
+            if (this.form.item_id && this.form.item.lots_enabled )
             {
                 return true;
             }
@@ -556,6 +600,7 @@ export default {
     methods: {
         ...mapActions([
             'loadConfiguration',
+            'clearExtraInfoItem',
         ]),
         canCreateProduct() {
             if (this.typeUser === 'admin') {
@@ -648,9 +693,9 @@ export default {
             }
         },
         async enabledSearchItemBySeries() {
-            
+
             if(this.configuration.search_item_by_series && this.items.length == 1){
-                
+
                 this.$notify({title: "Serie ubicada", message: "Producto añadido!", type: "success", duration: 1200});
                 this.form.item_id = this.items[0].id;
                 this.$refs.selectSearchNormal.$data.selectedLabel = '';
@@ -669,7 +714,7 @@ export default {
             if(this.configuration.search_item_by_series && this.items.length == 0){
                 this.$notify({title: "Serie no ubicada", message: "", type: "warning", duration: 1200});
             }
- 
+
         },
         filterMethod(query) {
 
@@ -734,6 +779,7 @@ export default {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
+            this.extra_temp = undefined;
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
@@ -742,8 +788,13 @@ export default {
 
 
             if (this.recordItem) {
+                if(this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined){
+                        this.extra_temp  = this.recordItem.item.extra
+                }
                 await this.reloadDataItems(this.recordItem.item_id)
+
                 this.form.item_id = await this.recordItem.item_id
+
                 await this.changeItem()
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
@@ -775,10 +826,10 @@ export default {
                 // }
 
                 if(this.recordItem.item.change_free_affectation_igv){
-                    
+
                     this.form.affectation_igv_type_id = '15'
                     this.form.item.change_free_affectation_igv = true
-                    
+
                 }else{
                     if(this.recordItem.item.original_affectation_igv_type_id){
                         this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
@@ -891,8 +942,10 @@ export default {
         },
         async changeItem() {
 
-            
+            this.clearExtraInfoItem()
+
             this.form.item = _.find(this.items, {'id': this.form.item_id});
+            this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
             this.lots = this.form.item.lots
@@ -908,7 +961,7 @@ export default {
                 if (this.form.item.attributes.length > 0) {
                     const contex = this
                     this.form.item.attributes.forEach((row) => {
-    
+
                         contex.form.attributes.push({
                             attribute_type_id: row.attribute_type_id,
                             description: row.description,
@@ -922,6 +975,7 @@ export default {
             }
 
             this.form.lots_group = this.form.item.lots_group
+            this.setExtraElements(this.form.item);
 
             // if (!this.recordItem) {
             //     await this.form.item.warehouses.forEach(element => {
@@ -963,7 +1017,7 @@ export default {
                 if (!this.form.IdLoteSelected)
                     return this.$message.error('Debe seleccionar un lote.');
             }
-
+            let extra = this.form.item.extra
 
             if (this.validateTotalItem().total_item) return;
 
@@ -1010,6 +1064,7 @@ export default {
 
             // this.row.edit = false;
             this.initForm();
+            this.row.item.extra = extra;
             //this.initializeFields()
 
             if (this.recordItem) {
@@ -1119,6 +1174,113 @@ export default {
         },
         addRowSelectLot(lots) {
             this.lots = lots
+        },
+        setExtraFieldOfitem(item) {
+            if(this.canShowExtraData) {
+                if (item.extra === undefined) item.extra = {};
+                if (item.extra.colors === undefined) item.extra.colors = null;
+                if (item.extra.CatItemUnitsPerPackage === undefined) item.extra.CatItemUnitsPerPackage = null;
+                if (item.extra.CatItemMoldProperty === undefined) item.extra.CatItemMoldProperty = null;
+                if (item.extra.CatItemUnitBusiness === undefined) item.extra.CatItemUnitBusiness = null;
+                if (item.extra.CatItemStatus === undefined) item.extra.CatItemStatus = null;
+                if (item.extra.CatItemPackageMeasurement === undefined) item.extra.CatItemPackageMeasurement = null;
+                if (item.extra.CatItemMoldCavity === undefined) item.extra.CatItemMoldCavity = null;
+                if (item.extra.CatItemProductFamily === undefined) item.extra.CatItemProductFamily = null;
+
+                if (this.extra_temp !== undefined) {
+                    item.extra = this.extra_temp;
+                }
+            }
+            return item
+        },
+        setExtraElements(item) {
+            this.clearExtraInfoItem()
+            if(this.canShowExtraData) {
+                let temp = [];
+                this.colors.find(obj => {
+                    for (var i = 0, iLen = item.colors.length; i < iLen; i++) {
+                        if (item.colors[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                });
+                this.$store.commit('setExtraColors', temp)
+                temp = [];
+                this.CatItemUnitsPerPackage.find(obj => {
+                    for (var i = 0, iLen = item.CatItemUnitsPerPackage.length; i < iLen; i++) {
+                        if (item.CatItemUnitsPerPackage[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemUnitsPerPackage', temp)
+                temp = [];
+                this.CatItemMoldProperty.find(obj => {
+                    for (var i = 0, iLen = item.CatItemMoldProperty.length; i < iLen; i++) {
+                        if (item.CatItemMoldProperty[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemMoldProperty', temp)
+                temp = [];
+                this.CatItemUnitBusiness.find(obj => {
+                    for (var i = 0, iLen = item.CatItemUnitBusiness.length; i < iLen; i++) {
+                        if (item.CatItemUnitBusiness[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemUnitBusiness', temp)
+                temp = [];
+                this.CatItemStatus.find(obj => {
+                    for (var i = 0, iLen = item.CatItemStatus.length; i < iLen; i++) {
+                        if (item.CatItemStatus[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemStatus', temp)
+                temp = [];
+                this.CatItemPackageMeasurement.find(obj => {
+                    for (var i = 0, iLen = item.CatItemPackageMeasurement.length; i < iLen; i++) {
+                        if (item.CatItemPackageMeasurement[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemPackageMeasurement', temp)
+                temp = [];
+                this.CatItemMoldCavity.find(obj => {
+                    for (var i = 0, iLen = item.CatItemMoldCavity.length; i < iLen; i++) {
+                        if (item.CatItemMoldCavity[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemMoldCavity', temp)
+                temp = [];
+                this.CatItemProductFamily.find(obj => {
+                    for (var i = 0, iLen = item.CatItemProductFamily.length; i < iLen; i++) {
+                        if (item.CatItemProductFamily[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemProductFamily', temp)
+                temp = [];
+                this.CatItemMoldProperty.find(obj => {
+                    for (var i = 0, iLen = item.CatItemMoldProperty.length; i < iLen; i++) {
+                        if (item.CatItemMoldProperty[i] === obj.id) {
+                            temp.push(obj)
+                        }
+                    }
+                })
+                this.$store.commit('setExtraCatItemMoldProperty', temp)
+                if (this.extra_temp !== undefined) {
+                    this.form.item.extra = this.extra_temp;
+                }
+            }
         },
     }
 }

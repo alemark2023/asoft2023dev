@@ -2,6 +2,13 @@
 
 namespace App\Models\Tenant;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\UnitType;
@@ -674,10 +681,18 @@ class Item extends ModelTenant
      * @param \App\Models\Tenant\Warehouse|\Modules\Inventory\Models\Warehouse|null $warehouse
      * @param false                                    $with_lots_has_sale
      * @param false                                    $extended_description
+
      *
      * @return array
      */
-    public function getDataToItemModal($warehouse = null, $with_lots_has_sale = false, $extended_description = false, $series = null, $search_item_by_series = false) {
+    public function getDataToItemModal(
+        $warehouse = null,
+        $with_lots_has_sale = false,
+        $extended_description = false,
+        $series = null,
+        $search_item_by_series = false,
+        $aditional_data = true
+    ) {
 
         if ($warehouse == null) {
             $establishment_id = auth()->user()->establishment_id;
@@ -688,7 +703,45 @@ class Item extends ModelTenant
         $lots_grp = $this->lots_group;
 
         $lots = $this->getLotsBySerie($warehouse, $series, $search_item_by_series);
-        // dd($lots);
+        $blank = [];
+        $currentColors = collect($blank);
+        $ItemUnitsPerPackage = collect($blank);
+        $ItemMoldProperty = collect($blank);
+        $ItemProductFamily = collect($blank);
+        $ItemMoldCavity = collect($blank);
+        $ItemPackageMeasurement = collect($blank);
+        $ItemStatus = collect($blank);
+        $ItemUnitBusiness = collect($blank);
+
+        if($aditional_data === true){
+            $currentColors = $this->getItemColor()->transform(function ($row) {
+                return $row->cat_colors_item_id;
+            });
+            $ItemUnitsPerPackage = $this->getItemUnitsPerPackage()->transform(function ($row) {
+                return $row->cat_item_units_per_package_id;
+            });
+            $ItemMoldProperty = $this->getItemMoldProperty()->transform(function ($row) {
+                return $row->cat_item_mold_properties_id;
+            });
+
+
+            $ItemProductFamily = $this->getItemProductFamily()->transform(function ($row) {
+                return $row->cat_item_product_family_id;
+            });
+            $ItemMoldCavity = $this->getItemMoldCavity()->transform(function ($row) {
+                return $row->cat_item_mold_cavities_id;
+            });
+            $ItemPackageMeasurement = $this->getItemPackageMeasurement()->transform(function ($row) {
+                return $row->cat_item_package_measurements_id;
+            });
+            $ItemStatus = $this->getItemStatus()->transform(function ($row) {
+                return $row->cat_item_status_id;
+            });
+            $ItemUnitBusiness = $this->getItemUnitBusiness()->transform(function ($row) {
+                return $row->cat_item_unit_business_id;
+            });
+
+        }
 
         if ($with_lots_has_sale == true) {
             $lots = $this->item_lots->where('has_sale', false)->transform(function ($row) {
@@ -726,6 +779,16 @@ class Item extends ModelTenant
             'model'                            => $this->model,
             'brand'                            => $detail['brand'],
             'warehouse_description'            => $detail['warehouse_description'],
+            'extra'                         => collect([
+                                                'colors' => null,
+                                                'CatItemUnitsPerPackage' => null,
+                                                'CatItemMoldProperty' => null,
+                                                'CatItemProductFamily' => null,
+                                                'CatItemMoldCavity' => null,
+                                                'CatItemPackageMeasurement' => null,
+                                                'CatItemStatus' => null,
+                                                'CatItemUnitBusiness' => null,
+                                             ]),
             'category'                         => $detail['category'],
             'stock'                            => $stock,
             'internal_id'                      => $this->internal_id,
@@ -742,6 +805,14 @@ class Item extends ModelTenant
             'has_igv'                          => (bool)$this->has_igv,
             'has_plastic_bag_taxes'            => (bool)$this->has_plastic_bag_taxes,
             'amount_plastic_bag_taxes'         => $this->amount_plastic_bag_taxes,
+            'colors' => $currentColors,
+            'CatItemUnitsPerPackage' => $ItemUnitsPerPackage,
+            'CatItemMoldProperty' => $ItemMoldProperty,
+            'CatItemProductFamily' => $ItemProductFamily,
+            'CatItemMoldCavity' => $ItemMoldCavity,
+            'CatItemPackageMeasurement' => $ItemPackageMeasurement,
+            'CatItemStatus' => $ItemStatus,
+            'CatItemUnitBusiness' => $ItemUnitBusiness,
             'item_unit_types'                  => collect($realtion_item_unit_types)->transform(function ($item_unit_types) {
                 return [
                     'id'            => $item_unit_types->id,
@@ -840,6 +911,10 @@ class Item extends ModelTenant
         $digemid_exportable = false;
         $name_disa = '';
         $laboratory = '';
+        $currentColors = ItemColor::where('item_id', $this->id)->get()->transform(function ($row) {
+            return $row->TransformDatatoEdit();
+        });
+
         if($configuration->isPharmacy()) {
             $digemid = $this->getCatDigemid();
             if (!empty($digemid)) {
@@ -849,10 +924,12 @@ class Item extends ModelTenant
             }
         }
 
+
         return [
             'name_disa'                           => $name_disa,
             'laboratory'                           => $laboratory,
             'exportable_pharmacy'                           => $digemid_exportable,
+            'colors' => $currentColors,
             'id'                           => $this->id,
             'sanitary'                 => $this->sanitary,
             'cod_digemid'                 => $this->cod_digemid,
@@ -1099,4 +1176,236 @@ class Item extends ModelTenant
         ];
     }
 
+
+    /**
+     * Almacena las unidades por almacen para poder guardarlos en la tabla.
+     *
+     * @param array $ItemUnitsPerPackage
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setItemUnitsPerPackage(array $ItemUnitsPerPackage = []) {
+
+        return $this->setExtraData(ItemUnitsPerPackage::class,'cat_item_units_per_package_id',$ItemUnitsPerPackage);
+
+
+    }
+
+    public function getItemUnitsPerPackage(){
+        return ItemUnitsPerPackage::where('item_id', $this->id)->where('active',1)->get();
+    }
+    /**
+     * Almacena los colores para poder guardarlos en la tabla.
+     * @param array $colors
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setItemColor($colors = []) {
+        return $this->setExtraData(ItemColor::class,'cat_colors_item_id',$colors);
+    }
+    public function getItemColor(){
+        return ItemColor::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    public function setItemMoldProperty($data = []) {
+        return $this->setExtraData(ItemMoldProperty::class,'cat_item_mold_properties_id',$data);
+    }
+    public function getItemMoldProperty(){
+        return ItemMoldProperty::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemUnitBusiness($data = []) {
+        return $this->setExtraData(ItemUnitBusiness::class,'cat_item_unit_business_id',$data);
+    }
+
+    public function getItemUnitBusiness(){
+        return ItemUnitBusiness::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemStatus($data = []) {
+        return $this->setExtraData(ItemStatus::class,'cat_item_status_id',$data);
+    }
+
+    public function getItemStatus(){
+        return ItemStatus::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    public function setItemPackageMeasurement($data = []) {
+        return $this->setExtraData(ItemPackageMeasurement::class,'cat_item_package_measurements_id',$data);
+    }
+
+    public function getItemPackageMeasurement(){
+        return ItemPackageMeasurement::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemMoldCavity($data = []) {
+        return $this->setExtraData(ItemMoldCavity::class,'cat_item_mold_cavities_id',$data);
+    }
+
+    public function getItemMoldCavity(){
+        return ItemMoldCavity::where('item_id', $this->id)->where('active',1)->get();
+    }
+    public function setItemProductFamily($data = []) {
+        return $this->setExtraData(ItemProductFamily::class,'cat_item_product_family_id',$data);
+    }
+
+    public function getItemProductFamily(){
+        return ItemProductFamily::where('item_id', $this->id)->where('active',1)->get();
+    }
+
+    /**
+     * @param  ItemMoldProperty|ItemUnitBusiness|ItemStatus|ItemColor|ItemUnitsPerPackage|ItemProductFamily|ItemMoldCavity|ItemPackageMeasurement|null      $class
+     * @param string $field_id
+     * @param array  $data
+     *
+     * @return $this
+     */
+    protected function setExtraData($class,$field_id = '',$data = []){
+        $dataCollection = collect($data);
+        $currentRow = $class::where('item_id',$this->id)
+            ->whereNotIn($field_id,$dataCollection)
+            ->get();
+        foreach ($currentRow as $row){
+            $row->setActive(false)->push();
+            $row->delete();
+        }
+
+
+        foreach($dataCollection as $item){
+
+            $ck = [
+                'item_id'=>$this->id,
+                $field_id=>$item
+            ];
+            $newRow = $class::where($ck)->first();
+            if(empty($newRow)) $newRow = new $class($ck);
+
+            $newRow->setActive(true)->push();
+        }
+        return $this;
+    }
+
+    /**
+     * Genera una estructura unica para los datos extra.
+     *
+     * @param       $array
+     * @param array $row
+     */
+    public static function SaveExtraDataToRequest(&$array, $row = [])
+    {
+
+        $colors_id = isset($row['item']['extra']['colors']) ? (int)$row['item']['extra']['colors'] : null;
+        $CatItemUnitsPerPackage_id = isset($row['item']['extra']['CatItemUnitsPerPackage']) ? (int)$row['item']['extra']['CatItemUnitsPerPackage'] : null;
+        $CatItemMoldProperty_id = isset($row['item']['extra']['CatItemMoldProperty']) ? (int)$row['item']['extra']['CatItemMoldProperty'] : null;
+        $CatItemProductFamily_id = isset($row['item']['extra']['CatItemProductFamily']) ? (int)$row['item']['extra']['CatItemProductFamily'] : null;
+        $CatItemMoldCavity_id = isset($row['item']['extra']['CatItemMoldCavity']) ? (int)$row['item']['extra']['CatItemMoldCavity'] : null;
+        $CatItemPackageMeasurement_id = isset($row['item']['extra']['CatItemPackageMeasurement']) ? (int)$row['item']['extra']['CatItemPackageMeasurement'] : null;
+        $CatItemStatus_id = isset($row['item']['extra']['CatItemStatus']) ? (int)$row['item']['extra']['CatItemStatus'] : null;
+        $CatItemUnitBusiness_id = isset($row['item']['extra']['CatItemUnitBusiness']) ? (int)$row['item']['extra']['CatItemUnitBusiness'] : null;
+
+
+        $array['item']['extra']["colors"] = $colors_id;
+        $array['item']['extra']["CatItemUnitsPerPackage"] = $CatItemUnitsPerPackage_id;
+        $array['item']['extra']["CatItemMoldProperty"] = $CatItemMoldProperty_id;
+        $array['item']['extra']["CatItemProductFamily"] = $CatItemProductFamily_id;
+        $array['item']['extra']["CatItemMoldCavity"] = $CatItemMoldCavity_id;
+        $array['item']['extra']["CatItemPackageMeasurement"] = $CatItemPackageMeasurement_id;
+        $array['item']['extra']["CatItemStatus"] = $CatItemStatus_id;
+        $array['item']['extra']["CatItemUnitBusiness"] = $CatItemUnitBusiness_id;
+
+        // Guarda el nombre del campo si existe
+
+        $colors_string = '';
+        if (!empty($colors_id)) {
+            $temp = CatColorsItem::find($colors_id);
+            if ($temp !== null) {
+                $colors_string = $temp->getName();
+            }
+        }
+        $CatItemUnitsPerPackage_string = '';
+
+        if (!empty($CatItemUnitsPerPackage_id)) {
+            $temp = CatItemUnitBusiness::find($CatItemUnitsPerPackage_id);
+            if ($temp !== null) {
+                $CatItemUnitsPerPackage_string = $temp->getName();
+            }
+        }
+        $CatItemMoldProperty_string = '';
+
+        if (!empty($CatItemMoldProperty_id)) {
+            $temp = CatItemMoldProperty::find($CatItemMoldProperty_id);
+            if ($temp !== null) {
+                $CatItemMoldProperty_string = $temp->getName();
+            }
+        }
+        $CatItemProductFamily_string = '';
+
+        if (!empty($CatItemProductFamily_id)) {
+            $temp = CatItemProductFamily::find($CatItemProductFamily_id);
+            if ($temp !== null) {
+                $CatItemProductFamily_string = $temp->getName();
+            }
+        }
+        $CatItemMoldCavity_string = '';
+
+        if (!empty($CatItemMoldCavity_id)) {
+            $temp = CatItemMoldCavity::find($CatItemMoldCavity_id);
+            if ($temp !== null) {
+                $CatItemMoldCavity_string = $temp->getName();
+            }
+        }
+        $CatItemPackageMeasurement_string = '';
+
+        if (!empty($CatItemPackageMeasurement_id)) {
+            $temp = CatItemPackageMeasurement::find($CatItemPackageMeasurement_id);
+            if ($temp !== null) {
+                $CatItemPackageMeasurement_string = $temp->getName();
+            }
+        }
+        $CatItemStatus_string = '';
+
+        if (!empty($CatItemStatus_id)) {
+            $temp = CatItemStatus::find($CatItemStatus_id);
+            if ($temp !== null) {
+                $CatItemStatus_string = $temp->getName();
+            }
+        }
+        $CatItemUnitBusiness_string = '';
+
+        if (!empty($CatItemUnitBusiness_id)) {
+            $temp = CatItemUnitBusiness::find($CatItemUnitBusiness_id);
+            if ($temp !== null) {
+                $CatItemUnitBusiness_string = $temp->getName();
+            }
+        }
+
+
+        $array['item']['extra']["string"]["colors"] = $colors_string;
+        $array['item']['extra']["string"]["CatItemUnitsPerPackage"] = $CatItemUnitsPerPackage_string;
+        $array['item']['extra']["string"]["CatItemMoldProperty"] = $CatItemMoldProperty_string;
+        $array['item']['extra']["string"]["CatItemProductFamily"] = $CatItemProductFamily_string;
+        $array['item']['extra']["string"]["CatItemMoldCavity"] = $CatItemMoldCavity_string;
+        $array['item']['extra']["string"]["CatItemPackageMeasurement"] = $CatItemPackageMeasurement_string;
+        $array['item']['extra']["string"]["CatItemStatus"] = $CatItemStatus_string;
+        $array['item']['extra']["string"]["CatItemUnitBusiness"] = $CatItemUnitBusiness_string;
+    }
+
+    /**
+     *
+     * Añade elementos extra al momento de generar el pdf
+     *
+     * @param $array
+     */
+    public function getExtraDataToPrint(&$array){
+
+        $array['image_url'] = ($this->image !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image)
+            : asset("/logo/{$this->image}");
+        $array['image_url_medium']=($this->image_medium !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_medium)
+            : asset("/logo/{$this->image_medium}");
+        $array['image_url_small'] =($this->image_small !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_small)
+            : asset("/logo/{$this->image_small}");
+
+    }
 }

@@ -12,6 +12,14 @@ use App\Imports\CatalogImport;
 use App\Imports\ItemsImport;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
+use App\Models\Tenant\Catalogs\CatColorsItem;
+use App\Models\Tenant\Catalogs\CatItemMoldCavity;
+use App\Models\Tenant\Catalogs\CatItemMoldProperty;
+use App\Models\Tenant\Catalogs\CatItemPackageMeasurement;
+use App\Models\Tenant\Catalogs\CatItemProductFamily;
+use App\Models\Tenant\Catalogs\CatItemStatus;
+use App\Models\Tenant\Catalogs\CatItemUnitBusiness;
+use App\Models\Tenant\Catalogs\CatItemUnitsPerPackage;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Catalogs\Tag;
@@ -147,13 +155,53 @@ class ItemController extends Controller
         $tags = Tag::all();
         $categories = Category::all();
         $brands = Brand::all();
+        $configuration= Configuration::first();
+        /** Informacion adicional */
+        $colors = collect([]);
+        $CatItemStatus=$colors;
+        $CatItemUnitBusiness = $colors;
+        $CatItemMoldCavity = $colors;
+        $CatItemPackageMeasurement =$colors;
+        $CatItemUnitsPerPackage = $colors;
+        $CatItemMoldProperty = $colors;
+        $CatItemProductFamily= $colors;
+        if($configuration->isShowExtraInfoToItem()){
+            $colors = CatColorsItem::all();
+            $CatItemStatus= CatItemStatus::all();
+            $CatItemUnitBusiness = CatItemUnitBusiness::all();
+            $CatItemMoldCavity = CatItemMoldCavity::all();
+            $CatItemPackageMeasurement = CatItemPackageMeasurement::all();
+            $CatItemUnitsPerPackage = CatItemUnitsPerPackage::all();
+            $CatItemMoldProperty = CatItemMoldProperty::all();
+            $CatItemProductFamily= CatItemProductFamily::all();
+        }
+        /** Informacion adicional */
         $configuration = Configuration::select(
             'affectation_igv_type_id',
-            'is_pharmacy'
+            'is_pharmacy',
+            'show_extra_info_to_item'
         )->firstOrFail();
-
-        return compact('unit_types', 'currency_types', 'attribute_types', 'system_isc_types',
-                        'affectation_igv_types','warehouses', 'accounts', 'tags', 'categories', 'brands', 'configuration');
+        return compact(
+            'unit_types',
+            'currency_types',
+            'attribute_types',
+            'system_isc_types',
+            'affectation_igv_types',
+            'warehouses',
+            'accounts',
+            'tags',
+            'categories',
+            'brands',
+            'configuration',
+            'colors',
+            'CatItemMoldCavity',
+            'CatItemMoldProperty',
+            'CatItemUnitBusiness',
+            'CatItemStatus',
+            'CatItemPackageMeasurement',
+            'CatItemProductFamily',
+            'CatItemUnitsPerPackage'
+        );
     }
 
     public function record($id)
@@ -164,6 +212,7 @@ class ItemController extends Controller
     }
 
     public function store(ItemRequest $request) {
+
         $id = $request->input('id');
         if (!$request->barcode) {
             if ($request->internal_id) {
@@ -248,6 +297,37 @@ class ItemController extends Controller
             $item_unit_type->save();
 
         }
+        $configuration = Configuration::first();
+        if($configuration->isShowExtraInfoToItem()){
+            // Extra data
+            if($request->has('colors')){
+                $item->setItemColor($request->colors);
+            }
+            if($request->has('CatItemUnitsPerPackage')){
+                $item->setItemUnitsPerPackage($request->CatItemUnitsPerPackage);
+            }
+            if($request->has('CatItemMoldCavity')){
+                $item->setItemMoldCavity($request->CatItemMoldCavity);
+            }
+            if($request->has('CatItemMoldProperty')){
+                $item->setItemMoldProperty($request->CatItemMoldProperty);
+            }
+            if($request->has('CatItemUnitBusiness')){
+                $item->setItemUnitBusiness($request->CatItemUnitBusiness);
+            }
+            if($request->has('CatItemStatus')){
+                $item->setItemStatus($request->CatItemStatus);
+            }
+            if($request->has('CatItemPackageMeasurement')){
+                $item->setItemPackageMeasurement($request->CatItemPackageMeasurement);
+            }
+            if($request->has('CatItemProductFamily')){
+                $item->setItemProductFamily($request->CatItemProductFamily);
+            }
+            // Extra data
+        }
+
+
 
         if ($request->tags_id) {
             ItemTag::destroy(   ItemTag::where('item_id', $item->id)->pluck('id'));

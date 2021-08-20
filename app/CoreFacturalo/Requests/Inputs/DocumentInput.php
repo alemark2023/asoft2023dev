@@ -6,14 +6,14 @@ use App\CoreFacturalo\Requests\Inputs\Common\ActionInput;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Requests\Inputs\Common\LegendInput;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Item;
-use Illuminate\Support\Str;
-use App\CoreFacturalo\Requests\Inputs\Transform\DocumentWebTransform;
-use Modules\Offline\Models\OfflineConfiguration;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Modules\Offline\Models\OfflineConfiguration;
 
 class DocumentInput
 {
@@ -60,6 +60,7 @@ class DocumentInput
             $data_json = Functions::valueKeyInArray($inputs, 'data_json');
         }
 
+        $items = self::items($inputs);
         return [
             'type' => $inputs['type'],
             'group_id' => $inputs['group_id'],
@@ -107,7 +108,7 @@ class DocumentInput
             'affectation_type_prepayment' => Functions::valueKeyInArray($inputs, 'affectation_type_prepayment'),
             'was_deducted_prepayment' => Functions::valueKeyInArray($inputs, 'was_deducted_prepayment', 0),
             'pending_amount_prepayment' => Functions::valueKeyInArray($inputs, 'pending_amount_prepayment', 0),
-            'items' => self::items($inputs),
+            'items' => $items,
             'charges' => self::charges($inputs),
             'discounts' => self::discounts($inputs),
             'prepayments' => self::prepayments($inputs),
@@ -144,7 +145,7 @@ class DocumentInput
             foreach ($inputs['items'] as $row) {
                 $item = Item::query()->find($row['item_id']);
                 /** @var Item $item */
-                $items[] = [
+                $arayItem = [
                     'item_id' => $item->id,
                     'item' => [
                         'description' => trim($item->description),
@@ -193,6 +194,8 @@ class DocumentInput
                     'additional_information' => Functions::valueKeyInArray($row, 'additional_information'),
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'name_product_pdf')
                 ];
+                Item::SaveExtraDataToRequest($arayItem,$row);
+                $items[] = $arayItem;
             }
             return $items;
         }

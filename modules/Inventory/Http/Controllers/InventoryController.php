@@ -107,7 +107,12 @@ class InventoryController extends Controller
 		];
 	}
 
-	public function store(Request $request)
+	public function ExtraDataList()
+    {
+        return view('inventory::extra_info.index');
+   }
+
+    public function store(Request $request)
 	{
 		$result = DB::connection('tenant')->transaction(function () use ($request) {
 			$item_id = $request->input('item_id');
