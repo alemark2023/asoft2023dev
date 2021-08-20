@@ -1,5 +1,6 @@
 <template>
     <div class="row">
+
         <!-- Colores -->
         <div class="col-md-4">
             <div v-if="colors.length > 0"

@@ -444,7 +444,15 @@ class DocumentController extends Controller
         }
 
         $items = collect($search_item)->transform(function($row) use($warehouse){
-
+            /** @var Item $row */
+            return $row->getDataToItemModal(
+                $warehouse,
+                true,
+                null,
+                false,
+                true
+            );
+            /**  Movido  al modelo  */
             $detail = $this->getFullDescription($row, $warehouse);
 
             return [

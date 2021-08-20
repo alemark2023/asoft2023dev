@@ -1,4 +1,5 @@
 export default {
+    deb:{},
     userType: '',
     showColorDialog: false,
     loading_submit: false,

@@ -444,6 +444,7 @@ export default {
     },
     data() {
         return {
+            extra_temp: undefined,
             can_add_new_product: false,
             loading_search: false,
             titleAction: '',
@@ -533,7 +534,6 @@ export default {
             'CatItemPackageMeasurement',
             'CatItemMoldCavity',
             'CatItemProductFamily',
-
             'extra_colors',
             'extra_CatItemUnitsPerPackage',
             'extra_CatItemMoldProperty',
@@ -542,6 +542,7 @@ export default {
             'extra_CatItemPackageMeasurement',
             'extra_CatItemMoldCavity',
             'extra_CatItemProductFamily',
+            'deb',
             'config',
         ]),
         showLots() {
@@ -769,6 +770,7 @@ export default {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
+            this.extra_temp = undefined;
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
@@ -777,8 +779,13 @@ export default {
 
 
             if (this.recordItem) {
+                if(this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined){
+                        this.extra_temp  = this.recordItem.item.extra
+                }
                 await this.reloadDataItems(this.recordItem.item_id)
+
                 this.form.item_id = await this.recordItem.item_id
+
                 await this.changeItem()
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
@@ -925,10 +932,10 @@ export default {
             this.clearExtraInfoItem()
 
             this.form.item = _.find(this.items, {'id': this.form.item_id});
+            this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.form.unit_price_value = this.form.item.sale_unit_price;
             this.lots = this.form.item.lots
-            this.setExtraElements();
 
             this.form.has_igv = this.form.item.has_igv;
             this.form.has_plastic_bag_taxes = this.form.item.has_plastic_bag_taxes;
@@ -955,6 +962,7 @@ export default {
             }
 
             this.form.lots_group = this.form.item.lots_group
+            this.setExtraElements(this.form.item);
 
             // if (!this.recordItem) {
             //     await this.form.item.warehouses.forEach(element => {
@@ -996,7 +1004,7 @@ export default {
                 if (!this.form.IdLoteSelected)
                     return this.$message.error('Debe seleccionar un lote.');
             }
-
+            let extra = this.form.item.extra
 
             if (this.validateTotalItem().total_item) return;
 
@@ -1043,6 +1051,7 @@ export default {
 
             // this.row.edit = false;
             this.initForm();
+            this.row.item.extra = extra;
             //this.initializeFields()
 
             if (this.recordItem) {
@@ -1153,16 +1162,33 @@ export default {
         addRowSelectLot(lots) {
             this.lots = lots
         },
-        setExtraElements() {
-            let item = this.form.item;
+        setExtraFieldOfitem(item) {
+            if (item.extra === undefined) item.extra = {};
+            if (item.extra.colors === undefined) item.extra.colors = null;
+            if (item.extra.CatItemUnitsPerPackage === undefined) item.extra.CatItemUnitsPerPackage = null;
+            if (item.extra.CatItemMoldProperty === undefined) item.extra.CatItemMoldProperty = null;
+            if (item.extra.CatItemUnitBusiness === undefined) item.extra.CatItemUnitBusiness = null;
+            if (item.extra.CatItemStatus === undefined) item.extra.CatItemStatus = null;
+            if (item.extra.CatItemPackageMeasurement === undefined) item.extra.CatItemPackageMeasurement = null;
+            if (item.extra.CatItemMoldCavity === undefined) item.extra.CatItemMoldCavity = null;
+            if (item.extra.CatItemProductFamily === undefined) item.extra.CatItemProductFamily = null;
+
+            if (this.extra_temp !== undefined) {
+                item.extra = this.extra_temp;
+            }
+
+            return item
+        },
+        setExtraElements(item) {
+            this.clearExtraInfoItem()
             let temp = [];
              this.colors.find(obj => {
-                for (var i = 0, iLen = item.colors.length; i < iLen; i++) {
-                    if (item.colors[i] === obj.id) {
-                        temp.push(obj)
-                    }
-                }
-            })
+                 for (var i = 0, iLen = item.colors.length; i < iLen; i++) {
+                     if (item.colors[i] === obj.id) {
+                         temp.push(obj)
+                     }
+                 }
+             });
             this.$store.commit('setExtraColors',temp)
             temp = [];this.CatItemUnitsPerPackage.find(obj => {
                 for (var i = 0, iLen = item.CatItemUnitsPerPackage.length; i < iLen; i++) {
@@ -1228,6 +1254,9 @@ export default {
                 }
             })
             this.$store.commit('setExtraCatItemMoldProperty',temp)
+            if(this.extra_temp  !== undefined) {
+                this.form.item.extra =this.extra_temp;
+            }
         },
     }
 }

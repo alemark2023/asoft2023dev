@@ -13,54 +13,53 @@ function readStorageData(variable, json = false) {
 
 export default {
     loadConfiguration(store) {
-        state.config = readStorageData('config', true)
-        state.customers = readStorageData('customers', true)
-        state.userType = readStorageData('userType', false)
-        state.company = readStorageData('company', true)
-        state.establishment = readStorageData('establishment', true)
-        if (state.colors === undefined) state.colors = []
-        if (state.CatItemMoldProperty === undefined) state.CatItemMoldProperty = []
-        if (state.CatItemUnitBusiness === undefined) state.CatItemUnitBusiness = []
-        if (state.CatItemStatus === undefined) state.CatItemStatus = []
-        if (state.CatItemProductFamily === undefined) state.CatItemProductFamily = []
-        if (state.CatItemPackageMeasurement === undefined) state.CatItemPackageMeasurement = []
-        if (state.CatItemUnitsPerPackage === undefined) state.CatItemUnitsPerPackage = []
-        if (state.CatItemMoldCavity === undefined) state.CatItemMoldCavity = []
-
-
-        if (state.extra_colors === undefined) state.extra_colors = []
-        if (state.extra_CatItemUnitsPerPackage === undefined) state.extra_CatItemUnitsPerPackage = []
-        if (state.extra_CatItemMoldProperty === undefined) state.extra_CatItemMoldProperty = []
-        if (state.extra_CatItemUnitBusiness === undefined) state.extra_CatItemUnitBusiness = []
-        if (state.extra_CatItemStatus === undefined) state.extra_CatItemStatus = []
-        if (state.extra_CatItemPackageMeasurement === undefined) state.extra_CatItemPackageMeasurement = []
-        if (state.extra_CatItemMoldCavity === undefined) state.extra_CatItemMoldCavity = []
-        if (state.extra_CatItemProductFamily === undefined) state.extra_CatItemProductFamily = []
-        if (state.loading_submit === undefined) state.loading_submit = false
+        state.config = readStorageData('config', true);
+        state.customers = readStorageData('customers', true);
+        state.userType = readStorageData('userType', false);
+        state.company = readStorageData('company', true);
+        state.establishment = readStorageData('establishment', true);
+        if (state.deb === undefined) state.deb = {};
+        if (state.colors === undefined) state.colors = [];
+        if (state.CatItemMoldProperty === undefined) state.CatItemMoldProperty = [];
+        if (state.CatItemUnitBusiness === undefined) state.CatItemUnitBusiness = [];
+        if (state.CatItemStatus === undefined) state.CatItemStatus = [];
+        if (state.CatItemProductFamily === undefined) state.CatItemProductFamily = [];
+        if (state.CatItemPackageMeasurement === undefined) state.CatItemPackageMeasurement = [];
+        if (state.CatItemUnitsPerPackage === undefined) state.CatItemUnitsPerPackage = [];
+        if (state.CatItemMoldCavity === undefined) state.CatItemMoldCavity = [];
+        if (state.extra_colors === undefined) state.extra_colors = [];
+        if (state.extra_CatItemUnitsPerPackage === undefined) state.extra_CatItemUnitsPerPackage = [];
+        if (state.extra_CatItemMoldProperty === undefined) state.extra_CatItemMoldProperty = [];
+        if (state.extra_CatItemUnitBusiness === undefined) state.extra_CatItemUnitBusiness = [];
+        if (state.extra_CatItemStatus === undefined) state.extra_CatItemStatus = [];
+        if (state.extra_CatItemPackageMeasurement === undefined) state.extra_CatItemPackageMeasurement = [];
+        if (state.extra_CatItemMoldCavity === undefined) state.extra_CatItemMoldCavity = [];
+        if (state.extra_CatItemProductFamily === undefined) state.extra_CatItemProductFamily = [];
+        if (state.loading_submit === undefined) state.loading_submit = false;
         // Previenete limite de almacen exedido
         /*
         5MB per app per browser. According to the HTML5 spec, this limit can be increased by the user when needed;
          however, only a few browsers support this
          */
         // alternativa posible sessionStorage
-        localStorage.removeItem('customers')
-        localStorage.removeItem('offices')
-        localStorage.removeItem('files')
-        localStorage.removeItem('processes')
-        localStorage.removeItem('actions')
-        localStorage.removeItem('workers')
-        localStorage.removeItem('warehouses')
-        localStorage.removeItem('all_items')
+        localStorage.removeItem('customers');
+        localStorage.removeItem('offices');
+        localStorage.removeItem('files');
+        localStorage.removeItem('processes');
+        localStorage.removeItem('actions');
+        localStorage.removeItem('workers');
+        localStorage.removeItem('warehouses');
+        localStorage.removeItem('all_items');
     },
     clearExtraInfoItem() {
-        state.extra_colors = []
-        state.extra_CatItemUnitsPerPackage = []
-        state.extra_CatItemMoldProperty = []
-        state.extra_CatItemUnitBusiness = []
-        state.extra_CatItemStatus = []
-        state.extra_CatItemPackageMeasurement = []
-        state.extra_CatItemMoldCavity = []
-        state.extra_CatItemProductFamily = []
+        state.extra_colors = [];
+        state.extra_CatItemUnitsPerPackage = [];
+        state.extra_CatItemMoldProperty = [];
+        state.extra_CatItemUnitBusiness = [];
+        state.extra_CatItemStatus = [];
+        state.extra_CatItemPackageMeasurement = [];
+        state.extra_CatItemMoldCavity = [];
+        state.extra_CatItemProductFamily = [];
     },
     loadWarehouses(store) {
         if (state.warehouses === undefined) state.warehouses = [];

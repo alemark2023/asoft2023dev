@@ -1,15 +1,25 @@
 <template>
-    <div class="col-12 row">
+    <div class="col-12 row"
+    v-if="
+        hasColors ||
+        hasCatItemUnitsPerPackage ||
+        hasCatItemMoldProperty ||
+        hasCatItemUnitBusiness ||
+        hasCatItemStatus ||
+        hasCatItemPackageMeasurement ||
+        hasCatItemMoldCavity ||
+        hasCatItemProductFamily
+    ">
 
         <!-- Colores -->
-        <div v-if="extra_colors.length > 0"
+        <div v-if="hasColors"
              class="col-md-4">
             <div
                 :class="{'has-danger': errors.colors}"
                 class="form-group">
                 <label class="control-label">Colores</label>
 
-                <el-select v-model="form.colors"
+                <el-select v-model="form.item.extra.colors"
                            :clearable="clearable"
                            :multiple="multiple"
 
@@ -25,14 +35,14 @@
             </div>
         </div>
         <!-- CatItemUnitsPerPackage -->
-        <div v-if="extra_CatItemUnitsPerPackage.length > 0"
+        <div v-if="hasCatItemUnitsPerPackage"
              class="col-md-4"
         >
             <div
                 :class="{'has-danger': errors.CatItemUnitsPerPackage}"
                 class="form-group">
                 <label class="control-label">Cantidad de unidades por empaque</label>
-                <el-select v-model="form.CatItemUnitsPerPackage"
+                <el-select v-model="form.item.extra.CatItemUnitsPerPackage"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -47,7 +57,7 @@
             </div>
         </div>
         <!-- CatItemMoldProperty -->
-        <div v-if="extra_CatItemMoldProperty.length > 0"
+        <div v-if="hasCatItemMoldProperty"
              class="col-md-4"
         >
             <div
@@ -56,7 +66,7 @@
                 <label class="control-label">Propiedades del molde</label>
 
 
-                <el-select v-model="form.CatItemMoldProperty"
+                <el-select v-model="form.item.extra.CatItemMoldProperty"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -72,7 +82,7 @@
             </div>
         </div>
         <!-- CatItemUnitBusiness -->
-        <div v-if="extra_CatItemUnitBusiness.length > 0"
+        <div v-if="hasCatItemUnitBusiness"
              class="col-md-4">
             <div
                 :class="{'has-danger': errors.CatItemUnitBusiness}"
@@ -80,7 +90,7 @@
             >
                 <label class="control-label">Unidades de negocio</label>
 
-                <el-select v-model="form.CatItemUnitBusiness"
+                <el-select v-model="form.item.extra.CatItemUnitBusiness"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -95,7 +105,7 @@
             </div>
         </div>
         <!-- CatItemStatus -->
-        <div v-if="extra_CatItemStatus.length > 0"
+        <div v-if="hasCatItemStatus"
              class="col-md-4"
         >
             <div
@@ -104,7 +114,7 @@
             >
                 <label class="control-label">Status del item</label>
 
-                <el-select v-model="form.CatItemStatus"
+                <el-select v-model="form.item.extra.CatItemStatus"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -119,14 +129,14 @@
             </div>
         </div>
         <!-- CatItemPackageMeasurement -->
-        <div v-if="extra_CatItemPackageMeasurement.length > 0"
+        <div v-if="hasCatItemPackageMeasurement"
              class="col-md-4"
         >
             <div
                 :class="{'has-danger': errors.CatItemPackageMeasurement}"
                 class="form-group">
                 <label class="control-label">Unidades de medida</label>
-                <el-select v-model="form.CatItemPackageMeasurement"
+                <el-select v-model="form.item.extra.CatItemPackageMeasurement"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -141,7 +151,7 @@
             </div>
         </div>
         <!-- CatItemMoldCavity -->
-        <div v-if="extra_CatItemMoldCavity.length > 0"
+        <div v-if="hasCatItemMoldCavity"
              class="col-md-4"
         >
             <div
@@ -149,7 +159,7 @@
                 class="form-group">
                 <label class="control-label">Cavidades del molde</label>
 
-                <el-select v-model="form.CatItemMoldCavity"
+                <el-select v-model="form.item.extra.CatItemMoldCavity"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -164,7 +174,7 @@
             </div>
         </div>
         <!-- CatItemProductFamily -->
-        <div v-if="extra_CatItemProductFamily.length > 0"
+        <div v-if="hasCatItemProductFamily"
              class="col-md-4"
         >
             <div
@@ -172,7 +182,7 @@
                 class="form-group">
                 <label class="control-label">Familia de productos</label>
 
-                <el-select v-model="form.CatItemProductFamily"
+                <el-select v-model="form.item.extra.CatItemProductFamily"
                            :clearable="clearable"
                            :multiple="multiple"
                 >
@@ -231,6 +241,30 @@ export default {
             'extra_CatItemProductFamily',
             'config',
         ]),
+        hasColors: function () {
+            return this.extra_colors.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.colors !== undefined;
+        },
+        hasCatItemUnitsPerPackage: function () {
+            return this.extra_CatItemUnitsPerPackage.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemUnitsPerPackage !== undefined;
+        },
+        hasCatItemMoldProperty: function () {
+            return this.extra_CatItemMoldProperty.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemMoldProperty !== undefined;
+        },
+        hasCatItemUnitBusiness: function () {
+            return this.extra_CatItemUnitBusiness.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemUnitBusiness !== undefined;
+        },
+        hasCatItemStatus: function () {
+            return this.extra_CatItemStatus.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemStatus !== undefined;
+        },
+        hasCatItemPackageMeasurement: function () {
+            return this.extra_CatItemPackageMeasurement.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemPackageMeasurement !== undefined;
+        },
+        hasCatItemMoldCavity: function () {
+            return this.extra_CatItemMoldCavity.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemMoldCavity !== undefined;
+        },
+        hasCatItemProductFamily: function () {
+            return this.extra_CatItemProductFamily.length > 0 && this.form.item.extra !== undefined && this.form.item.extra.CatItemProductFamily !== undefined;
+        },
     },
     data() {
         return {

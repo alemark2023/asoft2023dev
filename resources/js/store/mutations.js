@@ -107,6 +107,10 @@ export default {
         if(CatItemProductFamily === undefined ) CatItemProductFamily = [];
         state.CatItemProductFamily = CatItemProductFamily
     },
+    setDeb(state,debug) {
+        if(debug === undefined ) debug = {};
+        state.deb = debug
+    },
 
     setExtraColors(state, extra_colors) {
         if(extra_colors === undefined ) extra_colors = [];
