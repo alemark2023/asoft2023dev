@@ -1386,4 +1386,24 @@ class Item extends ModelTenant
         $array['item']['extra']["string"]["CatItemStatus"] = $CatItemStatus_string;
         $array['item']['extra']["string"]["CatItemUnitBusiness"] = $CatItemUnitBusiness_string;
     }
+
+    /**
+     *
+     * Añade elementos extra al momento de generar el pdf
+     *
+     * @param $array
+     */
+    public function getExtraDataToPrint(&$array){
+
+        $array['image_url'] = ($this->image !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image)
+            : asset("/logo/{$this->image}");
+        $array['image_url_medium']=($this->image_medium !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_medium)
+            : asset("/logo/{$this->image_medium}");
+        $array['image_url_small'] =($this->image_small !== 'imagen-no-disponible.jpg')
+            ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image_small)
+            : asset("/logo/{$this->image_small}");
+
+    }
 }

@@ -323,6 +323,7 @@ class DocumentItem extends ModelTenant
     public function getPrintExtraData()
     {
 
+
         $item = $this->item;
         $extra = (property_exists($item, 'extra')) ? $item->extra : null;
         $extra_string = ($extra != null && property_exists($extra, 'string')) ? $extra->string : null;
@@ -334,7 +335,7 @@ class DocumentItem extends ModelTenant
         $CatItemPackageMeasurement = ($extra_string != null && property_exists($extra_string, 'CatItemPackageMeasurement')) ? $extra_string->CatItemPackageMeasurement : null;
         $CatItemStatus = ($extra_string != null && property_exists($extra_string, 'CatItemStatus')) ? $extra_string->CatItemStatus : null;
         $CatItemUnitBusiness = ($extra_string != null && property_exists($extra_string, 'CatItemUnitBusiness')) ? $extra_string->CatItemUnitBusiness : null;
-        return [
+        $data = [
             'colors' => (!empty($colors)) ? $colors : null,
             'CatItemUnitsPerPackage' => (!empty($CatItemUnitsPerPackage)) ? $CatItemUnitsPerPackage : null,
             'CatItemMoldProperty' => (!empty($CatItemMoldProperty)) ? $CatItemMoldProperty : null,
@@ -344,6 +345,10 @@ class DocumentItem extends ModelTenant
             'CatItemStatus' => (!empty($CatItemStatus)) ? $CatItemStatus : null,
             'CatItemUnitBusiness' => (!empty($CatItemUnitBusiness)) ? $CatItemUnitBusiness : null,
         ];
+        // Se añaden campos extra desde el item
+        $itemModel = $this->getModelItem();
+        $itemModel->getExtraDataToPrint($data);
+        return $data;
     }
 
 }
