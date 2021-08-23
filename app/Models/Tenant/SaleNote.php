@@ -514,6 +514,7 @@ class SaleNote extends ModelTenant
             'soap_type_id'                 => $this->soap_type_id,
             'external_id'                  => $this->external_id,
             'date_of_issue'                => $this->date_of_issue->format('Y-m-d'),
+            'time_of_issue'                => $this->time_of_issue,
             'identifier'                   => $this->identifier,
             'full_number'                  => $this->series.'-'.$this->number,
             'customer_name'                => $this->customer->name,

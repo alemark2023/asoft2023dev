@@ -7,6 +7,9 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Nota de ventas</title>
         <style>
+            @page {
+              margin: 5;
+            }
             html {
                 font-family: sans-serif;
                 font-size: 12px;
@@ -98,6 +101,7 @@
                             <tr>
                                <th>#</th>
                                 <th class="text-center">Fecha Emisión</th>
+                                <th class="text-center">Hora Emisión</th>
                                 <th>Cliente</th>
                                 <th>Nota de Venta</th>
                                 <th>Estado</th>
@@ -119,6 +123,7 @@
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value->date_of_issue->format('Y-m-d')}}</td>
+                                    <td class="celda">{{$value->time_of_issue}}</td>
                                     <td class="celda">{{$value->customer->name}}</td>
                                     <td class="celda">{{$value->number_full}}</td>
                                     <td class="celda">{{$value->state_type->description}}</td>
@@ -200,14 +205,14 @@
                                 @endphp
                             @endforeach
                             <tr>
-                                <td class="celda" colspan="12"></td>
+                                <td class="celda" colspan="13"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
                             </tr>
                             <tr>
-                                <td class="celda" colspan="12"></td>
+                                <td class="celda" colspan="13"></td>
                                 <td class="celda" >Totales USD</td>
                                 <td class="celda">{{$acum_total_taxed_usd}}</td>
                                 <td class="celda">{{$acum_total_igv_usd}}</td>
