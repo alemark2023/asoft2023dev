@@ -126,6 +126,7 @@ export default {
       },
       notes: [],
       errors: {},
+      group_items_generate_document: false
     };
   },
   methods: {
@@ -138,46 +139,85 @@ export default {
         return;
       }
       this.loading = true;
-      const data = {
-        notes_id: this.form.selecteds,
-      };
-      this.$http
-        .post("/sale-notes/items", data)
-        .then((response) => {
-          const notes = [];
-          this.notes.map((d) => {
-            if (d.selected) {
-              notes.push(`${d.series}-${d.number}`);
-            }
-          });
-          const items = response.data.data;
-          const data = [];
-          items.map((i) => {
-            const it = {
-              id: i.item_id,
-              quantity: 0,
-            };
-            items.map((ite) => {
-              if (ite.item_id === it.id) {
-                it.quantity = it.quantity + parseFloat(ite.quantity);
+
+      if(this.group_items_generate_document){
+
+        const data = {
+          notes_id: this.form.selecteds, 
+        };
+
+        this.$http
+          .post("/sale-notes/items", data)
+          .then((response) => {
+            const notes = [];
+            this.notes.map((d) => {
+              if (d.selected) {
+                notes.push(`${d.series}-${d.number}`);
               }
             });
-            const itemIsDuplicated = data.find((item) => item.id === it.id);
-            if (itemIsDuplicated) {
-              itemIsDuplicated.quantity = it.quantity;
-            } else {
-              data.push(it);
-            }
-          });
-          const client = this.clients.find((c) => c.id === this.form.client_id);
-          localStorage.setItem("client", JSON.stringify(client));
-          localStorage.setItem("itemsForNotes", JSON.stringify(data));
-          localStorage.setItem("notes", JSON.stringify(notes));
-          this.onClose();
-          window.location.href = "/documents/create";
-        })
-        .catch((error) => this.axiosError(error))
-        .finally(() => (this.loading = false));
+            const items = response.data.data;
+            const data = [];
+            items.map((i) => {
+              const it = {
+                id: i.item_id,
+                quantity: 0,
+              };
+              items.map((ite) => {
+                if (ite.item_id === it.id) {
+                  it.quantity = it.quantity + parseFloat(ite.quantity);
+                }
+              });
+              const itemIsDuplicated = data.find((item) => item.id === it.id);
+              if (itemIsDuplicated) {
+                itemIsDuplicated.quantity = it.quantity;
+              } else {
+                data.push(it);
+              }
+            });
+            const client = this.clients.find((c) => c.id === this.form.client_id);
+            localStorage.setItem("client", JSON.stringify(client));
+            localStorage.setItem("itemsForNotes", JSON.stringify(data));
+            localStorage.setItem("notes", JSON.stringify(notes));
+            this.onClose();
+            window.location.href = "/documents/create";
+          })
+          .catch((error) => this.axiosError(error))
+          .finally(() => (this.loading = false));
+        
+        }else{
+          this.processNotGroupItems()
+        }
+    },
+    processNotGroupItems(){
+      
+        const data = {
+          notes_id: this.form.selecteds,
+          select_all: true
+        };
+
+        this.$http.post("/sale-notes/items", data)
+          .then((response) => {
+
+            const notes = [];
+            this.notes.map((d) => {
+              if (d.selected) {
+                notes.push(`${d.series}-${d.number}`);
+              }
+            });
+
+            const items = response.data.data;
+            
+            const client = this.clients.find((c) => c.id === this.form.client_id);
+            localStorage.setItem("client", JSON.stringify(client));
+            localStorage.setItem("itemsNotGroupForNotes", JSON.stringify(items));
+            localStorage.setItem("notes", JSON.stringify(notes));
+            this.onClose();
+            window.location.href = "/documents/create";
+          })
+          .catch((error) => this.axiosError(error))
+          .finally(() => (this.loading = false));
+
+
     },
     onFillSelectedNotes() {
       this.form.selecteds = [];
@@ -222,6 +262,17 @@ export default {
       this.filter.name = null;
       this.form.client_id = null;
       this.onFetchClients();
+      this.getConfigGroupItems();
+    },
+    getConfigGroupItems() { 
+
+      this.$http
+        .get("/sale-notes/config-group-items")
+        .then((response) => {
+          // console.log(response)
+          this.group_items_generate_document = response.data.group_items_generate_document
+        })
+        
     },
     onClose() {
       this.notes = [];

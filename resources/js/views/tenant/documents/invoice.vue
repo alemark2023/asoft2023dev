@@ -903,6 +903,10 @@ export default {
                     });
                 });
             }
+
+            //parse items from multiple sale notes not group
+            this.processItemsForNotesNotGroup()
+
             const clientfromDispatchesOrNotes = localStorage.getItem('client');
             if (clientfromDispatchesOrNotes) {
                 const client = JSON.parse(clientfromDispatchesOrNotes);
@@ -951,6 +955,25 @@ export default {
 
                 this.form.items[index] = await calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale)
                 await this.calculateTotal()
+
+            },
+            async processItemsForNotesNotGroup(){
+
+                let itemsNotGroupForNotes = localStorage.getItem('itemsNotGroupForNotes')
+
+                if (itemsNotGroupForNotes) {
+
+                    let itemsParsed = JSON.parse(itemsNotGroupForNotes)
+                     
+                    // prepare - validate prop presentation and others
+                    this.form.items = await this.onPrepareItems(itemsParsed).map(element => {
+                        element.item.presentation = element.item.presentation ? element.item.presentation : []
+                        return element
+                    });
+
+                    await this.calculateTotal()
+                    localStorage.removeItem('itemsNotGroupForNotes');
+                }
 
             },
             setItemFromResponse(item,itemsParsed){

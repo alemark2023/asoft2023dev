@@ -94,6 +94,7 @@ class Configuration extends ModelTenant
         'select_available_price_list',
         'currency_type_id',
         'show_extra_info_to_item',
+        'group_items_generate_document',
     ];
 
     protected $casts = [
@@ -108,6 +109,7 @@ class Configuration extends ModelTenant
         'send_data_to_other_server' => 'boolean',
         'select_available_price_list' => 'boolean',
         'show_extra_info_to_item' => 'boolean',
+        'group_items_generate_document' => 'boolean',
     ];
 
     /**
@@ -423,6 +425,7 @@ class Configuration extends ModelTenant
             'select_available_price_list' => (bool)$this->select_available_price_list,
             'show_extra_info_to_item' => (bool)$this->show_extra_info_to_item,
             'percentage_allowance_charge' => $this->percentage_allowance_charge,
+            'group_items_generate_document' => $this->group_items_generate_document,
             'currency_type_id' => $this->getCurrencyTypeId(),
             'currency_types' => $currency,
             'affectation_igv_types_exonerated_unaffected' => Item::AffectationIgvTypesExoneratedUnaffected(),

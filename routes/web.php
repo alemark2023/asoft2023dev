@@ -483,6 +483,7 @@ if ($hostname) {
             Route::get('sale-notes/search/item/{item}', 'Tenant\SaleNoteController@searchItemById');
             Route::get('sale-notes/list-by-client', 'Tenant\SaleNoteController@saleNotesByClient');
             Route::post('sale-notes/items', 'Tenant\SaleNoteController@getItemsFromNotes');
+            Route::get('sale-notes/config-group-items', 'Tenant\SaleNoteController@getConfigGroupItems');
 
             Route::get('sale_note_payments/records/{sale_note}', 'Tenant\SaleNotePaymentController@records');
             Route::get('sale_note_payments/document/{sale_note}', 'Tenant\SaleNotePaymentController@document');

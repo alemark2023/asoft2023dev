@@ -336,6 +336,25 @@
                                             <small class="form-control-feedback" v-if="errors.show_extra_info_to_item" v-text="errors.show_extra_info_to_item[0]"></small>
                                         </div>
                                     </div>
+
+                                    
+                                    <div class="col-md-6 mt-4">
+                                        <label class="control-label">Agrupar productos y cantidades - Generar CPE
+
+                                            <el-tooltip
+                                                class="item"
+                                                effect="dark"
+                                                        content="Agrupar/Sumar productos y cantidades al generar cpe desde múltiples notas de venta"
+                                                placement="top-start">
+                                                <i class="fa fa-info-circle"></i>
+                                            </el-tooltip>
+                                        </label>
+                                        <div class="form-group" :class="{'has-danger': errors.group_items_generate_document}">
+                                            <el-switch v-model="form.group_items_generate_document" active-text="Si" inactive-text="No" @change="submit"></el-switch>
+                                            <small class="form-control-feedback" v-if="errors.group_items_generate_document" v-text="errors.group_items_generate_document[0]"></small>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane class="mb-3" name="fourth">
@@ -602,6 +621,7 @@
                     search_item_by_series: false,
                     change_free_affectation_igv: false,
                     select_available_price_list: false,
+                    group_items_generate_document: false
                 };
             },
             submit() {
