@@ -154,8 +154,15 @@
         <div class="col-lg-6">
           <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
             <label class="control-label">Fecha de emisión</label>
-            <el-date-picker
+            <!-- <el-date-picker
               readonly
+              v-model="document.date_of_issue"
+              type="date"
+              value-format="yyyy-MM-dd"
+              :clearable="false"
+              @change="changeDateOfIssue"
+            ></el-date-picker> -->
+            <el-date-picker
               v-model="document.date_of_issue"
               type="date"
               value-format="yyyy-MM-dd"
