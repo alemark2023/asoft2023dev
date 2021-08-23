@@ -211,7 +211,7 @@
                         </div>
                     </div>
                     <template v-if="!is_client">
-                        <div v-if="form.item_unit_types.length > 0" class="col-md-12">
+                        <div v-if="has_list_prices" class="col-md-12">
                             <div class="table-responsive" style="margin:3px">
                                 <h5 class="separator-title">
                                     Lista de Precios
