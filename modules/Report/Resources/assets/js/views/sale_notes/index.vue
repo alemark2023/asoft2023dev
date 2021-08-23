@@ -25,6 +25,7 @@
                         <tr slot="heading">
                             <th>#</th>
                             <th class="text-center">Fecha Emisión</th>
+                            <th class="text-center">Hora Emisión</th>
                             <th class="">Usuario/Vendedor</th>
                             <th>Cliente</th>
                             <th>Nota de Venta</th>
@@ -47,6 +48,7 @@
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
+                            <td>{{row.time_of_issue}}</td>
                             <td>{{row.user_name}}</td>
                             <td>{{row.customer_name}}</td>
                             <td>{{row.number_full}}</td>
