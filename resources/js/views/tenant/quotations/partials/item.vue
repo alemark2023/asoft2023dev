@@ -435,6 +435,7 @@ export default {
     },
     data() {
         return {
+            operationTypeId:null,
             can_add_new_product: false,
             loading_search: false,
             titleAction: '',
@@ -601,10 +602,13 @@ export default {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
                 this.all_items = response.data.items
                 this.affectation_igv_types = response.data.affectation_igv_types
+                this.all_affectation_igv_types = this.affectation_igv_types
                 this.system_isc_types = response.data.system_isc_types
                 this.discount_types = response.data.discount_types
                 this.charge_types = response.data.charge_types
                 this.attribute_types = response.data.attribute_types
+                this.is_client = response.data.is_client
+                this.operation_types = response.data.operation_types
                 this.filterItems()
 
             })

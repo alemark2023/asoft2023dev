@@ -16,6 +16,7 @@ use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Catalogs\PriceType;
 use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Company;
@@ -29,6 +30,7 @@ use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\User;
 use App\Models\Tenant\Warehouse;
+use App\Traits\OfflineTrait;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +47,9 @@ use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 class QuotationController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
+    use FinanceTrait;
+    use OfflineTrait;
+    use StorageDocument;
 
     protected $quotation;
     protected $company;
@@ -210,8 +214,21 @@ class QuotationController extends Controller
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $is_client = $this->getIsClient();
+        $operation_types = OperationType::whereActive()->get();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types', 'discount_types', 'charge_types', 'attribute_types');
+        return compact(
+             'items',
+             'categories',
+             'operation_types',
+             'affectation_igv_types',
+             'system_isc_types',
+             'price_types',
+             'discount_types',
+             'charge_types',
+             'attribute_types',
+             'is_client'
+        );
     }
 
     public function record($id)
@@ -845,7 +862,7 @@ class QuotationController extends Controller
         ];
     }
 
-    
+
     public function itemWarehouses($item_id)
     {
 
