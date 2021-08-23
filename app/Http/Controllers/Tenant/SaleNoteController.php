@@ -1453,14 +1453,31 @@ class SaleNoteController extends Controller
             'notes_id' => 'required|array',
         ]);
 
-        $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
-            ->select('item_id', 'quantity')
-            ->get();
+
+        if($request->select_all){
+
+            $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)->get();
+
+        }else{
+
+            $items = SaleNoteItem::whereIn('sale_note_id', $request->notes_id)
+                    ->select('item_id', 'quantity')
+                    ->get();
+        }
+
 
         return response()->json([
             'success' => true,
             'data' => $items,
         ], 200);
+    }
+
+
+    public function getConfigGroupItems()
+    {
+        return [
+            'group_items_generate_document' => Configuration::select('group_items_generate_document')->first()->group_items_generate_document
+        ];
     }
 
     /**
