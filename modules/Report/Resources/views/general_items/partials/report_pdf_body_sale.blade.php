@@ -59,12 +59,13 @@ if (!isset($qty)) {
     $utility_item = '';
     $relation_item = $item;
     $purchase_unit_price = ($relation_item) ? $relation_item->purchase_unit_price : 0;
-    $set = ItemSet::where('individual_item_id',$item->id)->first();
-
+    $total =number_format( $qty * (float)$purchase_unit_price,2);
+    /*
+     $set = ItemSet::where('individual_item_id',$item->id)->first();
     if($set !== null){
         $qty = $set->quantity;
-        $total =number_format( $qty * (float)$purchase_unit_price,2);
     }
+    */
     $item_web_platform = $item->getWebPlatformModel();
     if ($item_web_platform) {
         $web_platform = $item_web_platform->name;
