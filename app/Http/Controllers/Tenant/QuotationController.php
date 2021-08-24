@@ -482,9 +482,12 @@ class QuotationController extends Controller
     public function ReturnItem( &$item)
     {
         $configuration =  Configuration::first();
-        $item->transform(function ($row) use($configuration) {
+        $establishment_id = auth()->user()->establishment_id;
+        $warehouse = \Modules\Inventory\Models\Warehouse::where('establishment_id', $establishment_id)->first();
+
+        $item->transform(function ($row) use($configuration,$warehouse) {
             /** @var \App\Models\Tenant\Item $row */
-            return $row->getDataToItemModal($configuration,false,true);
+            return $row->getDataToItemModal($warehouse,false,true);
             /** Se ha movido al modelo*/
             $full_description = $this->getFullDescription($row);
             return [

@@ -16,58 +16,68 @@
 
                             <template v-if="!search_item_by_barcode" id="select-append">
                                 <el-input id="custom-input">
-                                    <el-select id="select-width" ref="selectSearchNormal"
-                                               slot="prepend"
-                                               v-model="form.item_id"
-                                               :disabled="recordItem != null"
-                                               :loading="loading_search"
-                                               :remote-method="searchRemoteItems"
-                                               filterable
-                                               placeholder="Buscar"
-                                               popper-class="el-select-items"
-                                               remote
-                                               @change="changeItem"
-                                               @focus="focusSelectItem"
-                                               @visible-change="focusTotalItem">
+                                    <el-select
+                                        id="select-width"
+                                        ref="selectSearchNormal"
+                                        slot="prepend"
+                                        v-model="form.item_id"
+                                        :disabled="recordItem != null"
+                                        :loading="loading_search"
+                                        :remote-method="searchRemoteItems"
+                                        filterable
+                                        placeholder="Buscar"
+                                        popper-class="el-select-items"
+                                        remote
+                                        @change="changeItem"
+                                        @focus="focusSelectItem"
+                                        @visible-change="focusTotalItem">
 
-                                        <el-tooltip v-for="option in items" :key="option.id" placement="top">
-
-                                            <div slot="content">
-                                                Almacen: {{ option.warehouse_description }} <br>
-                                                Marca: {{ option.brand }} <br>
-                                                Categoria: {{ option.category }} <br>
-                                                Stock: {{ option.stock }} <br>
-                                                Precio: {{ option.currency_type_symbol }} {{ option.sale_unit_price }}
-                                                <br>
-                                            </div>
-
-                                            <el-option :label="option.full_description" :value="option.id"></el-option>
+                                        <el-tooltip
+                                            v-for="option in items"
+                                            :key="option.id"
+                                            placement="left">
+                                            <div
+                                                slot="content"
+                                                v-html="ItemSlotTooltipView(option)"
+                                            ></div>
+                                            <el-option
+                                                :label="ItemOptionDescriptionView(option)"
+                                                :value="option.id"
+                                            ></el-option>
 
                                         </el-tooltip>
-
                                     </el-select>
-                                    <el-tooltip slot="append" :disabled="recordItem != null" class="item"
-                                                content="Ver Stock del Producto" effect="dark"
-                                                placement="bottom">
-                                        <el-button :disabled="isEditItemNote" @click.prevent="clickWarehouseDetail()"><i
-                                            class="fa fa-search"></i></el-button>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Ver Stock del Producto"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickWarehouseDetail()">
+                                            <i class="fa fa-search"></i>
+                                        </el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
                             <template v-else>
                                 <el-input id="custom-input">
-                                    <el-select id="select-width" ref="selectBarcode"
-                                               slot="prepend"
-                                               v-model="form.item_id"
-                                               :disabled="recordItem != null"
-                                               :loading="loading_search"
-                                               :remote-method="searchRemoteItems"
-                                               filterable
-                                               placeholder="Buscar"
-                                               popper-class="el-select-items"
-                                               remote
-                                               value-key="id"
-                                               @change="changeItem"
+                                    <el-select
+                                        id="select-width"
+                                       ref="selectBarcode"
+                                       slot="prepend"
+                                       v-model="form.item_id"
+                                       :disabled="recordItem != null"
+                                       :loading="loading_search"
+                                       :remote-method="searchRemoteItems"
+                                       filterable
+                                       placeholder="Buscar"
+                                       popper-class="el-select-items"
+                                       remote
+                                       value-key="id"
+                                       @change="changeItem"
                                     >
                                         <el-option
                                             v-for="option in items"
@@ -75,12 +85,18 @@
                                             :label="option.full_description"
                                             :value="option.id"></el-option>
                                     </el-select>
-                                    <el-tooltip slot="append" :disabled="recordItem != null" class="item"
-                                                content="Ver Stock del Producto" effect="dark"
-                                                placement="bottom">
-                                        <el-button :disabled="isEditItemNote"
-                                                   @click.prevent="clickWarehouseDetail()"><i
-                                            class="fa fa-search"></i></el-button>
+                                    <el-tooltip
+                                        slot="append"
+                                        :disabled="recordItem != null"
+                                        class="item"
+                                        content="Ver Stock del Producto"
+                                        effect="dark"
+                                        placement="bottom">
+                                        <el-button
+                                            :disabled="isEditItemNote"
+                                            @click.prevent="clickWarehouseDetail()">
+                                            <i class="fa fa-search"></i>
+                                        </el-button>
                                     </el-tooltip>
                                 </el-input>
                             </template>
@@ -104,7 +120,9 @@
                             <label class="control-label">Afectación Igv</label>
                             <el-select v-model="form.affectation_igv_type_id"
                                        :disabled="!change_affectation_igv_type_id" filterable>
-                                <el-option v-for="option in affectation_igv_types" :key="option.id"
+                                <el-option
+                                    v-for="option in affectation_igv_types"
+                                    :key="option.id"
                                            :label="option.description"
                                            :value="option.id"></el-option>
                             </el-select>
@@ -120,10 +138,11 @@
                         <div :class="{'has-danger': errors.quantity}" class="form-group">
 
                             <label class="control-label">Cantidad</label>
-                            <el-input ref="inputQuantity"
-                                      v-model="form.quantity"
-                                      :disabled="form.item.calculate_quantity"
-                                      @blur="validateQuantity"
+                            <el-input
+                                ref="inputQuantity"
+                                  v-model="form.quantity"
+                                  :disabled="form.item.calculate_quantity"
+                                  @blur="validateQuantity"
                                       @input.native="changeValidateQuantity">
                                 <el-button slot="prepend"
                                            :disabled="form.quantity < 0.01 || form.item.calculate_quantity"
@@ -205,12 +224,14 @@
                     <div v-if="config.edit_name_product" class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
                             <label class="control-label">Nombre producto en PDF</label>
-                            <vue-ckeditor v-model="form.name_product_pdf"
+                            <vue-ckeditor
+                                v-model="form.name_product_pdf"
                                           :editors="editors"
                                           type="classic"></vue-ckeditor>
                         </div>
                     </div>
                     <template v-if="!is_client">
+
                         <div v-if="has_list_prices" class="col-md-12">
                             <div class="table-responsive" style="margin:3px">
                                 <h5 class="separator-title">
@@ -236,7 +257,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in item_unit_types" :key="index">
+                                    <tr v-for="(row, index) in form.item_unit_types" :key="index">
                                         <td class="text-center">{{ row.unit_type_id }}</td>
                                         <td class="text-center">{{ row.description }}</td>
                                         <td class="text-center">{{ row.quantity_unit }}</td>
@@ -360,7 +381,9 @@
                                                 <td>
                                                     <el-select v-model="row.attribute_type_id" filterable
                                                                @change="changeAttributeType(index)">
-                                                        <el-option v-for="option in attribute_types" :key="option.id"
+                                                        <el-option
+                                                            v-for="option in attribute_types"
+                                                            :key="option.id"
                                                                    :label="option.description"
                                                                    :value="option.id"></el-option>
                                                     </el-select>
@@ -386,7 +409,8 @@
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cerrar</el-button>
-                <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">{{ titleAction }}
+                <el-button v-if="form.item_id" class="add" native-type="submit" type="primary">
+                    {{ titleAction }}
                 </el-button>
             </div>
         </form>
@@ -418,6 +442,7 @@ import WarehousesDetail from './warehouses.vue'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 
 export default {
     props: [
@@ -435,17 +460,17 @@ export default {
     },
     data() {
         return {
+            extra_temp: undefined,
             operationTypeId:null,
+            isEditItemNote: false,
             can_add_new_product: false,
             loading_search: false,
             titleAction: '',
             is_client: false,
-            isEditItemNote: false,
             titleDialog: 'Agregar Producto o Servicio',
             resource: 'quotations',
             showDialogNewItem: false,
             has_list_prices: false,
-            showWarehousesDetail: false,
             errors: {},
             form: {},
             all_items: [],
@@ -463,8 +488,9 @@ export default {
             activePanel: 0,
             total_item: 0,
             item_unit_types: [],
-            warehousesDetail: [],
             item_unit_type: {},
+            showWarehousesDetail: false,
+            warehousesDetail: [],
             showListStock: false,
             search_item_by_barcode: false,
             isUpdateWarehouseId: null,
@@ -483,6 +509,10 @@ export default {
         this.loadConfiguration()
         this.$store.commit('setConfiguration', this.configuration)
         this.initForm()
+
+    },
+    mounted() {
+        this.getTables()
         this.$eventHub.$on('reloadDataItems', (item_id) => {
             this.reloadDataItems(item_id)
         })
@@ -490,9 +520,6 @@ export default {
         this.$eventHub.$on('selectWarehouseId', (warehouse_id) => {
             this.form.warehouse_id = warehouse_id
         })
-    },
-    mounted() {
-        this.getTables()
         this.canCreateProduct();
     },
     computed: {
@@ -500,11 +527,14 @@ export default {
             'config',
         ]),
         showLots() {
-            if (
-                this.form.item_id &&
-                this.form.item.lots_enabled &&
-                this.form.lots_group.length > 0
-            ) {
+            // if (
+            //     this.form.item_id &&
+            //     this.form.item.lots_enabled &&
+            //     this.form.lots_group.length > 0
+            // )
+
+            if (this.form.item_id && this.form.item.lots_enabled )
+            {
                 return true;
             }
 
@@ -543,6 +573,28 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        ItemSlotTooltipView(item) {
+            return ItemSlotTooltip(item);
+        },
+        ItemOptionDescriptionView(item) {
+            return ItemOptionDescription(item)
+        },
+        getTables() {
+            this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                let data = response.data
+                this.all_items = data.items
+                this.operation_types = data.operation_types
+                this.all_affectation_igv_types = data.affectation_igv_types
+                this.affectation_igv_types = data.affectation_igv_types
+                this.system_isc_types = data.system_isc_types
+                this.discount_types = data.discount_types
+                this.charge_types = data.charge_types
+                this.attribute_types = data.attribute_types
+                this.is_client = data.is_client
+                this.filterItems()
+
+            })
+        },
         canCreateProduct() {
             if (this.typeUser === 'admin') {
                 this.can_add_new_product = true
@@ -573,6 +625,9 @@ export default {
 
             this.calculateTotal()
         },
+        changeValidateQuantity(event) {
+            this.calculateTotal()
+        },
         getMinQuantity() {
             return 0.01
         },
@@ -594,24 +649,6 @@ export default {
         clickIncrease() {
             this.form.quantity = parseInt(this.form.quantity + 1)
             this.calculateTotal()
-        },
-        changeValidateQuantity(event) {
-            this.calculateTotal()
-        },
-        getTables() {
-            this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                this.all_items = response.data.items
-                this.affectation_igv_types = response.data.affectation_igv_types
-                this.all_affectation_igv_types = this.affectation_igv_types
-                this.system_isc_types = response.data.system_isc_types
-                this.discount_types = response.data.discount_types
-                this.charge_types = response.data.charge_types
-                this.attribute_types = response.data.attribute_types
-                this.is_client = response.data.is_client
-                this.operation_types = response.data.operation_types
-                this.filterItems()
-
-            })
         },
         async searchRemoteItems(input) {
             if (input.length > 2) {
@@ -713,19 +750,21 @@ export default {
                 unit_price: 0,
                 unit_price_value: 0,
                 input_unit_price: 0,
+                input_unit_price_value: 0,
                 charges: [],
                 discounts: [],
                 attributes: [],
                 has_igv: null,
+                is_set: false,
                 item_unit_types: [],
                 has_plastic_bag_taxes: false,
+                series_enabled: false,
                 warehouse_id: null,
                 lots_group: [],
                 IdLoteSelected: null,
                 document_item_id: null,
                 item_unit_type_id: null,
                 unit_type_id: null,
-                is_set: false,
                 extra_attr_name: 'Tiempo de entrega',
                 extra_attr_value: '',
                 name_product_pdf: ''
@@ -734,22 +773,24 @@ export default {
             this.activePanel = 0;
             this.total_item = 0;
             this.item_unit_type = {};
+            this.lots = []
             this.has_list_prices = false;
         },
         async create() {
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
-            let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
-            if (operation_type !== undefined) {
-                this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+            if(this.operation_types !== undefined) {
+                let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
+                if (operation_type !== undefined) {
+                    this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+                }
             }
-
 
             if (this.recordItem) {
                 await this.reloadDataItems(this.recordItem.item_id)
-                this.form.item_id = this.recordItem.item_id
-                await this.changeItem();
+                this.form.item_id = await this.recordItem.item_id
+                await this.changeItem()
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price = this.recordItem.unit_price
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
@@ -763,10 +804,14 @@ export default {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                 }
                 if (this.recordItem.item.change_free_affectation_igv) {
+
                     this.form.affectation_igv_type_id = '15'
                     this.form.item.change_free_affectation_igv = true
+
                 } else {
-                    this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    if(this.recordItem.item.original_affectation_igv_type_id){
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    }
                 }
                 this.calculateQuantity()
             } else {
@@ -872,9 +917,6 @@ export default {
             this.$emit('update:showDialog', false)
         },
         async changeItem() {
-            // this.getItems();
-
-
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.item_unit_types = this.form.item.item_unit_types;
             // this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
@@ -883,27 +925,31 @@ export default {
             // this.lots = this.form.item.lots
 
             this.form.has_igv = this.form.item.has_igv;
+            this.form.has_plastic_bag_taxes = this.form.item.has_plastic_bag_taxes;
             this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
             this.form.quantity = 1;
             (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
             this.cleanTotalItem();
             this.showListStock = true
 
-
-            if (this.form.item.attributes.length > 0) {
+            if(
+                this.form.item !== undefined &&
+                this.form.item.attributes !== undefined &&
+                this.form.item.attributes.length > 0
+            ) {
                 const contex = this
-                this.form.item.attributes.forEach((row) => {
+                    this.form.item.attributes.forEach((row) => {
 
-                    contex.form.attributes.push({
-                        attribute_type_id: row.attribute_type_id,
-                        description: row.description,
-                        value: row.value,
-                        start_date: row.start_date,
-                        end_date: row.end_date,
-                        duration: row.duration,
+                        contex.form.attributes.push({
+                            attribute_type_id: row.attribute_type_id,
+                            description: row.description,
+                            value: row.value,
+                            start_date: row.start_date,
+                            end_date: row.end_date,
+                            duration: row.duration,
+                        })
                     })
-                })
-            }
+                }
             // this.form.lots_group = this.form.item.lots_group
         },
         focusTotalItem(change) {
@@ -916,6 +962,7 @@ export default {
             if (this.form.item.calculate_quantity) {
                 this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
             }
+            this.calculateTotal()
         },
         calculateTotal() {
             this.readonly_total = _.round((this.form.quantity * this.form.unit_price), 4)
@@ -966,8 +1013,7 @@ export default {
             this.form.item.extra_attr_value = this.form.extra_attr_value;
             this.form.unit_price_value = this.form.unit_price;
             this.form.item.presentation = this.item_unit_type;
-            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id});
-
+            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': affectation_igv_type_id});
 
             // let IdLoteSelected = this.form.IdLoteSelected
             // let document_item_id = this.form.document_item_id
@@ -1012,6 +1058,7 @@ export default {
         cleanItems() {
             this.items = []
             this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
+            // console.log("add cart barcode")
         },
         validateTotalItem() {
 
@@ -1031,6 +1078,8 @@ export default {
                 await this.$http.get(`/${this.resource}/table/items`).then((response) => {
                     this.items = response.data
                     this.form.item_id = item_id
+                    // if(item_id) this.changeItem()
+                    // this.filterItems()
                 })
 
             } else {
@@ -1085,8 +1134,8 @@ export default {
             this.form.unit_price = valor
             this.form.unit_price_value = valor
             this.form.item.unit_type_id = row.unit_type_id
-            this.getTables()
             this.calculateQuantity()
+            this.getTables()
         },
         addRowLotGroup(id) {
             this.form.IdLoteSelected = id
@@ -1107,11 +1156,6 @@ export default {
 
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
-        },
-        getItems() {
-            // this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            //     this.items = response.data.items
-            // })
         },
     },
 }

@@ -2,7 +2,9 @@
 
 namespace Modules\Order\Http\Controllers;
 
+use App\Models\Tenant\Catalogs\OperationType;
 use App\Models\Tenant\Quotation;
+use App\Traits\OfflineTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Person;
@@ -59,8 +61,9 @@ use App\Http\Controllers\Tenant\DocumentController;
 class OrderNoteController extends Controller
 {
 
-    use StorageDocument, FinanceTrait;
-
+    use FinanceTrait;
+    use StorageDocument;
+    use OfflineTrait;
     protected $order_note;
     protected $company;
 
@@ -231,11 +234,24 @@ class OrderNoteController extends Controller
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();
         $price_types = PriceType::whereActive()->get();
+        $operation_types = OperationType::whereActive()->get();
         $discount_types = ChargeDiscountType::whereType('discount')->whereLevel('item')->get();
         $charge_types = ChargeDiscountType::whereType('charge')->whereLevel('item')->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
+        $is_client = $this->getIsClient();
 
-        return compact('items', 'categories', 'affectation_igv_types', 'system_isc_types', 'price_types', 'discount_types', 'charge_types', 'attribute_types');
+        return compact(
+            'items',
+            'categories',
+            'affectation_igv_types',
+            'system_isc_types',
+            'price_types',
+            'discount_types',
+            'charge_types',
+            'attribute_types',
+            'operation_types',
+            'is_client'
+        );
     }
 
     public function record($id)
